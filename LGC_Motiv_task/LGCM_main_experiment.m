@@ -5,31 +5,12 @@ clearvars;
 instrreset
 
 %% working directories
-savePath = ['D:' filesep 'Matlab_codes' filesep 'LGC_Motiv_task' filesep];
-
-%% Open a connexion to the biopack datastream
-  stim.u_out = udp('127.0.0.1', 2012, 'LocalPort', 15010);
-%  stim.u_out = udp('127.0.0.1', 2012);
-%      stim.u_out = udp('128.178.188.240', 16212, 'LocalPort', 15010);
-     
-% stim.u_out = udp('128.178.188.240', 16212);
-% stim.u_out = udp('','LocalHost', '','LocalPort', 16213);
- fopen(stim.u_out);
-% for i = 1:1000
-%         fread(stim.u_out,1,'double')
-%         i
-% end
-% stim.u_out = tcpip('128.178.188.240', 16212, 'NetworkRole','server');
-% fopen(stim.u_out);
-% for i = 1:1000
-%         fread(stim.u_out,1,'double')
-%         i
-% end
-
-% t = tcpip('localhost', 15010, 'NetworkRole', 'server');
-% % set(t, 'InputBufferSize', 16); 
-% fopen(t);
-% data1 = fread(t, 16,'float');
+main_folder = ['D:' filesep 'Matlab_codes' filesep];
+savePath = [main_folder 'LGC_Motiv_task' filesep];
+BioPac_folder = [main_folder, 'BioPac_functions' filesep];
+Matlab_DIY_functions_folder = [main_folder, 'Matlab_DIY_functions', filesep];
+% add personal functions (needed for PTB opening at least)
+addpath(Matlab_DIY_functions_folder);
 
 %% subject identification
 % Insert the initials, the number of the participants
@@ -44,15 +25,30 @@ if isempty(init) == true || isempty(subjectID) == true
     errordlg('You didn''t answer everything ! We need all information to continue.')
 end
 
+%
+warning('NEED TO ADD CHECK THAT THE SUBJECT ID IS OK (=that we will not overwrite anything');
+
 %% Initialize variables
 
+
+
+
+
+
+% Initialize variable only important at this layer
+totalMoney = 20;
+nbTrialPerCoinType = 1;
+nbTrialPerPhase = [3 nbTrialPerCoinType*3 nbTrialPerCoinType*3 nbTrialPerCoinType];
+
+
+
+
+
+%% start PTB
+% Screen variables
 % PTB initialization + anti bug due to sync
 % Here we call some default settings for setting up Psychtoolbox. So it doesn't crash when we call it
-PsychDefaultSetup(2);
-Screen('Preference','VisualDebugLevel', 0);
-Screen('Preference', 'SkipSyncTests', 1);
-
-
+[x, y, window, baselineTextSize] = ScreenConfiguration(IRM, testing_script);
 
 
 % PTB sound
@@ -76,19 +72,6 @@ sound.pahandle = PsychPortAudio('Open', [], 1, 1, sound.Fs_win, sound.numberChan
 % Set the volume to half
 PsychPortAudio('Volume', sound.pahandle, 0.5);
 
-
-
-
-% Initialize variable only important at this layer
-totalMoney = 20;
-nbTrialPerCoinType = 1;
-nbTrialPerPhase = [3 nbTrialPerCoinType*3 nbTrialPerCoinType*3 nbTrialPerCoinType];
-
-
-
-
-
-% Screen variables
 % GET classical screen information : screen numbers,
 scr.screens = Screen('Screens');
 
@@ -207,6 +190,15 @@ stim.imageTextures = [stim.imageTexture_1FR, stim.imageTexture_50Cent, stim.imag
 topPriorityLevel = MaxPriority(scr.window);
 Priority(topPriorityLevel);
 
+%% Open a connexion to the biopack datastream
+if strcmp(BioPac_yn,'yes')
+    % add biopac functions if missing so that they can be used for grip
+    % acquisition
+    addpath(BioPac_folder);
+    % start BioPac recording
+    [stim] = BioPac_start();
+end
+
 %% Stimulus Presentation Training - Reward/Punishment - Neutral
 
 % Launch training
@@ -305,6 +297,8 @@ if strcmp(neutral_block_yn,'yes')
     pause_dur,...
     nbTrialPerCoinType);
 end
+
+%% shouldn't there be a function
 
 %% Clear the screen
 sca;
