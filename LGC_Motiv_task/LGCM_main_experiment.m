@@ -300,7 +300,10 @@ all.usedMVC{4,1} = stim.measuredMVC;
 
 %% neutral block
 if strcmp(neutral_block_yn,'yes')
-    [all] = LGCM_neutral_intrinsic_motiv_block(all, scr, stim, speed, sound, totalMoney, nbTrialPerCoinType);
+    [all] = LGCM_neutral_intrinsic_motiv_block(all,...
+    scr, stim, speed, sound, totalMoney,...
+    pause_dur,...
+    nbTrialPerCoinType);
 end
 
 %% Clear the screen
