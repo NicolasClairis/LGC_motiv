@@ -1,4 +1,4 @@
-function [doWin,signal,firstT2] = stimulusPresentation(scr,stim,speed,sound)
+function [doWin,signal,firstT2] = LGCM_stimulusPresentation(scr,stim,speed,sound)
 
 % reset some variables at each stimulus presentation. Initialize others
 frame_i =1;
@@ -153,8 +153,7 @@ while 1
     
 end
 
-% Show a grey screen in between
+%% Show a grey screen in between
 speed.vbl  = Screen('Flip', scr.window, speed.vbl + (speed.waitframes - 0.5) * speed.ifi);
 
-end
-
+end % function
