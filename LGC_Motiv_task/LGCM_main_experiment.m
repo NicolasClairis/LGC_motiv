@@ -1,14 +1,17 @@
 % Clear the workspace and the screen, instrreset resets the udp channels
-sca;
-close all;
-clearvars;
-instrreset
+sca; % close all PTB screens
+close all; % close all windows
+clearvars; % clear variables from memory
+instrreset; % Disconnect and delete all instrument objects
 
 %% working directories
-main_folder = ['D:' filesep 'Matlab_codes' filesep];
-savePath = [main_folder 'LGC_Motiv_task' filesep];
-BioPac_folder = [main_folder, 'BioPac_functions' filesep];
+main_folder                 = ['D:' filesep 'Matlab_codes' filesep];
+main_task_folder            = [main_folder, 'LGC_Motiv_task' filesep];
+savePath                    = [main_folder, 'LGC_Motiv_results' filesep];
+BioPac_folder               = [main_folder, 'BioPac_functions' filesep];
+pics_folder                 = [main_task_folder, 'Coin_PNG', filesep];
 Matlab_DIY_functions_folder = [main_folder, 'Matlab_DIY_functions', filesep];
+
 % add personal functions (needed for PTB opening at least)
 addpath(Matlab_DIY_functions_folder);
 
@@ -25,82 +28,83 @@ if isempty(init) == true || isempty(subjectID) == true
     errordlg('You didn''t answer everything ! We need all information to continue.')
 end
 
-%
-warning('NEED TO ADD CHECK THAT THE SUBJECT ID IS OK (=that we will not overwrite anything');
+%% session number (crucial for fMRI mapping btw fMRI session and behavioral data)
+session_nm = input('Session number?');
 
-%% Initialize variables
-
-
+%% task type (physical/mental effort)
 
 
+%% Initialize main variables
+totalMoney = 20; % initial monetary amount for participating in the study(?)
+warning('Is the comment for the variable totalMoney correct Arthur?');
+nbTrialPerCoinType = 1; % what is this?
+nbTrialPerPhase = [3 nbTrialPerCoinType*3 nbTrialPerCoinType*3 nbTrialPerCoinType]; % what is this?
 
+% fMRI/behavioral version?
+task_type = questdlg('behavioral or fMRI version?',...
+    'task version',...
+    'behavioral','fMRI','behavioral');
 
-% Initialize variable only important at this layer
-totalMoney = 20;
-nbTrialPerCoinType = 1;
-nbTrialPerPhase = [3 nbTrialPerCoinType*3 nbTrialPerCoinType*3 nbTrialPerCoinType];
+% depending on the version (fMRI/behavioral), adapt the default options
+% accordingly
+switch task_type
+    case 'behavioral' % behavioral version (Arthur protocol)
+        IRM = 0;
+        
+        neutral_block_yn = 'yes'; % include neutral block at the end for intrinsic motivation
+        audio_fbk_yn = 'yes'; % include audio feedback (?)
+    case 'fMRI' % fMRI version (Nicolas protocol)
+        IRM = 1;
+        
+        neutral_block_yn = 'no'; % include neutral block at the end for intrinsic motivation
+        audio_fbk_yn = 'no'; % include audio feedback (?)
+end
 
+% physical or mental effort task
 
+% physical effort task => requires the BioPac
+% (mental effort task might also require the BioPac)
+BioPac_yn = 'yes';
 
+BioPac_yn = 'no';
 
+file_nm = [subjectCodeName,'_session',];
+
+%% check subject, run and task are new (= no overwritting of previous files)
+if exist([savePath, file_nm,'.mat'],'file')
+    error(['The file name ',file_nm,'.mat already exists. Please relaunch with a new file name or delete the data.']);
+end
+if exist([savePath, file_nm,'.xlsx'],'file')
+    error(['The file name ',file_nm,'.xlsx already exists. Please relaunch with a new file name or delete the data.']);
+end
 
 %% start PTB
 % Screen variables
 % PTB initialization + anti bug due to sync
 % Here we call some default settings for setting up Psychtoolbox. So it doesn't crash when we call it
-[x, y, window, baselineTextSize] = ScreenConfiguration(IRM, testing_script);
+[xScreenCenter, yScreenCenter,...
+    window, baselineTextSize] = ScreenConfiguration(IRM, testing_script);
 
-
-% PTB sound
-% Initialize Sounddriver and prepare 2 audio input we will use. Resample the second one
-InitializePsychSound(1);
-[sound.audio_win,sound.Fs_win] = audioread(['D:' filesep 'Matlab codes' filesep 'Experiment Motivation Original' filesep 'Sounds' filesep 'Win.mp3']);
-[sound.audio_lose,sound.Fs_lose] = audioread(['D:' filesep 'Matlab codes' filesep 'Experiment Motivation Original' filesep 'Sounds' filesep filesep 'loose.mp3']);
-[p,q] = rat(sound.Fs_win / sound.Fs_lose);
-sound.audio_lose = resample(sound.audio_lose,p,q);
-sound.numberChannels = 2;
-
-% Open Psych-Audio port, with the follow arguements
-% (1) [] = default sound device
-% (2) 1 = sound playback only
-% (3) 1 = default level of latency
-% (4) Requested frequency in samples per second
-% (5) 2 = stereo putput
-sound.pahandle = PsychPortAudio('Open', [], 1, 1, sound.Fs_win, sound.numberChannels);
-% sound.pahandle_lose = PsychPortAudio('Open', [], 1, 1, sound.Fs_lose, sound.nrchannels);
-
-% Set the volume to half
-PsychPortAudio('Volume', sound.pahandle, 0.5);
-
-% GET classical screen information : screen numbers,
-scr.screens = Screen('Screens');
-
-% Draw to the external screen if avaliable
+%% check this is equivalent to WindowSize in pixels (Arthur was extracting both as if they were different measures)
+[scr.xCenter, scr.yCenter] = RectCenter(scr.windowRect);
+%%
+% Draw to the external screen if avalaible
 scr.screenNumber = max(scr.screens);
 stim.VSsignal = 0;
 
-% Define black and white
-scr.white = WhiteIndex(scr.screenNumber);
-scr.black = BlackIndex(scr.screenNumber);
-
-scr.grey = 0.5;
 % Open an on screen window
 [scr.window, scr.windowRect] = PsychImaging('OpenWindow', scr.screenNumber, scr.grey);
 
-% Get the size of the on screen window
-[scr.screenXpixels, scr.screenYpixels] = Screen('WindowSize', scr.window);
-
-% Get the centre coordinate of the window
-[scr.xCenter, scr.yCenter] = RectCenter(scr.windowRect);
-
 % Enable alpha blending for anti-aliasing of all our textures
-Screen('BlendFunction', scr.window, 'GL_SRC_ALPHA', 'GL_ONE_MINUS_SRC_ALPHA');
+Screen('BlendFunction', window, 'GL_SRC_ALPHA', 'GL_ONE_MINUS_SRC_ALPHA');
 
+% store main info in scr structure
+scr.window = window;
+% Get the centre coordinate of the window
+scr.xCenter = xScreenCenter;
+scr.yCenter = yScreenCenter;
 
-
-
-
-% Speed related variables
+%% Speed related variables
 % Query the frame duration
 speed.ifi = Screen('GetFlipInterval', scr.window);
 
@@ -114,9 +118,6 @@ speed.vbl = Screen('Flip', scr.window);
 speed.waitframes = 1;
 % Set the amount we want our square to move on each button press
 speed.pixelsPerFrame = 6;
-
-
-
 
 % Stimulus related variables
 % The color used to represent the signal
@@ -146,23 +147,19 @@ stim.isPositiveStimuli = isPositiveStimuli(1);
 
 % Set the intial position of the coin for screen. (even if not in the good place)
 scr.squareX = stim.moneySize/2;
-scr.squareY = scr.yCenter;
+scr.squareY = yScreenCenter;
 
 % Position of each ring/coin/signal on the screen
-stim.centeredthreshold_1 = CenterRectOnPointd(stim.threshold_1,scr.xCenter, scr.yCenter);
-stim.centeredthreshold_2 = CenterRectOnPointd(stim.threshold_2,scr.xCenter, scr.yCenter);
-stim.missThreshold = CenterRectOnPointd(stim.missThreshold,scr.xCenter, scr.yCenter);
-stim.missTarget = CenterRectOnPointd(stim.missTarget,scr.windowRect(3) - scr.squareX, scr.yCenter);
+stim.centeredthreshold_1 = CenterRectOnPointd(stim.threshold_1,xScreenCenter, yScreenCenter);
+stim.centeredthreshold_2 = CenterRectOnPointd(stim.threshold_2,xScreenCenter, yScreenCenter);
+stim.missThreshold = CenterRectOnPointd(stim.missThreshold,xScreenCenter, yScreenCenter);
+stim.missTarget = CenterRectOnPointd(stim.missTarget,scr.windowRect(3) - scr.squareX, yScreenCenter);
 
 %Import the images
-imageLocation_20Cent = ['D:' filesep 'Matlab codes' filesep 'Experiment Motivation Original' filesep 'Coin PNG' filesep 'SMT_Coin_20RP.png'];
-[image_20Cent,~,alpha_20Cent] = imread(imageLocation_20Cent);
-imageLocation_50Cent = ['D:' filesep 'Matlab codes'  filesep 'Experiment Motivation Original' filesep 'Coin PNG'  filesep 'SMT_Coin_50RP.png'];
-[image_50Cent,~,alpha_50Cent] = imread(imageLocation_50Cent);
-imageLocation_1FR = ['D:' filesep 'Matlab codes' filesep 'Experiment Motivation Original' filesep 'Coin PNG'  filesep 'SMT_Coin_1FR.png'];
-[image_1FR,~,alpha_1FR] = imread(imageLocation_1FR);
-imageLocation_0FR = ['D:' filesep 'Matlab codes' filesep 'Experiment Motivation Original' filesep 'Coin PNG'  filesep 'SMT_Coin_0FR.png'];
-[image_0FR,~,alpha_0FR] = imread(imageLocation_0FR);
+[image_20Cent,~,alpha_20Cent] = imread([pics_folder 'SMT_Coin_20RP.png']);
+[image_50Cent,~,alpha_50Cent] = imread([pics_folder 'SMT_Coin_50RP.png']);
+[image_1FR,~,alpha_1FR] = imread([pics_folder 'SMT_Coin_1FR.png']);
+[image_0FR,~,alpha_0FR] = imread([pics_folder 'SMT_Coin_0FR.png']);
 
 % Make the image into a texture
 image_20Cent(:,:,4) = alpha_20Cent;
@@ -182,15 +179,30 @@ stim.incentiveIdx = incentiveIdx(randperm(nbTrialPerCoinType*3));
 stim.incentive = [1,0.5,0.2,0];
 stim.imageTextures = [stim.imageTexture_1FR, stim.imageTexture_50Cent, stim.imageTexture_20Cent, stim.imageTexture_0FR];
 
+%% PTB sound
+if strcmp(audio_fbk_yn,'yes')
+    % Initialize Sounddriver and prepare 2 audio input we will use. Resample the second one
+    InitializePsychSound(1);
+    [sound.audio_win,sound.Fs_win] = audioread(['D:' filesep 'Matlab codes' filesep 'Experiment Motivation Original' filesep 'Sounds' filesep 'Win.mp3']);
+    [sound.audio_lose,sound.Fs_lose] = audioread(['D:' filesep 'Matlab codes' filesep 'Experiment Motivation Original' filesep 'Sounds' filesep filesep 'loose.mp3']);
+    [p,q] = rat(sound.Fs_win / sound.Fs_lose);
+    sound.audio_lose = resample(sound.audio_lose,p,q);
+    sound.numberChannels = 2;
+    
+    % Open Psych-Audio port, with the follow arguements
+    % (1) [] = default sound device
+    % (2) 1 = sound playback only
+    % (3) 1 = default level of latency
+    % (4) Requested frequency in samples per second
+    % (5) 2 = stereo putput
+    sound.pahandle = PsychPortAudio('Open', [], 1, 1, sound.Fs_win, sound.numberChannels);
+    % sound.pahandle_lose = PsychPortAudio('Open', [], 1, 1, sound.Fs_lose, sound.nrchannels);
+    
+    % Set the volume to half
+    PsychPortAudio('Volume', sound.pahandle, 0.5);
+end
 
-
-
-
-% Maximum priority level so that all the computer power is given to this
-topPriorityLevel = MaxPriority(scr.window);
-Priority(topPriorityLevel);
-
-%% Open a connexion to the biopack datastream
+%% Open a connection to the biopack datastream
 if strcmp(BioPac_yn,'yes')
     % add biopac functions if missing so that they can be used for grip
     % acquisition
@@ -199,13 +211,13 @@ if strcmp(BioPac_yn,'yes')
     [stim] = BioPac_start();
 end
 
-%% Stimulus Presentation Training - Reward/Punishment - Neutral
+%% perform the task physical/mental effort
 
-% Launch training
+%% Launch training
 [all,stim] = training(scr,stim,speed,sound);
 
-% Launch Reward/Punishment
-for blockType = 1:2
+%% Launch Reward/Punishment
+for iBlockType = 1:2
     if stim.isPositiveStimuli == true
         
         % Reward Protocol followed by showing the results of the trial
@@ -236,7 +248,7 @@ for blockType = 1:2
         all.usedMVC{2,1} = stim.measuredMVC;
         
         % If it is the first block, do 10 sec break before launching next block
-        if blockType == 1
+        if iBlockType == 1
             speed.isShortBreak = true;
             showBreak(scr,stim,speed,totalMoney)
         end
@@ -269,7 +281,7 @@ for blockType = 1:2
         all.MVCsignal{3,2} = signal(3,:);
         stim.measuredMVC = max(measuredMVC);
         all.usedMVC{3,1} = stim.measuredMVC;
-        if blockType == 1
+        if iBlockType == 1
             speed.isShortBreak = true;
             showBreak(scr,stim,speed,totalMoney)
         end
@@ -281,7 +293,7 @@ end
 speed.isShortBreak = false;
 showBreak(scr,stim,speed,totalMoney)
 
-% Measure maximum power again ! save the data in the all struct one last time
+%% Measure maximum power again ! save the data in the all struct one last time
 [measuredMVC,signal] = measureMVC(scr,stim,speed);
 all.measuredMVC{4,1} = measuredMVC;
 all.MVCsignal{4,1} = signal(1,:);
@@ -298,12 +310,12 @@ if strcmp(neutral_block_yn,'yes')
     nbTrialPerCoinType);
 end
 
-%% shouldn't there be a function
+%% shouldn't there be a function to close BioPac stuff?
 
-%% Clear the screen
+%% Clear the PTB screen
 sca;
-%% Save Data
 
-% Double save to finish. one .mat (easier to take and do ML) and one excel just in case move them in the saving folde
-save([savePath, subjectCodeName '_data.mat'],'-struct','all')
-saveDataExcel(all,nbTrialPerPhase,subjectCodeName);
+%% Save Data
+% Double save to finish: .mat and .csv format
+save([savePath, file_nm,'.mat'],'-struct','all');
+saveDataExcel(all, nbTrialPerPhase, file_nm);
