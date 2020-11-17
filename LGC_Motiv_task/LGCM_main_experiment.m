@@ -5,7 +5,10 @@ clearvars; % clear variables from memory
 instrreset; % Disconnect and delete all instrument objects
 
 %% working directories
-main_folder                 = ['D:' filesep 'Matlab_codes' filesep];
+% main_folder                 = ['D:' filesep 'Matlab_codes' filesep]; % Arthur's laptop path
+main_folder                 = ['C:',filesep,'Users',filesep,'Loco',filesep,...
+    'Documents',filesep,'GitHub',filesep,...
+    'LGC_motiv', filesep]; % Nico's laptop Github path
 main_task_folder            = [main_folder, 'LGC_Motiv_task' filesep];
 savePath                    = [main_folder, 'LGC_Motiv_results' filesep];
 BioPac_folder               = [main_folder, 'BioPac_functions' filesep];
@@ -13,6 +16,8 @@ pics_folder                 = [main_task_folder, 'Coin_PNG', filesep];
 Matlab_DIY_functions_folder = [main_folder, 'Matlab_DIY_functions', filesep];
 
 % add personal functions (needed for PTB opening at least)
+addpath(genpath(main_task_folder));
+addpath(BioPac_folder);
 addpath(Matlab_DIY_functions_folder);
 
 %% subject identification
@@ -80,7 +85,16 @@ incentiveIdx = cat(1,...
     nbTrialPerCoinType*3));
 incentiveIdx = incentiveIdx(randperm(nbTrialPerCoinType*3));
 
+% MVC
+n_MVC_measures = 2; % 1 initial measure + 1 at the end
+n_MVC_repeat = 3; % number of repetitions of the MVC measurement
+all.MVC = NaN(1,n_MVC_measures);
+all.MVC_allValues_perTest = NaN(n_MVC_repeat, n_MVC_measures);
+
 %% timings
+wait.training_instructions = 3;
+wait.
+% jitter fixation cross
 
 
 %% file name
@@ -129,11 +143,7 @@ end
 
 %% perform the task
 %% initial MVC measurement
-[MVC, onsets_MVC] = LGCM_MVC_measurement(scr, session_effort_type, speed, stim);
-% store all in final output variable
-all.MVC(1) = MVC.MVC; % store initial MVC
-all.MVC_allValues_perTest(:,1) = MVC.MVC_perCalibSession;
-onsets.initial_MVC = onsets_MVC;
+[MVC_initial, onsets_MVC_initial] = LGCM_MVC_measurement(scr, session_effort_type, speed, stim, n_MVC_repeat);
 
 %% Launch training trials
 [all, stim] = LGCM_training(scr, stim, speed,...
@@ -141,8 +151,21 @@ onsets.initial_MVC = onsets_MVC;
     session_effort_type);
 
 %% Launch main task
+
+%% Announce the next block
+
 % reward block
 
+% Select wanted variable and Launch a big break after a block
+stim.isPositiveStimuli = false;
+speed.isShortBreak = false;
+showBreak(scr,stim,speed,totalMoney)
+
+% If it is the first block, do 10 sec break before launching next block
+if blockType == 1
+    speed.isShortBreak = true;
+    showBreak(scr,stim,speed,totalMoney)
+end
 
 % punishment block (always performed after reward block if included so that
 % it does not influence reward block parameters)
@@ -151,7 +174,7 @@ if strcmp(punishment_block_yn,'yes')
 end
 
 %% Measure maximum power again ! save the data in the all struct one last time
-warning('re-use same function but replace variable names here');
+[MVC_last, onsets_MVC_last] = LGCM_MVC_measurement(scr, session_effort_type, speed, stim, n_MVC_repeat);
 
 %% neutral block
 if strcmp(neutral_block_yn,'yes')
@@ -167,6 +190,17 @@ end
 sca;
 
 %% Save Data
+% store all relevant data in final output variable
+all.MVC(1) = MVC_initial.MVC; % store initial MVC
+all.MVC(1) = MVC_last.MVC; % store final MVC
+all.MVC_allValues_perTest(:,1) = MVC_initial.MVC_perCalibSession;
+all.MVC_allValues_perTest(:,2) = MVC_last.MVC_perCalibSession;
+onsets.initial_MVC = onsets_MVC_initial;
+onsets.final_MVC = onsets_MVC_final;
+
+% store timings in all structure
+all.onsets = onsets;
+
 % Double save to finish: .mat and .csv format
 save([savePath, file_nm,'.mat'],'-struct','all');
 saveDataExcel(all, nbTrialPerPhase, file_nm);
