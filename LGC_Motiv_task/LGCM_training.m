@@ -4,7 +4,8 @@ function [all, stim] = LGCM_training(scr, stim, speed,...
 %[all, stim] = LGCM_training(scr, stim, speed,...
 %     audio_fbk_yn, sound,...
 %     session_effort_type)
-% LGCM_training will allow to perform the first trials
+% LGCM_training will allow to perform the training trials before starting
+% the main task
 
 
 %% Show the training text
@@ -30,21 +31,6 @@ for iTrainingTrial = 1:n_training_trials
     all.incentive{1,iTrainingTrial} = stim.incentive(stim.incentiveIdx(iTrainingTrial));
     all.firstT2{1,iTrainingTrial} = firstT2;
 end
-
-%% Announce the next block
-Screen('TextSize',scr.window,100)
-switch stim.isPositiveStimuli
-    case 1
-        DrawFormattedText(scr.window, 'Next up : MISS or WIN Money ', 'center', scr.screenYpixels * 0.7, 1);
-    case 0
-        DrawFormattedText(scr.window, 'Next up : SAVE or LOSE Money ', 'center', scr.screenYpixels * 0.7, 1);
-end
-Screen('TextSize', scr.window, 150)
-DrawFormattedText(scr.window, 'Get Ready', 'center', scr.screenYpixels * 0.3, 1);
-
-%% Flip to the screen
-speed.vbl  = Screen('Flip', scr.window, speed.vbl + (speed.waitframes - 0.5) * speed.ifi);
-pause(3)
 
 
 end % function
