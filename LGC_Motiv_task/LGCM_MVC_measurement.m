@@ -1,4 +1,4 @@
-function[MVC, onsets] = LGCM_MVC_measurement(scr, session_effort_type, speed, stim)
+function[MVC, onsets] = LGCM_MVC_measurement(scr, session_effort_type, speed, stim, n_MVC_repeat)
 %[MVC, onsets] = LGCM_MVC_measurement(scr, session_effort_type, speed, stim)
 % LGCM_MVC_measurement will display the instructions and measure the MVC
 %
@@ -11,6 +11,8 @@ function[MVC, onsets] = LGCM_MVC_measurement(scr, session_effort_type, speed, st
 % speed: structure with stimulus display speed
 %
 % stim: structure with stimulus properties (size, etc.)
+%
+% n_MVC_repeat: number of repetitions of the MVC measurement
 %
 % OUTPUTS
 % MVC: MVC value
@@ -37,11 +39,8 @@ t_MVC_calib_instructions2 = 3;
 t_MVC_calib = 3;
 t_MVC_rest = 7;
 
-%% number of calibration sessions
-n_calib_MVC = 3;
-
 %% MVC 
-MVC_perCalibSession = NaN(1,n_calib_MVC);
+MVC_perCalibSession = NaN(1,n_MVC_repeat);
 
 %% Quick text to introduce MVC calibration
 Screen('TextSize', window, text_size_1);
@@ -64,7 +63,7 @@ centeredCore = CenterRectOnPointd(threshold_1, xCenter, yCenter);
 Screen('TextSize', scr.window, text_size_3);
 
 %% Measure MVC and keep maximal value
-for iCalib_MVC = 1:n_calib_MVC
+for iCalib_MVC = 1:n_MVC_repeat
     
     %% store all force values
     live_force_MVC.(['calib_session_',num2str(iCalib_MVC)]) = [];
