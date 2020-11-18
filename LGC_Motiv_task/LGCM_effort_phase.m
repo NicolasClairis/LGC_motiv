@@ -1,4 +1,5 @@
-function[onsets] = LGCM_effort_phase(scr, speed, stim, wait, audio, n_trials, reward_or_punishment)
+function[onsets] = LGCM_effort_phase(scr, speed, stim,...
+    wait, audio_fbk_yn, n_trials, reward_or_punishment)
 % will perform the main LGC motivational task
 
 %% extract main variables for display
@@ -36,7 +37,7 @@ for iTrial = 1:n_trials
     [doWin, signal, firstT2] = stimulusPresentation(scr,stim,speed,sound);
     
     %% display trial feedback
-    totalMoney = showResult(scr,stim,speed,totalMoney,doWin,stim.incentive(stim.incentiveIdx(iTrial)));
+    onsets_fbk(iTrial) = LGCM_trial_feedback(scr,stim,speed,totalMoney,doWin,stim.incentive(stim.incentiveIdx(iTrial)));
     
     %% display how many trials have been done (for the experimenter)
     disp(['Trial ',num2str(iTrial),'/',num2str(n_trials),' done']);

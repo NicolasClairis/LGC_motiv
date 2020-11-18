@@ -1,16 +1,16 @@
 function [doWin,signal,firstT2] = stimulusPresentation(scr,stim,speed,sound)
 
 % reset some variables at each stimulus presentation. Initialize others
-frame_i =1; % keep track of frame number ~equivalent to time sample
-frame_center_i =1; % serves to know if the size of the money is ok
-stim.VCsignal = 0; % force signal extracted with BioPac (might be removed)
-stim.atCenter = 0; % is the money at the center yet?
-stim.showCircles = true; % if missed will switch to false
-stim.triggerCatch = false; % did subject started to try to reach threshold2?
-enlargedMoneyIdx = round(linspace(stim.threshold_1(3),stim.threshold_2(3)+50,3*60)); % index of money enlargement speed
-signal = []; % force signal (redundant with stim.VCsignal maybe =>stim.VCsignal can be removed)
+frame_i =1;
+frame_center_i =1;
+stim.VCsignal = 0;
+stim.atCenter = 0;
+stim.showCircles = true;
+stim.triggerCatch = false;
+enlargedMoneyIdx = round(linspace(stim.threshold_1(3),stim.threshold_2(3)+50,3*60));
+signal = [];
 t2 = true;
-firstT2 = 0;% time when threshold 2 reached
+firstT2 = 0;
 
 % In case of a problem, win is not a boolean but 2 so that we can discard the trial
 doWin = 2;
@@ -33,7 +33,6 @@ while 1
     % Check different case condition, in which thing might happen
     % If the stimulus is in the center of the screen, but is underneath the minimum amount required then
     if stim.atCenter == 1 && stim.VCsignal < 60 && doWin ~= false
-        %% center + force lower than 60% => participant lost
         
         % Lost the coin and show animation of failure to aquire the coin
         doWin = 0;
@@ -41,11 +40,6 @@ while 1
         
         % If the stimulus is at the center (+-10 pixels) and that the participant either triggered  catching the coin for the first time, or is trying to catch it.
     elseif ((stim.VCsignal) > 70 && (scr.xCenter-10 < scr.squareX) && (scr.squareX < scr.xCenter+10) && (doWin ~= false)) || ((stim.VCsignal) > 60 && (stim.triggerCatch == true) && (scr.xCenter-10 < scr.squareX) && (scr.squareX < scr.xCenter+10) && (doWin ~= false))
-        %% if t2 reached (=70%) AND CENTER
-        % => while force still higher than 60%
-        % => piece money starts enlarging
-        %
-        % if one of these conditions is not reached => missed
         
         % the coin arrived at the center
         stim.atCenter =1;
@@ -69,11 +63,6 @@ while 1
         
         % If the coin had it's max size, then trigger victory
         if frame_center_i == size(enlargedMoneyIdx,2) && stim.isPositiveStimuli ~= 2
-            % Fill the audio playback buffer with the audio data, doubled for stereo presentation
-            PsychPortAudio('FillBuffer', sound.pahandle, [sound.audio_win'; sound.audio_win']);
-            % Start audio playback no repetition (1), start instantly (0), wait for device to really start (1)
-            PsychPortAudio('Start', sound.pahandle, 1, 0, 1);
-            
             % Win and get out
             doWin = 1;
             break
@@ -86,20 +75,9 @@ while 1
         end
         % If coin reaches the other end of the screen inside the miss threshold
     elseif (scr.windowRect(3)-stim.moneySize/2 -10 < scr.squareX) && (scr.squareX < scr.windowRect(3)-stim.moneySize/2+10)
-        %% end of the trial in case of miss:
-        % money moves towards the right of the screen
         
         % loss the coin
         doWin = 0;
-        
-        % If we were in the punishment block, play lose sound
-        if stim.isPositiveStimuli == false
-            
-            PsychPortAudio('FillBuffer', sound.pahandle, [sound.audio_lose(:,1)'; sound.audio_lose(:,2)']);
-            
-            % Start audio playback no repetition (1), start instantly (0), wait for device to really start (1)
-            PsychPortAudio('Start', sound.pahandle, 1, 0, 1);
-        end
         
         % end the trial as they lost
         break

@@ -84,6 +84,8 @@ incentiveIdx = cat(1,...
     repelem([1 2 3],...
     nbTrialPerCoinType*3));
 incentiveIdx = incentiveIdx(randperm(nbTrialPerCoinType*3));
+% training variables
+n_training_trials = 3;
 
 % MVC
 n_MVC_measures = 2; % 1 initial measure + 1 at the end
@@ -91,10 +93,12 @@ n_MVC_repeat = 3; % number of repetitions of the MVC measurement
 all.MVC = NaN(1,n_MVC_measures);
 all.MVC_allValues_perTest = NaN(n_MVC_repeat, n_MVC_measures);
 
+%% effort stimulus characteristics
+
 %% timings
-wait.training_instructions = 3;
-wait.
-% jitter fixation cross
+t_wait.training_instructions = 3;
+t_wait.fixation_cross = 0.5;
+% design jitter for period varying
 
 
 %% file name
@@ -114,7 +118,7 @@ end
 
 %% PTB initialization
 [scr, xScreenCenter, yScreenCenter,...
-    window, baselineTextSize] = ScreenConfiguration(IRM, testing_script);
+    window, baselineTextSize] = LGCM_ScreenConfiguration(IRM, testing_script);
 
 %% Stimulus related variables
 [stim] = LGCM_stim_initialize(scr);
@@ -146,9 +150,9 @@ end
 [MVC_initial, onsets_MVC_initial] = LGCM_MVC_measurement(scr, session_effort_type, speed, stim, n_MVC_repeat);
 
 %% Launch training trials
-[all, stim] = LGCM_training(scr, stim, speed,...
+[stim] = LGCM_training(scr, stim, speed,...
     audio_fbk_yn, sound,...
-    session_effort_type);
+    session_effort_type, n_training_trials);
 
 %% Launch main task
 
@@ -178,7 +182,7 @@ end
 
 %% neutral block
 if strcmp(neutral_block_yn,'yes')
-    [all] = LGCM_neutral_intrinsic_motiv_block(all,...
+    [output_vars] = LGCM_neutral_intrinsic_motiv_block(all,...
     scr, stim, speed, sound, totalMoney,...
     pause_dur,...
     nbTrialPerCoinType);
@@ -192,9 +196,11 @@ sca;
 %% Save Data
 % store all relevant data in final output variable
 all.MVC(1) = MVC_initial.MVC; % store initial MVC
-all.MVC(1) = MVC_last.MVC; % store final MVC
+all.MVC(2) = MVC_last.MVC; % store final MVC
 all.MVC_allValues_perTest(:,1) = MVC_initial.MVC_perCalibSession;
 all.MVC_allValues_perTest(:,2) = MVC_last.MVC_perCalibSession;
+all.MVC_initial = MVC_initial;
+all.MVC_last = MVC_last;
 onsets.initial_MVC = onsets_MVC_initial;
 onsets.final_MVC = onsets_MVC_final;
 
