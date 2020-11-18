@@ -7,6 +7,7 @@ screenYpixels = scr.Ycenter*2;
 window = scr.window;
 t_block_instructions = wait.block_instructions;
 t_cross = wait.fixation_cross;
+t_wait_stimDisp = wait.stimulus_display;
 
 %% Announce the next block
 Screen('TextSize',window,100)
@@ -27,17 +28,28 @@ WaitSecs(t_block_instructions)
 %% launch the task
 for iTrial = 1:n_trials
     %% fixation cross display
-    warning('extract onsets here');
+    Screen('FillRect',window,white,stim.cross_verticalLine); % vertical line
+    Screen('FillRect',window,white,stim.cross_horizontalLine); % horizontal line
+    [~,timenow] = Screen('Flip',window); % display the cross on screen
+    onsets.cross(iTrial) = timenow;
     WaitSecs(t_cross);
     
-    %% display the incentive
+    %% display the incentive before effort starts
+    centeredSignal = CenterRectOnPointd(baseSignal, xCenter, yCenter);
+    Screen('FillOval', window, signalColor, centeredSignal);
+    Screen('DrawTexture', window, image, [], centeredMoney);
+    % speed.vbl  = Screen('Flip', scr.window, speed.vbl + (speed.waitframes - 0.5) * speed.ifi);
+    [~, timenow] = Screen('Flip',window);
+    onsets.incentive(iTrial) = timenow;
+    WaitSecs(t_wait_stimDisp);
     
     %% effort phase
-    stim.imageTextureIdx = stim.incentiveIdx(iTrial);
-    [doWin, signal, firstT2] = stimulusPresentation(scr,stim,speed,sound);
+    [doWin, signal, onsets_tmp] = stimulusPresentation(scr,stim,iTrial,speed,sound);
+    onsets.success(iTrial) = onsets_tmp.success;
+    onsets.miss(iTrial) = onsets_tmp.miss;
     
     %% display trial feedback
-    onsets_fbk(iTrial) = LGCM_trial_feedback(scr,stim,speed,totalMoney,doWin,stim.incentive(stim.incentiveIdx(iTrial)));
+    onsets.fbk(iTrial) = LGCM_trial_feedback(scr,stim,speed,totalMoney,doWin,stim.incentive(stim.incentiveIdx(iTrial)));
     
     %% display how many trials have been done (for the experimenter)
     disp(['Trial ',num2str(iTrial),'/',num2str(n_trials),' done']);
