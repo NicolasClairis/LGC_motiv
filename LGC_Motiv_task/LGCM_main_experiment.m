@@ -142,15 +142,38 @@ if strcmp(BioPac_yn,'yes')
     addpath(BioPac_folder);
     
     % start BioPac recording
-    [stim] = BioPac_start();
+    [u_out] = BioPac_start();
 end
+
+%% keyboard keys configuration + waiting and recording first TTL for fMRI
+if IRM == 0
+    %% key configuration
+    KbName('UnifyKeyNames');
+    key.left = KbName('LeftArrow');
+    key.right = KbName('RightArrow');
+    key.escape= KbName('escape');
+elseif IRM == 1
+    %% fMRI key configuration
+    KbName('UnifyKeyNames');
+    key.left = 49;        % 49 % DROITE  bleu, left press
+    key.right = 50;       %50   %% GAUCHE JAUNE
+    key.escape = KbName('escape');
+end
+
+%% start recording fMRI TTL
+%% TRIGGER RAPHAEL
+if IRM == 1
+    dummy_scan = 4; % number of TTL to wait before starting the task
+    trigger = 53; % trigger value corresponding to TTL code
+    [T0, TTL] = LGCM_keyboard_check_start(dummy_scans, trigger);
+end % fMRI check
 
 %% perform the task
 %% initial MVC measurement
 [MVC_initial, onsets_MVC_initial] = LGCM_MVC_measurement(scr, session_effort_type, speed, stim, n_MVC_repeat);
 
 %% Launch training trials
-[stim] = LGCM_training(scr, stim, speed,...
+[onsets_training] = LGCM_training(scr, stim, speed,...
     audio_fbk_yn, sound,...
     session_effort_type, n_training_trials);
 
@@ -161,15 +184,7 @@ end
 % reward block
 
 % Select wanted variable and Launch a big break after a block
-stim.isPositiveStimuli = false;
-speed.isShortBreak = false;
 showBreak(scr,stim,speed,totalMoney)
-
-% If it is the first block, do 10 sec break before launching next block
-if blockType == 1
-    speed.isShortBreak = true;
-    showBreak(scr,stim,speed,totalMoney)
-end
 
 % punishment block (always performed after reward block if included so that
 % it does not influence reward block parameters)
@@ -186,6 +201,22 @@ if strcmp(neutral_block_yn,'yes')
     scr, stim, speed, sound, totalMoney,...
     pause_dur,...
     nbTrialPerCoinType);
+end
+
+%% get all TTL from the task
+if IRM == 1
+    switch session_effort_type
+        case 'physical'
+            TTL = LGCM_keyboard_check_end(TTL);
+        case 'mental'
+            [TTL, keyLeft, keyRight] = LGCM_keyboard_check_end(TTL);
+            % key storage of when left/right key have been pressed
+            all.keys.keyLeft    = keyLeft;
+            all.keys.keyRight   = keyRight;
+    end
+    % store T0 and TTL timings in onsets structure
+    onsets.T0 = T0;
+    onsets.TTL = TTL;
 end
 
 %% shouldn't there be a function to close BioPac stuff?
@@ -210,3 +241,5 @@ all.onsets = onsets;
 % Double save to finish: .mat and .csv format
 save([savePath, file_nm,'.mat'],'-struct','all');
 saveDataExcel(all, nbTrialPerPhase, file_nm);
+
+save([savePath, file_nm,'_messyAllStuff.mat']);
