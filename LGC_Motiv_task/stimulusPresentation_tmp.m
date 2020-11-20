@@ -1,4 +1,4 @@
-function [doWin,signal,firstT2] = stimulusPresentation(scr,stim,speed,sound)
+function [doWin,signal,firstT2] = stimulusPresentation_tmp(scr,stim,speed,sound)
 
 % reset some variables at each stimulus presentation. Initialize others
 frame_i =1;
@@ -39,7 +39,15 @@ while 1
         [stim,speed,frame_i,signal] = missprotocol(scr,stim,speed,signal,frame_i);
         
         % If the stimulus is at the center (+-10 pixels) and that the participant either triggered  catching the coin for the first time, or is trying to catch it.
-    elseif ((stim.VCsignal) > 70 && (scr.xCenter-10 < scr.squareX) && (scr.squareX < scr.xCenter+10) && (doWin ~= false)) || ((stim.VCsignal) > 60 && (stim.triggerCatch == true) && (scr.xCenter-10 < scr.squareX) && (scr.squareX < scr.xCenter+10) && (doWin ~= false))
+    elseif ((stim.VCsignal) > 70 &&...
+            (scr.xCenter-10 < scr.squareX) &&...
+            (scr.squareX < scr.xCenter+10) &&...
+            (doWin ~= false)) ||...
+            ((stim.VCsignal) > 60 &&...
+            (stim.triggerCatch == true) &&...
+            (scr.xCenter-10 < scr.squareX) &&...
+            (scr.squareX < scr.xCenter+10) &&...
+            (doWin ~= false))
         
         % the coin arrived at the center
         stim.atCenter =1;
@@ -74,7 +82,8 @@ while 1
             break
         end
         % If coin reaches the other end of the screen inside the miss threshold
-    elseif (scr.windowRect(3)-stim.moneySize/2 -10 < scr.squareX) && (scr.squareX < scr.windowRect(3)-stim.moneySize/2+10)
+    elseif (scr.windowRect(3)-stim.moneySize/2 -10 < scr.squareX) &&...
+            (scr.squareX < scr.windowRect(3)-stim.moneySize/2+10)
         
         % loss the coin
         doWin = 0;
