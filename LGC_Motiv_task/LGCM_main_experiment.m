@@ -79,11 +79,32 @@ nbTrialPerPhase = [3,...
     nbTrialPerCoinType*3,...
     nbTrialPerCoinType*3,...
     nbTrialPerCoinType]; % what is this?
-% Prepare an array of incentive, each type of coin being shown the same amount of time in a randomized order
-incentiveIdx = cat(1,...
-    repelem([1 2 3],...
-    nbTrialPerCoinType*3));
-incentiveIdx = incentiveIdx(randperm(nbTrialPerCoinType*3));
+
+% define order of each incentive display
+%
+% METHOD 1: it will randomize the order across all trials
+% ** advantage = reduces predictability for the next trial
+% ** inconvenient = might create patterns inside the task with periods with
+% a lot of high amount incentive and others with a lot of low amount
+% incentive
+%
+% % Prepare an array of incentive, each type of coin being shown the same amount of time in a randomized order
+% incentiveIdx = cat(1,...
+%     repelem([1 2 3],...
+%     nbTrialPerCoinType*3));
+% incentive_rdm_order_idx = randperm(nbTrialPerCoinType*3);
+% incentiveIdx = incentiveIdx(incentive_rdm_order_idx);
+%
+% METHOD 2: it will randomize the order within each mini-block. One
+% mini-block contains all possible incentives one single time. 
+% ** advantage: the frequency of each incentive is stable in the whole
+% task => no high vs low reward periods
+% ** inconvenient: if the number of incentives is low (2 or 3 typically)
+% then it becomes more predictable (if you have seen 2/3 of the possible 
+% incentives, then you might expect the 3rd one) => more efficient if you
+% have more than 2/3 incentive possibilities
+
+
 % training variables
 n_training_trials = 3;
 

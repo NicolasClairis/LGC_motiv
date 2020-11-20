@@ -174,12 +174,11 @@ while 1
                         % trial is a success
                         doWin = 1;
                     end
-                    
                     %% the subject's performance dropped below the tolerance threshold
                     % => the trial is a loss
                 elseif current_ForceLevel_tmp < threshold_2_forceLevel - threshold_2_forceLevel_tolerance_wdw
                     
-                    % money moves from the center to the right of the
+                    % money moves from the cen to the center of the
                     % screen
                     squareX = squareX + speed.pixelsPerFrame;
                     % display the new position of the money incentive
