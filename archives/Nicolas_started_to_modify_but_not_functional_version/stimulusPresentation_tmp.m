@@ -1,4 +1,4 @@
-function [doWin,signal,firstT2] = stimulusPresentation(scr,stim,speed,sound)
+function [doWin,signal,firstT2] = stimulusPresentation_tmp(scr,stim,speed,sound)
 
 % reset some variables at each stimulus presentation. Initialize others
 frame_i =1;
@@ -39,7 +39,15 @@ while 1
         [stim,speed,frame_i,signal] = missprotocol(scr,stim,speed,signal,frame_i);
         
         % If the stimulus is at the center (+-10 pixels) and that the participant either triggered  catching the coin for the first time, or is trying to catch it.
-    elseif ((stim.VCsignal) > 70 && (scr.xCenter-10 < scr.squareX) && (scr.squareX < scr.xCenter+10) && (doWin ~= false)) || ((stim.VCsignal) > 60 && (stim.triggerCatch == true) && (scr.xCenter-10 < scr.squareX) && (scr.squareX < scr.xCenter+10) && (doWin ~= false))
+    elseif ((stim.VCsignal) > 70 &&...
+            (scr.xCenter-10 < scr.squareX) &&...
+            (scr.squareX < scr.xCenter+10) &&...
+            (doWin ~= false)) ||...
+            ((stim.VCsignal) > 60 &&...
+            (stim.triggerCatch == true) &&...
+            (scr.xCenter-10 < scr.squareX) &&...
+            (scr.squareX < scr.xCenter+10) &&...
+            (doWin ~= false))
         
         % the coin arrived at the center
         stim.atCenter =1;
@@ -63,11 +71,6 @@ while 1
         
         % If the coin had it's max size, then trigger victory
         if frame_center_i == size(enlargedMoneyIdx,2) && stim.isPositiveStimuli ~= 2
-            % Fill the audio playback buffer with the audio data, doubled for stereo presentation
-            PsychPortAudio('FillBuffer', sound.pahandle, [sound.audio_win'; sound.audio_win']);
-            % Start audio playback no repetition (1), start instantly (0), wait for device to really start (1)
-            PsychPortAudio('Start', sound.pahandle, 1, 0, 1);
-            
             % Win and get out
             doWin = 1;
             break
@@ -79,19 +82,11 @@ while 1
             break
         end
         % If coin reaches the other end of the screen inside the miss threshold
-    elseif (scr.windowRect(3)-stim.moneySize/2 -10 < scr.squareX) && (scr.squareX < scr.windowRect(3)-stim.moneySize/2+10)
+    elseif (scr.windowRect(3)-stim.moneySize/2 -10 < scr.squareX) &&...
+            (scr.squareX < scr.windowRect(3)-stim.moneySize/2+10)
         
         % loss the coin
         doWin = 0;
-        
-        % If we were in the punishment block, play lose sound
-        if stim.isPositiveStimuli == false
-            
-            PsychPortAudio('FillBuffer', sound.pahandle, [sound.audio_lose(:,1)'; sound.audio_lose(:,2)']);
-            
-            % Start audio playback no repetition (1), start instantly (0), wait for device to really start (1)
-            PsychPortAudio('Start', sound.pahandle, 1, 0, 1);
-        end
         
         % end the trial as they lost
         break
