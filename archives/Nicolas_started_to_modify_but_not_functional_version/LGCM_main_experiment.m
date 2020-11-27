@@ -201,7 +201,7 @@ end % fMRI check
 %% Launch main task
 
 %% Announce the next block
-
+%§%
 % reward block
 
 % Select wanted variable and Launch a big break after a block
