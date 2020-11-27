@@ -24,7 +24,7 @@ Screen('BlendFunction', window, 'GL_SRC_ALPHA', 'GL_ONE_MINUS_SRC_ALPHA');
 stim.signalColor = [0 0.75 0.3];
 
 %% Money variables
-moneySize = 214;
+moneySize = warning('should be encoded relatively to screen size'); %214;
 stim.money = [0 0 moneySize moneySize];
 stim.moneySize      = moneySize;
 
@@ -32,13 +32,13 @@ stim.moneySize      = moneySize;
 % 30% of MVC defined to this size so that 70 can be at 500 pixels
 threshold_1    = [0 0 moneySize moneySize];
 % 70% of MVC
-threshold_2 = [0 0 500 500];
+threshold_2 = warning('should be encoded relatively to screen size');% [0 0 500 500];
 
 %% missed position
 %
 missTargetRect     = [0 0 moneySize moneySize];
 % 60% of MVC
-missThresholdRect = [0 0 429 429];
+missThresholdRect = warning('should be encoded relatively to screen size');%[0 0 429 429];
 
 %% Position of each ring/coin/signal on the screen
 % force thresholds
@@ -63,17 +63,6 @@ stim.imageTexture_20Cent    = Screen('MakeTexture', window, image_20Cent);
 stim.imageTexture_50Cent    = Screen('MakeTexture', window, image_50Cent);
 stim.imageTexture_1FR       = Screen('MakeTexture', window, image_1FR);
 stim.imageTexture_0FR       = Screen('MakeTexture', window, image_0FR);
-
-%% Prepare incentive texture
-stim.incentive = [1,...
-    0.5,...
-    0.2,...
-    0];
-% be careful to respect the same order for both variables
-stim.imageTextures = [stim.imageTexture_1FR,...
-    stim.imageTexture_50Cent,...
-    stim.imageTexture_20Cent,...
-    stim.imageTexture_0FR];
 
 %% fixation cross coordinates on the screen (code relative to screen Y size)
 cross_length    = screenYpixels/5;
