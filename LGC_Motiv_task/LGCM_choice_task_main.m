@@ -93,18 +93,19 @@ if exist([savePath, file_nm,'.mat'],'file')
 end
 
 %% fMRI/behavioral version of the task?
-task_type = 'fMRI'; % 'behavioral'/'fMRI' (leave by default to avoid answering for every subject)
+task_type = 'behavioral'; % 'behavioral'/'fMRI' (leave by default to avoid answering for every subject)
 
 % depending on the version of the task (fMRI/behavioral),
 % adapt the default options accordingly
 switch task_type
     case 'behavioral' % behavioral version (Arthur protocol)
         IRM = 0; % will not include fMRI
-        punishment_yn = 'yes'; % include punishment trials?
     case 'fMRI' % fMRI version (Nicolas protocol)
         IRM = 1; % will include fMRI => record TTL pulses + adapt key recordings accordingly
-        punishment_yn = 'no'; % include punishment trials?
 end
+
+%% include punishment condition?
+punishment_yn = 'yes'; % include punishment trials?
 
 %% if physical effort task => requires the BioPac
 % (mental effort task might also require the BioPac)
@@ -168,6 +169,10 @@ t_cross = 0.5;
 t_choice = 3;
 t_dispChoice = 1.5;
 t_effort = 5; % stable total time, but duration of the effort will depend on the difficulty level at each trial
+[onsets.cross,...
+    onsets.dispChoiceOptions,...
+    onsets.choice,...
+    onsets.effortPeriod] = deal(NaN(1,n_trials));
 
 %% start recording fMRI TTL
 if IRM == 1
@@ -178,7 +183,7 @@ end % fMRI check
 
 %% perform the task
 %% initial MVC measurement
-[MVC_initial, onsets_MVC_initial] = LGCM_MVC_measurement(scr, session_effort_type, speed, stim, n_MVC_repeat);
+[MVC_initial, onsets_MVC_initial] = LGCM_MVC_measurement(scr, stim, session_effort_type, speed, n_MVC_repeat);
 
 %% Launch training trials
 [onsets_training] = LGCM_training(scr, stim, speed,...
@@ -197,63 +202,19 @@ for iTrial = 1:n_trials
     onsets.cross(iTrial) = timeCrossNow;
     WaitSecs(t_cross);
     
-    %% choice task
-    % display maximal difficulty level for each option
-    Screen('FrameOval', window, stim.difficulty.maxColor,...
-        stim.difficulty.left.(['level_',num2str(n_E_levels)]),...
-        stim.difficulty.ovalWidth);
-    Screen('FrameOval', window, stim.difficulty.maxColor,...
-        stim.difficulty.right.(['level_',num2str(n_E_levels)]),...
-        stim.difficulty.ovalWidth);
-    % extract difficulty level for each side of the screen
-    E_left_tmp  = 1; % E_list.left(iTrial)
-    E_right_tmp = 2; % E_list.right(iTrial)
-    % extract reward level for each side of the screen
-    R_left_tmp  = 1; % R_list.left(iTrial)
-    R_right_tmp = 3; % R_list.right(iTrial)
-    % display each difficulty level
-    Screen('FrameOval', window, stim.difficulty.currLevelColor,...
-        stim.difficulty.left.(['level_',num2str(E_left_tmp)]),...
-        stim.difficulty.ovalWidth); % left option difficulty
-    Screen('FrameOval', window, stim.difficulty.currLevelColor,...
-        stim.difficulty.right.(['level_',num2str(E_right_tmp)]),...
-        stim.difficulty.ovalWidth); % right option difficulty
-    % display each reward level
-    Screen('DrawTexture', window,...
-        stim.reward.texture.(['reward_',num2str(R_left_tmp)]),...
-        [],...
-        stim.reward.left.(['reward_',num2str(R_left_tmp)]));
-    Screen('DrawTexture', window,...
-        stim.reward.texture.(['reward_',num2str(R_right_tmp)]),...
-        [],...
-        stim.reward.right.(['reward_',num2str(R_right_tmp)]));
-    
-    [~,timeChoicePeriodNow] = Screen('Flip',window);
-    onsets.choice_period(iTrial) = timeChoicePeriodNow;
-    while timeNow <= timeChoicePeriodNow + t_choice
-        [keyisdown, secs, keycode] = KbCheck;
-        if keyisdown == 1 &&...
-                keycode(key.left) == 1 && keycode(key.right) == 0
-            timedown = GetSecs;
-            choice(iTrial) = -1;
-        elseif keyisdown == 1 &&...
-                keycode(key.left) == 0 && keycode(key.right) == 1
-            timedown = GetSecs;
-            choice(iTrial) = 1;
-        end
-        onsets.choice(iTrial) = timedown;
-        warning('here you can either leave it that way (no visual feedback at the moment they chose an option',...
-            ' or show some visual feedback of the selected option already',...
-            ' or require the subject to keep pressing the button until the end of the trial.');
-    end % choice period
-    
+    %% choice phase
+    [choice(iTrial),...
+        onsets.dispChoiceOptions(iTrial),...
+        onsets.choice(iTrial)] = LGCM_choice_period(scr, stim,...
+        E_list, R_list, iTrial, n_E_levels, t_choice, key);
+
     %% display chosen option only
     [time_dispChoice,...
         R_chosen(iTrial),...
         E_chosen(iTrial)] = LGCM_choice_task_dispChosen(scr, stim,...
-        choice(iTrial), n_E_levels,...
-    E_left_tmp, E_right_tmp,...
-    R_left_tmp, R_right_tmp);
+        choice(iTrial),...
+    E_list, R_list, iTrial,....
+    n_E_levels);
     onsets.dispChoice(iTrial) = time_dispChoice;
     WaitSecs(t_dispChoice);
     

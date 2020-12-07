@@ -33,6 +33,14 @@ function[time_dispChoice, R_chosen, E_chosen] = LGCM_choice_task_dispChosen(scr,
 %% extract relevant parameters
 window = scr.window;
 
+% extract info for max possible effort
+stimDiffMaxColor = stim.difficulty.maxColor;
+stimMaxDiff = stim.difficulty.center.(['level_',num2str(n_E_levels)]);
+stimDiffOvalWidth = stim.difficulty.ovalWidth;
+
+% extract info for left and right stim difficulty and reward
+diffOvalColor = stim.difficulty.currLevelColor;
+
 % extract R and E left/right
 % E_left  = E_list.left(iTrial);
 % E_right = E_list.right(iTrial);
@@ -64,13 +72,13 @@ chosenStartAngle = stim.difficulty.startAngle.(['level_',num2str(E_chosen)]);
 maxCircleAngle = stim.difficulty.arcEndAngle;
 Screen('FillArc', window,...
     stim.difficulty.currLevelColor,...
-    stim.chosenOption.difficulty,...
+    stim.difficulty.below_center,...
     chosenStartAngle,...
     maxCircleAngle - chosenStartAngle);% right option difficulty
 
 % display maximal difficulty level for each option (= full circle)
 Screen('FrameOval', window, stim.difficulty.maxColor,...
-    stim.chosenOption.difficulty,...
+    stim.difficulty.below_center,...
     stim.difficulty.ovalWidth);
 
 %% display associated reward
@@ -83,14 +91,13 @@ switch R_chosen
         Screen('DrawTexture', window,...
             stim.reward.texture.(['reward_',num2str(R_chosen)]),...
             [],...
-            stim.chosenOption.reward.(['reward_',num2str(R_chosen)]));
+            stim.chosenOption.reward);
 end
 
 %% display a square on top of selected reward and effort
 Screen('FrameRect', window,...
     stim.chosenOption.squareColour,...
-    stim.chosenOption.squareRect,...
-    stim.chosenOption.squareWidth);
+    [,rect] [,penWidth]);
 
 %% display on screen and extract timing
 [~,time_dispChoice] = Screen('Flip',window);
