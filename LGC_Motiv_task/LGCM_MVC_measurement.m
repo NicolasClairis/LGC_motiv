@@ -1,16 +1,16 @@
-function[MVC, onsets] = LGCM_MVC_measurement(scr, session_effort_type, speed, stim, n_MVC_repeat)
-%[MVC, onsets] = LGCM_MVC_measurement(scr, session_effort_type, speed, stim)
+function[MVC, onsets] = LGCM_MVC_measurement(scr, stim, session_effort_type, speed, n_MVC_repeat)
+%[MVC, onsets] = LGCM_MVC_measurement(scr, stim, session_effort_type, speed)
 % LGCM_MVC_measurement will display the instructions and measure the MVC
 %
 % INPUTS
 % scr: structure about main screen parameters (size, window, etc.)
 %
+% stim: structure with stimulus properties (size, etc.)
+%
 % session_effort_type: 'physical'/'mental' effort task? => adapt the MVC
 % measurement accordingly
 %
 % speed: structure with stimulus display speed
-%
-% stim: structure with stimulus properties (size, etc.)
 %
 % n_MVC_repeat: number of repetitions of the MVC measurement
 %

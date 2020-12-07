@@ -86,13 +86,10 @@ stim.difficulty.ovalWidth       = 3;
 
 %% square to display for the chosen option
 stim.chosenOption.reward = stim.reward.top_center;
-stim.chosenOption.difficulty = stim.difficulty.below_center;
+stim.chosenOption.difficulty = stim.reward.below_center;
 stim.chosenOption.squareColour = black;
-stim.chosenOption.squareRect = [xScreenCenter*(2/3),...
-    yScreenCenter*(1/6),...
-    xScreenCenter*(4/3),...
-    yScreenCenter*(11/6)];
-stim.chosenOption.squareWidth = 10;
+stim.chosenOption.squareRect = [];
+stim.chosenOption.square
 
 %% force display
 

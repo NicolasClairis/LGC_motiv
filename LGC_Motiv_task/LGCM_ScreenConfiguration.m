@@ -40,23 +40,24 @@ elseif IRM == 1
 end
 
 %% set screen colour
-% black = [0 0 0];
-% white = [255 255 255];
+black = [0 0 0];
+white = [255 255 255];
 grey = [128 128 128];
 screenColour = grey;
 
 %% open PTB window + set debug parameters
 Screen('Preference','VisualDebugLevel', 1); % avoid initial Psychtoolbox window
-if testing_script == 0 % CENIR
-    Screen('Preference', 'SkipSyncTests', 0); % needs all other processes shut off
-    window = Screen('OpenWindow',whichScreen,screenColour);
-elseif testing_script == 1 % my own computer
-    Screen('Preference', 'SkipSyncTests', 1); % can work even if other softwares are on but displays an ugly red triangle at start
-    window = Screen('OpenWindow',whichScreen,screenColour);
+switch testing_script
+    case 0 % CENIR
+        Screen('Preference', 'SkipSyncTests', 0); % needs all other processes shut off
+        window = Screen('OpenWindow',whichScreen,screenColour);
+    case 1 % my own computer
+        Screen('Preference', 'SkipSyncTests', 1); % can work even if other softwares are on but displays an ugly red triangle at start
+        window = Screen('OpenWindow',whichScreen,screenColour);
 end
 
 %% hide mouse cursor
-HideCursor();
+% HideCursor();
 
 %% text display properties
 baselineTextSize = 40;
@@ -78,4 +79,7 @@ scr.window = window;
 scr.xCenter = xScreenCenter;
 scr.yCenter = yScreenCenter;
 scr.background_colour = screenColour;
+scr.colours.grey = grey;
+scr.colours.white = white;
+scr.colours.black = black;
 end % function

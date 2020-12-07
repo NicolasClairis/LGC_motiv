@@ -4,6 +4,10 @@
 % 3) display chosen option
 % 4) perform the effort corresponding to the chosen option
 %
+% The effort can be a physical effort of a fixed intensity but a 
+% varying duration (in the physical version of the task) or a mental effort
+% with a fixed number 
+%
 % developed by Arthur Barakat & Nicolas Clairis - 2020/2021
 %
 % See also LGCM_ScreenConfiguration.m, LGCM_MVC_measurement.m, etc.
@@ -14,10 +18,15 @@ close all; % close all windows
 clearvars; % clear variables from memory
 instrreset; % Disconnect and delete all instrument objects
 
+%% define if you are currently testing the script (1)
+% (no need to have correct timings and everything in PTB)
+% or if this is the actual experiment => use optimal timings of the
+% computer (0)
+testing_script = 1;
 
 %% working directories
-% main_folder                 = ['D:' filesep 'Matlab_codes' filesep]; % Arthur's laptop path
-main_folder                 = ['C:',filesep,'Users',filesep,'Loco',filesep,...
+% main_folder = ['D:' filesep 'Matlab_codes' filesep]; % Arthur's laptop path
+main_folder = ['C:',filesep,'Users',filesep,'Loco',filesep,...
     'Documents',filesep,'GitHub',filesep,...
     'LGC_motiv', filesep]; % Nico's laptop Github path
 main_task_folder            = [main_folder, 'LGC_Motiv_task' filesep];
@@ -43,33 +52,37 @@ end
     session_nm] = deal('');
 
 % effort type?
-while ~ismember(effort_type_letter,{'p','m'})
-    effort_type_letter = input('effort type? For physical, press ''p'', for mental press ''m''.','s');
-end
-switch effort_type_letter
-    case 'p'
-        effort_type = 'physical';
-    case 'm'
-        effort_type = 'mental';
-end
+% while ~ismember(effort_type_letter,{'p','m'})
+%     effort_type_letter = input('effort type? For physical, press ''p'', for mental press ''m''.','s');
+% end
+% switch effort_type_letter
+%     case 'p'
+%         effort_type = 'physical';
+%     case 'm'
+%         effort_type = 'mental';
+% end
+effort_type='mental';
 
 % subject
-while isempty(sub_initials)
-    sub_initials = input('Subject initials?','s');
-end
-while isempty(sub_nber)
-    sub_nber = input('Subject id number?','s');
-end
+% while isempty(sub_initials)
+%     sub_initials = input('Subject initials?','s');
+% end
+% while isempty(sub_nber) || length(sub_nber) ~= 2
+%     sub_nber = input('Subject id number? (2 numbers)','s');
+% end
+sub_initials = 'NC';
+sub_nber = '00';
 % Create subjectCodeName which is used as a file saving name
 subjectCodeName = strcat(sub_initials,'_s',sub_nber);
 
 % ask session number (especially for fMRI mapping with behavioral data)
-n_sess_max = 10; % maximal number of 
-while isempty(session_nm) ||...
-        str2double(session_nm) < 1 ||...
-        str2double(session_nm) > n_sess_max
-    session_nm = input('Session number?','s');
-end
+% n_sess_max = 10; % maximal number of sessions
+% while isempty(session_nm) ||...
+%         str2double(session_nm) < 1 ||...
+%         str2double(session_nm) > n_sess_max
+%     session_nm = input('Session number?','s');
+% end
+session_nm = '1';
 
 % file name
 file_nm = [subjectCodeName,'_session',session_nm,'_',effort_type,'_task'];
@@ -80,18 +93,19 @@ if exist([savePath, file_nm,'.mat'],'file')
 end
 
 %% fMRI/behavioral version of the task?
-task_type = 'fMRI'; % 'behavioral'/'fMRI' (leave by default to avoid answering for every subject)
+task_type = 'behavioral'; % 'behavioral'/'fMRI' (leave by default to avoid answering for every subject)
 
 % depending on the version of the task (fMRI/behavioral),
 % adapt the default options accordingly
 switch task_type
     case 'behavioral' % behavioral version (Arthur protocol)
         IRM = 0; % will not include fMRI
-        punishment_yn = 'yes'; % include punishment trials?
     case 'fMRI' % fMRI version (Nicolas protocol)
         IRM = 1; % will include fMRI => record TTL pulses + adapt key recordings accordingly
-        punishment_yn = 'no'; % include punishment trials?
 end
+
+%% include punishment condition?
+punishment_yn = 'yes'; % include punishment trials?
 
 %% if physical effort task => requires the BioPac
 % (mental effort task might also require the BioPac)
@@ -117,9 +131,23 @@ end
 %% initialize screen
 [scr, xScreenCenter, yScreenCenter,...
     window, baselineTextSize] = LGCM_ScreenConfiguration(IRM, testing_script);
+white = scr.colours.white;
+black = scr.colours.black;
+
+%% task parameters
+n_trials = 90;
+n_R_levels = 3;
+n_E_levels = 3;
+% create all possible combinations of these levels
+warning('create all possible combinations of these levels');
+% make as many mini-blocks containing all those combinations as there are
+% trials
+warning('make as many mini-blocks containing all those combinations as there are trials');
+% randomize the size of each option across trials
+warning('randomize the size of each option across trials');
 
 %% stimulus related variables
-[stim] = LGCM_stim_initialize(scr);
+[stim] = LGCM_stim_initialize(scr, n_R_levels, n_E_levels, pics_folder);
 
 %% keyboard keys configuration + waiting and recording first TTL for fMRI
 if IRM == 0
@@ -136,23 +164,15 @@ elseif IRM == 1
     key.escape = KbName('escape');
 end
 
-%% task parameters
-n_trials = 90;
-R_levels = [];
-E_levels = [];
-% create all possible combinations of these levels
-warning('create all possible combinations of these levels');
-% make as many mini-blocks containing all those combinations as there are
-% trials
-warning('make as many mini-blocks containing all those combinations as there are trials');
-% randomize the size of each option across trials
-warning('randomize the size of each option across trials');
-
 %% timings
 t_cross = 0.5;
 t_choice = 3;
 t_dispChoice = 1.5;
 t_effort = 5; % stable total time, but duration of the effort will depend on the difficulty level at each trial
+[onsets.cross,...
+    onsets.dispChoiceOptions,...
+    onsets.choice,...
+    onsets.effortPeriod] = deal(NaN(1,n_trials));
 
 %% start recording fMRI TTL
 if IRM == 1
@@ -163,7 +183,7 @@ end % fMRI check
 
 %% perform the task
 %% initial MVC measurement
-[MVC_initial, onsets_MVC_initial] = LGCM_MVC_measurement(scr, session_effort_type, speed, stim, n_MVC_repeat);
+[MVC_initial, onsets_MVC_initial] = LGCM_MVC_measurement(scr, stim, session_effort_type, speed, n_MVC_repeat);
 
 %% Launch training trials
 [onsets_training] = LGCM_training(scr, stim, speed,...
@@ -171,60 +191,36 @@ end % fMRI check
     session_effort_type, n_training_trials);
 
 %% launch main task
+choice = zeros(1,n_trials);
+[R_chosen, E_chosen] = deal(NaN(1, n_trials));
 for iTrial = 1:n_trials
     
-    % re-initialize choice
-    choice = 0;
-    
     %% fixation cross
-    Screen('FillRect',window,white,stim.cross_verticalLine); % vertical line
-    Screen('FillRect',window,white,stim.cross_horizontalLine); % horizontal line
+    Screen('FillRect',window,white, stim.cross.verticalLine); % vertical line
+    Screen('FillRect',window,white, stim.cross.horizontalLine); % horizontal line
     [~,timeCrossNow] = Screen('Flip',window); % display the cross on screen
     onsets.cross(iTrial) = timeCrossNow;
     WaitSecs(t_cross);
     
-    %% choice task
-    
-    [~,timeChoicePeriodNow] = Screen('Flip',window);
-    onsets.choice_period(iTrial) = timeChoicePeriodNow;
-    while timeNow <= timeChoicePeriodNow + t_choice
-        [keyisdown, secs, keycode] = KbCheck;
-        if keyisdown == 1 &&...
-                keycode(key.left) == 1 && keycode(key.right) == 0
-            timedown = GetSecs;
-            choice = -1;
-        elseif keyisdown == 1 &&...
-                keycode(key.left) == 0 && keycode(key.right) == 1
-            timedown = GetSecs;
-            choice = 1;
-        end
-        onsets.choice(iTrial) = timedown;
-        warning('here you can either leave it that way (no visual feedback at the moment they chose an option',...
-            ' or show some visual feedback of the selected option already',...
-            ' or require the subject to keep pressing the button until the end of the trial.');
-    end % choice period
-    
+    %% choice phase
+    [choice(iTrial),...
+        onsets.dispChoiceOptions(iTrial),...
+        onsets.choice(iTrial)] = LGCM_choice_period(scr, stim,...
+        E_list, R_list, iTrial, n_E_levels, t_choice, key);
+
     %% display chosen option only
-    
-    [~,timeDispChoiceNow] = Screen('Flip',window);
-    onsets.dispChoice(iTrial) = timeDispChoiceNow;
+    [time_dispChoice,...
+        R_chosen(iTrial),...
+        E_chosen(iTrial)] = LGCM_choice_task_dispChosen(scr, stim,...
+        choice(iTrial),...
+    E_list, R_list, iTrial,....
+    n_E_levels);
+    onsets.dispChoice(iTrial) = time_dispChoice;
     WaitSecs(t_dispChoice);
     
-    %% perform the effort
-    % extract reward (or punishment) and effort levels according to choice
-    % made
-    switch choice
-        case -1 % left option selected
-            R_level_tmp = R_level_left;
-            E_level_tmp = E_level_left;
-        case 1 % right option selected
-            R_level_tmp = R_level_right;
-            E_level_tmp = E_level_right;
-        case 0 % no choice made
-            R_level_tmp = 0; % no reward (or punishment? we have to decide)
-            warning('no reward or punishment when subject does not chose anything? We need to decide.');
-            E_level_tmp = max(E_level_left, E_level_right);
-    end
+    %% perform the effort (if no option was selected at the choice phase,
+    %the trial is locked until they make the effort, otherwise add a time
+    %limit)
     
     [~,timeEffortPeriodNow] = Screen('Flip',window);
     onsets.startEffortPeriod(iTrial) = timeEffortPeriodNow;
