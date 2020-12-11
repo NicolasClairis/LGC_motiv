@@ -1,4 +1,4 @@
-function[choice_trial, onsetDispChoiceOptions, onsetChoice] = LGCM_choice_period(scr, stim,...
+function[choice_trial, onsetDispChoiceOptions, onsetChoice, stoptask] = LGCM_choice_period(scr, stim,...
     E_list, R_list, iTrial, n_E_levels, t_choice, key)
 % [choice_trial, onsetDispChoiceOptions, onsetChoice] = LGCM_choice_period(scr, stim,...
 %     E_list, R_list, iTrial, n_E_levels, t_choice, key)
@@ -34,11 +34,13 @@ function[choice_trial, onsetDispChoiceOptions, onsetChoice] = LGCM_choice_period
 %
 % onsetChoice: if a choice was made, displays the timing
 %
+% stoptask:
+% (0) keep on
+% (1) in this case: signal for main function to stop the task
 
 %% initialize variables of interest
-choice_trial = 0;
-onsetChoice = NaN;
 window = scr.window;
+stoptask = 0;
 
 %% extract difficulty level for each side of the screen
 E_left_tmp  = 1; % E_list.left(iTrial)
@@ -83,27 +85,54 @@ Screen('DrawTexture', window,...
 [~,onsetDispChoiceOptions] = Screen('Flip',window);
 
 %% wait for choice to be made or time limit to be reached
+choicePeriodOver = 0;
 timeNow = onsetDispChoiceOptions;
-while timeNow <= onsetDispChoiceOptions + t_choice
+while choicePeriodOver == 0
+    %% check time
     timeNow = GetSecs;
+    if timeNow > (onsetDispChoiceOptions + t_choice)
+        % finish the trial
+        choicePeriodOver = 1;
+        choice_trial = 0;
+        onsetChoice = NaN;
+    end
+    
+    %% check key press
     [keyisdown, secs, keycode] = KbCheck;
     
-    %% left option chosen
-    if keyisdown == 1 &&...
-            keycode(key.left) == 1 && keycode(key.right) == 0
-        timedown = secs;
-        choice_trial = -1;
-    %% right option chosen
-    elseif keyisdown == 1 &&...
-            keycode(key.left) == 0 && keycode(key.right) == 1
-        timedown = secs;
-        choice_trial = 1;
+    %% some key was pressed
+    if keyisdown == 1
+        %% left option chosen
+        if keycode(key.left) == 1 &&...
+                keycode(key.right) == 0
+            % record time of chosen option
+            timedown = secs;
+            % record side of chosen option
+            choice_trial = -1;
+            choicePeriodOver = 1;
+            %% right option chosen
+        elseif keycode(key.left) == 0 &&...
+                keycode(key.right) == 1
+            % record time of chosen option
+            timedown = secs;
+            % record side of chosen option
+            choice_trial = 1;
+            choicePeriodOver = 1;
+        %% stop the task
+        elseif keycode(key.escape) == 1
+            choicePeriodOver = 1;
+            stoptask = 1;
+        end
+    end % some key was pressed
+    
+    %% get time when choice was made
+    if choice_trial ~= 0
+        onsetChoice = timedown;
     end
-    %% get time
-    onsetChoice = timedown;
-    warning('here you can either leave it that way (no visual feedback at the moment they chose an option',...
-        ' or show some visual feedback of the selected option already',...
-        ' or require the subject to keep pressing the button until the end of the trial.');
 end % choice period
+
+%     warning('you can either leave it that way (no visual feedback at the moment they chose an option',...
+%         ' or show some visual feedback of the selected option already',...
+%         ' or require the subject to keep pressing the button until the end of the trial.');
 
 end % function

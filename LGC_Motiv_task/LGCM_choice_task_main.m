@@ -163,6 +163,7 @@ elseif IRM == 1
     key.right = 50;       %50   %% GAUCHE JAUNE
     key.escape = KbName('escape');
 end
+was_a_key_pressed_bf_trial = NaN(1,n_trials);
 
 %% timings
 t_cross = 0.5;
@@ -172,7 +173,9 @@ t_effort = 5; % stable total time, but duration of the effort will depend on the
 [onsets.cross,...
     onsets.dispChoiceOptions,...
     onsets.choice,...
-    onsets.effortPeriod] = deal(NaN(1,n_trials));
+    onsets.effortPeriod,...
+    onsets.keyReleaseMessage,...
+    onsets.cross_after_buttonRelease] = deal(NaN(1,n_trials));
 
 %% start recording fMRI TTL
 if IRM == 1
@@ -183,12 +186,14 @@ end % fMRI check
 
 %% perform the task
 %% initial MVC measurement
-[MVC_initial, onsets_MVC_initial] = LGCM_MVC_measurement(scr, stim, session_effort_type, speed, n_MVC_repeat);
-
+% [MVC_initial, onsets_MVC_initial] = LGCM_MVC_measurement(scr, stim, session_effort_type, n_MVC_repeat);
+warning('MVC measurement function needs to be updated given last task changes');
 %% Launch training trials
-[onsets_training] = LGCM_training(scr, stim, speed,...
-    audio_fbk_yn, sound,...
-    session_effort_type, n_training_trials);
+% [onsets_training] = LGCM_training(scr, stim, speed,...
+%     audio_fbk_yn, sound,...
+%     session_effort_type, n_training_trials);
+warning(['Need to code a function for training before task starts',...
+    'goal: remind how each task works']);
 
 %% launch main task
 choice = zeros(1,n_trials);
@@ -202,11 +207,31 @@ for iTrial = 1:n_trials
     onsets.cross(iTrial) = timeCrossNow;
     WaitSecs(t_cross);
     
+    %% check that no key is being pressed before the trial starts
+    [was_a_key_pressed_bf_trial(iTrial),...
+        onsets.keyReleaseMessage(iTrial)] = LGCM_check_keys_are_up(scr, key);
+    % if a key was pressed before starting the trial => show the fixation
+    % cross again
+    if was_a_key_pressed_bf_trial(iTrial)
+        Screen('FillRect',window,white, stim.cross.verticalLine); % vertical line
+        Screen('FillRect',window,white, stim.cross.horizontalLine); % horizontal line
+        [~,timeCrossNow] = Screen('Flip',window); % display the cross on screen
+        onsets.cross_after_buttonRelease(iTrial) = timeCrossNow;
+        WaitSecs(t_cross);
+    end
+    
     %% choice phase
     [choice(iTrial),...
         onsets.dispChoiceOptions(iTrial),...
-        onsets.choice(iTrial)] = LGCM_choice_period(scr, stim,...
+        onsets.choice(iTrial),...
+        stoptask] = LGCM_choice_period(scr, stim,...
         E_list, R_list, iTrial, n_E_levels, t_choice, key);
+    
+    %% check if escape was pressed => stop everything if so
+    if stoptask == 1
+        save([savePath, file_nm,'_earlyEnd_tmp.mat'],'-struct','all');
+        break;
+    end
 
     %% display chosen option only
     [time_dispChoice,...
@@ -218,27 +243,18 @@ for iTrial = 1:n_trials
     onsets.dispChoice(iTrial) = time_dispChoice;
     WaitSecs(t_dispChoice);
     
-    %% perform the effort (if no option was selected at the choice phase,
-    %the trial is locked until they make the effort, otherwise add a time
-    %limit)
+    %% perform the effort
+    [] = LGCM_mental_effort();
     
-    [~,timeEffortPeriodNow] = Screen('Flip',window);
-    onsets.startEffortPeriod(iTrial) = timeEffortPeriodNow;
-    
-    
-    % update the effort display with time
-    % default money size if no effort is being made
-    [~,timeEffortPeriodNow] = Screen('Flip',window);
-    % store money size and timing for each timestep
-    
-    % increase of money size if effort > threshold with time
-    [~,timeEffortPeriodNow] = Screen('Flip',window);
-    % store money size and timing for each timestep
-    
-    % decrease of money size if effort < threshold while was above
-    [~,timeEffortPeriodNow] = Screen('Flip',window);
-    % store money size and timing for each timestep
-    
+    %% if the effort was not performed correctly,
+    % repeat the trial without the reward until the effort is achieved
+    % note the timings and performance for each repetition
+    if effortDoneTrial == 0
+        while ~effortDoneTrial
+            
+        end % effort done loop
+    end % if effort done
+        
 end % trial loop
 
 %% Measure maximum power again at the end
