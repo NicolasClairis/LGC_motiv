@@ -69,7 +69,8 @@ stim.difficulty.below_right = CenterRectOnPointd(stim.reward.moneyRect, xScreenC
 stim.difficulty.middle_center = CenterRectOnPointd(stim.reward.moneyRect, xScreenCenter, yScreenCenter);
 stim.difficulty.arcEndAngle = 360;
 
-% define the circle size for each difficulty level depending on the di
+% define the circle size for each difficulty level depending on the
+% difficulty
 for iDiff = 1:n_E_levels
     % extract name for subfield of the current difficulty level
     diff_level_nm = ['level_',num2str(iDiff)];
