@@ -61,7 +61,7 @@ end
 %     case 'm'
 %         effort_type = 'mental';
 % end
-effort_type='mental';
+effort_type = 'mental';
 
 % subject
 % while isempty(sub_initials)
@@ -146,8 +146,32 @@ warning('make as many mini-blocks containing all those combinations as there are
 % randomize the size of each option across trials
 warning('randomize the size of each option across trials');
 
-%% stimulus related variables
+% stimulus related variables for the display
 [stim] = LGCM_stim_initialize(scr, n_R_levels, n_E_levels, pics_folder);
+
+
+switch effort_type
+    case 'mental' % for mental effort, define all the number sequences in advance
+        % randomize the order of the numbers appearing on screen
+        mental_nbers_per_trial = LGCM_mental_numbers(n_trials);
+        
+        % randomize the type of the first trial (odd/even or higher/lower
+        % than 5)
+        mental_taskType_trialStart = LGCM_mental_task_start(n_trials);
+        
+    case 'physical'% for physical effort, ask the MVC
+        % take an initial MVC measurement
+        
+        % store global MVC
+        if exist([],'file') % retrieve past MVC value if has been extracted already
+            
+            
+        else % perform MVC measurement otherwise
+            
+        end
+        % [MVC_initial, onsets_MVC_initial] = LGCM_MVC_measurement(scr, stim, session_effort_type, n_MVC_repeat);
+        warning('MVC measurement function needs to be updated given last task changes');
+end
 
 %% keyboard keys configuration + waiting and recording first TTL for fMRI
 if IRM == 0
@@ -185,9 +209,6 @@ if IRM == 1
 end % fMRI check
 
 %% perform the task
-%% initial MVC measurement
-% [MVC_initial, onsets_MVC_initial] = LGCM_MVC_measurement(scr, stim, session_effort_type, n_MVC_repeat);
-warning('MVC measurement function needs to be updated given last task changes');
 %% Launch training trials
 % [onsets_training] = LGCM_training(scr, stim, speed,...
 %     audio_fbk_yn, sound,...
@@ -229,6 +250,7 @@ for iTrial = 1:n_trials
     
     %% check if escape was pressed => stop everything if so
     if stoptask == 1
+        % save all the data in case you still want to analyze it
         save([savePath, file_nm,'_earlyEnd_tmp.mat'],'-struct','all');
         break;
     end
@@ -244,16 +266,36 @@ for iTrial = 1:n_trials
     WaitSecs(t_dispChoice);
     
     %% perform the effort
-    [] = LGCM_mental_effort();
+    switch effort_type
+        case 'physical'
+            [trial_failed] = LGCM_physical_effort();
+        case 'mental'
+            [trial_failed, perf, onsetEffortPeriod] = LGCM_mental_effort(scr, stim,...
+                t_effort_max,...
+                R_chosen, R_or_P, E_chosen, n_E_levels,...
+                mental_nbers_per_trial(iTrial,:),...
+                switchPerc,...
+                mental_taskType_trialStart(iTrial));
+    end
     
-    %% if the effort was not performed correctly,
-    % repeat the trial without the reward until the effort is achieved
-    % note the timings and performance for each repetition
-    if effortDoneTrial == 0
-        while ~effortDoneTrial
-            
-        end % effort done loop
-    end % if effort done
+%     %% if the effort was not performed correctly,
+%     % repeat the trial without the reward until the effort is achieved
+%     % note the timings and performance for each repetition
+%     %
+%     % OR: new version: punish them with a loss
+%     if effortDoneTrial == 0
+% %         while ~effortDoneTrial
+% %             
+% %         end % effort done loop
+%     end % if effort done
+
+%%
+switch trial_failed
+    case 0 % trial is a success
+        
+    case 1 % trial failed
+        
+end
         
 end % trial loop
 

@@ -19,7 +19,7 @@ function[simu_choices, simu_stim] = LGCM_simulate_data(k_sensitivity_prm,...
 % .fixed_or_evolving:
 %   'fix': fixed stimuli
 %   'evolving': simulate a staircase procedure
-% .R_levels/.E_levels: details of the reward and effort levels
+% .R_levels/.E_levels .low/high: details of the reward and effort levels
 % define as vectors for each of the two possible options
 %
 % nTrials: number of total trials
@@ -39,7 +39,7 @@ function[simu_choices, simu_stim] = LGCM_simulate_data(k_sensitivity_prm,...
 %% motivational parameters
 kR = k_sensitivity_prm.kR + rand;
 kP = k_sensitivity_prm.kP + rand;
-kCost = k_sensitivity_prm.kC + rand;
+kC = k_sensitivity_prm.kC + rand;
 kF = k_sensitivity_prm.kF + rand;
 
 %% choice stochasticity
@@ -49,8 +49,23 @@ beta_choice = k_sensitivity_prm.beta_choice + rand;
 task_trials_type = stim.fixed_or_evolving;
 switch task_trials_type
     case 'fix'
-        stim.R_levels;
-        stim.E_levels;
+        R_levels = stim.R_levels;
+        E_levels = stim.E_levels;
 end
+
+%% prepare for simu and outputs
+simu_choices = NaN(1,nTrials);
+
+
+
+% for iTrial = 1:nTrials
+%     R_hRhE = ;
+%     R_lRlE = ;
+%     E_hRhE = ;
+%     E_lRlE = ;
+%     VA = LGCM_simu_get_SV(kR, kP, kC, kF, R, E, iTrial, model_n);
+%     VB = LGCM_simu_get_SV(kR, kP, kC, kF, R, E, iTrial, model_n);
+%     simu_choices(iTrial) = sigmo( (VA-VB), 1/beta_choice);
+% end % trial loop
 
 end % function
