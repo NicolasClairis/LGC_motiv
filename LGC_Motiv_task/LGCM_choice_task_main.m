@@ -149,6 +149,11 @@ warning('randomize the size of each option across trials');
 % stimulus related variables for the display
 [stim] = LGCM_stim_initialize(scr, n_R_levels, n_E_levels, pics_folder);
 
+% determine reward and punishment trials
+R_or_P_list = [repmat({'R'},1,n_trials/2), repmat({'P'},1,n_trials/2)];
+R_or_P_order = randperm(n_trials);
+R_or_P = R_or_P_list(R_or_P_order);
+
 
 switch effort_type
     case 'mental' % for mental effort, define all the number sequences in advance
@@ -189,9 +194,13 @@ elseif IRM == 1
 end
 was_a_key_pressed_bf_trial = NaN(1,n_trials);
 
+%%
+warning('For displays: add 4th layer after RGB colour values for transparency');
+%%
+
 %% timings
 t_cross = 0.5;
-t_choice = 3;
+t_choice = 5;
 t_dispChoice = 1.5;
 t_effort = 5; % stable total time, but duration of the effort will depend on the difficulty level at each trial
 [onsets.cross,...
@@ -199,7 +208,9 @@ t_effort = 5; % stable total time, but duration of the effort will depend on the
     onsets.choice,...
     onsets.effortPeriod,...
     onsets.keyReleaseMessage,...
-    onsets.cross_after_buttonRelease] = deal(NaN(1,n_trials));
+    onsets.cross_after_buttonRelease,...
+    onset.fbk, onset.fbk_win, onset.fbk_loss,...
+    onset.fbk_fail] = deal(NaN(1,n_trials));
 
 %% start recording fMRI TTL
 if IRM == 1
@@ -228,11 +239,12 @@ for iTrial = 1:n_trials
     onsets.cross(iTrial) = timeCrossNow;
     WaitSecs(t_cross);
     
-    %% check that no key is being pressed before the trial starts
+    %% check that no key is being pressed before the choice trial starts
     [was_a_key_pressed_bf_trial(iTrial),...
         onsets.keyReleaseMessage(iTrial)] = LGCM_check_keys_are_up(scr, key);
+    
     % if a key was pressed before starting the trial => show the fixation
-    % cross again
+    % cross again with a similar amount of time
     if was_a_key_pressed_bf_trial(iTrial)
         Screen('FillRect',window,white, stim.cross.verticalLine); % vertical line
         Screen('FillRect',window,white, stim.cross.horizontalLine); % horizontal line
@@ -260,43 +272,71 @@ for iTrial = 1:n_trials
         R_chosen(iTrial),...
         E_chosen(iTrial)] = LGCM_choice_task_dispChosen(scr, stim,...
         choice(iTrial),...
-    E_list, R_list, iTrial,....
-    n_E_levels);
+        E_list, R_list, iTrial,....
+        n_E_levels);
     onsets.dispChoice(iTrial) = time_dispChoice;
     WaitSecs(t_dispChoice);
     
-    %% perform the effort
-    switch effort_type
-        case 'physical'
-            [trial_failed] = LGCM_physical_effort();
-        case 'mental'
-            [trial_failed, perf, onsetEffortPeriod] = LGCM_mental_effort(scr, stim,...
-                t_effort_max,...
-                R_chosen, R_or_P, E_chosen, n_E_levels,...
-                mental_nbers_per_trial(iTrial,:),...
-                switchPerc,...
-                mental_taskType_trialStart(iTrial));
+    %% perform the effort if a choice was made, otherwise punish the
+    % subject for not answering to the choice
+    if choice(iTrial) == 0 % no choice was made => failure
+        trial_failed = 1;
+        
+    elseif ismember(choice(iTrial), [-1,1]) % choice done => perform the corresponding effort
+        
+        
+        %% perform the effort
+        switch effort_type
+            case 'physical'
+                [trial_failed] = LGCM_physical_effort();
+            case 'mental'
+                [trial_failed, perf, onsetEffortPeriod(iTrial)] = LGCM_mental_effort(scr, stim,...
+                    t_effort_max,...
+                    R_chosen, R_or_P, E_chosen, n_E_levels,...
+                    mental_nbers_per_trial(iTrial,:),...
+                    switchPerc,...
+                    mental_taskType_trialStart(iTrial));
+        end
+        
+        %     %% if the effort was not performed correctly,
+        %     % repeat the trial without the reward until the effort is achieved
+        %     % note the timings and performance for each repetition
+        %     %
+        %     % OR: new version: punish them with a loss
+        %     if effortDoneTrial == 0
+        % %         while ~effortDoneTrial
+        % %
+        % %         end % effort done loop
+        %     end % if effort done
+    end
+    %%
+    switch trial_failed
+        case 0 % trial is a success
+            
+            % display monetary incentive
+            
+            % display feedback
+            switch R_or_P{iTrial}
+                case 'R'
+%                     DrawFormattedText(window,'You won', xScreenCenter, (1/5)*yScreenCenter);
+                    DrawFormattedText(window,'Vous avez obtenu', xScreenCenter, (1/5)*yScreenCenter);
+                case 'P'
+%                     DrawFormattedText(window,'You lost', xScreenCenter, (1/5)*yScreenCenter);
+                    DrawFormattedText(window,'Vous avez perdu', xScreenCenter, (1/5)*yScreenCenter);
+            end
+            
+            [~,onset.fbk(iTrial)] = Screen(window,'Flip');
+            [~,onset.fbk_win(iTrial)] = Screen(window,'Flip');
+            [~,onset.fbk_loss(iTrial)] = Screen(window,'Flip');
+        case 1 % trial failed
+            % display message
+%             DrawFormattedText(window,'Too slow!', xScreenCenter, (1/5)*yScreenCenter);
+            DrawFormattedText(window,'Trop lent!', xScreenCenter, (1/5)*yScreenCenter);
+            % display money loss for failing
+            
+            [~,onset.fbk_fail(iTrial)] = Screen(window,'Flip');
     end
     
-%     %% if the effort was not performed correctly,
-%     % repeat the trial without the reward until the effort is achieved
-%     % note the timings and performance for each repetition
-%     %
-%     % OR: new version: punish them with a loss
-%     if effortDoneTrial == 0
-% %         while ~effortDoneTrial
-% %             
-% %         end % effort done loop
-%     end % if effort done
-
-%%
-switch trial_failed
-    case 0 % trial is a success
-        
-    case 1 % trial failed
-        
-end
-        
 end % trial loop
 
 %% Measure maximum power again at the end

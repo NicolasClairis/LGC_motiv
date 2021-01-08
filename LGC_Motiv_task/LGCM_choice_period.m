@@ -86,7 +86,6 @@ Screen('DrawTexture', window,...
 
 %% wait for choice to be made or time limit to be reached
 choicePeriodOver = 0;
-timeNow = onsetDispChoiceOptions;
 while choicePeriodOver == 0
     %% check time
     timeNow = GetSecs;
