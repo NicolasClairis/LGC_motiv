@@ -1,5 +1,5 @@
-function[] = LGCM_mental_effort_task_question_display(scr, task_trialType, sideQuestion)
-% [] = LGCM_mental_effort_task_question_display(scr, task_trialStart)
+function[] = LGCM_mental_effort_task_question_display(scr, task_trialType, sideQuestion, textCol)
+% [] = LGCM_mental_effort_task_question_display(scr, task_trialStart, sideQuestion, textCol)
 % LGCM_mental_effort_task_question_display will display question for the
 % mental effort being made according to the current task.
 %
@@ -16,6 +16,8 @@ function[] = LGCM_mental_effort_task_question_display(scr, task_trialType, sideQ
 % sideQuestion.hL.high
 % (-1) left
 % (+1) right
+%
+% textCol: rgb code to know with which colour should the text be displayed
 %
 % See also LGCM_mental_effort.m
 
@@ -41,9 +43,9 @@ switch task_trialType
             else
                 error('error in sideQuestion definition');
             end
-            DrawFormattedText(window,'pair', x_pair, y_coord );
+            DrawFormattedText(window,'pair', x_pair, y_coord, textCol );
             DrawFormattedText(window,'OU', xScreenCenter, y_coord );
-            DrawFormattedText(window,'impair', x_impair, y_coord );
+            DrawFormattedText(window,'impair', x_impair, y_coord, textCol );
             
         case 1 % higher/lower than 5?
             if sideQuestion.hL.low == -1 && sideQuestion.hL.high == +1
@@ -55,9 +57,9 @@ switch task_trialType
             else
                 error('error in sideQuestion definition');
             end
-            DrawFormattedText(window,'< 5', x_low, y_coord );
+            DrawFormattedText(window,'< 5', x_low, y_coord, textCol );
             DrawFormattedText(window,'OU', xScreenCenter, y_coord );
-            DrawFormattedText(window,'> 5', x_high, y_coord );
+            DrawFormattedText(window,'> 5', x_high, y_coord, textCol );
 end % task type
     
 end % function

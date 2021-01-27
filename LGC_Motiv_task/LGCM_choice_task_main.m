@@ -48,7 +48,7 @@ end
 %% task type (physical/mental effort) + subject + session identification
 [effort_type_letter,...
     sub_initials,...
-    sub_nber,...
+    sub_nber_str,...
     session_nm] = deal('');
 
 % effort type?
@@ -67,22 +67,34 @@ effort_type = 'mental';
 % while isempty(sub_initials)
 %     sub_initials = input('Subject initials?','s');
 % end
-% while isempty(sub_nber) || length(sub_nber) ~= 2
-%     sub_nber = input('Subject id number? (2 numbers)','s');
+% while isempty(sub_nber) || length(sub_nber) ~= 3
+%     sub_nber_str = input('Subject id number? (3 numbers)','s'); % string
+% %     number of the subject
 % end
 sub_initials = 'NC';
-sub_nber = '00';
+sub_nber_str = '000';
+% convert subject number string into a number
+i_sub = str2double(sub_nber_str);
 % Create subjectCodeName which is used as a file saving name
-subjectCodeName = strcat(sub_initials,'_s',sub_nber);
+subjectCodeName = strcat(sub_initials,'_s',sub_nber_str);
+
 
 % ask session number (especially for fMRI mapping with behavioral data)
 % n_sess_max = 10; % maximal number of sessions
 % while isempty(session_nm) ||...
 %         str2double(session_nm) < 1 ||...
 %         str2double(session_nm) > n_sess_max
-%     session_nm = input('Session number?','s');
+%     session_nm = input('Session number? (write 0 if training session)','s');
 % end
 session_nm = '1';
+
+if ismember(session_nm,{'0','00'})
+    learning_done = false;
+elseif str2double(session_nm) > 0
+    learning_done = true;
+else
+    error('problem with session_nm specification');
+end
 
 % file name
 file_nm = [subjectCodeName,'_session',session_nm,'_',effort_type,'_task'];
@@ -136,15 +148,15 @@ black = scr.colours.black;
 
 %% task parameters
 n_trials = 90;
-n_R_levels = 3;
-n_E_levels = 3;
+n_R_levels = 5;
+n_E_levels = 5;
 % create all possible combinations of these levels
-warning('create all possible combinations of these levels');
+warning('create R/E trials');
 % make as many mini-blocks containing all those combinations as there are
 % trials
 warning('make as many mini-blocks containing all those combinations as there are trials');
-% randomize the size of each option across trials
-warning('randomize the size of each option across trials');
+% randomize the side of each option across trials
+warning('randomize the side of each option across trials');
 
 % stimulus related variables for the display
 [stim] = LGCM_stim_initialize(scr, n_R_levels, n_E_levels, pics_folder);
@@ -157,6 +169,46 @@ R_or_P = R_or_P_list(R_or_P_order);
 
 switch effort_type
     case 'mental' % for mental effort, define all the number sequences in advance
+        %% define side of each expected answer
+        sideQuestion.oE.pair = -1;
+        sideQuestion.oE.impair = 1;
+        sideQuestion.hL.low = -1;
+        sideQuestion.hL.high = 1;
+        
+        %% define colours to use for numbers font
+        col1 = [26 26 26];% 0 0 0
+        col2 = [103 0 31];% 239 138 98
+        
+        %% LGCM_mental_learning
+        % if learning has not been done yet
+        if ~learning_done
+            n_max_to_reach_withInstructions = 10;
+            n_max_to_reach_withoutInstructions = 10;
+            %  define colours to use for the font of the numbers according to
+            %  subject number to alternate the type of colour used
+            if mod(i_sub,2) == 0
+                mental_n_col.oddEven = col1;
+                mental_n_col.lowHigh = col2;
+            elseif mod(i_sub,2) == 1
+                mental_n_col.oddEven = col2;
+                mental_n_col.lowHigh = col1;
+            end
+            % perform a first session with instructions
+            [nTrials_withInstructions,...
+                nTrials_withoutInstructions,...
+                rt_training] = LGCM_mental_learning(scr, stim,...
+                col_n_taskType,...
+                n_max_to_reach_withInstructions, n_max_to_reach_withoutInstructions,...
+                mental_n_col, sideQuestion);
+            % do again without instructions
+            
+            %% MVC measurement
+            n_mental_max_perTrial = LGCM_mental_calib(scr, stim);
+        elseif learning_done
+            n_mental_max_perTrial = input('please write manually n_max of pairs done during training');
+        end % learning + training session
+        
+        %% define 
         % randomize the order of the numbers appearing on screen
         mental_nbers_per_trial = LGCM_mental_numbers(n_trials);
         
@@ -165,6 +217,7 @@ switch effort_type
         mental_taskType_trialStart = LGCM_mental_task_start(n_trials);
         
     case 'physical'% for physical effort, ask the MVC
+        
         % take an initial MVC measurement
         
         % store global MVC
@@ -176,6 +229,7 @@ switch effort_type
         end
         % [MVC_initial, onsets_MVC_initial] = LGCM_MVC_measurement(scr, stim, session_effort_type, n_MVC_repeat);
         warning('MVC measurement function needs to be updated given last task changes');
+        
 end
 
 %% keyboard keys configuration + waiting and recording first TTL for fMRI
