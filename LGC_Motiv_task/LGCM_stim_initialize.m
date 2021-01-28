@@ -25,7 +25,7 @@ screenYpixels   = yScreenCenter*2;
 
 % colours
 black = [0 0 0];
-blue = [0 0 255];
+difficultyArcColor = [178 24 43];
 % white = [255 255 255];
 % screen_background_colour = scr.background_colour;
 
@@ -82,7 +82,7 @@ end % difficulty
 
 %% color used to represent the signal
 stim.difficulty.maxColor        = black;
-stim.difficulty.currLevelColor  = blue;
+stim.difficulty.currLevelColor  = difficultyArcColor;
 stim.difficulty.ovalWidth       = 3;
 
 %% square to display for the chosen option

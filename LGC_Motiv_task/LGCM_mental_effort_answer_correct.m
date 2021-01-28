@@ -30,7 +30,7 @@ function[answerCorrect] = LGCM_mental_effort_answer_correct(task_type, numberVal
 switch task_type
     case 0 % odd/even task
         
-        if ( (sideAnswer == sideQuestion.oE.pair) && (mod(numberVal,2) == 0 ) ) ||...
+        if ( (sideAnswer == sideQuestion.oE.pair) && (mod(numberVal,2) == 0) ) ||...
                (sideAnswer == sideQuestion.oE.impair) && (mod(numberVal,2) ~= 0 ) % select pair or impair and was correct
             answerCorrect = 1;
         else

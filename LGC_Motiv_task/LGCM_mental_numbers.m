@@ -18,7 +18,7 @@ n_to_use_taskSwitch = [1, 2, 3, 4, 6, 7, 8, 9];
 n_nbers_to_use = length(n_to_use_taskSwitch);
 
 %% define matrix with all the possible numbers
-n_sequences_per_trial = 10; % for security prepare a lot just in case the subject keeps committing errors
+n_sequences_per_trial = 500; % for security prepare a lot just in case the subject keeps committing errors
 mental_nbers_per_trial = NaN(n_trials, n_nbers_to_use*n_sequences_per_trial);
 
 %% extract all possible permutations

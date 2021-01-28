@@ -1,0 +1,58 @@
+function[onset_stim] = LGCM_mental_display_stim(scr, stim,...
+    startAngle, endAngle,...
+    sideQuestion, taskType_tmp)
+%[onset_stim] = LGCM_mental_display_stim(scr, stim)
+% LGCM_mental_display_stim will display the arc, number to solve,
+% instructions and reward level (all relevant info) according to the inputs
+%
+% INPUTS
+% scr: screen structure with relevant info about screen
+%
+% stim: structure with relevant info about stimulus display
+%
+% startAngle, endAngle: values for the angle of the arc showing how far you
+% are from reaching the end
+%
+% sideQuestion: structure explaining which side corresponds to which answer
+% for each task (odd/even,;
+%
+% OUTPUTS
+% onset_stim: time when everything appears on screen
+%
+% See also LGCM_mental_learning.m
+
+%% extract relevant parameters
+window = scr.window;
+xScreenCenter = scr.xCenter;
+yScreenCenter = scr.yCenter;
+arcCurrLevelColor = stim.difficulty.currLevelColor;
+arcPosition = stim.difficulty.middle_center;
+
+%% percentage of correct answers already provided
+Screen('FillArc', window,...
+    arcCurrLevelColor,...
+    arcPosition,...
+    startAngle,...
+    endAngle - startAngle);
+
+%% number to solve
+switch taskType_tmp
+    case 0 % odd/even
+        textColor = oddEven_col;
+    case 1 % lower/higher than 5
+        textColor = lowHigh_col;
+end
+DrawFormattedText(window, num2str(numberValue_tmp),...
+    xScreenCenter, yScreenCenter*(9/6), textColor);
+
+%% instructions
+if instructions_disp
+    LGCM_mental_effort_task_question_display(scr, taskType_tmp, sideQuestion, textColor);
+end
+
+%% reward level
+
+%% display on screen
+[~,onset_stim] = Screen(window,'Flip');
+
+end % function
