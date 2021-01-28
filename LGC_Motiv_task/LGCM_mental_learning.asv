@@ -81,7 +81,6 @@ oddEven_col = mental_n_col.oddEven;
 lowHigh_col = mental_n_col.lowHigh;
 
 blackCol = [0 0 0];
-wrapat = 50; % go to line for DrawFormattedText when more than this number of characters
 
 %% display general instruction on the screen
 % adapt text depending on if instructions included or not
@@ -95,13 +94,13 @@ for iTimeLoop = 1:2
                 'Vous pouvez répondre avec les boutons. ',...
                 'La correspondance entre la position des boutons et la ',...
                 'réponse que vous souhaitez donner est la suivante:'],...
-                'center', yScreenCenter/3, blackCol, wrapat);
+                'center', yScreenCenter/3, blackCol, 50);
         case 0
             DrawFormattedText(window,...
                 ['Vous allez pouvoir vous entraîner à effectuer la tâche mais vous ',...
                 ' devrez vous rappeler de la correspondance entre les couleurs et la ',...
                 ' question à laquelle il faut répondre. /n Pour rappel:'],...
-                'center', yScreenCenter/3, blackCol, wrapat);
+                'center', yScreenCenter/3, blackCol);
     end
     
     % odd/even info
@@ -139,7 +138,6 @@ i_question = 1;
 [onsetTrial] = LGCM_mental_display_stim(scr, stim,...
     startAngle, endAngle,...
     sideQuestion, taskType(1), numberVector(1), mental_n_col, instructions_disp);
-onset_question_tmp = onsetTrial; % for the first question
 
 % loop until relevant number of subsequent correct answers has been reached
 while i_max_correct < n_max_to_reach
@@ -147,9 +145,7 @@ while i_max_correct < n_max_to_reach
     numberValue_tmp = numberVector(i_question);
     taskType_tmp = taskType(i_question);
     
-    LGCM_mental_display_stim(scr, stim,...
-        startAngle, endAngle,...
-        sideQuestion, taskType_tmp, numberValue_tmp, mental_n_col, instructions_disp);
+    LGCM_display_mental_stim();
     
     %% check key presses
     [keyisdown, timeAnswer, keyCode] = KbCheck();
@@ -209,11 +205,12 @@ while i_max_correct < n_max_to_reach
         end % at least one correct answer filter
         
         %% update variables of interest
-        % record time to answer and re-initialize the counter to get next
-        % RT
-        rt(i_question) = timeAnswer - onset_question_tmp;
-        onset_question_tmp = timeAnswer; % for the next question, the onset corresponds to the answer of the previous question
-        % record side and nature of the answer provided (correct/wrong?)
+        % record time to answer and side of the answer
+        if i_question == 1
+            rt(i_question) = timeAnswer - onsetTrial;
+        else
+            rt(i_question) = timeAnswer - onsetTrial;
+        end
         sideAnswer(i_question) = sideAnswer_tmp;
         goodOrBadAnswer(i_question) = answerCorrect_tmp;
         
@@ -232,11 +229,11 @@ learning_summary.numberVector   = numberVector(questions_done);
 learning_summary.taskType       = taskType(questions_done);
 learning_summary.sideAnswer     = sideAnswer(questions_done);
 learning_summary.isGoodAnswer   = goodOrBadAnswer(questions_done);
-learning_summary.rt             = rt(questions_done);
 learning_summary.n_switch       = n_switch;
 learning_summary.n_max_to_reach = n_max_to_reach;
 % record output
 learning_summary.n_trials_required_forLearning = i_question - 1;
+learning_summary.rt             = rt;
 
 
 end % function

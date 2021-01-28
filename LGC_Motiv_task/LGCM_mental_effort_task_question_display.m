@@ -23,17 +23,21 @@ function[] = LGCM_mental_effort_task_question_display(scr, task_trialType, sideQ
 
 %% extract relevant info
 window = scr.window;
-xScreenCenter = scr.xScreenCenter;
-yScreenCenter = scr.yScreenCenter;
+xScreenCenter = scr.xCenter;
+yScreenCenter = scr.yCenter;
+blackCol = [0 0 0];
 
 %% determine x,y coordinates
-y_coord = yScreenCenter*(5/6);
+y_coord = yScreenCenter*(5/3);
 x_left = xScreenCenter/2;
 x_right = xScreenCenter*(3/2);
 
 %% display on the screen
 switch task_trialType
         case 0 % odd/even
+            DrawFormattedText(window, 'Chiffre pair ou impair?',...
+                    'center', yScreenCenter/3, textCol);
+                
             if sideQuestion.oE.pair == -1 && sideQuestion.oE.impair == +1
                     x_pair = x_left;
                     x_impair = x_right;
@@ -44,10 +48,13 @@ switch task_trialType
                 error('error in sideQuestion definition');
             end
             DrawFormattedText(window,'pair', x_pair, y_coord, textCol );
-            DrawFormattedText(window,'OU', xScreenCenter, y_coord );
+            DrawFormattedText(window,'OU', 'center', y_coord, blackCol );
             DrawFormattedText(window,'impair', x_impair, y_coord, textCol );
             
         case 1 % higher/lower than 5?
+            DrawFormattedText(window, 'Chiffre < ou > 5?',...
+                    'center', yScreenCenter/3, textCol);
+                
             if sideQuestion.hL.low == -1 && sideQuestion.hL.high == +1
                     x_low = x_left;
                     x_high = x_right;
@@ -58,7 +65,7 @@ switch task_trialType
                 error('error in sideQuestion definition');
             end
             DrawFormattedText(window,'< 5', x_low, y_coord, textCol );
-            DrawFormattedText(window,'OU', xScreenCenter, y_coord );
+            DrawFormattedText(window,'OU', 'center', y_coord, blackCol );
             DrawFormattedText(window,'> 5', x_high, y_coord, textCol );
 end % task type
     
