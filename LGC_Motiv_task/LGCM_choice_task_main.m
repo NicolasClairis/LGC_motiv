@@ -124,6 +124,9 @@ punishment_yn = 'yes'; % include punishment trials?
 switch effort_type
     case 'physical'
         BioPac_yn = 'yes';
+        warning(['check this out ',...
+            'https://fr.mathworks.com/help/daq/getting-started-with-session-based-interface-using-ni-devices.html',...
+            ' for NI card compatibility']);
     case 'mental'
         BioPac_yn = 'no';
 end
@@ -132,19 +135,20 @@ end
 % (for measuring physical force + maybe also other variables like Skin
 % Conductance or heart rate)
 if strcmp(BioPac_yn,'yes')
-    % add biopac functions if missing so that they can be used for grip
-    % acquisition
-    addpath(BioPac_folder);
-    
-    % start BioPac recording
-    [u_out] = BioPac_start();
+    warning('update what is necessary for grip based on NI device requirements');
+%     % add biopac functions if missing so that they can be used for grip
+%     % acquisition
+%     addpath(BioPac_folder); % probably useless once you switch to NI card
+%     
+%     % start BioPac recording
+%     [u_out] = BioPac_start();
 end
 
 %% initialize screen
 [scr, xScreenCenter, yScreenCenter,...
     window, baselineTextSize] = LGCM_ScreenConfiguration(IRM, testing_script);
 white = scr.colours.white;
-black = scr.colours.black;
+% black = scr.colours.black;
 
 %% keyboard keys configuration + waiting and recording first TTL for fMRI
 if IRM == 0
@@ -162,80 +166,99 @@ elseif IRM == 1
 end
 
 %% task parameters
+% calibration
+switch effort_type % in case you use different numbers for each effort type
+    case 'mental'
+        n_calibTrials = 5;
+    case 'physical'
+        n_calibTrials = 5;
+end
+% actual task
 n_trials = 90;
-n_R_levels = 3;
-n_E_levels = 3;
-warning('add pictures to make it 5 reward and effort levels');
-% create all possible combinations of these levels
-warning('create R/E trials');
-% make as many mini-blocks containing all those combinations as there are
-% trials
-warning('make as many mini-blocks containing all those combinations as there are trials');
-% randomize the side of each option across trials
-warning('randomize the side of each option across trials');
+n_R_levels = 4;
+n_E_levels = 4;
 
 % stimulus related variables for the display
 [stim] = LGCM_stim_initialize(scr, n_R_levels, n_E_levels, pics_folder);
 
 % determine reward and punishment trials
-R_or_P_list = [repmat({'R'},1,n_trials/2), repmat({'P'},1,n_trials/2)];
-R_or_P_order = randperm(n_trials);
-R_or_P = R_or_P_list(R_or_P_order);
+choice_opt = LGCM_choice_option_design(n_R_levels, n_E_levels, punishment_yn, n_trials);
+if strcmp(punishment_yn,'yes')
+    R_or_P = choice_opt.R_or_P;
+end
 
+%% timings
+t_cross = 0.5;
+t_choice = 5;
+t_dispChoice = 1.5;
+switch effort_type % in case you use different numbers for each effort type
+    case 'mental'
+        t_max_effort = 5; % time to perform the task
+    case 'physical'
+        t_max_effort = 5; % time to perform the task
+end
+calibTimes.instructions = 5;
+calibTimes.effort_max = t_max_effort;
+calibTimes.fbk = 2;
 
+%% learning + calibration
 switch effort_type
     case 'mental' % for mental effort, define all the number sequences in advance
-        %% main parameters for mental effort task
-        % define side of each expected answer
-        sideQuestion.oE.pair = -1;
-        sideQuestion.oE.impair = 1;
-        sideQuestion.hL.low = -1;
-        sideQuestion.hL.high = 1;
-        
-        % define colours to use for numbers font
-        col1 = [253 219 199];
-        col2 = [239 138 98];
-        
-        % switch percentage = percentage of questions with a switch per
-        % trial
-        switchPerc = 1/2;
+        mentalE_prm = LGCM_mental_effort_parameters(i_sub);
+        mentalE_prm.startAngle = 0; % for learning always start at zero
         
         %% LGCM_mental_learning
-        % if learning has not been done yet
+        learning_time_limit = false;
+        % extract numbers to use for each learning phase
+        [numberVector_learning] = LGCM_mental_numbers(2);
+        
+        %% adapt number of required correct answers according to if learning was done or not
         if ~learning_done
-            n_max_to_reach_withInstructions = 10;
-            n_max_to_reach_withoutInstructions = 10;
-            %  define colours to use for the font of the numbers according to
-            %  subject number to alternate the type of colour used
-            if mod(i_sub,2) == 0
-                mental_n_col.oddEven = col1;
-                mental_n_col.lowHigh = col2;
-            elseif mod(i_sub,2) == 1
-                mental_n_col.oddEven = col2;
-                mental_n_col.lowHigh = col1;
-            end
-            % perform a first session with instructions
-            instructions_disp = 1;
-            [learning_summary_withInstru] = LGCM_mental_learning(scr, stim, key,...
-                n_max_to_reach_withInstructions,...
-                mental_n_col, sideQuestion, switchPerc, instructions_disp);
-            % do again without instructions
-            instructions_disp = 0;
-             [learning_summary_withoutInstru] = LGCM_mental_learning(scr, stim, key,...
-                n_max_to_reach_withoutInstructions,...
-                 mental_n_col, sideQuestion, switchPerc, instructions_disp);
-            
-            %% MVC measurement
-            n_mental_max_perTrial = LGCM_mental_calib(scr, stim);
-        elseif learning_done
-            n_mental_max_perTrial = input('please write manually n_max of pairs done during training');
+            n_max_learning_withInstructions = 6;%20;
+            n_max_learning_withoutInstructions = 16;%30;
+            % calibration max
+            n_calibMax = 4;
+        elseif learning_done % short retraining at the beginning of each block
+            n_max_learning_withInstructions = 6;%10;
+            n_max_learning_withoutInstructions = 6;%10;
         end % learning + training session
         
-        %% define 
-        % randomize the order of the numbers appearing on screen
+        % perform a first session with instructions (left/right vs odd/even
+        % and lower/higher than 5 mapping)
+        instructions_disp = 1;
+        % display instructions
+        [onset_endInstru_withInstru] = LGCM_mental_learning(scr, instructions_disp, mentalE_prm);
+        % perform the learning with instructions
+        [mentalE_perf_learning_withInstru] = LGCM_mental_effort_perf(scr, stim, key,...
+            numberVector_learning(1,:),...
+            mentalE_prm, n_max_learning_withInstructions, instructions_disp, learning_time_limit);
+        
+        % do a second learning session without instructions (= no mapping
+        % between side and answer type)
+        instructions_disp = 0;
+        % display instructions
+        [onset_endInstru_withoutInstru] = LGCM_mental_learning(scr, instructions_disp, mentalE_prm);
+        % perform the learning without instructions as in the real task
+        [mentalE_perf_learning_withoutInstru] = LGCM_mental_effort_perf(scr, stim, key,...
+            numberVector_learning(2,:),...
+            mentalE_prm, n_max_learning_withoutInstructions, instructions_disp, learning_time_limit);
+        
+        %% max performance measurement
+        if ~learning_done
+            % extract numbers to use for each calibration trial
+            [numberVector_calib] = LGCM_mental_numbers(n_calibTrials);
+            n_mental_max_perTrial = LGCM_mental_calib(scr, stim, key,...
+                numberVector_calib, mentalE_prm, n_calibTrials,...
+                n_calibMax, calibTimes);
+        elseif learning_done
+            % indicate max performance
+            n_mental_max_perTrial = input('please write manually n_max of pairs done during training');            
+        end % learning + training session
+        
+        %% randomize the order of the numbers appearing on screen
         mental_nbers_per_trial = LGCM_mental_numbers(n_trials);
         
-        % randomize the type of the first trial (odd/even or higher/lower
+        %% randomize the type of the first trial (odd/even or higher/lower
         % than 5)
         mental_taskType_trialStart = LGCM_mental_task_start(n_trials);
         
@@ -255,18 +278,11 @@ switch effort_type
         
 end
 
+% %%
+% warning('For monetary displays: add 4th layer after RGB colour values for transparency');
+% %%
 
-
-
-%%
-warning('For displays: add 4th layer after RGB colour values for transparency');
-%%
-
-%% timings
-t_cross = 0.5;
-t_choice = 5;
-t_dispChoice = 1.5;
-t_effort = 5; % stable total time, but duration of the effort will depend on the difficulty level at each trial
+%% initialize onsets for main task
 [onsets.cross,...
     onsets.dispChoiceOptions,...
     onsets.choice,...
@@ -280,16 +296,8 @@ t_effort = 5; % stable total time, but duration of the effort will depend on the
 if IRM == 1
     dummy_scan = 4; % number of TTL to wait before starting the task
     trigger_id = 84; % trigger value corresponding to the TTL code
-    [T0, TTL] = LGCM_keyboard_check_start(dummy_scans, trigger_id);
+    [T0, TTL] = LGCM_keyboard_check_start(dummy_scans, trigger_id, key);
 end % fMRI check
-
-%% perform the task
-%% Launch training trials
-% [onsets_training] = LGCM_training(scr, stim, speed,...
-%     audio_fbk_yn, sound,...
-%     session_effort_type, n_training_trials);
-warning(['Need to code a function for training before task starts',...
-    'goal: remind how each task works']);
 
 %% launch main task
 choice = zeros(1,n_trials);
@@ -310,7 +318,7 @@ for iTrial = 1:n_trials
     
     % if a key was pressed before starting the trial => show the fixation
     % cross again with a similar amount of time
-    if was_a_key_pressed_bf_trial(iTrial)
+    if was_a_key_pressed_bf_trial(iTrial) == 1
         Screen('FillRect',window,white, stim.cross.verticalLine); % vertical line
         Screen('FillRect',window,white, stim.cross.horizontalLine); % horizontal line
         [~,timeCrossNow] = Screen('Flip',window); % display the cross on screen
@@ -323,7 +331,7 @@ for iTrial = 1:n_trials
         onsets.dispChoiceOptions(iTrial),...
         onsets.choice(iTrial),...
         stoptask] = LGCM_choice_period(scr, stim,...
-        E_list, R_list, iTrial, n_E_levels, t_choice, key);
+        choice_opt, iTrial, t_choice, key);
     
     %% check if escape was pressed => stop everything if so
     if stoptask == 1
@@ -335,10 +343,9 @@ for iTrial = 1:n_trials
     %% display chosen option only
     [time_dispChoice,...
         R_chosen(iTrial),...
-        E_chosen(iTrial)] = LGCM_choice_task_dispChosen(scr, stim,...
+        E_chosen(iTrial)] = LGCM_choice_task_dispChosen(scr, stim, choice_opt,...
         choice(iTrial),...
-        E_list, R_list, iTrial,....
-        n_E_levels);
+        iTrial);
     onsets.dispChoice(iTrial) = time_dispChoice;
     WaitSecs(t_dispChoice);
     
@@ -357,10 +364,13 @@ for iTrial = 1:n_trials
             case 'mental'
                 [trial_failed, perf, onsetEffortPeriod(iTrial)] = LGCM_mental_effort(scr, stim,...
                     t_effort_max,...
-                    R_chosen, R_or_P, E_chosen, n_E_levels,...
+                    R_chosen, R_or_P{iTrial}, E_chosen, n_E_levels,...
                     mental_nbers_per_trial(iTrial,:),...
                     switchPerc,...
                     mental_taskType_trialStart(iTrial));
+                %%
+                warning('update things here based on what has been coded already for training and calibration');
+                %%
         end
         
         %     %% if the effort was not performed correctly,
@@ -391,8 +401,12 @@ for iTrial = 1:n_trials
             end
             
             [~,onset.fbk(iTrial)] = Screen(window,'Flip');
-            [~,onset.fbk_win(iTrial)] = Screen(window,'Flip');
-            [~,onset.fbk_loss(iTrial)] = Screen(window,'Flip');
+            switch R_or_P{iTrial}
+                case 'R'
+                    onset.fbk_win(iTrial) = onset.fbk(iTrial);
+                case 'P'
+                    onset.fbk_loss(iTrial) = onset.fbk(iTrial);
+            end
         case 1 % trial failed
             % display message
 %             DrawFormattedText(window,'Too slow!', xScreenCenter, (1/5)*yScreenCenter);
@@ -436,6 +450,11 @@ all.MVC_initial = MVC_initial;
 all.MVC_last = MVC_last;
 onsets.initial_MVC = onsets_MVC_initial;
 onsets.final_MVC = onsets_MVC_final;
+% timings
+all.times.cross         = t_cross;
+all.times.choice        = t_choice;
+all.times.dispChosen    = t_dispChoice;
+all.times.effort_max    = t_max_effort;
 
 % store timings in all structure
 all.onsets = onsets;

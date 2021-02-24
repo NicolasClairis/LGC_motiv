@@ -82,4 +82,5 @@ scr.background_colour = screenColour;
 scr.colours.grey = grey;
 scr.colours.white = white;
 scr.colours.black = black;
+scr.wrapat = 50; % limit characters for drawformattedtext
 end % function

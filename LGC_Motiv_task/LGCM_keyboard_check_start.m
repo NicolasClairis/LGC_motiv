@@ -1,11 +1,14 @@
-function[T0, TTL] = LGCM_keyboard_check_start(dummy_scan, trigger_id)
-%[T0, TTL] = LGCM_keyboard_check_start(dummy_scan, trigger_id)
+function[T0, TTL] = LGCM_keyboard_check_start(dummy_scan, trigger_id, key)
+%[T0, TTL] = LGCM_keyboard_check_start(dummy_scan, trigger_id, key)
 % LGCM_keyboard_check_start starts recording key presses (and TTL inputs)
 %
 % INPUTS
 % dummy_scan: number of TTL to wait before starting the task
 %
 % trigger_id: number corresponding to the TTL trigger
+%
+% key: structure with subfield with the corresponding key code for left and
+% right key presses
 %
 % OUTPUTS
 % T0: time of the first TTL on which all onsets will be referenced

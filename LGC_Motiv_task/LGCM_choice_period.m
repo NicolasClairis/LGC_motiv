@@ -1,6 +1,6 @@
-function[choice_trial, onsetDispChoiceOptions, onsetChoice, stoptask] = LGCM_choice_period(scr, stim,...
-    E_list, R_list, iTrial, n_E_levels, t_choice, key)
-% [choice_trial, onsetDispChoiceOptions, onsetChoice] = LGCM_choice_period(scr, stim,...
+function[choice_trial, onsetDispChoiceOptions, onsetChoice, stoptask] = LGCM_choice_period(scr, stim, choice_opt,...
+    iTrial, t_choice, key)
+% [choice_trial, onsetDispChoiceOptions, onsetChoice] = LGCM_choice_period(scr, stim, choice_opt,...
 %     E_list, R_list, iTrial, n_E_levels, t_choice, key)
 % will display the choice options and then wait for the choice to be made
 % (or the time limit to be reached. Provides timings and choice made in
@@ -11,14 +11,10 @@ function[choice_trial, onsetDispChoiceOptions, onsetChoice, stoptask] = LGCM_cho
 %
 % stim: structure with informations about the stimuli to display
 %
-% E_list: structure with list of effort levels for each side (left/right)
-% for each trial
-%
-% R_list: same as a E_list but for rewards
+% choice_opt: structure with info about choice options (side of each
+% option, reward level, effort level, etC.)
 %
 % iTrial: trial number
-%
-% n_E_levels: maximum effort levels
 %
 % t_choice: maximal time to wait for choice
 %
@@ -42,12 +38,19 @@ function[choice_trial, onsetDispChoiceOptions, onsetChoice, stoptask] = LGCM_cho
 window = scr.window;
 stoptask = 0;
 
-%% extract difficulty level for each side of the screen
-E_left_tmp  = 1; % E_list.left(iTrial)
-E_right_tmp = 2; % E_list.right(iTrial)
+%% extract difficulty & reward level for each side of the screen
+% effort level
+E_left_tmp = choice_opt.E.left(iTrial);
+E_right_tmp = choice_opt.E.right(iTrial);
 % extract reward level for each side of the screen
-R_left_tmp  = 1; % R_list.left(iTrial)
-R_right_tmp = 3; % R_list.right(iTrial)
+R_left_tmp  = choice_opt.R.left(iTrial);
+R_right_tmp = choice_opt.R.right(iTrial);
+
+% E_left_tmp  = 1;
+% E_right_tmp = 2;
+% % extract reward level for each side of the screen
+% R_left_tmp  = 1;
+% R_right_tmp = 3;
 
 %% display each difficulty level
 leftStartAngle = stim.difficulty.startAngle.(['level_',num2str(E_left_tmp)]);

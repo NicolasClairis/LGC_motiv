@@ -76,7 +76,7 @@ for iDiff = 1:n_E_levels
     diff_level_nm = ['level_',num2str(iDiff)];
     
     % extract angle for the arc which will correspond to the difficulty
-    % level
+    % level: max circle = max difficulty level
     stim.difficulty.startAngle.(diff_level_nm) = stim.difficulty.arcEndAngle*(iDiff./n_E_levels);
 end % difficulty
 
