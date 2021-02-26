@@ -77,7 +77,12 @@ for iDiff = 1:n_E_levels
     
     % extract angle for the arc which will correspond to the difficulty
     % level: max circle = max difficulty level
-    stim.difficulty.startAngle.(diff_level_nm) = stim.difficulty.arcEndAngle*(iDiff./n_E_levels);
+    startAngle_diff_tmp = stim.difficulty.arcEndAngle*(iDiff./n_E_levels);
+    if startAngle_diff_tmp < 360
+        stim.difficulty.startAngle.(diff_level_nm) = startAngle_diff_tmp;
+    elseif startAngle_diff_tmp == 360
+        stim.difficulty.startAngle.(diff_level_nm) = 0;
+    end
 end % difficulty
 
 %% color used to represent the signal
