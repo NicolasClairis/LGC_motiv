@@ -103,6 +103,13 @@ for iCalibTrial = 1:n_calibTrials
                 n_max = n_calibMax;
             else % increase difficulty to push towards
                 n_max = max_perf_reached_duringCalib + 2;
+                n_switch = mentalE_prm.switchPerc*n_max;
+                % number of switches has to be integer => increase
+                % difficulty accordingly
+                while n_switch ~= round(n_switch)
+                    n_max = n_max + 1;
+                    n_switch = mentalE_prm.switchPerc*n_max;
+                end
             end
     end
     

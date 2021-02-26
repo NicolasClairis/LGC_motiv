@@ -37,11 +37,21 @@ switch punishment_yn
         % rewards
         choice_design_RE = LGCM_choice_design_RE_levels(n_R_levels, n_E_levels, n_trials_per_condition);
         % punishment
-        choice_design_PE = LGCM_choice_design_RE_levels(n_R_levels, n_E_levels, n_trials_per_condition);
+        choice_design_PE_tmp = LGCM_choice_design_RE_levels(n_R_levels, n_E_levels, n_trials_per_condition);
+        % for punishment, reward left and reward right should be inverted
+        % otherwise the options will be strange (more high punishments with
+        % high levels of effort)
+        choice_design_PE.effort = choice_design_PE_tmp.effort;
+        choice_design_PE.allOptions = [choice_design_PE_tmp.allOptions(:,2),...
+            choice_design_PE_tmp.allOptions(:,1),...
+            choice_design_PE_tmp.allOptions(:,3),...
+            choice_design_PE_tmp.allOptions(:,4)]; % reverse Rleft and Rright
+        choice_design_PE.punishment.left = choice_design_PE_tmp.reward.right;
+        choice_design_PE.punishment.right = choice_design_PE_tmp.reward.left;
         % pool all together
         choice_design.allOptions = [choice_design_RE.allOptions, choice_design_PE.allOptions];
-        choice_design.reward.left   = [choice_design_RE.reward.left, choice_design_PE.reward.left];
-        choice_design.reward.right  = [choice_design_RE.reward.right, choice_design_PE.reward.right];
+        choice_design.reward.left   = [choice_design_RE.reward.left, choice_design_PE.punishment.right];
+        choice_design.reward.right  = [choice_design_RE.reward.right, choice_design_PE.punishment.left];
         choice_design.effort.left   = [choice_design_RE.effort.left, choice_design_PE.effort.left];
         choice_design.effort.right  = [choice_design_RE.effort.right, choice_design_PE.effort.right];
         

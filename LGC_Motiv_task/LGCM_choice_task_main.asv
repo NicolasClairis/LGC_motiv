@@ -405,10 +405,7 @@ for iTrial = 1:n_trials
             end
             
             % display monetary incentive
-            Screen('DrawTexture', window,...
-            stim.reward.texture.(['reward_',num2str(R_chosen(iTrial))]),...
-            [],...
-            stim.chosenOption.reward.(['reward_',num2str(R_chosen(iTrial))]));
+            
             
             [~,onset.fbk(iTrial)] = Screen(window,'Flip');
             switch R_or_P{iTrial}

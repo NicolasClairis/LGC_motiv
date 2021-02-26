@@ -1,6 +1,6 @@
-function[mentalE_perf, trial_success] = LGCM_mental_effort_perf(scr, stim, key,...
+function[mentalE_perf, trial_success, onsets] = LGCM_mental_effort_perf(scr, stim, key,...
     numberVector, mentalE_prm, n_max_to_reach, instructions_disp, time_limit, t_max)
-%[mentalE_perf, trial_success] = LGCM_mental_effort_perf(scr, stim, key,...
+%[mentalE_perf, trial_success, onsets] = LGCM_mental_effort_perf(scr, stim, key,...
 %     numberVector, mentalE_prm, n_max_to_reach, instructions_disp, time_limit, t_max)
 %
 % LGCM_mental_effort_perf corresponds to the actual performance. Can be
@@ -37,6 +37,14 @@ function[mentalE_perf, trial_success] = LGCM_mental_effort_perf(scr, stim, key,.
 % (1) display instructions: ask if odd/even (or lower/higher than 5) and
 % display also on the screen the relevant answer to each question
 %
+% time_limit
+% (0)/false = no time limit to perform the requested number of questions
+% (1)/true = when time limit is reached, stop the trial, even if requested
+% number not reached => consider the trial a failure
+%
+% t_max: maximum time allowed to reach the requested number of correct
+% answers
+%
 % OUTPUTS
 % mentalE_perf: structure with summary of mental effort performance
 %   .nTrials: number of trials it took to reach a correct
@@ -44,13 +52,16 @@ function[mentalE_perf, trial_success] = LGCM_mental_effort_perf(scr, stim, key,.
 %   .rt: reaction time (rt) for each question
 %   .taskType: task type (0: odd/even; 1: lower/higher than 5)
 %
+% onsets: structure with onset of each number on the screen
+%   .nb_i: onset of (i) question during the current trial
+%
 % See also LGCM_mental_learning.m
 
 %% extract relevant variables
 % angle values
-startAngle = mentalE_prm.startAngle;
+startAngle_currentTrial = mentalE_prm.startAngle;
 endAngle = 360;
-totalAngleDistance = endAngle - startAngle;
+totalAngleDistance = endAngle - startAngle_currentTrial;
 
 % extract main mental effort parameters
 sideQuestion = mentalE_prm.sideQuestion;
@@ -87,10 +98,13 @@ KbReleaseWait;
 
 %% initial display to get timing of the start
 [onsetTrial] = LGCM_mental_display_stim(scr, stim,...
-    startAngle, endAngle,...
+    startAngle_currentTrial, endAngle,...
     sideQuestion, taskType(1), numberVector(1), mental_n_col, instructions_disp);
 onset_question_tmp = onsetTrial; % for the first question
+onsets.nb_1 = onsetTrial;
 timeNow = onsetTrial;
+
+startAngle = startAngle_currentTrial;
 
 % loop until relevant number of subsequent correct answers has been reached
 % or that max time limit has been reached (if one time limit has been
@@ -104,9 +118,14 @@ while (i_max_correct < n_max_to_reach) &&...
     numberValue_tmp = numberVector(i_question);
     taskType_tmp = taskType(i_question);
     
-    LGCM_mental_display_stim(scr, stim,...
+    onset_stim = LGCM_mental_display_stim(scr, stim,...
         startAngle, endAngle,...
         sideQuestion, taskType_tmp, numberValue_tmp, mental_n_col, instructions_disp);
+    
+    %% record onset
+    if i_question > 1
+        onsets.(['nb_',num2str(i_question)]) = onset_stim;
+    end
     
     %% check key presses
     [keyisdown, timeAnswer, keyCode] = KbCheck();
@@ -136,7 +155,7 @@ while (i_max_correct < n_max_to_reach) &&...
         switch answerCorrect_tmp
             case 0 % error made
                 % if wrong, set back indicators to zero: needs to restart
-                startAngle = 0;
+                startAngle = startAngle_currentTrial; % re-initialize
                 i_max_correct = 0;
             case 1 % if correct, update the count and the display
                 startAngle = startAngle + totalAngleDistance/n_max_to_reach;

@@ -29,8 +29,10 @@ sideQuestion.hL.low = -1;
 sideQuestion.hL.high = 1;
 
 %% define colours to use for numbers font
-col1 = [253 219 199];
-col2 = [239 138 98];
+% col1 = [253 219 199];
+% col2 = [239 138 98];
+col1 = [0 0 0];
+col2 = [255 255 255];
 
 %% switch percentage = percentage of questions with a switch per
 % trial

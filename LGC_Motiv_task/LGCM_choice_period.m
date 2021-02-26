@@ -92,10 +92,10 @@ choicePeriodOver = 0;
 while choicePeriodOver == 0
     %% check time
     timeNow = GetSecs;
+    choice_trial = 0; % by default no choice is being made
     if timeNow > (onsetDispChoiceOptions + t_choice)
         % finish the trial
         choicePeriodOver = 1;
-        choice_trial = 0;
         onsetChoice = NaN;
     end
     
