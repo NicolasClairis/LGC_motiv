@@ -38,7 +38,7 @@ stim.reward.moneyRect  = [0 0 moneySize moneySize];
 stim.reward.moneySize  = moneySize;
 
 % Import the reward images and store them into memory
-for iR = 0:n_R_levels
+for iR = 1:n_R_levels
     % extract name for subfield of the current difficulty level
     R_level_nm = ['reward_',num2str(iR)];
     
