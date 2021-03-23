@@ -51,6 +51,8 @@ function[mentalE_perf, trial_success, onsets] = LGCM_mental_effort_perf(scr, sti
 % performance
 %   .rt: reaction time (rt) for each question
 %   .taskType: task type (0: odd/even; 1: lower/higher than 5)
+%   .totalTime_success: time passed between trial onset and last correct
+%   answer (if the trial was a success), NaN if trial was a failure
 %
 % onsets: structure with onset of each number on the screen
 %   .nb_i: onset of (i) question during the current trial
@@ -216,11 +218,14 @@ mentalE_perf.n_max_to_reach = n_max_to_reach;
 mentalE_perf.n_questions_performed = i_question - 1;
 mentalE_perf.n_questions_correct = i_max_correct;
 % record if trial was achieved or interrompted due to time limit (=failure)
-if i_max_correct == n_max_to_reach
+if i_max_correct == n_max_to_reach % reached the top
     trial_success = true;
-elseif i_max_correct < n_max_to_reach
+    totalTime_success = timeAnswer - onsetTrial; % total time between start of the trial and last correct answer
+elseif i_max_correct < n_max_to_reach % not enough good answers
     trial_success = false;
+    totalTime_success = NaN;
 end
 mentalE_perf.success = trial_success;
+mentalE_perf.totalTime_success = totalTime_success;
 
 end % function

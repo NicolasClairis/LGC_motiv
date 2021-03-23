@@ -1,7 +1,7 @@
 function[time_dispChoice, R_chosen, E_chosen] = LGCM_choice_task_dispChosen(scr, stim, choice_opt, choice,...
-    iTrial)
+    R_or_P, iTrial)
 % [time_dispChoice, R_chosen, E_chosen] = LGCM_choice_task_dispChosen(scr, stim, choice_opt, choice,...
-%     iTrial)
+%     R_or_P, iTrial)
 %
 % INPUTS
 % scr: structure with screen parameters
@@ -17,6 +17,9 @@ function[time_dispChoice, R_chosen, E_chosen] = LGCM_choice_task_dispChosen(scr,
 % (0) no option chosen => show higher effort with no associated reward
 % (1) right option => right reward and effort
 %
+% R_or_P: character indicating the nature of the current trial
+% 'R': reward trial
+% 'P': punishment trial
 %
 % iTrial: trial number
 %
@@ -29,6 +32,11 @@ function[time_dispChoice, R_chosen, E_chosen] = LGCM_choice_task_dispChosen(scr,
 window = scr.window;
 % xScreenCenter = scr.xCenter;
 yScreenCenter = scr.yCenter;
+white = scr.colours.white;
+black = scr.colours.black;
+
+% remind the option they chose
+DrawFormattedText(window,'Vous avez choisi','center',yScreenCenter/6,white);
 
 %% extract difficulty & reward level for each side of the screen
 % effort level
@@ -61,7 +69,6 @@ switch choice
 end % choice
 
 %% display reward and effort level
-white = [1 1 1];
 switch R_chosen
     case 0 % no option was selected
         DrawFormattedText(window,...
@@ -69,10 +76,25 @@ switch R_chosen
             'center', yScreenCenter/2, white);
     otherwise % one option was selected
         % reward level
+        R_chosen_nm = ['reward_',num2str(R_chosen)];
         Screen('DrawTexture', window,...
-            stim.reward.texture.(['reward_',num2str(R_chosen)]),...
+            stim.reward.texture.(R_chosen_nm),...
             [],...
-            stim.chosenOption.reward.(['reward_',num2str(R_chosen)]));
+            stim.chosenOption.reward.(R_chosen_nm));
+        
+        % if punishment trial, add also indication to know that money is to be lost
+        if strcmp(R_or_P,'P')
+            lineWidth = 10;
+            % cross on monetary incentive
+            Screen('DrawLine', window, black,...
+                stim.reward.top_center.(R_chosen_nm)(1), stim.reward.top_center.(R_chosen_nm)(2),...
+                stim.reward.top_center.(R_chosen_nm)(3), stim.reward.top_center.(R_chosen_nm)(4),...
+                lineWidth);
+            Screen('DrawLine', window, black,...
+                stim.reward.top_center.(R_chosen_nm)(3), stim.reward.top_left.(R_chosen_nm)(2),...
+                stim.reward.top_center.(R_chosen_nm)(1), stim.reward.top_center.(R_chosen_nm)(4),...
+                lineWidth);
+        end
         
         %% display difficulty level
         chosenStartAngle = stim.difficulty.startAngle.(['level_',num2str(E_chosen)]);

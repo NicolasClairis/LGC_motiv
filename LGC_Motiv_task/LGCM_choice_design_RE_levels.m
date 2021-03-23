@@ -1,5 +1,8 @@
 function [choice_design] = LGCM_choice_design_RE_levels(n_R_levels, n_E_levels, n_trials)
 %[choice_design] = LGCM_choice_design_RE_levels(n_R_levels, n_E_levels, n_trials)
+% LGCM_choice_design_RE_levels will extract the levels of difficulty for
+% each choice trial based on the number of trials and number of reward and
+% effort conditions required.
 %
 % INPUTS
 % n_R_levels: number of reward levels

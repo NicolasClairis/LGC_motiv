@@ -1,10 +1,10 @@
 function[choice_trial, onsetDispChoiceOptions, onsetChoice, stoptask] = LGCM_choice_period(scr, stim, choice_opt,...
-    iTrial, t_choice, key)
+    R_or_P, iTrial, t_choice, key)
 % [choice_trial, onsetDispChoiceOptions, onsetChoice] = LGCM_choice_period(scr, stim, choice_opt,...
-%     E_list, R_list, iTrial, n_E_levels, t_choice, key)
-% will display the choice options and then wait for the choice to be made
-% (or the time limit to be reached. Provides timings and choice made in
-% output.
+%     R_or_P, iTrial, t_choice, key)
+% LGCM_choice_period will display the choice options and then wait for the 
+% choice to be made (or the time limit to be reached. Provides timings and 
+% choice made in output.
 %
 % INPUTS
 % scr: structure with screen informations
@@ -13,6 +13,10 @@ function[choice_trial, onsetDispChoiceOptions, onsetChoice, stoptask] = LGCM_cho
 %
 % choice_opt: structure with info about choice options (side of each
 % option, reward level, effort level, etC.)
+%
+% R_or_P: character indicating the nature of the current trial
+% 'R': reward trial
+% 'P': punishment trial
 %
 % iTrial: trial number
 %
@@ -37,6 +41,13 @@ function[choice_trial, onsetDispChoiceOptions, onsetChoice, stoptask] = LGCM_cho
 %% initialize variables of interest
 window = scr.window;
 stoptask = 0;
+white = scr.colours.white;
+black = scr.colours.black;
+yScreenCenter = scr.yCenter;
+
+%% ask question on top
+DrawFormattedText(window,'Que préférez-vous?','center',yScreenCenter/4,white);
+DrawFormattedText(window,'OU','center','center',white);
 
 %% extract difficulty & reward level for each side of the screen
 % effort level
@@ -75,16 +86,44 @@ Screen('FrameOval', window, stim.difficulty.maxColor,...
     stim.difficulty.below_right,...
     stim.difficulty.ovalWidth);
 
-%% display each reward level
-Screen('DrawTexture', window,...
-    stim.reward.texture.(['reward_',num2str(R_left_tmp)]),...
-    [],...
-    stim.reward.top_left.(['reward_',num2str(R_left_tmp)]));
-Screen('DrawTexture', window,...
-    stim.reward.texture.(['reward_',num2str(R_right_tmp)]),...
-    [],...
-    stim.reward.top_right.(['reward_',num2str(R_right_tmp)]));
+%% display each monetary incentive level
+% extract reward levels
+R_left_nm = ['reward_',num2str(R_left_tmp)];
+R_right_nm = ['reward_',num2str(R_right_tmp)];
 
+% display reward images
+Screen('DrawTexture', window,...
+    stim.reward.texture.(R_left_nm),...
+    [],...
+    stim.reward.top_left.(R_left_nm));
+Screen('DrawTexture', window,...
+    stim.reward.texture.(R_right_nm),...
+    [],...
+    stim.reward.top_right.(R_right_nm));
+
+% if punishment trial, add also indication to know that money is to be lost
+if strcmp(R_or_P,'P')
+   lineWidth = 10;
+   % cross on left option
+   Screen('DrawLine', window, black,...
+       stim.reward.top_left.(R_left_nm)(1), stim.reward.top_left.(R_left_nm)(2),...
+       stim.reward.top_left.(R_left_nm)(3), stim.reward.top_left.(R_left_nm)(4),...
+       lineWidth);
+   Screen('DrawLine', window, black,...
+       stim.reward.top_left.(R_left_nm)(3), stim.reward.top_left.(R_left_nm)(2),...
+       stim.reward.top_left.(R_left_nm)(1), stim.reward.top_left.(R_left_nm)(4),...
+       lineWidth);
+   
+   % cross on right option
+   Screen('DrawLine', window, black,...
+       stim.reward.top_right.(R_right_nm)(1), stim.reward.top_right.(R_right_nm)(2),...
+       stim.reward.top_right.(R_right_nm)(3), stim.reward.top_right.(R_right_nm)(4),...
+       lineWidth);
+   Screen('DrawLine', window, black,...
+       stim.reward.top_right.(R_right_nm)(3), stim.reward.top_right.(R_right_nm)(2),...
+       stim.reward.top_right.(R_right_nm)(1), stim.reward.top_right.(R_right_nm)(4),...
+       lineWidth);
+end
 [~,onsetDispChoiceOptions] = Screen('Flip',window);
 
 %% wait for choice to be made or time limit to be reached

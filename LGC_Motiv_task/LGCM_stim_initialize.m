@@ -71,16 +71,17 @@ stim.difficulty.arcEndAngle = 360;
 
 % define the circle size for each difficulty level depending on the
 % difficulty
+% note level 1 = easiest level (ascending order)
 for iDiff = 1:n_E_levels
     % extract name for subfield of the current difficulty level
     diff_level_nm = ['level_',num2str(iDiff)];
     
     % extract angle for the arc which will correspond to the difficulty
     % level: max circle = max difficulty level
-    startAngle_diff_tmp = stim.difficulty.arcEndAngle*(iDiff./n_E_levels);
-    if startAngle_diff_tmp < 360
-        stim.difficulty.startAngle.(diff_level_nm) = startAngle_diff_tmp;
-    elseif startAngle_diff_tmp == 360
+    startAngle_tmp = stim.difficulty.arcEndAngle*((n_E_levels - iDiff)./n_E_levels);
+    if startAngle_tmp < 360
+        stim.difficulty.startAngle.(diff_level_nm) = startAngle_tmp;
+    elseif startAngle_tmp == 360
         stim.difficulty.startAngle.(diff_level_nm) = 0;
     end
 end % difficulty

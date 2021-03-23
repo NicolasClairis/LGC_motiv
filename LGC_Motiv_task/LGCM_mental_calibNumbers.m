@@ -1,7 +1,9 @@
-function[n_mental_max_perTrial, calib_summary] = LGCM_mental_calib(scr, stim, key,...
+function[n_mental_max_perTrial, calib_summary] = LGCM_mental_calibNumbers(scr, stim, key,...
     numberVector_calib, mentalE_prm, n_calibTrials, n_calibMax, calibTimes)
+%[n_mental_max_perTrial, calib_summary] = LGCM_mental_calibNumbers(scr, stim, key,...
+%     numberVector_calib, mentalE_prm, n_calibTrials, n_calibMax, calibTimes)
 %
-% LGCM_mental_calib will extract maximum number of subsequent correct
+% LGCM_mental_calibNumbers will extract maximum number of subsequent correct
 % answers participants can provide in the limited amount of time that is
 % available for them to answer.
 %
@@ -30,7 +32,7 @@ function[n_mental_max_perTrial, calib_summary] = LGCM_mental_calib(scr, stim, ke
 %
 % n_calibTrials: number of calibration trials
 %
-% n_max_learning_withoutInstructions: reference number of subsequent
+% n_calibMax: reference number of subsequent
 % correct answers to use
 %
 % calibTimes: structure with timings for this phase of the task
