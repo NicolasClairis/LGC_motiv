@@ -21,6 +21,7 @@ function[mentalE_perf, trial_success, onsets] = LGCM_mental_effort_perf(scr, sti
 % numberVector: vector with big list of numbers for the current trial
 %
 % mentalE_prm: structure with main parameters for mental effort task:
+%   .startAngle: start angle for displaying the effort arc
 %
 %   .mental_n_col: structure with the colour to use for the font
 %       .oddEven: colour to use for odd or even question

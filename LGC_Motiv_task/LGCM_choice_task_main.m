@@ -182,6 +182,23 @@ end
 n_trials = 88;
 n_R_levels = 4;
 n_E_levels = 4;
+switch effort_type
+    case 'physical'
+        F_threshold = 50; % force should be maintained above this threshold
+        F_tolerance = 5; % tolerance allowed around the threshold
+        % need to define timings for each level of force
+        switch n_E_levels
+            case 3
+                E_time_levels.level_1 = 1;
+                E_time_levels.level_2 = 2;
+                E_time_levels.level_3 = 3;
+            case 4
+                E_time_levels.level_1 = 0.5;
+                E_time_levels.level_2 = 1.5;
+                E_time_levels.level_3 = 2.5;
+                E_time_levels.level_4 = 3.5;
+        end
+end
 
 % stimulus related variables for the display
 [stim] = LGCM_stim_initialize(scr, n_R_levels, n_E_levels, pics_folder);
@@ -445,6 +462,12 @@ for iTrial = 1:n_trials
                 [physicalE_perf{iTrial},...
                     trial_was_successfull_tmp,...
                     onsets.effortPeriod{iTrial}] = LGCM_physical_effort(scr, stim, key,...
+                    time_limit, t_max_effort);
+                
+                [physicalE_perf{iTrial}, trial_was_successfull_tmp, onsets.effortPeriod{iTrial}] = LGCM_physical_effort_perf(scr, stim,...
+                    E_chosen,...
+                    E_time_levels,...
+                    F_threshold, F_tolerance,...
                     time_limit, t_max_effort);
             case 'mental'
                 mentalE_prm.startAngle = stim.difficulty.startAngle.(['level_',num2str(E_chosen(iTrial))]); % adapt start angle to current level of difficulty
