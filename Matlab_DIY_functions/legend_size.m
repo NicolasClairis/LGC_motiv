@@ -6,8 +6,8 @@ function [  ] = legend_size( pSize )
 % pSize: size of the text you want to use
 % Originally written by N.Clairis - 31/01/2020
 
+% set(gca,'FontName','Century gothic');
 set(gca,'fontsize',pSize,'FontWeight','bold');
 set(findall(gcf,'type','text'),'FontSize',pSize,'fontWeight','bold');
 
-end
-
+end % function
