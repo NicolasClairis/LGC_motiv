@@ -61,7 +61,6 @@ wrapat = scr.wrapat;
 
 % define main parameters
 calib_time_limit = true; % time will be limited (as opposed to learning where time was infinite)
-instructions_disp = 0; % no instructions anymore, goal is to calibrate as if it was the actual task
 
 % introduce variables of interest
 [t_min_calibPerf,...
@@ -119,7 +118,8 @@ for iCalibTrial = 1:n_calibTrials
     %% calibration trial start: finish when max time reached OR when correct number of answers has been provided
     [mentalE_perf, calibTrial_success] = LGCM_mental_effort_perf(scr, stim, key,...
         numberVector_calib(iCalibTrial,:),...
-        mentalE_prm, n_calibMax, instructions_disp, calib_time_limit, t_effort_max);
+        mentalE_prm, n_calibMax,...
+        'all','noInstructions', calib_time_limit, t_effort_max); % no instruction (calibration as in the real task)
     
     calib_summary.mentalE_perf(iCalibTrial) = mentalE_perf;
     % store current maximum performance

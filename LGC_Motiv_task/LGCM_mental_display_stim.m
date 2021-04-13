@@ -1,9 +1,11 @@
 function[onset_stim] = LGCM_mental_display_stim(scr, stim,...
     startAngle, endAngle,...
-    sideQuestion, taskType, numberValue, mental_n_col, instructions_disp)
+    sideQuestion, taskType, numberValue, mental_n_col,...
+    learning_instructions)
 % [onset_stim] = LGCM_mental_display_stim(scr, stim,...
 %     startAngle, endAngle,...
-%     sideQuestion, taskType, numberValue, mental_n_col, instructions_disp)
+%     sideQuestion, taskType, numberValue, mental_n_col,...
+%     learning_instructions)
 % LGCM_mental_display_stim will display the arc, number to solve,
 % instructions and reward level (all relevant info) according to the inputs
 %
@@ -25,12 +27,12 @@ function[onset_stim] = LGCM_mental_display_stim(scr, stim,...
 % mental_n_col: structure with information about colour corresponding to
 % each task type
 %
-% instructions_disp:
-% (0) no help to answer, will only display the number in the appropriate
-% colour
-% (1) provide instructions with the question to answer (odd/even;
-% lower/higher than 5) and the side corresponding to each possible answer
-% (left/right)
+% learning_instructions
+% 'fullInstructions': display instructions: ask if odd/even (or lower/higher than 5) and
+% display also on the screen the relevant answer to each question
+% 'partialInstructions': display only the two possible answers but not the
+% question anymore
+% 'noInstructions': no reminder of what the question is nor of where you should answer
 %
 % OUTPUTS
 % onset_stim: time when everything appears on screen
@@ -62,8 +64,9 @@ DrawFormattedText(window, num2str(numberValue),...
     xScreenCenter, yScreenCenter*(9/6), textColor);
 
 %% instructions
-if instructions_disp
-    LGCM_mental_effort_task_question_display(scr, taskType, sideQuestion, textColor);
+switch learning_instructions
+    case {'fullInstructions','partialInstructions'}
+        LGCM_mental_effort_task_question_display(scr, taskType, sideQuestion, textColor, learning_instructions);
 end
 
 %% reward level

@@ -43,9 +43,15 @@ switchPerc = 1/2;
 if mod(i_sub,2) == 0
     mental_n_col.oddEven = col1;
     mental_n_col.lowHigh = col2;
+    % record mapping with name also (for learning phase)
+    mental_n_col.col1 = 'oddEven';
+    mental_n_col.col2 = 'lowHigh';
 elseif mod(i_sub,2) == 1
     mental_n_col.oddEven = col2;
     mental_n_col.lowHigh = col1;
+    % record mapping with name also (for learning phase)
+    mental_n_col.col1 = 'lowHigh';
+    mental_n_col.col2 = 'oddEven';
 end
 
 %% store all in output

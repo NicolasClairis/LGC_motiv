@@ -1,14 +1,21 @@
-function[onset_Press] = LGCM_mental_learning(scr, instructions_disp, mentalE_prm)
-% [onset_Press] = LGCM_mental_learning(scr, instructions_disp, mentalE_prm)
+function[onset_Press] = LGCM_mental_learning(scr, learning_col, learning_instructions, mentalE_prm)
+% [onset_Press] = LGCM_mental_learning(scr, learning_col, learning_instructions, mentalE_prm)
 % LGCM_mental_learning will display instructions before learning starts.
 %
 % INPUTS
 % scr: structure with screen parameters
 %
-% instructions_disp:
-% (0) no reminder of what the question is nor of where you should answer
-% (1) display instructions: ask if odd/even (or lower/higher than 5) and
+% learning_col:
+% 'col1': learning with colour 1 only
+% 'col2': learning with colour 2 only
+% 'all': learning with both colours
+%
+% learning_instructions
+% 'fullInstructions': display instructions: ask if odd/even (or lower/higher than 5) and
 % display also on the screen the relevant answer to each question
+% 'partialInstructions': display only the two possible answers but not the
+% question anymore
+% 'noInstructions': no reminder of what the question is nor of where you should answer
 %
 % mentalE_prm: structure with mental effort parameters
 %   .mental_n_col: field with colour for each type of question
@@ -36,8 +43,8 @@ wrapat = scr.wrapat; % go to line for DrawFormattedText when more than this numb
 % adapt text depending on if instructions included or not
 
 for iTimeLoop = 1:2
-    switch instructions_disp
-        case 1 % WITH INSTRUCTIONS
+    switch learning_instructions
+        case 'fullInstructions' % WITH INSTRUCTIONS
             DrawFormattedText(window,...
                 ['Vous allez pouvoir vous entraîner à effectuer la tâche. ',...
                 'La couleur du chiffre représente la question posée.',...
@@ -45,7 +52,13 @@ for iTimeLoop = 1:2
                 'La correspondance entre la position des boutons et la ',...
                 'réponse que vous souhaitez donner est la suivante:'],...
                 'center', yScreenCenter/3, blackCol, wrapat);
-        case 0
+        case 'partialInstructions'
+            DrawFormattedText(window,...
+                ['Vous allez pouvoir vous entraîner à effectuer la tâche mais vous ',...
+                ' devrez vous rappeler de la correspondance entre les couleurs et la ',...
+                ' question à laquelle il faut répondre. Pour rappel:'],...
+                'center', yScreenCenter/3, blackCol, wrapat);
+        case 'noInstructions'
             DrawFormattedText(window,...
                 ['Vous allez pouvoir vous entraîner à effectuer la tâche mais vous ',...
                 ' devrez vous rappeler de la correspondance entre les couleurs et la ',...
@@ -54,20 +67,28 @@ for iTimeLoop = 1:2
     end
     
     % odd/even info
-    DrawFormattedText(window,'Pair ou Impair?',...
-        'center',yScreenCenter, oddEven_col);
-    DrawFormattedText(window, 'Pair',...
-        xScreenCenter/2, yScreenCenter*5/4, oddEven_col);
-    DrawFormattedText(window, 'Impair',...
-        xScreenCenter*3/2, yScreenCenter*5/4, oddEven_col);
+    if strcmp(learning_col,'all') ||...
+            ( strcmp(learning_col, 'col1') && strcmp(mentalE_prm.mental_n_col.col1,'oddEven')) ||...
+            ( strcmp(learning_col, 'col2') && strcmp(mentalE_prm.mental_n_col.col2,'oddEven'))
+        DrawFormattedText(window,'Pair ou Impair?',...
+            'center',yScreenCenter, oddEven_col);
+        DrawFormattedText(window, 'Pair',...
+            xScreenCenter/2, yScreenCenter*5/4, oddEven_col);
+        DrawFormattedText(window, 'Impair',...
+            xScreenCenter*3/2, yScreenCenter*5/4, oddEven_col);
+    end
     
     % lower/higher than 5 info
-    DrawFormattedText(window,'< ou > 5?',...
-        'center',yScreenCenter*6/4, lowHigh_col);
-    DrawFormattedText(window, '< 5',...
-        xScreenCenter/2, yScreenCenter*7/4, lowHigh_col);
-    DrawFormattedText(window, '> 5',...
-        xScreenCenter*3/2, yScreenCenter*7/4, lowHigh_col);
+    if strcmp(learning_col,'all') ||...
+            ( strcmp(learning_col, 'col1') && strcmp(mentalE_prm.mental_n_col.col1,'lowHigh')) ||...
+            ( strcmp(learning_col, 'col2') && strcmp(mentalE_prm.mental_n_col.col2,'lowHigh'))
+        DrawFormattedText(window,'< ou > 5?',...
+            'center',yScreenCenter*6/4, lowHigh_col);
+        DrawFormattedText(window, '< 5',...
+            xScreenCenter/2, yScreenCenter*7/4, lowHigh_col);
+        DrawFormattedText(window, '> 5',...
+            xScreenCenter*3/2, yScreenCenter*7/4, lowHigh_col);
+    end
     
     if iTimeLoop == 1 % force them to read at first
         Screen(window,'Flip');

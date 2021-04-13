@@ -1,7 +1,9 @@
 function[mentalE_perf, trial_success, onsets] = LGCM_mental_effort_perf(scr, stim, key,...
-    numberVector, mentalE_prm, n_max_to_reach, instructions_disp, time_limit, t_max)
+    numberVector, mentalE_prm, n_max_to_reach,...
+    learning_col, learning_instructions, time_limit, t_max)
 %[mentalE_perf, trial_success, onsets] = LGCM_mental_effort_perf(scr, stim, key,...
-%     numberVector, mentalE_prm, n_max_to_reach, instructions_disp, time_limit, t_max)
+%     numberVector, mentalE_prm, n_max_to_reach,...
+%     curr_learning_col, curr_learning_instructions, time_limit, t_max)
 %
 % LGCM_mental_effort_perf corresponds to the actual performance. Can be
 % used both for learning period (with or without instructions) and for the
@@ -32,10 +34,17 @@ function[mentalE_perf, trial_success, onsets] = LGCM_mental_effort_perf(scr, sti
 %   .switchPerc: percentage of switches required (based on total number of
 %   subsequent correct answers you want)
 %
-% instructions_disp:
-% (0) no reminder of what the question is nor of where you should answer
-% (1) display instructions: ask if odd/even (or lower/higher than 5) and
+% learning_col:
+% 'col1': learning with colour 1 only
+% 'col2': learning with colour 2 only
+% 'all': learning with both colours
+%
+% learning_instructions
+% 'fullInstructions': display instructions: ask if odd/even (or lower/higher than 5) and
 % display also on the screen the relevant answer to each question
+% 'partialInstructions': display only the two possible answers but not the
+% question anymore
+% 'noInstructions': no reminder of what the question is nor of where you should answer
 %
 % time_limit
 % (0)/false = no time limit to perform the requested number of questions
@@ -53,6 +62,10 @@ function[mentalE_perf, trial_success, onsets] = LGCM_mental_effort_perf(scr, sti
 %   .taskType: task type (0: odd/even; 1: lower/higher than 5)
 %   .totalTime_success: time passed between trial onset and last correct
 %   answer (if the trial was a success), NaN if trial was a failure
+%
+% trial_success:
+% false: failure
+% true: effort was correctly performed in the requested time
 %
 % onsets: structure with onset of each number on the screen
 %   .nb_i: onset of (i) question during the current trial
@@ -72,9 +85,13 @@ switchPerc = mentalE_prm.switchPerc;
 
 % determine number of switches to implement in a given sequence
 % with instructions
-n_switch = switchPerc*n_max_to_reach;
-if n_switch ~= round(n_switch)
-    error('something is wrong with your script, number of switch has to be integer');
+if strcmp(learning_col,'all')
+    n_switch = switchPerc*n_max_to_reach;
+    if n_switch ~= round(n_switch)
+        error('something is wrong with your script, number of switch has to be integer');
+    end
+else % no switch if learning session focusing on one single colour
+    n_switch = 0;
 end
 
 %% define moments when the task switches: should be unpredictable and
@@ -84,8 +101,26 @@ n_questions = size(numberVector,2);
     rt,...
     sideAnswer,...
     goodOrBadAnswer] = deal( NaN(1, n_questions));
+
 % define first trial task type
-taskType(1)    = random_binary;
+switch learning_col
+    case 'all'
+        taskType(1) = random_binary; % define randomly the nature of the first trial
+    case 'col1' % start with colour 1
+        switch mentalE_prm.mental_n_col.col1
+            case 'oddEven'
+                taskType(1) = 0;
+            case 'lowHigh'
+                taskType(1) = 1;
+        end
+    case 'col2' % start with colour 2
+        switch mentalE_prm.mental_n_col.col2
+            case 'oddEven'
+                taskType(1) = 0;
+            case 'lowHigh'
+                taskType(1) = 1;
+        end
+end
 
 %% initialize the counters
 % number of subsequent correct answers
@@ -101,12 +136,16 @@ KbReleaseWait;
 %% initial display to get timing of the start
 [onsetTrial] = LGCM_mental_display_stim(scr, stim,...
     startAngle_currentTrial, endAngle,...
-    sideQuestion, taskType(1), numberVector(1), mental_n_col, instructions_disp);
+    sideQuestion, taskType(1), numberVector(1), mental_n_col,...
+    learning_instructions);
 onset_question_tmp = onsetTrial; % for the first question
 onsets.nb_1 = onsetTrial;
 timeNow = onsetTrial;
 
 startAngle = startAngle_currentTrial;
+
+% keep track of number of errors made during the trial
+jErrorsMade = 0;
 
 % loop until relevant number of subsequent correct answers has been reached
 % or that max time limit has been reached (if one time limit has been
@@ -120,9 +159,24 @@ while (i_max_correct < n_max_to_reach) &&...
     numberValue_tmp = numberVector(i_question);
     taskType_tmp = taskType(i_question);
     
+    % display instructions after 2 errors have been made (in case where no
+    % instructions on screen)
+    if strcmp(learning_instructions,'noInstructions') &&...
+            i_question > 1 &&...
+            mod(jErrorsMade, 2) == 0 &&...
+            goodOrBadAnswer(i_question  - 1)
+        % will display instructions for the next question everytime after
+        % 2 errors (can be adapted easily to remain for th whole trial if
+        % necessary)
+        learning_instructions_bis = 'fullInstructions';
+    else
+        learning_instructions_bis = learning_instructions;
+    end
+    
     onset_stim = LGCM_mental_display_stim(scr, stim,...
         startAngle, endAngle,...
-        sideQuestion, taskType_tmp, numberValue_tmp, mental_n_col, instructions_disp);
+        sideQuestion, taskType_tmp, numberValue_tmp, mental_n_col,...
+        learning_instructions_bis);
     
     %% record onset
     if i_question > 1
@@ -159,6 +213,7 @@ while (i_max_correct < n_max_to_reach) &&...
                 % if wrong, set back indicators to zero: needs to restart
                 startAngle = startAngle_currentTrial; % re-initialize
                 i_max_correct = 0;
+                jErrorsMade = jErrorsMade + 1;
             case 1 % if correct, update the count and the display
                 startAngle = startAngle + totalAngleDistance/n_max_to_reach;
                 i_max_correct = i_max_correct + 1;
@@ -214,6 +269,7 @@ mentalE_perf.isGoodAnswer   = goodOrBadAnswer(questions_done);
 mentalE_perf.rt             = rt(questions_done);
 mentalE_perf.n_switch       = n_switch;
 mentalE_perf.n_max_to_reach = n_max_to_reach;
+mentalE_perf.n_errorsMade   = jErrorsMade;
 % record number of questions answered and how many were correct
 mentalE_perf.n_questions_performed = i_question - 1;
 mentalE_perf.n_questions_correct = i_max_correct;
