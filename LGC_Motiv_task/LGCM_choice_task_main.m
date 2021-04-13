@@ -33,13 +33,13 @@ cd ..
 main_folder                 = [pwd filesep]; % you have to be sure that you are in the correct path when you launch the script
 main_task_folder            = [main_folder, 'LGC_Motiv_task' filesep];
 savePath                    = [main_folder, 'LGC_Motiv_results' filesep];
-BioPac_folder               = [main_folder, 'BioPac_functions' filesep];
+% BioPac_folder               = [main_folder, 'BioPac_functions' filesep];
 pics_folder                 = [main_task_folder, 'Coin_PNG', filesep];
 Matlab_DIY_functions_folder = [main_folder, 'Matlab_DIY_functions', filesep];
 
 % add personal functions (needed for PTB opening at least)
 addpath(genpath(main_task_folder));
-addpath(BioPac_folder);
+% addpath(BioPac_folder);
 addpath(Matlab_DIY_functions_folder);
 
 % create results folder if no subject has been acquired yet
