@@ -2,7 +2,7 @@
 % 1) fixation cross
 % 2) choice between 2 options
 % 3) display chosen option
-% 4) perform the effort corresponding to the chosen option
+% 4) perform the effort corresponding to the chosen option 
 %
 % The effort can be a physical effort of a fixed intensity but a 
 % varying duration (in the physical version of the task) or a mental effort
