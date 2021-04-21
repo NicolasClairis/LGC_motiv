@@ -218,7 +218,9 @@ while (i_correctAnswers < n_max_to_reach) &&...
                 
                 % just (-1) decrement after an error (otherwise too hard)
                 startAngle = startAngle - totalAngleDistance/n_max_to_reach;
-                i_correctAnswers = i_correctAnswers - 1; % if wrong, decrement the total number of correct answers
+                if i_correctAnswers > 0 % keep equal to zero if you made a mistake the first trial
+                    i_correctAnswers = i_correctAnswers - 1; % if wrong, decrement the total number of correct answers
+                end
                 jErrorsMade = jErrorsMade + 1;
             case 1 % if correct, update the count and the display
                 startAngle = startAngle + totalAngleDistance/n_max_to_reach;
@@ -240,8 +242,6 @@ while (i_correctAnswers < n_max_to_reach) &&...
             
             if answerCorrect_tmp == 0 % no task switch after an error to keep the task easy after an error has been made
                 taskType(i_question + 1) = taskType(i_question);
-            elseif i_correctAnswers == 0
-                
             else
                 taskType(i_question + 1) = task_seq_tmp(i_correctAnswers + 1);
             end
