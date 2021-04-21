@@ -165,7 +165,7 @@ while (i_max_correct < n_max_to_reach) &&...
     if strcmp(learning_instructions,'noInstructions') &&...
             i_question > 1 &&...
             mod(jErrorsMade, 2) == 0 &&...
-            goodOrBadAnswer(i_question  - 1)
+            goodOrBadAnswer(i_question  - 1) == 0
         % will display instructions for the next question everytime after
         % 2 errors (can be adapted easily to remain for th whole trial if
         % necessary)
@@ -211,9 +211,14 @@ while (i_max_correct < n_max_to_reach) &&...
         
         switch answerCorrect_tmp
             case 0 % error made
-                % if wrong, set back indicators to zero: needs to restart
-                startAngle = startAngle_currentTrial; % re-initialize
-                i_max_correct = 0;
+                % version where you reset the timer whenever they make an
+                % error
+                % startAngle = startAngle_currentTrial; % re-initialize
+                % i_max_correct = 0; % if wrong, set back indicators to zero: needs to restart
+                
+                % just (-1) decrement after an error (otherwise too hard)
+                startAngle = startAngle - totalAngleDistance/n_max_to_reach;
+                i_max_correct = i_max_correct - 1; % if wrong, decrement the total number of correct answers
                 jErrorsMade = jErrorsMade + 1;
             case 1 % if correct, update the count and the display
                 startAngle = startAngle + totalAngleDistance/n_max_to_reach;
@@ -221,27 +226,24 @@ while (i_max_correct < n_max_to_reach) &&...
         end
         
         %% define the task type for the next question
-        if i_max_correct >= 1 && i_max_correct < n_max_to_reach
+        if i_max_correct == 1
             % once a correct answer has been provided you need to assign the
             % moments when a switch will happen
             % = define a STAY/SWITCH sequence
-            % (as long as errors are being made, keep the task easy)
-            %
+            [task_seq_tmp] = LGCM_mental_effort_task_switches(taskType_tmp, n_max_to_reach, n_switch);
+        end % first correct answer of a sequence
+        
+        % define the task type for the next question
+        if i_max_correct < n_max_to_reach
             % once the expected amount of correct answers has been reached,
             % there is no need to make more switches
             
-            if i_max_correct == 1
-                [task_seq_tmp] = LGCM_mental_effort_task_switches(taskType_tmp, n_max_to_reach, n_switch);
-            end % first correct answer of a sequence
-            
-            % extract
-            taskType(i_question + 1) = task_seq_tmp(i_max_correct + 1);
-            
-        elseif i_max_correct == 0 % keep doing the same task as long as the participant makes an error
-            % so that the task is clearly understood before adding the
-            % switches
-            taskType(i_question + 1) = taskType(i_question);
-        end % at least one correct answer filter
+            if answerCorrect_tmp == 0 % no task switch after an error to keep the task easy after an error has been made
+                taskType(i_question + 1) = taskType(i_question);
+            else
+                taskType(i_question + 1) = task_seq_tmp(i_max_correct + 1);
+            end
+        end % no need to update task type for the next question if the end has been reached
         
         %% update variables of interest
         % record time to answer and re-initialize the counter to get next
