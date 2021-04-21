@@ -126,7 +126,7 @@ if strcmp(R_or_P,'P')
 %        lineWidth);
 
     %% add coloured circle on top of monetary incentives
-    Screen('
+    Screen();
     
 end
 [~,onsetDispChoiceOptions] = Screen('Flip',window);

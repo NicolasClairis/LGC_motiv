@@ -25,8 +25,8 @@ screenYpixels   = yScreenCenter*2;
 
 % colours
 black = [0 0 0];
-difficultyArcColor = [178 24 43];
-% difficultyArcColor = [254 224 182];
+% difficultyArcColor = [178 24 43];
+difficultyArcColor = [124 224 139];
 % white = [255 255 255];
 % screen_background_colour = scr.background_colour;
 
