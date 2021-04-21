@@ -1,10 +1,10 @@
-function[x, y, window, baselineTextSize] = ScreenConfiguration(IRM, testing_script)
-% [x, y, window] = ScreenConfiguration(IRM, testing_script)
+function[scr, xScreenCenter, yScreenCenter, window, baselineTextSize] = LGCM_ScreenConfiguration(IRM, testing_script)
+% [scr, xScreenCenter, yScreenCenter, window, baselineTextSize] = LGCM_ScreenConfiguration(IRM, testing_script)
 % function with common parameters for starting psychtoolbox for any of the
 % three tasks used in fMRI (taskGripRP, taskMentalRP and taskLearning75).
 % It could be reused by any other task.
 %
-% INPUTS:
+% INPUTS
 % IRM: is it for training (outside fMRI: only one screen) (0) or inside the
 % scanner (should have 2 screens: one for us and one where you can follow
 % what the subject sees in the scanner. PTB has to be opened in the latter)
@@ -13,11 +13,21 @@ function[x, y, window, baselineTextSize] = ScreenConfiguration(IRM, testing_scri
 % (0)
 %
 % OUTPUTS
-% x,y: x and y coordinates of the center of the screen
+% scr: structure with main screen informations (screen window, screen size,
+% x and y center coordinates, etc.)
+%
+% xScreenCenter,yScreenCenter: x and y coordinates of the center of the screen
+%
 % window: window where PTB stims are displayed
+%
+% baselineTextSize: baseline size of the text displayed on the screen
 %
 % Developed by Nicolas Clairis - february 2017
 
+%% select on which screen PTB will be displayed
+% (particularly when you have several screens, 
+% like at the MRI scanner where you need to be sure that things are 
+% displayed on the scanner screen)
 screens = Screen('Screens');
 if IRM == 0
     whichScreen = max(screens);
@@ -29,35 +39,43 @@ elseif IRM == 1
     end
 end
 
+%% set screen colour
+% black = [0 0 0];
+% white = [255 255 255];
+grey = [128 128 128];
+screenColour = grey;
+
+%% open PTB window + set debug parameters
 Screen('Preference','VisualDebugLevel', 1); % avoid initial Psychtoolbox window
 if testing_script == 0 % CENIR
     Screen('Preference', 'SkipSyncTests', 0); % needs all other processes shut off
-    window = Screen('OpenWindow',whichScreen,[0 0 0]);
+    window = Screen('OpenWindow',whichScreen,screenColour);
 elseif testing_script == 1 % my own computer
     Screen('Preference', 'SkipSyncTests', 1); % can work even if other softwares are on but displays an ugly red triangle at start
-    % when testing, set resolution equal to CENIR computer for testing
-%     LCenirScreen = 1024;
-%     HCenirScreen = 768;
-%     Screen('Resolution', whichScreen, LCenirScreen, HCenirScreen); % sets a new whichScreen resolution for PTB
-%     window = Screen('OpenWindow',whichScreen,[0 0 0], [1, 1, LCenirScreen, HCenirScreen]); % default window is full whichScreen screen
-
-% window = Screen('OpenWindow', whichScreen, [], [1, 1, 800, 600]); % for debugging
-    window = Screen('OpenWindow',whichScreen,[0 0 0]);
+    window = Screen('OpenWindow',whichScreen,screenColour);
 end
-HideCursor()
 
+%% hide mouse cursor
+HideCursor();
+
+%% text display properties
 baselineTextSize = 40;
 Screen('TextSize', window, baselineTextSize);
 Screen('TextFont', window, 'arial');
-% if testing_script == 0 % CENIR
-[L, H] = Screen('WindowSize',whichScreen);
-% elseif testing_script == 1
-%        L = LCenirScreen;
-%        H = HCenirScreen;
-% end
-x = L/2;
-y = H/2;
-% nber of characters authorized before breaking the line:
-% wrapat_nb_char = 25;
+textSize.baseline = 40;
+textSize.big = 150;
+textSize.middle = 100;
 
-end
+%% extract x and y coordinates of the center of the screen
+[L, H] = Screen('WindowSize',whichScreen);
+xScreenCenter = L/2;
+yScreenCenter = H/2;
+
+%% store main informations inside scr structure
+scr.screenNumber = whichScreen;
+scr.textSize = textSize;
+scr.window = window;
+scr.xCenter = xScreenCenter;
+scr.yCenter = yScreenCenter;
+scr.background_colour = screenColour;
+end % function
