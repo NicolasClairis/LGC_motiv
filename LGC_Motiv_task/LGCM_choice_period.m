@@ -128,10 +128,10 @@ if strcmp(R_or_P,'P')
     %% add coloured circle on top of monetary incentives
     % left option
     Screen('FillOval', window, stim.punishment.colourOverlay,...
-        stim.reward.top_left.(R_left_nm));
+        stim.punishment.circleOverlay.top_left.(R_left_nm));
     % right option
     Screen('FillOval', window, stim.punishment.colourOverlay,...
-        stim.reward.top_right.(R_right_nm));
+        stim.punishment.circleOverlay.top_right.(R_right_nm));
 end
 [~,onsetDispChoiceOptions] = Screen('Flip',window);
 
