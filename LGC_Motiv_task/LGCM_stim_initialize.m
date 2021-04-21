@@ -38,7 +38,7 @@ stim.reward.moneyRect  = [0 0 moneySize moneySize];
 stim.reward.moneySize  = moneySize;
 
 % Import the reward images and store them into memory
-for iR = 0:n_R_levels
+for iR = 1:n_R_levels
     % extract name for subfield of the current difficulty level
     R_level_nm = ['reward_',num2str(iR)];
     
@@ -71,13 +71,19 @@ stim.difficulty.arcEndAngle = 360;
 
 % define the circle size for each difficulty level depending on the
 % difficulty
+% note level 1 = easiest level (ascending order)
 for iDiff = 1:n_E_levels
     % extract name for subfield of the current difficulty level
     diff_level_nm = ['level_',num2str(iDiff)];
     
     % extract angle for the arc which will correspond to the difficulty
-    % level
-    stim.difficulty.startAngle.(diff_level_nm) = stim.difficulty.arcEndAngle*(iDiff./n_E_levels);
+    % level: max circle = max difficulty level
+    startAngle_tmp = stim.difficulty.arcEndAngle*((n_E_levels - iDiff)./n_E_levels);
+    if startAngle_tmp < 360
+        stim.difficulty.startAngle.(diff_level_nm) = startAngle_tmp;
+    elseif startAngle_tmp == 360
+        stim.difficulty.startAngle.(diff_level_nm) = 0;
+    end
 end % difficulty
 
 %% color used to represent the signal

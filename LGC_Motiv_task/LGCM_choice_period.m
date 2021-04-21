@@ -1,24 +1,24 @@
-function[choice_trial, onsetDispChoiceOptions, onsetChoice, stoptask] = LGCM_choice_period(scr, stim,...
-    E_list, R_list, iTrial, n_E_levels, t_choice, key)
-% [choice_trial, onsetDispChoiceOptions, onsetChoice] = LGCM_choice_period(scr, stim,...
-%     E_list, R_list, iTrial, n_E_levels, t_choice, key)
-% will display the choice options and then wait for the choice to be made
-% (or the time limit to be reached. Provides timings and choice made in
-% output.
+function[choice_trial, onsetDispChoiceOptions, onsetChoice, stoptask] = LGCM_choice_period(scr, stim, choice_opt,...
+    R_or_P, iTrial, t_choice, key)
+% [choice_trial, onsetDispChoiceOptions, onsetChoice] = LGCM_choice_period(scr, stim, choice_opt,...
+%     R_or_P, iTrial, t_choice, key)
+% LGCM_choice_period will display the choice options and then wait for the 
+% choice to be made (or the time limit to be reached. Provides timings and 
+% choice made in output.
 %
 % INPUTS
 % scr: structure with screen informations
 %
 % stim: structure with informations about the stimuli to display
 %
-% E_list: structure with list of effort levels for each side (left/right)
-% for each trial
+% choice_opt: structure with info about choice options (side of each
+% option, reward level, effort level, etC.)
 %
-% R_list: same as a E_list but for rewards
+% R_or_P: character indicating the nature of the current trial
+% 'R': reward trial
+% 'P': punishment trial
 %
 % iTrial: trial number
-%
-% n_E_levels: maximum effort levels
 %
 % t_choice: maximal time to wait for choice
 %
@@ -41,13 +41,27 @@ function[choice_trial, onsetDispChoiceOptions, onsetChoice, stoptask] = LGCM_cho
 %% initialize variables of interest
 window = scr.window;
 stoptask = 0;
+white = scr.colours.white;
+black = scr.colours.black;
+yScreenCenter = scr.yCenter;
 
-%% extract difficulty level for each side of the screen
-E_left_tmp  = 1; % E_list.left(iTrial)
-E_right_tmp = 2; % E_list.right(iTrial)
+%% ask question on top
+DrawFormattedText(window,'Que préférez-vous?','center',yScreenCenter/4,white);
+DrawFormattedText(window,'OU','center','center',white);
+
+%% extract difficulty & reward level for each side of the screen
+% effort level
+E_left_tmp = choice_opt.E.left(iTrial);
+E_right_tmp = choice_opt.E.right(iTrial);
 % extract reward level for each side of the screen
-R_left_tmp  = 1; % R_list.left(iTrial)
-R_right_tmp = 3; % R_list.right(iTrial)
+R_left_tmp  = choice_opt.R.left(iTrial);
+R_right_tmp = choice_opt.R.right(iTrial);
+
+% E_left_tmp  = 1;
+% E_right_tmp = 2;
+% % extract reward level for each side of the screen
+% R_left_tmp  = 1;
+% R_right_tmp = 3;
 
 %% display each difficulty level
 leftStartAngle = stim.difficulty.startAngle.(['level_',num2str(E_left_tmp)]);
@@ -72,16 +86,44 @@ Screen('FrameOval', window, stim.difficulty.maxColor,...
     stim.difficulty.below_right,...
     stim.difficulty.ovalWidth);
 
-%% display each reward level
-Screen('DrawTexture', window,...
-    stim.reward.texture.(['reward_',num2str(R_left_tmp)]),...
-    [],...
-    stim.reward.top_left.(['reward_',num2str(R_left_tmp)]));
-Screen('DrawTexture', window,...
-    stim.reward.texture.(['reward_',num2str(R_right_tmp)]),...
-    [],...
-    stim.reward.top_right.(['reward_',num2str(R_right_tmp)]));
+%% display each monetary incentive level
+% extract reward levels
+R_left_nm = ['reward_',num2str(R_left_tmp)];
+R_right_nm = ['reward_',num2str(R_right_tmp)];
 
+% display reward images
+Screen('DrawTexture', window,...
+    stim.reward.texture.(R_left_nm),...
+    [],...
+    stim.reward.top_left.(R_left_nm));
+Screen('DrawTexture', window,...
+    stim.reward.texture.(R_right_nm),...
+    [],...
+    stim.reward.top_right.(R_right_nm));
+
+% if punishment trial, add also indication to know that money is to be lost
+if strcmp(R_or_P,'P')
+   lineWidth = 10;
+   % cross on left option
+   Screen('DrawLine', window, black,...
+       stim.reward.top_left.(R_left_nm)(1), stim.reward.top_left.(R_left_nm)(2),...
+       stim.reward.top_left.(R_left_nm)(3), stim.reward.top_left.(R_left_nm)(4),...
+       lineWidth);
+   Screen('DrawLine', window, black,...
+       stim.reward.top_left.(R_left_nm)(3), stim.reward.top_left.(R_left_nm)(2),...
+       stim.reward.top_left.(R_left_nm)(1), stim.reward.top_left.(R_left_nm)(4),...
+       lineWidth);
+   
+   % cross on right option
+   Screen('DrawLine', window, black,...
+       stim.reward.top_right.(R_right_nm)(1), stim.reward.top_right.(R_right_nm)(2),...
+       stim.reward.top_right.(R_right_nm)(3), stim.reward.top_right.(R_right_nm)(4),...
+       lineWidth);
+   Screen('DrawLine', window, black,...
+       stim.reward.top_right.(R_right_nm)(3), stim.reward.top_right.(R_right_nm)(2),...
+       stim.reward.top_right.(R_right_nm)(1), stim.reward.top_right.(R_right_nm)(4),...
+       lineWidth);
+end
 [~,onsetDispChoiceOptions] = Screen('Flip',window);
 
 %% wait for choice to be made or time limit to be reached
@@ -89,10 +131,10 @@ choicePeriodOver = 0;
 while choicePeriodOver == 0
     %% check time
     timeNow = GetSecs;
+    choice_trial = 0; % by default no choice is being made
     if timeNow > (onsetDispChoiceOptions + t_choice)
         % finish the trial
         choicePeriodOver = 1;
-        choice_trial = 0;
         onsetChoice = NaN;
     end
     

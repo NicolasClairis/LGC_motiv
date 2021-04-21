@@ -19,18 +19,23 @@ task_seq = NaN(1, n_correctAnswerToProvide);
 task_seq(1) = prev_task_type;
 
 %% define the sequence
-% randomize the moment when the switch appears
-switch_idx = randperm(n_correctAnswerToProvide - 1, n_switch) + 1;
-
-% for each question, determine if a switch
-for iQuest = 2:n_correctAnswerToProvide
+if n_switch > 0
+    % randomize the moment when the switch appears
+    switch_idx = randperm(n_correctAnswerToProvide - 1, n_switch) + 1;
     
-    if ~ismember(iQuest, switch_idx) % no switch
-        task_seq(iQuest) = task_seq(iQuest - 1);
+    % for each question, determine if a switch
+    for iQuest = 2:n_correctAnswerToProvide
         
-    elseif ismember(iQuest, switch_idx) % switch
-        task_seq(iQuest) = 1 - task_seq(iQuest - 1);
+        if ~ismember(iQuest, switch_idx) % no switch
+            task_seq(iQuest) = task_seq(iQuest - 1);
+            
+        elseif ismember(iQuest, switch_idx) % switch
+            task_seq(iQuest) = 1 - task_seq(iQuest - 1);
+        end
     end
+    
+else % learning session with no switch: all trials are of the same type
+    task_seq(:) = prev_task_type;
 end
 
 end % function

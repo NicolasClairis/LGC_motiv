@@ -1,8 +1,7 @@
 function[trial_failed, perf, onsetEffortPeriod, onsetAnswers, onsetNumbers] = LGCM_mental_effort(scr, stim,...
     t_effort_max, n_correctAnswers,...
-    R_chosen, R_or_P, E_chosen, n_E_levels,...
-    numberVector, switchPerc, task_trialStart,...
-    sideQuestion,...
+    R_chosen, R_or_P, E_chosen,...
+    numberVector, mentalE_prm, task_trialStart,...
     key)
 % 
 % LGCM_mental_effort sub-function of LGCM_choice_task_main.m to perform the
@@ -25,21 +24,19 @@ function[trial_failed, perf, onsetEffortPeriod, onsetAnswers, onsetNumbers] = LG
 % E_chosen: effort level chosen for this trial => tells you how many
 % correct answers have to be given subsequently to fill the trial
 %
-% n_E_levels: maximum number of effort levels
-%
 % numberVector: big vector with list of numbers
 %
-% switchPerc: percentage of switch for this task
-%
-% task_trialStart: string which indicates which is the first task to do
-% (0) start with odd/even task
-% (1) higher/lower than 5 task
-%
-% sideQuestion: structure with side for each answer (especially if you decide to vary it)
+% mentalE_prm: structure with some relevant mental effort parameters
+%   .switchPerc: percentage of switch for this task
+%   .sideQuestion: structure with side for each answer (especially if you decide to vary it)
 % sideQuestion.oE.pair, sideQuestion.oE.impair, sideQuestion.hL.low,
 % sideQuestion.hL.high
 % (-1) left
 % (+1) right
+%
+% task_trialStart: string which indicates which is the first task to do
+% (0) start with odd/even task
+% (1) higher/lower than 5 task
 %
 % key: structure with relevant key codes for left and right key press
 % 
@@ -63,6 +60,10 @@ window = scr.window;
 startAngle = stim.difficulty.startAngle.(['level_',num2str(E_chosen)]);
 endAngle = stim.difficulty.arcEndAngle;
 totalAngleDistance = endAngle - startAngle;
+% extract relevant mental effort parameters
+switchPerc = mentalE_prm.switchPerc; % percentage of switch trials
+sideQuestion = mentalE_prm.sideQuestion; % side (left/right) for each answer
+col_rgb = mentalE_prm.mental_n_col; % colours for each type of question
 
 % extract correspondancy between level of effort and number of subsequent
 % correct answers to give

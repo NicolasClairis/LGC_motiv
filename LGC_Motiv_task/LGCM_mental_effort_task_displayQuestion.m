@@ -52,7 +52,7 @@ Screen('FillArc', window,...
     endAngle - startAngle);
 
 % display number to solve
-DrawFormattedText(window,num2str(numberValue), xScreenCenter, yScreenCenter*(1/6));
+DrawFormattedText(window,num2str(numberValue), 'center', yScreenCenter*(1/6));
 
 % display question according to type of task on which to start
 LGCM_mental_effort_task_question_display(scr, task_type);

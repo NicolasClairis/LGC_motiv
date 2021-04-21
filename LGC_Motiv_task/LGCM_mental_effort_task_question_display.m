@@ -1,5 +1,5 @@
-function[] = LGCM_mental_effort_task_question_display(scr, task_trialType, sideQuestion, textCol)
-% [] = LGCM_mental_effort_task_question_display(scr, task_trialStart, sideQuestion, textCol)
+function[] = LGCM_mental_effort_task_question_display(scr, task_trialType, sideQuestion, textCol, learning_instructions)
+% [] = LGCM_mental_effort_task_question_display(scr, task_trialStart, sideQuestion, textCol, learning_instructions)
 % LGCM_mental_effort_task_question_display will display question for the
 % mental effort being made according to the current task.
 %
@@ -19,7 +19,20 @@ function[] = LGCM_mental_effort_task_question_display(scr, task_trialType, sideQ
 %
 % textCol: rgb code to know with which colour should the text be displayed
 %
+% learning_instructions
+% 'fullInstructions': display instructions: ask if odd/even (or lower/higher than 5) and
+% display also on the screen the relevant answer to each question
+% 'partialInstructions': display only the two possible answers but not the
+% question anymore
+% 'noInstructions': no reminder of what the question is nor of where you should answer
+%
 % See also LGCM_mental_effort.m
+
+%% check no error in script
+if ~ismember(learning_instructions,{'fullInstructions','partialInstructions'})
+    error(['learning instructions should be equal to fullInstructions or partialInstructions',...
+        ' but currently equal to ',learning_instructions,'. Please fix it']);
+end
 
 %% extract relevant info
 window = scr.window;
@@ -34,39 +47,43 @@ x_right = xScreenCenter*(3/2);
 
 %% display on the screen
 switch task_trialType
-        case 0 % odd/even
+    case 0 % odd/even
+        if strcmp(learning_instructions,'fullInstructions')
             DrawFormattedText(window, 'Chiffre pair ou impair?',...
-                    'center', yScreenCenter/3, textCol);
-                
-            if sideQuestion.oE.pair == -1 && sideQuestion.oE.impair == +1
-                    x_pair = x_left;
-                    x_impair = x_right;
-            elseif sideQuestion.oE.pair == +1 && sideQuestion.oE.impair == -1
-                    x_pair = x_right;
-                    x_impair = x_left;
-            else
-                error('error in sideQuestion definition');
-            end
-            DrawFormattedText(window,'pair', x_pair, y_coord, textCol );
-            DrawFormattedText(window,'OU', 'center', y_coord, blackCol );
-            DrawFormattedText(window,'impair', x_impair, y_coord, textCol );
-            
-        case 1 % higher/lower than 5?
+                'center', yScreenCenter/3, textCol);
+        end
+        
+        if sideQuestion.oE.pair == -1 && sideQuestion.oE.impair == +1
+            x_pair = x_left;
+            x_impair = x_right;
+        elseif sideQuestion.oE.pair == +1 && sideQuestion.oE.impair == -1
+            x_pair = x_right;
+            x_impair = x_left;
+        else
+            error('error in sideQuestion definition');
+        end
+        DrawFormattedText(window,'pair', x_pair, y_coord, textCol );
+        DrawFormattedText(window,'OU', 'center', y_coord, blackCol );
+        DrawFormattedText(window,'impair', x_impair, y_coord, textCol );
+        
+    case 1 % higher/lower than 5?
+        if strcmp(learning_instructions,'fullInstructions')
             DrawFormattedText(window, 'Chiffre < ou > 5?',...
-                    'center', yScreenCenter/3, textCol);
-                
-            if sideQuestion.hL.low == -1 && sideQuestion.hL.high == +1
-                    x_low = x_left;
-                    x_high = x_right;
-            elseif sideQuestion.hL.low == +1 && sideQuestion.hL.high == -1
-                    x_low = x_right;
-                    x_high = x_left;
-            else
-                error('error in sideQuestion definition');
-            end
-            DrawFormattedText(window,'< 5', x_low, y_coord, textCol );
-            DrawFormattedText(window,'OU', 'center', y_coord, blackCol );
-            DrawFormattedText(window,'> 5', x_high, y_coord, textCol );
+                'center', yScreenCenter/3, textCol);
+        end
+        
+        if sideQuestion.hL.low == -1 && sideQuestion.hL.high == +1
+            x_low = x_left;
+            x_high = x_right;
+        elseif sideQuestion.hL.low == +1 && sideQuestion.hL.high == -1
+            x_low = x_right;
+            x_high = x_left;
+        else
+            error('error in sideQuestion definition');
+        end
+        DrawFormattedText(window,'< 5', x_low, y_coord, textCol );
+        DrawFormattedText(window,'OU', 'center', y_coord, blackCol );
+        DrawFormattedText(window,'> 5', x_high, y_coord, textCol );
 end % task type
     
 end % function
