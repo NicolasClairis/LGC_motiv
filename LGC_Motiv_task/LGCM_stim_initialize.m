@@ -88,7 +88,8 @@ for iDiff = 1:n_E_levels
 end % difficulty
 
 %% color used to represent the signal
-stim.punishment.colourOverlay = [213 62 79];
+alpha_punishment = 115;
+stim.punishment.colourOverlay   = [255 50 0 alpha_punishment];
 stim.difficulty.maxColor        = black;
 stim.difficulty.currLevelColor  = difficultyArcColor;
 stim.difficulty.ovalWidth       = 3;
