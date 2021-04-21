@@ -26,7 +26,7 @@ screenYpixels   = yScreenCenter*2;
 % colours
 black = [0 0 0];
 % difficultyArcColor = [178 24 43];
-difficultyArcColor = [124 224 139];
+difficultyArcColor = [224 224 139];
 % white = [255 255 255];
 % screen_background_colour = scr.background_colour;
 
@@ -88,6 +88,7 @@ for iDiff = 1:n_E_levels
 end % difficulty
 
 %% color used to represent the signal
+stim.punishment.colourOverlay = [213 62 79];
 stim.difficulty.maxColor        = black;
 stim.difficulty.currLevelColor  = difficultyArcColor;
 stim.difficulty.ovalWidth       = 3;
