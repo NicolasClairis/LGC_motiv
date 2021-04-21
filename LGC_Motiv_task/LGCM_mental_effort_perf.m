@@ -125,7 +125,7 @@ end
 
 %% initialize the counters
 % number of subsequent correct answers
-i_max_correct = 0;
+i_correctAnswers = 0;
 % number of questions answered
 i_question = 1;
 
@@ -151,7 +151,7 @@ jErrorsMade = 0;
 % loop until relevant number of subsequent correct answers has been reached
 % or that max time limit has been reached (if one time limit has been
 % defined)
-while (i_max_correct < n_max_to_reach) &&...
+while (i_correctAnswers < n_max_to_reach) &&...
         ( ( (time_limit == true) && (timeNow < onsetTrial + t_max) ) ||...
         (time_limit == false) )
     timeNow = GetSecs;
@@ -218,15 +218,15 @@ while (i_max_correct < n_max_to_reach) &&...
                 
                 % just (-1) decrement after an error (otherwise too hard)
                 startAngle = startAngle - totalAngleDistance/n_max_to_reach;
-                i_max_correct = i_max_correct - 1; % if wrong, decrement the total number of correct answers
+                i_correctAnswers = i_correctAnswers - 1; % if wrong, decrement the total number of correct answers
                 jErrorsMade = jErrorsMade + 1;
             case 1 % if correct, update the count and the display
                 startAngle = startAngle + totalAngleDistance/n_max_to_reach;
-                i_max_correct = i_max_correct + 1;
+                i_correctAnswers = i_correctAnswers + 1;
         end
         
         %% define the task type for the next question
-        if i_max_correct == 1
+        if i_correctAnswers == 1
             % once a correct answer has been provided you need to assign the
             % moments when a switch will happen
             % = define a STAY/SWITCH sequence
@@ -234,14 +234,16 @@ while (i_max_correct < n_max_to_reach) &&...
         end % first correct answer of a sequence
         
         % define the task type for the next question
-        if i_max_correct < n_max_to_reach
+        if i_correctAnswers < n_max_to_reach
             % once the expected amount of correct answers has been reached,
             % there is no need to make more switches
             
             if answerCorrect_tmp == 0 % no task switch after an error to keep the task easy after an error has been made
                 taskType(i_question + 1) = taskType(i_question);
+            elseif i_correctAnswers == 0
+                
             else
-                taskType(i_question + 1) = task_seq_tmp(i_max_correct + 1);
+                taskType(i_question + 1) = task_seq_tmp(i_correctAnswers + 1);
             end
         end % no need to update task type for the next question if the end has been reached
         
@@ -275,12 +277,12 @@ mentalE_perf.n_max_to_reach = n_max_to_reach;
 mentalE_perf.n_errorsMade   = jErrorsMade;
 % record number of questions answered and how many were correct
 mentalE_perf.n_questions_performed = i_question - 1;
-mentalE_perf.n_questions_correct = i_max_correct;
+mentalE_perf.n_questions_correct = i_correctAnswers;
 % record if trial was achieved or interrompted due to time limit (=failure)
-if i_max_correct == n_max_to_reach % reached the top
+if i_correctAnswers == n_max_to_reach % reached the top
     trial_success = true;
     totalTime_success = timeAnswer - onsetTrial; % total time between start of the trial and last correct answer
-elseif i_max_correct < n_max_to_reach % not enough good answers
+elseif i_correctAnswers < n_max_to_reach % not enough good answers
     trial_success = false;
     totalTime_success = NaN;
 end

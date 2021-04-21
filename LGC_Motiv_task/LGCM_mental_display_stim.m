@@ -41,7 +41,7 @@ function[onset_stim] = LGCM_mental_display_stim(scr, stim,...
 
 %% extract relevant parameters
 window = scr.window;
-xScreenCenter = scr.xCenter;
+% xScreenCenter = scr.xCenter;
 yScreenCenter = scr.yCenter;
 arcCurrLevelColor = stim.difficulty.currLevelColor;
 arcPosition = stim.difficulty.middle_center;
@@ -62,7 +62,7 @@ switch taskType
 end
 Screen('TextSize', window, scr.textSize.mentalNumber);
 DrawFormattedText(window, num2str(numberValue),...
-    xScreenCenter, yScreenCenter*(9/6), textColor);
+    'center', yScreenCenter*(9/6), textColor);
 Screen('TextSize', window, scr.textSize.baseline);
 
 %% instructions
