@@ -9,7 +9,8 @@ function [choice_design] = LGCM_choice_design_RE_levels(n_R_levels, n_E_levels, 
 %
 % n_E_levels: number of effort levels
 %
-% n_trials: total number of trial of the current session
+% n_trials: total number of trials of the current session for the current
+% condition (reward or punishment)
 %
 % OUTPUTS
 % choice_design: structure with level of reward and effort for left and
@@ -86,7 +87,7 @@ end % RL-RR loop
 % take also a few samples from the trivial parts of the matrix (where RL-RR
 % and EL-ER have opposite signs = when more rewarded option is also the
 % less effortful)
-n_samples_matrix_irrelevantParts = 4; % = number of samples for each subpart of the matrix where data is less relevant for the estimation
+n_samples_matrix_irrelevantParts = 3; % = number of samples for each subpart of the matrix where data is less relevant for the estimation
 % check number of boxes per subpart of the matrix
 n_irrelevant_boxes = (n_E_levels - 1)*(n_R_levels - 1);
 
