@@ -64,6 +64,7 @@ baselineTextSize = 40;
 Screen('TextSize', window, baselineTextSize);
 Screen('TextFont', window, 'arial');
 textSize.baseline = 40;
+textSize.mentalNumber = 120;
 textSize.big = 150;
 textSize.middle = 100;
 

@@ -36,7 +36,7 @@ white = scr.colours.white;
 black = scr.colours.black;
 
 % remind the option they chose
-DrawFormattedText(window,'Vous avez choisi','center',yScreenCenter/6,white);
+DrawFormattedText(window,'Vous avez choisi','center',yScreenCenter/6.5,white);
 
 %% extract difficulty & reward level for each side of the screen
 % effort level

@@ -60,16 +60,16 @@ switch taskType
     case 1 % lower/higher than 5
         textColor = mental_n_col.lowHigh;
 end
+Screen('TextSize', window, scr.textSize.mentalNumber);
 DrawFormattedText(window, num2str(numberValue),...
     xScreenCenter, yScreenCenter*(9/6), textColor);
+Screen('TextSize', window, scr.textSize.baseline);
 
 %% instructions
 switch learning_instructions
     case {'fullInstructions','partialInstructions'}
         LGCM_mental_effort_task_question_display(scr, taskType, sideQuestion, textColor, learning_instructions);
 end
-
-%% reward level
 
 %% display on screen
 [~,onset_stim] = Screen(window,'Flip');

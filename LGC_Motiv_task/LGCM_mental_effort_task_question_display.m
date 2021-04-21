@@ -63,7 +63,7 @@ switch task_trialType
             error('error in sideQuestion definition');
         end
         DrawFormattedText(window,'pair', x_pair, y_coord, textCol );
-        DrawFormattedText(window,'OU', 'center', y_coord, blackCol );
+        DrawFormattedText(window,'OU', 'center', y_coord, textCol );
         DrawFormattedText(window,'impair', x_impair, y_coord, textCol );
         
     case 1 % higher/lower than 5?
@@ -82,7 +82,7 @@ switch task_trialType
             error('error in sideQuestion definition');
         end
         DrawFormattedText(window,'< 5', x_low, y_coord, textCol );
-        DrawFormattedText(window,'OU', 'center', y_coord, blackCol );
+        DrawFormattedText(window,'OU', 'center', y_coord, textCol );
         DrawFormattedText(window,'> 5', x_high, y_coord, textCol );
 end % task type
     
