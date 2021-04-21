@@ -1,9 +1,11 @@
-function[physicalE_perf, trial_success, onsets] = LGCM_physical_effort_perf(scr, stim,...
+function[physicalE_perf, trial_success, onsets] = LGCM_physical_effort_perf(scr, stim, dq,...
+    MVC,...
     E_chosen,...
     E_time_levels,...
     F_threshold, F_tolerance,...
     time_limit, t_max_effort)
-% [physicalE_perf, trial_success, onsets] = LGCM_physical_effort_perf(scr, stim,...
+% [physicalE_perf, trial_success, onsets] = LGCM_physical_effort_perf(scr, stim, dq,...
+%     MVC,...
 %     E_chosen,...
 %     E_time_levels,...
 %     F_threshold, F_tolerance,...
@@ -15,6 +17,11 @@ function[physicalE_perf, trial_success, onsets] = LGCM_physical_effort_perf(scr,
 % scr: structure with screen data
 %
 % stim: structure with data around the stimuli to display
+%
+% dq: information about the handgrip
+%
+% MVC: maximal voluntary contraction force done during first calibration
+% (expressed in Voltage)
 %
 % E_chosen: effort level of the chosen option
 %
@@ -52,6 +59,8 @@ function[physicalE_perf, trial_success, onsets] = LGCM_physical_effort_perf(scr,
 
 %% initialize the variables of interest
 trial_success = 0;
+% initialize indicators whether force threshold has been reached or not
+has_F_threshold_ever_been_reached = 0;
 % angle values
 startAngle = stim.difficulty.startAngle.(['level_',num2str(E_chosen)]);
 currentAngle = startAngle;
@@ -66,7 +75,8 @@ t_effort_to_keep = E_time_levels.(['level_',num2str(E_chosen)]);
 
 % display effort scale on the left for the live display of the effort level
 % add force threshold to maintain
-disp_realtime_force(scr, F_threshold, F_tolerance, 0);
+force_initialDisplay = 0;
+disp_realtime_force(scr, F_threshold, F_tolerance, force_initialDisplay, 'task');
 
 % display difficulty level on top of the reward as an arc
 Screen('FillArc', window,...
@@ -79,42 +89,45 @@ Screen('FillArc', window,...
 onsets.effort_phase = onsetEffortPhase;
 timeNow = onsetEffortPhase;
 
-%% start timer: if they don't achieve the effort in time they will have to repeat without the reward
+%% effort
 force_levels = [];
-if time_limit == true
-    while timeNow <= onsetEffortPhase + t_max_effort
-        [timeNow, force_levels, onsets, currentAngle, was_F_above_threshold] = LGCM_physical_effort_check_livePerf(scr, totalAngleDistance,...
-            force_levels,...
-            F_threshold, F_tolerance, t_effort_to_keep,...
-            was_F_above_threshold, has_F_threshold_ever_been_reached, onsets);
-    end % time loop
+while (trial_success == 0) ||...
+        ( (time_limit == true) && (timeNow <= (onsetEffortPhase + t_max_effort)) )
+    % you either stop if the trial was successful (both learning and actual
+    % task) OR if there is a time_limit defined and this time_limit was
+    % reached (actual task only)
     
-    %% check whether performance was or not achieved in the time course available
+    % check the performance and update the display of the force
+    % accordingly
+    [timeNow, force_levels, onsets, currentAngle,...
+        has_F_threshold_ever_been_reached] = LGCM_physical_effort_check_livePerf(scr, dq,...
+        MVC,...
+        totalAngleDistance,...
+        currentAngle, force_levels, has_F_threshold_ever_been_reached,...
+        F_threshold, F_tolerance, t_effort_to_keep,...
+        onsets);
+    
+    % check whether performance was or not achieved
     if currentAngle >= endAngle
         trial_success = 1;
+        onsets.effort_success = timeNow;
     end
-    
-else % no trial time limit (for training for example)
-    while trial_success == 0
-        
-        % keep performing the effort while the trial is not a success
-        [timeNow, force_levels, onsets, currentAngle, was_F_above_threshold] = LGCM_physical_effort_check_livePerf(scr, totalAngleDistance,...
-            force_levels,...
-            F_threshold, F_tolerance, t_effort_to_keep,...
-            was_F_above_threshold, has_F_threshold_ever_been_reached, onsets);
-        
-        % check whether performance was or not achieved
-        if currentAngle >= endAngle
-            trial_success = 1;
-            onsets.effort_success = timeNow;
-        end
-    end
-end % time limit
+end % time loop
+
+%% check whether performance was or not achieved in the time course available
+if currentAngle >= endAngle
+    trial_success = 1;
+    onsets.effort_success = timeNow;
+end
 
 %% record vars of interest
 physicalE_perf.trial_success = trial_success;
 physicalE_perf.onsets = onsets;
 % record all the force levels during the performance
 physicalE_perf.force_levels = force_levels;
+physicalE_perf.startAngle = startAngle;
+physicalE_perf.finalAngle = currentAngle;
+physicalE_perf.endAngle = endAngle;
+physicalE_perf.has_F_threshold_ever_been_reached = has_F_threshold_ever_been_reached;
 
 end % function
