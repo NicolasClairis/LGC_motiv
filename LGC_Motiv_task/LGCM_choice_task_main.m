@@ -302,7 +302,7 @@ switch effort_type
             % need to remind the mapping the second time
             learning_cols = {'col1','col2','all'};
             n_learningColours = length(learning_cols);
-            learning_instructions = {'fullInstructions','partialInstructions','noInstructions'};
+            learning_instructions = {'fullInstructions','noInstructions'}; %,'partialInstructions'
             n_learningInstructions = length(learning_instructions);
             % extract numbers to use for each learning phase
             [numberVector_learning] = LGCM_mental_numbers(n_learningColours*n_learningInstructions);
