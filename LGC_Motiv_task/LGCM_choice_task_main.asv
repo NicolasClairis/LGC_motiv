@@ -2,11 +2,11 @@
 % 1) fixation cross
 % 2) choice between 2 options
 % 3) display chosen option
-% 4) perform the effort corresponding to the chosen option
+% 4) perform the effort corresponding to the chosen option 
 %
-% The effort can be a physical effort of a fixed intensity but a
+% The effort can be a physical effort of a fixed intensity but a 
 % varying duration (in the physical version of the task) or a mental effort
-% with a fixed number
+% with a fixed number 
 %
 % developed by Arthur Barakat & Nicolas Clairis - 2020/2021
 %
@@ -135,10 +135,10 @@ switch effort_type
         % device
         % d = daqlist;
         % d{1, "DeviceInfo"}
-        
+       
         % initialize NI input
         dq = daq("ni");
-        %         dq.Rate = 500; % define the acquisition rate
+%         dq.Rate = 500; % define the acquisition rate
         NI_module_nm = "cDAQ1Mod1";
         NI_channel_output = "ai0";
         addinput(dq, NI_module_nm, NI_channel_output,"Voltage");
@@ -185,7 +185,7 @@ switch effort_type
     case 'mental'
         % define number of pairs to solve for each level of difficulty
         
-        % for learning: define the number of correct answers to provide
+        % for learning: define the number of correct answers to provide 
         % for the learning to be considered ok
         % adapt number of required correct answers according to if learning was done or not
         if ~learning_done
@@ -258,7 +258,7 @@ switch effort_type % in case you use different numbers for each effort type
     case 'physical'
         calibTimes.instructions_bis = 10;
         calibTimes.effort_max = 5;% time to perform the task
-        %         calibTimes.
+%         calibTimes.
         calibTimes.t_MVC_rest = 7; % rest after each MVC calibration
 end
 calibTimes.fbk = 2;
@@ -332,7 +332,7 @@ switch effort_type
         % Maybe just perform twice each level of effort so that they get an idea of what it implies?
         error('physical effort learning to be added here.');
 end
-
+        
 %% calibration and max perf measurement before start of the session
 switch effort_type
     case 'mental'
@@ -342,10 +342,10 @@ switch effort_type
             [numberVector_calib] = LGCM_mental_numbers(n_calibTrials);
             
             %% in case of using a fixed time and calibrating the maximal number of correct answers
-            %             n_mental_max_perTrial = LGCM_mental_calibNumbers(scr, stim, key,...
-            %                 numberVector_calib, mentalE_prm, n_calibTrials,...
-            %                 n_calibMax, calibTimes);
-            
+%             n_mental_max_perTrial = LGCM_mental_calibNumbers(scr, stim, key,...
+%                 numberVector_calib, mentalE_prm, n_calibTrials,...
+%                 n_calibMax, calibTimes);
+
             %% alternatively, use fixed number of correct answers to provide for each effort
             % level
             % repeat calibration until the subject performance is better
@@ -370,18 +370,18 @@ switch effort_type
             [numberVector_initialMaxPerf] = LGCM_mental_numbers(n_calibTrials);
             n_initialMaxPerfTrials = 1;
             [t_min_initialMaxPerf, initialMaxPerfSessionSummary, initialMaxPerfSuccess] = LGCM_mental_calibTime(scr, stim, key,...
-                numberVector_initialMaxPerf, mentalE_prm_learning_and_calib, n_initialMaxPerfTrials, n_calibMax, calibTimes);
+                    numberVector_initialMaxPerf, mentalE_prm_learning_and_calib, n_initialMaxPerfTrials, n_calibMax, calibTimes);
         end % learning + training session
         taskTimes.max_effort = t_max_effort;
         
         % in case you calibrate number of correct answers during the
         % training
-        %         % define levels of difficulty based on the calibration
-        %         for iE_level = 1:n_E_levels
-        %             n_to_reach.(['E_level_',num2str(iE_level)]) = round((iE_level/(n_E_levels + 1))*n_mental_max_perTrial);
-        %             warning('you should check that all levels are effort can be differentiated or you have a big problem');
-        %         end
-        
+%         % define levels of difficulty based on the calibration
+%         for iE_level = 1:n_E_levels
+%             n_to_reach.(['E_level_',num2str(iE_level)]) = round((iE_level/(n_E_levels + 1))*n_mental_max_perTrial);
+%             warning('you should check that all levels are effort can be differentiated or you have a big problem');
+%         end
+
     case 'physical'% for physical effort, ask the MVC
         
         if ~learning_done % record and store global MVC
@@ -414,8 +414,8 @@ onset.taskWillStart = timeExpStartMsg;
 disp('Please launch fMRI and then press space.');
 [~, ~, keyCode] = KbCheck();
 while(keyCode(key.space) ~= 1)
-    % wait until the key has been pressed
-    [~, ~, keyCode] = KbCheck();
+   % wait until the key has been pressed
+   [~, ~, keyCode] = KbCheck();
 end
 
 %% initialize onsets for main task
@@ -449,6 +449,7 @@ switch effort_type
     case 'mental'
         % initialize main parameters of the task
         mentalE_prm = LGCM_mental_effort_parameters(i_sub);
+        mentalE_prm_learning_and_calib.startAngle = 0; % for learning always start at zero
         % randomize the order of the numbers appearing on screen
         mental_nbers_per_trial = LGCM_mental_numbers(n_trials);
         
@@ -494,7 +495,7 @@ for iTrial = 1:n_trials
         save([results_folder, file_nm,'_earlyEnd_tmp.mat'],'-struct','all');
         break;
     end
-    
+
     %% chosen option display period
     [time_dispChoice,...
         R_chosen(iTrial),...
@@ -504,7 +505,7 @@ for iTrial = 1:n_trials
     onsets.dispChoice(iTrial) = time_dispChoice;
     WaitSecs(t_dispChoice);
     
-    %% Effort period
+    %% Effort period 
     % perform the effort if a choice was made, otherwise punish the
     % subject for not answering to the choice
     if choice(iTrial) == 0 % no choice was made => failure
@@ -548,7 +549,7 @@ for iTrial = 1:n_trials
     switch trial_was_successfull(iTrial)
         case 0 % trial failed
             % display message
-            %             DrawFormattedText(window,'Too slow!', xScreenCenter, (1/5)*yScreenCenter);
+%             DrawFormattedText(window,'Too slow!', xScreenCenter, (1/5)*yScreenCenter);
             DrawFormattedText(window,'Trop lent!',...
                 'center', (1/5)*yScreenCenter,...
                 white);
@@ -560,30 +561,22 @@ for iTrial = 1:n_trials
             % display feedback
             switch R_or_P{iTrial}
                 case 'R'
-                    %                     DrawFormattedText(window,'You won', xScreenCenter, (1/5)*yScreenCenter);
+%                     DrawFormattedText(window,'You won', xScreenCenter, (1/5)*yScreenCenter);
                     DrawFormattedText(window,'Vous avez obtenu',...
                         'center', (1/5)*yScreenCenter,...
                         white);
                 case 'P'
-                    %                     DrawFormattedText(window,'You lost', xScreenCenter, (1/5)*yScreenCenter);
+%                     DrawFormattedText(window,'You lost', xScreenCenter, (1/5)*yScreenCenter);
                     DrawFormattedText(window,'Vous avez perdu',...
                         'center', (1/5)*yScreenCenter,...
                         white);
             end
             
             % display monetary incentive
-            R_chosen_tmp = ['reward_',num2str(R_chosen(iTrial))];
             Screen('DrawTexture', window,...
-                stim.reward.texture.(R_chosen_tmp),...
-                [],...
-                stim.chosenOption.reward.(R_chosen_tmp));
-            
-            % punishments: add negative overlay on top of the monetary
-            % incentive
-            if strcmp(R_or_P{iTrial},'P')
-                Screen('FillOval', window, stim.punishment.colourOverlay,...
-                    stim.punishment.circleOverlay.top_center.(R_chosen_tmp));
-            end
+            stim.reward.texture.(['reward_',num2str(R_chosen(iTrial))]),...
+            [],...
+            stim.chosenOption.reward.(['reward_',num2str(R_chosen(iTrial))]));
             
             [~,onsets.fbk(iTrial)] = Screen(window,'Flip');
             switch R_or_P{iTrial}
@@ -641,8 +634,8 @@ WaitSecs(t_finalCross);
 disp('You can stop the fMRI acquisition now. When it''s done, please press space.');
 [~, ~, keyCode] = KbCheck();
 while(keyCode(key.space) ~= 1)
-    % wait until the key has been pressed
-    [~, ~, keyCode] = KbCheck();
+   % wait until the key has been pressed
+   [~, ~, keyCode] = KbCheck();
 end
 
 %% get all TTL from the task
@@ -665,7 +658,7 @@ end
 save([results_folder, file_nm,'_messyAllStuff.mat']);
 
 %% Measure maximum power again at the end
-% add instructions
+% add instructions 
 DrawFormattedText(['Pour finir cette session, nous allons vous demander ',...
     'd''essayer à nouveau de battre votre record.']);
 Screen(window,'Flip');
@@ -675,18 +668,30 @@ switch effort_type
     case 'physical'
         [MVC_last, onsets_MVC_last] = LGCM_MVC_measurement(scr, stim, dq, nFinalTrial, calibTimes);
     case 'mental'
+        mentalE_prm_learning_and_calib.startAngle = 0;
+        error('last MVC needs fixing')
+        [numberVector_calib] = LGCM_mental_numbers(nFinalTrial);
+        [t_min_finalMaxPerf, finalMaxPerf_SessionSummary, finalMaxPerf_calibSuccess] = LGCM_mental_calibTime(scr, stim, key,...
+            numberVector_calib, mentalE_prm_learning_and_calib, nFinalTrial, n_calibMax, calibTimes);
+        
+        
         % extract numbers to use for each calibration trial
-        [numberVector_endCalib] = LGCM_mental_numbers(nFinalTrial);
+        [numberVector_endCalib] = LGCM_mental_numbers(n_calibTrials);
         
         % use fixed number of correct answers to provide for each effort
         % level
         % repeat calibration until the subject performance is better
         % than the requested time threshold
-        [t_min_finalMaxPerf, finalMaxPerf_SessionSummary, finalMaxPerf_calibSuccess] = LGCM_mental_calibTime(scr, stim, key,...
-            numberVector_endCalib, mentalE_prm_learning_and_calib, nFinalTrial, n_calibMax, calibTimes);
-        calibEndSessionSummary.calibEndSession.calibSummary = finalMaxPerf_SessionSummary;
-        calibEndSessionSummary.calibEndSession.calibSuccess = finalMaxPerf_calibSuccess;
-        calibEndSessionSummary.calibEndSession.t_mental_max_perTrial = t_min_finalMaxPerf;
+        calibSuccess = false;
+        calibSession = 0;
+        while calibSuccess == false
+            calibSession = calibSession + 1;
+            [t_min_endCalib, calibEndSessionSummary, calibSuccess] = LGCM_mental_calibTime(scr, stim, key,...
+                numberVector_endCalib, mentalE_prm_learning_and_calib, n_calibTrials, n_calibMax, calibTimes);
+            calibSummary.calibEndSession.calibSummary = calibEndSessionSummary;
+            calibSummary.calibEndSession.calibSuccess = calibSuccess;
+            calibSummary.calibEndSession.t_mental_max_perTrial = t_min_endCalib;
+        end
 end
 
 %% stop acquisition of biopac handgrip
