@@ -578,7 +578,7 @@ for iTrial = 1:n_trials
                 [],...
                 stim.chosenOption.reward.(R_chosen_tmp));
             
-            % punishments: add negative overlay on top of the monetary
+            % punishments: add negative  overlay on top of the monetary
             % incentive
             if strcmp(R_or_P{iTrial},'P')
                 Screen('FillOval', window, stim.punishment.colourOverlay,...
@@ -666,8 +666,10 @@ save([results_folder, file_nm,'_messyAllStuff.mat']);
 
 %% Measure maximum power again at the end
 % add instructions
-DrawFormattedText(['Pour finir cette session, nous allons vous demander ',...
-    'd''essayer à nouveau de battre votre record.']);
+DrawFormattedText(window,...
+    ['Pour finir cette session, nous allons vous demander ',...
+    'd''essayer à nouveau de battre votre record.'],...
+    'center', yScreenCenter*(5/3), scr.colours.black, scr.wrapat);
 Screen(window,'Flip');
 % MVC maximum
 nFinalTrial = 1;
