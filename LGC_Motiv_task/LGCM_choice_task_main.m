@@ -276,7 +276,7 @@ switch effort_type
         t_max_effort = 5; % time to perform the task
         taskTimes.max_effort = t_max_effort;
     case 'mental'
-        t_min_scalingFactor = 140/100; % multiply calibrated minimal time by this value
+        t_min_scalingFactor = 150/100; % multiply calibrated minimal time by this value
 end
 t_fbk = 1; % feedback display
 taskTimes.cross = t_cross;
@@ -578,7 +578,7 @@ for iTrial = 1:n_trials
                 [],...
                 stim.chosenOption.reward.(R_chosen_tmp));
             
-            % punishments: add negative overlay on top of the monetary
+            % punishments: add negative  overlay on top of the monetary
             % incentive
             if strcmp(R_or_P{iTrial},'P')
                 Screen('FillOval', window, stim.punishment.colourOverlay,...
@@ -666,8 +666,10 @@ save([results_folder, file_nm,'_messyAllStuff.mat']);
 
 %% Measure maximum power again at the end
 % add instructions
-DrawFormattedText(['Pour finir cette session, nous allons vous demander ',...
-    'd''essayer à nouveau de battre votre record.']);
+DrawFormattedText(window,...
+    ['Pour finir cette session, nous allons vous demander ',...
+    'd''essayer à nouveau de battre votre record.'],...
+    'center', yScreenCenter*(5/3), scr.colours.black, scr.wrapat);
 Screen(window,'Flip');
 % MVC maximum
 nFinalTrial = 1;

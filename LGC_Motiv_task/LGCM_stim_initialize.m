@@ -24,7 +24,9 @@ yScreenCenter   = scr.yCenter;
 screenYpixels   = yScreenCenter*2;
 
 % colours
-black = [0 0 0];
+black = scr.colours.black;
+white = scr.colours.white;
+grey = scr.colours.grey;
 % difficultyArcColor = [178 24 43];
 difficultyArcColor = [255 210 0];
 % white = [255 255 255];
@@ -54,7 +56,7 @@ for iR = 1:n_R_levels
     stim_tmp = Screen('MakeTexture', window, image_tmp);
     stim.reward.texture.(R_level_nm) = stim_tmp;
     % display on top of the screen (for choice)
-    stim.reward.top_center.(R_level_nm) = CenterRectOnPointd(stim.reward.moneyRect, xScreenCenter, yScreenCenter/2);
+    stim.reward.top_center.(R_level_nm) = CenterRectOnPointd(stim.reward.moneyRect, xScreenCenter, yScreenCenter*(2/3));
     stim.reward.top_left.(R_level_nm) = CenterRectOnPointd(stim.reward.moneyRect, xScreenCenter/2, yScreenCenter/2);
     stim.reward.top_right.(R_level_nm) = CenterRectOnPointd(stim.reward.moneyRect, xScreenCenter*(3/2), yScreenCenter/2);
     % display on middle of the screen for performance
@@ -105,6 +107,21 @@ for iDiff = 1:n_E_levels
         stim.difficulty.startAngle.(diff_level_nm) = 0;
     end
 end % difficulty
+
+%% extract text size
+[~,~,textSizeWin] = DrawFormattedText(window,'Gagner',xScreenCenter,yScreenCenter,white);
+stim.textRectSize.xSizeWin = textSizeWin(3) - textSizeWin(1);
+stim.textRectSize.ySizeWin = textSizeWin(4) - textSizeWin(2);
+[~,~,textSizeLose] = DrawFormattedText(window,'perdre',xScreenCenter,yScreenCenter,white);
+stim.textRectSize.xSizeLose = textSizeLose(3) - textSizeLose(1);
+stim.textRectSize.ySizeLose = textSizeLose(4) - textSizeLose(2);
+[~,~,textSizeForEffort] = DrawFormattedText(window,'pour',xScreenCenter,yScreenCenter,white);
+stim.textRectSize.xSizeForEffort = textSizeForEffort(3) - textSizeForEffort(1);
+stim.textRectSize.ySizeForEffort = textSizeForEffort(4) - textSizeForEffort(2);
+% add grey screen on top to be sure that this does not actually appear on
+% the screen
+Screen('FillRect',window, grey, [0 0 xScreenCenter*2 yScreenCenter*2]);
+Screen(window,'Flip');
 
 %% color used to represent the signal
 alpha_punishment = 115;
