@@ -41,8 +41,8 @@ switch punishment_yn
         choice_design_PE = LGCM_choice_design_RE_levels(n_R_levels, n_E_levels, n_trials_per_condition, 'P');
         % pool all together
         choice_design.allOptions = [choice_design_RE.allOptions, choice_design_PE.allOptions];
-        choice_design.reward.left   = [choice_design_RE.reward.left, choice_design_PE.punishment.right];
-        choice_design.reward.right  = [choice_design_RE.reward.right, choice_design_PE.punishment.left];
+        choice_design.reward.left   = [choice_design_RE.reward.left, choice_design_PE.punishment.left];
+        choice_design.reward.right  = [choice_design_RE.reward.right, choice_design_PE.punishment.right];
         choice_design.effort.left   = [choice_design_RE.effort.left, choice_design_PE.effort.left];
         choice_design.effort.right  = [choice_design_RE.effort.right, choice_design_PE.effort.right];
         
