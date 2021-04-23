@@ -56,7 +56,7 @@ for iR = 1:n_R_levels
     stim_tmp = Screen('MakeTexture', window, image_tmp);
     stim.reward.texture.(R_level_nm) = stim_tmp;
     % display on top of the screen (for choice)
-    stim.reward.top_center.(R_level_nm) = CenterRectOnPointd(stim.reward.moneyRect, xScreenCenter, yScreenCenter/2);
+    stim.reward.top_center.(R_level_nm) = CenterRectOnPointd(stim.reward.moneyRect, xScreenCenter, yScreenCenter*(2/3));
     stim.reward.top_left.(R_level_nm) = CenterRectOnPointd(stim.reward.moneyRect, xScreenCenter/2, yScreenCenter/2);
     stim.reward.top_right.(R_level_nm) = CenterRectOnPointd(stim.reward.moneyRect, xScreenCenter*(3/2), yScreenCenter/2);
     % display on middle of the screen for performance
