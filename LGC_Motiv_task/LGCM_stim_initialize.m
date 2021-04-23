@@ -24,7 +24,9 @@ yScreenCenter   = scr.yCenter;
 screenYpixels   = yScreenCenter*2;
 
 % colours
-black = [0 0 0];
+black = scr.colours.black;
+white = scr.colours.white;
+grey = scr.colours.grey;
 % difficultyArcColor = [178 24 43];
 difficultyArcColor = [255 210 0];
 % white = [255 255 255];
@@ -108,11 +110,15 @@ end % difficulty
 
 %% extract text size
 [~,~,textSizeWin] = DrawFormattedText(window,'Gagner',xScreenCenter,yScreenCenter,white);
-stim.textRectSize.xSizeWin = textSizeWin(4) - textSizeWin(1);
+stim.textRectSize.xSizeWin = textSizeWin(3) - textSizeWin(1);
 [~,~,textSizeLose] = DrawFormattedText(window,'perdre',xScreenCenter,yScreenCenter,white);
-stim.textRectSize.xSizeLose = textSizeLose(4) - textSizeLose(1);
+stim.textRectSize.xSizeLose = textSizeLose(3) - textSizeLose(1);
 [~,~,textSizeForEffort] = DrawFormattedText(window,'pour',xScreenCenter,yScreenCenter,white);
-stim.textRectSize.xSizeForEffort = textSizeForEffort(4) - textSizeForEffort(1);
+stim.textRectSize.xSizeForEffort = textSizeForEffort(3) - textSizeForEffort(1);
+% add grey screen on top to be sure that this does not actually appear on
+% the screen
+Screen('FillRect',window, grey, [0 0 xScreenCenter*2 yScreenCenter*2]);
+Screen(window,'Flip');
 
 %% color used to represent the signal
 alpha_punishment = 115;
