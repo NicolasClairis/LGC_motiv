@@ -138,9 +138,9 @@ end
 switch R_or_P
     case 'R'
         % define coordinates
-        xStart_R_left_txt = xScreenCenter/2 - stim.textRectSize.xSizeWin;
-        xStart_R_right_txt = xScreenCenter*(3/2) - stim.textRectSize.xSizeWin;
-        yStart_R_txt = stim.reward.top_left.(R_left_nm)(2)-yScreenCenter/10;
+        xStart_R_left_txt = xScreenCenter/2 - stim.textRectSize.xSizeWin/2;
+        xStart_R_right_txt = xScreenCenter*(3/2) - stim.textRectSize.xSizeWin/2;
+        yStart_R_txt = stim.reward.top_left.(R_left_nm)(2)-stim.textRectSize.ySizeWin;
         % display
         DrawFormattedText(window,'Gagner',...
             xStart_R_left_txt,...
@@ -152,9 +152,9 @@ switch R_or_P
             white);
     case 'P'
         % define coordinates
-        xStart_P_left_txt = xScreenCenter/2 - stim.textRectSize.xSizeLose;
-        xStart_P_right_txt = xScreenCenter*(3/2) - stim.textRectSize.xSizeLose;
-        yStart_P_txt = stim.reward.top_left.(R_left_nm)(2)-yScreenCenter/10;
+        xStart_P_left_txt = xScreenCenter/2 - stim.textRectSize.xSizeLose/2;
+        xStart_P_right_txt = xScreenCenter*(3/2) - stim.textRectSize.xSizeLose/2;
+        yStart_P_txt = stim.reward.top_left.(R_left_nm)(2)-stim.textRectSize.ySizeLose;
         % display
         DrawFormattedText(window,'Perdre',...
             xStart_P_left_txt,...
@@ -166,9 +166,9 @@ switch R_or_P
             white);
 end
 % define coordinates
-xStart_forE_left_txt = xScreenCenter/2 - stim.textRectSize.xSizeForEffort;
-xStart_forE_right_txt = xScreenCenter*(3/2) - stim.textRectSize.xSizeForEffort;
-yStart_forEffort_txt = stim.difficulty.below_left(2)-yScreenCenter/10;
+xStart_forE_left_txt = xScreenCenter/2 - stim.textRectSize.xSizeForEffort/2;
+xStart_forE_right_txt = xScreenCenter*(3/2) - stim.textRectSize.xSizeForEffort/2;
+yStart_forEffort_txt = stim.difficulty.below_left(2)-stim.textRectSize.ySizeForEffort;
 % display
 DrawFormattedText(window,'pour',...
     xStart_forE_left_txt,...

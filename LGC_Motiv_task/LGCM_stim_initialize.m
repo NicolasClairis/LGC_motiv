@@ -111,10 +111,13 @@ end % difficulty
 %% extract text size
 [~,~,textSizeWin] = DrawFormattedText(window,'Gagner',xScreenCenter,yScreenCenter,white);
 stim.textRectSize.xSizeWin = textSizeWin(3) - textSizeWin(1);
+stim.textRectSize.ySizeWin = textSizeWin(4) - textSizeWin(2);
 [~,~,textSizeLose] = DrawFormattedText(window,'perdre',xScreenCenter,yScreenCenter,white);
 stim.textRectSize.xSizeLose = textSizeLose(3) - textSizeLose(1);
+stim.textRectSize.ySizeLose = textSizeLose(4) - textSizeLose(2);
 [~,~,textSizeForEffort] = DrawFormattedText(window,'pour',xScreenCenter,yScreenCenter,white);
 stim.textRectSize.xSizeForEffort = textSizeForEffort(3) - textSizeForEffort(1);
+stim.textRectSize.ySizeForEffort = textSizeForEffort(4) - textSizeForEffort(2);
 % add grey screen on top to be sure that this does not actually appear on
 % the screen
 Screen('FillRect',window, grey, [0 0 xScreenCenter*2 yScreenCenter*2]);

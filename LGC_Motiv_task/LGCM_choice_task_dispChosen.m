@@ -30,7 +30,7 @@ function[time_dispChoice, R_chosen, E_chosen] = LGCM_choice_task_dispChosen(scr,
 
 %% extract relevant parameters
 window = scr.window;
-% xScreenCenter = scr.xCenter;
+xScreenCenter = scr.xCenter;
 yScreenCenter = scr.yCenter;
 white = scr.colours.white;
 black = scr.colours.black;
@@ -83,7 +83,17 @@ switch R_chosen
             stim.chosenOption.reward.(R_chosen_nm));
         
         % if punishment trial, add also indication to know that money is to be lost
-        if strcmp(R_or_P,'P')
+        switch R_or_P
+            case 'R'
+                % define coordinates
+                xStart_R_txt = xScreenCenter - stim.textRectSize.xSizeWin/2;
+                yStart_R_txt = stim.reward.top_center.(R_chosen_nm)(2)-stim.textRectSize.ySizeWin;
+                % display
+                DrawFormattedText(window,'Gagner',...
+                    xStart_R_txt,...
+                    yStart_R_txt,...
+                    white);
+            case 'P'
             % version with black cross on top of the monetary incentives
 %             lineWidth = 10;
 %             % cross on monetary incentive
@@ -99,6 +109,15 @@ switch R_chosen
             % version with negative overlay on top of monetary incentive
             Screen('FillOval', window, stim.punishment.colourOverlay,...
                     stim.punishment.circleOverlay.top_center.(R_chosen_nm));
+                
+                % define coordinates
+                xStart_R_txt = xScreenCenter - stim.textRectSize.xSizeLose/2;
+                yStart_R_txt = stim.reward.top_center.(R_chosen_nm)(2)-stim.textRectSize.ySizeLose;
+                % display
+                DrawFormattedText(window,'Perdre',...
+                    xStart_R_txt,...
+                    yStart_R_txt,...
+                    white);
         end
         
         %% display difficulty level
@@ -114,6 +133,15 @@ switch R_chosen
         Screen('FrameOval', window, stim.difficulty.maxColor,...
             stim.chosenOption.difficulty,...
             stim.difficulty.ovalWidth);
+        
+        % define coordinates
+        xStart_forE_txt = xScreenCenter - stim.textRectSize.xSizeForEffort/2;
+        yStart_forEffort_txt = stim.difficulty.below_center(2)-stim.textRectSize.ySizeForEffort;
+        % display
+        DrawFormattedText(window,'pour',...
+            xStart_forE_txt,...
+            yStart_forEffort_txt,...
+            white);
 end
 
 %% display a square on top of selected reward and effort
