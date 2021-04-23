@@ -276,7 +276,7 @@ switch effort_type
         t_max_effort = 5; % time to perform the task
         taskTimes.max_effort = t_max_effort;
     case 'mental'
-        t_min_scalingFactor = 140/100; % multiply calibrated minimal time by this value
+        t_min_scalingFactor = 150/100; % multiply calibrated minimal time by this value
 end
 t_fbk = 1; % feedback display
 taskTimes.cross = t_cross;

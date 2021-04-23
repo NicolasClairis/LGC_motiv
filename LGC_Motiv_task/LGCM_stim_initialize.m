@@ -106,6 +106,14 @@ for iDiff = 1:n_E_levels
     end
 end % difficulty
 
+%% extract text size
+[~,~,textSizeWin] = DrawFormattedText(window,'Gagner',xScreenCenter,yScreenCenter,white);
+stim.textRectSize.xSizeWin = textSizeWin(4) - textSizeWin(1);
+[~,~,textSizeLose] = DrawFormattedText(window,'perdre',xScreenCenter,yScreenCenter,white);
+stim.textRectSize.xSizeLose = textSizeLose(4) - textSizeLose(1);
+[~,~,textSizeForEffort] = DrawFormattedText(window,'pour',xScreenCenter,yScreenCenter,white);
+stim.textRectSize.xSizeForEffort = textSizeForEffort(4) - textSizeForEffort(1);
+
 %% color used to represent the signal
 alpha_punishment = 115;
 stim.punishment.colourOverlay   = [255 50 0 alpha_punishment];
