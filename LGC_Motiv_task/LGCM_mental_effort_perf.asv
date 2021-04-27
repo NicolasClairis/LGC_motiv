@@ -124,7 +124,7 @@ switch learning_col
 end
 
 % define a STAY/SWITCH sequence
-task_seq = LGCM_mental_effort_task_switches(taskType(1), n_max_to_reach, n_switch);
+[task_seq_tmp] = LGCM_mental_effort_task_switches(taskType_tmp, n_max_to_reach, n_switch);
 
 %% initialize the counters
 % number of subsequent correct answers
@@ -214,23 +214,18 @@ while (i_correctAnswers < n_max_to_reach) &&...
         
         switch answerCorrect_tmp
             case 0 % error made
-                
                 % version where you reset the timer whenever they make an
                 % error
                 % startAngle = startAngle_currentTrial; % re-initialize
                 % i_max_correct = 0; % if wrong, set back indicators to zero: needs to restart
                 
-                % remove one correct
-                    startAngle = startAngle - totalAngleDistance/n_max_to_reach;
+                % just (-1) decrement after an error (otherwise too hard)
+                startAngle = startAngle - totalAngleDistance/n_max_to_reach;
                 if i_correctAnswers > 0 % keep equal to zero if you made a mistake the first trial
                     i_correctAnswers = i_correctAnswers - 1; % if wrong, decrement the total number of correct answers
-                    % just (-1) decrement after an error (otherwise too hard)
-                else % if error made during the first trial should not move
-                    i_correctAnswers = 0;
-                    startAngle = startAngle_currentTrial;
                 end
                 jErrorsMade = jErrorsMade + 1;
-            case 1 % if correct, update the count of correct answers and the angle display
+            case 1 % if correct, update the count and the display
                 startAngle = startAngle + totalAngleDistance/n_max_to_reach;
                 i_correctAnswers = i_correctAnswers + 1;
         end
