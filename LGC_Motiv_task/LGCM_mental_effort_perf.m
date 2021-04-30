@@ -128,7 +128,10 @@ task_seq = LGCM_mental_effort_task_switches(taskType(1), n_max_to_reach, n_switc
 
 %% initialize the counters
 % number of subsequent correct answers
-i_correctAnswers = 0;
+iCorrectAnswers = 0; % indicator to know when trial is considered as a success
+% (note that iCorrectAnswers will decrease for each error made, but not
+% jCorrectAnswers)
+jCorrectAnswers = 0; % indicator tracking actual real number of correct answers
 % number of questions answered
 i_question = 1;
 
@@ -154,7 +157,7 @@ jErrorsMade = 0;
 % loop until relevant number of subsequent correct answers has been reached
 % or that max time limit has been reached (if one time limit has been
 % defined)
-while (i_correctAnswers < n_max_to_reach) &&...
+while (iCorrectAnswers < n_max_to_reach) &&...
         ( ( (time_limit == true) && (timeNow < onsetTrial + t_max) ) ||...
         (time_limit == false) )
     timeNow = GetSecs;
@@ -220,30 +223,33 @@ while (i_correctAnswers < n_max_to_reach) &&...
                 % startAngle = startAngle_currentTrial; % re-initialize
                 % i_max_correct = 0; % if wrong, set back indicators to zero: needs to restart
                 
-                % remove one correct
-                    startAngle = startAngle - totalAngleDistance/n_max_to_reach;
-                if i_correctAnswers > 0 % keep equal to zero if you made a mistake the first trial
-                    i_correctAnswers = i_correctAnswers - 1; % if wrong, decrement the total number of correct answers
+                
+                if iCorrectAnswers > 0 % keep equal to zero if you made a mistake the first trial
+                    iCorrectAnswers = iCorrectAnswers - 1; % if wrong, decrement the total number of correct answers
                     % just (-1) decrement after an error (otherwise too hard)
+                    startAngle = startAngle - totalAngleDistance/n_max_to_reach;
                 else % if error made during the first trial should not move
-                    i_correctAnswers = 0;
-                    startAngle = startAngle_currentTrial;
+                    iCorrectAnswers = 0;
+                    startAngle = startAngle_currentTrial; % if error made during the first question, keep at initial location
+                    % otherwise it means that you increase the difficulty
+                    % when they make an error for the first question
                 end
                 jErrorsMade = jErrorsMade + 1;
             case 1 % if correct, update the count of correct answers and the angle display
                 startAngle = startAngle + totalAngleDistance/n_max_to_reach;
-                i_correctAnswers = i_correctAnswers + 1;
+                iCorrectAnswers = iCorrectAnswers + 1;
+                jCorrectAnswers = jCorrectAnswers + 1;
         end
         
         %% define the task type for the next question
-        if i_correctAnswers < n_max_to_reach
+        if iCorrectAnswers < n_max_to_reach
             % once the expected amount of correct answers has been reached,
             % there is no need to make more switches
             
             if answerCorrect_tmp == 0 % no task switch after an error to keep the task easy after an error has been made
                 taskType(i_question + 1) = taskType(i_question);
             else
-                taskType(i_question + 1) = task_seq(i_correctAnswers + 1);
+                taskType(i_question + 1) = task_seq(iCorrectAnswers + 1);
             end
         end % no need to update task type for the next question if the end has been reached
         
@@ -277,12 +283,13 @@ mentalE_perf.n_max_to_reach = n_max_to_reach;
 mentalE_perf.n_errorsMade   = jErrorsMade;
 % record number of questions answered and how many were correct
 mentalE_perf.n_questions_performed = i_question - 1;
-mentalE_perf.n_questions_correct = i_correctAnswers;
+mentalE_perf.n_correctAnswersForDisplay = iCorrectAnswers;
+mentalE_perf.n_correctAnswersProvided = jCorrectAnswers;
 % record if trial was achieved or interrompted due to time limit (=failure)
-if i_correctAnswers == n_max_to_reach % reached the top
+if iCorrectAnswers == n_max_to_reach % reached the top
     trial_success = true;
     totalTime_success = timeAnswer - onsetTrial; % total time between start of the trial and last correct answer
-elseif i_correctAnswers < n_max_to_reach % not enough good answers
+elseif iCorrectAnswers < n_max_to_reach % not enough good answers
     trial_success = false;
     totalTime_success = NaN;
 end
