@@ -26,6 +26,12 @@ function[time_dispChoice, R_chosen, E_chosen] = LGCM_choice_task_dispChosen(scr,
 % OUTPUTS
 % time_dispChoice: onset of the display of the chosen option on the screen
 %
+% R_chosen: numeric variable reflecting the level of the reward associated
+% to the chosen option
+%
+% E_chosen:numeric variable reflecting the level of the effort associated
+% to the chosen option
+%
 % See also LGCM_choice_task_main.m
 
 %% extract relevant parameters
