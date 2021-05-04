@@ -1,5 +1,7 @@
 function [key, dq] = LGCM_relevant_key_definition(effort_type, IRM)
 %[key, dq] = LGCM_relevant_key_definition(effort_type, IRM)
+% LGCM_relevant_key_definition defines keyboard, handgrip and TTL relevant
+% code.
 %
 % INPUTS
 % effort_type:
