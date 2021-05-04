@@ -120,7 +120,7 @@ switch kR_tasksSplitOrPool
     case 'split'
         fx = fatigue;
     case 'pool'
-        fx = [fatigue_Ep, fatigue_Em];
+        fx = [fatigue_Em, fatigue_Ep];
 end
 
 end % function
