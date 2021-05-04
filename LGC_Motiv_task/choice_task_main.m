@@ -108,16 +108,9 @@ if exist([results_folder, file_nm,'.mat'],'file')
 end
 
 %% fMRI/behavioral version of the task?
-task_type = 'behavioral'; % 'behavioral'/'fMRI' (leave by default to avoid answering for every subject)
-
-% depending on the version of the task (fMRI/behavioral),
-% adapt the default options accordingly
-switch task_type
-    case 'behavioral' % behavioral version (Arthur protocol)
-        IRM = 0; % will not include fMRI
-    case 'fMRI' % fMRI version (Nicolas protocol)
-        IRM = 1; % will include fMRI => record TTL pulses + adapt key recordings accordingly
-end
+IRM = 0;
+% (0) does not include fMRI = training
+% (1) include fMRI
 
 %% include punishment condition?
 punishment_yn = 'yes'; % include punishment trials?
@@ -664,8 +657,7 @@ if IRM == 1 % || IRM == 0 %for piloting
     %% add fixation cross to terminate the acquisition (to avoid weird fMRI behavior for last trial)
     Screen('FillRect',window,white, stim.cross.verticalLine); % vertical line
     Screen('FillRect',window,white, stim.cross.horizontalLine); % horizontal line
-    [~,timeCrossNow] = Screen('Flip',window); % display the cross on screen
-    onsets.finalCross = timeCrossNow;
+    [~,onsets.finalCross] = Screen('Flip',window); % display the cross on screen
     WaitSecs(t_finalCross);
     
     %% display feedback for the current session
