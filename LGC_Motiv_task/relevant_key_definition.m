@@ -34,16 +34,10 @@ switch effort_type
         
         % initialize NI input
         dq = daq("ni");
-        %         dq.Rate = 500; % define the acquisition rate of the
-        %         module
+        dq.Rate = 20; % define the acquisition rate of the module
         NI_module_nm = "cDAQ1Mod1"; % define module to use on the NI card
         NI_channel_output = "ai0"; % define the channel output from the NI card
         addinput(dq, NI_module_nm, NI_channel_output,"Voltage");
-        % start acquiring the data in the background (if you don't use this
-        % function, everytime you call the read function, it will take a
-        % long time to process)
-        start(dq,"continuous");
-        % will need data = read(dq) function only to read the signal
 end
 
 %% keyboard keys configuration + waiting and recording first TTL for fMRI

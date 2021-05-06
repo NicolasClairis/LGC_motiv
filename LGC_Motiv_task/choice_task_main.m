@@ -723,12 +723,6 @@ if IRM == 1
     end
 end
 
-%% stop acquisition of biopac handgrip
-switch effort_type
-    case 'physical'
-        stop(dq);
-end
-
 %% Clear the PTB screen
 sca;
 

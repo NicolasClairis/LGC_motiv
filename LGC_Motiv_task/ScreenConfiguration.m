@@ -32,7 +32,7 @@ screens = Screen('Screens');
 if IRM == 0
     whichScreen = max(screens);
 elseif IRM == 1
-    if testing_script == 0 % CENIR
+    if testing_script == 0
         whichScreen = 1; % 1 if 2 screens, 0 if one screen
     elseif testing_script == 1 % my own computer
         whichScreen = max(screens);
@@ -72,6 +72,10 @@ textSize.middle = 100;
 [L, H] = Screen('WindowSize',whichScreen);
 xScreenCenter = L/2;
 yScreenCenter = H/2;
+
+%% store frame rate for physical effort task in particular
+% query the frame duration (inter-frame interval)
+scr.ifi = Screen('GetFlipInterval', window);
 
 %% store main informations inside scr structure
 scr.screenNumber = whichScreen;
