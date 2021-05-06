@@ -20,13 +20,17 @@ function [gx] = LGCM_g_observation(x,P,u,inG)
 
 %% extract conditions of the model
 fatigueEvolOrObs    = inG.mdlPrm.fatigueEvolOrObs;
-kR_tasksSplitOrPool = inG.mdlPrm.kR_tasksSplitOrPool;
+kRP_tasksSplitOrPool = inG.mdlPrm.kRP_tasksSplitOrPool;
 fatigue = inG.mdlPrm.fatigue;
 
 %% load parameters to estimate
 % reward
 iP = 1;
 kR = P(iP);
+% punishment
+iP = iP + 1;
+kP = P(iP);
+% effort and fatigue
 switch fatigueEvolOrObs
     case 'split'
         % effort
@@ -69,12 +73,15 @@ end
 trialN      = u(1);
 Rleft       = u(2);
 Rright      = u(3);
-switch kR_tasksSplitOrPool
+switch kRP_tasksSplitOrPool
     case 'split'
         Eleft       = u(4);
         Eright      = u(5);
         sumEprev    = u(6);
         intEprev    = u(7);
+        % ElevelPrevTrial = u(8);
+        % EintegralPrevTrial = u(9);
+        R_or_P = u(10);
     case 'pool'
         Eleft_Em     = u(4);
         Eright_Em    = u(5);
@@ -85,11 +92,22 @@ switch kR_tasksSplitOrPool
         sumEprev_Ep  = u(10);
         intEprev_Ep  = u(11);
         effort_type  = u(12);
+        % ElevelPrevTrial_Em = u(13);
+        % ElevelPrevTrial_Ep = u(14);
+        % EintegralPrevTrial_Em = u(15);
+        % EintegralPrevTrial_Ep = u(16);
+        R_or_P = u(17);
 end
 
 %% compute variables of interest
 DeltaR = Rleft - Rright;
-switch kR_tasksSplitOrPool
+switch R_or_P
+    case 0 % punishment
+        kRP = kP;
+    case 1 % reward
+        kRP = kR;
+end
+switch kRP_tasksSplitOrPool
     case 'pool'
         switch effort_type
             case 0 % mental
@@ -105,7 +123,7 @@ end
 % define fatigue component to consider
 switch fatigueEvolOrObs
     case 'hidden state'
-        switch kR_tasksSplitOrPool
+        switch kRP_tasksSplitOrPool
             case 'split'
                 FatigueComponent = x(1);
             case 'pool'
@@ -121,7 +139,7 @@ switch fatigueEvolOrObs
                 end
         end
     case 'observation parameter'
-        switch kR_tasksSplitOrPool
+        switch kRP_tasksSplitOrPool
             case 'split'
                 switch fatigue
                     case 'trialN' % use trial number as as simple account of the cumulated level of fatigue
@@ -162,9 +180,9 @@ end
 %% output
 switch fatigueEvolOrObs
     case 'hidden state' % fatigue sensitivity computed in evolution function f already
-        gx = 1./( 1 + exp(- ( (kR.*DeltaR) -kE.*DeltaE.*(1+FatigueComponent) ) ));
+        gx = 1./( 1 + exp( -( (kRP.*DeltaR) -kE.*DeltaE.*(1+FatigueComponent) ) ));
     case 'observation parameter'
-        gx = 1./( 1 + exp(- ( (kR.*DeltaR) -kE.*DeltaE.*(1+kF.*FatigueComponent) ) ));
+        gx = 1./( 1 + exp( -( (kRP.*DeltaR) -kE.*DeltaE.*(1+kF.*FatigueComponent) ) ));
 end
 
 end % function
