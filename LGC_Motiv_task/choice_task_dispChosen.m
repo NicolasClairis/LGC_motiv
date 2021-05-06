@@ -1,6 +1,6 @@
-function[time_dispChoice, R_chosen, E_chosen] = LGCM_choice_task_dispChosen(scr, stim, choice_opt, choice,...
+function[time_dispChoice, R_chosen, E_chosen] = choice_task_dispChosen(scr, stim, choice_opt, choice,...
     R_or_P, iTrial)
-% [time_dispChoice, R_chosen, E_chosen] = LGCM_choice_task_dispChosen(scr, stim, choice_opt, choice,...
+% [time_dispChoice, R_chosen, E_chosen] = choice_task_dispChosen(scr, stim, choice_opt, choice,...
 %     R_or_P, iTrial)
 %
 % INPUTS
@@ -32,7 +32,7 @@ function[time_dispChoice, R_chosen, E_chosen] = LGCM_choice_task_dispChosen(scr,
 % E_chosen:numeric variable reflecting the level of the effort associated
 % to the chosen option
 %
-% See also LGCM_choice_task_main.m
+% See also choice_task_main.m
 
 %% extract relevant parameters
 window = scr.window;

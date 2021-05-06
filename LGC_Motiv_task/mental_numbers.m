@@ -1,6 +1,6 @@
-function[mental_nbers_per_trial] = LGCM_mental_numbers(n_trials)
-%[mental_nbers_per_trial] = LGCM_mental_numbers(n_trials)
-% LGCM_mental_numbers will pre-define all the numbers appearing on screen for every participant.
+function[mental_nbers_per_trial] = mental_numbers(n_trials)
+%[mental_nbers_per_trial] = mental_numbers(n_trials)
+% mental_numbers will pre-define all the numbers appearing on screen for every participant.
 % The script ensures that no sequence is repeated so that they can't expect
 % a given number to appear after seeing another.
 %

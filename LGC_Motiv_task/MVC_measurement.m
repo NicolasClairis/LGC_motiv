@@ -1,6 +1,6 @@
-function[MVC, onsets] = LGCM_MVC_measurement(scr, dq, n_MVC_repeat, calibTimes)
-%[MVC, onsets] = LGCM_MVC_measurement(scr, dq, n_MVC_repeat, calibTimes)
-% LGCM_MVC_measurement will display the instructions and measure the MVC
+function[MVC, onsets] = MVC_measurement(scr, dq, n_MVC_repeat, calibTimes)
+%[MVC, onsets] = MVC_measurement(scr, dq, n_MVC_repeat, calibTimes)
+% MVC_measurement will display the instructions and measure the MVC
 % for the physical effort task.
 %
 % INPUTS
@@ -22,7 +22,7 @@ function[MVC, onsets] = LGCM_MVC_measurement(scr, dq, n_MVC_repeat, calibTimes)
 %
 % onsets: structure with the onset value of each step of this measure
 %
-% See also LGCM_choice_task_main.m
+% See also choice_task_main.m
 
 %% screen relevant variables
 window = scr.window;

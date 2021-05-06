@@ -1,6 +1,6 @@
-function[R_money] = LGCM_R_amounts(n_R_levels)
-%[R_money] = LGCM_R_amounts(n_R_levels)
-% LGCM_R_amounts will create a structure with the planned amount for each
+function[R_money] = R_amounts(n_R_levels)
+%[R_money] = R_amounts(n_R_levels)
+% R_amounts will create a structure with the planned amount for each
 % reward level
 %
 % INPUTS

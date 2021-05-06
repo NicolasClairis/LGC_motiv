@@ -1,6 +1,6 @@
-function[stim] = LGCM_stim_initialize(scr, n_R_levels, n_E_levels, pics_folder)
-%[stim] = LGCM_stim_initialize(scr, n_R_levels, n_E_levels, pics_folder)
-%LGCM_stim_initialize will initialize the v
+function[stim] = stim_initialize(scr, n_R_levels, n_E_levels, pics_folder)
+%[stim] = stim_initialize(scr, n_R_levels, n_E_levels, pics_folder)
+%stim_initialize will initialize the v
 %
 % INPUTS
 % scr: structure with main screen informations (size, center, window, etc.
@@ -14,7 +14,7 @@ function[stim] = LGCM_stim_initialize(scr, n_R_levels, n_E_levels, pics_folder)
 % OUTPUTS
 % stim: structure with stimulus informations
 %
-% See also LGCM_main_experiment.m
+% See also main_experiment.m
 
 %% extract screen main informations
 window          = scr.window;

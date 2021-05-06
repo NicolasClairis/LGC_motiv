@@ -1,6 +1,6 @@
-function[T0, TTL] = LGCM_keyboard_check_start(dummy_scan, trigger_id, key)
-%[T0, TTL] = LGCM_keyboard_check_start(dummy_scan, trigger_id, key)
-% LGCM_keyboard_check_start starts recording key presses (and TTL inputs)
+function[T0, TTL] = keyboard_check_start(dummy_scan, trigger_id, key)
+%[T0, TTL] = keyboard_check_start(dummy_scan, trigger_id, key)
+% keyboard_check_start starts recording key presses (and TTL inputs)
 %
 % INPUTS
 % dummy_scan: number of TTL to wait before starting the task
@@ -15,7 +15,7 @@ function[T0, TTL] = LGCM_keyboard_check_start(dummy_scan, trigger_id, key)
 %
 % TTL: vector which will serve to keep all TTL
 %
-% See also LGCM_keyboard_check_end.m
+% See also keyboard_check_end.m
 
 next = 0;
 TTL = []; % TTL TIMES

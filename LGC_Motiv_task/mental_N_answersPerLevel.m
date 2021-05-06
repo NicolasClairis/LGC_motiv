@@ -1,6 +1,6 @@
-function[n_to_reach] = LGCM_mental_N_answersPerLevel(n_E_levels)
-% [n_to_reach] = LGCM_mental_N_answersPerLevel(n_E_levels)
-% LGCM_mental_N_answersPerLevel will determine the number of correct
+function[n_to_reach] = mental_N_answersPerLevel(n_E_levels)
+% [n_to_reach] = mental_N_answersPerLevel(n_E_levels)
+% mental_N_answersPerLevel will determine the number of correct
 % answers to provide for each difficulty level depending on the total
 % number of difficulty levels that you want to implement
 % 
@@ -11,7 +11,7 @@ function[n_to_reach] = LGCM_mental_N_answersPerLevel(n_E_levels)
 % n_to_reach: structure with the corresponding number of correct answers to
 % provide for each difficulty level
 %
-% See also LGCM_choice_task_main.m
+% See also choice_task_main.m
 
 if n_E_levels < 3
     error('not enough difficulty levels!');

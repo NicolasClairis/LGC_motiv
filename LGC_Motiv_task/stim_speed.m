@@ -1,6 +1,6 @@
-function [speed] = LGCM_stim_speed(window)
-%[speed] = LGCM_stim_speed(window)
-% LGCM_stim_speed
+function [speed] = stim_speed(window)
+%[speed] = stim_speed(window)
+% stim_speed
 %
 % INPUTS
 % window: identification of the PTB window
@@ -8,7 +8,7 @@ function [speed] = LGCM_stim_speed(window)
 % OUTPUTS
 % speed: structure with main informations about stimulus speed display
 %
-% See also LGCM_main_experiment.m
+% See also main_experiment.m
 
 %% Query the frame duration
 speed.ifi = Screen('GetFlipInterval', window);

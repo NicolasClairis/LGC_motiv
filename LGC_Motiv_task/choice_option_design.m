@@ -1,6 +1,6 @@
-function[choice_opt] = LGCM_choice_option_design(n_R_levels, n_E_levels, punishment_yn, n_trials)
-%[choice_opt] = LGCM_choice_option_design(n_R_levels, n_E_levels, punishment_yn, n_trials)
-% LGCM_choice_option_design will create the design matrix of the trials to
+function[choice_opt] = choice_option_design(n_R_levels, n_E_levels, punishment_yn, n_trials)
+%[choice_opt] = choice_option_design(n_R_levels, n_E_levels, punishment_yn, n_trials)
+% choice_option_design will create the design matrix of the trials to
 % be presented at each trial:
 % condition: punishment or reward?
 % reward and effort level associated to each option
@@ -35,10 +35,10 @@ switch punishment_yn
     case 'yes'
         n_trials_per_condition = n_trials/2;
         % rewards
-        choice_design_RE = LGCM_choice_design_RE_levels(n_R_levels, n_E_levels, n_trials_per_condition, 'R');
+        choice_design_RE = choice_design_RE_levels(n_R_levels, n_E_levels, n_trials_per_condition, 'R');
         % punishment: be careful matrix is not defined the same way (high
         % punishment left is like low reward left)
-        choice_design_PE = LGCM_choice_design_RE_levels(n_R_levels, n_E_levels, n_trials_per_condition, 'P');
+        choice_design_PE = choice_design_RE_levels(n_R_levels, n_E_levels, n_trials_per_condition, 'P');
         % pool all together
         choice_design.allOptions = [choice_design_RE.allOptions, choice_design_PE.allOptions];
         choice_design.reward.left   = [choice_design_RE.reward.left, choice_design_PE.punishment.left];
@@ -50,7 +50,7 @@ switch punishment_yn
         R_or_P_tmp = [repmat({'R'},1,n_trials_per_condition), repmat({'P'},1,n_trials_per_condition)]; % (0 for punishment and 1 for reward)
         
     case 'no'
-        choice_design = LGCM_choice_design_RE_levels(n_R_levels, n_E_levels, n_trials, 'R');
+        choice_design = choice_design_RE_levels(n_R_levels, n_E_levels, n_trials, 'R');
 end
 
 %% randomize order of the trials

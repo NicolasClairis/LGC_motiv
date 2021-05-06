@@ -1,5 +1,5 @@
-function [trainingChoiceOptions, nTrainingTrials, R_or_P] = LGCM_training_options(taskTrainingCond, n_R_levels, n_E_levels)
-% [trainingChoiceOptions] = LGCM_training_options(taskTrainingCond, n_R_levels, n_E_levels)
+function [trainingChoiceOptions, nTrainingTrials, R_or_P] = training_options(taskTrainingCond, n_R_levels, n_E_levels)
+% [trainingChoiceOptions] = training_options(taskTrainingCond, n_R_levels, n_E_levels)
 % design of the reward, effort and punishment options for the learning
 % phase
 %

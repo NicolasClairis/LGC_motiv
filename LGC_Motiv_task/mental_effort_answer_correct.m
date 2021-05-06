@@ -1,6 +1,6 @@
-function[answerCorrect] = LGCM_mental_effort_answer_correct(task_type, numberVal, sideAnswer, sideQuestion)
-%[answerCorrect] = LGCM_mental_effort_answer_correct(task_type, numberVal, sideAnswer, sideQuestions)
-% LGCM_mental_effort_answer_correct will tell you if the current question
+function[answerCorrect] = mental_effort_answer_correct(task_type, numberVal, sideAnswer, sideQuestion)
+%[answerCorrect] = mental_effort_answer_correct(task_type, numberVal, sideAnswer, sideQuestions)
+% mental_effort_answer_correct will tell you if the current question
 % was solved correctly or not
 %
 % INPUTS

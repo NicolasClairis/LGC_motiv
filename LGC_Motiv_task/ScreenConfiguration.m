@@ -1,5 +1,5 @@
-function[scr, xScreenCenter, yScreenCenter, window, baselineTextSize] = LGCM_ScreenConfiguration(IRM, testing_script)
-% [scr, xScreenCenter, yScreenCenter, window, baselineTextSize] = LGCM_ScreenConfiguration(IRM, testing_script)
+function[scr, xScreenCenter, yScreenCenter, window, baselineTextSize] = ScreenConfiguration(IRM, testing_script)
+% [scr, xScreenCenter, yScreenCenter, window, baselineTextSize] = ScreenConfiguration(IRM, testing_script)
 % function with common parameters for starting psychtoolbox for any of the
 % three tasks used in fMRI (taskGripRP, taskMentalRP and taskLearning75).
 % It could be reused by any other task.

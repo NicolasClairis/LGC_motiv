@@ -1,12 +1,12 @@
-function[onset_stim] = LGCM_mental_display_stim(scr, stim,...
+function[onset_stim] = mental_display_stim(scr, stim,...
     startAngle, endAngle,...
     sideQuestion, taskType, numberValue, mental_n_col,...
     learning_instructions)
-% [onset_stim] = LGCM_mental_display_stim(scr, stim,...
+% [onset_stim] = mental_display_stim(scr, stim,...
 %     startAngle, endAngle,...
 %     sideQuestion, taskType, numberValue, mental_n_col,...
 %     learning_instructions)
-% LGCM_mental_display_stim will display the arc, number to solve,
+% mental_display_stim will display the arc, number to solve,
 % instructions and reward level (all relevant info) according to the inputs
 %
 % INPUTS
@@ -37,7 +37,7 @@ function[onset_stim] = LGCM_mental_display_stim(scr, stim,...
 % OUTPUTS
 % onset_stim: time when everything appears on screen
 %
-% See also LGCM_mental_learning.m
+% See also mental_learning.m
 
 %% extract relevant parameters
 window = scr.window;
@@ -68,7 +68,7 @@ Screen('TextSize', window, scr.textSize.baseline);
 %% instructions
 switch learning_instructions
     case {'fullInstructions','partialInstructions'}
-        LGCM_mental_effort_task_question_display(scr, taskType, sideQuestion, textColor, learning_instructions);
+        mental_effort_task_question_display(scr, taskType, sideQuestion, textColor, learning_instructions);
 end
 
 %% display on screen
