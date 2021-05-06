@@ -147,10 +147,12 @@ switch effort_type
         if ~learning_done
             n_maxLearning.learning_withInstructions = 6;%20;
             n_maxLearning.learning_withoutInstructions = 6;%30;
-        elseif learning_done % short retraining at the beginning of each block
-            n_maxLearning.learning_withInstructions = 6;%10;
-            n_maxLearning.learning_withoutInstructions = 6;%10;
+        elseif learning_done % short retraining at the beginning of each block to remind the mapping
+            n_maxLearning.learning_withInstructions = 3;
+            n_maxLearning.learning_withoutInstructions = 3;
         end % learning + training session
+    case 'physical'
+        n_learningForceRepeats = 3; % number of learning repetitions for each level of force
 end
 
 % calibration
@@ -160,6 +162,9 @@ switch effort_type % in case you use different numbers for each effort type
     case 'physical'
         n_calibTrials = 5;
 end
+
+% max performance (beginning and end of each MRI session)
+n_MaxPerfTrials = 3;
 
 % actual task
 % n_R_levels = 4;
@@ -258,25 +263,15 @@ switch effort_type
                 end % learning instructions loop
             end % learning colour loop
         end % MRI filter
-        
-    case 'physical'
-        % learning should be short to avoid exhausting the participant.
-        % Maybe just perform twice each level of effort so that they get an idea of what it implies?
-        error('physical effort learning to be added here.');
 end
 
-%% calibration and max perf measurement before start of the session
-switch effort_type
-    case 'mental'
-        %% max performance measurement
-        if ~learning_done
+%% calibration (before the MRI)
+if IRM == 0 && ~learning_done
+    switch effort_type
+        case 'mental'
+            %% max performance measurement
             % extract numbers to use for each calibration trial
             [numberVector_calib] = mental_numbers(n_calibTrials);
-            
-            %% in case of using a fixed time and calibrating the maximal number of correct answers
-            %             n_mental_max_perTrial = mental_calibNumbers(scr, stim, key,...
-            %                 numberVector_calib, mentalE_prm, n_calibTrials,...
-            %                 n_calibMax, calibTimes);
             
             %% alternatively, use fixed number of correct answers to provide for each effort
             % level
@@ -294,46 +289,65 @@ switch effort_type
             end
             % save calib performance
             save(calibPerf_file_nm,'t_min_calib');
-        elseif learning_done
-            % indicate max performance
-            t_min_calib = getfield(load(calibPerf_file_nm,'t_min_calib'),'t_min_calib');
-            % perform one trial
-            [numberVector_initialMaxPerf] = mental_numbers(n_calibTrials);
-            n_initialMaxPerfTrials = 1;
-            [t_min_initialMaxPerf, initialMaxPerfSessionSummary, initialMaxPerfSuccess] = mental_calibTime(scr, stim, key,...
-                numberVector_initialMaxPerf, mentalE_prm_learning_and_calib, n_initialMaxPerfTrials, n_calibMax, calibTimes);
-        end % learning + training session
-        t_max_effort = t_min_calib*t_min_scalingFactor; % allow more time then min performance
-        taskTimes.max_effort = t_max_effort;
-        
-        % in case you calibrate number of correct answers during the
-        % training
-        %         % define levels of difficulty based on the calibration
-        %         for iE_level = 1:n_E_levels
-        %             n_to_reach.(['E_level_',num2str(iE_level)]) = round((iE_level/(n_E_levels + 1))*n_mental_max_perTrial);
-        %             warning('you should check that all levels are effort can be differentiated or you have a big problem');
-        %         end
-        
-    case 'physical'% for physical effort, ask the MVC
-        
-        if ~learning_done % record and store global MVC
+            
+            
+        case 'physical'% for physical effort, ask the MVC
+            % record and store global MVC
             [initial_MVC, onsets_initial_MVC] = MVC_measurement(scr, stim, dq, n_MVC_repeat, calibTimes);
             MVC = nanmax(initial_MVC); % expressed in Voltage
             save(calibPerf_file_nm,'MVC');
-        elseif learning_done % retrieve stored MVC and
+    end
+    
+else % load max performance from calibration
+    switch effort_type
+        case 'mental'
+            t_min_calib = getfield(load(calibPerf_file_nm,'t_min_calib'),'t_min_calib');
+        case 'physical'
+            MVC = getfield(load(calibPerf_file_nm,'MVC'),'MVC'); % expressed in Voltage
+    end
+end
+
+% mental effort: increase time available based on calibration max
+% performance
+switch effort_type
+    case 'mental'
+        t_training_max_effort = t_min_calib*trainingTimes.t_min_scalingFactor; % allow more time then min performance
+        trainingTimes.max_effort = t_training_max_effort;
+        t_max_effort = t_min_calib*taskTimes.t_min_scalingFactor; % allow more time then min performance
+        taskTimes.max_effort = t_max_effort;
+end
+
+%% learning (for physical effort task)
+% needs to be done after the calibration
+switch effort_type
+    case 'physical'
+        % learning should be short to avoid exhausting the participant.
+        % just perform X times each level of effort so that they get an idea of what it implies
+        [learningPerfSummary, learningOnsets] = physical_learning(scr, stim, dq, n_E_levels, Ep_time_levels,...
+            F_threshold, F_tolerance, MVC,...
+            n_learningForceRepeats);
+end
+
+%% max perf measurement before start of each session
+if IRM ~= 1 || learning_done
+    switch effort_type
+        case 'mental'
+            % perform max perf
+            [numberVector_initialMaxPerf] = mental_numbers(n_MaxPerfTrials);
+            [t_min_initialMaxPerf, initialMaxPerfSessionSummary, initialMaxPerfSuccess] = mental_calibTime(scr, stim, key,...
+                numberVector_initialMaxPerf, mentalE_prm_learning_and_calib, n_MaxPerfTrials, n_calibMax, calibTimes);
+        case 'physical'
             % take an initial MVC measurement (even if it has been done in a
             % previous session, will allow us to keep track of the force level
-            % of our participants) but in this case only do it once
-            MVC = getfield(load(calibPerf_file_nm,'MVC'),'MVC'); % expressed in Voltage
-            n_calib_repeat = 1;
-            [initial_MVC, onsets_initial_MVC] = MVC_measurement(scr, stim, dq, n_calib_repeat, calibTimes);
-        end
+            % of our participants)
+            [initial_MVC, onsets_initial_MVC] = MVC_measurement(scr, stim, dq, n_MaxPerfTrials, calibTimes);
+    end
 end
 
 %% short training should be added there (as similar as possible to the main task
 % but no actual incentives involved? ie specify to the participants
 % this will not be rewarded) => this should be included at the
-% beginning of every session
+% beginning of the training session
 if IRM == 0
     switch punishment_yn
         case 'yes'
@@ -349,15 +363,6 @@ if IRM == 0
         % define parameters for the training
         % reward/punishment and effort levels
         [trainingChoiceOptions, n_trainingTrials, R_or_P_training] = training_options(taskTrainingCond, n_R_levels, n_E_levels);
-        jittersTraining = linspace(0.5, 3.5, n_trainingTrials);
-        jitterTrainingRdmPerm = randperm(n_trainingTrials);
-        t_trainingCross = jittersTraining(jitterTrainingRdmPerm);
-        trainingTimings.t_cross = t_trainingCross;
-        trainingTimings.t_max_effort = t_max_effort;
-        trainingTimings.t_instructions = t_trainingInstructions;
-        trainingTimings.t_choice = t_choice;
-        trainingTimings.t_fbk = t_fbk;
-        trainingTimings.t_dispChoice = t_dispChoice;
         
         % start with reward training alone
         switch effort_type
@@ -368,7 +373,7 @@ if IRM == 0
                 Ep_or_Em_vars.n_to_reach = n_to_reach;
         end
         [trainingSummary.(taskTrainingCond)] = choice_and_perf_training(scr, stim, key, effort_type, Ep_or_Em_vars, R_money,...
-                    taskTrainingCond, R_or_P_training, n_trainingTrials, trainingChoiceOptions, trainingTimings);
+            taskTrainingCond, R_or_P_training, n_trainingTrials, trainingChoiceOptions, trainingTimes);
     end % learning condition loop
     
     DrawFormattedText(window,'Bravo! Votre entraînement est terminé.',...
@@ -624,7 +629,7 @@ if IRM == 1 % || IRM == 0 %for piloting
     Screen('FillRect',window,white, stim.cross.verticalLine); % vertical line
     Screen('FillRect',window,white, stim.cross.horizontalLine); % horizontal line
     [~,onsets.finalCross] = Screen('Flip',window); % display the cross on screen
-    WaitSecs(t_finalCross);
+    WaitSecs(taskTimes.finalCross);
     
     %% display feedback for the current session
     DrawFormattedText(window,...
@@ -727,6 +732,8 @@ if IRM == 1
     switch effort_type
         case 'physical'
             all.physicalPerf = perfSummary;
+            all.learning.perf = learningPerfSummary;
+            all.learning.onsets = learningOnsets;
         case 'mental'
             if IRM == 0
                 all.learningPerf = mentalE_learningPerf;
