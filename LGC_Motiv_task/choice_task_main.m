@@ -211,46 +211,12 @@ switch punishment_yn
         error('punishment_yn has not been initiliazed.');
 end
 
-%% timings
-% calibration timings
-calibTimes.instructions = 5;
-switch effort_type % in case you use different numbers for each effort type
-    case 'mental'
-        calibTimes.effort_max = 10; % maximal time to perform the task (calibrated time should be shorter)
-    case 'physical'
-        calibTimes.instructions_bis = 10;
-        calibTimes.effort_max = 5;% time to perform the task
-        %         calibTimes.
-        calibTimes.t_MVC_rest = 7; % rest after each MVC calibration
-end
-calibTimes.fbk = 2;
+%% load timings for each phase of the experiment
+[trainingTimes, calibTimes, taskTimes] = timings_definition(n_trainingTrials, nTrials);
 
-% training timings
-t_trainingInstructions = 5;
-t_trainingEnd = 5;
-
-% main task timings
-jitters = linspace(0.5, 3.5, nTrials);
-jitterRdmPerm = randperm(nTrials);
-t_cross = jitters(jitterRdmPerm);
-
-t_finalCross = 5;
-t_choice = 7;
-t_dispChoice = 3;
-switch effort_type
-    case 'physical' % in case you use different numbers for each effort type
-        t_max_effort = 5; % time to perform the task
-        taskTimes.max_effort = t_max_effort;
-    case 'mental'
-        t_min_scalingFactor = 150/100; % multiply calibrated minimal time by this value
-end
-t_fbk = 1; % feedback display
-taskTimes.cross = t_cross;
-taskTimes.choice = t_choice;
-taskTimes.dispChoice = t_dispChoice;
-taskTimes.feedback = t_fbk;
-
-%% learning
+%% learning (for mental effort)
+% for physical effort, you need to perform the MVC calibration before the
+% learning phase
 switch effort_type
     case 'mental' % for mental effort, define all the number sequences in advance
         

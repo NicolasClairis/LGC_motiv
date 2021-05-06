@@ -57,12 +57,12 @@ xScreenCenter = scr.xCenter;
 barTimeWaitRect = stim.barTimeWaitRect;
 
 % timings
-t_max_effort = timings.t_max_effort;
-t_cross = timings.t_cross;
-t_instructions = timings.t_instructions;
-t_choice = timings.t_choice;
-t_dispChoice = timings.t_dispChoice;
-t_fbk = timings.t_fbk;
+t_max_effort    = timings.max_effort;
+t_cross         = timings.cross;
+t_instructions  = timings.instructions;
+t_choice        = timings.choice;
+t_dispChoice    = timings.dispChoice;
+t_fbk           = timings.fbk;
 
 % specific variables
 switch effort_type
