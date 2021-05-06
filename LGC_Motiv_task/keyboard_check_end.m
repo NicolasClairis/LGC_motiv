@@ -1,5 +1,5 @@
-function[TTL, keyLeft, keyRight] = LGCM_keyboard_check_end(TTL, trigger_id)
-%[TTL, keyLeft, keyRight] = LGCM_keyboard_check_end(TTL, trigger_id)
+function[TTL, keyLeft, keyRight] = keyboard_check_end(TTL, trigger_id)
+%[TTL, keyLeft, keyRight] = keyboard_check_end(TTL, trigger_id)
 %
 % INPUTS
 % TTL: vector with initial fMRI TTL timings
@@ -13,7 +13,7 @@ function[TTL, keyLeft, keyRight] = LGCM_keyboard_check_end(TTL, trigger_id)
 %
 % keyRight: timing for all presses of right key
 %
-% See also LGCM_keyboard_check_start.m
+% See also keyboard_check_start.m
 
 %% stop recording key presses
 KbQueueStop;

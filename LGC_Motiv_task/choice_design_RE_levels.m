@@ -1,6 +1,6 @@
-function [choice_design] = LGCM_choice_design_RE_levels(n_RP_levels, n_E_levels, n_trials, RP_condition)
-%[choice_design] = LGCM_choice_design_RE_levels(n_RP_levels, n_E_levels, n_trials, RP_condition)
-% LGCM_choice_design_RE_levels will extract the levels of difficulty for
+function [choice_design] = choice_design_RE_levels(n_RP_levels, n_E_levels, n_trials, RP_condition)
+%[choice_design] = choice_design_RE_levels(n_RP_levels, n_E_levels, n_trials, RP_condition)
+% choice_design_RE_levels will extract the levels of difficulty for
 % each choice trial based on the number of trials and number of reward and
 % effort conditions required.
 %
@@ -27,7 +27,7 @@ function [choice_design] = LGCM_choice_design_RE_levels(n_RP_levels, n_E_levels,
 %   .effort
 %       .left/right: effort level for left vs right option
 %
-% See also LGCM_choice_option_design.m
+% See also choice_option_design.m
 
 %% define possible values for R and E
 possible_E = 1:n_E_levels;

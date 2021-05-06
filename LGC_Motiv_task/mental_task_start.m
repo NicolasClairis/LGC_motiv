@@ -1,7 +1,7 @@
-function[mental_taskType_trialStart] = LGCM_mental_task_start(n_trials)
-%[mental_taskType_trialStart] = LGCM_mental_task_start(n_trials)
+function[mental_taskType_trialStart] = mental_task_start(n_trials)
+%[mental_taskType_trialStart] = mental_task_start(n_trials)
 %
-% LGCM_mental_task_start will randomize the type of task for the first
+% mental_task_start will randomize the type of task for the first
 % question of each trial
 %
 % INPUTS

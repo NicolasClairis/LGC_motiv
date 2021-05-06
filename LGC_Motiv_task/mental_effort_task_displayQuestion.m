@@ -1,6 +1,6 @@
-function[] = LGCM_mental_effort_task_displayQuestion(scr, stim, startAngle, endAngle, task_type, R_chosen, R_or_P, numberValue)
-%LGCM_mental_effort_task_displayQuestion(scr, stim, startAngle, endAngle, task_type, R_chosen, R_or_P, numberValue)
-% LGCM_mental_effort_task_displayQuestion will display all relevant information for mental
+function[] = mental_effort_task_displayQuestion(scr, stim, startAngle, endAngle, task_type, R_chosen, R_or_P, numberValue)
+%mental_effort_task_displayQuestion(scr, stim, startAngle, endAngle, task_type, R_chosen, R_or_P, numberValue)
+% mental_effort_task_displayQuestion will display all relevant information for mental
 % effort task
 %
 % INPUTS
@@ -55,6 +55,6 @@ Screen('FillArc', window,...
 DrawFormattedText(window,num2str(numberValue), 'center', yScreenCenter*(1/6));
 
 % display question according to type of task on which to start
-LGCM_mental_effort_task_question_display(scr, task_type);
+mental_effort_task_question_display(scr, task_type);
 
 end % function

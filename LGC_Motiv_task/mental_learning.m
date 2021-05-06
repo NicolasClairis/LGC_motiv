@@ -1,6 +1,6 @@
-function[onset_Press] = LGCM_mental_learning(scr, learning_col, learning_instructions, mentalE_prm)
-% [onset_Press] = LGCM_mental_learning(scr, learning_col, learning_instructions, mentalE_prm)
-% LGCM_mental_learning will display instructions before learning starts.
+function[onset_Press] = mental_learning(scr, learning_col, learning_instructions, mentalE_prm)
+% [onset_Press] = mental_learning(scr, learning_col, learning_instructions, mentalE_prm)
+% mental_learning will display instructions before learning starts.
 %
 % INPUTS
 % scr: structure with screen parameters

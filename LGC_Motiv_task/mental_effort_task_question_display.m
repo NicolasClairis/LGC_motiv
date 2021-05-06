@@ -1,6 +1,6 @@
-function[] = LGCM_mental_effort_task_question_display(scr, task_trialType, sideQuestion, textCol, learning_instructions)
-% [] = LGCM_mental_effort_task_question_display(scr, task_trialStart, sideQuestion, textCol, learning_instructions)
-% LGCM_mental_effort_task_question_display will display question for the
+function[] = mental_effort_task_question_display(scr, task_trialType, sideQuestion, textCol, learning_instructions)
+% [] = mental_effort_task_question_display(scr, task_trialStart, sideQuestion, textCol, learning_instructions)
+% mental_effort_task_question_display will display question for the
 % mental effort being made according to the current task.
 %
 % INPUTS
@@ -26,7 +26,7 @@ function[] = LGCM_mental_effort_task_question_display(scr, task_trialType, sideQ
 % question anymore
 % 'noInstructions': no reminder of what the question is nor of where you should answer
 %
-% See also LGCM_mental_effort.m
+% See also mental_effort.m
 
 %% check no error in script
 if ~ismember(learning_instructions,{'fullInstructions','partialInstructions'})

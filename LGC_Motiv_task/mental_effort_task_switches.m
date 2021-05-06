@@ -1,5 +1,5 @@
-function[task_seq] = LGCM_mental_effort_task_switches(prev_task_type, n_correctAnswerToProvide, n_switch)
-% [task_seq] = LGCM_mental_effort_task_switches(prev_task_type, n_correctAnswerToProvide, n_switch)
+function[task_seq] = mental_effort_task_switches(prev_task_type, n_correctAnswerToProvide, n_switch)
+% [task_seq] = mental_effort_task_switches(prev_task_type, n_correctAnswerToProvide, n_switch)
 %
 % INPUTS
 % prev_task_type: initial task type = starting type of the sequence

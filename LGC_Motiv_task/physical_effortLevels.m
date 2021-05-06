@@ -1,6 +1,6 @@
-function [Ep_time_levels] = LGCM_physical_effortLevels(n_E_levels)
-%[Ep_time_levels] = LGCM_physical_effortLevels(n_E_levels)
-% LGCM_physical_effortLevels will determine the duration (in seconds)
+function [Ep_time_levels] = physical_effortLevels(n_E_levels)
+%[Ep_time_levels] = physical_effortLevels(n_E_levels)
+% physical_effortLevels will determine the duration (in seconds)
 % corresponding to each difficulty level according to the total number of
 % difficulty conditions (n_E_levels) that has been defined.
 %
