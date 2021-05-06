@@ -21,15 +21,15 @@ mdlPrm.fatigueType = questdlg('How do you want to model fatigue?',...
     'trial number','sum of efforts','effort integral',...
     'trial number'); % consider trial number, sum of effort levels until current trial or integral of effort performed
 
-mdlPrm.kR_tasksSplitOrPool = questdlg('Pool tasks together to estimate kR or check them separately?',...
-    '1 kR per subject or per task per subject',...
+mdlPrm.kRP_tasksSplitOrPool = questdlg('Pool tasks together to estimate kR and kP or check them separately?',...
+    '1 kR and 1 kP per subject or per task per subject',...
     'pool','split',...
     'split');
 
 % extract model parameters
 fatigueEvolOrObs    = mdlPrm.fatigueEvolOrObs;
 fatigueType         = mdlPrm.fatigueType;
-kR_tasksSplitOrPool = mdlPrm.kR_tasksSplitOrPool;
+kRP_tasksSplitOrPool = mdlPrm.kRP_tasksSplitOrPool;
 
 %% prepare the model variables to use for VBA model estimation
 nTrialsPerSession = 44;
@@ -41,12 +41,13 @@ nTotalTrials = nTrialsPerTask*nTasks;
 nTotalSessions = nSessionsPerTask*nTasks;
 
 % initialize parameters of interest
-switch kR_tasksSplitOrPool
+switch kRP_tasksSplitOrPool
     case 'pool'
         % one variable to explain for both tasks
         [choice_left,...
             trialN,...
             Rleft, Rright,...
+            R_or_P,...
             EleftPool_Em, ErightPool_Em,...
             EleftPool_Ep, ErightPool_Ep,...
             sumEprevPool_Em, intEprevPool_Em,...
@@ -59,6 +60,7 @@ switch kR_tasksSplitOrPool
         [choice_left_Ep,...
             trialN_Ep,...
             Rleft_Ep, Rright_Ep,...
+            R_or_P_Ep,...
             Eleft_Ep, Eright_Ep,...
             sumEprev_Ep, intEprev_Ep,...
             ElevelPrevTrial_Ep,...
@@ -66,6 +68,7 @@ switch kR_tasksSplitOrPool
         [choice_left_Em,...
             trialN_Em,...
             Rleft_Em, Rright_Em,...
+            R_or_P_Em,...
             Eleft_Em, Eright_Em,...
             sumEprev_Em, intEprev_Em,...
             ElevelPrevTrial_Em,...
@@ -112,15 +115,20 @@ for iTask = 1:nTasks
                     error('define how to compute integral of effort for physical effort task');
             end
         end
+        R_or_P_str_tmp = loadStruct.R_or_P; % load reward or punishment string
+        % convert in a variable = to (0) for punishments and to (+1) for
+        % rewards
+        R_or_P_tmp = strcmp(R_or_P_str_tmp,'R');
         
         % store into variables for the model
-        switch kR_tasksSplitOrPool
+        switch kRP_tasksSplitOrPool
             case 'pool'
                 trials_idx = (1:nTrialsPerSession) + nTrialsPerSession*(iSession - 1) + nTrialsPerTask*(iTask - 1);
                 choice_left(trials_idx) = choice_tmp;
                 trialN(trials_idx) = trialN_tmp;
                 Rleft(trials_idx) = Rleft_tmp;
                 Rright(trials_idx) = Rright_tmp;
+                R_or_P(trials_idx) = R_or_P_tmp;
                 switch task_nm
                     case 'mental'
                         EleftPool_Em(trials_idx)    = Eleft_tmp;
@@ -154,6 +162,7 @@ for iTask = 1:nTasks
                         trialN_Ep(trials_idx) = trialN_tmp;
                         Rleft_Ep(trials_idx) = Rleft_tmp;
                         Rright_Ep(trials_idx) = Rright_tmp;
+                        R_or_P_Ep(trials_idx) = R_or_P_tmp;
                         Eleft_Ep(trials_idx) = Eleft_tmp;
                         Eright_Ep(trials_idx) = Eright_tmp;
                         sumEprev_Ep(trials_idx) = sumEprev_tmp;
@@ -165,6 +174,7 @@ for iTask = 1:nTasks
                         trialN_Em(trials_idx) = trialN_tmp;
                         Rleft_Em(trials_idx) = Rleft_tmp;
                         Rright_Em(trials_idx) = Rright_tmp;
+                        R_or_P_Em(trials_idx) = R_or_P_tmp;
                         Eleft_Em(trials_idx) = Eleft_tmp;
                         Eright_Em(trials_idx) = Eright_tmp;
                         sumEprev_Em(trials_idx) = sumEprev_tmp;
@@ -180,36 +190,35 @@ end % loop through physical and mental effort tasks
 %% Define number of parameters to estimate
 switch fatigueEvolOrObs
     case 'hidden state'
-        switch kR_tasksSplitOrPool
+        switch kRP_tasksSplitOrPool
             case 'pool'
-                n_G_prm = 3; % kR, kEm, kEp
-                G_Phi_prm_nm = {'kR','kEm','kEp'};
+                G_Phi_prm_nm = {'kR','kP','kEm','kEp'};
                 % 1 fatigue component per task kF_Ep and kF_Em
-                n_hiddenStates = 2; % kF physical and kF mental
-                n_F_prm = 2; % fatigue component evolving through time
-                F_Phi_prm_nm = {'kFEm','kFE'};
+                F_Phi_prm_nm = {'kFEm','kFE'}; % Fatigue physical and Fatigue mental
             case 'split'
-                n_G_prm = 2; % kR and kE for each task
-                G_Phi_prm_nm = {'kR','kE'};
+                G_Phi_prm_nm = {'kR','kP','kE'};
                 % 1 fatigue component
-                n_hiddenStates = 1;
-                n_F_prm = 1; % fatigue component evolving through time
-                F_Phi_prm_nm = {'kF'};
+                F_Phi_prm_nm = {'kF'}; % fatigue component evolving through time
         end
+        n_G_prm = length(G_Phi_prm_nm);
+        n_F_prm = length(F_Phi_prm_nm); 
+        n_hiddenStates = n_F_prm; % (hidden states = fatigue components = number of F parameters)
     case 'observation parameter' % no evolution function nor any hidden state
+        % no hidden states in this case (=no evolution function)
+        F_Phi_prm_nm = {''};
         n_hiddenStates = 0;
         n_F_prm = 0;
-        switch kR_tasksSplitOrPool
+        % observation parameters
+        switch kRP_tasksSplitOrPool
             case 'pool'
-                n_G_prm = 5; % kR, kEm, kEp, kFEm, kFEp
-                G_Phi_prm_nm = {'kR','kEm','kEp','kFEm','kFEp'};
+                G_Phi_prm_nm = {'kR','kP','kEm','kEp','kFEm','kFEp'};
             case 'split'
-                n_G_prm = 3; % kR, kE and kF for each task
-                G_Phi_prm_nm = {'kR','kE','kF'};
+                G_Phi_prm_nm = {'kR','kP','kE','kF'};
         end
+        n_G_prm = length(G_Phi_prm_nm);
 end
 
-switch kR_tasksSplitOrPool
+switch kRP_tasksSplitOrPool
     case 'pool'
         nTrialsEstimation = nTotalTrials;
     case 'split'
@@ -219,7 +228,7 @@ end
 %% Define VBA options
 
 % enter the variables in VBA format
-switch kR_tasksSplitOrPool
+switch kRP_tasksSplitOrPool
     case 'pool'
         u_t = [trialN;...
             Rleft; Rright;...
@@ -229,20 +238,23 @@ switch kR_tasksSplitOrPool
             sumEprevPool_Ep; intEprevPool_Ep;...
             effort_type;...
             ElevelPrevTrialPool_Em; ElevelPrevTrialPool_Ep;...
-            EintegralPrevTrialPool_Em; EintegralPrevTrialPool_Ep];
+            EintegralPrevTrialPool_Em; EintegralPrevTrialPool_Ep;...
+            R_or_P];
     case 'split'
         u_t_Ep = [trialN_Ep;...
             Rleft_Ep; Rright_Ep;...
             Eleft_Ep; Eright_Ep;...
             sumEprev_Ep; intEprev_Ep;...
             ElevelPrevTrial_Ep,...
-            EintegralPrevTrial_Ep];
+            EintegralPrevTrial_Ep;...
+            R_or_P_Ep];
         u_t_Em = [trialN_Em;...
             Rleft_Em; Rright_Em;...
             Eleft_Em; Eright_Em;...
             sumEprev_Em; intEprev_Em;...
             ElevelPrevTrial_Em,...
-            EintegralPrevTrial_Em];
+            EintegralPrevTrial_Em;...
+            R_or_P_Em];
 end
 % define number of parameters to estimate
 dim = struct('n', n_hiddenStates,... % number of hidden states
@@ -279,7 +291,7 @@ options.priors.SigmaPhi = eye(n_G_prm);
 
 %% use multisession to pool sessions together but considering that they can have
 % different noise levels
-switch kR_tasksSplitOrPool
+switch kRP_tasksSplitOrPool
     case 'pool'
         options.multisession.split = repmat(nTrialsPerSession, 1, nTotalSessions);
     case 'split'
@@ -287,7 +299,7 @@ switch kR_tasksSplitOrPool
 end
 % fix the parameters which should be equivalent across sessions and those
 % which can vary independently in each session
-switch kR_tasksSplitOrPool
+switch kRP_tasksSplitOrPool
     case 'pool' % need to see how to fix kR across sessions but not the parameters specific to each task
         if strcmp(fatigueEvolOrObs,'hidden state')
             options.multisession.fixed.theta = 1:n_F_prm;
@@ -302,7 +314,7 @@ end
 
 %% need to define options separetely (for trials to ignore in particular)
 % for each model when tasks are studied separately
-switch kR_tasksSplitOrPool
+switch kRP_tasksSplitOrPool
     case 'split'
         options_Em = options;
         options_Ep = options;
@@ -311,7 +323,7 @@ end
 %% select trials to ignore
 
 % ignore trials where no answer was provided for the estimation of the model
-switch kR_tasksSplitOrPool
+switch kRP_tasksSplitOrPool
     case 'split'
         % mental effort
         noChoiceTrials_Em = isnan(choice_left_Em);
@@ -327,7 +339,7 @@ end
 % avoid updating hidden states (fatigue) for the first trial and for any
 % trial where there was no effort performance (because choice too slow or
 % performance failure)
-switch kR_tasksSplitOrPool
+switch kRP_tasksSplitOrPool
     case 'split'
         options_Em.skipf = zeros(nTrialsEstimation,1);
         options_Ep.skipf = zeros(nTrialsEstimation,1);
@@ -358,7 +370,7 @@ end
 g_fname = @LGCM_g_observation;
 
 %% Do Laplacian inversion of the model with the VBA
-switch kR_tasksSplitOrPool
+switch kRP_tasksSplitOrPool
     case 'pool'
         [posterior, out] = VBA_NLStateSpaceModel(choice_left, u_t, f_fname, g_fname, dim, options);
     case 'split'
@@ -370,7 +382,7 @@ end
 
 % note: if you want to add some constraints on the parameters (ie > 0 or
 % else) you might want to use functions like exp/log to transform them
-switch kR_tasksSplitOrPool
+switch kRP_tasksSplitOrPool
     case 'pool'
         switch fatigueEvolOrObs
             case 'hidden state'
@@ -378,27 +390,31 @@ switch kR_tasksSplitOrPool
                 kFEm.mean = posterior.muTheta(1);
                 kFEp.mean = posterior.muTheta(2);
                 kR.mean      = posterior.muPhi(1);
-                kEm.mean      = posterior.muPhi(2);
-                kEp.mean      = posterior.muPhi(3);
+                kP.mean      = posterior.muPhi(2);
+                kEm.mean      = posterior.muPhi(3);
+                kEp.mean      = posterior.muPhi(4);
                 % extract variance
                 kFEm.sigma = posterior.SigmaTheta(1);
                 kFEp.sigma = posterior.SigmaTheta(2);
                 kR.sigma      = posterior.SigmaPhi(1);
-                kEm.sigma      = posterior.SigmaPhi(2);
-                kEp.sigma      = posterior.SigmaPhi(3);
+                kP.sigma      = posterior.SigmaPhi(2);
+                kEm.sigma      = posterior.SigmaPhi(3);
+                kEp.sigma      = posterior.SigmaPhi(4);
             case 'observation parameter'
                 % extract mean
                 kR.mean      = posterior.muPhi(1);
-                kEm.mean      = posterior.muPhi(2);
-                kEp.mean      = posterior.muPhi(3);
-                kFEm.mean      = posterior.muPhi(4);
-                kFEp.mean      = posterior.muPhi(5);
+                kP.mean      = posterior.muPhi(2);
+                kEm.mean      = posterior.muPhi(3);
+                kEp.mean      = posterior.muPhi(4);
+                kFEm.mean      = posterior.muPhi(5);
+                kFEp.mean      = posterior.muPhi(6);
                 % extract variance
                 kR.sigma      = posterior.SigmaPhi(1);
-                kEm.sigma      = posterior.SigmaPhi(2);
-                kEp.sigma      = posterior.SigmaPhi(3);
-                kFEm.sigma      = posterior.SigmaPhi(2);
-                kFEp.sigma      = posterior.SigmaPhi(3);
+                kP.sigma      = posterior.SigmaPhi(2);
+                kEm.sigma      = posterior.SigmaPhi(3);
+                kEp.sigma      = posterior.SigmaPhi(4);
+                kFEm.sigma      = posterior.SigmaPhi(5);
+                kFEp.sigma      = posterior.SigmaPhi(6);
         end
     case 'split'
         switch fatigueEvolOrObs
@@ -408,29 +424,37 @@ switch kR_tasksSplitOrPool
                 kFEp.mean = posterior_Ep.muTheta(1);
                 kR_Em.mean      = posterior_Em.muPhi(1);
                 kR_Ep.mean      = posterior_Ep.muPhi(1);
-                kEm.mean      = posterior_Em.muPhi(2);
-                kEp.mean      = posterior_Ep.muPhi(2);
+                kP_Em.mean      = posterior_Em.muPhi(2);
+                kP_Ep.mean      = posterior_Ep.muPhi(2);
+                kEm.mean      = posterior_Em.muPhi(3);
+                kEp.mean      = posterior_Ep.muPhi(3);
                 % extract variance
                 kFEm.sigma = posterior_Em.SigmaTheta(1);
                 kFEp.sigma = posterior_Ep.SigmaTheta(1);
                 kR_Em.sigma      = posterior_Em.SigmaPhi(1);
                 kR_Ep.sigma      = posterior_Ep.SigmaPhi(1);
-                kEm.sigma      = posterior_Em.SigmaPhi(2);
-                kEp.sigma      = posterior_Ep.SigmaPhi(2);
+                kP_Em.sigma      = posterior_Em.SigmaPhi(2);
+                kP_Ep.sigma      = posterior_Ep.SigmaPhi(2);
+                kEm.sigma      = posterior_Em.SigmaPhi(3);
+                kEp.sigma      = posterior_Ep.SigmaPhi(3);
             case 'observation parameter'
                 % extract mean
                 kR_Em.mean      = posterior_Em.muPhi(1);
                 kR_Ep.mean      = posterior_Ep.muPhi(1);
-                kEm.mean      = posterior_Em.muPhi(2);
-                kEp.mean      = posterior_Ep.muPhi(2);
-                kFEm.mean      = posterior_Em.muPhi(3);
-                kFEp.mean      = posterior_Ep.muPhi(3);
+                kP_Em.mean      = posterior_Em.muPhi(2);
+                kP_Ep.mean      = posterior_Ep.muPhi(2);
+                kEm.mean      = posterior_Em.muPhi(3);
+                kEp.mean      = posterior_Ep.muPhi(3);
+                kFEm.mean      = posterior_Em.muPhi(4);
+                kFEp.mean      = posterior_Ep.muPhi(4);
                 % extract variance
                 kR_Em.sigma      = posterior_Em.SigmaPhi(1);
                 kR_Ep.sigma      = posterior_Ep.SigmaPhi(1);
-                kEm.sigma      = posterior_Em.SigmaPhi(2);
-                kEp.sigma      = posterior_Ep.SigmaPhi(2);
-                kFEm.sigma      = posterior_Em.SigmaPhi(3);
-                kFEp.sigma      = posterior_Ep.SigmaPhi(3);
+                kP_Em.sigma      = posterior_Em.SigmaPhi(2);
+                kP_Ep.sigma      = posterior_Ep.SigmaPhi(2);
+                kEm.sigma      = posterior_Em.SigmaPhi(3);
+                kEp.sigma      = posterior_Ep.SigmaPhi(3);
+                kFEm.sigma      = posterior_Em.SigmaPhi(4);
+                kFEp.sigma      = posterior_Ep.SigmaPhi(4);
         end
-end
+end % pool both effort tasks or not?

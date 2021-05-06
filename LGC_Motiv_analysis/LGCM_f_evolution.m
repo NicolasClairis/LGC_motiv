@@ -14,11 +14,11 @@ function [ fx ] = LGCM_f_evolution( x, P, u, inF )
 % fx: updated hidden state for the current trial
 
 %% load model parameters
-kR_tasksSplitOrPool = inF.mdlPrm.kR_tasksSplitOrPool;
+kRP_tasksSplitOrPool = inF.mdlPrm.kRP_tasksSplitOrPool;
 fatigueType = inF.mdlPrm.fatigueType;
 
 %% load hidden states
-switch kR_tasksSplitOrPool
+switch kRP_tasksSplitOrPool
     case 'split'
         fatigue_lastTrial   = x(1);
     case 'pool' % both tasks are pooled but fatigue parameter should be estimated independently
@@ -27,7 +27,7 @@ switch kR_tasksSplitOrPool
 end
 
 %% load parameters to estimate
-switch kR_tasksSplitOrPool
+switch kRP_tasksSplitOrPool
     case 'split'
         iP = 1;
         kF = P(iP);
@@ -39,7 +39,7 @@ switch kR_tasksSplitOrPool
 end
 
 %% load task variables
-switch kR_tasksSplitOrPool
+switch kRP_tasksSplitOrPool
     case 'split'
         trialN = u(1);
         % Rleft = u(2);
@@ -70,7 +70,7 @@ switch kR_tasksSplitOrPool
 end
 
 % extract effort based on the current model
-switch kR_tasksSplitOrPool
+switch kRP_tasksSplitOrPool
     case 'split'
         switch fatigueType
             case 'trial number'
@@ -102,7 +102,7 @@ switch kR_tasksSplitOrPool
 end
 
 %% update fatigue according to the model used
-switch kR_tasksSplitOrPool
+switch kRP_tasksSplitOrPool
     case 'split'
         fatigue = fatigue_lastTrial + kF*effortLastTrial;
     case 'pool'
@@ -116,7 +116,7 @@ switch kR_tasksSplitOrPool
         end
 end
 %% output
-switch kR_tasksSplitOrPool
+switch kRP_tasksSplitOrPool
     case 'split'
         fx = fatigue;
     case 'pool'
