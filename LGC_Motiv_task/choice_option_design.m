@@ -21,15 +21,6 @@ function[choice_opt] = choice_option_design(n_R_levels, n_E_levels, punishment_y
 % OUTPUTS
 % choice_opt: structure with the details of the choice options
 
-%% initialize variables of interest
-[choice_opt.LR_side,...
-    choice_opt.R_levels,...
-    choice_opt.E_levels] = deal(NaN(2, n_trials));
-
-if strcmp(punishment_yn,'yes')
-    choice_opt.R_or_P = cell(1, n_trials); % variable to know which trials are rewarding and which are punishments
-end
-
 %% punishment included or not?
 switch punishment_yn
     case 'yes'
