@@ -200,7 +200,6 @@ switch fatigueEvolOrObs
                 % 1 fatigue component
                 F_Phi_prm_nm = {'kF'}; % fatigue component evolving through time
         end
-        n_G_prm = length(G_Phi_prm_nm);
         n_F_prm = length(F_Phi_prm_nm); 
         n_hiddenStates = n_F_prm; % (hidden states = fatigue components = number of F parameters)
     case 'observation parameter' % no evolution function nor any hidden state
@@ -215,8 +214,8 @@ switch fatigueEvolOrObs
             case 'split'
                 G_Phi_prm_nm = {'kR','kP','kE','kF'};
         end
-        n_G_prm = length(G_Phi_prm_nm);
 end
+n_G_prm = length(G_Phi_prm_nm);
 
 switch kRP_tasksSplitOrPool
     case 'pool'
