@@ -48,11 +48,11 @@ bigGrad = yMetrics/5;
 smallGrad = bigGrad/4;
 switch calib_or_Task
     case 'calib' % center the scale
-        leftScaleLimit      = xScreenCenter*(1/4); % left limit of the scale
-        rightScaleLimit     = xScreenCenter*(2/4); % right limit of the scale
-    case 'task' % put the scale on the left
         leftScaleLimit      = xScreenCenter*(3.5/4); % left limit of the scale
         rightScaleLimit     = xScreenCenter*(4.5/4); % right limit of the scale
+    case 'task' % put the scale on the left
+        leftScaleLimit      = xScreenCenter*(1/4); % left limit of the scale
+        rightScaleLimit     = xScreenCenter*(2/4); % right limit of the scale
 end
 graphXSize = rightScaleLimit - leftScaleLimit;
 % screen coordinates for the bar representing the realtime force level
@@ -91,7 +91,13 @@ Screen('DrawLine', window, red, leftScaleLimit, yThreshold, rightScaleLimit, yTh
 
 %% draw an orange bar with the actual level of force
 yActualLevelBottom = bottomScaleLimit + 10;
-yActualLevelTop = bottomScaleLimit - (F_now/100)*graphYSize;
+if F_now > 0 && F_now < 100
+    yActualLevelTop = bottomScaleLimit - (F_now/100)*graphYSize;
+elseif F_now >= 0
+    yActualLevelTop = bottomScaleLimit;
+elseif F_now <= 100
+    yActualLevelTop = bottomScaleLimit - graphYSize;
+end
 Screen('FillRect', window, orange,...
     [leftBarLimit,...
     yActualLevelTop,...
