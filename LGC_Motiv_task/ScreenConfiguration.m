@@ -73,10 +73,6 @@ textSize.middle = 100;
 xScreenCenter = L/2;
 yScreenCenter = H/2;
 
-%% store frame rate for physical effort task in particular
-% query the frame duration (inter-frame interval)
-scr.ifi = Screen('GetFlipInterval', window);
-
 %% store main informations inside scr structure
 scr.screenNumber = whichScreen;
 scr.textSize = textSize;
