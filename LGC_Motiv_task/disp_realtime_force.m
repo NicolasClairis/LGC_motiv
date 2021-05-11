@@ -81,8 +81,20 @@ for yaxis = (-4*yMetrics/5):(yMetrics/5):yMetrics
 end
 
 %% draw the threshold to reach
-yThreshold = bottomScaleLimit - graphYSize*(F_threshold/100);
-Screen('DrawLine', window, red, leftScaleLimit, yThreshold, rightScaleLimit, yThreshold,3);
+
+% % draw a red line to indicate the threshold to reach
+% yThreshold = bottomScaleLimit - graphYSize*(F_threshold/100);
+% Screen('DrawLine', window, red, leftScaleLimit, yThreshold, rightScaleLimit, yThreshold,3);
+
+% draw a red rectangle representing the window (including the tolerance
+% threshold) to reach to have a good performance
+yLowThreshold = bottomScaleLimit - graphYSize*((F_threshold - F_tolerance)/100);
+yTopThreshold = bottomScaleLimit - graphYSize*((F_threshold + F_tolerance)/100);
+Screen('FillRect', window, red,...
+    [leftScaleLimit,...
+    yTopThreshold,...
+    rightScaleLimit,...
+    yLowThreshold]);
 
 % %% you can also add the tolerance threshold but maybe better avoid it so
 % that participant do not see this as the actual threshold to reach
@@ -93,9 +105,9 @@ Screen('DrawLine', window, red, leftScaleLimit, yThreshold, rightScaleLimit, yTh
 yActualLevelBottom = bottomScaleLimit + 10;
 if F_now > 0 && F_now < 100
     yActualLevelTop = bottomScaleLimit - (F_now/100)*graphYSize;
-elseif F_now >= 0
+elseif F_now <= 0 % bound to bottom of the scale
     yActualLevelTop = bottomScaleLimit;
-elseif F_now <= 100
+elseif F_now >= 100 % bount to top of the scale
     yActualLevelTop = bottomScaleLimit - graphYSize;
 end
 Screen('FillRect', window, orange,...
