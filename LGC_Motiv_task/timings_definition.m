@@ -54,7 +54,7 @@ switch effort_type
         
         % store frame rate for physical effort task
         % query the frame duration (inter-frame interval)
-        taskTimes.ifi = Screen('GetFlipInterval', window);
+        taskTimes.ifi = Screen('GetFlipInterval', scr.window);
         % scr.ifi = 1/15; % Arthur manual definition
         
         % define pause duration after read to make it work without losing
@@ -82,6 +82,15 @@ trainingTimes.t_cross = t_trainingCross;
 switch effort_type
     case 'physical' % in case you use different numbers for each effort type
         trainingTimes.max_effort = t_max_effort;
+        
+        % store frame rate for physical effort task
+        % query the frame duration (inter-frame interval)
+        trainingTimes.ifi = Screen('GetFlipInterval', scr.window);
+        % scr.ifi = 1/15; % Arthur manual definition
+        
+        % define pause duration after read to make it work without losing
+        % too much in the display
+        trainingTimes.physicalReadWait = 0.075; % Arthur manual definition
     case 'mental'
         trainingTimes.t_min_scalingFactor = 150/100; % multiply calibrated minimal time by this value
 end
