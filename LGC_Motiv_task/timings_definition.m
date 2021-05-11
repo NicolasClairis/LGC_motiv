@@ -32,8 +32,8 @@ switch effort_type % in case you use different numbers for each effort type
     case 'physical'
         calibTimes.instructions_bis = 10;
         calibTimes.effort_max = 5;% time to perform the task
-        %         calibTimes.
-        calibTimes.t_MVC_rest = 7; % rest after each MVC calibration
+        calibTimes.physicalReadWait = 0.075; % Arthur manual definition
+        calibTimes.MVC_rest = 7; % rest after each MVC calibration
 end
 calibTimes.fbk = 2;
 
