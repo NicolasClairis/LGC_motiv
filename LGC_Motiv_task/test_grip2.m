@@ -9,9 +9,10 @@ pause(0.125)
 MVC=3.5;
 F_threshold = 50;
 t_effort_to_keep=3;
-F_tolerance=5;
+F_tolerance=3;
 nFrames=6;
-ifi = Screen('GetFlipInterval', window);
+% ifi = Screen('GetFlipInterval', window);
+ifi = 1/15
 startAngle = stim.difficulty.startAngle.(['level_',num2str(2)]);
 currentAngle = startAngle;
 endAngle = stim.difficulty.arcEndAngle;
@@ -51,7 +52,11 @@ force_levels = [force_levels;...
 pause(0.1);
 iFrame = 1;
 jTest=0;
-while (trial_success == false) || (timeNow < (timeStart + 5))
+z=0;
+[percSqueeze, percStoppedSqueeze] = deal(0);
+timeNow = GetSecs;
+while (trial_success == false) && (timeNow < (timeStart + 5))
+    z = z+ 1;
 % for j=1:1000
     % you either stop if the trial was successful (both learning and actual
     % task) OR if there is a time_limit defined and this time_limit was
@@ -64,6 +69,7 @@ while (trial_success == false) || (timeNow < (timeStart + 5))
     % check force being applied now
     %     if timeNow >= (timeCheck + 0.3)
     F_now_Voltage_tmp = read(dq,'all','OutputFormat','Matrix');
+    pause(0.075)
     if ~isempty(F_now_Voltage_tmp)
         F_now_Voltage = F_now_Voltage_tmp(end);
         timeCheck = timeNow;
@@ -83,6 +89,8 @@ while (trial_success == false) || (timeNow < (timeStart + 5))
     %% update the center display according to if force above or below the threshold
     if F_now >= (F_threshold - F_tolerance) % while force > threshold, update the timer
         
+        percSqueeze = percSqueeze + (force_levels(end,2) - force_levels(end-1,2))/t_effort_to_keep;
+        
         if stateSqueezeON == false % the participant was not squeezing above threshold => new start
             n_starts = length(onsets.effort.start);
             onsets.effort.start(n_starts + 1) = timeNow;
@@ -90,15 +98,13 @@ while (trial_success == false) || (timeNow < (timeStart + 5))
             stateSqueezeON = true;
         end
         
-        % update the angle for the display
-        if ~isempty(onsets.effort.start)
-            timeEffortStart_tmp = onsets.effort.start(end);
-        end
-        if ~isempty(onsets.effort.stop)
-            timeEffortStop_tmp = onsets.effort.stop(end);
+    else % force below threshold
+        
+        % update the stop only when angle is higher than zero
+        if currentAngle > startAngle
+            percStoppedSqueeze = percStoppedSqueeze + (timeNow - force_levels(end-1,2))/t_effort_to_keep;
         end
         
-    else % force below threshold
         % switch from squeeze above threshold to squeeze below threshold
         if stateSqueezeON == true % the participant was squeezing above threshold but now he squeezes below threshold
             n_stops = length(onsets.effort.stop);
@@ -106,23 +112,17 @@ while (trial_success == false) || (timeNow < (timeStart + 5))
             % update state of squeeze
             stateSqueezeON = false;
         end
-        
-        % update the angle for the display
-        if ~isempty(onsets.effort.start)
-            timeEffortStart_tmp = onsets.effort.start(end);
-        end
-        if ~isempty(onsets.effort.stop)
-            timeEffortStop_tmp = onsets.effort.stop(end);
-        end
     end % Force above or below threshold?
     
     % update the angle for display
-    if timeEffortStart_tmp > 0
-        percentageTimeForceAlreadyMaintained = (timeNow - timeEffortStart_tmp + timeEffortStop_tmp)/t_effort_to_keep;
-        if percentageTimeForceAlreadyMaintained >= 0
-            currentAngle = totalAngleDistance*percentageTimeForceAlreadyMaintained;
-        else
+    if ~isempty(onsets.effort.start)
+        percentageTimeForceAlreadyMaintained = percSqueeze - percStoppedSqueeze;
+        if percentageTimeForceAlreadyMaintained >= 0 && percentageTimeForceAlreadyMaintained <= 1
+            currentAngle = startAngle + totalAngleDistance*percentageTimeForceAlreadyMaintained;
+        elseif percentageTimeForceAlreadyMaintained < 0
             currentAngle = startAngle;
+        elseif percentageTimeForceAlreadyMaintained > 1
+            currentAngle = endAngle;
         end
     end
     

@@ -192,7 +192,7 @@ choice_opt = choice_option_design(n_R_levels, n_E_levels, punishment_yn, nTrials
 switch effort_type
     case 'physical'
         F_threshold = 50; % force should be maintained above this threshold (expressed in % of MVC)
-        F_tolerance = 5; % tolerance allowed around the threshold (expressed in % of MVC)
+        F_tolerance = 2.5; % tolerance allowed around the threshold (expressed in % of MVC)
         % need to define timings for each level of force
         [Ep_time_levels] = physical_effortLevels(n_E_levels);
     case 'mental'
@@ -217,7 +217,7 @@ switch punishment_yn
 end
 
 %% load timings for each phase of the experiment
-[trainingTimes, calibTimes, taskTimes] = timings_definition(n_trainingTrials, nTrials);
+[trainingTimes, calibTimes, taskTimes] = timings_definition(scr, n_trainingTrials, nTrials, effort_type);
 
 %% learning (for mental effort)
 % for physical effort, you need to perform the MVC calibration before the
@@ -318,7 +318,7 @@ switch effort_type
 end
 
 %% learning (for physical effort task)
-% needs to be done after the calibration
+% (needs to be done after the calibration)
 switch effort_type
     case 'physical'
         % learning should be short to avoid exhausting the participant.
@@ -329,6 +329,7 @@ switch effort_type
 end
 
 %% max perf measurement before start of each session
+% (not for training out of MRI)
 if IRM ~= 1 || learning_done
     switch effort_type
         case 'mental'

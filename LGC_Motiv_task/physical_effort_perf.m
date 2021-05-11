@@ -3,13 +3,13 @@ function[physicalE_perf, trial_success, onsets] = physical_effort_perf(scr, stim
     E_chosen,...
     E_time_levels,...
     F_threshold, F_tolerance,...
-    time_limit, t_max_effort)
+    time_limit, timings)
 % [physicalE_perf, trial_success, onsets] = physical_effort_perf(scr, stim, dq,...
 %     MVC,...
 %     E_chosen,...
 %     E_time_levels,...
 %     F_threshold, F_tolerance,...
-%     time_limit, t_max_effort)
+%     time_limit, timings)
 % physical_effort_perf will check if physical effort was performed as
 % requested in the available time.
 %
@@ -36,7 +36,8 @@ function[physicalE_perf, trial_success, onsets] = physical_effort_perf(scr, stim
 % (false): no time limit = keep doing until performance reached
 % (true): time limit = fixed duration for this period
 %
-% t_max_effort: maximum time until when the required effort can be performed
+% timings: structure with relevant timings for the task (pause timing, time
+% to wait for the effort performance, etc.)
 %
 % OUTPUTS
 % physicalE_perf: structure with summary of physical effort performance
@@ -60,9 +61,12 @@ function[physicalE_perf, trial_success, onsets] = physical_effort_perf(scr, stim
 %% initialize the variables of interest
 % screen and PTB parameters
 window = scr.window;
-ifi = scr.ifi;
-nFrames = 6;
-
+% extract timings
+ifi = timings.ifi;
+t_max_effort = timings.t_max_effort;
+t_readWait = timings.physicalReadWait;
+% by default when the trial starts, the trial cannot be a success already
+% => initialize to zero
 trial_success = 0;
 % initialize indicators whether force threshold has been reached or not
 has_F_threshold_ever_been_reached = 0;
@@ -114,55 +118,62 @@ F_now_Voltage_tmp = read(dq,'all','OutputFormat','Matrix');
 F_now_Voltage = F_now_Voltage_tmp(end);
 % convert force level from Voltage to a percentage of MVC
 F_now = (F_now_Voltage/MVC)*100;
+% sample should be ok
+sampleOk_tmp = 1;
 % store force levels in the output
 force_levels = [force_levels;...
-    [F_now, timeCheck, F_now_Voltage]]; % store F in % of MVC, time and F in Volts
+    [F_now, timeCheck, F_now_Voltage, sampleOk_tmp]]; % store F in % of MVC, time and F in Volts
 % short pause to avoid empty matrix reading by read.m function
-pause(0.1);
+pause(t_readWait);
 
-while (trial_success == 0) ||...
-        ( (time_limit == true) && (timeNow <= (onsetEffortPhase + t_max_effort)) )
+while (trial_success == 0) &&...
+        ( (time_limit == false) ||...
+        ( (time_limit == true) && (timeNow <= (onsetEffortPhase + t_max_effort)) ))
     % you either stop if the trial was successful (both learning and actual
-    % task) OR if there is a time_limit defined and this time_limit was
-    % reached (actual task only)
+    % task) OR if there is a time_limit and this time_limit was reached (actual task only)
     
     %% read current level of force
     % check timing now when we extract the level of force
     timeNow = GetSecs;
-    % check force being applied now
-    if timeNow >= timeCheck + 0.1
-        F_now_Voltage_tmp = read(dq,'all','OutputFormat','Matrix');
+    % check force being applied right now
+    F_now_Voltage_tmp = read(dq,'all','OutputFormat','Matrix');
+    pause(t_readWait);
+    if ~isempty(F_now_Voltage_tmp)
         F_now_Voltage = F_now_Voltage_tmp(end);
-        timeCheck = timeNow;
         % convert force level from Voltage to a percentage of MVC
         F_now = (F_now_Voltage/MVC)*100;
-        F_now_interpolate_tmp = linspace(force_levels(end, 1), F_now, nFrames);
-        % store force levels in the output
-        force_levels = [force_levels;...
-            [F_now, timeNow, F_now_Voltage]]; % store F in % of MVC, time and F in Volts
-        % reset frame for visual display
-        iFrame = 1;
+        sampleOk_tmp = 1;
+    else % record when the output of read was empty to know when the force level was kept equal because of read failure
+        sampleOk_tmp = 0;
     end
+    % store force levels in the output
+    force_levels = [force_levels;...
+        [F_now, timeNow, F_now_Voltage, sampleOk_tmp]]; % store F in % of MVC, time and F in Volts
     
     %% update the center display according to if force above or below the threshold
     if F_now >= (F_threshold - F_tolerance) % while force > threshold, update the timer
+        
+        % update the effort index
+        percSqueeze = percSqueeze + (force_levels(end,2) - force_levels(end-1,2))/t_effort_to_keep;
         
         if stateSqueezeON == false % the participant was not squeezing above threshold => new start
             n_starts = length(onsets.effort.start);
             onsets.effort.start(n_starts + 1) = timeNow;
             % update state of squeeze
             stateSqueezeON = true;
-        end
-        
-        % update the angle for the display
-        if ~isempty(onsets.effort.start)
-            timeEffortStart_tmp = onsets.effort.start(end);
-        end
-        if ~isempty(onsets.effort.stop)
-            timeEffortStop_tmp = onsets.effort.stop(end);
+            % for the first occurrence update the indicator that the force
+            % has been reached at least once
+            if n_starts == 0
+                has_F_threshold_ever_been_reached = 1;
+            end
         end
         
     else % force below threshold
+        % update the stop index only when angle is higher than zero
+        if currentAngle > startAngle
+            percStoppedSqueeze = percStoppedSqueeze + (timeNow - force_levels(end-1,2))/t_effort_to_keep;
+        end
+        
         % switch from squeeze above threshold to squeeze below threshold
         if stateSqueezeON == true % the participant was squeezing above threshold but now he squeezes below threshold
             n_stops = length(onsets.effort.stop);
@@ -170,23 +181,17 @@ while (trial_success == 0) ||...
             % update state of squeeze
             stateSqueezeON = false;
         end
-        
-        % update the angle for the display
-        if ~isempty(onsets.effort.start)
-            timeEffortStart_tmp = onsets.effort.start(end);
-        end
-        if ~isempty(onsets.effort.stop)
-            timeEffortStop_tmp = onsets.effort.stop(end);
-        end
     end % Force above or below threshold?
     
     % update the angle for display
-    if timeEffortStart_tmp > 0
-        percentageTimeForceAlreadyMaintained = (timeNow - timeEffortStart_tmp + timeEffortStop_tmp)/t_effort_to_keep;
-        if percentageTimeForceAlreadyMaintained >= 0
-            currentAngle = totalAngleDistance*percentageTimeForceAlreadyMaintained;
-        else
+    if has_F_threshold_ever_been_reached == 1 % no need to update the angle as long as the threshold has not been reached at least once
+        percentageTimeForceAlreadyMaintained = percSqueeze - percStoppedSqueezing;
+        if percentageTimeForceAlreadyMaintained >= 0 && percentageTimeForceAlreadyMaintained <= 1
+            currentAngle = startAngle + totalAngleDistance*percentageTimeForceAlreadyMaintained;
+        elseif percentageTimeForceAlreadyMaintained < 0 % bound the angle to the start of the trial
             currentAngle = startAngle;
+        elseif percentageTimeForceAlreadyMaintained > 1 % bound the top for visual display (otherwise ugly)
+            currentAngle = endAngle;
         end
     end
     
@@ -194,9 +199,6 @@ while (trial_success == 0) ||...
     
     % display real-time force level
     disp_realtime_force(scr, F_threshold, F_tolerance, F_now_interpolate_tmp(iFrame), 'task');
-    if iFrame < nFrames
-        iFrame = iFrame + 1;
-    end
     
     % display performance achieved level on top of the reward as an arc
     Screen('FillArc', window,...
@@ -223,16 +225,12 @@ end % time loop
 %% stop acquisition of biopac handgrip
 stop(dq);
 
-%% check whether performance was or not achieved in the time course available
-if currentAngle >= endAngle
-    trial_success = 1;
-    onsets.effort_success = timeNow;
-end
-
 %% record vars of interest
 physicalE_perf.trial_success = trial_success;
 physicalE_perf.onsets = onsets;
 % record all the force levels during the performance
+physicalE_perf.t_max_effort = t_max_effort;
+physicalE_perf.t_effort_to_keep = t_effort_to_keep;
 physicalE_perf.force_levels = force_levels;
 physicalE_perf.startAngle = startAngle;
 physicalE_perf.finalAngle = currentAngle;
