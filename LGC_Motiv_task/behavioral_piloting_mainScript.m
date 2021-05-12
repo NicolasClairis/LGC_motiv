@@ -72,6 +72,8 @@ n_trainingConditions = length(trainingConditions);
 [trainingTimes_Ep, calibTimes_Ep, learningTimes_Ep, taskTimes_Ep] = timings_definition(scr, trainingConditions, n_R_levels, n_E_levels, n_trialsPerSession, 'physical');
 
 n_sessions = 4; % 4 blocks in total (2 mental and 2 physical)
+t_endSession = 180;
+
 %% physical parameters
 n_MVC_repeat = 3;
 n_learningForceRepeats = 3; % number of learning repetitions for each level of difficulty (= each level of force)
@@ -289,7 +291,8 @@ for iSession = 1:n_sessions
         ['Félicitations! Cette session est maintenant terminée.',...
         'Vous avez obtenu: ',num2str(finalGains),' chf au cours de cette session.'],...
         'center', yScreenCenter*(5/3), scr.colours.black, scr.wrapat);
-    
+    Screen(window,'Flip');
+    WaitSecs(t_endSession);
 end % session loop
 
 %% save the data
