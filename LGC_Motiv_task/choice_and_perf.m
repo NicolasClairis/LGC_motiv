@@ -137,7 +137,7 @@ for iTrial = 1:nTrials
     end
     
     %% extract reward of punishment trial condition
-    R_or_P_tmp = choiceOptions.R_or_P_trials{iTrial};
+    R_or_P_tmp = choiceOptions.R_or_P{iTrial};
     
     %% choice period
     if ~strcmp(training_R_P_RP_or_mainTask,'mainTask')
