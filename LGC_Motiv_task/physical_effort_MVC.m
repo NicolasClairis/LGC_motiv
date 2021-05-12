@@ -35,6 +35,7 @@ bottomScaleLimit    = yScreenCenter*(3/2); % bottom limit of the scale
 % topScaleLimit       = yScreenCenter*(1/2); % upper limit of the scale
 leftScaleLimit      = xScreenCenter*(3.5/4); % left limit of the scale
 rightScaleLimit     = xScreenCenter*(4.5/4); % right limit of the scale
+graphYSize = bottomScaleLimit - topScaleLimit;
 
 %% force relevant variables
 F_start = 0; % initial force level at zero
