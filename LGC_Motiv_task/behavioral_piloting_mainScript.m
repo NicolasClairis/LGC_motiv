@@ -1,5 +1,10 @@
 % script for behavioral pilots
 
+%% clean workspace before starting
+clearvars;
+close all;
+clc;
+
 %% working directories
 % launch within the folder where scripts are stored or will not work
 cd ..
@@ -19,7 +24,8 @@ addpath(Matlab_DIY_functions_folder);
 if ~exist(results_folder,'dir')
     mkdir(results_folder);
 end
-
+% go back to folder with scripts
+cd(main_task_folder);
 
 %% define subject ID
 iSubject = 0;
@@ -71,7 +77,7 @@ F_tolerance = 2.5; % tolerance allowed around the threshold (expressed in % of M
 [Ep_time_levels] = physical_effortLevels(n_E_levels);
 
 % calibration
-n_calibTrials_Ep = 5;
+n_calibTrials_Ep = 3;
 
 %% mental parameters
 % define number of pairs to solve for each level of difficulty
@@ -80,7 +86,7 @@ n_to_reach = mental_N_answersPerLevel(n_E_levels);
 % calibration: calibrate the maximal duration required for the
 % top effort
 n_calibMax = n_to_reach.(['E_level_',num2str(n_E_levels)]);
-n_calibTrials_Em = 5;
+n_calibTrials_Em = 3;
 % pre and post-task calibration (lower number of trials)
 n_calibTrials_Em_bis = 3;
 
@@ -134,8 +140,8 @@ warning('left few training trials for Arthur, but need to increase for actual su
 
 % %% mental preparation
 %     %% learning mental
-% mentalE_prm_learning_and_calib = mental_effort_parameters(iSubject);
-% mentalE_prm_learning_and_calib.startAngle = 0; % for learning always start at zero
+mentalE_prm_learning_and_calib = mental_effort_parameters(iSubject);
+mentalE_prm_learning_and_calib.startAngle = 0; % for learning always start at zero
 % % no time limit for each trial: as long as needed until learning is
 % % ok
 % learning_time_limit = false;

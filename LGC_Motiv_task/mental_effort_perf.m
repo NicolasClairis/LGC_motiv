@@ -101,7 +101,8 @@ n_questions = size(numberVector,2);
 [taskType,...
     rt,...
     sideAnswer,...
-    goodOrBadAnswer] = deal( NaN(1, n_questions));
+    goodOrBadAnswer,...
+    numberVectorUsed] = deal( NaN(1, n_questions));
 
 % define first trial task type
 switch learning_col
@@ -134,6 +135,9 @@ iCorrectAnswers = 0; % indicator to know when trial is considered as a success
 jCorrectAnswers = 0; % indicator tracking actual real number of correct answers
 % number of questions answered
 i_question = 1;
+
+% keep track of actual numbers used
+numberVectorUsed(1) = numberVector(1);
 
 %% wait all keys are released before starting
 KbReleaseWait;
@@ -241,15 +245,20 @@ while (iCorrectAnswers < n_max_to_reach) &&...
                 jCorrectAnswers = jCorrectAnswers + 1;
         end
         
-        %% define the task type for the next question
+        %% define the task type and the number for the next question
         if iCorrectAnswers < n_max_to_reach
             % once the expected amount of correct answers has been reached,
             % there is no need to make more switches
             
-            if answerCorrect_tmp == 0 % no task switch after an error to keep the task easy after an error has been made
+            if answerCorrect_tmp == 0
+                % no task switch after an error to keep the task easy after an error has been made
                 taskType(i_question + 1) = taskType(i_question);
+                % no change of number after an error to keep the task easy
+                % after an error has been made
+                numberVectorUsed(i_question + 1) = numberVectorUsed(i_question);
             else
                 taskType(i_question + 1) = task_seq(iCorrectAnswers + 1);
+                numberVectorUsed(i_question + 1) = numberVector(iCorrectAnswers + 1);
             end
         end % no need to update task type for the next question if the end has been reached
         
@@ -274,6 +283,7 @@ end % keep performing until number of subsequent answers reaches threshold prede
 questions_done = ~isnan(sideAnswer);
 % record question parameters
 mentalE_perf.numberVector   = numberVector(questions_done);
+mentalE_perf.numberVectorUsed = numberVectorUsed(questions_done);
 mentalE_perf.taskType       = taskType(questions_done);
 mentalE_perf.sideAnswer     = sideAnswer(questions_done);
 mentalE_perf.isGoodAnswer   = goodOrBadAnswer(questions_done);
