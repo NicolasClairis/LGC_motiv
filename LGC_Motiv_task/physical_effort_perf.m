@@ -115,23 +115,16 @@ force_levels = [];
 [percSqueeze, percStoppedSqueezing] = deal(0);
 
 % initialize read
-timeCheck = GetSecs;
-F_now_Voltage_tmp = read(dq,'all','OutputFormat','Matrix');
-if ~isempty(F_now_Voltage_tmp)
-    F_now_Voltage = F_now_Voltage_tmp(end);
-    % sample should be ok
-    sampleOk_tmp = 1;
-else % record when the output of read was empty to know when the force level was kept equal because of read failure
-    sampleOk_tmp = 0;
-    F_now_Voltage = 0;% by default at zero at beginning if no output of read
+[F_now_Voltage, timeCheck, sampleOk_tmp] = F_read(dq, t_readWait);
+% if read failed replace by zero for start
+if isnan(F_now_Voltage)
+    F_now_Voltage = 0;
 end
 % convert force level from Voltage to a percentage of MVC
 F_now = (F_now_Voltage/MVC)*100;
 % store force levels in the output
 force_levels = [force_levels;...
     [F_now, timeCheck, F_now_Voltage, sampleOk_tmp]]; % store F in % of MVC, time and F in Volts
-% short pause to avoid empty matrix reading by read.m function
-pause(t_readWait);
 
 while (trial_success == 0) &&...
         ( (time_limit == false) ||...
@@ -140,18 +133,12 @@ while (trial_success == 0) &&...
     % task) OR if there is a time_limit and this time_limit was reached (actual task only)
     
     %% read current level of force
-    % check timing now when we extract the level of force
-    timeNow = GetSecs;
-    % check force being applied right now
-    F_now_Voltage_tmp = read(dq,'all','OutputFormat','Matrix');
-    pause(t_readWait);
-    if ~isempty(F_now_Voltage_tmp)
-        F_now_Voltage = F_now_Voltage_tmp(end);
+    [F_now_Voltage, timeNow, sampleOk_tmp] = F_read(dq, t_readWait);
+    % update F_now only when the force sample was read properly (otherwise
+    % keep previous value)
+    if sampleOk_tmp == 1
         % convert force level from Voltage to a percentage of MVC
         F_now = (F_now_Voltage/MVC)*100;
-        sampleOk_tmp = 1;
-    else % record when the output of read was empty to know when the force level was kept equal because of read failure
-        sampleOk_tmp = 0;
     end
     % store force levels in the output
     force_levels = [force_levels;...
