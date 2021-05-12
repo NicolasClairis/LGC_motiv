@@ -126,6 +126,8 @@ end
 
 % define a STAY/SWITCH sequence
 task_seq = mental_effort_task_switches(taskType(1), n_max_to_reach, n_switch);
+% define first number which will appear on screen
+numberVectorUsed(1) = numberVector(1);
 
 %% initialize the counters
 % number of subsequent correct answers
@@ -135,9 +137,6 @@ iCorrectAnswers = 0; % indicator to know when trial is considered as a success
 jCorrectAnswers = 0; % indicator tracking actual real number of correct answers
 % number of questions answered
 i_question = 1;
-
-% keep track of actual numbers used
-numberVectorUsed(1) = numberVector(1);
 
 %% wait all keys are released before starting
 KbReleaseWait;
@@ -282,7 +281,7 @@ end % keep performing until number of subsequent answers reaches threshold prede
 % keep only questions performed
 questions_done = ~isnan(sideAnswer);
 % record question parameters
-mentalE_perf.numberVector   = numberVector(questions_done);
+mentalE_perf.numberVector   = numberVector;
 mentalE_perf.numberVectorUsed = numberVectorUsed(questions_done);
 mentalE_perf.taskType       = taskType(questions_done);
 mentalE_perf.sideAnswer     = sideAnswer(questions_done);

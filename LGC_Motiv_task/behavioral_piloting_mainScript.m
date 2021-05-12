@@ -1,8 +1,10 @@
 % script for behavioral pilots
 
 %% clean workspace before starting
+sca;
 clearvars;
 close all;
+instrreset; % Disconnect and delete all instrument objects
 clc;
 
 %% working directories
