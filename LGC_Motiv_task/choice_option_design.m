@@ -53,8 +53,11 @@ choice_opt.E.right = choice_design.effort.right(rdm_order);
 
 % if punishments included, should also apply randomization to
 % reward/punishment case
-if strcmp(punishment_yn,'yes')
-    choice_opt.R_or_P = R_or_P_tmp(rdm_order);
+switch punishment_yn
+    case 'yes'
+        choice_opt.R_or_P = R_or_P_tmp(rdm_order);
+    case 'no' % all trials are rewarding
+        choice_opt.R_or_P = repmat({'R'},1,n_trials);
 end
 
 end % function
