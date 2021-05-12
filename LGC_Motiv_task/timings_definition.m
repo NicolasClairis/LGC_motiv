@@ -109,6 +109,7 @@ end
 % other times
 switch effort_type
     case 'physical' % in case you use different numbers for each effort type
+        % max effort time
         trainingTimes.max_effort = t_max_effort;
         
         % store frame rate for physical effort task

@@ -63,7 +63,7 @@ function[physicalE_perf, trial_success, onsets] = physical_effort_perf(scr, stim
 window = scr.window;
 % extract timings
 ifi = timings.ifi;
-t_max_effort = timings.t_max_effort;
+t_max_effort = timings.max_effort;
 t_readWait = timings.physicalReadWait;
 % by default when the trial starts, the trial cannot be a success already
 % => initialize to zero
