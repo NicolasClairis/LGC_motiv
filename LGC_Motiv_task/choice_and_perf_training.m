@@ -58,7 +58,7 @@ barTimeWaitRect = stim.barTimeWaitRect;
 
 % timings
 t_max_effort    = timings.max_effort;
-t_cross         = timings.cross;
+t_cross         = timings.cross.(R_or_P_or_RP_condition);
 t_instructions  = timings.instructions;
 t_choice        = timings.choice;
 t_dispChoice    = timings.dispChoice;

@@ -1,5 +1,5 @@
-function[trainingTimes, calibTimes, taskTimes] = timings_definition(scr, n_trainingTrials, nTrials, effort_type)
-%[trainingTimes, calibTimes, taskTimes] = timings_definition(scr, n_trainingTrials, nTrials, effort_type)
+function[trainingTimes, calibTimes, taskTimes] = timings_definition(scr, trainingConditions, n_R_levels, n_E_levels, nTrials, effort_type)
+%[trainingTimes, calibTimes, taskTimes] = timings_definition(scr, n_trainingTrials, taskTrainingConditions, n_R_levels, n_E_levels, nTrials, effort_type)
 % timings_definition defines the time duration for each period of the
 % experiment.
 % All timings are expressed in seconds.
@@ -7,7 +7,12 @@ function[trainingTimes, calibTimes, taskTimes] = timings_definition(scr, n_train
 % INPUTS
 % scr: structure with screen parameters
 %
-% n_trainingTrials: number of training trials
+% trainingConditions: 'R' or {'R','P','RP'} (reward, punishment, reward and punishment)
+% prepare jitter timings accordingly
+%
+% n_R_levels: number of reward conditions
+%
+% n_E_levels: number of effort conditions
 %
 % nTrials: number of trials in the main task
 %
@@ -74,10 +79,15 @@ taskTimes.finalCross = t_finalCross;
 trainingTimes.trainingInstructions = 5;
 trainingTimes.trainingEnd   = 5;
 % jitters for fixation cross during training
-jittersTraining = linspace(jitterMin, jitterMax, n_trainingTrials);
-jitterTrainingRdmPerm = randperm(n_trainingTrials);
-t_trainingCross = jittersTraining(jitterTrainingRdmPerm);
-trainingTimes.t_cross = t_trainingCross;
+n_trainingCond = length(trainingConditions);
+for iTraining = 1:n_trainingCond
+    trainingCond = trainingConditions{iTraining};
+    [~, n_trainingTrials, ~] = training_options(trainingCond, n_R_levels, n_E_levels);
+    jittersTraining = linspace(jitterMin, jitterMax, n_trainingTrials);
+    jitterTrainingRdmPerm = randperm(n_trainingTrials);
+    t_trainingCross = jittersTraining(jitterTrainingRdmPerm);
+    trainingTimes.cross.(trainingCond) = t_trainingCross;
+end
 % other times
 switch effort_type
     case 'physical' % in case you use different numbers for each effort type

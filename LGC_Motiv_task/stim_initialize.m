@@ -147,6 +147,12 @@ stim.chosenOption.squareWidth = 10;
 stim.endTrialcircle  = [0 0 moneySize+(moneySize/5) moneySize+(moneySize/5)];
 stim.end_trial.middle_center = CenterRectOnPointd(stim.endTrialcircle, xScreenCenter, yScreenCenter);
 
+%% define bar size for the waiting time
+stim.barTimeWaitRect = [xScreenCenter*(1/2),...
+    yScreenCenter*(3/4),...
+    xScreenCenter*(3/2),...
+    yScreenCenter];
+
 %% fixation cross coordinates on the screen (code relative to screen Y size)
 cross_length    = screenYpixels/6;
 cross_thickness = 0.2*cross_length;
