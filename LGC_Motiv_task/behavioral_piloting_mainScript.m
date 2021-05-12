@@ -119,10 +119,10 @@ for iTrainingCondition = 1:n_trainingConditions
         trainingCond, R_or_P_training_tmp, n_trainingTrials_tmp, trainingChoiceOptions_tmp, trainingTimes_Ep);
 end % learning condition loop
 
-DrawFormattedText(window,'Bravo! Votre entraînement est terminé.',...
+DrawFormattedText(window,'Bravo! Votre entraînement physique est terminé.',...
     'center','center',scr.colours.black, scr.wrapat);
 [~,onsets.EndTrainingMsg] = Screen('Flip',window); % display the cross on screen
-WaitSecs(trainingTimes.trainingEnd);
+WaitSecs(trainingTimes_Ep.trainingEnd);
 
 %% mental preparation
     %% learning mental
