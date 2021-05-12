@@ -139,8 +139,8 @@ for iCalib_MVC = 1:n_MVC_repeat
         % better?
         if iCalib_MVC > 1
             maxMVCuntilNow = nanmax( MVC_perCalibSession(1:(iCalib_MVC-1)));
-            yThreshold = bottomScaleLimit - graphYSize*((maxMVCuntilNow/maxVoltage)*100)
-            Screen('DrawLine', window, orange, leftScaleLimit, yThreshold, rightScaleLimit, yThreshold,10);
+            yThreshold = bottomScaleLimit - graphYSize*((maxMVCuntilNow/maxVoltage)*100);
+            Screen('DrawLine', window, orange, leftScaleLimit, yThreshold, rightScaleLimit, yThreshold,5);
         end
         
         Screen(window,'Flip');
