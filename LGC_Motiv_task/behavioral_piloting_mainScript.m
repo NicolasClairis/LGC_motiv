@@ -81,6 +81,8 @@ n_to_reach = mental_N_answersPerLevel(n_E_levels);
 % top effort
 n_calibMax = n_to_reach.(['E_level_',num2str(n_E_levels)]);
 n_calibTrials_Em = 5;
+% pre and post-task calibration (lower number of trials)
+n_calibTrials_Em_bis = 3;
 
 % learning
 % perform 2 learning sessions, one with instructions and then one without
@@ -178,9 +180,8 @@ while calibSuccess == false
     calibSummary.(['calibSession_',num2str(calibSession)]).t_mental_max_perTrial = t_min_calib;
 end
 
-trainingTimes_Em.max_effort = t_min_calib*trainingTimes_Em.t_min_scalingFactor; % allow more time then min performance
-taskTimes_Em.max_effort     = t_min_calib*taskTimes_Em.t_min_scalingFactor; % allow more time then min performance
     %% training mental
+trainingTimes_Em.max_effort = t_min_calib*trainingTimes_Em.t_min_scalingFactor; % allow more time then min performance
 for iTrainingCondition = 1:n_trainingConditions
     trainingCond = trainingConditions{iTrainingCondition};
     
@@ -197,6 +198,9 @@ for iTrainingCondition = 1:n_trainingConditions
 end % learning condition loop
 
 %% actual task
+% for mental effort timing
+taskTimes_Em.max_effort     = t_min_calib*taskTimes_Em.t_min_scalingFactor; % allow more time then min performance
+
 % instruction that main task will start soon
 DrawFormattedText(window,...
     'L''expérimentateur va bientôt démarrer la tâche.',...
@@ -244,7 +248,15 @@ for iSession = 1:n_sessions
     elseif ( (mod(iSubject,2) == 0) && ismember(iSession,[2,4]) ) ||...
             ( (mod(iSubject,2) ~= 0) && ismember(iSession,[1,3]) )% mental task
         % pre-task max perf
-
+        % extract numbers to use for each calibration trial
+        [numberVector_calib_tmp] = mental_numbers(n_calibTrials_Em_bis);
+        
+        % alternatively, use fixed number of correct answers to provide for each effort
+        % level
+        % repeat calibration until the subject performance is better
+        % than the requested time threshold
+        [t_min_calib, calibSessionSummary, calibSuccess] = mental_calibTime(scr, stim, key,...
+            numberVector_calib_tmp, mentalE_prm_learning_and_calib, n_calibTrials_Em_bis, n_calibMax, calibTimes_Em);
         % task
         [perfSummary.mental.(session_nm)] = choice_and_perf(scr, stim, key,...
             'mental', Em_vars, R_money,...
@@ -253,7 +265,14 @@ for iSession = 1:n_sessions
         choiceOptions.mental.(session_nm) = choiceOptions_tmp;
 
         % post-task max perf
+        [numberVector_calib_tmp_bis] = mental_numbers(n_calibTrials_Em_bis);
         
+        % alternatively, use fixed number of correct answers to provide for each effort
+        % level
+        % repeat calibration until the subject performance is better
+        % than the requested time threshold
+        [t_min_calib, calibSessionSummary, calibSuccess] = mental_calibTime(scr, stim, key,...
+            numberVector_calib_tmp_bis, mentalE_prm_learning_and_calib, n_calibTrials_Em_bis, n_calibMax, calibTimes_Em);
     end % nature of the task
     % display feedback for the current session
     DrawFormattedText(window,...
