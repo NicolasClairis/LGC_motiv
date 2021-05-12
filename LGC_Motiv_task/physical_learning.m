@@ -49,7 +49,8 @@ t_learning_rest = timings.learning_rest;
 
 n_learningTrials = n_learningForceRepeats*n_E_levels;
 %% initialize vars of interst
-[perfSummary, onsets.effortPeriod, onsets.rest] = deal(cell(1,n_learningTrials));
+[perfSummary, onsets.effortPeriod] = deal(cell(1,n_learningTrials));
+onsets.learningRest = NaN(1,n_learningTrials);
 
 %% perform learning
 jTrial = 0;
