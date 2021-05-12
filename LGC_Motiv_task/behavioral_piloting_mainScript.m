@@ -110,8 +110,9 @@ for iTrainingCondition = 1:n_trainingConditions
     [trainingChoiceOptions_tmp, n_trainingTrials_tmp, R_or_P_training_tmp] = training_options(trainingCond, n_R_levels, n_E_levels);
     
     % start with reward training alone
-    Ep_or_Em_vars.MVC = MVC;
-    [trainingSummary.(trainingCond)] = choice_and_perf_training(scr, stim, key, 'physical', Ep_or_Em_vars, R_money,...
+    Ep_vars.MVC = MVC;
+    Ep_vars.dq = dq;
+    [trainingSummary.(trainingCond)] = choice_and_perf_training(scr, stim, key, 'physical', Ep_vars, R_money,...
         trainingCond, R_or_P_training_tmp, n_trainingTrials_tmp, trainingChoiceOptions_tmp, trainingTimes_Ep);
 end % learning condition loop
 
@@ -168,6 +169,7 @@ while calibSuccess == false
     calibSummary.(['calibSession_',num2str(calibSession)]).t_mental_max_perTrial = t_min_calib;
 end
     %% training mental
+
 
 %% actual task
 % each block 1) MVC 2) task 3) MVC

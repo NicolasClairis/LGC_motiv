@@ -71,6 +71,7 @@ switch effort_type
         n_to_reach = Ep_or_Em_vars.n_to_reach;
     case 'physical'
         MVC = Ep_or_Em_vars.MVC;
+        dq = Ep_or_Em_vars.dq;
 end
 
 %% instruction that main task will start soon

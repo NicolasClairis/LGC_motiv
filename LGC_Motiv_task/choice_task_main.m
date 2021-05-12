@@ -366,6 +366,7 @@ if IRM == 0
         switch effort_type
             case 'physical'
                 Ep_or_Em_vars.MVC = MVC;
+                Ep_or_Em_vars.dq = dq;
             case 'mental'
                 Ep_or_Em_vars.i_sub = i_sub;
                 Ep_or_Em_vars.n_to_reach = n_to_reach;
