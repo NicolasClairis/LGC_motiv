@@ -111,7 +111,7 @@ switch effort_type
         % than 5)
         mental_taskType_trialStart = mental_task_start(nTrials);
         % number of good answers to reach at each trial
-        n_max_to_reach_perTrial = Nan(1,nTrials);
+        n_max_to_reach_perTrial = NaN(1,nTrials);
 end
 
 time_limit = true; % time limit to reach level of force required
