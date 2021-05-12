@@ -222,7 +222,7 @@ end
 n_trainingConditions = length(trainingConditions);
 
 %% load timings for each phase of the experiment
-[trainingTimes, calibTimes, taskTimes] = timings_definition(scr, trainingConditions, n_R_levels, n_E_levels, nTrials, effort_type);
+[trainingTimes, calibTimes, learningTimes, taskTimes] = timings_definition(scr, trainingConditions, n_R_levels, n_E_levels, nTrials, effort_type);
 
 %% learning (for mental effort)
 % for physical effort, you need to perform the MVC calibration before the
@@ -330,7 +330,7 @@ switch effort_type
         % just perform X times each level of effort so that they get an idea of what it implies
         [learningPerfSummary, learningOnsets] = physical_learning(scr, stim, dq, n_E_levels, Ep_time_levels,...
             F_threshold, F_tolerance, MVC,...
-            n_learningForceRepeats);
+            n_learningForceRepeats, learningTimes);
 end
 
 %% max perf measurement before start of each session

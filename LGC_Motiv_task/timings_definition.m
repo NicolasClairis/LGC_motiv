@@ -1,5 +1,5 @@
-function[trainingTimes, calibTimes, taskTimes] = timings_definition(scr, trainingConditions, n_R_levels, n_E_levels, nTrials, effort_type)
-%[trainingTimes, calibTimes, taskTimes] = timings_definition(scr, n_trainingTrials, taskTrainingConditions, n_R_levels, n_E_levels, nTrials, effort_type)
+function[trainingTimes, calibTimes, learningTimes, taskTimes] = timings_definition(scr, trainingConditions, n_R_levels, n_E_levels, nTrials, effort_type)
+%[trainingTimes, calibTimes, learningTimes, taskTimes] = timings_definition(scr, n_trainingTrials, taskTrainingConditions, n_R_levels, n_E_levels, nTrials, effort_type)
 % timings_definition defines the time duration for each period of the
 % experiment.
 % All timings are expressed in seconds.
@@ -25,9 +25,16 @@ function[trainingTimes, calibTimes, taskTimes] = timings_definition(scr, trainin
 %
 % calibTimes: structure with calibration timings
 %
+% learningTimes: structure with learning timings
+%
 % taskTimes: structure with main task timings
 %
-%
+
+%% manual calibration values
+if strcmp(effort_type, 'physical')
+    t_ifi = 1/15;
+    t_readWait = 0.075;
+end
 
 %% calibration timings
 calibTimes.instructions = 5;
@@ -37,11 +44,21 @@ switch effort_type % in case you use different numbers for each effort type
     case 'physical'
         calibTimes.instructions_bis = 10;
         calibTimes.effort_max = 5;% time to perform the task
-        calibTimes.physicalReadWait = 0.075; % Arthur manual definition
+        calibTimes.physicalReadWait = t_readWait; % Arthur manual definition
         calibTimes.MVC_rest = 7; % rest after each MVC calibration
-        calibTimes.ifi = 1/15; % manual definition to match with read frame rate
+        calibTimes.ifi = t_ifi; % manual definition to match with read frame rate
 end
 calibTimes.fbk = 2;
+
+%% learning timings
+switch effort_type % in case you use different numbers for each effort type
+    case 'mental'
+        learningTimes = [];
+    case 'physical'
+        learningTimes.ifi = t_ifi;
+        learningTimes.t_max_effort = [];
+        learningTimes.physicalReadWait = t_readWait;
+end
 
 %% main task timings
 jitterMin = 0.5;
@@ -60,12 +77,12 @@ switch effort_type
         
         % store frame rate for physical effort task
         % query the frame duration (inter-frame interval)
-%         taskTimes.ifi = Screen('GetFlipInterval', scr.window);
-        taskTimes.ifi = 1/15; % manual definition to match with read frame rate
+        %         taskTimes.ifi = Screen('GetFlipInterval', scr.window);
+        taskTimes.ifi = t_ifi; % manual definition to match with read frame rate
         
         % define pause duration after read to make it work without losing
         % too much in the display
-        taskTimes.physicalReadWait = 0.075; % Arthur manual definition
+        taskTimes.physicalReadWait = t_readWait; % Arthur manual definition
     case 'mental'
         taskTimes.t_min_scalingFactor = 150/100; % multiply calibrated minimal time by this value
 end
@@ -96,12 +113,12 @@ switch effort_type
         
         % store frame rate for physical effort task
         % query the frame duration (inter-frame interval)
-%         trainingTimes.ifi = Screen('GetFlipInterval', scr.window);
-        trainingTimes.ifi = 1/15; % manual definition to match with read frame rate
+        %         trainingTimes.ifi = Screen('GetFlipInterval', scr.window);
+        trainingTimes.ifi = t_ifi; % manual definition to match with read frame rate
         
         % define pause duration after read to make it work without losing
         % too much in the display
-        trainingTimes.physicalReadWait = 0.075; % Arthur manual definition
+        trainingTimes.physicalReadWait = t_readWait; % Arthur manual definition
     case 'mental'
         trainingTimes.t_min_scalingFactor = 150/100; % multiply calibrated minimal time by this value
 end
