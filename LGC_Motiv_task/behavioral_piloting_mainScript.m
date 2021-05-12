@@ -60,6 +60,7 @@ n_trainingConditions = length(trainingConditions);
 [trainingTimes_Ep, calibTimes_Ep, taskTimes_Ep] = timings_definition(scr, trainingConditions, n_R_levels, n_E_levels, n_trialsPerSession, 'physical');
 
 %% physical parameters
+n_MVC_repeat = 3;
 n_learningForceRepeats = 3; % number of learning repetitions for each level of difficulty (= each level of force)
 F_threshold = 50; % force should be maintained above this threshold (expressed in % of MVC)
 F_tolerance = 2.5; % tolerance allowed around the threshold (expressed in % of MVC)
@@ -75,7 +76,7 @@ n_calibMax = n_to_reach.(['E_level_',num2str(n_E_levels)]);
 
 %% physical preparation
 % physical MVC
-[initial_MVC, onsets_initial_MVC] = physical_effort_MVC(scr, stim, dq, n_MVC_repeat, calibTimes);
+[initial_MVC, onsets_initial_MVC] = physical_effort_MVC(scr, stim, dq, n_MVC_repeat, calibTimes_Ep);
 MVC = nanmax(initial_MVC); % expressed in Voltage
 
 % learning physical
