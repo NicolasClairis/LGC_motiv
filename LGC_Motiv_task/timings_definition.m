@@ -127,6 +127,6 @@ switch effort_type
 end
 trainingTimes.choice        = t_choice;
 trainingTimes.dispChoice    = t_dispChoice;
-trainingTimes.fbk           = t_fbk;
+trainingTimes.feedback      = t_fbk;
 
 end % function
