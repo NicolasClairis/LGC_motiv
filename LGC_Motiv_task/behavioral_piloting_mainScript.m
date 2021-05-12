@@ -113,65 +113,65 @@ warning('left few training trials for Arthur, but need to increase for actual su
     %% physical MVC
 [initial_MVC, onsets_initial_MVC] = physical_effort_MVC(scr, dq, n_MVC_repeat, calibTimes_Ep);
 MVC = nanmax(initial_MVC.MVC); % expressed in Voltage
-% 
-%     %% learning physical
-% [learningPerfSummary_Ep, learningOnsets_Ep] = physical_learning(scr, stim, dq, n_E_levels, Ep_time_levels,...
-%     F_threshold, F_tolerance, MVC,...
-%     n_learningForceRepeats, learningTimes_Ep);
-% 
-%     %% training physical
-% for iTrainingCondition = 1:n_trainingConditions
-%     trainingCond = trainingConditions{iTrainingCondition};
-%     
-%     % define parameters for the training
-%     % reward/punishment and effort levels
-%     [trainingChoiceOptions_Ep_tmp, n_trainingTrials_Ep_tmp] = training_options(trainingCond, n_R_levels, n_E_levels);
-%     
+
+    %% learning physical
+[learningPerfSummary_Ep, learningOnsets_Ep] = physical_learning(scr, stim, dq, n_E_levels, Ep_time_levels,...
+    F_threshold, F_tolerance, MVC,...
+    n_learningForceRepeats, learningTimes_Ep);
+
+    %% training physical
+for iTrainingCondition = 1:n_trainingConditions
+    trainingCond = trainingConditions{iTrainingCondition};
+    
+    % define parameters for the training
+    % reward/punishment and effort levels
+    [trainingChoiceOptions_Ep_tmp, n_trainingTrials_Ep_tmp] = training_options(trainingCond, n_R_levels, n_E_levels);
+    
     % start with reward training alone
     Ep_vars.MVC = MVC;
     Ep_vars.dq = dq;
     Ep_vars.Ep_time_levels = Ep_time_levels;
     Ep_vars.F_threshold = F_threshold;
     Ep_vars.F_tolerance = F_tolerance;
-%     [onsets_Ep_training.(trainingCond)] = choice_and_perf_trainingInstructions(scr, trainingCond, trainingTimes_Ep.instructions);
-%     [trainingSummary_Ep.(trainingCond)] = choice_and_perf(scr, stim, key, 'physical', Ep_vars, R_money,...
-%         trainingCond, n_trainingTrials_Ep_tmp, trainingChoiceOptions_Ep_tmp, trainingTimes_Ep,...
-%         results_folder, file_nm_training_Ep);
-% end % learning condition loop
-% 
-% DrawFormattedText(window,'Bravo! Votre entraînement physique est terminé.',...
-%     'center','center',scr.colours.black, scr.wrapat);
-% [~,onsets.EndTrainingMsg] = Screen('Flip',window); % display the cross on screen
-% WaitSecs(trainingTimes_Ep.trainingEnd);
+    [onsets_Ep_training.(trainingCond)] = choice_and_perf_trainingInstructions(scr, trainingCond, trainingTimes_Ep.instructions);
+    [trainingSummary_Ep.(trainingCond)] = choice_and_perf(scr, stim, key, 'physical', Ep_vars, R_money,...
+        trainingCond, n_trainingTrials_Ep_tmp, trainingChoiceOptions_Ep_tmp, trainingTimes_Ep,...
+        results_folder, file_nm_training_Ep);
+end % learning condition loop
+
+DrawFormattedText(window,'Bravo! Votre entraînement physique est terminé.',...
+    'center','center',scr.colours.black, scr.wrapat);
+[~,onsets.EndTrainingMsg] = Screen('Flip',window); % display the cross on screen
+WaitSecs(trainingTimes_Ep.trainingEnd);
 
 %% mental preparation
-%     %% learning mental
+    %% learning mental
 mentalE_prm_learning_and_calib = mental_effort_parameters(iSubject);
 mentalE_prm_learning_and_calib.startAngle = 0; % for learning always start at zero
-% % no time limit for each trial: as long as needed until learning is
-% % ok
-% learning_time_limit = false;
-% % extract numbers to use for each learning phase
-% [numberVector_learning] = mental_numbers(n_learningColours*n_learningInstructions);
-% jLearningSession = 0;
-% for iCol = 1:n_learningColours
-%     curr_learning_col = learning_cols{iCol};
-%     for iLearning_Instructions = 1:n_learningInstructions
-%         curr_learning_instructions = learning_instructions{iLearning_Instructions};
-%         
-%         jLearningSession = jLearningSession + 1;
-%         learning_sess_nm = ['learning_session',num2str(jLearningSession)];
-%         % display instructions for the current learning type
-%         [onsets.endLearningInstructions.(learning_sess_nm).(curr_learning_col).(curr_learning_instructions)] = mental_learning(scr,...
-%             curr_learning_col, curr_learning_instructions, mentalE_prm_learning_and_calib);
-%         
-%         % perform the learning
-%         [learningPerfSummary_Em.(learning_sess_nm).(curr_learning_col).(curr_learning_instructions)] = mental_effort_perf(scr, stim, key,...
-%             numberVector_learning(jLearningSession,:),...
-%             mentalE_prm_learning_and_calib, n_maxLearning.learning_withInstructions,...
-%             curr_learning_col, curr_learning_instructions, learning_time_limit);
-%     end % learning instructions loop
-% end % learning colour loop
+% no time limit for each trial: as long as needed until learning is
+% ok
+learning_time_limit = false;
+% extract numbers to use for each learning phase
+[numberVector_learning] = mental_numbers(n_learningColours*n_learningInstructions);
+jLearningSession = 0;
+for iCol = 1:n_learningColours
+    curr_learning_col = learning_cols{iCol};
+    for iLearning_Instructions = 1:n_learningInstructions
+        curr_learning_instructions = learning_instructions{iLearning_Instructions};
+        
+        jLearningSession = jLearningSession + 1;
+        learning_sess_nm = ['learning_session',num2str(jLearningSession)];
+        % display instructions for the current learning type
+        [onsets.endLearningInstructions.(learning_sess_nm).(curr_learning_col).(curr_learning_instructions)] = mental_learning(scr,...
+            curr_learning_col, curr_learning_instructions, mentalE_prm_learning_and_calib);
+        
+        % perform the learning
+        [learningPerfSummary_Em.(learning_sess_nm).(curr_learning_col).(curr_learning_instructions)] = mental_effort_perf(scr, stim, key,...
+            numberVector_learning(jLearningSession,:),...
+            mentalE_prm_learning_and_calib, n_maxLearning.learning_withInstructions,...
+            curr_learning_col, curr_learning_instructions, learning_time_limit);
+    end % learning instructions loop
+end % learning colour loop
 
     %% calibration mental
 % extract numbers to use for each calibration trial
@@ -192,23 +192,23 @@ while calibSuccess == false
     calibSummary.(['calibSession_',num2str(calibSession)]).t_mental_max_perTrial = t_min_calib;
 end
 
-%     %% training mental
-% trainingTimes_Em.max_effort = t_min_calib*trainingTimes_Em.t_min_scalingFactor; % allow more time then min performance
-% for iTrainingCondition = 1:n_trainingConditions
-%     trainingCond = trainingConditions{iTrainingCondition};
-%     
-%     % define parameters for the training
-%     % reward/punishment and effort levels
-%     [trainingChoiceOptions_Em_tmp, n_trainingTrials_Em_tmp] = training_options(trainingCond, n_R_levels, n_E_levels);
-%     
-%     % start with reward training alone
+    %% training mental
+trainingTimes_Em.max_effort = t_min_calib*trainingTimes_Em.t_min_scalingFactor; % allow more time then min performance
+for iTrainingCondition = 1:n_trainingConditions
+    trainingCond = trainingConditions{iTrainingCondition};
+    
+    % define parameters for the training
+    % reward/punishment and effort levels
+    [trainingChoiceOptions_Em_tmp, n_trainingTrials_Em_tmp] = training_options(trainingCond, n_R_levels, n_E_levels);
+    
+    % start with reward training alone
     Em_vars.i_sub = iSubject;
     Em_vars.n_to_reach = n_to_reach;
-%     [onsets_Em_training.(trainingCond)] = choice_and_perf_trainingInstructions(scr, trainingCond, trainingTimes_Em.instructions);
-%     [trainingSummary_Em.(trainingCond)] = choice_and_perf(scr, stim, key, 'mental', Em_vars, R_money,...
-%         trainingCond, n_trainingTrials_Em_tmp, trainingChoiceOptions_Em_tmp, trainingTimes_Em,...
-%         results_folder, file_nm_training_Em);
-% end % learning condition loop
+    [onsets_Em_training.(trainingCond)] = choice_and_perf_trainingInstructions(scr, trainingCond, trainingTimes_Em.instructions);
+    [trainingSummary_Em.(trainingCond)] = choice_and_perf(scr, stim, key, 'mental', Em_vars, R_money,...
+        trainingCond, n_trainingTrials_Em_tmp, trainingChoiceOptions_Em_tmp, trainingTimes_Em,...
+        results_folder, file_nm_training_Em);
+end % learning condition loop
 
 %% actual task
 % for mental effort timing
@@ -242,19 +242,19 @@ for iSession = 1:n_sessions
     if ( (mod(iSubject,2) == 0) && ismember(iSession,[1,3]) ) ||...
             ( (mod(iSubject,2) ~= 0) && ismember(iSession,[2,4]) )% physical task
         
-%         % pre-task MVC
-%         [MVC_preTask.(session_nm), onsets_preTask_MVC.physical.(session_nm)] = physical_effort_MVC(scr, dq, n_MVC_repeat, calibTimes_Ep);
-% 
-%         % task
-%         [perfSummary.physical.(session_nm)] = choice_and_perf(scr, stim, key,...
-%             'physical', Ep_vars, R_money,...
-%             'mainTask', n_trialsPerSession, choiceOptions_tmp, taskTimes_Ep,...
-%             results_folder, [file_nm,'_physical_',session_nm]);
-%         choiceOptions.physical.(session_nm) = choiceOptions_tmp;
-%         finalGains = perfSummary.physical.(session_nm).totalGain(end);
-% 
-%         % post-task MVC
-%         [MVC_postTask.(session_nm), onsets_postTask_MVC.physical.(session_nm)] = physical_effort_MVC(scr, dq, n_MVC_repeat, calibTimes_Ep);
+        % pre-task MVC
+        [MVC_preTask.(session_nm), onsets_preTask_MVC.physical.(session_nm)] = physical_effort_MVC(scr, dq, n_MVC_repeat, calibTimes_Ep);
+
+        % task
+        [perfSummary.physical.(session_nm)] = choice_and_perf(scr, stim, key,...
+            'physical', Ep_vars, R_money,...
+            'mainTask', n_trialsPerSession, choiceOptions_tmp, taskTimes_Ep,...
+            results_folder, [file_nm,'_physical_',session_nm]);
+        choiceOptions.physical.(session_nm) = choiceOptions_tmp;
+        finalGains = perfSummary.physical.(session_nm).totalGain(end);
+
+        % post-task MVC
+        [MVC_postTask.(session_nm), onsets_postTask_MVC.physical.(session_nm)] = physical_effort_MVC(scr, dq, n_MVC_repeat, calibTimes_Ep);
     elseif ( (mod(iSubject,2) == 0) && ismember(iSession,[2,4]) ) ||...
             ( (mod(iSubject,2) ~= 0) && ismember(iSession,[1,3]) )% mental task
         % pre-task max perf
