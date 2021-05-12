@@ -231,7 +231,10 @@ while (trial_success == 0) &&...
 end % time loop
 
 %% stop acquisition of biopac handgrip
+% stop acquiring data in the grip buffer
 stop(dq);
+% empty the grip buffer
+flush(dq);
 
 %% record vars of interest
 physicalE_perf.trial_success = trial_success;
