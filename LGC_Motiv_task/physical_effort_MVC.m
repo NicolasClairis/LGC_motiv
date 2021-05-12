@@ -131,7 +131,7 @@ for iCalib_MVC = 1:n_MVC_repeat
         % store force levels in the output
         forceCalib.(['calibTrial_',num2str(iCalib_MVC)]) = [forceCalib.(['calibTrial_',num2str(iCalib_MVC)]);...
             [F_now, timeNow, F_now_Voltage, sampleOk_tmp]]; % store F in % of MVC, time and F in Volts
-        DrawFormattedText(window, 'GO !', 'center', yScreenSize*0.8, 1);
+        DrawFormattedText(window, 'GO !', 'center', yScreenSize*0.9, 1);
         disp_realtime_force(scr, F_threshold, F_tolerance, F_now, 'calib');
         
         % for calibration trials coming after the first one, you can also
@@ -140,7 +140,7 @@ for iCalib_MVC = 1:n_MVC_repeat
         if iCalib_MVC > 1
             maxMVCuntilNow = nanmax( MVC_perCalibSession(1:(iCalib_MVC-1)));
             yThreshold = bottomScaleLimit - graphYSize*((maxMVCuntilNow/maxVoltage)*100);
-            Screen('DrawLine', window, orange, leftScaleLimit, yThreshold, rightScaleLimit, yThreshold,3);
+            Screen('DrawLine', window, orange, leftScaleLimit, yThreshold, rightScaleLimit, yThreshold,10);
         end
         
         Screen(window,'Flip');

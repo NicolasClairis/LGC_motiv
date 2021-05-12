@@ -145,7 +145,23 @@ for iCol = 1:n_learningColours
 end % learning colour loop
 
     %% calibration mental
-
+    % extract numbers to use for each calibration trial
+    [numberVector_calib] = mental_numbers(n_calibTrials);
+    
+    %% alternatively, use fixed number of correct answers to provide for each effort
+    % level
+    % repeat calibration until the subject performance is better
+    % than the requested time threshold
+    calibSuccess = false;
+    calibSession = 0;
+    while calibSuccess == false
+        calibSession = calibSession + 1;
+        [t_min_calib, calibSessionSummary, calibSuccess] = mental_calibTime(scr, stim, key,...
+            numberVector_calib, mentalE_prm_learning_and_calib, n_calibTrials, n_calibMax, calibTimes);
+        calibSummary.(['calibSession_',num2str(calibSession)]).calibSummary = calibSessionSummary;
+        calibSummary.(['calibSession_',num2str(calibSession)]).calibSuccess = calibSuccess;
+        calibSummary.(['calibSession_',num2str(calibSession)]).t_mental_max_perTrial = t_min_calib;
+    end
     %% training mental
 
 %% actual task
