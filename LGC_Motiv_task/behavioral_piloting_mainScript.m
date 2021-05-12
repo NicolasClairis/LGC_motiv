@@ -87,16 +87,16 @@ n_maxLearning.learning_withInstructions = 15;
 n_maxLearning.learning_withoutInstructions = 15;
 
 %% physical preparation
-% physical MVC
+    %% physical MVC
 [initial_MVC, onsets_initial_MVC] = physical_effort_MVC(scr, dq, n_MVC_repeat, calibTimes_Ep);
 MVC = nanmax(initial_MVC); % expressed in Voltage
 
-% learning physical
+    %% learning physical
 [learningPerfSummary, learningOnsets] = physical_learning(scr, stim, dq, n_E_levels, Ep_time_levels,...
     F_threshold, F_tolerance, MVC,...
     n_learningForceRepeats);
 
-% training physical
+    %% training physical
 for iTrainingCondition = 1:n_trainingConditions
     trainingCond = trainingConditions{iTrainingCondition};
     
@@ -116,7 +116,7 @@ DrawFormattedText(window,'Bravo! Votre entraînement est terminé.',...
 WaitSecs(trainingTimes.trainingEnd);
 
 %% mental preparation
-% learning mental
+    %% learning mental
 mentalE_prm_learning_and_calib = mental_effort_parameters(i_sub);
 mentalE_prm_learning_and_calib.startAngle = 0; % for learning always start at zero
 % no time limit for each trial: as long as needed until learning is
@@ -144,9 +144,9 @@ for iCol = 1:n_learningColours
     end % learning instructions loop
 end % learning colour loop
 
-% calibration mental
+    %% calibration mental
 
-% training mental
+    %% training mental
 
 %% actual task
 % each block 1) MVC 2) task 3) MVC
