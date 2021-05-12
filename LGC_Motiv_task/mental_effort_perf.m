@@ -166,7 +166,7 @@ while (iCorrectAnswers < n_max_to_reach) &&...
     timeNow = GetSecs;
     
     % trial informations
-    numberValue_tmp = numberVector(i_question);
+    numberValue_tmp = numberVectorUsed(i_question);
     taskType_tmp = taskType(i_question);
     
     % display instructions after 2 errors have been made (in case where no
