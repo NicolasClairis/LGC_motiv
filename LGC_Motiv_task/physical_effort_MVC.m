@@ -159,7 +159,10 @@ for iCalib_MVC = 1:n_MVC_repeat
 end % calibration loop
 
 %% stop acquisition of biopac handgrip
+% stop acquiring data in the grip buffer
 stop(dq);
+% empty the grip buffer
+flush(dq);
 
 %% store max MVC measure in output
 MVC.forceCalib = forceCalib;
