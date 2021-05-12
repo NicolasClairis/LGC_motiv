@@ -257,7 +257,7 @@ while (iCorrectAnswers < n_max_to_reach) &&...
                 numberVectorUsed(i_question + 1) = numberVectorUsed(i_question);
             else
                 taskType(i_question + 1) = task_seq(iCorrectAnswers + 1);
-                numberVectorUsed(i_question + 1) = numberVector(iCorrectAnswers + 1);
+                numberVectorUsed(i_question + 1) = numberVector(jCorrectAnswers + 1);
             end
         end % no need to update task type for the next question if the end has been reached
         
