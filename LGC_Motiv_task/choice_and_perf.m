@@ -328,5 +328,5 @@ switch effort_type
 end
 
 %% save all the data in case of crash later on
-save([results_folder, file_nm,'_behavioral_tmp.mat']);
+save([results_folder, file_nm,'_behavioral_tmp.mat'],'summary');
 end % function
