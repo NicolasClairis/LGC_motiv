@@ -31,6 +31,8 @@ cd(main_task_folder);
 
 %% define subject ID
 iSubject = 0;
+file_nm_training_Em = ['pilot_data_Em_sub',num2str(iSubject)];
+file_nm_training_Ep = ['pilot_data_Ep_sub',num2str(iSubject)];
 file_nm = ['pilot_data_sub',num2str(iSubject)];
 
 %% general parameters
@@ -132,7 +134,7 @@ warning('left few training trials for Arthur, but need to increase for actual su
 %     [onsets_Ep_training.(trainingCond)] = choice_and_perf_trainingInstructions(scr, trainingCond, trainingTimes_Ep.instructions);
 %     [trainingSummary_Ep.(trainingCond)] = choice_and_perf(scr, stim, key, 'physical', Ep_vars, R_money,...
 %         trainingCond, n_trainingTrials_Ep_tmp, trainingChoiceOptions_Ep_tmp, trainingTimes_Ep,...
-%         results_folder, file_nm);
+%         results_folder, file_nm_training_Ep);
 % end % learning condition loop
 % 
 % DrawFormattedText(window,'Bravo! Votre entraînement physique est terminé.',...
@@ -202,7 +204,8 @@ for iTrainingCondition = 1:n_trainingConditions
     Em_vars.n_to_reach = n_to_reach;
     [onsets_Em_training.(trainingCond)] = choice_and_perf_trainingInstructions(scr, trainingCond, trainingTimes_Em.instructions);
     [trainingSummary_Em.(trainingCond)] = choice_and_perf(scr, stim, key, 'mental', Em_vars, R_money,...
-        trainingCond, n_trainingTrials_Em_tmp, trainingChoiceOptions_Em_tmp, trainingTimes_Em);
+        trainingCond, n_trainingTrials_Em_tmp, trainingChoiceOptions_Em_tmp, trainingTimes_Em,...
+        results_folder, file_nm_training_Em);
 end % learning condition loop
 
 %% actual task
@@ -248,7 +251,7 @@ for iSession = 1:n_sessions
         [perfSummary.physical.(session_nm)] = choice_and_perf(scr, stim, key,...
             'physical', Ep_vars, R_money,...
             'mainTask', n_trialsPerSession, choiceOptions_tmp, taskTimes_Ep,...
-            results_folder, file_nm);
+            results_folder, [file_nm,'_physical_',session_nm]);
         choiceOptions.physical.(session_nm) = choiceOptions_tmp;
 
         % post-task MVC
@@ -269,7 +272,7 @@ for iSession = 1:n_sessions
         [perfSummary.mental.(session_nm)] = choice_and_perf(scr, stim, key,...
             'mental', Em_vars, R_money,...
             'mainTask', n_trialsPerSession, choiceOptions_tmp, taskTimes_Em,...
-            results_folder, file_nm);
+            results_folder, [file_nm,'_mental_',session_nm]);
         choiceOptions.mental.(session_nm) = choiceOptions_tmp;
 
         % post-task max perf

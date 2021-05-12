@@ -325,6 +325,14 @@ switch effort_type
     case 'mental'
         summary.mentalE_prm = mentalE_prm;
         summary.n_max_to_reach_perTrial = n_max_to_reach_perTrial;
+        summary.i_sub = i_sub;
+        summary.n_to_reach = n_to_reach;
+    case 'physical'
+        summary.MVC = MVC;
+        summary.dq = dq;
+        summary.Ep_time_levels = Ep_time_levels;
+        summary.F_threshold = F_threshold;
+        summary.F_tolerance = F_tolerance;
 end
 
 %% save all the data in case of crash later on

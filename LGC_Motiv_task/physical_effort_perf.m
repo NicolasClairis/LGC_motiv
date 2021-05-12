@@ -109,7 +109,6 @@ timeNow = onsetEffortPhase;
 [dispInfos.time,...
     dispInfos.currentAngle,...
     dispInfos.forceLevel] = deal([]);
-[timeEffortStart_tmp, timeEffortStop_tmp] = deal(0);
 stateSqueezeON = false;
 force_levels = [];
 
