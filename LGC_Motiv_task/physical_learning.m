@@ -38,11 +38,20 @@ function[perfSummary, onsets] = physical_learning(scr, stim, dq, n_E_levels, Ep_
 %
 % onsets: structure with information about timings of the experiment
 
+%% screen parameters
+window = scr.window;
+yScreenCenter = scr.yCenter;
+yScreenSize = yScreenCenter*2;
+
+%% time parameters
 time_limit = false; % learning = no time limit
+t_learning_rest = timings.learning_rest;
 
 n_learningTrials = n_learningForceRepeats*n_E_levels;
-[perfSummary, onsets.effortPeriod] = deal(cell(1,n_learningTrials));
+%% initialize vars of interst
+[perfSummary, onsets.effortPeriod, onsets.rest] = deal(cell(1,n_learningTrials));
 
+%% perform learning
 jTrial = 0;
 for iForceRepeat = 1:n_learningForceRepeats
     for iEffortLevel = 1:n_E_levels
@@ -56,6 +65,12 @@ for iForceRepeat = 1:n_learningForceRepeats
             Ep_time_levels,...
             F_threshold, F_tolerance,...
             time_limit, timings);
+        
+        %% Show a rest text and give some rest
+        DrawFormattedText(window, 'Reposez-vous quelques secondes.', 'center', yScreenSize*0.8, [0 0.8 0 ]);
+        [~,timeNow]  = Screen(window,'Flip');
+        onsets.rest(jTrial) = timeNow;
+        WaitSecs(t_learning_rest);
     end % effort level loop
 end % loop of learning repetitions
         
