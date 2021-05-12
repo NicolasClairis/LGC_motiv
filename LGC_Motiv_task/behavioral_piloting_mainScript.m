@@ -89,7 +89,7 @@ n_maxLearning.learning_withoutInstructions = 15;
 %% physical preparation
     %% physical MVC
 [initial_MVC, onsets_initial_MVC] = physical_effort_MVC(scr, dq, n_MVC_repeat, calibTimes_Ep);
-MVC = nanmax(initial_MVC); % expressed in Voltage
+MVC = nanmax(initial_MVC.MVC); % expressed in Voltage
 
     %% learning physical
 [learningPerfSummary, learningOnsets] = physical_learning(scr, stim, dq, n_E_levels, Ep_time_levels,...
