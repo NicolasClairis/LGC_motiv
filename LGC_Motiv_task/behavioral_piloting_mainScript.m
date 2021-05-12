@@ -224,10 +224,6 @@ while(keyCode(key.space) ~= 1)
     [~, ~, keyCode] = KbCheck();
 end
 
-% initialize max perf variables
-[MVC_preTask, MVC_postTask,...
-    t_min_calib_preTask, t_min_calib_postTask] = deal(NaN(1,n_sessions));
-
 % each block 1) MVC 2) task 3) MVC
 for iSession = 1:n_sessions
     % define session number
@@ -266,7 +262,7 @@ for iSession = 1:n_sessions
         % level
         % repeat calibration until the subject performance is better
         % than the requested time threshold
-        [t_min_calib, calibSessionSummary, calibSuccess] = mental_calibTime(scr, stim, key,...
+        [t_min_calib_preTask.(session_nm), calibSessionSummary_preTask.(session_nm), calibSuccess_preTask.(session_nm)] = mental_calibTime(scr, stim, key,...
             numberVector_calib_tmp, mentalE_prm_learning_and_calib, n_calibTrials_Em_bis, n_calibMax, calibTimes_Em);
         % task
         [perfSummary.mental.(session_nm)] = choice_and_perf(scr, stim, key,...
@@ -282,7 +278,7 @@ for iSession = 1:n_sessions
         % level
         % repeat calibration until the subject performance is better
         % than the requested time threshold
-        [t_min_calib, calibSessionSummary, calibSuccess] = mental_calibTime(scr, stim, key,...
+        [t_min_calib_postTask.(session_nm), calibSessionSummary_postTask.(session_nm), calibSuccess_postTask.(session_nm)] = mental_calibTime(scr, stim, key,...
             numberVector_calib_tmp_bis, mentalE_prm_learning_and_calib, n_calibTrials_Em_bis, n_calibMax, calibTimes_Em);
     end % nature of the task
     % display feedback for the current session
@@ -311,6 +307,10 @@ all.physical.postTask.MVC = MVC_postTask;
 all.physical.postTask.onsets_MVC = onsets_postTask_MVC.physical;
 all.mental.preTask.t_min_calib = t_min_calib_preTask;
 all.mental.postTask.t_min_calib = t_min_calib_postTask;
+all.mental.preTask.calibSessionSummary = calibSessionSummary_preTask;
+all.mental.postTask.calibSessionSummary = calibSessionSummary_postTask;
+all.mental.preTask.calibSuccess = calibSuccess_preTask;
+all.mental.postTask.calibSuccess = calibSuccess_postTask;
 % actual performance in the main task sessions
 % record physical main task data
 all.physical.session1.choiceOptions = choiceOptions.physical.session1;
