@@ -39,6 +39,7 @@ switch effort_type % in case you use different numbers for each effort type
         calibTimes.effort_max = 5;% time to perform the task
         calibTimes.physicalReadWait = 0.075; % Arthur manual definition
         calibTimes.MVC_rest = 7; % rest after each MVC calibration
+        calibTimes.ifi = 1/15; % manual definition to match with read frame rate
 end
 calibTimes.fbk = 2;
 
@@ -59,8 +60,8 @@ switch effort_type
         
         % store frame rate for physical effort task
         % query the frame duration (inter-frame interval)
-        taskTimes.ifi = Screen('GetFlipInterval', scr.window);
-        % scr.ifi = 1/15; % Arthur manual definition
+%         taskTimes.ifi = Screen('GetFlipInterval', scr.window);
+        taskTimes.ifi = 1/15; % manual definition to match with read frame rate
         
         % define pause duration after read to make it work without losing
         % too much in the display
@@ -95,8 +96,8 @@ switch effort_type
         
         % store frame rate for physical effort task
         % query the frame duration (inter-frame interval)
-        trainingTimes.ifi = Screen('GetFlipInterval', scr.window);
-        % scr.ifi = 1/15; % Arthur manual definition
+%         trainingTimes.ifi = Screen('GetFlipInterval', scr.window);
+        trainingTimes.ifi = 1/15; % manual definition to match with read frame rate
         
         % define pause duration after read to make it work without losing
         % too much in the display
