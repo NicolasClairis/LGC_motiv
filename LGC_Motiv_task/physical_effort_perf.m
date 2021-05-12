@@ -113,6 +113,8 @@ timeNow = onsetEffortPhase;
 stateSqueezeON = false;
 force_levels = [];
 
+[percSqueeze, percStoppedSqueezing] = deal(0);
+
 % initialize read
 timeCheck = GetSecs;
 F_now_Voltage_tmp = read(dq,'all','OutputFormat','Matrix');
@@ -177,7 +179,7 @@ while (trial_success == 0) &&...
     else % force below threshold
         % update the stop index only when angle is higher than zero
         if currentAngle > startAngle
-            percStoppedSqueeze = percStoppedSqueeze + (timeNow - force_levels(end-1,2))/t_effort_to_keep;
+            percStoppedSqueezing = percStoppedSqueezing + (timeNow - force_levels(end-1,2))/t_effort_to_keep;
         end
         
         % switch from squeeze above threshold to squeeze below threshold
