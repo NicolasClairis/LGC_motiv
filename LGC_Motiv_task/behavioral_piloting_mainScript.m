@@ -22,6 +22,7 @@ end
 
 
 %% define subject ID
+i_sub = 1;
 
 %% general parameters
 % initialize screen
