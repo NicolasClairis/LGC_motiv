@@ -79,6 +79,17 @@ Screen('TextSize', window, text_size_3);
 [onsets.effortScale_start,...
     onsets.initial_MVC_rest] = deal(NaN(1,n_MVC_repeat));
 
+%% initialize Force variable
+F_now_Voltage_tmp = read(dq,'all','OutputFormat','Matrix');
+pause(t_readWait);
+if ~isempty(F_now_Voltage_tmp)
+    F_now_Voltage = F_now_Voltage_tmp(end);
+    % convert force level from Voltage to a percentage of MVC
+    F_now = (F_now_Voltage/maxVoltage)*100;
+else % record when the output of read was empty to know when the force level was kept equal because of read failure
+    F_now = 0;
+end
+
 %% Measure MVC and keep maximal value
 for iCalib_MVC = 1:n_MVC_repeat
     

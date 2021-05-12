@@ -74,6 +74,18 @@ n_to_reach = mental_N_answersPerLevel(n_E_levels);
 % top effort
 n_calibMax = n_to_reach.(['E_level_',num2str(n_E_levels)]);
 
+% learning
+% perform 2 learning sessions, one with instructions and then one without
+% (left/right) vs (odd/even) and (lower/higher than 5) - mapping indicated the first time)
+% need to remind the mapping the second time
+learning_cols = {'col1','col2','all'};
+n_learningColours = length(learning_cols);
+learning_instructions = {'fullInstructions','noInstructions'}; %,'partialInstructions'
+n_learningInstructions = length(learning_instructions);
+% initial learning
+n_maxLearning.learning_withInstructions = 15;
+n_maxLearning.learning_withoutInstructions = 15;
+
 %% physical preparation
 % physical MVC
 [initial_MVC, onsets_initial_MVC] = physical_effort_MVC(scr, dq, n_MVC_repeat, calibTimes_Ep);
@@ -105,6 +117,32 @@ WaitSecs(trainingTimes.trainingEnd);
 
 %% mental preparation
 % learning mental
+mentalE_prm_learning_and_calib = mental_effort_parameters(i_sub);
+mentalE_prm_learning_and_calib.startAngle = 0; % for learning always start at zero
+% no time limit for each trial: as long as needed until learning is
+% ok
+learning_time_limit = false;
+% extract numbers to use for each learning phase
+[numberVector_learning] = mental_numbers(n_learningColours*n_learningInstructions);
+jLearningSession = 0;
+for iCol = 1:n_learningColours
+    curr_learning_col = learning_cols{iCol};
+    for iLearning_Instructions = 1:n_learningInstructions
+        curr_learning_instructions = learning_instructions{iLearning_Instructions};
+        
+        jLearningSession = jLearningSession + 1;
+        learning_sess_nm = ['learning_session',num2str(jLearningSession)];
+        % display instructions for the current learning type
+        [onsets.endLearningInstructions.(learning_sess_nm).(curr_learning_col).(curr_learning_instructions)] = mental_learning(scr,...
+            curr_learning_col, curr_learning_instructions, mentalE_prm_learning_and_calib);
+        
+        % perform the learning
+        [mentalE_learningPerf.(learning_sess_nm).(curr_learning_col).(curr_learning_instructions)] = mental_effort_perf(scr, stim, key,...
+            numberVector_learning(jLearningSession,:),...
+            mentalE_prm_learning_and_calib, n_maxLearning.learning_withInstructions,...
+            curr_learning_col, curr_learning_instructions, learning_time_limit);
+    end % learning instructions loop
+end % learning colour loop
 
 % calibration mental
 
