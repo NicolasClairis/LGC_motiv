@@ -82,10 +82,8 @@ WaitSecs(t_MVC_calib_instructions1);
     onsets.initial_MVC_rest] = deal(NaN(1,n_MVC_repeat));
 
 %% initialize Force variable
-F_now_Voltage_tmp = read(dq,'all','OutputFormat','Matrix');
-pause(t_readWait);
-if ~isempty(F_now_Voltage_tmp)
-    F_now_Voltage = F_now_Voltage_tmp(end);
+[F_now_Voltage, timeCheck, sampleOk_tmp] = F_read(dq, t_readWait);
+if sampleOk_tmp == 1
     % convert force level from Voltage to a percentage of MVC
     F_now = (F_now_Voltage/maxVoltage)*100;
 else % record when the output of read was empty to know when the force level was kept equal because of read failure
@@ -117,17 +115,11 @@ for iCalib_MVC = 1:n_MVC_repeat
     forceCalib.(['calibTrial_',num2str(iCalib_MVC)]) = [];
     timeNow = GetSecs;
     while timeNow < timeEffortScaleStart + t_MVC_calib
-        timeNow = GetSecs;
-        F_now_Voltage_tmp = read(dq,'all','OutputFormat','Matrix');
-        pause(t_readWait);
+        [F_now_Voltage, timeNow, sampleOk_tmp] = F_read(dq, t_readWait);
         % convert in percentage of maximal voltage
-        if ~isempty(F_now_Voltage_tmp)
-            F_now_Voltage = F_now_Voltage_tmp(end);
+        if sampleOk_tmp == 1
             % convert force level from Voltage to a percentage of MVC
             F_now = (F_now_Voltage/maxVoltage)*100;
-            sampleOk_tmp = 1;
-        else % record when the output of read was empty to know when the force level was kept equal because of read failure
-            sampleOk_tmp = 0;
         end
         % store force levels in the output
         forceCalib.(['calibTrial_',num2str(iCalib_MVC)]) = [forceCalib.(['calibTrial_',num2str(iCalib_MVC)]);...

@@ -200,8 +200,8 @@ end
 %     [trainingChoiceOptions_Em_tmp, n_trainingTrials_Em_tmp] = training_options(trainingCond, n_R_levels, n_E_levels);
 %     
 %     % start with reward training alone
-%     Em_vars.i_sub = iSubject;
-%     Em_vars.n_to_reach = n_to_reach;
+    Em_vars.i_sub = iSubject;
+    Em_vars.n_to_reach = n_to_reach;
 %     [onsets_Em_training.(trainingCond)] = choice_and_perf_trainingInstructions(scr, trainingCond, trainingTimes_Em.instructions);
 %     [trainingSummary_Em.(trainingCond)] = choice_and_perf(scr, stim, key, 'mental', Em_vars, R_money,...
 %         trainingCond, n_trainingTrials_Em_tmp, trainingChoiceOptions_Em_tmp, trainingTimes_Em,...
@@ -240,19 +240,19 @@ for iSession = 1:n_sessions
     if ( (mod(iSubject,2) == 0) && ismember(iSession,[1,3]) ) ||...
             ( (mod(iSubject,2) ~= 0) && ismember(iSession,[2,4]) )% physical task
         
-        % pre-task MVC
-        [MVC_preTask.(session_nm), onsets_preTask_MVC.physical.(session_nm)] = physical_effort_MVC(scr, dq, n_MVC_repeat, calibTimes_Ep);
-
-        % task
-        [perfSummary.physical.(session_nm)] = choice_and_perf(scr, stim, key,...
-            'physical', Ep_vars, R_money,...
-            'mainTask', n_trialsPerSession, choiceOptions_tmp, taskTimes_Ep,...
-            results_folder, [file_nm,'_physical_',session_nm]);
-        choiceOptions.physical.(session_nm) = choiceOptions_tmp;
-        finalGains = perfSummary.physical.(session_nm).totalGain(end);
-
-        % post-task MVC
-        [MVC_postTask.(session_nm), onsets_postTask_MVC.physical.(session_nm)] = physical_effort_MVC(scr, dq, n_MVC_repeat, calibTimes_Ep);
+%         % pre-task MVC
+%         [MVC_preTask.(session_nm), onsets_preTask_MVC.physical.(session_nm)] = physical_effort_MVC(scr, dq, n_MVC_repeat, calibTimes_Ep);
+% 
+%         % task
+%         [perfSummary.physical.(session_nm)] = choice_and_perf(scr, stim, key,...
+%             'physical', Ep_vars, R_money,...
+%             'mainTask', n_trialsPerSession, choiceOptions_tmp, taskTimes_Ep,...
+%             results_folder, [file_nm,'_physical_',session_nm]);
+%         choiceOptions.physical.(session_nm) = choiceOptions_tmp;
+%         finalGains = perfSummary.physical.(session_nm).totalGain(end);
+% 
+%         % post-task MVC
+%         [MVC_postTask.(session_nm), onsets_postTask_MVC.physical.(session_nm)] = physical_effort_MVC(scr, dq, n_MVC_repeat, calibTimes_Ep);
     elseif ( (mod(iSubject,2) == 0) && ismember(iSession,[2,4]) ) ||...
             ( (mod(iSubject,2) ~= 0) && ismember(iSession,[1,3]) )% mental task
         % pre-task max perf
