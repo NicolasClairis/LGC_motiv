@@ -72,6 +72,9 @@ switch effort_type
     case 'physical'
         MVC = Ep_or_Em_vars.MVC;
         dq = Ep_or_Em_vars.dq;
+        Ep_time_levels = Ep_or_Em_vars.Ep_time_levels;
+        F_threshold = Ep_or_Em_vars.F_threshold;
+        F_tolerance = Ep_or_Em_vars.F_tolerance;
 end
 
 %% instruction that main task will start soon
