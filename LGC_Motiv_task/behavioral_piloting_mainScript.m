@@ -67,12 +67,17 @@ F_tolerance = 2.5; % tolerance allowed around the threshold (expressed in % of M
 % need to define timings for each level of force
 [Ep_time_levels] = physical_effortLevels(n_E_levels);
 
+% calibration
+n_calibTrials_Ep = 5;
+
 %% mental parameters
 % define number of pairs to solve for each level of difficulty
 n_to_reach = mental_N_answersPerLevel(n_E_levels);
+
 % calibration: calibrate the maximal duration required for the
 % top effort
 n_calibMax = n_to_reach.(['E_level_',num2str(n_E_levels)]);
+n_calibTrials_Em = 5;
 
 % learning
 % perform 2 learning sessions, one with instructions and then one without
@@ -145,23 +150,23 @@ for iCol = 1:n_learningColours
 end % learning colour loop
 
     %% calibration mental
-    % extract numbers to use for each calibration trial
-    [numberVector_calib] = mental_numbers(n_calibTrials);
-    
-    %% alternatively, use fixed number of correct answers to provide for each effort
-    % level
-    % repeat calibration until the subject performance is better
-    % than the requested time threshold
-    calibSuccess = false;
-    calibSession = 0;
-    while calibSuccess == false
-        calibSession = calibSession + 1;
-        [t_min_calib, calibSessionSummary, calibSuccess] = mental_calibTime(scr, stim, key,...
-            numberVector_calib, mentalE_prm_learning_and_calib, n_calibTrials, n_calibMax, calibTimes);
-        calibSummary.(['calibSession_',num2str(calibSession)]).calibSummary = calibSessionSummary;
-        calibSummary.(['calibSession_',num2str(calibSession)]).calibSuccess = calibSuccess;
-        calibSummary.(['calibSession_',num2str(calibSession)]).t_mental_max_perTrial = t_min_calib;
-    end
+% extract numbers to use for each calibration trial
+[numberVector_calib] = mental_numbers(n_calibTrials);
+
+% alternatively, use fixed number of correct answers to provide for each effort
+% level
+% repeat calibration until the subject performance is better
+% than the requested time threshold
+calibSuccess = false;
+calibSession = 0;
+while calibSuccess == false
+    calibSession = calibSession + 1;
+    [t_min_calib, calibSessionSummary, calibSuccess] = mental_calibTime(scr, stim, key,...
+        numberVector_calib, mentalE_prm_learning_and_calib, n_calibTrials_Em, n_calibMax, calibTimes_Em);
+    calibSummary.(['calibSession_',num2str(calibSession)]).calibSummary = calibSessionSummary;
+    calibSummary.(['calibSession_',num2str(calibSession)]).calibSuccess = calibSuccess;
+    calibSummary.(['calibSession_',num2str(calibSession)]).t_mental_max_perTrial = t_min_calib;
+end
     %% training mental
 
 %% actual task
