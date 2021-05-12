@@ -283,10 +283,12 @@ for iSession = 1:n_sessions
         [t_min_calib_postTask.(session_nm), calibSessionSummary_postTask.(session_nm), calibSuccess_postTask.(session_nm)] = mental_calibTime(scr, stim, key,...
             numberVector_calib_tmp_bis, mentalE_prm_learning_and_calib, n_calibTrials_Em_bis, n_calibMax, calibTimes_Em);
     end % nature of the task
+    
     % display feedback for the current session
     DrawFormattedText(window,...
         ['Félicitations! Cette session est maintenant terminée.',...
-        'Vous avez obtenu: ',num2str(finalGains),' chf au cours de cette session.']);
+        'Vous avez obtenu: ',num2str(finalGains),' chf au cours de cette session.'],...
+        'center', yScreenCenter*(5/3), scr.colours.black, scr.wrapat);
     
 end % session loop
 
