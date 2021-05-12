@@ -304,5 +304,6 @@ elseif iCorrectAnswers < n_max_to_reach % not enough good answers
 end
 mentalE_perf.success = trial_success;
 mentalE_perf.totalTime_success = totalTime_success;
+mentalE_perf.onsets = onsets;
 
 end % function
