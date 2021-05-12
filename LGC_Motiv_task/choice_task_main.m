@@ -10,7 +10,8 @@
 %
 % developed by Arthur Barakat & Nicolas Clairis - 2020/2021
 %
-% See also ScreenConfiguration.m, MVC_measurement.m, etc.
+% See also ScreenConfiguration.m, physical_effort_perf.m,
+% mental_effort_perf.m
 
 %% Clear the workspace and the screen, instrreset resets the udp channels
 sca; % close all PTB screens
@@ -122,12 +123,6 @@ punishment_yn = 'yes'; % include punishment trials?
 white = scr.colours.white;
 black = scr.colours.black;
 
-% define bar size for the waiting time
-barTimeWaitRect = [xScreenCenter*(1/2),...
-    yScreenCenter*(3/4),...
-    xScreenCenter*(3/2),...
-    yScreenCenter];
-
 % define relevant keys and dynamometer
 switch effort_type
     case 'mental'
@@ -205,8 +200,9 @@ end
 
 % stimulus related variables for the display
 [stim] = stim_initialize(scr, n_R_levels, n_E_levels, pics_folder);
-stim.barTimeWaitRect = barTimeWaitRect;
+barTimeWaitRect = stim.barTimeWaitRect;
 
+% define nature of the trial (reward or punishment)
 switch punishment_yn
     case 'yes'
         R_or_P = choice_opt.R_or_P;
@@ -216,8 +212,17 @@ switch punishment_yn
         error('punishment_yn has not been initiliazed.');
 end
 
+% define number of training conditions
+switch punishment_yn
+    case 'yes'
+        trainingConditions = {'R','P','RP'};
+    case 'no'
+        trainingConditions = {'R'};
+end
+n_trainingConditions = length(trainingConditions);
+
 %% load timings for each phase of the experiment
-[trainingTimes, calibTimes, taskTimes] = timings_definition(scr, n_trainingTrials, nTrials, effort_type);
+[trainingTimes, calibTimes, taskTimes] = timings_definition(scr, trainingConditions, n_R_levels, n_E_levels, nTrials, effort_type);
 
 %% learning (for mental effort)
 % for physical effort, you need to perform the MVC calibration before the
@@ -293,7 +298,7 @@ if IRM == 0 && ~learning_done
             
         case 'physical'% for physical effort, ask the MVC
             % record and store global MVC
-            [initial_MVC, onsets_initial_MVC] = MVC_measurement(scr, stim, dq, n_MVC_repeat, calibTimes);
+            [initial_MVC, onsets_initial_MVC] = physical_effort_MVC(scr, stim, dq, n_MVC_repeat, calibTimes);
             MVC = nanmax(initial_MVC); % expressed in Voltage
             save(calibPerf_file_nm,'MVC');
     end
@@ -341,7 +346,7 @@ if IRM ~= 1 || learning_done
             % take an initial MVC measurement (even if it has been done in a
             % previous session, will allow us to keep track of the force level
             % of our participants)
-            [initial_MVC, onsets_initial_MVC] = MVC_measurement(scr, stim, dq, n_MaxPerfTrials, calibTimes);
+            [initial_MVC, onsets_initial_MVC] = physical_effort_MVC(scr, stim, dq, n_MaxPerfTrials, calibTimes);
     end
 end
 
@@ -350,20 +355,12 @@ end
 % this will not be rewarded) => this should be included at the
 % beginning of the training session
 if IRM == 0
-    switch punishment_yn
-        case 'yes'
-            taskTrainingConditions = {'R','P','RP'};
-        case 'no'
-            taskTrainingConditions = {'R'};
-    end
-    n_trainingConditions = length(taskTrainingConditions);
-    
     for iTrainingCondition = 1:n_trainingConditions
-        taskTrainingCond = taskTrainingConditions{iTrainingCondition};
+        trainingCond_tmp = trainingConditions{iTrainingCondition};
         
         % define parameters for the training
         % reward/punishment and effort levels
-        [trainingChoiceOptions, n_trainingTrials, R_or_P_training] = training_options(taskTrainingCond, n_R_levels, n_E_levels);
+        [trainingChoiceOptions_tmp, n_trainingTrials_tmp, R_or_P_training_tmp] = training_options(trainingCond_tmp, n_R_levels, n_E_levels);
         
         % start with reward training alone
         switch effort_type
@@ -373,14 +370,14 @@ if IRM == 0
                 Ep_or_Em_vars.i_sub = i_sub;
                 Ep_or_Em_vars.n_to_reach = n_to_reach;
         end
-        [trainingSummary.(taskTrainingCond)] = choice_and_perf_training(scr, stim, key, effort_type, Ep_or_Em_vars, R_money,...
-            taskTrainingCond, R_or_P_training, n_trainingTrials, trainingChoiceOptions, trainingTimes);
+        [trainingSummary.(trainingCond_tmp)] = choice_and_perf_training(scr, stim, key, effort_type, Ep_or_Em_vars, R_money,...
+            trainingCond_tmp, R_or_P_training_tmp, n_trainingTrials_tmp, trainingChoiceOptions_tmp, trainingTimes);
     end % learning condition loop
     
     DrawFormattedText(window,'Bravo! Votre entraînement est terminé.',...
         'center','center',scr.colours.black, scr.wrapat);
     [~,onsets.EndTrainingMsg] = Screen('Flip',window); % display the cross on screen
-    WaitSecs(t_trainingEnd);
+    WaitSecs(trainingTimes.trainingEnd);
     sca; % close PTB if learning out of the MRI
 end % training before MRI
 
@@ -678,7 +675,7 @@ if IRM == 1
     nFinalTrial = 1;
     switch effort_type
         case 'physical'
-            [MVC_last, onsets_MVC_last] = MVC_measurement(scr, stim, dq, nFinalTrial, calibTimes);
+            [MVC_last, onsets_MVC_last] = physical_effort_MVC(scr, stim, dq, nFinalTrial, calibTimes);
         case 'mental'
             % extract numbers to use for each calibration trial
             [numberVector_endCalib] = mental_numbers(nFinalTrial);
