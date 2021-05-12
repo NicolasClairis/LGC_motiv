@@ -6,8 +6,6 @@ function[MVC, onsets] = physical_effort_MVC(scr, dq, n_MVC_repeat, calibTimes)
 % INPUTS
 % scr: structure about main screen parameters (size, window, etc.)
 %
-% stim: structure with stimulus properties (size, etc.)
-%
 % dq: device from which the force will be recorded
 %
 % n_MVC_repeat: number of repetitions of the MVC measurement

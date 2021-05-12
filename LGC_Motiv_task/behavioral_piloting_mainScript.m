@@ -76,7 +76,7 @@ n_calibMax = n_to_reach.(['E_level_',num2str(n_E_levels)]);
 
 %% physical preparation
 % physical MVC
-[initial_MVC, onsets_initial_MVC] = physical_effort_MVC(scr, stim, dq, n_MVC_repeat, calibTimes_Ep);
+[initial_MVC, onsets_initial_MVC] = physical_effort_MVC(scr, dq, n_MVC_repeat, calibTimes_Ep);
 MVC = nanmax(initial_MVC); % expressed in Voltage
 
 % learning physical

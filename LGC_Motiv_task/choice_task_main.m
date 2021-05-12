@@ -298,7 +298,7 @@ if IRM == 0 && ~learning_done
             
         case 'physical'% for physical effort, ask the MVC
             % record and store global MVC
-            [initial_MVC, onsets_initial_MVC] = physical_effort_MVC(scr, stim, dq, n_MVC_repeat, calibTimes);
+            [initial_MVC, onsets_initial_MVC] = physical_effort_MVC(scr, dq, n_MVC_repeat, calibTimes);
             MVC = nanmax(initial_MVC); % expressed in Voltage
             save(calibPerf_file_nm,'MVC');
     end
