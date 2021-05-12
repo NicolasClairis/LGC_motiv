@@ -204,7 +204,7 @@ while (trial_success == 0) &&...
     %% display on screen accordingly
     
     % display real-time force level
-    disp_realtime_force(scr, F_threshold, F_tolerance, F_now_interpolate_tmp(iFrame), 'task');
+    disp_realtime_force(scr, F_threshold, F_tolerance, F_now, 'task');
     
     % display performance achieved level on top of the reward as an arc
     Screen('FillArc', window,...
