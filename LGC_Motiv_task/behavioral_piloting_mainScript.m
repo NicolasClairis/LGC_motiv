@@ -157,7 +157,7 @@ end % learning colour loop
 
     %% calibration mental
 % extract numbers to use for each calibration trial
-[numberVector_calib] = mental_numbers(n_calibTrials);
+[numberVector_calib] = mental_numbers(n_calibTrials_Em);
 
 % alternatively, use fixed number of correct answers to provide for each effort
 % level
@@ -189,6 +189,18 @@ for iTrainingCondition = 1:n_trainingConditions
 end % learning condition loop
 
 %% actual task
+% instruction that main task will start soon
+DrawFormattedText(window,...
+    'L''expérimentateur va bientôt démarrer la tâche.',...
+    'center', yScreenCenter*(5/3), scr.colours.black, scr.wrapat);
+[~, onsets.taskWillStart] = Screen(window, 'Flip');
+disp('Please press space.');
+[~, ~, keyCode] = KbCheck();
+while(keyCode(key.space) ~= 1)
+    % wait until the key has been pressed
+    [~, ~, keyCode] = KbCheck();
+end
+
 % each block 1) MVC 2) task 3) MVC
 
 % physical 1
@@ -198,6 +210,8 @@ end % learning condition loop
 % physical 2
 
 % mental 2
+
+
 
 %% close all
 sca;
