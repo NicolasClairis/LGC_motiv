@@ -182,7 +182,7 @@ if strcmp(punishment_yn,'yes') && mod(nTrials,2) ~= 0
 end
 %
 % determine reward/punishment and effort level combinations for each trial
-choice_opt = choice_option_design(n_R_levels, n_E_levels, punishment_yn, nTrials);
+choiceOptions = choice_option_design(n_R_levels, n_E_levels, punishment_yn, nTrials);
 
 switch effort_type
     case 'physical'
@@ -201,16 +201,6 @@ end
 % stimulus related variables for the display
 [stim] = stim_initialize(scr, n_R_levels, n_E_levels, pics_folder);
 barTimeWaitRect = stim.barTimeWaitRect;
-
-% define nature of the trial (reward or punishment)
-switch punishment_yn
-    case 'yes'
-        R_or_P = choice_opt.R_or_P;
-    case 'no' % by default all trials are rewarding if no punishment
-        R_or_P = repmat({'R'},1,nTrials);
-    otherwise
-        error('punishment_yn has not been initiliazed.');
-end
 
 % define number of training conditions
 switch punishment_yn
@@ -360,7 +350,7 @@ if IRM == 0
         
         % define parameters for the training
         % reward/punishment and effort levels
-        [trainingChoiceOptions_tmp, n_trainingTrials_tmp, R_or_P_training_tmp] = training_options(trainingCond_tmp, n_R_levels, n_E_levels);
+        [trainingChoiceOptions_tmp, n_trainingTrials_tmp] = training_options(trainingCond_tmp, n_R_levels, n_E_levels);
         
         % start with reward training alone
         switch effort_type
@@ -374,8 +364,10 @@ if IRM == 0
                 Ep_or_Em_vars.i_sub = i_sub;
                 Ep_or_Em_vars.n_to_reach = n_to_reach;
         end
-        [trainingSummary.(trainingCond_tmp)] = choice_and_perf_training(scr, stim, key, effort_type, Ep_or_Em_vars, R_money,...
-            trainingCond_tmp, R_or_P_training_tmp, n_trainingTrials_tmp, trainingChoiceOptions_tmp, trainingTimes);
+        [onsets_training.(trainingCond_tmp)] = choice_and_perf_trainingInstructions(scr, trainingCond_tmp, trainingTimes.instructions);
+        [trainingSummary.(trainingCond_tmp)] = choice_and_perf(scr, stim, key, effort_type, Ep_or_Em_vars, R_money,...
+            trainingCond_tmp, n_trainingTrials_tmp, trainingChoiceOptions_tmp, trainingTimes,...
+            results_folder, file_nm);
     end % learning condition loop
     
     DrawFormattedText(window,'Bravo! Votre entraînement est terminé.',...
@@ -399,233 +391,18 @@ if IRM == 1 % || IRM == 0 %for piloting
         [~, ~, keyCode] = KbCheck();
     end
     
-    %% initialize onsets for main task
-    [onsets.cross,...
-        onsets.dispChoiceOptions,...
-        onsets.choice,...
-        onsets.keyReleaseMessage,...
-        onsets.cross_after_buttonRelease,...
-        onsets.fbk, onsets.fbk_win, onsets.fbk_loss,...
-        onsets.fbk_fail,...
-        onsets.timeBarWait] = deal(NaN(1,nTrials));
-    % variables during effort period should record the data for each trial
-    [onsets.effortPeriod,...
-        perfSummary] = deal(cell(1, nTrials));
-    
     %% start recording fMRI TTL and wait for a given amount of TTL before
     % starting the task in order to calibrate all timings on T0
     if IRM == 1
         dummy_scans = 4; % number of TTL to wait before starting the task
         [T0, TTL] = keyboard_check_start(dummy_scans, key.trigger_id, key);
     end % fMRI check
-    
-    %% launch main task
-    choice = zeros(1,nTrials);
-    [R_chosen, E_chosen,...
-        effortTime,...
-        trial_was_successfull,...
-        gain,...
-        totalGain] = deal(NaN(1, nTrials));
-    was_a_key_pressed_bf_trial = NaN(1,nTrials);
-    switch effort_type
-        case 'mental'
-            % initialize main parameters of the task
-            mentalE_prm = mental_effort_parameters(i_sub);
-            % randomize the order of the numbers appearing on screen
-            mental_nbers_per_trial = mental_numbers(nTrials);
-            
-            % randomize the type of the first trial (odd/even or higher/lower
-            % than 5)
-            mental_taskType_trialStart = mental_task_start(nTrials);
-    end
-    
-    time_limit = true; % time limit to reach level of force required
-    for iTrial = 1:nTrials
-        
-        %% fixation cross period
-        Screen('FillRect',window,white, stim.cross.verticalLine); % vertical line
-        Screen('FillRect',window,white, stim.cross.horizontalLine); % horizontal line
-        [~,timeCrossNow] = Screen('Flip',window); % display the cross on screen
-        onsets.cross(iTrial) = timeCrossNow;
-        WaitSecs(t_cross(iTrial));
-        
-        %% check that no key is being pressed before the choice trial starts
-        [was_a_key_pressed_bf_trial(iTrial),...
-            onsets.keyReleaseMessage(iTrial)] = check_keys_are_up(scr, key);
-        
-        % if a key was pressed before starting the trial => show the fixation
-        % cross again with a similar amount of time
-        if was_a_key_pressed_bf_trial(iTrial) == 1
-            Screen('FillRect',window,white, stim.cross.verticalLine); % vertical line
-            Screen('FillRect',window,white, stim.cross.horizontalLine); % horizontal line
-            [~,timeCrossNow] = Screen('Flip',window); % display the cross on screen
-            onsets.cross_after_buttonRelease(iTrial) = timeCrossNow;
-            WaitSecs(t_cross(iTrial));
-        end
-        
-        %% extract reward of punishment trial condition
-        R_or_P_tmp = R_or_P{iTrial};
-        
-        %% choice period
-        [choice(iTrial),...
-            onsets.dispChoiceOptions(iTrial),...
-            onsets.choice(iTrial),...
-            stoptask] = choice_period(scr, stim,...
-            choice_opt, R_or_P_tmp, iTrial, t_choice, key);
-        
-        %% check if escape was pressed => stop everything if so
-        if stoptask == 1
-            % save all the data in case you still want to analyze it
-            save([results_folder, file_nm,'_earlyEnd_tmp.mat'],'-struct','all');
-            break;
-        end
-        
-        %% chosen option display period
-        [time_dispChoice,...
-            R_chosen(iTrial),...
-            E_chosen(iTrial)] = choice_task_dispChosen(scr, stim, choice_opt,...
-            choice(iTrial), R_or_P_tmp,...
-            iTrial);
-        onsets.dispChoice(iTrial) = time_dispChoice;
-        WaitSecs(t_dispChoice);
-        
-        %% Effort period
-        % perform the effort if a choice was made, otherwise punish the
-        % subject for not answering to the choice
-        if choice(iTrial) == 0 % no choice was made => failure
-            trial_was_successfull(iTrial) = 0;
-            
-        elseif ismember(choice(iTrial), [-1,1]) % choice done => perform the corresponding effort
-            
-            %% mental effort: check no key is being pressed before the start of the effort period
-            % for physical effort: useless since only the grip is required
-            if strcmp(effort_type,'mental')
-                [was_a_key_pressed_bf_trial(iTrial),...
-                    onsets.keyReleaseMessage(iTrial)] = check_keys_are_up(scr, key);
-            end
-            
-            %% perform the effort
-            tic;
-            switch effort_type
-                case 'physical'
-                    [perfSummary{iTrial},...
-                        trial_was_successfull(iTrial),...
-                        onsets.effortPeriod{iTrial}] = physical_effort_perf(scr, stim, dq,...
-                        MVC,...
-                        E_chosen,...
-                        Ep_time_levels,...
-                        F_threshold, F_tolerance,...
-                        time_limit, t_max_effort);
-                case 'mental'
-                    mentalE_prm.startAngle = stim.difficulty.startAngle.(['level_',num2str(E_chosen(iTrial))]); % adapt start angle to current level of difficulty
-                    n_max_to_reach_tmp = n_to_reach.(['E_level_',num2str(E_chosen(iTrial))]);
-                    [perfSummary{iTrial},...
-                        trial_was_successfull(iTrial),...
-                        onsets.effortPeriod{iTrial}] = mental_effort_perf(scr, stim, key,...
-                        mental_nbers_per_trial(iTrial,:),...
-                        mentalE_prm, n_max_to_reach_tmp,...
-                        'all', 'noInstructions', time_limit, t_max_effort);
-            end % effort type loop
-            effortTime(iTrial) = toc;
-        end % choice made or not?
-        
-        %% Feedback period
-        switch trial_was_successfull(iTrial)
-            case 0 % trial failed
-                % display message
-                %             DrawFormattedText(window,'Too slow!', xScreenCenter, (1/5)*yScreenCenter);
-                DrawFormattedText(window,'Trop lent!',...
-                    'center', (1/5)*yScreenCenter,...
-                    white);
-                % display money loss for failing
-                
-                [~,onsets.fbk_fail(iTrial)] = Screen(window,'Flip');
-                
-                % record loss for the current trial
-                gain(iTrial) = -R_money.trialFail;
-                
-            case 1 % trial is a success
-                % display feedback
-                switch R_or_P_tmp
-                    case 'R'
-                        DrawFormattedText(window,'Vous avez obtenu',...
-                            'center', (1/5)*yScreenCenter,...
-                            white);
-                    case 'P'
-                        DrawFormattedText(window,'Vous avez perdu',...
-                            'center', (1/5)*yScreenCenter,...
-                            white);
-                end
-                
-                % display monetary incentive
-                R_chosen_tmp = ['reward_',num2str(R_chosen(iTrial))];
-                Screen('DrawTexture', window,...
-                    stim.reward.texture.(R_chosen_tmp),...
-                    [],...
-                    stim.chosenOption.reward.(R_chosen_tmp));
-                
-                % punishments: add negative  overlay on top of the monetary
-                % incentive
-                if strcmp(R_or_P_tmp,'P')
-                    Screen('FillOval', window, stim.punishment.colourOverlay,...
-                        stim.punishment.circleOverlay.top_center.(R_chosen_tmp));
-                end
-                
-                [~,onsets.fbk(iTrial)] = Screen(window,'Flip');
-                switch R_or_P_tmp
-                    case 'R'
-                        onsets.fbk_win(iTrial) = onsets.fbk(iTrial);
-                    case 'P'
-                        onsets.fbk_loss(iTrial) = onsets.fbk(iTrial);
-                end
-                
-                % record loss for the current trial
-                switch R_or_P_tmp
-                    case 'R'
-                        gain(iTrial) = R_money.(['R_',num2str(R_chosen(iTrial))]);
-                    case 'P'
-                        gain(iTrial) = (-1)*R_money.(['R_',num2str(R_chosen(iTrial))]);
-                end
-            otherwise
-                error(['weird behavior with trial_was_successfull variable. ',...
-                    'It appears as if it was not initialized for the current trial.']);
-        end
-        
-        % update monetary amount earned until now
-        totalGain(iTrial) = sum(gain(1:iTrial));
-        WaitSecs(t_fbk);
-        
-        %% Time waiting period
-        % this period allows to de-confound effort and delay, ie even if lower
-        % effort has been selected and performed quicker, a short waiting time
-        % will force to wait
-        if effortTime(iTrial) < t_max_effort
-            tic;
-            onsets.timeBarWait(iTrial) = GetSecs; % record start of time bar
-            
-            % show a dynamic waiting bar until the timing ends
-            while toc < (t_max_effort - effortTime(iTrial))
-                % update bar with time remaining
-                percTimeAchieved = (toc + effortTime(iTrial))./t_max_effort;
-                barTimeWaitRect_bis = barTimeWaitRect;
-                % start on the right corner of the bar + percentage already
-                % achieved and move to the left
-                barTimeWaitRect_bis(3) = barTimeWaitRect(3) - percTimeAchieved*(barTimeWaitRect(3) - barTimeWaitRect(1));
-                %
-                DrawFormattedText(window,'Temps restant','center',yScreenCenter*(1/2));
-                % draw one global fixed rectangle showing the total duration
-                Screen('FrameRect',window, black, barTimeWaitRect);
-                % draw one second rectangle updating dynamically showing the
-                % time remaining
-                Screen('FillRect',window, black, barTimeWaitRect_bis);
-                
-                Screen(window,'Flip');
-            end % display until time catches up with maximum effort time
-        end % if all time taken, no need for time penalty
-        
-        %% display number of trials done for the experimenter
-        disp(['Trial ',num2str(iTrial),'/',num2str(nTrials),' done']);
-    end % trial loop
+
+    %% perform choice and performance task
+    [perfSummary] = choice_and_perf(scr, stim, key,...
+        effort_type, Ep_or_Em_vars, R_money,...
+        'mainTask', nTrials, choiceOptions, taskTimes,...
+        results_folder, file_nm);
     
     %% add fixation cross to terminate the acquisition (to avoid weird fMRI behavior for last trial)
     Screen('FillRect',window,white, stim.cross.verticalLine); % vertical line
@@ -636,7 +413,7 @@ if IRM == 1 % || IRM == 0 %for piloting
     %% display feedback for the current session
     DrawFormattedText(window,...
         ['Félicitations! Cette session est maintenant terminée.',...
-        'Vous avez obtenu: ',num2str(totalGain(nTrials)),' chf au cours de cette session.']);
+        'Vous avez obtenu: ',num2str(perfSummary.totalGain(nTrials)),' chf au cours de cette session.']);
     
     % indicate to the experimenter when to stop the fMRI acquisition
     disp('You can stop the fMRI acquisition now. When and only when it is done, please press space.');
@@ -702,15 +479,7 @@ sca;
 %% Save Data
 if IRM == 1
     % store all relevant data in final output variable
-    all.choice_opt = choice_opt; % choice options
-    % choice made
-    all.choice = choice;
-    all.R_chosen = R_chosen;
-    all.E_chosen = E_chosen;
-    % effort informations
-    all.effortTime = effortTime;
-    %
-    all.trial_success = trial_was_successfull;
+    all.choice_opt = choiceOptions; % choice options
     % store max before and after the session
     switch effort_type
         case 'physical'
@@ -741,7 +510,6 @@ if IRM == 1
                 all.learningPerf = mentalE_learningPerf;
                 all.mentalE_prm_learning = mentalE_prm_learning_and_calib;
             end
-            all.mentalE_prm = mentalE_prm;
             all.mentalE_perf = perfSummary;
     end
     % store timings in all structure

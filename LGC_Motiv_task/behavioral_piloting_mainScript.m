@@ -22,7 +22,8 @@ end
 
 
 %% define subject ID
-i_sub = 0;
+iSubject = 0;
+file_nm = ['pilot_data_sub',num2str(iSubject)];
 
 %% general parameters
 % initialize screen
@@ -60,6 +61,7 @@ n_trainingConditions = length(trainingConditions);
 [trainingTimes_Em, calibTimes_Em, learningTimes_Em, taskTimes_Em] = timings_definition(scr, trainingConditions, n_R_levels, n_E_levels, n_trialsPerSession, 'mental');
 [trainingTimes_Ep, calibTimes_Ep, learningTimes_Ep, taskTimes_Ep] = timings_definition(scr, trainingConditions, n_R_levels, n_E_levels, n_trialsPerSession, 'physical');
 
+n_sessions = 4; % 4 blocks in total (2 mental and 2 physical)
 %% physical parameters
 n_MVC_repeat = 3;
 n_learningForceRepeats = 3; % number of learning repetitions for each level of difficulty (= each level of force)
@@ -98,28 +100,30 @@ warning('left few training trials for Arthur, but need to increase for actual su
 [initial_MVC, onsets_initial_MVC] = physical_effort_MVC(scr, dq, n_MVC_repeat, calibTimes_Ep);
 MVC = nanmax(initial_MVC.MVC); % expressed in Voltage
 
-%     %% learning physical
-% [learningPerfSummary, learningOnsets] = physical_learning(scr, stim, dq, n_E_levels, Ep_time_levels,...
-%     F_threshold, F_tolerance, MVC,...
-%     n_learningForceRepeats, learningTimes_Ep);
-% 
-%     %% training physical
-% for iTrainingCondition = 1:n_trainingConditions
-%     trainingCond = trainingConditions{iTrainingCondition};
-%     
-%     % define parameters for the training
-%     % reward/punishment and effort levels
-%     [trainingChoiceOptions_tmp, n_trainingTrials_tmp, R_or_P_training_tmp] = training_options(trainingCond, n_R_levels, n_E_levels);
-%     
-%     % start with reward training alone
-%     Ep_vars.MVC = MVC;
-%     Ep_vars.dq = dq;
-%     Ep_vars.Ep_time_levels = Ep_time_levels;
-%     Ep_vars.F_threshold = F_threshold;
-%     Ep_vars.F_tolerance = F_tolerance;
-%     [trainingSummary.(trainingCond)] = choice_and_perf_training(scr, stim, key, 'physical', Ep_vars, R_money,...
-%         trainingCond, R_or_P_training_tmp, n_trainingTrials_tmp, trainingChoiceOptions_tmp, trainingTimes_Ep);
-% end % learning condition loop
+    %% learning physical
+[learningPerfSummary_Ep, learningOnsets_Ep] = physical_learning(scr, stim, dq, n_E_levels, Ep_time_levels,...
+    F_threshold, F_tolerance, MVC,...
+    n_learningForceRepeats, learningTimes_Ep);
+
+    %% training physical
+for iTrainingCondition = 1:n_trainingConditions
+    trainingCond = trainingConditions{iTrainingCondition};
+    
+    % define parameters for the training
+    % reward/punishment and effort levels
+    [trainingChoiceOptions_Ep_tmp, n_trainingTrials_Ep_tmp] = training_options(trainingCond, n_R_levels, n_E_levels);
+    
+    % start with reward training alone
+    Ep_vars.MVC = MVC;
+    Ep_vars.dq = dq;
+    Ep_vars.Ep_time_levels = Ep_time_levels;
+    Ep_vars.F_threshold = F_threshold;
+    Ep_vars.F_tolerance = F_tolerance;
+    [onsets_Ep_training.(trainingCond)] = choice_and_perf_trainingInstructions(scr, trainingCond, trainingTimes_Ep.instructions);
+    [trainingSummary_Ep.(trainingCond)] = choice_and_perf(scr, stim, key, 'physical', Ep_vars, R_money,...
+        trainingCond, n_trainingTrials_Ep_tmp, trainingChoiceOptions_Ep_tmp, trainingTimes_Ep,...
+        results_folder, file_nm);
+end % learning condition loop
 
 DrawFormattedText(window,'Bravo! Votre entraînement physique est terminé.',...
     'center','center',scr.colours.black, scr.wrapat);
@@ -128,7 +132,7 @@ WaitSecs(trainingTimes_Ep.trainingEnd);
 
 %% mental preparation
     %% learning mental
-mentalE_prm_learning_and_calib = mental_effort_parameters(i_sub);
+mentalE_prm_learning_and_calib = mental_effort_parameters(iSubject);
 mentalE_prm_learning_and_calib.startAngle = 0; % for learning always start at zero
 % no time limit for each trial: as long as needed until learning is
 % ok
@@ -148,7 +152,7 @@ for iCol = 1:n_learningColours
             curr_learning_col, curr_learning_instructions, mentalE_prm_learning_and_calib);
         
         % perform the learning
-        [mentalE_learningPerf.(learning_sess_nm).(curr_learning_col).(curr_learning_instructions)] = mental_effort_perf(scr, stim, key,...
+        [learningPerfSummary_Em.(learning_sess_nm).(curr_learning_col).(curr_learning_instructions)] = mental_effort_perf(scr, stim, key,...
             numberVector_learning(jLearningSession,:),...
             mentalE_prm_learning_and_calib, n_maxLearning.learning_withInstructions,...
             curr_learning_col, curr_learning_instructions, learning_time_limit);
@@ -182,13 +186,14 @@ for iTrainingCondition = 1:n_trainingConditions
     
     % define parameters for the training
     % reward/punishment and effort levels
-    [trainingChoiceOptions_tmp, n_trainingTrials_tmp, R_or_P_training_tmp] = training_options(trainingCond, n_R_levels, n_E_levels);
+    [trainingChoiceOptions_Em_tmp, n_trainingTrials_Em_tmp] = training_options(trainingCond, n_R_levels, n_E_levels);
     
     % start with reward training alone
-    Em_vars.i_sub = i_sub;
+    Em_vars.i_sub = iSubject;
     Em_vars.n_to_reach = n_to_reach;
-    [trainingSummary.(trainingCond)] = choice_and_perf_training(scr, stim, key, 'mental', Em_vars, R_money,...
-        trainingCond, R_or_P_training_tmp, n_trainingTrials_tmp, trainingChoiceOptions_tmp, trainingTimes_Em);
+    [onsets_Em_training.(trainingCond)] = choice_and_perf_trainingInstructions(scr, trainingCond, trainingTimes_Em.instructions);
+    [trainingSummary_Em.(trainingCond)] = choice_and_perf_training(scr, stim, key, 'mental', Em_vars, R_money,...
+        trainingCond, n_trainingTrials_Em_tmp, trainingChoiceOptions_Em_tmp, trainingTimes_Em);
 end % learning condition loop
 
 %% actual task
@@ -204,17 +209,92 @@ while(keyCode(key.space) ~= 1)
     [~, ~, keyCode] = KbCheck();
 end
 
+% initialize max perf variables
+[MVC_preTask, MVC_postTask,...
+    t_min_calib_preTask, t_min_calib_postTask] = deal(NaN(1,n_sessions));
+
 % each block 1) MVC 2) task 3) MVC
+for iSession = 1:n_sessions
+    % define session number
+    if ismember(iSession,[1,2])
+        session_nm = 'session1';
+    elseif ismember(iSession,[3,4])
+        session_nm = 'session2';
+    end
+    
+    % define trials (here is where you might want to replace the function
+    % by a fixed matrix design
+    [choiceOptions_tmp] = choice_option_design(n_R_levels, n_E_levels, punishment_yn, n_trialsPerSession);
+    
+    if ( (mod(iSubject,2) == 0) && ismember(iSession,[1,3]) ) ||...
+            ( (mod(iSubject,2) ~= 0) && ismember(iSession,[2,4]) )% physical task
+        
+        % pre-task MVC
+        [MVC_preTask.(session_nm), onsets_preTask_MVC.physical.(session_nm)] = physical_effort_MVC(scr, dq, n_MVC_repeat, calibTimes_Ep);
 
-% physical 1
+        % task
+        [perfSummary.physical.(session_nm)] = choice_and_perf(scr, stim, key,...
+            'physical', Ep_vars, R_money,...
+            'mainTask', n_trialsPerSession, choiceOptions_tmp, taskTimes_Ep,...
+            results_folder, file_nm);
+        choiceOptions.physical.(session_nm) = choiceOptions_tmp;
 
-% mental 1
+        % post-task MVC
+        [MVC_postTask.(session_nm), onsets_postTask_MVC.physical.(session_nm)] = physical_effort_MVC(scr, dq, n_MVC_repeat, calibTimes_Ep);
+    elseif ( (mod(iSubject,2) == 0) && ismember(iSession,[2,4]) ) ||...
+            ( (mod(iSubject,2) ~= 0) && ismember(iSession,[1,3]) )% mental task
+        % pre-task max perf
 
-% physical 2
+        % task
+        [perfSummary.mental.(session_nm)] = choice_and_perf(scr, stim, key,...
+            'mental', Em_vars, R_money,...
+            'mainTask', n_trialsPerSession, choiceOptions_tmp, taskTimes_Em,...
+            results_folder, file_nm);
+        choiceOptions.mental.(session_nm) = choiceOptions_tmp;
 
-% mental 2
+        % post-task max perf
+        
+    end % nature of the task
+    % display feedback for the current session
+    DrawFormattedText(window,...
+        ['Félicitations! Cette session est maintenant terminée.',...
+        'Vous avez obtenu: ',num2str(perfSummary.totalGain(nTrials)),' chf au cours de cette session.']);
+    
+end % session loop
 
+%% save the data
+% global variables
+all.physical.global.MVC = MVC;
+all.mental.global.t_min_calib = t_min_calib;
+% learning performance
+all.physical.learning = learningPerfSummary_Ep;
+all.mental.learning = learningPerfSummary_Em;
+% training performance
+all.physical.training.performance = trainingSummary_Ep;
+all.physical.training.instructions = onsets_Ep_training;
+all.mental.training.performance = trainingSummary_Em;
+all.mental.training.instructions = onsets_Em_training;
+% best performance pre/post-task
+all.physical.preTask.MVC = MVC_preTask;
+all.physical.preTask.onsets_MVC = onsets_preTask_MVC.physical;
+all.physical.postTask.MVC = MVC_postTask;
+all.physical.postTask.onsets_MVC = onsets_postTask_MVC.physical;
+all.mental.preTask.t_min_calib = t_min_calib_preTask;
+all.mental.postTask.t_min_calib = t_min_calib_postTask;
+% actual performance in the main task sessions
+% record physical main task data
+all.physical.session1.choiceOptions = choiceOptions.physical.session1;
+all.physical.session1.perfSummary = perfSummary.physical.session1;
+all.physical.session2.choiceOptions = choiceOptions.physical.session2;
+all.physical.session2.perfSummary = perfSummary.physical.session2;
+% record mental main task data
+all.mental.session1.choiceOptions = choiceOptions.mental.session1;
+all.mental.session1.perfSummary = perfSummary.mental.session1;
+all.mental.session2.choiceOptions = choiceOptions.mental.session2;
+all.mental.session2.perfSummary = perfSummary.mental.session2;
 
+% actually save the data
+save([results_folder, file_nm,'.mat'],'all');
 
-%% close all
+%% close PTB
 sca;

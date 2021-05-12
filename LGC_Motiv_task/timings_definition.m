@@ -89,7 +89,7 @@ switch effort_type
         taskTimes.t_min_scalingFactor = 150/100; % multiply calibrated minimal time by this value
 end
 t_fbk = 1; % feedback display
-taskTimes.cross = t_cross;
+taskTimes.cross.mainTask = t_cross;
 taskTimes.choice = t_choice;
 taskTimes.dispChoice = t_dispChoice;
 taskTimes.feedback = t_fbk;

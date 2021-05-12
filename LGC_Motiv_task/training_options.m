@@ -1,4 +1,4 @@
-function [trainingChoiceOptions, nTrainingTrials, R_or_P] = training_options(taskTrainingCond, n_R_levels, n_E_levels)
+function [trainingChoiceOptions, nTrainingTrials] = training_options(taskTrainingCond, n_R_levels, n_E_levels)
 % [trainingChoiceOptions] = training_options(taskTrainingCond, n_R_levels, n_E_levels)
 % design of the reward, effort and punishment options for the learning
 % phase
@@ -15,11 +15,9 @@ function [trainingChoiceOptions, nTrainingTrials, R_or_P] = training_options(tas
 %
 % OUTPUTS
 % trainingChoiceOptions: structure with reward and effort level for each
-% training trial
+% training trial + reward or punishment trial
 %
 % nTrainingTrials: number of training trials
-%
-% R_or_P: indication of which trials are reward or punishment condition
 
 %% define options and reward or punishment trials
 if n_R_levels == 3 && n_E_levels == 3
@@ -74,5 +72,7 @@ switch taskTrainingCond
         trainingChoiceOptions.R.right = trainingChoiceOptions.R.right(rand_RP);
         trainingChoiceOptions.E.right = trainingChoiceOptions.E.right(rand_RP);
 end
+% store reward/punishment condition for each trial
+trainingChoiceOptions.R_or_P = R_or_P;
 
 end % function
