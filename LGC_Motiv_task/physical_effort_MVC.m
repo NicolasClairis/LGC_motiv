@@ -27,14 +27,15 @@ window = scr.window;
 xScreenCenter = scr.xCenter;
 yScreenCenter = scr.yCenter;
 yScreenSize = yScreenCenter*2;
-text_size_1 = 100;
-text_size_2 = 150;
-text_size_3 = 140;
+text_size_1 = 50;
+text_size_2 = 75;
+text_size_3 = 70;
 orange = [255 153 0];
 bottomScaleLimit    = yScreenCenter*(3/2); % bottom limit of the scale
 % topScaleLimit       = yScreenCenter*(1/2); % upper limit of the scale
 leftScaleLimit      = xScreenCenter*(3.5/4); % left limit of the scale
 rightScaleLimit     = xScreenCenter*(4.5/4); % right limit of the scale
+graphYSize = bottomScaleLimit - topScaleLimit;
 
 %% force relevant variables
 F_start = 0; % initial force level at zero
@@ -61,11 +62,11 @@ MVC_perCalibSession = NaN(1,n_MVC_repeat);
 %% Quick text to introduce MVC calibration
 Screen('TextSize', window, text_size_1);
 DrawFormattedText(window, ['Avant de commencer l''expérience, ',...
-    'nous allons vous demander',...
-    'de serrer la poignée de force au maximum de vos capacités plusieurs',...
+    'nous allons vous demander ',...
+    'de serrer la poignée de force au maximum de vos capacités plusieurs ',...
     'fois d''affilée.'], 'center',yScreenSize*0.7, 1);
 Screen('TextSize', window, text_size_2)
-DrawFormattedText(window, 'Tenez-vous prêt à serrer', 'center', yScreenSize*0.3, 1);
+DrawFormattedText(window, 'Tenez-vous prêt à serrer la poignée.', 'center', yScreenSize*0.3, 1);
 
 [~,time_disp1,~,~,~] = Screen(window,'Flip');
 onsets.initial_MVC_instructions = time_disp1;
@@ -147,7 +148,7 @@ for iCalib_MVC = 1:n_MVC_repeat
     end % time for the current calibration trial
     
     %% Show a rest text and give some rest
-    DrawFormattedText(window, 'Reposez-vous quelques secondes', 'center', yScreenSize*0.8, [0 0.8 0 ]);
+    DrawFormattedText(window, 'Reposez-vous quelques secondes.', 'center', yScreenSize*0.8, [0 0.8 0 ]);
     [~,timeNow]  = Screen(window,'Flip');
     onsets.initial_MVC_rest(iCalib_MVC) = timeNow;
     WaitSecs(t_MVC_rest);
