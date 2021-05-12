@@ -125,12 +125,12 @@ MVC = nanmax(initial_MVC.MVC); % expressed in Voltage
 %     % reward/punishment and effort levels
 %     [trainingChoiceOptions_Ep_tmp, n_trainingTrials_Ep_tmp] = training_options(trainingCond, n_R_levels, n_E_levels);
 %     
-%     % start with reward training alone
-%     Ep_vars.MVC = MVC;
-%     Ep_vars.dq = dq;
-%     Ep_vars.Ep_time_levels = Ep_time_levels;
-%     Ep_vars.F_threshold = F_threshold;
-%     Ep_vars.F_tolerance = F_tolerance;
+    % start with reward training alone
+    Ep_vars.MVC = MVC;
+    Ep_vars.dq = dq;
+    Ep_vars.Ep_time_levels = Ep_time_levels;
+    Ep_vars.F_threshold = F_threshold;
+    Ep_vars.F_tolerance = F_tolerance;
 %     [onsets_Ep_training.(trainingCond)] = choice_and_perf_trainingInstructions(scr, trainingCond, trainingTimes_Ep.instructions);
 %     [trainingSummary_Ep.(trainingCond)] = choice_and_perf(scr, stim, key, 'physical', Ep_vars, R_money,...
 %         trainingCond, n_trainingTrials_Ep_tmp, trainingChoiceOptions_Ep_tmp, trainingTimes_Ep,...
