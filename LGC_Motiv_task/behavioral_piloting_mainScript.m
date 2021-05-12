@@ -97,11 +97,11 @@ n_maxLearning.learning_withInstructions = 8;
 n_maxLearning.learning_withoutInstructions = 8;
 warning('left few training trials for Arthur, but need to increase for actual subjects');
 
-%% physical preparation
-    %% physical MVC
-[initial_MVC, onsets_initial_MVC] = physical_effort_MVC(scr, dq, n_MVC_repeat, calibTimes_Ep);
-MVC = nanmax(initial_MVC.MVC); % expressed in Voltage
-
+% %% physical preparation
+%     %% physical MVC
+% [initial_MVC, onsets_initial_MVC] = physical_effort_MVC(scr, dq, n_MVC_repeat, calibTimes_Ep);
+% MVC = nanmax(initial_MVC.MVC); % expressed in Voltage
+% 
 %     %% learning physical
 % [learningPerfSummary_Ep, learningOnsets_Ep] = physical_learning(scr, stim, dq, n_E_levels, Ep_time_levels,...
 %     F_threshold, F_tolerance, MVC,...
@@ -132,34 +132,34 @@ MVC = nanmax(initial_MVC.MVC); % expressed in Voltage
 % [~,onsets.EndTrainingMsg] = Screen('Flip',window); % display the cross on screen
 % WaitSecs(trainingTimes_Ep.trainingEnd);
 
-%% mental preparation
-    %% learning mental
-mentalE_prm_learning_and_calib = mental_effort_parameters(iSubject);
-mentalE_prm_learning_and_calib.startAngle = 0; % for learning always start at zero
-% no time limit for each trial: as long as needed until learning is
-% ok
-learning_time_limit = false;
-% extract numbers to use for each learning phase
-[numberVector_learning] = mental_numbers(n_learningColours*n_learningInstructions);
-jLearningSession = 0;
-for iCol = 1:n_learningColours
-    curr_learning_col = learning_cols{iCol};
-    for iLearning_Instructions = 1:n_learningInstructions
-        curr_learning_instructions = learning_instructions{iLearning_Instructions};
-        
-        jLearningSession = jLearningSession + 1;
-        learning_sess_nm = ['learning_session',num2str(jLearningSession)];
-        % display instructions for the current learning type
-        [onsets.endLearningInstructions.(learning_sess_nm).(curr_learning_col).(curr_learning_instructions)] = mental_learning(scr,...
-            curr_learning_col, curr_learning_instructions, mentalE_prm_learning_and_calib);
-        
-        % perform the learning
-        [learningPerfSummary_Em.(learning_sess_nm).(curr_learning_col).(curr_learning_instructions)] = mental_effort_perf(scr, stim, key,...
-            numberVector_learning(jLearningSession,:),...
-            mentalE_prm_learning_and_calib, n_maxLearning.learning_withInstructions,...
-            curr_learning_col, curr_learning_instructions, learning_time_limit);
-    end % learning instructions loop
-end % learning colour loop
+% %% mental preparation
+%     %% learning mental
+% mentalE_prm_learning_and_calib = mental_effort_parameters(iSubject);
+% mentalE_prm_learning_and_calib.startAngle = 0; % for learning always start at zero
+% % no time limit for each trial: as long as needed until learning is
+% % ok
+% learning_time_limit = false;
+% % extract numbers to use for each learning phase
+% [numberVector_learning] = mental_numbers(n_learningColours*n_learningInstructions);
+% jLearningSession = 0;
+% for iCol = 1:n_learningColours
+%     curr_learning_col = learning_cols{iCol};
+%     for iLearning_Instructions = 1:n_learningInstructions
+%         curr_learning_instructions = learning_instructions{iLearning_Instructions};
+%         
+%         jLearningSession = jLearningSession + 1;
+%         learning_sess_nm = ['learning_session',num2str(jLearningSession)];
+%         % display instructions for the current learning type
+%         [onsets.endLearningInstructions.(learning_sess_nm).(curr_learning_col).(curr_learning_instructions)] = mental_learning(scr,...
+%             curr_learning_col, curr_learning_instructions, mentalE_prm_learning_and_calib);
+%         
+%         % perform the learning
+%         [learningPerfSummary_Em.(learning_sess_nm).(curr_learning_col).(curr_learning_instructions)] = mental_effort_perf(scr, stim, key,...
+%             numberVector_learning(jLearningSession,:),...
+%             mentalE_prm_learning_and_calib, n_maxLearning.learning_withInstructions,...
+%             curr_learning_col, curr_learning_instructions, learning_time_limit);
+%     end % learning instructions loop
+% end % learning colour loop
 
     %% calibration mental
 % extract numbers to use for each calibration trial
