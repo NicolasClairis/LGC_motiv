@@ -84,6 +84,7 @@ t_effort_to_keep = E_time_levels.(['level_',num2str(E_chosen)]);
 % function, everytime you call the read function, it will take a
 % long time to process)
 start(dq,"continuous");
+pause(0.125);
 % will need data = read(dq) function only to read the signal
 
 %% display all relevant variables on the screen for the effort period
@@ -115,11 +116,16 @@ force_levels = [0,NaN,0]; % need to initialize for the interpolation
 % initialize read
 timeCheck = GetSecs;
 F_now_Voltage_tmp = read(dq,'all','OutputFormat','Matrix');
-F_now_Voltage = F_now_Voltage_tmp(end);
+if ~isempty(F_now_Voltage_tmp)
+    F_now_Voltage = F_now_Voltage_tmp(end);
+    % sample should be ok
+    sampleOk_tmp = 1;
+else % record when the output of read was empty to know when the force level was kept equal because of read failure
+    sampleOk_tmp = 0;
+    F_now_Voltage = 0;% by default at zero at beginning if no output of read
+end
 % convert force level from Voltage to a percentage of MVC
 F_now = (F_now_Voltage/MVC)*100;
-% sample should be ok
-sampleOk_tmp = 1;
 % store force levels in the output
 force_levels = [force_levels;...
     [F_now, timeCheck, F_now_Voltage, sampleOk_tmp]]; % store F in % of MVC, time and F in Volts
