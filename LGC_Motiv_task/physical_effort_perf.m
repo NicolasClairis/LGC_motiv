@@ -111,7 +111,7 @@ timeNow = onsetEffortPhase;
     dispInfos.forceLevel] = deal([]);
 [timeEffortStart_tmp, timeEffortStop_tmp] = deal(0);
 stateSqueezeON = false;
-force_levels = [0,NaN,0]; % need to initialize for the interpolation
+force_levels = [];
 
 % initialize read
 timeCheck = GetSecs;
