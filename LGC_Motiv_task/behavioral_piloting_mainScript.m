@@ -107,10 +107,10 @@ n_maxLearning.learning_withInstructions = 8;
 n_maxLearning.learning_withoutInstructions = 8;
 warning('left few training trials for Arthur, but need to increase for actual subjects');
 
-% %% physical preparation
-%     %% physical MVC
-% [initial_MVC, onsets_initial_MVC] = physical_effort_MVC(scr, dq, n_MVC_repeat, calibTimes_Ep);
-% MVC = nanmax(initial_MVC.MVC); % expressed in Voltage
+%% physical preparation
+    %% physical MVC
+[initial_MVC, onsets_initial_MVC] = physical_effort_MVC(scr, dq, n_MVC_repeat, calibTimes_Ep);
+MVC = nanmax(initial_MVC.MVC); % expressed in Voltage
 % 
 %     %% learning physical
 % [learningPerfSummary_Ep, learningOnsets_Ep] = physical_learning(scr, stim, dq, n_E_levels, Ep_time_levels,...
@@ -142,7 +142,7 @@ warning('left few training trials for Arthur, but need to increase for actual su
 % [~,onsets.EndTrainingMsg] = Screen('Flip',window); % display the cross on screen
 % WaitSecs(trainingTimes_Ep.trainingEnd);
 
-% %% mental preparation
+%% mental preparation
 %     %% learning mental
 mentalE_prm_learning_and_calib = mental_effort_parameters(iSubject);
 mentalE_prm_learning_and_calib.startAngle = 0; % for learning always start at zero
@@ -190,23 +190,23 @@ while calibSuccess == false
     calibSummary.(['calibSession_',num2str(calibSession)]).t_mental_max_perTrial = t_min_calib;
 end
 
-    %% training mental
-trainingTimes_Em.max_effort = t_min_calib*trainingTimes_Em.t_min_scalingFactor; % allow more time then min performance
-for iTrainingCondition = 1:n_trainingConditions
-    trainingCond = trainingConditions{iTrainingCondition};
-    
-    % define parameters for the training
-    % reward/punishment and effort levels
-    [trainingChoiceOptions_Em_tmp, n_trainingTrials_Em_tmp] = training_options(trainingCond, n_R_levels, n_E_levels);
-    
-    % start with reward training alone
-    Em_vars.i_sub = iSubject;
-    Em_vars.n_to_reach = n_to_reach;
-    [onsets_Em_training.(trainingCond)] = choice_and_perf_trainingInstructions(scr, trainingCond, trainingTimes_Em.instructions);
-    [trainingSummary_Em.(trainingCond)] = choice_and_perf(scr, stim, key, 'mental', Em_vars, R_money,...
-        trainingCond, n_trainingTrials_Em_tmp, trainingChoiceOptions_Em_tmp, trainingTimes_Em,...
-        results_folder, file_nm_training_Em);
-end % learning condition loop
+%     %% training mental
+% trainingTimes_Em.max_effort = t_min_calib*trainingTimes_Em.t_min_scalingFactor; % allow more time then min performance
+% for iTrainingCondition = 1:n_trainingConditions
+%     trainingCond = trainingConditions{iTrainingCondition};
+%     
+%     % define parameters for the training
+%     % reward/punishment and effort levels
+%     [trainingChoiceOptions_Em_tmp, n_trainingTrials_Em_tmp] = training_options(trainingCond, n_R_levels, n_E_levels);
+%     
+%     % start with reward training alone
+%     Em_vars.i_sub = iSubject;
+%     Em_vars.n_to_reach = n_to_reach;
+%     [onsets_Em_training.(trainingCond)] = choice_and_perf_trainingInstructions(scr, trainingCond, trainingTimes_Em.instructions);
+%     [trainingSummary_Em.(trainingCond)] = choice_and_perf(scr, stim, key, 'mental', Em_vars, R_money,...
+%         trainingCond, n_trainingTrials_Em_tmp, trainingChoiceOptions_Em_tmp, trainingTimes_Em,...
+%         results_folder, file_nm_training_Em);
+% end % learning condition loop
 
 %% actual task
 % for mental effort timing
