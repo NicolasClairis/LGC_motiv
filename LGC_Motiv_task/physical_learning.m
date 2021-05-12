@@ -1,9 +1,9 @@
 function[perfSummary, onsets] = physical_learning(scr, stim, dq, n_E_levels, Ep_time_levels,...
     F_threshold, F_tolerance, MVC,...
-    n_learningForceRepeats)
+    n_learningForceRepeats, timings)
 % [perfSummary, onsets] = physical_learning(scr, stim, dq, n_E_levels, Ep_time_levels,...
 %     F_threshold, F_tolerance, MVC,...
-%     n_learningForceRepeats)
+%     n_learningForceRepeats, timings)
 %physical_learning will perform a short learning for the physical effort
 %task. For each level of effort, a few trials will be performed in order to
 %ensure that the participant understands what corresponds to each level of
@@ -31,6 +31,12 @@ function[perfSummary, onsets] = physical_learning(scr, stim, dq, n_E_levels, Ep_
 % n_learningForceRepeats: number of repetitions of the learning process
 % (how many time they will need to perform each level of force)
 %
+% timings: structure with relevant timings for learning phase
+%
+% OUTPUTS
+% perfSummary: structure with performance summary variables
+%
+% onsets: structure with information about timings of the experiment
 
 time_limit = false; % learning = no time limit
 
@@ -49,7 +55,7 @@ for iForceRepeat = 1:n_learningForceRepeats
             effort_level,...
             Ep_time_levels,...
             F_threshold, F_tolerance,...
-            time_limit, []);
+            time_limit, timings);
     end % effort level loop
 end % loop of learning repetitions
         

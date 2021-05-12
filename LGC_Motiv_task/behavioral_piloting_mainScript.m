@@ -56,8 +56,8 @@ end
 n_trainingConditions = length(trainingConditions);
 
 % load timings for each phase of the experiment
-[trainingTimes_Em, calibTimes_Em, taskTimes_Em] = timings_definition(scr, trainingConditions, n_R_levels, n_E_levels, n_trialsPerSession, 'mental');
-[trainingTimes_Ep, calibTimes_Ep, taskTimes_Ep] = timings_definition(scr, trainingConditions, n_R_levels, n_E_levels, n_trialsPerSession, 'physical');
+[trainingTimes_Em, calibTimes_Em, learningTimes_Em, taskTimes_Em] = timings_definition(scr, trainingConditions, n_R_levels, n_E_levels, n_trialsPerSession, 'mental');
+[trainingTimes_Ep, calibTimes_Ep, learningTimes_Ep, taskTimes_Ep] = timings_definition(scr, trainingConditions, n_R_levels, n_E_levels, n_trialsPerSession, 'physical');
 
 %% physical parameters
 n_MVC_repeat = 3;
@@ -94,7 +94,7 @@ MVC = nanmax(initial_MVC.MVC); % expressed in Voltage
     %% learning physical
 [learningPerfSummary, learningOnsets] = physical_learning(scr, stim, dq, n_E_levels, Ep_time_levels,...
     F_threshold, F_tolerance, MVC,...
-    n_learningForceRepeats);
+    n_learningForceRepeats, learningTimes_Ep);
 
     %% training physical
 for iTrainingCondition = 1:n_trainingConditions
