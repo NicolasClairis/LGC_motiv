@@ -112,6 +112,9 @@ for iTrainingCondition = 1:n_trainingConditions
     % start with reward training alone
     Ep_vars.MVC = MVC;
     Ep_vars.dq = dq;
+    Ep_vars.Ep_time_levels = Ep_time_levels;
+    Ep_vars.F_threshold = F_threshold;
+    Ep_vars.F_tolerance = F_tolerance;
     [trainingSummary.(trainingCond)] = choice_and_perf_training(scr, stim, key, 'physical', Ep_vars, R_money,...
         trainingCond, R_or_P_training_tmp, n_trainingTrials_tmp, trainingChoiceOptions_tmp, trainingTimes_Ep);
 end % learning condition loop

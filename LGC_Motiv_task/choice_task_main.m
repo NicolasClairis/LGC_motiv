@@ -367,6 +367,9 @@ if IRM == 0
             case 'physical'
                 Ep_or_Em_vars.MVC = MVC;
                 Ep_or_Em_vars.dq = dq;
+                Ep_or_Em_vars.Ep_time_levels = Ep_time_levels;
+                Ep_or_Em_vars.F_threshold = F_threshold;
+                Ep_or_Em_vars.F_tolerance = F_tolerance;
             case 'mental'
                 Ep_or_Em_vars.i_sub = i_sub;
                 Ep_or_Em_vars.n_to_reach = n_to_reach;
