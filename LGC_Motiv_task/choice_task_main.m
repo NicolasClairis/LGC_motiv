@@ -18,6 +18,7 @@ sca; % close all PTB screens
 close all; % close all windows
 clearvars; % clear variables from memory
 instrreset; % Disconnect and delete all instrument objects
+clc;
 
 %% define if you are currently testing the script (1)
 % (no need to have correct timings and everything in PTB)

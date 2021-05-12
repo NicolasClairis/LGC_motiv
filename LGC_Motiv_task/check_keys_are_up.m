@@ -34,6 +34,9 @@ while (keyIsDown == 1) &&...
     was_a_key_pressed_bf_trial = 1;
     DrawFormattedText(scr.window, 'Relâchez les boutons svp','center','center')
     [~, onsets_keyReleaseMessage] = Screen(scr.window,'Flip');
+    % keep checking the buttons to know if the keyboard has been released
+    % or not
+    [keyIsDown, secs, keyCode] = KbCheck();
 end % some relevant key is being pressed
 
 end % function
