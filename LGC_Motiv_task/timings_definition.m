@@ -94,7 +94,7 @@ taskTimes.feedback = t_fbk;
 taskTimes.finalCross = t_finalCross;
 
 %% training timings
-trainingTimes.trainingInstructions = 5;
+trainingTimes.instructions = 5;
 trainingTimes.trainingEnd   = 5;
 % jitters for fixation cross during training
 n_trainingCond = length(trainingConditions);
