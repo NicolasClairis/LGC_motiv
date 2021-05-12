@@ -249,6 +249,7 @@ for iSession = 1:n_sessions
             'mainTask', n_trialsPerSession, choiceOptions_tmp, taskTimes_Ep,...
             results_folder, [file_nm,'_physical_',session_nm]);
         choiceOptions.physical.(session_nm) = choiceOptions_tmp;
+        finalGains = perfSummary.physical.(session_nm).totalGain(end);
 
         % post-task MVC
         [MVC_postTask.(session_nm), onsets_postTask_MVC.physical.(session_nm)] = physical_effort_MVC(scr, dq, n_MVC_repeat, calibTimes_Ep);
@@ -270,6 +271,7 @@ for iSession = 1:n_sessions
             'mainTask', n_trialsPerSession, choiceOptions_tmp, taskTimes_Em,...
             results_folder, [file_nm,'_mental_',session_nm]);
         choiceOptions.mental.(session_nm) = choiceOptions_tmp;
+        finalGains = perfSummary.mental.(session_nm).totalGain(end);
 
         % post-task max perf
         [numberVector_calib_tmp_bis] = mental_numbers(n_calibTrials_Em_bis);
@@ -284,7 +286,7 @@ for iSession = 1:n_sessions
     % display feedback for the current session
     DrawFormattedText(window,...
         ['Félicitations! Cette session est maintenant terminée.',...
-        'Vous avez obtenu: ',num2str(perfSummary.totalGain(nTrials)),' chf au cours de cette session.']);
+        'Vous avez obtenu: ',num2str(finalGains),' chf au cours de cette session.']);
     
 end % session loop
 
