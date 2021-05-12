@@ -27,6 +27,7 @@ window = scr.window;
 xScreenCenter = scr.xCenter;
 yScreenCenter = scr.yCenter;
 yScreenSize = yScreenCenter*2;
+GoYlocation = yScreenSize*0.9;
 % text_size_1 = 50;
 % text_size_2 = 75;
 % text_size_3 = 70;
@@ -107,7 +108,7 @@ for iCalib_MVC = 1:n_MVC_repeat
     %     end
     
     %% start displaying effort scale and Go signal
-    DrawFormattedText(window, 'GO !', 'center', yScreenSize*0.8, 1);
+    DrawFormattedText(window, 'GO !', 'center', GoYlocation, 1);
     disp_realtime_force(scr, F_threshold, F_tolerance, F_start, 'calib');
     [~,timeEffortScaleStart]  = Screen(window,'Flip');
     onsets.effortScale_start(iCalib_MVC) = timeEffortScaleStart;
@@ -131,7 +132,7 @@ for iCalib_MVC = 1:n_MVC_repeat
         % store force levels in the output
         forceCalib.(['calibTrial_',num2str(iCalib_MVC)]) = [forceCalib.(['calibTrial_',num2str(iCalib_MVC)]);...
             [F_now, timeNow, F_now_Voltage, sampleOk_tmp]]; % store F in % of MVC, time and F in Volts
-        DrawFormattedText(window, 'GO !', 'center', yScreenSize*0.9, 1);
+        DrawFormattedText(window, 'GO !', 'center', GoYlocation, 1);
         disp_realtime_force(scr, F_threshold, F_tolerance, F_now, 'calib');
         
         % for calibration trials coming after the first one, you can also
