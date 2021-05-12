@@ -98,7 +98,7 @@ for iCalib_MVC = 1:n_MVC_repeat
     DrawFormattedText(window, 'GO !', 'center', yScreenSize*0.8, 1);
     disp_realtime_force(scr, F_threshold, F_tolerance, F_start, 'calib');
     [~,timeEffortScaleStart]  = Screen(window,'Flip');
-    onsets.effortScale_start(i_Calib_MVC) = timeEffortScaleStart;
+    onsets.effortScale_start(iCalib_MVC) = timeEffortScaleStart;
     
     %% During t_MVC_calib second, show signal power and record it
     forceCalib.(['calibTrial_',num2str(iCalib_MVC)]) = [];
