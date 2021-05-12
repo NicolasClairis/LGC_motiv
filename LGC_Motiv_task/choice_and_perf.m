@@ -63,7 +63,7 @@ t_max_effort    = timings.max_effort;
 t_cross         = timings.cross.(training_R_P_RP_or_mainTask);
 t_choice        = timings.choice;
 t_dispChoice    = timings.dispChoice;
-t_fbk           = timings.fbk;
+t_fbk           = timings.feedback;
 
 % specific variables
 switch effort_type
