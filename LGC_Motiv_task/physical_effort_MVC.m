@@ -27,9 +27,9 @@ window = scr.window;
 xScreenCenter = scr.xCenter;
 yScreenCenter = scr.yCenter;
 yScreenSize = yScreenCenter*2;
-text_size_1 = 50;
-text_size_2 = 75;
-text_size_3 = 70;
+% text_size_1 = 50;
+% text_size_2 = 75;
+% text_size_3 = 70;
 orange = [255 153 0];
 bottomScaleLimit    = yScreenCenter*(3/2); % bottom limit of the scale
 topScaleLimit       = yScreenCenter*(1/2); % upper limit of the scale
@@ -60,12 +60,12 @@ maxVoltage = 10; % maximum voltage that can be reached by the grip (force will b
 MVC_perCalibSession = NaN(1,n_MVC_repeat);
 
 %% Quick text to introduce MVC calibration
-Screen('TextSize', window, text_size_1);
+% Screen('TextSize', window, text_size_1);
 DrawFormattedText(window, ['Avant de commencer l''expérience, ',...
     'nous allons vous demander ',...
     'de serrer la poignée de force au maximum de vos capacités plusieurs ',...
     'fois d''affilée.'], 'center',yScreenSize*0.7, 1, scr.wrapat);
-Screen('TextSize', window, text_size_2)
+% Screen('TextSize', window, text_size_2)
 DrawFormattedText(window, 'Tenez-vous prêt à serrer la poignée.', 'center', yScreenSize*0.3, 1);
 
 [~,time_disp1,~,~,~] = Screen(window,'Flip');
@@ -74,7 +74,7 @@ WaitSecs(t_MVC_calib_instructions1);
 
 %% Measure MVC
 % Set screen text size
-Screen('TextSize', window, text_size_3);
+% Screen('TextSize', window, text_size_3);
 
 %% initialize onsets
 [onsets.effortScale_start,...
