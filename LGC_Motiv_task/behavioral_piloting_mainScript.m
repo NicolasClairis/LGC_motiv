@@ -96,33 +96,33 @@ n_maxLearning.learning_withoutInstructions = 15;
 [initial_MVC, onsets_initial_MVC] = physical_effort_MVC(scr, dq, n_MVC_repeat, calibTimes_Ep);
 MVC = nanmax(initial_MVC.MVC); % expressed in Voltage
 
-    %% learning physical
-[learningPerfSummary, learningOnsets] = physical_learning(scr, stim, dq, n_E_levels, Ep_time_levels,...
-    F_threshold, F_tolerance, MVC,...
-    n_learningForceRepeats, learningTimes_Ep);
+%     %% learning physical
+% [learningPerfSummary, learningOnsets] = physical_learning(scr, stim, dq, n_E_levels, Ep_time_levels,...
+%     F_threshold, F_tolerance, MVC,...
+%     n_learningForceRepeats, learningTimes_Ep);
+% 
+%     %% training physical
+% for iTrainingCondition = 1:n_trainingConditions
+%     trainingCond = trainingConditions{iTrainingCondition};
+%     
+%     % define parameters for the training
+%     % reward/punishment and effort levels
+%     [trainingChoiceOptions_tmp, n_trainingTrials_tmp, R_or_P_training_tmp] = training_options(trainingCond, n_R_levels, n_E_levels);
+%     
+%     % start with reward training alone
+%     Ep_vars.MVC = MVC;
+%     Ep_vars.dq = dq;
+%     Ep_vars.Ep_time_levels = Ep_time_levels;
+%     Ep_vars.F_threshold = F_threshold;
+%     Ep_vars.F_tolerance = F_tolerance;
+%     [trainingSummary.(trainingCond)] = choice_and_perf_training(scr, stim, key, 'physical', Ep_vars, R_money,...
+%         trainingCond, R_or_P_training_tmp, n_trainingTrials_tmp, trainingChoiceOptions_tmp, trainingTimes_Ep);
+% end % learning condition loop
 
-    %% training physical
-for iTrainingCondition = 1:n_trainingConditions
-    trainingCond = trainingConditions{iTrainingCondition};
-    
-    % define parameters for the training
-    % reward/punishment and effort levels
-    [trainingChoiceOptions_tmp, n_trainingTrials_tmp, R_or_P_training_tmp] = training_options(trainingCond, n_R_levels, n_E_levels);
-    
-    % start with reward training alone
-    Ep_vars.MVC = MVC;
-    Ep_vars.dq = dq;
-    Ep_vars.Ep_time_levels = Ep_time_levels;
-    Ep_vars.F_threshold = F_threshold;
-    Ep_vars.F_tolerance = F_tolerance;
-    [trainingSummary.(trainingCond)] = choice_and_perf_training(scr, stim, key, 'physical', Ep_vars, R_money,...
-        trainingCond, R_or_P_training_tmp, n_trainingTrials_tmp, trainingChoiceOptions_tmp, trainingTimes_Ep);
-end % learning condition loop
-
-DrawFormattedText(window,'Bravo! Votre entraînement est terminé.',...
+DrawFormattedText(window,'Bravo! Votre entraînement physique est terminé.',...
     'center','center',scr.colours.black, scr.wrapat);
 [~,onsets.EndTrainingMsg] = Screen('Flip',window); % display the cross on screen
-WaitSecs(trainingTimes.trainingEnd);
+WaitSecs(trainingTimes_Ep.trainingEnd);
 
 %% mental preparation
     %% learning mental
