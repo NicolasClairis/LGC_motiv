@@ -22,7 +22,7 @@ end
 
 
 %% define subject ID
-i_sub = 1;
+i_sub = 0;
 
 %% general parameters
 % initialize screen
@@ -88,9 +88,10 @@ learning_cols = {'col1','col2','all'};
 n_learningColours = length(learning_cols);
 learning_instructions = {'fullInstructions','noInstructions'}; %,'partialInstructions'
 n_learningInstructions = length(learning_instructions);
-% initial learning
-n_maxLearning.learning_withInstructions = 15;
-n_maxLearning.learning_withoutInstructions = 15;
+% initial learning: careful to enter a pair number here
+n_maxLearning.learning_withInstructions = 8;
+n_maxLearning.learning_withoutInstructions = 8;
+warning('left few training trials for Arthur, but need to increase for actual subjects');
 
 %% physical preparation
     %% physical MVC
@@ -173,7 +174,22 @@ while calibSuccess == false
     calibSummary.(['calibSession_',num2str(calibSession)]).t_mental_max_perTrial = t_min_calib;
 end
     %% training mental
-
+for iTrainingCondition = 1:n_trainingConditions
+    trainingCond = trainingConditions{iTrainingCondition};
+    
+    % define parameters for the training
+    % reward/punishment and effort levels
+    [trainingChoiceOptions_tmp, n_trainingTrials_tmp, R_or_P_training_tmp] = training_options(trainingCond, n_R_levels, n_E_levels);
+    
+    % start with reward training alone
+    Ep_vars.MVC = MVC;
+    Ep_vars.dq = dq;
+    Ep_vars.Ep_time_levels = Ep_time_levels;
+    Ep_vars.F_threshold = F_threshold;
+    Ep_vars.F_tolerance = F_tolerance;
+    [trainingSummary.(trainingCond)] = choice_and_perf_training(scr, stim, key, 'physical', Ep_vars, R_money,...
+        trainingCond, R_or_P_training_tmp, n_trainingTrials_tmp, trainingChoiceOptions_tmp, trainingTimes_Ep);
+end % learning condition loop
 
 %% actual task
 % each block 1) MVC 2) task 3) MVC
