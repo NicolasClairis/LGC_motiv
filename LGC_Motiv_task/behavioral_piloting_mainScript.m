@@ -173,6 +173,9 @@ while calibSuccess == false
     calibSummary.(['calibSession_',num2str(calibSession)]).calibSuccess = calibSuccess;
     calibSummary.(['calibSession_',num2str(calibSession)]).t_mental_max_perTrial = t_min_calib;
 end
+
+trainingTimes_Em.max_effort = t_min_calib*trainingTimes_Em.t_min_scalingFactor; % allow more time then min performance
+taskTimes_Em.max_effort     = t_min_calib*taskTimes_Em.t_min_scalingFactor; % allow more time then min performance
     %% training mental
 for iTrainingCondition = 1:n_trainingConditions
     trainingCond = trainingConditions{iTrainingCondition};
