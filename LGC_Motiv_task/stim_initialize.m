@@ -46,16 +46,17 @@ for iR = 1:n_R_levels
     % extract name for subfield of the current difficulty level
     R_level_nm = ['reward_',num2str(iR)];
     
-    % import the reward image
-    [image_tmp, ~, alpha_tmp] = imread([pics_folder 'SMT_Money_',num2str(iR),'.png']);
-    
-    % transform into texture
-    image_tmp(:,:,4) = alpha_tmp;
-    
-    % store the image
-    stim_tmp = Screen('MakeTexture', window, image_tmp);
-    stim.reward.texture.(R_level_nm) = stim_tmp;
-    stim.reward.text.(R_level_nm) = iR;
+    % no use of reward images anymore
+%     % import the reward image
+%     [image_tmp, ~, alpha_tmp] = imread([pics_folder 'SMT_Money_',num2str(iR),'.png']);
+%     
+%     % transform into texture
+%     image_tmp(:,:,4) = alpha_tmp;
+%     
+%     % store the image
+%     stim_tmp = Screen('MakeTexture', window, image_tmp);
+%     stim.reward.texture.(R_level_nm) = stim_tmp;
+%     stim.reward.text.(R_level_nm) = iR;
     
 %     % display on top of the screen (for choice)
     stim.reward.top_center.(R_level_nm) = CenterRectOnPointd(stim.reward.moneyRect, xScreenCenter, yScreenCenter*(2/3));
@@ -141,6 +142,7 @@ Screen('FillRect',window, grey, [0 0 xScreenCenter*2 yScreenCenter*2]);
 Screen(window,'Flip');
 
 %% color used to represent the signal
+% no use of monetary images anymore
 alpha_punishment = 115;
 stim.punishment.colourOverlay   = [255 50 0 alpha_punishment];
 stim.difficulty.maxColor        = black;
