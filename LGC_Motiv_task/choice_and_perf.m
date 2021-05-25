@@ -301,6 +301,9 @@ for iTrial = 1:nTrials
             Screen('FrameRect',window, black, barTimeWaitRect);
             % draw one second rectangle updating dynamically showing the
             % time remaining
+            if barTimeWaitRect_bis(3) < barTimeWaitRect(1)
+                barTimeWaitRect_bis(3) = barTimeWaitRect(1) +1;
+            end
             Screen('FillRect',window, black, barTimeWaitRect_bis);
             
             Screen(window,'Flip');

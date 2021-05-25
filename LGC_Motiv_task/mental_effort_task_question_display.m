@@ -49,7 +49,9 @@ x_right = xScreenCenter*(3/2);
 switch task_trialType
     case 0 % odd/even
         if strcmp(learning_instructions,'fullInstructions')
-            DrawFormattedText(window, 'Chiffre pair ou impair?',...
+%             DrawFormattedText(window, 'Chiffre pair ou impair?',...
+%                 'center', yScreenCenter/3, textCol);
+             DrawFormattedText(window, 'Number even or odd?',...
                 'center', yScreenCenter/3, textCol);
         end
         
@@ -65,7 +67,9 @@ switch task_trialType
         DrawFormattedText(window,'pair', x_pair, y_coord, textCol );
         DrawFormattedText(window,'OU', 'center', y_coord, textCol );
         DrawFormattedText(window,'impair', x_impair, y_coord, textCol );
-        
+%         DrawFormattedText(window,'even', x_pair, y_coord, textCol );
+%         DrawFormattedText(window,'OR', 'center', y_coord, textCol );
+%         DrawFormattedText(window,'odd', x_impair, y_coord, textCol );        
     case 1 % higher/lower than 5?
         if strcmp(learning_instructions,'fullInstructions')
             DrawFormattedText(window, 'Chiffre < ou > 5?',...
