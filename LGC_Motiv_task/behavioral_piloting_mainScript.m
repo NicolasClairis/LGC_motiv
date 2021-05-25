@@ -34,11 +34,11 @@ cd(main_task_folder);
 %% Define subject ID
 
 % Insert the initials, the number of the participants
-info = cell(2,1);
-while isempty(info{1}) || isempty(info{2}) % repeat until both are answered
+[init, iSubject] = deal([]);
+while isempty(init) || isempty(iSubject) % repeat until both are answered
     info = inputdlg({'Initials', 'Subject ID'});
+    [init, iSubject] = info{[1,2]};
 end
-[init, iSubject] = info{[1,2]};
 
 % Create subjectCodeName which is used as a file saving name
 subjectCodeName = strcat(init,'_s',iSubject);
@@ -52,6 +52,12 @@ file_nm_training_Em = ['pilot_data_Em_',init,'_sub_',num2str(iSubject)];
 file_nm_training_Ep = ['pilot_data_Ep_',init,'_sub_',num2str(iSubject)];
 file_nm = ['pilot_data',init,'_sub_',num2str(iSubject)];
 %% general parameters
+
+% define subparts of the task to perform
+warning('please add here a way to select the parameters for the task: training/task, mental/physical, session number, etc.');
+% temporary quick fix to work
+effort_type = 'mental';
+
 % initialize screen
 [scr, xScreenCenter, yScreenCenter,...
     window, baselineTextSize] = ScreenConfiguration(0, 1);
@@ -59,7 +65,7 @@ white = scr.colours.white;
 black = scr.colours.black;
 
 % define relevant keys and dynamometer module
-[key, dq] = relevant_key_definition('physical', 0);
+[key, dq] = relevant_key_definition(effort_type, 0);
 
 % include punishment condition?
 punishment_yn = 'yes'; % include punishment trials?
@@ -89,6 +95,7 @@ n_trainingConditions = length(trainingConditions);
 
 n_sessions = 4; % 4 blocks in total (2 mental and 2 physical)
 t_endSession = 180;
+
 
 %% physical parameters
 n_MVC_repeat = 3;
