@@ -20,25 +20,28 @@ function [key, dq] = relevant_key_definition(effort_type, IRM)
 % dynamometer recording with a NI card
 
 %% if physical effort task => requires opening the connection to the BioPac
-switch effort_type
-    case 'physical'
-        % open communication with National Instruments card (which should
-        % be connected to the Biopac module, itself connected to the
-        % handgrip. Be careful to set everything properly in the channel 1
-        % as input (grip) and output (to NI card)
-        
-        % you can use the following functions to check the name of the
-        % device
-        % d = daqlist;
-        % d{1, "DeviceInfo"}
-        
-        % initialize NI input
-        dq = daq("ni");
-        dq.Rate = 20; % define the acquisition rate of the module
-        NI_module_nm = "cDAQ1Mod1"; % define module to use on the NI card
-        NI_channel_output = "ai0"; % define the channel output from the NI card
-        addinput(dq, NI_module_nm, NI_channel_output,"Voltage");
-end
+% switch effort_type
+%     case 'physical'
+%         % open communication with National Instruments card (which should
+%         % be connected to the Biopac module, itself connected to the
+%         % handgrip. Be careful to set everything properly in the channel 1
+%         % as input (grip) and output (to NI card)
+%         
+%         % you can use the following functions to check the name of the
+%         % device
+%         % d = daqlist;
+%         % d{1, "DeviceInfo"}
+%         
+%         % initialize NI input
+%         dq = daq("ni");
+%         dq.Rate = 20; % define the acquisition rate of the module
+%         NI_module_nm = "cDAQ1Mod1"; % define module to use on the NI card
+%         NI_channel_output = "ai0"; % define the channel output from the NI card
+%         addinput(dq, NI_module_nm, NI_channel_output,"Voltage");
+% end
+
+dq = 1;
+
 
 %% keyboard keys configuration + waiting and recording first TTL for fMRI
 if IRM == 0
