@@ -34,16 +34,14 @@ cd(main_task_folder);
 %% Define subject ID
 
 % Insert the initials, the number of the participants
-info = inputdlg({'Initials', 'Subject ID'});
-[init,iSubject] = info{[1,2]};
+info = cell(2,1);
+while isempty(info{1}) || isempty(info{2}) % repeat until both are answered
+    info = inputdlg({'Initials', 'Subject ID'});
+end
+[init, iSubject] = info{[1,2]};
 
 % Create subjectCodeName which is used as a file saving name
 subjectCodeName = strcat(init,'_s',iSubject);
-
-% Escape the experiment in case of no answer to either question
-if isempty(init) == true || isempty(iSubject) == true
-    errordlg('You didn''t answer everything ! We need all information to continue.')
-end
 
 % iSubject = 0;
 % file_nm_training_Em = ['pilot_data_Em_sub',num2str(iSubject)];
