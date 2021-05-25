@@ -55,11 +55,19 @@ for iR = 1:n_R_levels
     % store the image
     stim_tmp = Screen('MakeTexture', window, image_tmp);
     stim.reward.texture.(R_level_nm) = stim_tmp;
-    % display on top of the screen (for choice)
+    stim.reward.text.(R_level_nm) = iR;
+    
+%     % display on top of the screen (for choice)
     stim.reward.top_center.(R_level_nm) = CenterRectOnPointd(stim.reward.moneyRect, xScreenCenter, yScreenCenter*(2/3));
     stim.reward.top_left.(R_level_nm) = CenterRectOnPointd(stim.reward.moneyRect, xScreenCenter/2, yScreenCenter/2);
     stim.reward.top_right.(R_level_nm) = CenterRectOnPointd(stim.reward.moneyRect, xScreenCenter*(3/2), yScreenCenter/2);
-    % display on middle of the screen for performance
+    
+    stim.reward.top_centertxt.(R_level_nm) = [xScreenCenter, yScreenCenter*(2/3)];
+    stim.reward.top_lefttxt.(R_level_nm) = [xScreenCenter/2, yScreenCenter/2];
+    stim.reward.top_righttxt.(R_level_nm) = [xScreenCenter*(3/2), yScreenCenter/2];
+
+
+% display on middle of the screen for performance
     stim.reward.middle_center.(R_level_nm) = CenterRectOnPointd(stim.reward.moneyRect, xScreenCenter, yScreenCenter);
     
     % corresponding coordinates for red circle overlay for punishments
@@ -79,6 +87,15 @@ for iR = 1:n_R_levels
         stim.reward.middle_center.(R_level_nm)(2)+punishmentRecalibrateCoord,...
         stim.reward.middle_center.(R_level_nm)(3)-punishmentRecalibrateCoord,...
         stim.reward.middle_center.(R_level_nm)(4)-punishmentRecalibrateCoord];
+    
+    [~,~,textSizeWin] = DrawFormattedText(window,[num2str(iR),'Fr'],xScreenCenter,yScreenCenter,white);
+    stim.reward.text.xStart_R_txt.(R_level_nm) =  (textSizeWin(1) + textSizeWin(3))/2;
+    stim.reward.text.yStart_R_txt.(R_level_nm) = (textSizeWin(2) + textSizeWin(4))/2;
+    % add grey screen on top to be sure that this does not actually appear on
+    % the screen
+    Screen('FillRect',window, grey, [0 0 xScreenCenter*2 yScreenCenter*2]);
+    Screen(window,'Flip');
+    
 end
 
 %% difficulty rings
