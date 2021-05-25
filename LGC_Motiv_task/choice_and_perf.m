@@ -109,7 +109,7 @@ switch effort_type
         
         % randomize the type of the first trial (odd/even or higher/lower
         % than 5)
-        mental_taskType_trialStart = mental_task_start(nTrials);
+%         mental_taskType_trialStart = mental_task_start(nTrials);
         % number of good answers to reach at each trial
         n_max_to_reach_perTrial = NaN(1,nTrials);
 end
@@ -288,22 +288,29 @@ for iTrial = 1:nTrials
         onsets.timeBarWait(iTrial) = GetSecs; % record start of time bar
         
         % show a dynamic waiting bar until the timing ends
-        while toc < (t_max_effort - effortTime(iTrial))
+        while toc <= (t_max_effort - effortTime(iTrial))
+            timeSinceStart_tmp = toc;
             % update bar with time remaining
-            percTimeAchieved = (toc + effortTime(iTrial))./t_max_effort;
+            percTimeAchieved = (timeSinceStart_tmp + effortTime(iTrial))./t_max_effort;
             barTimeWaitRect_bis = barTimeWaitRect;
             % start on the right corner of the bar + percentage already
             % achieved and move to the left
-            barTimeWaitRect_bis(3) = barTimeWaitRect(3) - percTimeAchieved*(barTimeWaitRect(3) - barTimeWaitRect(1));
+            if percTimeAchieved > 0 && percTimeAchieved < 1
+                barTimeWaitRect_bis(3) = barTimeWaitRect(3) - percTimeAchieved*(barTimeWaitRect(3) - barTimeWaitRect(1));
+            elseif percTimeAchieved > 1
+                error('you should get out of the loop when the time spent is too long');
+            end
+            if barTimeWaitRect_bis(3) < barTimeWaitRect(1)
+                %                 barTimeWaitRect_bis(3) = barTimeWaitRect(1) +1;
+                error('this should never happen in principle. Please revise the code');
+            end
             %
             DrawFormattedText(window,'Temps restant','center',yScreenCenter*(1/2));
             % draw one global fixed rectangle showing the total duration
             Screen('FrameRect',window, black, barTimeWaitRect);
+            
             % draw one second rectangle updating dynamically showing the
             % time remaining
-            if barTimeWaitRect_bis(3) < barTimeWaitRect(1)
-                barTimeWaitRect_bis(3) = barTimeWaitRect(1) +1;
-            end
             Screen('FillRect',window, black, barTimeWaitRect_bis);
             
             Screen(window,'Flip');
