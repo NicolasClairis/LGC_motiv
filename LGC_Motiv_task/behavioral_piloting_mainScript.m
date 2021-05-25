@@ -22,7 +22,7 @@ addpath(genpath(main_task_folder));
 % addpath(BioPac_folder);
 addpath(Matlab_DIY_functions_folder);
 
-% create results folder if no subject has been acquired yet
+% create results folder if no -subject has been acquired yet
 if ~exist(results_folder,'dir')
     mkdir(results_folder);
 end
@@ -30,11 +30,29 @@ end
 cd(main_task_folder);
 
 %% define subject ID
-iSubject = 0;
-file_nm_training_Em = ['pilot_data_Em_sub',num2str(iSubject)];
-file_nm_training_Ep = ['pilot_data_Ep_sub',num2str(iSubject)];
-file_nm = ['pilot_data_sub',num2str(iSubject)];
 
+%% Define subject ID
+
+% Insert the initials, the number of the participants
+info = inputdlg({'Initials', 'Subject ID'});
+[init,iSubject] = info{[1,2]};
+
+% Create subjectCodeName which is used as a file saving name
+subjectCodeName = strcat(init,'_s',iSubject);
+
+% Escape the experiment in case of no answer to either question
+if isempty(init) == true || isempty(iSubject) == true
+    errordlg('You didn''t answer everything ! We need all information to continue.')
+end
+
+% iSubject = 0;
+% file_nm_training_Em = ['pilot_data_Em_sub',num2str(iSubject)];
+% file_nm_training_Ep = ['pilot_data_Ep_sub',num2str(iSubject)];
+% file_nm = ['pilot_data_sub',num2str(iSubject)];
+
+file_nm_training_Em = ['pilot_data_Em_',init,'_sub_',num2str(iSubject)];
+file_nm_training_Ep = ['pilot_data_Ep_',init,'_sub_',num2str(iSubject)];
+file_nm = ['pilot_data',init,'_sub_',num2str(iSubject)];
 %% general parameters
 % initialize screen
 [scr, xScreenCenter, yScreenCenter,...
