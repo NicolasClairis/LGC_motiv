@@ -4,7 +4,10 @@ close all;
 clearvars;
 instrreset
 
-%Open a connexion to the biopack datastream
+%% working directories
+savePath = ['D:' filesep 'Matlab_codes' filesep 'LGC_Motiv_task' filesep];
+
+%% Open a connexion to the biopack datastream
   stim.u_out = udp('127.0.0.1', 2012, 'LocalPort', 15010);
 %  stim.u_out = udp('127.0.0.1', 2012);
 %      stim.u_out = udp('128.178.188.240', 16212, 'LocalPort', 15010);
@@ -323,6 +326,5 @@ sca;
 %% Save Data
 
 % Double save to finish. one .mat (easier to take and do ML) and one excel just in case move them in the saving folde
-save([subjectCodeName '_data'],'-struct','all')
-movefile(['D:' filesep 'Matlab codes' filesep 'Experiment Motivation Original' filesep 'Matlab Code' filesep subjectCodeName '_data.mat'],['D:' filesep 'Matlab codes' filesep 'Experiment Motivation Original' filesep 'SavedData']);
+save([savePath, subjectCodeName '_data.mat'],'-struct','all')
 saveDataExcel(all,nbTrialPerPhase,subjectCodeName);
