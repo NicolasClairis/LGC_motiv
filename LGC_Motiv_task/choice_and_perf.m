@@ -300,11 +300,8 @@ for iTrial = 1:nTrials
             if percTimeAchieved > 0 && percTimeAchieved < 1
                 barTimeWaitRect_bis(3) = barTimeWaitRect(3) - percTimeAchieved*(barTimeWaitRect(3) - barTimeWaitRect(1));
             elseif percTimeAchieved > 1
-                error('you should get out of the loop when the time spent is too long');
-            end
-            if barTimeWaitRect_bis(3) < barTimeWaitRect(1)
-                %                 barTimeWaitRect_bis(3) = barTimeWaitRect(1) +1;
-                error('this should never happen in principle. Please revise the code');
+                warning('you should get out of the loop when the time spent is too long but it seems there was a bug, display of timebar was locked to zero to compensate');
+                barTimeWaitRect_bis(3) = barTimeWaitRect(1) + 1;
             end
             %
             DrawFormattedText(window,'Temps restant','center',yScreenCenter*(1/2));
