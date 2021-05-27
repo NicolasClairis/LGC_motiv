@@ -1,5 +1,5 @@
-function[stim] = stim_initialize(scr, n_R_levels, n_E_levels, pics_folder)
-%[stim] = stim_initialize(scr, n_R_levels, n_E_levels, pics_folder)
+function[stim] = stim_initialize(scr, n_R_levels, n_E_levels)
+%[stim] = stim_initialize(scr, n_R_levels, n_E_levels)
 %stim_initialize will initialize the v
 %
 % INPUTS
@@ -8,8 +8,6 @@ function[stim] = stim_initialize(scr, n_R_levels, n_E_levels, pics_folder)
 % n_R_levels: number of reward levels
 %
 % n_E_levels: number of difficulty levels
-%
-% pics_folder: path where pictures of reward levels are stored
 %
 % OUTPUTS
 % stim: structure with stimulus informations
@@ -36,68 +34,24 @@ difficultyArcColor = [255 210 0];
 Screen('BlendFunction', window, 'GL_SRC_ALPHA', 'GL_ONE_MINUS_SRC_ALPHA');
 
 %% Money variables
-moneySize = yScreenCenter/2; % 214 in initial Arthur version
-stim.reward.moneyRect  = [0 0 moneySize moneySize];
-stim.reward.moneySize  = moneySize;
 
-% Import the reward images and store them into memory
-punishmentRecalibrateCoord = 8;
-for iR = 1:n_R_levels
-    % extract name for subfield of the current difficulty level
-    R_level_nm = ['reward_',num2str(iR)];
-    
-    % no use of reward images anymore
-%     % import the reward image
-%     [image_tmp, ~, alpha_tmp] = imread([pics_folder 'SMT_Money_',num2str(iR),'.png']);
-%     
-%     % transform into texture
-%     image_tmp(:,:,4) = alpha_tmp;
-%     
-%     % store the image
-%     stim_tmp = Screen('MakeTexture', window, image_tmp);
-%     stim.reward.texture.(R_level_nm) = stim_tmp;
-%     stim.reward.text.(R_level_nm) = iR;
-    
-    % display on top of the screen (for choice)
-    stim.reward.top_center.(R_level_nm) = CenterRectOnPointd(stim.reward.moneyRect, xScreenCenter, yScreenCenter*(2/3));
-    stim.reward.top_left.(R_level_nm) = CenterRectOnPointd(stim.reward.moneyRect, xScreenCenter/2, yScreenCenter/2);
-    stim.reward.top_right.(R_level_nm) = CenterRectOnPointd(stim.reward.moneyRect, xScreenCenter*(3/2), yScreenCenter/2);
-    
-    stim.reward.top_centertxt.(R_level_nm) = [xScreenCenter, yScreenCenter*(2/3)];
-    stim.reward.top_lefttxt.(R_level_nm) = [xScreenCenter/2, yScreenCenter/2];
-    stim.reward.top_righttxt.(R_level_nm) = [xScreenCenter*(3/2), yScreenCenter/2];
+% extract reward amount text size (for choice)
+[~,~,textSizeR] = DrawFormattedText(window,'+0.00 CHF', xScreenCenter, yScreenCenter, white);
+xSizeText = textSizeR(3) - textSizeR(1);
+ySizeText = textSizeR(4) - textSizeR(2);
+stim.reward.xSizeText = xSizeText;
+stim.reward.ySizeText = ySizeText;
+% define where the text will be displayed
+stim.reward.text.top_center_start = [xScreenCenter - xSizeText/2, yScreenCenter*(2/3) - ySizeText/2]; % for display of chosen option
+stim.reward.text.top_left_start = [xScreenCenter/2 - xSizeText/2, yScreenCenter/2 - ySizeText/2]; % for display of left option
+stim.reward.text.top_right_start = [xScreenCenter*(3/2) - xSizeText/2, yScreenCenter/2 - ySizeText/2]; % for display of right option
+% display on middle of the screen for performance feedback
+stim.reward.text.middle_center_start = [xScreenCenter - xSizeText/2, yScreenCenter - ySizeText/2];
 
-
-    % display on middle of the screen for performance
-    stim.reward.middle_center.(R_level_nm) = CenterRectOnPointd(stim.reward.moneyRect, xScreenCenter, yScreenCenter);
-    
-%     % corresponding coordinates for red circle overlay for punishments
-%     stim.punishment.circleOverlay.top_center.(R_level_nm)       = [stim.reward.top_center.(R_level_nm)(1)+punishmentRecalibrateCoord,...
-%         stim.reward.top_center.(R_level_nm)(2)+punishmentRecalibrateCoord,...
-%         stim.reward.top_center.(R_level_nm)(3)-punishmentRecalibrateCoord,...
-%         stim.reward.top_center.(R_level_nm)(4)-punishmentRecalibrateCoord];
-%     stim.punishment.circleOverlay.top_left.(R_level_nm)         = [stim.reward.top_left.(R_level_nm)(1)+punishmentRecalibrateCoord,...
-%         stim.reward.top_left.(R_level_nm)(2)+punishmentRecalibrateCoord,...
-%         stim.reward.top_left.(R_level_nm)(3)-punishmentRecalibrateCoord,...
-%         stim.reward.top_left.(R_level_nm)(4)-punishmentRecalibrateCoord];
-%     stim.punishment.circleOverlay.top_right.(R_level_nm)        = [stim.reward.top_right.(R_level_nm)(1)+punishmentRecalibrateCoord,...
-%         stim.reward.top_right.(R_level_nm)(2)+punishmentRecalibrateCoord,...
-%         stim.reward.top_right.(R_level_nm)(3)-punishmentRecalibrateCoord,...
-%         stim.reward.top_right.(R_level_nm)(4)-punishmentRecalibrateCoord];
-%     stim.punishment.circleOverlay.middle_center.(R_level_nm)    = [stim.reward.middle_center.(R_level_nm)(1)+punishmentRecalibrateCoord,...
-%         stim.reward.middle_center.(R_level_nm)(2)+punishmentRecalibrateCoord,...
-%         stim.reward.middle_center.(R_level_nm)(3)-punishmentRecalibrateCoord,...
-%         stim.reward.middle_center.(R_level_nm)(4)-punishmentRecalibrateCoord];
-    
-    [~,~,textSizeWin] = DrawFormattedText(window,[num2str(iR),'Fr'],xScreenCenter,yScreenCenter,white);
-    stim.reward.text.xStart_R_txt.(R_level_nm) =  (textSizeWin(1) + textSizeWin(3))/2;
-    stim.reward.text.yStart_R_txt.(R_level_nm) = (textSizeWin(2) + textSizeWin(4))/2;
-    % add grey screen on top to be sure that this does not actually appear on
-    % the screen
-    Screen('FillRect',window, grey, [0 0 xScreenCenter*2 yScreenCenter*2]);
-    Screen(window,'Flip');
-    
-end
+% add grey screen on top to be sure that this does not actually appear on
+% the screen
+Screen('FillRect',window, grey, [0 0 xScreenCenter*2 yScreenCenter*2]);
+Screen(window,'Flip');
 
 %% difficulty rings
 % 
