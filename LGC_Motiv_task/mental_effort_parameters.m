@@ -1,6 +1,6 @@
-function[mentalE_prm] = LGCM_mental_effort_parameters(i_sub)
-%[mentalE_prm] = LGCM_mental_effort_parameters()
-% LGCM_mental_effort_parameters definition of the main parameters for the
+function[mentalE_prm] = mental_effort_parameters(i_sub)
+%[mentalE_prm] = mental_effort_parameters(i_sub)
+% mental_effort_parameters definition of the main parameters for the
 % mental effort task.
 %
 % INPUTS

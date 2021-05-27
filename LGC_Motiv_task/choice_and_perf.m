@@ -136,7 +136,11 @@ for iTrial = 1:nTrials
         WaitSecs(t_cross(iTrial));
     end
     
-    %% extract reward of punishment trial condition
+    %% extract monetary incentive, effort level and reward/punishment condition
+    R_left_tmp = choiceOptions.R_left(iTrial);
+    R_right_tmp = choiceOptions.R_left(iTrial);
+    E_left_tmp = choiceOptions.R_left(iTrial);
+    E_right_tmp = choiceOptions.R_left(iTrial);
     R_or_P_tmp = choiceOptions.R_or_P{iTrial};
     
     %% choice period
@@ -147,14 +151,30 @@ for iTrial = 1:nTrials
                 onsets.dispChoiceOptions(iTrial),...
                 onsets.choice(iTrial),...
                 stoptask] = choice_period(scr, stim,...
-                choiceOptions, R_or_P_tmp, iTrial, t_choice, key);
+                R_left_tmp, R_right_tmp, E_left_tmp, E_right_tmp, R_or_P_tmp,...
+                t_choice, key);
         end % keep performing the trial until a choice is made
     else % for actual task, if they don't answer in time, consider the trial as a failure
         [choice(iTrial),...
             onsets.dispChoiceOptions(iTrial),...
             onsets.choice(iTrial),...
             stoptask] = choice_period(scr, stim,...
-            choiceOptions, R_or_P_tmp, iTrial, t_choice, key);
+            R_left_tmp, R_right_tmp, E_left_tmp, E_right_tmp, R_or_P_tmp,...
+            t_choice, key);
+    end
+    
+    % extract choice made
+    switch choice(iTrial)
+        case -1 % choice = left option
+            R_chosen(iTrial) = R_left_tmp;
+            E_chosen(iTrial) = E_left_tmp;
+        case 1 % choice = right option
+            R_chosen(iTrial) = R_right_tmp;
+            E_chosen(iTrial) = E_right_tmp;
+        case 0 % no option was selected
+            R_chosen(iTrial) = 0;
+            %             E_chosen(iTrial) = max(E_left_tmp, E_right_tmp); % by default opt for the higher effort with no reward if no option was selected
+            E_chosen(iTrial) = 0;
     end
     
     %% check if escape was pressed => stop everything if so
@@ -165,11 +185,7 @@ for iTrial = 1:nTrials
     end
     
     %% chosen option display period
-    [time_dispChoice,...
-        R_chosen(iTrial),...
-        E_chosen(iTrial)] = choice_task_dispChosen(scr, stim, choiceOptions,...
-        choice(iTrial), R_or_P_tmp,...
-        iTrial);
+    [time_dispChoice] = choice_task_dispChosen(scr, stim, R_chosen(iTrial), E_chosen(iTrial), R_or_P_tmp);
     onsets.dispChoice(iTrial) = time_dispChoice;
     WaitSecs(t_dispChoice);
     
