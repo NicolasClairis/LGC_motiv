@@ -81,14 +81,7 @@ switch R_chosen
             'Trop lent!',...
             'center', yScreenCenter/2, white);
     otherwise % one option was selected
-        % reward level
-        R_chosen_nm = ['reward_',num2str(R_chosen)];
-%         Screen('DrawTexture', window,...
-%             stim.reward.texture.(R_chosen_nm),...
-%             [],...
-%             stim.chosenOption.reward.(R_chosen_nm));
-          DrawFormattedText(window,[num2str(stim.reward.text.(R_chosen_nm)),'Fr'],stim.reward.top_centertxt.(R_chosen_nm)(1),stim.reward.top_centertxt.(R_chosen_nm)(2),white);
-
+        
         % if punishment trial, add also indication to know that money is to be lost
         switch R_or_P
             case 'R'
@@ -100,22 +93,9 @@ switch R_chosen
                     xStart_R_txt,...
                     yStart_R_txt,...
                     white);
+                moneySign = '+';
+                moneyColour = stim.reward.text.colour;
             case 'P'
-                % version with black cross on top of the monetary incentives
-                %             lineWidth = 10;
-                %             % cross on monetary incentive
-                %             Screen('DrawLine', window, black,...
-                %                 stim.reward.top_center.(R_chosen_nm)(1), stim.reward.top_center.(R_chosen_nm)(2),...
-                %                 stim.reward.top_center.(R_chosen_nm)(3), stim.reward.top_center.(R_chosen_nm)(4),...
-                %                 lineWidth);
-                %             Screen('DrawLine', window, black,...
-                %                 stim.reward.top_center.(R_chosen_nm)(3), stim.reward.top_left.(R_chosen_nm)(2),...
-                %                 stim.reward.top_center.(R_chosen_nm)(1), stim.reward.top_center.(R_chosen_nm)(4),...
-                %                 lineWidth);
-                
-                % version with negative overlay on top of monetary incentive
-                Screen('FillOval', window, stim.punishment.colourOverlay,...
-                    stim.punishment.circleOverlay.top_center.(R_chosen_nm));
                 
                 % define coordinates
                 xStart_R_txt = xScreenCenter - stim.textRectSize.xSizeLose/2;
@@ -125,7 +105,17 @@ switch R_chosen
                     xStart_R_txt,...
                     yStart_R_txt,...
                     white);
+                moneySign = '-';
+                moneyColour = stim.punishment.text.colour;
         end
+        
+        % reward level
+        R_chosen_nm = ['reward_',num2str(R_chosen)];
+        
+        trialMoneyObtained = sprintf('%0.2f',R_chosen(iTrial));
+        DrawFormattedText(window,[moneySign, trialMoneyObtained,' CHF'],...
+            stim.reward.text.top_center_start,...
+            moneyColour);
         
         %% display difficulty level
         chosenStartAngle = stim.difficulty.startAngle.(['level_',num2str(E_chosen)]);

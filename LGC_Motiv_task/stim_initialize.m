@@ -1,11 +1,9 @@
-function[stim] = stim_initialize(scr, n_R_levels, n_E_levels)
-%[stim] = stim_initialize(scr, n_R_levels, n_E_levels)
+function[stim] = stim_initialize(scr, n_E_levels)
+%[stim] = stim_initialize(scr, n_E_levels)
 %stim_initialize will initialize the v
 %
 % INPUTS
 % scr: structure with main screen informations (size, center, window, etc.
-%
-% n_R_levels: number of reward levels
 %
 % n_E_levels: number of difficulty levels
 %
@@ -47,6 +45,11 @@ stim.reward.text.top_left_start = [xScreenCenter/2 - xSizeText/2, yScreenCenter/
 stim.reward.text.top_right_start = [xScreenCenter*(3/2) - xSizeText/2, yScreenCenter/2 - ySizeText/2]; % for display of right option
 % display on middle of the screen for performance feedback
 stim.reward.text.middle_center_start = [xScreenCenter - xSizeText/2, yScreenCenter - ySizeText/2];
+
+% define the colour to use for the text according to the condition
+% (reward/punishment)
+stim.reward.text.colour = white;
+stim.punishment.text.colour = [255 50 0];
 
 % add grey screen on top to be sure that this does not actually appear on
 % the screen
