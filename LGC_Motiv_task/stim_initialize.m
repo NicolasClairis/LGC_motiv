@@ -105,10 +105,13 @@ stim.textRectSize.ySizeForEffort = ySizeForEffort;
 % extract x/y coordinates for the display of the corresponding text
 stim.winRewardText.top_left     = [xScreenCenter/2 - xSizeWin/2,        yScreenCenter/2 - ySizeWin/2];
 stim.winRewardText.top_right    = [xScreenCenter*(3/2) - xSizeWin/2,    yScreenCenter/2 - ySizeWin/2];
+stim.winRewardText.top_center   = [xScreenCenter - xSizeWin/2,          yScreenCenter/2 - ySizeWin/2];
 stim.loseRewardText.top_left    = [xScreenCenter/2 - xSizeLose/2,       yScreenCenter/2 - ySizeLose/2];
 stim.loseRewardText.top_right   = [xScreenCenter*(3/2) - xSizeLose/2,   yScreenCenter/2 - ySizeLose/2];
-stim.effort_introText.bottom_left         = [xScreenCenter/2 - xSizeForEffort/2,  yScreenCenter*(3/2) - ySizeForEffort/2];
-stim.effort_introText.bottom_right        = [xScreenCenter*(3/2) - xSizeForEffort/2, yScreenCenter*(3/2)  - ySizeForEffort/2];
+stim.loseRewardText.top_center  = [xScreenCenter - xSizeLose/2,         yScreenCenter/2 - ySizeLose/2];
+stim.effort_introText.bottom_left   = [xScreenCenter/2 - xSizeForEffort/2,      yScreenCenter*(3/2) - ySizeForEffort/2];
+stim.effort_introText.bottom_right  = [xScreenCenter*(3/2) - xSizeForEffort/2,  yScreenCenter*(3/2)  - ySizeForEffort/2];
+stim.effort_introText.bottom_center = [xScreenCenter*(3/2) - xSizeForEffort/2,  yScreenCenter*(3/2)  - ySizeForEffort/2];
 % add grey screen on top to be sure that this does not actually appear on
 % the screen
 Screen('FillRect',window, grey, [0 0 xScreenCenter*2 yScreenCenter*2]);
