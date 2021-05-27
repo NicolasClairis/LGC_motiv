@@ -84,15 +84,31 @@ for iDiff = 1:n_E_levels
 end % difficulty
 
 %% extract text size
+% win option
 [~,~,textSizeWin] = DrawFormattedText(window,'Gagner',xScreenCenter,yScreenCenter,white);
-stim.textRectSize.xSizeWin = textSizeWin(3) - textSizeWin(1);
-stim.textRectSize.ySizeWin = textSizeWin(4) - textSizeWin(2);
-[~,~,textSizeLose] = DrawFormattedText(window,'perdre',xScreenCenter,yScreenCenter,white);
-stim.textRectSize.xSizeLose = textSizeLose(3) - textSizeLose(1);
-stim.textRectSize.ySizeLose = textSizeLose(4) - textSizeLose(2);
+xSizeWin = textSizeWin(3) - textSizeWin(1);
+ySizeWin = textSizeWin(4) - textSizeWin(2);
+stim.textRectSize.xSizeWin = xSizeWin;
+stim.textRectSize.ySizeWin = ySizeWin;
+% lose option
+[~,~,textSizeLose] = DrawFormattedText(window,'Perdre',xScreenCenter,yScreenCenter,white);
+xSizeLose = textSizeLose(3) - textSizeLose(1);
+ySizeLose = textSizeLose(4) - textSizeLose(2);
+stim.textRectSize.xSizeLose = xSizeLose;
+stim.textRectSize.ySizeLose = ySizeLose;
+% effort
 [~,~,textSizeForEffort] = DrawFormattedText(window,'pour',xScreenCenter,yScreenCenter,white);
-stim.textRectSize.xSizeForEffort = textSizeForEffort(3) - textSizeForEffort(1);
-stim.textRectSize.ySizeForEffort = textSizeForEffort(4) - textSizeForEffort(2);
+xSizeForEffort = textSizeForEffort(3) - textSizeForEffort(1);
+ySizeForEffort = textSizeForEffort(4) - textSizeForEffort(2);
+stim.textRectSize.xSizeForEffort = xSizeForEffort;
+stim.textRectSize.ySizeForEffort = ySizeForEffort;
+% extract x/y coordinates for the display of the corresponding text
+stim.winRewardText.top_left     = [xScreenCenter/2 - xSizeWin/2,        yScreenCenter/2 - ySizeWin/2];
+stim.winRewardText.top_right    = [xScreenCenter*(3/2) - xSizeWin/2,    yScreenCenter/2 - ySizeWin/2];
+stim.loseRewardText.top_left    = [xScreenCenter/2 - xSizeLose/2,       yScreenCenter/2 - ySizeLose/2];
+stim.loseRewardText.top_right   = [xScreenCenter*(3/2) - xSizeLose/2,   yScreenCenter/2 - ySizeLose/2];
+stim.effort_introText.bottom_left         = [xScreenCenter/2 - xSizeForEffort/2,  yScreenCenter*(3/2) - ySizeForEffort/2];
+stim.effort_introText.bottom_right        = [xScreenCenter*(3/2) - xSizeForEffort/2, yScreenCenter*(3/2)  - ySizeForEffort/2];
 % add grey screen on top to be sure that this does not actually appear on
 % the screen
 Screen('FillRect',window, grey, [0 0 xScreenCenter*2 yScreenCenter*2]);
