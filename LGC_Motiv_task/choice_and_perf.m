@@ -235,27 +235,20 @@ for iTrial = 1:nTrials
                     DrawFormattedText(window,'Vous avez obtenu',...
                         'center', (1/5)*yScreenCenter,...
                         white);
+                    fbkSign = '+';
+                    fbkColour = stim.reward.text.colour;
                 case 'P'
                     DrawFormattedText(window,'Vous avez perdu',...
                         'center', (1/5)*yScreenCenter,...
                         white);
+                    fbkSign = '-';
+                    fbkColour = stim.punishment.text.colour;
             end
-            
-            % display monetary incentive
-            R_chosen_tmp = ['reward_',num2str(R_chosen(iTrial))];
-%             Screen('DrawTexture', window,...
-%                 stim.reward.texture.(R_chosen_tmp),...
-%                 [],...
-%                 stim.chosenOption.reward.(R_chosen_tmp));
-            DrawFormattedText(window,[num2str(stim.reward.text.(R_chosen_tmp)),'Fr'],stim.reward.top_centertxt.(R_chosen_tmp)(1),stim.reward.top_centertxt.(R_chosen_tmp)(2),white);
-
-            
-            % punishments: add negative  overlay on top of the monetary
-            % incentive
-            if strcmp(R_or_P_tmp,'P')
-                Screen('FillOval', window, stim.punishment.colourOverlay,...
-                    stim.punishment.circleOverlay.top_center.(R_chosen_tmp));
-            end
+            % display money won/lost
+            trialMoneyObtained = sprintf('%0.2f',R_chosen(iTrial));
+            DrawFormattedText(window, [fbkSign, trialMoneyObtained,' CHF'],...
+                stim.reward.text.middle_center_start,...
+                fbkColour);
             
             [~,onsets.fbk(iTrial)] = Screen(window,'Flip');
             switch R_or_P_tmp
