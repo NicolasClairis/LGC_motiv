@@ -41,16 +41,16 @@ ySizeText = textSizeR(4) - textSizeR(2);
 stim.reward.xSizeText = xSizeText;
 stim.reward.ySizeText = ySizeText;
 % define where the text will be displayed
-stim.reward.text.top_center_start = [xScreenCenter - xSizeText/2, yScreenCenter*(2/3) - ySizeText/2]; % for display of chosen option
-stim.reward.text.top_left_start = [xScreenCenter/2 - xSizeText/2, yScreenCenter/2 - ySizeText/2]; % for display of left option
-stim.reward.text.top_right_start = [xScreenCenter*(3/2) - xSizeText/2, yScreenCenter/2 - ySizeText/2]; % for display of right option
+stim.reward.text.top_center_start = [xScreenCenter - xSizeText/2, yScreenCenter*(3/4) - ySizeText/2]; % for display of chosen option
+stim.reward.text.top_left_start = [xScreenCenter/2 - xSizeText/2, yScreenCenter*(3/4) - ySizeText/2]; % for display of left option
+stim.reward.text.top_right_start = [xScreenCenter*(3/2) - xSizeText/2, yScreenCenter*(3/4) - ySizeText/2]; % for display of right option
 % display on middle of the screen for performance feedback
 stim.reward.text.middle_center_start = [xScreenCenter - xSizeText/2, yScreenCenter - ySizeText/2];
 
 % define the colour to use for the text according to the condition
 % (reward/punishment)
 stim.reward.text.colour = white;
-stim.punishment.text.colour = [255 50 0];
+stim.punishment.text.colour = [239 138 98];
 
 % add grey screen on top to be sure that this does not actually appear on
 % the screen
@@ -58,13 +58,15 @@ Screen('FillRect',window, grey, [0 0 xScreenCenter*2 yScreenCenter*2]);
 Screen(window,'Flip');
 
 %% difficulty rings
-% 
+difficultyRectlinearSize = yScreenCenter/2; % 214 in initial Arthur version
+difficultyRectXYsize  = [0 0 difficultyRectlinearSize difficultyRectlinearSize];
+stim.difficulty.rectSize  = difficultyRectXYsize;
 % position each ring on the screen (for choice task)
-stim.difficulty.below_center = CenterRectOnPointd(stim.reward.moneyRect, xScreenCenter, yScreenCenter*(3/2));
-stim.difficulty.below_left = CenterRectOnPointd(stim.reward.moneyRect, xScreenCenter/2, yScreenCenter*(3/2));
-stim.difficulty.below_right = CenterRectOnPointd(stim.reward.moneyRect, xScreenCenter*(3/2), yScreenCenter*(3/2));
+stim.difficulty.below_center = CenterRectOnPointd(difficultyRectXYsize, xScreenCenter, yScreenCenter*(3/2));
+stim.difficulty.below_left = CenterRectOnPointd(difficultyRectXYsize, xScreenCenter/2, yScreenCenter*(3/2));
+stim.difficulty.below_right = CenterRectOnPointd(difficultyRectXYsize, xScreenCenter*(3/2), yScreenCenter*(3/2));
 % position each ring on the screen (for performance task)
-stim.difficulty.middle_center = CenterRectOnPointd(stim.reward.moneyRect, xScreenCenter, yScreenCenter);
+stim.difficulty.middle_center = CenterRectOnPointd(difficultyRectXYsize, xScreenCenter, yScreenCenter);
 stim.difficulty.arcEndAngle = 360;
 
 % define the circle size for each difficulty level depending on the
@@ -104,15 +106,15 @@ ySizeForEffort = textSizeForEffort(4) - textSizeForEffort(2);
 stim.textRectSize.xSizeForEffort = xSizeForEffort;
 stim.textRectSize.ySizeForEffort = ySizeForEffort;
 % extract x/y coordinates for the display of the corresponding text
-stim.winRewardText.top_left     = [xScreenCenter/2 - xSizeWin/2,        yScreenCenter/2 - ySizeWin/2];
-stim.winRewardText.top_right    = [xScreenCenter*(3/2) - xSizeWin/2,    yScreenCenter/2 - ySizeWin/2];
-stim.winRewardText.top_center   = [xScreenCenter - xSizeWin/2,          yScreenCenter/2 - ySizeWin/2];
-stim.loseRewardText.top_left    = [xScreenCenter/2 - xSizeLose/2,       yScreenCenter/2 - ySizeLose/2];
-stim.loseRewardText.top_right   = [xScreenCenter*(3/2) - xSizeLose/2,   yScreenCenter/2 - ySizeLose/2];
-stim.loseRewardText.top_center  = [xScreenCenter - xSizeLose/2,         yScreenCenter/2 - ySizeLose/2];
-stim.effort_introText.bottom_left   = [xScreenCenter/2 - xSizeForEffort/2,      yScreenCenter*(3/2) - ySizeForEffort/2];
-stim.effort_introText.bottom_right  = [xScreenCenter*(3/2) - xSizeForEffort/2,  yScreenCenter*(3/2)  - ySizeForEffort/2];
-stim.effort_introText.bottom_center = [xScreenCenter*(3/2) - xSizeForEffort/2,  yScreenCenter*(3/2)  - ySizeForEffort/2];
+stim.winRewardText.top_left     = [xScreenCenter/2 - xSizeWin/2,        stim.reward.text.top_left_start(2) - ySizeWin*2];
+stim.winRewardText.top_right    = [xScreenCenter*(3/2) - xSizeWin/2,    stim.reward.text.top_right_start(2) - ySizeWin*2];
+stim.winRewardText.top_center   = [xScreenCenter - xSizeWin/2,          stim.reward.text.top_center_start(2) - ySizeWin*2];
+stim.loseRewardText.top_left    = [xScreenCenter/2 - xSizeLose/2,       stim.reward.text.top_left_start(2) - ySizeLose*2];
+stim.loseRewardText.top_right   = [xScreenCenter*(3/2) - xSizeLose/2,   stim.reward.text.top_right_start(2) - ySizeLose*2];
+stim.loseRewardText.top_center  = [xScreenCenter - xSizeLose/2,         stim.reward.text.top_center_start(2) - ySizeLose*2];
+stim.effort_introText.bottom_left   = [xScreenCenter/2 - xSizeForEffort/2,      stim.difficulty.below_left(2) - ySizeForEffort/2];
+stim.effort_introText.bottom_right  = [xScreenCenter*(3/2) - xSizeForEffort/2,  stim.difficulty.below_right(2)  - ySizeForEffort/2];
+stim.effort_introText.bottom_center = [xScreenCenter - xSizeForEffort/2,        stim.difficulty.below_center(2)  - ySizeForEffort/2];
 % add grey screen on top to be sure that this does not actually appear on
 % the screen
 Screen('FillRect',window, grey, [0 0 xScreenCenter*2 yScreenCenter*2]);
@@ -120,14 +122,12 @@ Screen(window,'Flip');
 
 %% color used to represent the signal
 % no use of monetary images anymore
-alpha_punishment = 115;
-stim.punishment.colourOverlay   = [255 50 0 alpha_punishment];
 stim.difficulty.maxColor        = black;
 stim.difficulty.currLevelColor  = difficultyArcColor;
 stim.difficulty.ovalWidth       = 3;
 
 %% square to display for the chosen option
-stim.chosenOption.reward = stim.reward.top_center;
+stim.chosenOption.reward = stim.reward.text.top_center_start;
 stim.chosenOption.difficulty = stim.difficulty.below_center;
 stim.chosenOption.squareColour = black;
 stim.chosenOption.squareRect = [xScreenCenter*(2/3),...
@@ -136,11 +136,8 @@ stim.chosenOption.squareRect = [xScreenCenter*(2/3),...
     yScreenCenter*(11/6)];
 stim.chosenOption.squareWidth = 10;
 
-%% force display
-
-%% for the end of the performance period
-% circle around the money to signify end of the trial (win or loss)
-stim.endTrialcircle  = [0 0 moneySize+(moneySize/5) moneySize+(moneySize/5)];
+%% for the end of the performance period circle to signify end of the trial (win or loss)
+stim.endTrialcircle  = [0 0 difficultyRectlinearSize+(difficultyRectlinearSize/5) difficultyRectlinearSize+(difficultyRectlinearSize/5)];
 stim.end_trial.middle_center = CenterRectOnPointd(stim.endTrialcircle, xScreenCenter, yScreenCenter);
 
 %% define bar size for the waiting time

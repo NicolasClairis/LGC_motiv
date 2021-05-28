@@ -1,6 +1,7 @@
-function[time_dispChoice, R_chosen, E_chosen] = choice_task_dispChosen(scr, stim, R_chosen, E_chosen, R_or_P)
-% [time_dispChoice, R_chosen, E_chosen] = choice_task_dispChosen(scr, stim, choice_opt, choice,...
+function[time_dispChoice] = choice_task_dispChosen(scr, stim, R_chosen, E_chosen, R_or_P)
+% [time_dispChoice] = choice_task_dispChosen(scr, stim, choice_opt, choice,...
 %     R_or_P, iTrial)
+% choice_task_dispChosen will display the chosen option
 %
 % INPUTS
 % scr: structure with screen parameters
@@ -18,12 +19,6 @@ function[time_dispChoice, R_chosen, E_chosen] = choice_task_dispChosen(scr, stim
 %
 % OUTPUTS
 % time_dispChoice: onset of the display of the chosen option on the screen
-%
-% R_chosen: numeric variable reflecting the level of the reward associated
-% to the chosen option
-%
-% E_chosen:numeric variable reflecting the level of the effort associated
-% to the chosen option
 %
 % See also choice_task_main.m
 
@@ -49,13 +44,15 @@ switch R_chosen
         switch R_or_P
             case 'R'
                 DrawFormattedText(window,'Gagner',...
-                    stim.winRewardText.top_center,...
+                    stim.winRewardText.top_center(1),...
+                    stim.winRewardText.top_center(2),...
                     white);
                 moneySign = '+';
                 moneyColour = stim.reward.text.colour;
             case 'P'
                 DrawFormattedText(window,'Perdre',...
-                    stim.loseRewardText.top_center,...
+                    stim.loseRewardText.top_center(1),...
+                    stim.loseRewardText.top_center(2),...
                     white);
                 moneySign = '-';
                 moneyColour = stim.punishment.text.colour;
@@ -63,7 +60,8 @@ switch R_chosen
         
         trialMoneyObtained = sprintf('%0.2f',R_chosen);
         DrawFormattedText(window,[moneySign, trialMoneyObtained,' CHF'],...
-            stim.reward.text.top_center_start,...
+            stim.reward.text.top_center_start(1),...
+            stim.reward.text.top_center_start(2),...
             moneyColour);
         
         %% display difficulty level
@@ -82,7 +80,8 @@ switch R_chosen
         
         % display
         DrawFormattedText(window,'pour',...
-            stim.effort_introText.bottom_center,...
+            stim.effort_introText.bottom_center(1),...
+            stim.effort_introText.bottom_center(2),...
             white);
 end
 

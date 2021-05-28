@@ -200,7 +200,7 @@ switch effort_type
 end
 
 % stimulus related variables for the display
-[stim] = stim_initialize(scr, n_R_levels, n_E_levels, pics_folder);
+[stim] = stim_initialize(scr, n_E_levels);
 barTimeWaitRect = stim.barTimeWaitRect;
 
 % define number of training conditions
