@@ -14,9 +14,8 @@ function[mental_nbers_per_trial] = mental_numbers(n_trials)
 %
 
 %% define numbers to be used
-% n_to_use_taskSwitch = [1, 2, 3, 4, 6, 7, 8, 9]; % all numbers between 1
+n_to_use_taskSwitch = [1, 2, 3, 4, 6, 7, 8, 9]; % all numbers between 1
 % and 9 but 5 to have equal amount of numbers <5 and >5
-n_to_use_taskSwitch = [1, 3, 7, 9]; % remove even numbers for which the side of the answer is always the same (ex: 2 is odd and < 5 => always left side)
 n_nbers_to_use = length(n_to_use_taskSwitch);
 
 %% define matrix with all the possible numbers
@@ -30,12 +29,6 @@ n_possiblePerms = size(all_possible_perms, 1);
 % randomize the order of the permutations
 if n_nbers_to_use == 8 % in this case: lots of permutation, you can use them
     rdm_order = randperm(n_possiblePerms);
-elseif n_nbers_to_use == 4 % not enough permutation, need to repeat them several times, to ensure you get enough samples
-    rdm_order = NaN(1, n_trials*n_sequences_per_trial);
-    for iRepeat = 1:(floor(n_trials*n_sequences_per_trial)/n_possiblePerms)
-        trials_idx = (1:n_possiblePerms) + n_possiblePerms*(iRepeat - 1);
-        rdm_order(trials_idx) = randperm(n_possiblePerms);
-    end
 end
 all_possible_perms_rdm_order = all_possible_perms(rdm_order,:);
 
