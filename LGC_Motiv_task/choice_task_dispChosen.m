@@ -30,14 +30,14 @@ white = scr.colours.white;
 black = scr.colours.black;
 
 % remind the option they chose
-DrawFormattedText(window,'Vous avez choisi','center',yScreenCenter/6.5,white);
+DrawFormattedText(window,'Vous avez choisi','center',stim.chosenOption.message_yCoord,white);
 
 %% display reward and effort level
 switch R_chosen
     case 0 % no option was selected
         DrawFormattedText(window,...
             'Trop lent!',...
-            'center', yScreenCenter/2, white);
+            'center', yScreenCenter, white);
     otherwise % one option was selected
         
         % if punishment trial, add also indication to know that money is to be lost
