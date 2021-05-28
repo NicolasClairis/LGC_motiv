@@ -1,9 +1,7 @@
-function[choice_trial, onsetDispChoiceOptions, onsetChoice, stoptask] = choice_period(scr, stim,...
-    R_left, R_right, E_left, E_right, R_or_P,...
-    t_choice, key)
+function[choice_trial, onsetDispChoiceOptions, onsetChoice, stoptask, chosenReward] = choice_period_staircase(scr, stim,...
+    R_or_P, iTrial, t_choice, key, baselineReward, staircaseReward, chosenReward)
 % [choice_trial, onsetDispChoiceOptions, onsetChoice] = choice_period(scr, stim, choice_opt,...
-%     R_left, R_right, E_left, E_right, R_or_P, R_amounts,...
-%     t_choice, key)
+%     R_or_P, iTrial, t_choice, key)
 % choice_period will display the choice options and then wait for the 
 % choice to be made (or the time limit to be reached. Provides timings and 
 % choice made in output.
@@ -13,13 +11,14 @@ function[choice_trial, onsetDispChoiceOptions, onsetChoice, stoptask] = choice_p
 %
 % stim: structure with informations about the stimuli to display
 %
-% R_left, R_right: reward monetary amount for left and right option
-%
-% E_left, E_right: level of effort for left and right option
+% choice_opt: structure with info about choice options (side of each
+% option, reward level, effort level, etC.)
 %
 % R_or_P: character indicating the nature of the current trial
 % 'R': reward trial
 % 'P': punishment trial
+%
+% iTrial: trial number
 %
 % t_choice: maximal time to wait for choice
 %
@@ -43,20 +42,34 @@ function[choice_trial, onsetDispChoiceOptions, onsetChoice, stoptask] = choice_p
 window = scr.window;
 stoptask = 0;
 white = scr.colours.white;
-% black = scr.colours.black;
+black = scr.colours.black;
 yScreenCenter = scr.yCenter;
-% xScreenCenter = scr.xCenter;
+xScreenCenter = scr.xCenter;
 
 %% ask question on top
 DrawFormattedText(window,'Que préférez-vous?','center',yScreenCenter/4,white);
 DrawFormattedText(window,'OU','center','center',white);
 
+%% extract difficulty & reward level for each side of the screen
+% effort level
+% E_left_tmp = choice_opt.E.left(iTrial);
+% E_right_tmp = choice_opt.E.right(iTrial);
+% extract reward level for each side of the screen
+% R_left_tmp  = choice_opt.R.left(iTrial);
+% R_right_tmp = choice_opt.R.right(iTrial);
+
+E_left_tmp = 1;
+E_right_tmp = 3;
+% extract reward level for each side of the screen
+R_left  = baselineReward;
+R_right = staircaseReward(iTrial);
+
 %% display each difficulty level
-leftStartAngle = stim.difficulty.startAngle.(['level_',num2str(E_left)]);
-rightStartAngle = stim.difficulty.startAngle.(['level_',num2str(E_right)]);
+leftStartAngle = stim.difficulty.startAngle.(['level_',num2str(E_left_tmp)]);
+rightStartAngle = stim.difficulty.startAngle.(['level_',num2str(E_right_tmp)]);
 maxCircleAngle = stim.difficulty.arcEndAngle;
 Screen('FillArc', window,...
-    stim.difficulty. currLevelColor,...
+    stim.difficulty.currLevelColor,...
     stim.difficulty.below_left,...
     leftStartAngle,...
     maxCircleAngle - leftStartAngle); % left option difficulty
@@ -75,52 +88,75 @@ Screen('FrameOval', window, stim.difficulty.maxColor,...
     stim.difficulty.ovalWidth);
 
 %% display each monetary incentive level
+% extract reward levels
+% R_left_nm = ['reward_',num2str(R_left_tmp)];
+% R_right_nm = ['reward_',num2str(R_right_tmp)];
+R_left_nm = ['reward_',num2str(1)];
+R_right_nm = ['reward_',num2str(1)];
+
+% display reward images
+% Screen('DrawTexture', window,...
+%     stim.reward.texture.(R_left_nm),...
+%     [],...
+%     stim.reward.top_left.(R_left_nm));
+% Screen('DrawTexture', window,...
+%     stim.reward.texture.(R_right_nm),...
+%     [],...
+%     stim.reward.top_right.(R_right_nm));
+
+DrawFormattedText(window,[num2str(R_left),'Fr'],stim.reward.top_lefttxt.(R_left_nm)(1),stim.reward.top_lefttxt.(R_left_nm)(2),white);
+DrawFormattedText(window,[num2str(R_right),'Fr'],stim.reward.top_righttxt.(R_right_nm)(1),stim.reward.top_righttxt.(R_right_nm)(2),white);
+
+
+% if punishment trial, add also indication to know that money is to be lost
+if strcmp(R_or_P,'P')
+%COming soon
+
+
+end
+
 switch R_or_P
     case 'R'
+        % define coordinates
+        xStart_R_left_txt = xScreenCenter/2 - stim.textRectSize.xSizeWin/2;
+        xStart_R_right_txt = xScreenCenter*(3/2) - stim.textRectSize.xSizeWin/2;
+        yStart_R_txt = stim.reward.top_left.(R_left_nm)(2)-stim.textRectSize.ySizeWin/3;
+        % display
         DrawFormattedText(window,'Gagner',...
-            stim.winRewardText.top_left(1),...
-            stim.winRewardText.top_left(2),...
+            xStart_R_left_txt,...
+            yStart_R_txt,...
             white);
         DrawFormattedText(window,'Gagner',...
-            stim.winRewardText.top_right(1),...
-            stim.winRewardText.top_right(2),...
+            xStart_R_right_txt,...
+            yStart_R_txt,...
             white);
-        moneySign = '+';
-        moneyColour = stim.reward.text.colour;
     case 'P'
+        % define coordinates
+        xStart_P_left_txt = xScreenCenter/2 - stim.textRectSize.xSizeLose/2;
+        xStart_P_right_txt = xScreenCenter*(3/2) - stim.textRectSize.xSizeLose/2;
+        yStart_P_txt = stim.reward.top_left.(R_left_nm)(2)-stim.textRectSize.ySizeLose/3;
+        % display
         DrawFormattedText(window,'Perdre',...
-            stim.loseRewardText.top_left(1),...
-            stim.loseRewardText.top_left(2),...
+            xStart_P_left_txt,...
+            yStart_P_txt,...
             white);
         DrawFormattedText(window,'Perdre',...
-            stim.loseRewardText.top_right(1),...
-            stim.loseRewardText.top_right(2),...
+            xStart_P_right_txt,...
+            yStart_P_txt,...
             white);
-        moneySign = '-';
-        moneyColour = stim.punishment.text.colour;
 end
-% extract money corresponding to left and right option in the X.XX format
-moneyLeft = sprintf('%0.2f',R_left);
-moneyRight = sprintf('%0.2f',R_right);
-DrawFormattedText(window,...
-    [moneySign, moneyLeft,' CHF'],...
-    stim.reward.text.top_left_start(1),...
-    stim.reward.text.top_left_start(2),...
-    moneyColour);
-DrawFormattedText(window,...
-    [moneySign, moneyRight,' CHF'],...
-    stim.reward.text.top_right_start(1),...
-    stim.reward.text.top_right_start(2),...
-    moneyColour);
-
-% display corresponding effort text
+% define coordinates
+xStart_forE_left_txt = xScreenCenter/2 - stim.textRectSize.xSizeForEffort/2;
+xStart_forE_right_txt = xScreenCenter*(3/2) - stim.textRectSize.xSizeForEffort/2;
+yStart_forEffort_txt = stim.difficulty.below_left(2)-stim.textRectSize.ySizeForEffort/2;
+% display
 DrawFormattedText(window,'pour',...
-    stim.effort_introText.bottom_left(1),...
-    stim.effort_introText.bottom_left(2),...
+    xStart_forE_left_txt,...
+    yStart_forEffort_txt,...
     white);
 DrawFormattedText(window,'pour',...
-    stim.effort_introText.bottom_right(1),...
-    stim.effort_introText.bottom_right(2),...
+    xStart_forE_right_txt,...
+    yStart_forEffort_txt,...
     white);
 
 [~,onsetDispChoiceOptions] = Screen('Flip',window);
@@ -150,6 +186,7 @@ while choicePeriodOver == 0
             % record side of chosen option
             choice_trial = -1;
             choicePeriodOver = 1;
+            chosenReward(iTrial) = baselineReward;
             %% right option chosen
         elseif keycode(key.left) == 0 &&...
                 keycode(key.right) == 1
@@ -158,6 +195,7 @@ while choicePeriodOver == 0
             % record side of chosen option
             choice_trial = 1;
             choicePeriodOver = 1;
+            chosenReward(iTrial) = staircaseReward(iTrial);
         %% stop the task
         elseif keycode(key.escape) == 1
             choicePeriodOver = 1;
