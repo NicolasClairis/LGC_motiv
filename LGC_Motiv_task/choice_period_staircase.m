@@ -1,5 +1,5 @@
-function[choice_trial, onsetDispChoiceOptions, onsetChoice, stoptask] = choice_period(scr, stim, choice_opt,...
-    R_or_P, iTrial, t_choice, key)
+function[choice_trial, onsetDispChoiceOptions, onsetChoice, stoptask, chosenReward] = choice_period_staircase(scr, stim,...
+    R_or_P, iTrial, t_choice, key, baselineReward, staircaseReward, chosenReward)
 % [choice_trial, onsetDispChoiceOptions, onsetChoice] = choice_period(scr, stim, choice_opt,...
 %     R_or_P, iTrial, t_choice, key)
 % choice_period will display the choice options and then wait for the 
@@ -52,24 +52,24 @@ DrawFormattedText(window,'OU','center','center',white);
 
 %% extract difficulty & reward level for each side of the screen
 % effort level
-E_left_tmp = choice_opt.E.left(iTrial);
-E_right_tmp = choice_opt.E.right(iTrial);
+% E_left_tmp = choice_opt.E.left(iTrial);
+% E_right_tmp = choice_opt.E.right(iTrial);
 % extract reward level for each side of the screen
-R_left_tmp  = choice_opt.R.left(iTrial);
-R_right_tmp = choice_opt.R.right(iTrial);
+% R_left_tmp  = choice_opt.R.left(iTrial);
+% R_right_tmp = choice_opt.R.right(iTrial);
 
-% E_left_tmp  = 1;
-% E_right_tmp = 2;
-% % extract reward level for each side of the screen
-% R_left_tmp  = 1;
-% R_right_tmp = 3;
+E_left_tmp = 1;
+E_right_tmp = 3;
+% extract reward level for each side of the screen
+R_left  = baselineReward;
+R_right = staircaseReward(iTrial);
 
 %% display each difficulty level
 leftStartAngle = stim.difficulty.startAngle.(['level_',num2str(E_left_tmp)]);
 rightStartAngle = stim.difficulty.startAngle.(['level_',num2str(E_right_tmp)]);
 maxCircleAngle = stim.difficulty.arcEndAngle;
 Screen('FillArc', window,...
-    stim.difficulty. currLevelColor,...
+    stim.difficulty.currLevelColor,...
     stim.difficulty.below_left,...
     leftStartAngle,...
     maxCircleAngle - leftStartAngle); % left option difficulty
@@ -89,8 +89,10 @@ Screen('FrameOval', window, stim.difficulty.maxColor,...
 
 %% display each monetary incentive level
 % extract reward levels
-R_left_nm = ['reward_',num2str(R_left_tmp)];
-R_right_nm = ['reward_',num2str(R_right_tmp)];
+% R_left_nm = ['reward_',num2str(R_left_tmp)];
+% R_right_nm = ['reward_',num2str(R_right_tmp)];
+R_left_nm = ['reward_',num2str(1)];
+R_right_nm = ['reward_',num2str(1)];
 
 % display reward images
 % Screen('DrawTexture', window,...
@@ -102,41 +104,15 @@ R_right_nm = ['reward_',num2str(R_right_tmp)];
 %     [],...
 %     stim.reward.top_right.(R_right_nm));
 
-DrawFormattedText(window,[num2str(stim.reward.text.(R_left_nm)),'Fr'],stim.reward.top_lefttxt.(R_left_nm)(1),stim.reward.top_lefttxt.(R_left_nm)(2),white);
-DrawFormattedText(window,[num2str(stim.reward.text.(R_right_nm)),'Fr'],stim.reward.top_righttxt.(R_right_nm)(1),stim.reward.top_righttxt.(R_right_nm)(2),white);
+DrawFormattedText(window,[num2str(R_left),'Fr'],stim.reward.top_lefttxt.(R_left_nm)(1),stim.reward.top_lefttxt.(R_left_nm)(2),white);
+DrawFormattedText(window,[num2str(R_right),'Fr'],stim.reward.top_righttxt.(R_right_nm)(1),stim.reward.top_righttxt.(R_right_nm)(2),white);
 
 
 % if punishment trial, add also indication to know that money is to be lost
 if strcmp(R_or_P,'P')
-   %% 
-%    lineWidth = 10;
-%    % cross on left option
-%    Screen('DrawLine', window, black,...
-%        stim.reward.top_left.(R_left_nm)(1), stim.reward.top_left.(R_left_nm)(2),...
-%        stim.reward.top_left.(R_left_nm)(3), stim.reward.top_left.(R_left_nm)(4),...
-%        lineWidth);
-%    Screen('DrawLine', window, black,...
-%        stim.reward.top_left.(R_left_nm)(3), stim.reward.top_left.(R_left_nm)(2),...
-%        stim.reward.top_left.(R_left_nm)(1), stim.reward.top_left.(R_left_nm)(4),...
-%        lineWidth);
-%    
-%    % cross on right option
-%    Screen('DrawLine', window, black,...
-%        stim.reward.top_right.(R_right_nm)(1), stim.reward.top_right.(R_right_nm)(2),...
-%        stim.reward.top_right.(R_right_nm)(3), stim.reward.top_right.(R_right_nm)(4),...
-%        lineWidth);
-%    Screen('DrawLine', window, black,...
-%        stim.reward.top_right.(R_right_nm)(3), stim.reward.top_right.(R_right_nm)(2),...
-%        stim.reward.top_right.(R_right_nm)(1), stim.reward.top_right.(R_right_nm)(4),...
-%        lineWidth);
+%COming soon
 
-    %% add coloured circle on top of monetary incentives
-    % left option
-    Screen('FillOval', window, stim.punishment.colourOverlay,...
-        stim.punishment.circleOverlay.top_left.(R_left_nm));
-    % right option
-    Screen('FillOval', window, stim.punishment.colourOverlay,...
-        stim.punishment.circleOverlay.top_right.(R_right_nm));
+
 end
 
 switch R_or_P
@@ -210,6 +186,7 @@ while choicePeriodOver == 0
             % record side of chosen option
             choice_trial = -1;
             choicePeriodOver = 1;
+            chosenReward(iTrial) = baselineReward;
             %% right option chosen
         elseif keycode(key.left) == 0 &&...
                 keycode(key.right) == 1
@@ -218,6 +195,7 @@ while choicePeriodOver == 0
             % record side of chosen option
             choice_trial = 1;
             choicePeriodOver = 1;
+            chosenReward(iTrial) = staircaseReward(iTrial);
         %% stop the task
         elseif keycode(key.escape) == 1
             choicePeriodOver = 1;
