@@ -196,7 +196,7 @@ if strcmp(taskToPerform.mental.learning,'on')
             jLearningSession = jLearningSession + 1;
             learning_sess_nm = ['learning_session',num2str(jLearningSession)];
             % display instructions for the current learning type
-            [onsets.endLearningInstructions.(learning_sess_nm).(curr_learning_col).(curr_learning_instructions)] = mental_learning(scr,...
+            [onsets.endLearningInstructions.(learning_sess_nm).(curr_learning_col).(curr_learning_instructions)] = mental_learningInstructions(scr,...
                 curr_learning_col, curr_learning_instructions, mentalE_prm_learning_and_calib);
             
             % perform the learning
