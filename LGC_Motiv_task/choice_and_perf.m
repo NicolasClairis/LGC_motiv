@@ -137,10 +137,10 @@ for iTrial = 1:nTrials
     end
     
     %% extract monetary incentive, effort level and reward/punishment condition
-    R_left_tmp = choiceOptions.R_left(iTrial);
-    R_right_tmp = choiceOptions.R_left(iTrial);
-    E_left_tmp = choiceOptions.R_left(iTrial);
-    E_right_tmp = choiceOptions.R_left(iTrial);
+    R_left_tmp = choiceOptions.R.left(iTrial);
+    R_right_tmp = choiceOptions.R.right(iTrial);
+    E_left_tmp = choiceOptions.E.left(iTrial);
+    E_right_tmp = choiceOptions.E.right(iTrial);
     R_or_P_tmp = choiceOptions.R_or_P{iTrial};
     
     %% choice period
@@ -263,7 +263,8 @@ for iTrial = 1:nTrials
             % display money won/lost
             trialMoneyObtained = sprintf('%0.2f',R_chosen(iTrial));
             DrawFormattedText(window, [fbkSign, trialMoneyObtained,' CHF'],...
-                stim.reward.text.middle_center_start,...
+                stim.reward.text.middle_center_start(1),...
+                stim.reward.text.middle_center_start(2),...
                 fbkColour);
             
             [~,onsets.fbk(iTrial)] = Screen(window,'Flip');
@@ -313,7 +314,7 @@ for iTrial = 1:nTrials
                 barTimeWaitRect_bis(3) = barTimeWaitRect(1) + 1;
             end
             %
-            DrawFormattedText(window,'Temps restant','center',yScreenCenter*(1/2));
+            DrawFormattedText(window,'Temps restant','center',yScreenCenter*(1/2),white);
             % draw one global fixed rectangle showing the total duration
             Screen('FrameRect',window, black, barTimeWaitRect);
             
