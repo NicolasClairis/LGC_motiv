@@ -120,30 +120,30 @@ if strcmp(taskToPerform.mental.calib,'on') ||...
         strcmp(taskToPerform.mental.learning,'on') ||...
         strcmp(taskToPerform.mental.training,'on') ||...
         strcmp(taskToPerform.mental.task,'on')
-% define relevant keys and dynamometer module
-key_Em = relevant_key_definition('mental', IRM);
-% define number of pairs to solve for each level of difficulty
-n_to_reach = mental_N_answersPerLevel(n_E_levels);
-
-% calibration: calibrate the maximal duration required for the
-% top effort
-n_calibMax = n_to_reach.(['E_level_',num2str(n_E_levels)]);
-n_calibTrials_Em = 3;
-% pre and post-task calibration (lower number of trials)
-n_calibTrials_Em_bis = 3;
-
-% learning
-% perform 2 learning sessions, one with instructions and then one without
-% (left/right) vs (odd/even) and (lower/higher than 5) - mapping indicated the first time)
-% need to remind the mapping the second time
-learning_cols = {'col1','col2','all'};
-n_learningColours = length(learning_cols);
-learning_instructions = {'fullInstructions','noInstructions'}; %,'partialInstructions'
-n_learningInstructions = length(learning_instructions);
-% initial learning: careful to enter a pair number here
-n_maxLearning.learning_withInstructions = 8;
-n_maxLearning.learning_withoutInstructions = 8;
-warning('left few training trials for Arthur, but need to increase for actual subjects');
+    % define relevant keys and dynamometer module
+    key_Em = relevant_key_definition('mental', IRM);
+    % define number of pairs to solve for each level of difficulty
+    n_to_reach = mental_N_answersPerLevel(n_E_levels);
+    
+    % calibration: calibrate the maximal duration required for the
+    % top effort
+    n_calibMax = n_to_reach.(['E_level_',num2str(n_E_levels)]);
+    n_calibTrials_Em = 3;
+    % pre and post-task calibration (lower number of trials)
+    n_calibTrials_Em_bis = 3;
+    
+    % learning
+    % perform 2 learning sessions, one with instructions and then one without
+    % (left/right) vs (odd/even) and (lower/higher than 5) - mapping indicated the first time)
+    % need to remind the mapping the second time
+    learning_cols = {'col1','col2','all'};
+    n_learningColours = length(learning_cols);
+    learning_instructions = {'fullInstructions','noInstructions'}; %,'partialInstructions'
+    n_learningInstructions = length(learning_instructions);
+    % initial learning: careful to enter a pair number here
+    n_maxLearning.learning_withInstructions = 8;
+    n_maxLearning.learning_withoutInstructions = 8;
+    warning('left few training trials for Arthur, but need to increase for actual subjects');
 end
 
 %% physical preparation
@@ -217,7 +217,6 @@ if strcmp(taskToPerform.mental.learning,'on')
         end % learning instructions loop
     end % learning colour loop
     
-
 end
 
 %% calibration mental
