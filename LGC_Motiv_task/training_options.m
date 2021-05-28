@@ -23,23 +23,35 @@ function [trainingChoiceOptions, nTrainingTrials] = training_options(taskTrainin
 if n_R_levels == 3 && n_E_levels == 3
     switch taskTrainingCond
         case 'R'
-            trainingChoiceOptions.R.left    = [1 3 1 1 3 3];
-            trainingChoiceOptions.R.right   = [3 1 2 3 2 1];
-            trainingChoiceOptions.E.left    = [1 1 2 3 3 3];
-            trainingChoiceOptions.E.right   = [3 3 3 1 2 1];
+%             trainingChoiceOptions.R.left    = [1 3 1 1 3 3];
+%             trainingChoiceOptions.R.right   = [3 1 2 3 2 1];
+%             trainingChoiceOptions.E.left    = [1 1 2 3 3 3];
+%             trainingChoiceOptions.E.right   = [3 3 3 1 2 1];
+            trainingChoiceOptions.R.left    = [1 3 2];
+            trainingChoiceOptions.R.right   = [3 1 1];
+            trainingChoiceOptions.E.left    = [1 1 3];
+            trainingChoiceOptions.E.right   = [3 2 2];
         case 'P'
             % would be good to map reward and punishment so that there is
             % no discrepancy in the average reward and effort levels
             % between the two training sessions
-            trainingChoiceOptions.R.left    = [3 2 1 1 3 2];
-            trainingChoiceOptions.R.right   = [1 3 3 3 1 1];
-            trainingChoiceOptions.E.left    = [1 3 1 3 3 1];
-            trainingChoiceOptions.E.right   = [3 2 3 1 1 2];
+%             trainingChoiceOptions.R.left    = [3 2 1 1 3 2];
+%             trainingChoiceOptions.R.right   = [1 3 3 3 1 1];
+%             trainingChoiceOptions.E.left    = [1 3 1 3 3 1];
+%             trainingChoiceOptions.E.right   = [3 2 3 1 1 2];
+            trainingChoiceOptions.R.left    = [1 2 2];
+            trainingChoiceOptions.R.right   = [3 1 3];
+            trainingChoiceOptions.E.left    = [3 1 1];
+            trainingChoiceOptions.E.right   = [1 2 3];
         case 'RP'
-            trainingChoiceOptions.R.left    = [1 3 1 1 3 3 3 2 1 1 3 2];
-            trainingChoiceOptions.R.right   = [3 1 2 3 2 1 1 3 3 3 1 1];
-            trainingChoiceOptions.E.left    = [1 1 2 3 3 3 1 3 1 3 3 1];
-            trainingChoiceOptions.E.right   = [3 3 3 1 2 1 3 2 3 1 1 2];
+            %             trainingChoiceOptions.R.left    = [1 3 1 1 3 3 3 2 1 1 3 2];
+            %             trainingChoiceOptions.R.right   = [3 1 2 3 2 1 1 3 3 3 1 1];
+            %             trainingChoiceOptions.E.left    = [1 1 2 3 3 3 1 3 1 3 3 1];
+            %             trainingChoiceOptions.E.right   = [3 3 3 1 2 1 3 2 3 1 1 2];
+            trainingChoiceOptions.R.left    = [1 3 2 1 2 2];
+            trainingChoiceOptions.R.right   = [3 1 1 3 1 3];
+            trainingChoiceOptions.E.left    = [1 1 3 3 1 1];
+            trainingChoiceOptions.E.right   = [3 2 2 1 2 3];
     end
 else
     error(['Please determine a training sequence for when there are ',num2str(n_R_levels),' reward levels ',...
@@ -60,6 +72,8 @@ switch taskTrainingCond
         % use the same sequence for all participants
         if n_R_levels == 3 && n_E_levels == 3 && nTrainingTrials == 12
             rand_RP = [4 9 2 6 5 11 10 12 1 7 8 3];
+        elseif n_R_levels == 3 && n_E_levels == 3 && nTrainingTrials == 6
+            rand_RP = [2 3 4 5 1 6];
         else
             error(['Please define a pre-determined training sequence for reward and punishment for when ',num2str(n_R_levels),' reward levels ',...
         ' and ', num2str(n_E_levels),' effort levels and ',num2str(nTrainingTrials),' trials']);

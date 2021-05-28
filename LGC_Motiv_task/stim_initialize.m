@@ -32,8 +32,6 @@ difficultyArcColor = [255 210 0];
 Screen('BlendFunction', window, 'GL_SRC_ALPHA', 'GL_ONE_MINUS_SRC_ALPHA');
 
 %% Money variables
-
-
 % extract reward amount text size (for choice)
 [~,~,textSizeR] = DrawFormattedText(window,'+0.00 CHF', xScreenCenter, yScreenCenter, white);
 xSizeText = textSizeR(3) - textSizeR(1);
@@ -51,11 +49,6 @@ stim.reward.text.middle_center_start = [xScreenCenter - xSizeText/2, yScreenCent
 % (reward/punishment)
 stim.reward.text.colour = white;
 stim.punishment.text.colour = [239 138 98];
-
-% add grey screen on top to be sure that this does not actually appear on
-% the screen
-Screen('FillRect',window, grey, [0 0 xScreenCenter*2 yScreenCenter*2]);
-Screen(window,'Flip');
 
 %% difficulty rings
 difficultyRectlinearSize = yScreenCenter/2; % 214 in initial Arthur version
@@ -112,13 +105,10 @@ stim.winRewardText.top_center   = [xScreenCenter - xSizeWin/2,          stim.rew
 stim.loseRewardText.top_left    = [xScreenCenter/2 - xSizeLose/2,       stim.reward.text.top_left_start(2) - ySizeLose*2];
 stim.loseRewardText.top_right   = [xScreenCenter*(3/2) - xSizeLose/2,   stim.reward.text.top_right_start(2) - ySizeLose*2];
 stim.loseRewardText.top_center  = [xScreenCenter - xSizeLose/2,         stim.reward.text.top_center_start(2) - ySizeLose*2];
-stim.effort_introText.bottom_left   = [xScreenCenter/2 - xSizeForEffort/2,      stim.difficulty.below_left(2) - ySizeForEffort/2];
-stim.effort_introText.bottom_right  = [xScreenCenter*(3/2) - xSizeForEffort/2,  stim.difficulty.below_right(2)  - ySizeForEffort/2];
-stim.effort_introText.bottom_center = [xScreenCenter - xSizeForEffort/2,        stim.difficulty.below_center(2)  - ySizeForEffort/2];
-% add grey screen on top to be sure that this does not actually appear on
-% the screen
-Screen('FillRect',window, grey, [0 0 xScreenCenter*2 yScreenCenter*2]);
-Screen(window,'Flip');
+stim.effort_introText.bottom_left   = [xScreenCenter/2 - xSizeForEffort/2,      stim.difficulty.below_left(2) - ySizeForEffort];
+stim.effort_introText.bottom_right  = [xScreenCenter*(3/2) - xSizeForEffort/2,  stim.difficulty.below_right(2)  - ySizeForEffort];
+stim.effort_introText.bottom_center = [xScreenCenter - xSizeForEffort/2,        stim.difficulty.below_center(2)  - ySizeForEffort];
+
 
 %% color used to represent the signal
 % no use of monetary images anymore
@@ -127,16 +117,20 @@ stim.difficulty.currLevelColor  = difficultyArcColor;
 stim.difficulty.ovalWidth       = 3;
 
 %% square to display for the chosen option
+[~,~,textSizeChosenMsg] = DrawFormattedText(window,'Vous avez choisi',xScreenCenter,yScreenCenter,white);
+ySizeChosenMsg = textSizeChosenMsg(4) - textSizeChosenMsg(2);
+stim.chosenOption.message_yCoord = yScreenCenter*(3/8) - ySizeChosenMsg/2;
 stim.chosenOption.reward = stim.reward.text.top_center_start;
 stim.chosenOption.difficulty = stim.difficulty.below_center;
 stim.chosenOption.squareColour = black;
 stim.chosenOption.squareRect = [xScreenCenter*(2/3),...
-    yScreenCenter*(1/6),...
+    yScreenCenter*(3/8) + ySizeChosenMsg,...
     xScreenCenter*(4/3),...
     yScreenCenter*(11/6)];
 stim.chosenOption.squareWidth = 10;
 
 %% for the end of the performance period circle to signify end of the trial (win or loss)
+stim.feedback.message_yCoord = (3/8)*yScreenCenter;
 stim.endTrialcircle  = [0 0 difficultyRectlinearSize+(difficultyRectlinearSize/5) difficultyRectlinearSize+(difficultyRectlinearSize/5)];
 stim.end_trial.middle_center = CenterRectOnPointd(stim.endTrialcircle, xScreenCenter, yScreenCenter);
 
@@ -157,5 +151,10 @@ stim.cross.horizontalLine = [xScreenCenter - (cross_length/2),...
     yScreenCenter - (cross_thickness/2),...
     xScreenCenter + (cross_length/2),...
     yScreenCenter + (cross_thickness/2)];
+
+%% add grey screen on top to be sure that this does not actually appear on
+% the screen
+Screen('FillRect',window, grey, [0 0 xScreenCenter*2 yScreenCenter*2]);
+Screen(window,'Flip');
 
 end % function
