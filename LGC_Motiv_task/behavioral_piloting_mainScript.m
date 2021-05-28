@@ -95,7 +95,6 @@ n_trainingConditions = length(trainingConditions);
 n_sessions = 4; % 4 blocks in total (2 mental and 2 physical)
 t_endSession = 180;
 
-
 %% physical parameters
 if strcmp(taskToPerform.physical.calib,'on') ||...
         strcmp(taskToPerform.physical.learning,'on') ||...
@@ -104,15 +103,10 @@ if strcmp(taskToPerform.physical.calib,'on') ||...
     % define relevant keys and dynamometer module
     [key_Ep, dq] = relevant_key_definition('physical', IRM);
     % define conditions
-    n_MVC_repeat = 3;
-    n_learningForceRepeats = 3; % number of learning repetitions for each level of difficulty (= each level of force)
     F_threshold = 50; % force should be maintained above this threshold (expressed in % of MVC)
     F_tolerance = 2.5; % tolerance allowed around the threshold (expressed in % of MVC)
     % need to define timings for each level of force
     [Ep_time_levels] = physical_effortLevels(n_E_levels);
-    
-    % calibration
-    n_calibTrials_Ep = 3;
 end
 
 %% mental parameters
@@ -124,37 +118,19 @@ if strcmp(taskToPerform.mental.calib,'on') ||...
     key_Em = relevant_key_definition('mental', IRM);
     % define number of pairs to solve for each level of difficulty
     n_to_reach = mental_N_answersPerLevel(n_E_levels);
-    
-    % calibration: calibrate the maximal duration required for the
-    % top effort
-    n_calibMax = n_to_reach.(['E_level_',num2str(n_E_levels)]);
-    n_calibTrials_Em = 3;
-    % pre and post-task calibration (lower number of trials)
-    n_calibTrials_Em_bis = 3;
-    
-    % learning
-    % perform 2 learning sessions, one with instructions and then one without
-    % (left/right) vs (odd/even) and (lower/higher than 5) - mapping indicated the first time)
-    % need to remind the mapping the second time
-    learning_cols = {'col1','col2','all'};
-    n_learningColours = length(learning_cols);
-    learning_instructions = {'fullInstructions','noInstructions'}; %,'partialInstructions'
-    n_learningInstructions = length(learning_instructions);
-    % initial learning: careful to enter a pair number here
-    n_maxLearning.learning_withInstructions = 8;
-    n_maxLearning.learning_withoutInstructions = 8;
-    warning('left few training trials for Arthur, but need to increase for actual subjects');
 end
 
 %% physical preparation
 %% physical MVC
 if strcmp(taskToPerform.physical.calib,'on')
+    n_MVC_repeat = 3; % number of calibration trials
     [initial_MVC, onsets_initial_MVC] = physical_effort_MVC(scr, dq, n_MVC_repeat, calibTimes_Ep);
     MVC = nanmax(initial_MVC.MVC); % expressed in Voltage
 end
 
 % learning physical
 if strcmp(taskToPerform.physical.learning,'on')
+    n_learningForceRepeats = 3; % number of learning repetitions for each level of difficulty (= each level of force)
     [learningPerfSummary_Ep, learningOnsets_Ep] = physical_learning(scr, stim, dq, n_E_levels, Ep_time_levels,...
         F_threshold, F_tolerance, MVC,...
         n_learningForceRepeats, learningTimes_Ep);
@@ -190,6 +166,20 @@ end
 %% mental preparation
 %% learning mental
 if strcmp(taskToPerform.mental.learning,'on')
+    
+    
+    % learning parameters
+    % perform 2 learning sessions, one with instructions and then one without
+    % (left/right) vs (odd/even) and (lower/higher than 5) - mapping indicated the first time)
+    % need to remind the mapping the second time
+    learning_cols = {'col1','col2','all'};
+    n_learningColours = length(learning_cols);
+    learning_instructions = {'fullInstructions','noInstructions'}; %,'partialInstructions'
+    n_learningInstructions = length(learning_instructions);
+    % initial learning: careful to enter a pair number here
+    n_maxLearning.learning_withInstructions = 20;
+    n_maxLearning.learning_withoutInstructions = 20;
+    
     mentalE_prm_learning_and_calib = mental_effort_parameters(iSubject);
     mentalE_prm_learning_and_calib.startAngle = 0; % for learning always start at zero
     % no time limit for each trial: as long as needed until learning is
@@ -221,6 +211,14 @@ end
 
 %% calibration mental
 if strcmp(taskToPerform.mental.calib,'on')
+    % calibration parameters
+    % calibrate the maximal duration required for the
+    % top effort
+    n_calibMax = n_to_reach.(['E_level_',num2str(n_E_levels)]);
+    n_calibTrials_Em = 3;
+    % pre and post-task calibration (lower number of trials)
+    n_calibTrials_Em_bis = 3;
+    
     mentalE_prm_learning_and_calib = mental_effort_parameters(iSubject);
     mentalE_prm_learning_and_calib.startAngle = 0; % for learning always start at zero
     % extract numbers to use for each calibration trial
@@ -352,8 +350,18 @@ end
 
 %% save the data
 % global variables
+if strcmp(taskToPerform.physical.calib,'on') ||...
+        strcmp(taskToPerform.physical.learning,'on') ||...
+        strcmp(taskToPerform.physical.training,'on') ||...
+        strcmp(taskToPerform.physical.task,'on')
 all.physical.global.MVC = MVC;
+end
+if strcmp(taskToPerform.mental.calib,'on') ||...
+        strcmp(taskToPerform.mental.learning,'on') ||...
+        strcmp(taskToPerform.mental.training,'on') ||...
+        strcmp(taskToPerform.mental.task,'on')
 all.mental.global.t_min_calib = t_min_calib;
+end
 % learning performance
 if strcmp(taskToPerform.mental.learning,'on')
     all.physical.learning = learningPerfSummary_Ep;
