@@ -33,6 +33,7 @@ Screen('BlendFunction', window, 'GL_SRC_ALPHA', 'GL_ONE_MINUS_SRC_ALPHA');
 
 %% Money variables
 
+
 % extract reward amount text size (for choice)
 [~,~,textSizeR] = DrawFormattedText(window,'+0.00 CHF', xScreenCenter, yScreenCenter, white);
 xSizeText = textSizeR(3) - textSizeR(1);
