@@ -266,7 +266,9 @@ end
 %% actual task
 if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,'on')
     % for mental effort timing
-    taskTimes_Em.max_effort     = t_min_calib*taskTimes_Em.t_min_scalingFactor; % allow more time then min performance
+    if strcmp(taskToPerform.mental.task,'on')
+        taskTimes_Em.max_effort     = t_min_calib*taskTimes_Em.t_min_scalingFactor; % allow more time then min performance
+    end
     
     % instruction that main task will start soon
     DrawFormattedText(window,...
