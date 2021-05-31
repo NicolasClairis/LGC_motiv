@@ -56,9 +56,9 @@ taskToPerform.physical.calib = 'off';
 taskToPerform.physical.learning = 'off';
 taskToPerform.physical.training = 'off';
 taskToPerform.physical.task = 'off';
-taskToPerform.mental.learning = 'off';
-taskToPerform.mental.calib = 'on';
-taskToPerform.mental.training = 'on';
+taskToPerform.mental.learning = 'on';
+taskToPerform.mental.calib = 'off';
+taskToPerform.mental.training = 'off';
 taskToPerform.mental.task = 'off';
 % initialize screen
 [scr, xScreenCenter, yScreenCenter,...
@@ -89,11 +89,11 @@ end
 n_trainingConditions = length(trainingConditions);
 
 % load timings for each phase of the experiment
-[trainingTimes_Em, calibTimes_Em, learningTimes_Em, taskTimes_Em] = timings_definition(scr, trainingConditions, n_R_levels, n_E_levels, n_trialsPerSession, 'mental');
-[trainingTimes_Ep, calibTimes_Ep, learningTimes_Ep, taskTimes_Ep] = timings_definition(scr, trainingConditions, n_R_levels, n_E_levels, n_trialsPerSession, 'physical');
+[trainingTimes_Em, calibTimes_Em, learningTimes_Em, taskTimes_Em, mainTimes] = timings_definition(scr, trainingConditions, n_R_levels, n_E_levels, n_trialsPerSession, 'mental');
+[trainingTimes_Ep, calibTimes_Ep, learningTimes_Ep, taskTimes_Ep, ~] = timings_definition(scr, trainingConditions, n_R_levels, n_E_levels, n_trialsPerSession, 'physical');
+t_endSession = mainTimes.t_endSession;
 
 n_sessions = 4; % 4 blocks in total (2 mental and 2 physical)
-t_endSession = 180;
 
 %% physical parameters
 if strcmp(taskToPerform.physical.calib,'on') ||...
@@ -196,7 +196,7 @@ if strcmp(taskToPerform.mental.learning,'on')
             jLearningSession = jLearningSession + 1;
             learning_sess_nm = ['learning_session',num2str(jLearningSession)];
             % display instructions for the current learning type
-            [onsets.endLearningInstructions.(learning_sess_nm).(curr_learning_col).(curr_learning_instructions)] = mental_learning(scr,...
+            [onsets.endLearningInstructions.(learning_sess_nm).(curr_learning_col).(curr_learning_instructions)] = mental_learningInstructions(scr,...
                 curr_learning_col, curr_learning_instructions, mentalE_prm_learning_and_calib);
             
             % perform the learning
@@ -207,6 +207,41 @@ if strcmp(taskToPerform.mental.learning,'on')
         end % learning instructions loop
     end % learning colour loop
     
+    
+    %% extended learning of each difficulty level
+    mentalE_prm_extendedLearning = mentalE_prm_learning_and_calib;
+    n_repeatsPerEffortLevel = 30;
+    % define conditions for the extended learning
+    [learning_effortLevel, learning_effort_n_toReach] = deal(NaN(1,n_repeatsPerEffortLevel*n_E_levels));
+    for iE_level = 1:n_E_levels
+        learning_Em_idx_tmp = (1:n_repeatsPerEffortLevel) + n_repeatsPerEffortLevel*(iE_level - 1);
+        learning_effort_n_toReach(learning_Em_idx_tmp) = repmat(n_to_reach.(['E_level_',num2str(iE_level)]), 1, n_repeatsPerEffortLevel);
+        learning_effortLevel(learning_Em_idx_tmp) = repmat(iE_level, 1, n_repeatsPerEffortLevel);
+    end
+    n_extendedLearningTrials = length(learning_effort_n_toReach);
+    % randomize the order of the trials
+    rdmOrderExtendedLearning = randperm(n_extendedLearningTrials);
+    learning_effort_n_toReach = learning_effort_n_toReach(rdmOrderExtendedLearning);
+    learning_effortLevel = learning_effortLevel(rdmOrderExtendedLearning);
+    [numberVector_learning] = mental_numbers(n_extendedLearningTrials);
+    
+    % perform the training
+    warning('need to add instructions here');
+    for iExtendedLearningTrial = 1:n_extendedLearningTrials
+        % define start angle according to current difficulty level
+        mentalE_prm_extendedLearning.startAngle = stim.difficulty.startAngle.(['level_',num2str(learning_effortLevel(iExtendedLearningTrial))]);
+        [learningPerfSummary_Em.extendedLearning.(['trial_',num2str(iExtendedLearningTrial)])] = mental_effort_perf(scr, stim, key_Em,...
+            numberVector_learning(iExtendedLearningTrial,:),...
+            mentalE_prm_extendedLearning, learning_effort_n_toReach(iExtendedLearningTrial),...
+            'all', 'noInstructions', learning_time_limit);
+        
+        % small break between each answer
+        DrawFormattedText(window,'Bravo!','center',yScreenCenter/2,white);
+        DrawFormattedText(window,'Au suivant!','center','center',white);
+        [~,~,timeExtendedLearningFbk.(['trial_',num2str(iExtendedLearningTrial)])] = Screen(window,'Flip');
+        WaitSecs(learningTimes_Em.learning_rest);
+        disp([num2str(iExtendedLearningTrial),'/',num2str(n_extendedLearningTrials),' learning trial done']);
+    end % trial loop
 end
 
 %% calibration mental

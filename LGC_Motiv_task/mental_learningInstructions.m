@@ -1,6 +1,6 @@
-function[onset_Press] = mental_learning(scr, learning_col, learning_instructions, mentalE_prm)
-% [onset_Press] = mental_learning(scr, learning_col, learning_instructions, mentalE_prm)
-% mental_learning will display instructions before learning starts.
+function[onset_Press] = mental_learningInstructions(scr, learning_col, learning_instructions, mentalE_prm)
+% [onset_Press] = mental_learningInstructions(scr, learning_col, learning_instructions, mentalE_prm)
+% mental_learningInstructions will display instructions before learning starts.
 %
 % INPUTS
 % scr: structure with screen parameters
@@ -64,6 +64,12 @@ for iTimeLoop = 1:2
                 'devrez vous rappeler de la correspondance entre les couleurs et la ',...
                 'question à laquelle il faut répondre. Pour rappel:'],...
                 'center', yScreenCenter/3, blackCol, wrapat);
+        case 'extendedLearning'
+            DrawFormattedText(window,...
+                ['Vous allez à présent vous entraîner à nouveau sur les ',...
+                'différents niveaux de difficulté que vous rencontrerez dans la tâche. ',...
+                'Pour rappel:'],...
+                'center',yScreenCenter/3,blackCol, wrapat);
     end
     
     % odd/even info
