@@ -131,10 +131,10 @@ DrawFormattedText(window,'pour',...
 %% wait for choice to be made or time limit to be reached
 choicePeriodOver = 0;
 while choicePeriodOver == 0
+    choice_trial = 0; % by default no choice is being made
     %% check time if a time limit is set for the choice
     if timeParameter.timeLimit == true
         timeNow = GetSecs;
-        choice_trial = 0; % by default no choice is being made
         if timeNow > (onsetDispChoiceOptions + timeParameter.t_choice)
             % finish the trial
             choicePeriodOver = 1;
