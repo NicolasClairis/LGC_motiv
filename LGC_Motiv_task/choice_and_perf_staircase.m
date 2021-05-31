@@ -58,10 +58,18 @@ yScreenCenter = scr.yCenter;
 xScreenCenter = scr.xCenter;
 barTimeWaitRect = stim.barTimeWaitRect;
 
-% timings
-t_max_effort    = timings.max_effort;
 t_cross         = timings.cross.(training_R_P_RP_or_mainTask);
-t_choice        = timings.choice;
+% precise if the choice and the performance periods will have a time
+% constraint
+choiceTimeParameters.timeLimit = false;
+timeLimitPerf = true; % time limit to reach level of force required
+% if there is a time limit for the choices (and/or the performance), extract the time limit you
+% should use
+if timeLimitPerf == true 
+    t_max_effort    = timings.max_effort;
+else
+    t_max_effort = [];
+end
 t_dispChoice    = timings.dispChoice;
 t_fbk           = timings.feedback;
 
@@ -115,8 +123,6 @@ switch effort_type
         n_max_to_reach_perTrial = NaN(1,nTrials);
 end
 
-time_limit = true; % time limit to reach level of force required
-
 %% define monetary incentive, effort level and reward/punishment condition
 
 if strcmp('R',R_or_P)
@@ -159,7 +165,7 @@ for iTrial = 1:nTrials
                 onsets.choice(iTrial),...
                 stoptask] = choice_period(scr, stim,...
                 R_left, R_right_tmp, E_left, E_right, R_or_P,...
-                t_choice, key);
+                choiceTimeParameters, key);
         end % keep performing the trial until a choice is made
     else % for actual task, if they don't answer in time, consider the trial as a failure
         [choice(iTrial),...
@@ -167,7 +173,7 @@ for iTrial = 1:nTrials
             onsets.choice(iTrial),...
             stoptask] = choice_period(scr, stim,...
             R_left, R_right_tmp, E_left, E_right, R_or_P,...
-            t_choice, key);
+            choiceTimeParameters, key);
     end
     
     
@@ -273,7 +279,7 @@ for iTrial = 1:nTrials
                     E_chosen(iTrial),...
                     Ep_time_levels,...
                     F_threshold, F_tolerance,...
-                    time_limit, timings);
+                    timeLimitPerf, timings);
             case 'mental'
                 mentalE_prm.startAngle = stim.difficulty.startAngle.(['level_',num2str(E_chosen(iTrial))]); % adapt start angle to current level of difficulty
                 n_max_to_reach_perTrial(iTrial) = n_to_reach.(['E_level_',num2str(E_chosen(iTrial))]);
@@ -282,7 +288,7 @@ for iTrial = 1:nTrials
                     onsets.effortPeriod{iTrial}] = mental_effort_perf(scr, stim, key,...
                     mental_nbers_per_trial(iTrial,:),...
                     mentalE_prm, n_max_to_reach_perTrial(iTrial),...
-                    'all', 'noInstructions', time_limit, t_max_effort);
+                    'all', 'noInstructions', timeLimitPerf, t_max_effort);
         end % effort type loop
         effortTime(iTrial) = toc;
     end % choice made or not?
