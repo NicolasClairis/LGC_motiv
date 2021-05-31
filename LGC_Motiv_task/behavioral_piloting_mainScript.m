@@ -234,12 +234,12 @@ if strcmp(taskToPerform.mental.learning,'on')
             numberVector_learning(iExtendedLearningTrial,:),...
             mentalE_prm_extendedLearning, learning_effort_n_toReach(iExtendedLearningTrial),...
             'all', 'noInstructions', learning_time_limit);
+        
         % small break between each answer
         DrawFormattedText(window,'Bravo!','center',yScreenCenter/2,white);
         DrawFormattedText(window,'Au suivant!','center','center',white);
         [~,~,timeExtendedLearningFbk.(['trial_',num2str(iExtendedLearningTrial)])] = Screen(window,'Flip');
-        WaitSecs(1);
-        warning('define time to wait in timings_definition.m please');
+        WaitSecs(learningTimes_Em.learning_rest);
         disp([num2str(iExtendedLearningTrial),'/',num2str(n_extendedLearningTrials),' learning trial done']);
     end % trial loop
 end
