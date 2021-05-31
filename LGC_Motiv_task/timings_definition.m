@@ -1,5 +1,5 @@
-function[trainingTimes, calibTimes, learningTimes, taskTimes] = timings_definition(scr, trainingConditions, n_R_levels, n_E_levels, nTrials, effort_type)
-%[trainingTimes, calibTimes, learningTimes, taskTimes] = timings_definition(scr, n_trainingTrials, taskTrainingConditions, n_R_levels, n_E_levels, nTrials, effort_type)
+function[trainingTimes, calibTimes, learningTimes, taskTimes, mainTimes] = timings_definition(trainingConditions, n_R_levels, n_E_levels, nTrials, effort_type)
+%[trainingTimes, calibTimes, learningTimes, taskTimes, mainTimes] = timings_definition(scr, n_trainingTrials, taskTrainingConditions, n_R_levels, n_E_levels, nTrials, effort_type)
 % timings_definition defines the time duration for each period of the
 % experiment.
 % All timings are expressed in seconds.
@@ -29,6 +29,7 @@ function[trainingTimes, calibTimes, learningTimes, taskTimes] = timings_definiti
 %
 % taskTimes: structure with main task timings
 %
+% mainTimes: structure with times useful for both tasks
 
 %% manual calibration values
 if strcmp(effort_type, 'physical')
@@ -128,5 +129,8 @@ end
 trainingTimes.choice        = t_choice;
 trainingTimes.dispChoice    = t_dispChoice;
 trainingTimes.feedback      = t_fbk;
+
+%% time feedback end of a block
+mainTimes.endSession = 180;
 
 end % function
