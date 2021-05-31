@@ -91,7 +91,7 @@ n_trainingConditions = length(trainingConditions);
 % load timings for each phase of the experiment
 [trainingTimes_Em, calibTimes_Em, learningTimes_Em, taskTimes_Em, mainTimes] = timings_definition(trainingConditions, n_R_levels, n_E_levels, n_trialsPerSession, 'mental');
 [trainingTimes_Ep, calibTimes_Ep, learningTimes_Ep, taskTimes_Ep, ~] = timings_definition(trainingConditions, n_R_levels, n_E_levels, n_trialsPerSession, 'physical');
-t_endSession = mainTimes.t_endSession;
+t_endSession = mainTimes.endSession;
 
 n_sessions = 4; % 4 blocks in total (2 mental and 2 physical)
 

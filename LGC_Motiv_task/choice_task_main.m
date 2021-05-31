@@ -213,7 +213,8 @@ end
 n_trainingConditions = length(trainingConditions);
 
 %% load timings for each phase of the experiment
-[trainingTimes, calibTimes, learningTimes, taskTimes] = timings_definition(scr, trainingConditions, n_R_levels, n_E_levels, nTrials, effort_type);
+[trainingTimes, calibTimes, learningTimes, taskTimes, mainTimes] = timings_definition(trainingConditions, n_R_levels, n_E_levels, nTrials, effort_type);
+t_endSession = mainTimes.endSession;
 
 %% learning (for mental effort)
 % for physical effort, you need to perform the MVC calibration before the
@@ -415,7 +416,9 @@ if IRM == 1 % || IRM == 0 %for piloting
     DrawFormattedText(window,...
         ['Félicitations! Cette session est maintenant terminée.',...
         'Vous avez obtenu: ',num2str(perfSummary.totalGain(nTrials)),' chf au cours de cette session.']);
-    
+    [~,onsets.endSessionFbk] = Screen(window,'Flip');
+    WaitSecs(t_endSession);
+        
     % indicate to the experimenter when to stop the fMRI acquisition
     disp('You can stop the fMRI acquisition now. When and only when it is done, please press space.');
     [~, ~, keyCode] = KbCheck();
