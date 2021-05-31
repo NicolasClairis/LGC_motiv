@@ -1,6 +1,6 @@
 function[summary] = choice_and_perf_staircase(scr, stim, key,...
-    effort_type, Ep_or_Em_vars, R_money,...
-    training_R_P_RP_or_mainTask, nTrials, choiceOptions, timings,...
+    effort_type, Ep_or_Em_vars,...
+    training_R_P_RP_or_mainTask,R_or_P,E_right,E_left, nTrials, timings,...
     results_folder, file_nm)
 % [summary] = choice_and_perf(scr, stim, key,...
 %     effort_type, Ep_or_Em_vars, R_money,...
@@ -45,7 +45,7 @@ function[summary] = choice_and_perf_staircase(scr, stim, key,...
 % results_folder: path where data needs to be saved
 %
 % file_nm: file name for results
-% 
+%
 % OUTPUTS
 % summary: structure with most relevant variables extracted during
 % the performance
@@ -58,20 +58,20 @@ yScreenCenter = scr.yCenter;
 xScreenCenter = scr.xCenter;
 barTimeWaitRect = stim.barTimeWaitRect;
 
-% timings
-t_max_effort    = timings.max_effort;
 t_cross         = timings.cross.(training_R_P_RP_or_mainTask);
-t_choice        = timings.choice;
+% precise if the choice and the performance periods will have a time
+% constraint
+choiceTimeParameters.timeLimit = false;
+timeLimitPerf = true; % time limit to reach level of force required
+% if there is a time limit for the choices (and/or the performance), extract the time limit you
+% should use
+if timeLimitPerf == true 
+    t_max_effort    = timings.max_effort;
+else
+    t_max_effort = [];
+end
 t_dispChoice    = timings.dispChoice;
 t_fbk           = timings.feedback;
-
-% Number of trials per staircase procedure
-nTrials = 5;
-baselineReward = 1.5;
-staircaseReward = deal(NaN(1,nTrials+1));
-staircaseReward(1) = 3.5;
-chosenReward = deal(NaN(1,nTrials));
-
 
 % specific variables
 switch effort_type
@@ -102,6 +102,7 @@ end
 
 %% launch main task
 choice = zeros(1,nTrials);
+
 [R_chosen, E_chosen,...
     effortTime,...
     trial_was_successfull,...
@@ -117,12 +118,22 @@ switch effort_type
         
         % randomize the type of the first trial (odd/even or higher/lower
         % than 5)
-%         mental_taskType_trialStart = mental_task_start(nTrials);
+        %         mental_taskType_trialStart = mental_task_start(nTrials);
         % number of good answers to reach at each trial
         n_max_to_reach_perTrial = NaN(1,nTrials);
 end
 
-time_limit = true; % time limit to reach level of force required
+%% define monetary incentive, effort level and reward/punishment condition
+
+if strcmp('R',R_or_P)
+    R_left = 1.5;
+    R_right_tmp = 2.5;
+elseif strcmp('P',R_or_P)
+    R_left = 1.5;
+    R_right_tmp = 0.5;
+end
+R_right_baseline = R_right_tmp;
+
 for iTrial = 1:nTrials
     
     %% fixation cross period
@@ -144,41 +155,90 @@ for iTrial = 1:nTrials
         WaitSecs(t_cross(iTrial));
     end
     
-    %% extract reward of punishment trial condition
-    R_or_P_tmp = choiceOptions.R_or_P{iTrial};
     
     %% choice period
     if ~strcmp(training_R_P_RP_or_mainTask,'mainTask')
         % for training: keep choice period until a choice is done
         while choice(iTrial) == 0
-%             [choice(iTrial),...
-%                 onsets.dispChoiceOptions(iTrial),...
-%                 onsets.choice(iTrial),...
-%                 stoptask] = choice_period(scr, stim,...
-%                 choiceOptions, R_or_P_tmp, iTrial, t_choice, key);
             [choice(iTrial),...
-             onset.DispChoiceOptions(iTrial),...
-             onset.Choice(iTrial),...
-             stoptask,...
-             chosenReward] = choice_period_staircase(scr, stim,...
-             R_or_P_tmp, iTrial, t_choice, key, baselineReward, staircaseReward, chosenReward);
-            
-            %     adapt the next staircaseReward proposed         
-            if chosenReward(iTrial) == baselineReward
-                staircaseReward(iTrial+1) = staircaseReward(iTrial) + (staircaseReward(iTrial)- baselineReward)/2;
-            elseif chosenReward(iTrial) == staircaseReward(iTrial)
-                staircaseReward(iTrial+1) = staircaseReward(iTrial) - (staircaseReward(iTrial)- baselineReward)/2;
-            else
-                error(['Something went wrong in the staircase procedure choice ']);
-            end
-            
+                onsets.dispChoiceOptions(iTrial),...
+                onsets.choice(iTrial),...
+                stoptask] = choice_period(scr, stim,...
+                R_left, R_right_tmp, E_left, E_right, R_or_P,...
+                choiceTimeParameters, key);
         end % keep performing the trial until a choice is made
     else % for actual task, if they don't answer in time, consider the trial as a failure
         [choice(iTrial),...
             onsets.dispChoiceOptions(iTrial),...
             onsets.choice(iTrial),...
             stoptask] = choice_period(scr, stim,...
-            choiceOptions, R_or_P_tmp, iTrial, t_choice, key);
+            R_left, R_right_tmp, E_left, E_right, R_or_P,...
+            choiceTimeParameters, key);
+    end
+    
+    
+    
+    
+    % extract choice made
+    switch choice(iTrial)
+        case -1 % choice = left option
+            R_chosen(iTrial) = R_left;
+            E_chosen(iTrial) = E_left;
+        case 1 % choice = right option
+            R_chosen(iTrial) = R_right_tmp;
+            E_chosen(iTrial) = E_right;
+        case 0 % no option was selected
+            R_chosen(iTrial) = 0;
+            E_chosen(iTrial) = 0;
+    end
+    
+    switch R_or_P
+        % If it is a reward trial, iterate in a direction
+        case 'R'
+            % case they are trying to win more money by going for the low option a few times
+            if choice(iTrial) == -1 && R_right_baseline <= R_right_tmp
+                % do nothing to prevent second ifcondition from running
+                R_right_tmp = R_right_baseline;
+            elseif choice(iTrial) == -1
+                R_right_tmp = R_right_tmp + (R_right_tmp - R_left)/2;
+            elseif choice(iTrial) == 1
+                R_right_tmp = R_right_tmp - (R_right_tmp - R_left)/2;
+            elseif choice(iTrial) == 0
+                % if no choice was made, redo the trial
+                R_right_tmp = R_right_tmp;
+            else
+                error('Il y a un bug dans la partie choix');
+            end
+            % In case the new value is higher than baseline, put it back
+            if R_right_baseline <= R_right_tmp
+                R_right_tmp = R_right_baseline;
+            end
+            % if it is a punishment trial, iterate in the other direction
+        case 'P'
+            % case we are trying to diverge from the beginning and the loss would become close to 0
+            if choice(iTrial) == -1 && R_right_baseline >= R_right_tmp
+                % do nothing to prevent second ifcondition from running
+                R_right_tmp = R_right_baseline;
+            elseif choice(iTrial) == -1
+                R_right_tmp = R_right_tmp - (R_left - R_right_tmp)/2;
+            elseif choice(iTrial) == 1
+                R_right_tmp = R_right_tmp + (R_left - R_right_tmp)/2;
+            elseif choice(iTrial) == 0
+                % if no choice was made, redo the trial
+                R_right_tmp = R_right_tmp;
+            else
+                error('Il y a un bug dans la partie choix');
+            end
+            
+            % In case the new value is higher than baseline, put it back
+            if R_right_baseline >= R_right_tmp
+                R_right_tmp = R_right_baseline;
+            end
+    end
+    
+    % save the Indifference point, considered as the last choice to the right
+    if iTrial == 5
+        IP = R_right_tmp;
     end
     
     %% check if escape was pressed => stop everything if so
@@ -189,11 +249,7 @@ for iTrial = 1:nTrials
     end
     
     %% chosen option display period
-    [time_dispChoice,...
-        R_chosen(iTrial),...
-        E_chosen(iTrial)] = choice_task_dispChosen(scr, stim, choiceOptions,...
-        choice(iTrial), R_or_P_tmp,...
-        iTrial);
+    [time_dispChoice] = choice_task_dispChosen(scr, stim, R_chosen(iTrial), E_chosen(iTrial), R_or_P);
     onsets.dispChoice(iTrial) = time_dispChoice;
     WaitSecs(t_dispChoice);
     
@@ -223,7 +279,7 @@ for iTrial = 1:nTrials
                     E_chosen(iTrial),...
                     Ep_time_levels,...
                     F_threshold, F_tolerance,...
-                    time_limit, timings);
+                    timeLimitPerf, timings);
             case 'mental'
                 mentalE_prm.startAngle = stim.difficulty.startAngle.(['level_',num2str(E_chosen(iTrial))]); % adapt start angle to current level of difficulty
                 n_max_to_reach_perTrial(iTrial) = n_to_reach.(['E_level_',num2str(E_chosen(iTrial))]);
@@ -232,7 +288,7 @@ for iTrial = 1:nTrials
                     onsets.effortPeriod{iTrial}] = mental_effort_perf(scr, stim, key,...
                     mental_nbers_per_trial(iTrial,:),...
                     mentalE_prm, n_max_to_reach_perTrial(iTrial),...
-                    'all', 'noInstructions', time_limit, t_max_effort);
+                    'all', 'noInstructions', timeLimitPerf, t_max_effort);
         end % effort type loop
         effortTime(iTrial) = toc;
     end % choice made or not?
@@ -250,39 +306,33 @@ for iTrial = 1:nTrials
             [~,onsets.fbk_fail(iTrial)] = Screen(window,'Flip');
             
             % record loss for the current trial
-            gain(iTrial) = -R_money.trialFail;
+            gain(iTrial) = -5;
             
         case 1 % trial is a success
             % display feedback
-            switch R_or_P_tmp
+            switch R_or_P
                 case 'R'
                     DrawFormattedText(window,'Vous avez obtenu',...
                         'center', (1/5)*yScreenCenter,...
                         white);
+                    fbkSign = '+';
+                    fbkColour = stim.reward.text.colour;
                 case 'P'
                     DrawFormattedText(window,'Vous avez perdu',...
                         'center', (1/5)*yScreenCenter,...
                         white);
+                    fbkSign = '-';
+                    fbkColour = stim.punishment.text.colour;
             end
-            
-            % display monetary incentive
-            R_chosen_tmp = ['reward_',num2str(R_chosen(iTrial))];
-%             Screen('DrawTexture', window,...
-%                 stim.reward.texture.(R_chosen_tmp),...
-%                 [],...
-%                 stim.chosenOption.reward.(R_chosen_tmp));
-            DrawFormattedText(window,[num2str(chosenReward(iTrial)),'Fr'],stim.reward.top_centertxt.(R_chosen_tmp)(1),stim.reward.top_centertxt.(R_chosen_tmp)(2),white);
-
-            
-            % punishments: add negative  overlay on top of the monetary
-            % incentive
-            if strcmp(R_or_P_tmp,'P')
-                Screen('FillOval', window, stim.punishment.colourOverlay,...
-                    stim.punishment.circleOverlay.top_center.(R_chosen_tmp));
-            end
+            % display money won/lost
+            trialMoneyObtained = sprintf('%0.2f',R_chosen(iTrial));
+            DrawFormattedText(window, [fbkSign, trialMoneyObtained,' CHF'],...
+                stim.reward.text.middle_center_start(1),...
+                stim.reward.text.middle_center_start(2),...
+                fbkColour);
             
             [~,onsets.fbk(iTrial)] = Screen(window,'Flip');
-            switch R_or_P_tmp
+            switch R_or_P
                 case 'R'
                     onsets.fbk_win(iTrial) = onsets.fbk(iTrial);
                 case 'P'
@@ -290,11 +340,11 @@ for iTrial = 1:nTrials
             end
             
             % record loss for the current trial
-            switch R_or_P_tmp
+            switch R_or_P
                 case 'R'
-                    gain(iTrial) = R_money.(['R_',num2str(R_chosen(iTrial))]);
+                    gain(iTrial) = R_chosen(iTrial);
                 case 'P'
-                    gain(iTrial) = (-1)*R_money.(['R_',num2str(R_chosen(iTrial))]);
+                    gain(iTrial) = (-1)*R_chosen(iTrial);
             end
         otherwise
             error(['weird behavior with trial_was_successfull variable. ',...
@@ -324,14 +374,11 @@ for iTrial = 1:nTrials
             if percTimeAchieved > 0 && percTimeAchieved < 1
                 barTimeWaitRect_bis(3) = barTimeWaitRect(3) - percTimeAchieved*(barTimeWaitRect(3) - barTimeWaitRect(1));
             elseif percTimeAchieved > 1
-                error('you should get out of the loop when the time spent is too long');
-            end
-            if barTimeWaitRect_bis(3) < barTimeWaitRect(1)
-                %                 barTimeWaitRect_bis(3) = barTimeWaitRect(1) +1;
-                error('this should never happen in principle. Please revise the code');
+                warning('you should get out of the loop when the time spent is too long but it seems there was a bug, display of timebar was locked to zero to compensate');
+                barTimeWaitRect_bis(3) = barTimeWaitRect(1) + 1;
             end
             %
-            DrawFormattedText(window,'Temps restant','center',yScreenCenter*(1/2));
+            DrawFormattedText(window,'Temps restant','center',yScreenCenter*(1/2),white);
             % draw one global fixed rectangle showing the total duration
             Screen('FrameRect',window, black, barTimeWaitRect);
             
@@ -348,10 +395,11 @@ for iTrial = 1:nTrials
 end % trial loop
 
 %% extract relevant training data
+summary.IP = IP;
 summary.onsets = onsets;
-summary.choiceOptions = choiceOptions;
 summary.R_chosen = R_chosen;
 summary.E_chosen = E_chosen;
+summary.optionChosen = choice;
 summary.perfSummary = perfSummary;
 summary.gain = gain;
 summary.totalGain = totalGain;
