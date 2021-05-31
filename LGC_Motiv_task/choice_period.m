@@ -1,9 +1,9 @@
 function[choice_trial, onsetDispChoiceOptions, onsetChoice, stoptask] = choice_period(scr, stim,...
     R_left, R_right, E_left, E_right, R_or_P,...
-    t_choice, key)
+    timeParameter, key)
 % [choice_trial, onsetDispChoiceOptions, onsetChoice] = choice_period(scr, stim, choice_opt,...
 %     R_left, R_right, E_left, E_right, R_or_P, R_amounts,...
-%     t_choice, key)
+%     timeParameter, key)
 % choice_period will display the choice options and then wait for the 
 % choice to be made (or the time limit to be reached. Provides timings and 
 % choice made in output.
@@ -21,7 +21,10 @@ function[choice_trial, onsetDispChoiceOptions, onsetChoice, stoptask] = choice_p
 % 'R': reward trial
 % 'P': punishment trial
 %
-% t_choice: maximal time to wait for choice
+% timeParameter: structure with timing information
+%   .timeLimit: (false) no time limit; (true) time limit for the choice
+%   period
+%   .t_choice: maximal time to wait for choice
 %
 % key: code for left/right keys
 %
@@ -128,13 +131,15 @@ DrawFormattedText(window,'pour',...
 %% wait for choice to be made or time limit to be reached
 choicePeriodOver = 0;
 while choicePeriodOver == 0
-    %% check time
-    timeNow = GetSecs;
-    choice_trial = 0; % by default no choice is being made
-    if timeNow > (onsetDispChoiceOptions + t_choice)
-        % finish the trial
-        choicePeriodOver = 1;
-        onsetChoice = NaN;
+    %% check time if a time limit is set for the choice
+    if timeParameter.timeLimit == true
+        timeNow = GetSecs;
+        choice_trial = 0; % by default no choice is being made
+        if timeNow > (onsetDispChoiceOptions + timeParameter.t_choice)
+            % finish the trial
+            choicePeriodOver = 1;
+            onsetChoice = NaN;
+        end
     end
     
     %% check key press

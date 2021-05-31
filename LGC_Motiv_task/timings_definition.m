@@ -53,13 +53,13 @@ calibTimes.fbk = 2;
 %% learning timings
 switch effort_type % in case you use different numbers for each effort type
     case 'mental'
-        learningTimes = [];
+        learningTimes.learning_rest = 1.5;
     case 'physical'
         learningTimes.ifi = t_ifi;
         learningTimes.max_effort = [];
         learningTimes.physicalReadWait = t_readWait;
         learningTimes.learning_rest = 1;
-        warning('for real subjects update time, now short for Arthur');
+        warning('for real subjects update resting time, now short for Arthur');
 end
 
 %% main task timings
