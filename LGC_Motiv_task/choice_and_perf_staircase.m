@@ -45,7 +45,7 @@ function[summary] = choice_and_perf_staircase(scr, stim, key,...
 % results_folder: path where data needs to be saved
 %
 % file_nm: file name for results
-% 
+%
 % OUTPUTS
 % summary: structure with most relevant variables extracted during
 % the performance
@@ -110,15 +110,15 @@ switch effort_type
         
         % randomize the type of the first trial (odd/even or higher/lower
         % than 5)
-%         mental_taskType_trialStart = mental_task_start(nTrials);
+        %         mental_taskType_trialStart = mental_task_start(nTrials);
         % number of good answers to reach at each trial
         n_max_to_reach_perTrial = NaN(1,nTrials);
 end
 
 time_limit = true; % time limit to reach level of force required
 
-    %% define monetary incentive, effort level and reward/punishment condition
-    
+%% define monetary incentive, effort level and reward/punishment condition
+
 if strcmp('R',R_or_P)
     R_left = 1.5;
     R_right_tmp = 2.5;
@@ -149,7 +149,7 @@ for iTrial = 1:nTrials
         WaitSecs(t_cross(iTrial));
     end
     
-
+    
     %% choice period
     if ~strcmp(training_R_P_RP_or_mainTask,'mainTask')
         % for training: keep choice period until a choice is done
@@ -168,11 +168,11 @@ for iTrial = 1:nTrials
             stoptask] = choice_period(scr, stim,...
             R_left, R_right_tmp, E_left, E_right, R_or_P,...
             t_choice, key);
-    end   
-      
-      
+    end
     
-
+    
+    
+    
     % extract choice made
     switch choice(iTrial)
         case -1 % choice = left option
@@ -189,38 +189,52 @@ for iTrial = 1:nTrials
     switch R_or_P
         % If it is a reward trial, iterate in a direction
         case 'R'
-        % case they are trying to win more money by going for the low option a few times
-        if choice(iTrial) == -1 && R_right_baseline <= R_right_tmp
-            % do nothing to prevent second ifcondition from running
-            R_right_tmp = R_right_baseline;
-        elseif choice(iTrial) == -1
-            R_right_tmp = R_right_tmp + (R_right_tmp - R_left)/2;
-        elseif choice(iTrial) == 1
-            R_right_tmp = R_right_tmp - (R_right_tmp - R_left)/2;
-        else
-            error('La personne ne nous a pas fait un choix');
-        end
-        
-    % if it is a punishment trial, iterate in the other direction 
+            % case they are trying to win more money by going for the low option a few times
+            if choice(iTrial) == -1 && R_right_baseline <= R_right_tmp
+                % do nothing to prevent second ifcondition from running
+                R_right_tmp = R_right_baseline;
+            elseif choice(iTrial) == -1
+                R_right_tmp = R_right_tmp + (R_right_tmp - R_left)/2;
+            elseif choice(iTrial) == 1
+                R_right_tmp = R_right_tmp - (R_right_tmp - R_left)/2;
+            elseif choice(iTrial) == 0
+                % if no choice was made, redo the trial
+                R_right_tmp = R_right_tmp;
+            else
+                error('Il y a un bug dans la partie choix');
+            end
+            % In case the new value is higher than baseline, put it back
+            if R_right_baseline <= R_right_tmp
+                R_right_tmp = R_right_baseline;
+            end
+            % if it is a punishment trial, iterate in the other direction
         case 'P'
-        % case we are trying to diverge from the beginning and the loss would become close to 0
-        if choice(iTrial) == -1 && R_right_baseline >= R_right_tmp
-            % do nothing to prevent second ifcondition from running
-            R_right_tmp = R_right_baseline;
-        elseif choice(iTrial) == -1
-            R_right_tmp = R_right_tmp - (R_left - R_right_tmp)/2;
-        elseif choice(iTrial) == 1
-            R_right_tmp = R_right_tmp + (R_left - R_right_tmp)/2;
-        else
-            error('La personne ne nous a pas fait un choix');
-        end
+            % case we are trying to diverge from the beginning and the loss would become close to 0
+            if choice(iTrial) == -1 && R_right_baseline >= R_right_tmp
+                % do nothing to prevent second ifcondition from running
+                R_right_tmp = R_right_baseline;
+            elseif choice(iTrial) == -1
+                R_right_tmp = R_right_tmp - (R_left - R_right_tmp)/2;
+            elseif choice(iTrial) == 1
+                R_right_tmp = R_right_tmp + (R_left - R_right_tmp)/2;
+            elseif choice(iTrial) == 0
+                % if no choice was made, redo the trial
+                R_right_tmp = R_right_tmp;
+            else
+                error('Il y a un bug dans la partie choix');
+            end
+            
+            % In case the new value is higher than baseline, put it back
+            if R_right_baseline >= R_right_tmp
+                R_right_tmp = R_right_baseline;
+            end
     end
     
     % save the Indifference point, considered as the last choice to the right
     if iTrial == 5
         IP = R_right_tmp;
     end
-        
+    
     %% check if escape was pressed => stop everything if so
     if stoptask == 1
         % save all the data in case you still want to analyze it
@@ -379,6 +393,7 @@ summary.IP = IP;
 summary.onsets = onsets;
 summary.R_chosen = R_chosen;
 summary.E_chosen = E_chosen;
+summary.optionChosen = choice;
 summary.perfSummary = perfSummary;
 summary.gain = gain;
 summary.totalGain = totalGain;

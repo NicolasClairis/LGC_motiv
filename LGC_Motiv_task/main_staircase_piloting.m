@@ -41,14 +41,9 @@ end
 % Create subjectCodeName which is used as a file saving name
 subjectCodeName = strcat(init,'_s',iSubject);
 
-% iSubject = 0;
-% file_nm_training_Em = ['pilot_data_Em_sub',num2str(iSubject)];
-% file_nm_training_Ep = ['pilot_data_Ep_sub',num2str(iSubject)];
-% file_nm = ['pilot_data_sub',num2str(iSubject)];
-
-file_nm_training_Em = ['pilot_data_Em_',init,'_sub_',num2str(iSubject)];
-file_nm_training_Ep = ['pilot_data_Ep_',init,'_sub_',num2str(iSubject)];
-file_nm = ['pilot_data',init,'_sub_',num2str(iSubject)];
+file_nm_training_Em = ['IP_pilot_data_Em_',init,'_sub_',num2str(iSubject)];
+file_nm_training_Ep = ['IP_pilot_data_Ep_',init,'_sub_',num2str(iSubject)];
+file_nm = ['IP_pilot_data',init,'_sub_',num2str(iSubject)];
 %% general parameters
 IRM = 0;
 % define subparts of the task to perform (on/off)
@@ -93,8 +88,8 @@ n_trainingConditions = length(trainingConditions);
 [trainingTimes_Ep, calibTimes_Ep, learningTimes_Ep, taskTimes_Ep] = timings_definition(scr, trainingConditions, n_R_levels, n_E_levels, n_trialsPerSession, 'physical');
 
 n_sessions = 4; % 4 blocks in total (2 mental and 2 physical)
-t_endSession = 180;
-
+t_endSession = 10;
+warning('modified time between blocks for debuging, put it back at 180s');
 
 %% physical parameters
 if strcmp(taskToPerform.physical.calib,'on') ||...
@@ -143,7 +138,6 @@ if strcmp(taskToPerform.mental.calib,'on') ||...
     % initial learning: careful to enter a pair number here
     n_maxLearning.learning_withInstructions = 8;
     n_maxLearning.learning_withoutInstructions = 8;
-    warning('left few training trials for Arthur, but need to increase for actual subjects');
 end
 
 %% physical preparation
@@ -266,10 +260,18 @@ end
 
 if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,'on')
     
+    % keep track of which block was first
+    switch mod(iSubject,2)
+        case 0
+            all.mentalfirst = 1;
+        case 1
+            all.mentalfirst = 0;
+    end
+    
     % prepare multiple versions of efforts for indifference point
     E_right = [3 2 3];
     E_left = [1 1 2];
-    for iEffort=1:3
+    for iEffortLevel=1:3
         
         
         % for mental effort timing
@@ -277,146 +279,162 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
             taskTimes_Em.max_effort     = t_min_calib*taskTimes_Em.t_min_scalingFactor; % allow more time then min performance
         end
         
-        % instruction that main task will start soon
-        DrawFormattedText(window,...
-            'L''expérimentateur va bientôt démarrer la tâche.',...
-            'center', yScreenCenter*(5/3), scr.colours.black, scr.wrapat);
-        [~, onsets.taskWillStart] = Screen(window, 'Flip');
-        disp('Please press space.');
-        [~, ~, keyCode] = KbCheck();
-        while(keyCode(key_Em.space) ~= 1)
-            % wait until the key has been pressed
-            [~, ~, keyCode] = KbCheck();
-        end
         
-      
+            iMental = 1;
+            iPhysical = 1;
+            
         for iSession = 1:n_sessions
+            
             session_nm = ['session_nb',num2str(iSession)];
             if ismember(iSession,[1,2])
                 R_or_P = 'R';
             elseif ismember(iSession,[3,4])
                 R_or_P = 'P';
             end
+            
+            % instruction that main task will start soon
+            DrawFormattedText(window,...
+                'L''expérimentateur va bientôt démarrer la tâche.',...
+                'center', yScreenCenter*(5/3), scr.colours.black, scr.wrapat);
+            [~, onsets.taskWillStart] = Screen(window, 'Flip');
+            disp('Please press space.');
+            [~, ~, keyCode] = KbCheck();
+            while(keyCode(key_Em.space) ~= 1)
+                % wait until the key has been pressed
+                [~, ~, keyCode] = KbCheck();
+            end
+            
+            
             % iSubject makes sure each new subject has pattern physical mental in a different order.
             % iSession switches which code at each session
             switch mod(iSubject+iSession,2)
                 case 1
                     if strcmp(taskToPerform.physical.task,'on')
-                    % run physical
-                    % pre-task MVC
-                    [MVC_preTask.(session_nm), onsets_preTask_MVC.physical.(session_nm)] = physical_effort_MVC(scr, dq, n_MVC_repeat, calibTimes_Ep);
-                    
-                    % task
-                    [perfSummary.physical.(session_nm)] = choice_and_perf_staircase(scr, stim, key_Ep,...
-                        'physical', Ep_vars, R_money,...
-                        'mainTask',R_or_P,E_right(iEffort),E_left(iEffort), n_trialsPerSession, taskTimes_Ep,...
-                        results_folder, [file_nm,'_physical_',session_nm]);
-                    choiceOptions.physical.(session_nm) = choiceOptions_tmp;
-                    finalGains = perfSummary.physical.(session_nm).totalGain(end);
-                    
-                    % post-task MVC
-                    [MVC_postTask.(session_nm), onsets_postTask_MVC.physical.(session_nm)] = physical_effort_MVC(scr, dq, n_MVC_repeat, calibTimes_Ep);
+                        % run physical
+                        %                         % pre-task MVC
+                        %                         [MVC_preTask.(session_nm), onsets_preTask_MVC.physical.(session_nm)] = physical_effort_MVC(scr, dq, n_MVC_repeat, calibTimes_Ep);
+                        
+                        % task
+                        [perfSummary.physical.(['session_nb',num2str(iPhysical)]).(['Effort_lvl',(num2str(iEffortLevel))])] = choice_and_perf_staircase(scr, stim, key_Ep,...
+                            'physical', Ep_vars, R_money,...
+                            'mainTask',R_or_P,E_right(iEffortLevel),E_left(iEffortLevel), n_trialsPerSession, taskTimes_Ep,...
+                            results_folder, [file_nm,'_physical_',session_nm,'_',num2str(iEffortLevel)]);
+                        iPhysical = iPhysical +1;
+                        % % % % %                         choiceOptions.physical.(session_nm) = choiceOptions_tmp;
+                        finalGains = perfSummary.physical.(['session_nb',num2str(iPhysical)]).(['Effort_lvl',(num2str(iEffortLevel))]).totalGain(end);
+                        
+                        %                         % post-task MVC
+                        %                         [MVC_postTask.(session_nm), onsets_postTask_MVC.physical.(session_nm)] = physical_effort_MVC(scr, dq, n_MVC_repeat, calibTimes_Ep);
                     end
                     
-                case 0 
+                case 0
                     if strcmp(taskToPerform.mental.task,'on')
-                    % run physical
-                    % pre-task max perf
-                    % extract numbers to use for each calibration trial
-                    [numberVector_calib_tmp] = mental_numbers(n_calibTrials_Em_bis);
-                    
-                    % alternatively, use fixed number of correct answers to provide for each effort
-                    % level
-                    % repeat calibration until the subject performance is better
-                    % than the requested time threshold
-                    [t_min_calib_preTask.(session_nm).calibSessionSummary_preTask.(session_nm), calibSuccess_preTask.(session_nm)] = mental_calibTime(scr, stim, key_Em,...
-                        numberVector_calib_tmp, mentalE_prm_learning_and_calib, n_calibTrials_Em_bis, n_calibMax, calibTimes_Em);
-                    
-                    % task
-                    [perfSummary.mental.(session_nm)] = choice_and_perf_staircase(scr, stim, key_Em,...
-                        'mental', Em_vars,...
-                        'mainTask',R_or_P,E_right((iEffort)),E_left((iEffort)), n_trialsPerSession, taskTimes_Em,...
-                        results_folder, [file_nm,'_mental_',session_nm]);
-                    % % % % % % % % %             choiceOptions.mental.(session_nm) = choiceOptions_tmp;
-                    finalGains = perfSummary.mental.(session_nm).totalGain(end);
-                    
-                    % post-task max perf
-                    [numberVector_calib_tmp_bis] = mental_numbers(n_calibTrials_Em_bis);
-                    
-                    % re-measure max perf
-                    [t_min_calib_postTask.(session_nm), calibSessionSummary_postTask.(session_nm), calibSuccess_postTask.(session_nm)] = mental_calibTime(scr, stim, key_Em,...
-                        numberVector_calib_tmp_bis, mentalE_prm_learning_and_calib, n_calibTrials_Em_bis, n_calibMax, calibTimes_Em);
-                    
-            % display feedback for the current session
-            DrawFormattedText(window,...
-                ['Félicitations! Cette session est maintenant terminée.',...
-                'Vous avez obtenu: ',num2str(finalGains),' chf au cours de cette session.'],...
-                'center', yScreenCenter*(5/3), scr.colours.black, scr.wrapat);
-            Screen(window,'Flip');
-            % give 3min break after 4 IP                    
-              WaitSecs(5);   
+                        % run physical
+                        % pre-task max perf
+                        %                         % extract numbers to use for each calibration trial
+                        %                         [numberVector_calib_tmp] = mental_numbers(n_calibTrials_Em_bis);
+                        %
+                        %                         % alternatively, use fixed number of correct answers to provide for each effort
+                        %                         % level
+                        %                         % repeat calibration until the subject performance is better
+                        %                         % than the requested time threshold
+                        %                         [t_min_calib_preTask.(session_nm).calibSessionSummary_preTask.(session_nm), calibSuccess_preTask.(session_nm)] = mental_calibTime(scr, stim, key_Em,...
+                        %                             numberVector_calib_tmp, mentalE_prm_learning_and_calib, n_calibTrials_Em_bis, n_calibMax, calibTimes_Em);
+                        %
+                        % task
+                        [perfSummary.mental.(['session_nb',num2str(iMental)]).(['Effort_lvl',(num2str(iEffortLevel))])] = choice_and_perf_staircase(scr, stim, key_Em,...
+                            'mental', Em_vars,...
+                            'mainTask',R_or_P,E_right((iEffortLevel)),E_left((iEffortLevel)), n_trialsPerSession, taskTimes_Em,...
+                            results_folder, [file_nm,'_mental_',session_nm,'_',num2str(iEffortLevel)]);
+                        % % % % % % % % %             choiceOptions.mental.(session_nm) = choiceOptions_tmp;
+                        finalGains = perfSummary.mental.(['session_nb',num2str(iMental)]).(['Effort_lvl',(num2str(iEffortLevel))]).totalGain(end);
+                        iMental = iMental +1;
+                        %                         % post-task max perf
+                        %                         [numberVector_calib_tmp_bis] = mental_numbers(n_calibTrials_Em_bis);
+                        %
+                        %                         % re-measure max perf
+                        %                         [t_min_calib_postTask.(session_nm), calibSessionSummary_postTask.(session_nm), calibSuccess_postTask.(session_nm)] = mental_calibTime(scr, stim, key_Em,...
+                        %                             numberVector_calib_tmp_bis, mentalE_prm_learning_and_calib, n_calibTrials_Em_bis, n_calibMax, calibTimes_Em);
+                        %
+                        
                     end
-            end
+                    % Display feedback only for mental effort but in the end for physical too
+                    if strcmp(taskToPerform.physical.task,'off') && strcmp(taskToPerform.mental.task,'on')
+                        if mod(iSubject+iSession,2) == 0
+                            
+                            % display feedback for the current session
+                            DrawFormattedText(window,...
+                                ['Félicitations! Cette session est maintenant terminée.',...
+                                'Vous avez obtenu: ',num2str(finalGains),' chf au cours de cette session.'],...
+                                'center', yScreenCenter*(5/3), scr.colours.black, scr.wrapat);
+                            Screen(window,'Flip');
+                            % give 3min break after 4 IP
+                            WaitSecs(t_endSession);
+                        end
+                    end
                     
-    
-
-        
-        end % session loop  
+            end % session loop
+        end
     end
 end
-    %% save the data
-    % global variables
-    all.physical.global.MVC = MVC;
-    all.mental.global.t_min_calib = t_min_calib;
-    % learning performance
-    if strcmp(taskToPerform.mental.learning,'on')
-        all.physical.learning = learningPerfSummary_Ep;
-    end
-    if strcmp(taskToPerform.physical.learning,'on')
-        all.mental.learning = learningPerfSummary_Em;
-    end
-    % training performance
-    if strcmp(taskToPerform.physical.training,'on')
-        all.physical.training.performance = trainingSummary_Ep;
-        all.physical.training.instructions = onsets_Ep_training;
-    end
-    if strcmp(taskToPerform.mental.training,'on')
-        all.mental.training.performance = trainingSummary_Em;
-        all.mental.training.instructions = onsets_Em_training;
-    end
-    % best performance pre/post-task
-    if strcmp(taskToPerform.physical.task,'on')
-        all.physical.preTask.MVC = MVC_preTask;
-        all.physical.preTask.onsets_MVC = onsets_preTask_MVC.physical;
-        all.physical.postTask.MVC = MVC_postTask;
-        all.physical.postTask.onsets_MVC = onsets_postTask_MVC.physical;
-    end
-    if strcmp(taskToPerform.mental.task,'on')
-        all.mental.preTask.t_min_calib = t_min_calib_preTask;
-        all.mental.postTask.t_min_calib = t_min_calib_postTask;
-        all.mental.preTask.calibSessionSummary = calibSessionSummary_preTask;
-        all.mental.postTask.calibSessionSummary = calibSessionSummary_postTask;
-        all.mental.preTask.calibSuccess = calibSuccess_preTask;
-        all.mental.postTask.calibSuccess = calibSuccess_postTask;
-    end
-    % actual performance in the main task sessions
-    % record physical main task data
-    if strcmp(taskToPerform.physical.task,'on')
-        all.physical.session1.choiceOptions = choiceOptions.physical.session1;
-        all.physical.session1.perfSummary = perfSummary.physical.session1;
-        all.physical.session2.choiceOptions = choiceOptions.physical.session2;
-        all.physical.session2.perfSummary = perfSummary.physical.session2;
-    end
-    % record mental main task data
-    if strcmp(taskToPerform.mental.task,'on')
-        all.mental.session1.choiceOptions = choiceOptions.mental.session1;
-        all.mental.session1.perfSummary = perfSummary.mental.session1;
-        all.mental.session2.choiceOptions = choiceOptions.mental.session2;
-        all.mental.session2.perfSummary = perfSummary.mental.session2;
-    end
+%% save the data
+
+% learning performance
+if strcmp(taskToPerform.mental.learning,'on')
+    all.physical.learning = learningPerfSummary_Ep;
+    %     % global variables
+    %     all.mental.global.t_min_calib = t_min_calib;
+end
+if strcmp(taskToPerform.physical.learning,'on')
+    all.mental.learning = learningPerfSummary_Em;
+    %     % global variables
+    %     all.physical.global.MVC = MVC;
     
-    % actually save the data
-    save([results_folder, file_nm,'.mat'],'all');
-    
-    %% close PTB
-    sca;
+end
+% training performance
+if strcmp(taskToPerform.physical.training,'on')
+    all.physical.training.performance = trainingSummary_Ep;
+    all.physical.training.instructions = onsets_Ep_training;
+end
+if strcmp(taskToPerform.mental.training,'on')
+    all.mental.training.performance = trainingSummary_Em;
+    all.mental.training.instructions = onsets_Em_training;
+end
+% best performance pre/post-task
+% if strcmp(taskToPerform.physical.task,'on')
+%     all.physical.preTask.MVC = MVC_preTask;
+%     all.physical.preTask.onsets_MVC = onsets_preTask_MVC.physical;
+%     all.physical.postTask.MVC = MVC_postTask;
+%     all.physical.postTask.onsets_MVC = onsets_postTask_MVC.physical;
+% end
+% if strcmp(taskToPerform.mental.task,'on')
+%     all.mental.preTask.t_min_calib = t_min_calib_preTask;
+%     all.mental.postTask.t_min_calib = t_min_calib_postTask;
+%     all.mental.preTask.calibSessionSummary = calibSessionSummary_preTask;
+%     all.mental.postTask.calibSessionSummary = calibSessionSummary_postTask;
+%     all.mental.preTask.calibSuccess = calibSuccess_preTask;
+%     all.mental.postTask.calibSuccess = calibSuccess_postTask;
+% end
+% actual performance in the main task sessions
+% record physical main task data
+if strcmp(taskToPerform.physical.task,'on')
+    for iEffort= 1:3
+        for iSession = 1:n_sessions/2
+            all.physical.(['EffortLvl_',num2str(iEffort)]).(['session_nb',num2str(iSession)]).perfSummary = perfSummary.physical.(['session_nb',num2str(iSession)]).(['Effort_lvl',(num2str(iEffort))]);           
+        end
+    end
+end
+% record mental main task data
+if strcmp(taskToPerform.mental.task,'on')
+    for iEffort= 1:3
+        for iSession = 1:n_sessions/2
+             all.mental.(['EffortLvl_',num2str(iEffort)]).(['session_nb',num2str(iSession)]).perfSummary = perfSummary.mental.(['session_nb',num2str(iSession)]).(['Effort_lvl',(num2str(iEffort))]);           
+        end
+    end
+end
+
+% actually save the data
+save([results_folder, file_nm,'.mat'],'all');
+
+%% close PTB
+sca;
