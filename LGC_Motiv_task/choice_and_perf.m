@@ -149,8 +149,8 @@ for iTrial = 1:nTrials
     end
     
     %% extract monetary incentive, effort level and reward/punishment condition
-    R_left_tmp = choiceOptions.R.left(iTrial);
-    R_right_tmp = choiceOptions.R.right(iTrial);
+    R_left_tmp = choiceOptions.monetary_amount.left(iTrial);
+    R_right_tmp = choiceOptions.monetary_amount.right(iTrial);
     E_left_tmp = choiceOptions.E.left(iTrial);
     E_right_tmp = choiceOptions.E.right(iTrial);
     R_or_P_tmp = choiceOptions.R_or_P{iTrial};
@@ -273,7 +273,7 @@ for iTrial = 1:nTrials
                     fbkColour = stim.punishment.text.colour;
             end
             % display money won/lost
-            trialMoneyObtained = sprintf('%0.2f',R_chosen(iTrial));
+            trialMoneyObtained = sprintf('%0.2f',R_chosen(iTrial) );
             DrawFormattedText(window, [fbkSign, trialMoneyObtained,' CHF'],...
                 stim.reward.text.middle_center_start(1),...
                 stim.reward.text.middle_center_start(2),...
@@ -290,9 +290,9 @@ for iTrial = 1:nTrials
             % record loss for the current trial
             switch R_or_P_tmp
                 case 'R'
-                    gain(iTrial) = R_money.(['R_',num2str(R_chosen(iTrial))]);
+                    gain(iTrial) = R_chosen(iTrial);
                 case 'P'
-                    gain(iTrial) = (-1)*R_money.(['R_',num2str(R_chosen(iTrial))]);
+                    gain(iTrial) = (-1)*R_chosen(iTrial);
             end
         otherwise
             error(['weird behavior with trial_was_successfull variable. ',...
