@@ -1,4 +1,4 @@
-function[choice_opt] = choice_option_design(n_R_levels, n_E_levels, punishment_yn, n_trials)
+function[choice_opt] = choice_option_design(n_R_levels, n_E_levels, punishment_yn, n_trials, R_money)
 %[choice_opt] = choice_option_design(n_R_levels, n_E_levels, punishment_yn, n_trials)
 % choice_option_design will create the design matrix of the trials to
 % be presented at each trial:
@@ -17,6 +17,9 @@ function[choice_opt] = choice_option_design(n_R_levels, n_E_levels, punishment_y
 % 'no': no punishment
 %
 % n_trials: total number of trials for the current session
+%
+% R_money: structure with monetary amount corresponding to each reward and
+% punishment level
 %
 % OUTPUTS
 % choice_opt: structure with the details of the choice options
@@ -58,6 +61,19 @@ switch punishment_yn
         choice_opt.R_or_P = R_or_P_tmp(rdm_order);
     case 'no' % all trials are rewarding
         choice_opt.R_or_P = repmat({'R'},1,n_trials);
+end
+
+%% transform reward (and punishment) levels into monetary amounts
+[choice_design.reward_amount.left, choice_design.reward_amount.right] = deal(NaN(1,n_trials));
+for iTrial = 1:n_trials
+    switch choice_opt.R_or_P{iTrial}
+        case 'R'
+            choice_design.monetary_amount.left(iTrial) = R_money.(['R_',num2str(choice_opt.R.left(iTrial))]);
+            choice_design.monetary_amount.right(iTrial) = R_money.(['R_',num2str(choice_opt.R.right(iTrial))]);
+        case 'P'
+            choice_design.monetary_amount.left(iTrial) = R_money.(['P_',num2str(choice_opt.R.left(iTrial))]);
+            choice_design.monetary_amount.right(iTrial) = R_money.(['P_',num2str(choice_opt.R.right(iTrial))]);
+    end
 end
 
 end % function

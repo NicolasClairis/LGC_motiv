@@ -74,7 +74,7 @@ n_R_levels = 3;
 n_E_levels = 3;
 n_trialsPerSession = 44;
 % mapping between reward levels and actual monetary amounts
-R_money = R_amounts(n_R_levels);
+R_money = R_amounts(n_R_levels, punishment_yn);
 
 % initialize visual stimuli to use in the experiment
 [stim] = stim_initialize(scr, n_E_levels);
@@ -325,7 +325,7 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
         
         % define trials (here is where you might want to replace the function
         % by a fixed matrix design
-        [choiceOptions_tmp] = choice_option_design(n_R_levels, n_E_levels, punishment_yn, n_trialsPerSession);
+        [choiceOptions_tmp] = choice_option_design(n_R_levels, n_E_levels, punishment_yn, n_trialsPerSession, R_money);
         
         if (( (mod(iSubject,2) == 0) && ismember(iSession,[1,3]) ) ||...
                 ( (mod(iSubject,2) ~= 0) && ismember(iSession,[2,4]) ) ) &&...
