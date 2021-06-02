@@ -1,5 +1,5 @@
-function [trainingChoiceOptions, nTrainingTrials] = training_options(taskTrainingCond, n_R_levels, n_E_levels)
-% [trainingChoiceOptions] = training_options(taskTrainingCond, n_R_levels, n_E_levels)
+function [trainingChoiceOptions, nTrainingTrials] = training_options(taskTrainingCond, n_R_levels, n_E_levels, R_money)
+% [trainingChoiceOptions, nTrainingTrials] = training_options(taskTrainingCond, n_R_levels, n_E_levels)
 % design of the reward, effort and punishment options for the learning
 % phase
 %
@@ -13,6 +13,9 @@ function [trainingChoiceOptions, nTrainingTrials] = training_options(taskTrainin
 %
 % n_E_levels: number of effort levels
 %
+% R_money: structure with monetary amount corresponding to each reward and
+% punishment level
+%
 % OUTPUTS
 % trainingChoiceOptions: structure with reward and effort level for each
 % training trial + reward or punishment trial
@@ -23,10 +26,6 @@ function [trainingChoiceOptions, nTrainingTrials] = training_options(taskTrainin
 if n_R_levels == 3 && n_E_levels == 3
     switch taskTrainingCond
         case 'R'
-%             trainingChoiceOptions.R.left    = [1 3 1 1 3 3];
-%             trainingChoiceOptions.R.right   = [3 1 2 3 2 1];
-%             trainingChoiceOptions.E.left    = [1 1 2 3 3 3];
-%             trainingChoiceOptions.E.right   = [3 3 3 1 2 1];
             trainingChoiceOptions.R.left    = [1 3 2];
             trainingChoiceOptions.R.right   = [3 1 1];
             trainingChoiceOptions.E.left    = [1 1 3];
@@ -35,19 +34,11 @@ if n_R_levels == 3 && n_E_levels == 3
             % would be good to map reward and punishment so that there is
             % no discrepancy in the average reward and effort levels
             % between the two training sessions
-%             trainingChoiceOptions.R.left    = [3 2 1 1 3 2];
-%             trainingChoiceOptions.R.right   = [1 3 3 3 1 1];
-%             trainingChoiceOptions.E.left    = [1 3 1 3 3 1];
-%             trainingChoiceOptions.E.right   = [3 2 3 1 1 2];
             trainingChoiceOptions.R.left    = [1 2 2];
             trainingChoiceOptions.R.right   = [3 1 3];
             trainingChoiceOptions.E.left    = [3 1 1];
             trainingChoiceOptions.E.right   = [1 2 3];
         case 'RP'
-            %             trainingChoiceOptions.R.left    = [1 3 1 1 3 3 3 2 1 1 3 2];
-            %             trainingChoiceOptions.R.right   = [3 1 2 3 2 1 1 3 3 3 1 1];
-            %             trainingChoiceOptions.E.left    = [1 1 2 3 3 3 1 3 1 3 3 1];
-            %             trainingChoiceOptions.E.right   = [3 3 3 1 2 1 3 2 3 1 1 2];
             trainingChoiceOptions.R.left    = [1 3 2 1 2 2];
             trainingChoiceOptions.R.right   = [3 1 1 3 1 3];
             trainingChoiceOptions.E.left    = [1 1 3 3 1 1];
@@ -88,5 +79,11 @@ switch taskTrainingCond
 end
 % store reward/punishment condition for each trial
 trainingChoiceOptions.R_or_P = R_or_P;
+
+%% convert data in monetary amounts
+if exist('R_money','var') && ~isempty(R_money) % you also need this function for the preparation of the timings, no need to compute this in this case
+    [trainingChoiceOptions.monetary_amount.left] = reward_level_to_moneyAmount_converter(trainingChoiceOptions.R.left, R_money, R_or_P);
+    [trainingChoiceOptions.monetary_amount.right] = reward_level_to_moneyAmount_converter(trainingChoiceOptions.R.right, R_money, R_or_P);
+end
 
 end % function

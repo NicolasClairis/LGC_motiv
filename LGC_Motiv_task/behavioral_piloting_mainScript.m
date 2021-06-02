@@ -56,9 +56,9 @@ taskToPerform.physical.calib = 'off';
 taskToPerform.physical.learning = 'off';
 taskToPerform.physical.training = 'off';
 taskToPerform.physical.task = 'off';
-taskToPerform.mental.learning = 'on';
-taskToPerform.mental.calib = 'off';
-taskToPerform.mental.training = 'off';
+taskToPerform.mental.learning = 'off';
+taskToPerform.mental.calib = 'on';
+taskToPerform.mental.training = 'on';
 taskToPerform.mental.task = 'off';
 % initialize screen
 [scr, xScreenCenter, yScreenCenter,...
@@ -143,7 +143,7 @@ if strcmp(taskToPerform.physical.training,'on')
         
         % define parameters for the training
         % reward/punishment and effort levels
-        [trainingChoiceOptions_Ep_tmp, n_trainingTrials_Ep_tmp] = training_options(trainingCond, n_R_levels, n_E_levels);
+        [trainingChoiceOptions_Ep_tmp, n_trainingTrials_Ep_tmp] = training_options(trainingCond, n_R_levels, n_E_levels, R_money);
         
         % start with reward training alone
         Ep_vars.MVC = MVC;
@@ -226,7 +226,8 @@ if strcmp(taskToPerform.mental.learning,'on')
     [numberVector_learning] = mental_numbers(n_extendedLearningTrials);
     
     % perform the training
-    warning('need to add instructions here');
+    [onsets.endLearningInstructions.(['learning_session',num2str(1 + jLearningSession)]).all.extendedLearning] = mental_learningInstructions(scr,...
+                'all', 'extendedLearning', mentalE_prm_learning_and_calib);
     for iExtendedLearningTrial = 1:n_extendedLearningTrials
         % define start angle according to current difficulty level
         mentalE_prm_extendedLearning.startAngle = stim.difficulty.startAngle.(['level_',num2str(learning_effortLevel(iExtendedLearningTrial))]);
@@ -283,7 +284,7 @@ if strcmp(taskToPerform.mental.training,'on')
         
         % define parameters for the training
         % reward/punishment and effort levels
-        [trainingChoiceOptions_Em_tmp, n_trainingTrials_Em_tmp] = training_options(trainingCond, n_R_levels, n_E_levels);
+        [trainingChoiceOptions_Em_tmp, n_trainingTrials_Em_tmp] = training_options(trainingCond, n_R_levels, n_E_levels, R_money);
         
         % start with reward training alone
         Em_vars.i_sub = iSubject;
