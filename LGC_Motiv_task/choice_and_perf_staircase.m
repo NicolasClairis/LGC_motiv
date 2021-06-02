@@ -125,6 +125,7 @@ end
 
 %% define monetary incentive, effort level and reward/punishment condition
 
+% initialize left-right values, depending on the condition
 if strcmp('R',R_or_P)
     R_left = 1.5;
     R_right_tmp = 2.5;
@@ -132,6 +133,7 @@ elseif strcmp('P',R_or_P)
     R_left = 1.5;
     R_right_tmp = 0.5;
 end
+% remember initial baseline value for the right value as it will change due to staircase
 R_right_baseline = R_right_tmp;
 
 for iTrial = 1:nTrials
@@ -193,50 +195,45 @@ for iTrial = 1:nTrials
     end
     
     switch R_or_P
-        % If it is a reward trial, iterate in a direction
+        
+        % If it is a reward trial
         case 'R'
-            % case they are trying to win more money by going for the low option a few times
-            if choice(iTrial) == -1 && R_right_baseline <= R_right_tmp
-                % do nothing to prevent second ifcondition from running
-                R_right_tmp = R_right_baseline;
-            elseif choice(iTrial) == -1
+            % if right values becomes higher than baseline (cause they were lazy) put back baseline
+            if choice(iTrial) == -1
                 R_right_tmp = R_right_tmp + (R_right_tmp - R_left)/2;
             elseif choice(iTrial) == 1
                 R_right_tmp = R_right_tmp - (R_right_tmp - R_left)/2;
             elseif choice(iTrial) == 0
-                % if no choice was made, redo the trial
+                % if no choice was made, keep same value
                 R_right_tmp = R_right_tmp;
             else
                 error('Il y a un bug dans la partie choix');
             end
-            % In case the new value is higher than baseline, put it back
+            % In case computed value is higher than baseline, put it back to baseline
             if R_right_baseline <= R_right_tmp
                 R_right_tmp = R_right_baseline;
             end
-            % if it is a punishment trial, iterate in the other direction
+            % if it is a punishment trial
         case 'P'
-            % case we are trying to diverge from the beginning and the loss would become close to 0
-            if choice(iTrial) == -1 && R_right_baseline >= R_right_tmp
-                % do nothing to prevent second ifcondition from running
-                R_right_tmp = R_right_baseline;
-            elseif choice(iTrial) == -1
+            % case it is a punishment trial
+            if choice(iTrial) == -1
                 R_right_tmp = R_right_tmp - (R_left - R_right_tmp)/2;
             elseif choice(iTrial) == 1
                 R_right_tmp = R_right_tmp + (R_left - R_right_tmp)/2;
             elseif choice(iTrial) == 0
-                % if no choice was made, redo the trial
+                % if no choice was made, keep same value for next trial
                 R_right_tmp = R_right_tmp;
             else
                 error('Il y a un bug dans la partie choix');
             end
             
-            % In case the new value is higher than baseline, put it back
+            % In case computed value is lower than baseline, put it back to baseline
             if R_right_baseline >= R_right_tmp
                 R_right_tmp = R_right_baseline;
             end
     end
     
-    % save the Indifference point, considered as the last choice to the right
+    % save the Indifference point, considered as the last choice to the right after computation
     if iTrial == 5
         IP = R_right_tmp;
     end
