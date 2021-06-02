@@ -64,16 +64,7 @@ switch punishment_yn
 end
 
 %% transform reward (and punishment) levels into monetary amounts
-[choice_design.reward_amount.left, choice_design.reward_amount.right] = deal(NaN(1,n_trials));
-for iTrial = 1:n_trials
-    switch choice_opt.R_or_P{iTrial}
-        case 'R'
-            choice_design.monetary_amount.left(iTrial) = R_money.(['R_',num2str(choice_opt.R.left(iTrial))]);
-            choice_design.monetary_amount.right(iTrial) = R_money.(['R_',num2str(choice_opt.R.right(iTrial))]);
-        case 'P'
-            choice_design.monetary_amount.left(iTrial) = R_money.(['P_',num2str(choice_opt.R.left(iTrial))]);
-            choice_design.monetary_amount.right(iTrial) = R_money.(['P_',num2str(choice_opt.R.right(iTrial))]);
-    end
-end
+[choice_opt.monetary_amount.left] = reward_level_to_moneyAmount_converter(choice_opt.R.left, R_money, choice_opt.R_or_P);
+[choice_opt.monetary_amount.right] = reward_level_to_moneyAmount_converter(choice_opt.R.right, R_money, choice_opt.R_or_P);
 
 end % function
