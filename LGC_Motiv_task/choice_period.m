@@ -99,8 +99,8 @@ switch R_or_P
             white);
 end
 % display monetary amount associated to each option
-drawRewardAmount(scr, stim, R_left, R_or_P, stim.reward.text.top_left_start);
-drawRewardAmount(scr, stim, R_right, R_or_P, stim.reward.text.top_right_start);
+drawRewardAmount(scr, stim, R_left, R_or_P, 'top_left_start');
+drawRewardAmount(scr, stim, R_right, R_or_P, 'top_right_start');
 
 % display corresponding effort text
 DrawFormattedText(window,'pour',...

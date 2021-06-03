@@ -53,7 +53,7 @@ switch R_chosen
                     stim.loseRewardText.top_center(2),...
                     white);
         end
-        drawRewardAmount(scr, stim, R_chosen, R_or_P, stim.reward.text.top_center_start);
+        drawRewardAmount(scr, stim, R_chosen, R_or_P, 'top_center_start');
 
         %% display difficulty level
         chosenStartAngle = stim.difficulty.startAngle.(['level_',num2str(E_chosen)]);
