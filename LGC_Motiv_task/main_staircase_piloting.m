@@ -70,7 +70,7 @@ n_E_levels = 3;
 % define number of trials per staircase procedure
 n_trialsPerSession = 5;
 % mapping between reward levels and actual monetary amounts
-R_money = R_amounts(n_R_levels);
+R_money = R_amounts(n_R_levels, punishment_yn);
 
 % initialize visual stimuli to use in the experiment
 [stim] = stim_initialize(scr, n_E_levels);
@@ -165,7 +165,7 @@ if strcmp(taskToPerform.physical.training,'on')
         
         % define parameters for the training
         % reward/punishment and effort levels
-        [trainingChoiceOptions_Ep_tmp, n_trainingTrials_Ep_tmp] = training_options(trainingCond, n_R_levels, n_E_levels);
+        [trainingChoiceOptions_Ep_tmp, n_trainingTrials_Ep_tmp] = training_options(trainingCond, n_R_levels, n_E_levels, R_money);
         
         % start with reward training alone
         Ep_vars.MVC = MVC;
@@ -248,7 +248,7 @@ if strcmp(taskToPerform.mental.training,'on')
         
         % define parameters for the training
         % reward/punishment and effort levels
-        [trainingChoiceOptions_Em_tmp, n_trainingTrials_Em_tmp] = training_options(trainingCond, n_R_levels, n_E_levels);
+        [trainingChoiceOptions_Em_tmp , n_trainingTrials_Em_tmp] = training_options(trainingCond, n_R_levels, n_E_levels,R_money);
         
         % start with reward training alone
         Em_vars.i_sub = iSubject;
