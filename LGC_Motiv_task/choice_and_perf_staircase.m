@@ -321,13 +321,8 @@ for iTrial = 1:nTrials
                     fbkSign = '-';
                     fbkColour = stim.punishment.text.colour;
             end
-            % display money won/lost
-%             trialMoneyObtained = sprintf('%0.2f',R_chosen(iTrial));
-%             DrawFormattedText(window, [fbkSign, trialMoneyObtained,' CHF'],...
-%                 stim.reward.text.middle_center_start(1),...
-%                 stim.reward.text.middle_center_start(2),...
-%                 fbkColour);
-            drawRewardAmount(scr, stim, R_chosen(iTrial), R_or_P, stim.reward.text.middle_center_start);
+
+            drawRewardAmount(scr, stim, R_chosen(iTrial), R_or_P, 'middle_center_start');
           
             [~,onsets.fbk(iTrial)] = Screen(window,'Flip');
             switch R_or_P
