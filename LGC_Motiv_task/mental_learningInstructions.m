@@ -16,6 +16,8 @@ function[onset_Press] = mental_learningInstructions(scr, learning_col, learning_
 % 'partialInstructions': display only the two possible answers but not the
 % question anymore
 % 'noInstructions': no reminder of what the question is nor of where you should answer
+% 'extendedLearning': extended learning, to train on each level of
+% difficulty
 %
 % mentalE_prm: structure with mental effort parameters
 %   .mental_n_col: field with colour for each type of question

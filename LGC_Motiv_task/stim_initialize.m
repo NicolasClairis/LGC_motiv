@@ -32,6 +32,9 @@ difficultyArcColor = [255 210 0];
 Screen('BlendFunction', window, 'GL_SRC_ALPHA', 'GL_ONE_MINUS_SRC_ALPHA');
 
 %% Money variables
+rewardTextSize = 70;
+stim.reward.textSizeForPTB = rewardTextSize;
+Screen('TextSize', window, rewardTextSize);
 % extract reward amount text size (for choice)
 [~,~,textSizeR] = DrawFormattedText(window,'+0.00 CHF', xScreenCenter, yScreenCenter, white);
 xSizeText = textSizeR(3) - textSizeR(1);
@@ -39,16 +42,19 @@ ySizeText = textSizeR(4) - textSizeR(2);
 stim.reward.xSizeText = xSizeText;
 stim.reward.ySizeText = ySizeText;
 % define where the text will be displayed
-stim.reward.text.top_center_start = [xScreenCenter - xSizeText/2, yScreenCenter*(3/4) - ySizeText/2]; % for display of chosen option
-stim.reward.text.top_left_start = [xScreenCenter/2 - xSizeText/2, yScreenCenter*(3/4) - ySizeText/2]; % for display of left option
-stim.reward.text.top_right_start = [xScreenCenter*(3/2) - xSizeText/2, yScreenCenter*(3/4) - ySizeText/2]; % for display of right option
+stim.reward.text.top_left_start = [xScreenCenter/2 - xSizeText/2, yScreenCenter*(4/5) - ySizeText/2]; % left option choice period
+stim.reward.text.top_right_start = [xScreenCenter*(3/2) - xSizeText/2, yScreenCenter*(4/5) - ySizeText/2]; % right option choice period
+stim.reward.text.top_center_start = [xScreenCenter - xSizeText/2, yScreenCenter*(4/5) - ySizeText/2]; % chosen option display
 % display on middle of the screen for performance feedback
-stim.reward.text.middle_center_start = [xScreenCenter - xSizeText/2, yScreenCenter - ySizeText/2];
+stim.reward.text.middle_center_start = [xScreenCenter - xSizeText/2, yScreenCenter - ySizeText/2]; % feedback
 
 % define the colour to use for the text according to the condition
 % (reward/punishment)
 stim.reward.text.colour = white;
 stim.punishment.text.colour = [239 138 98];
+
+% set text back to baseline size
+Screen('TextSize', window, scr.textSize.baseline);
 
 %% difficulty rings
 difficultyRectlinearSize = yScreenCenter/2; % 214 in initial Arthur version
@@ -99,12 +105,12 @@ ySizeForEffort = textSizeForEffort(4) - textSizeForEffort(2);
 stim.textRectSize.xSizeForEffort = xSizeForEffort;
 stim.textRectSize.ySizeForEffort = ySizeForEffort;
 % extract x/y coordinates for the display of the corresponding text
-stim.winRewardText.top_left     = [xScreenCenter/2 - xSizeWin/2,        stim.reward.text.top_left_start(2) - ySizeWin*2];
-stim.winRewardText.top_right    = [xScreenCenter*(3/2) - xSizeWin/2,    stim.reward.text.top_right_start(2) - ySizeWin*2];
-stim.winRewardText.top_center   = [xScreenCenter - xSizeWin/2,          stim.reward.text.top_center_start(2) - ySizeWin*2];
-stim.loseRewardText.top_left    = [xScreenCenter/2 - xSizeLose/2,       stim.reward.text.top_left_start(2) - ySizeLose*2];
-stim.loseRewardText.top_right   = [xScreenCenter*(3/2) - xSizeLose/2,   stim.reward.text.top_right_start(2) - ySizeLose*2];
-stim.loseRewardText.top_center  = [xScreenCenter - xSizeLose/2,         stim.reward.text.top_center_start(2) - ySizeLose*2];
+stim.winRewardText.top_left     = [xScreenCenter/2 - xSizeWin/2,        stim.reward.text.top_left_start(2) - ySizeWin*2.5];
+stim.winRewardText.top_right    = [xScreenCenter*(3/2) - xSizeWin/2,    stim.reward.text.top_right_start(2) - ySizeWin*2.5];
+stim.winRewardText.top_center   = [xScreenCenter - xSizeWin/2,          stim.reward.text.top_center_start(2) - ySizeWin*2.5];
+stim.loseRewardText.top_left    = [xScreenCenter/2 - xSizeLose/2,       stim.reward.text.top_left_start(2) - ySizeLose*2.5];
+stim.loseRewardText.top_right   = [xScreenCenter*(3/2) - xSizeLose/2,   stim.reward.text.top_right_start(2) - ySizeLose*2.5];
+stim.loseRewardText.top_center  = [xScreenCenter - xSizeLose/2,         stim.reward.text.top_center_start(2) - ySizeLose*2.5];
 stim.effort_introText.bottom_left   = [xScreenCenter/2 - xSizeForEffort/2,      stim.difficulty.below_left(2) - ySizeForEffort];
 stim.effort_introText.bottom_right  = [xScreenCenter*(3/2) - xSizeForEffort/2,  stim.difficulty.below_right(2)  - ySizeForEffort];
 stim.effort_introText.bottom_center = [xScreenCenter - xSizeForEffort/2,        stim.difficulty.below_center(2)  - ySizeForEffort];
