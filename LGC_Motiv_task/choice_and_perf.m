@@ -268,7 +268,7 @@ for iTrial = 1:nTrials
                         'center', stim.feedback.message_yCoord,...
                         white);
             end
-            drawRewardAmount(scr, stim, R_chosen(iTrial), R_or_P_tmp, stim.reward.text.middle_center_start);
+            drawRewardAmount(scr, stim, R_chosen(iTrial), R_or_P_tmp, 'middle_center_start');
         
             [~,onsets.fbk(iTrial)] = Screen(window,'Flip');
             switch R_or_P_tmp
