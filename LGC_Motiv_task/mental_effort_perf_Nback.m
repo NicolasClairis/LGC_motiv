@@ -167,8 +167,22 @@ while (iCorrectAnswers < n_max_to_reach) &&...
     timeNow = GetSecs;
     
     % trial informations
-    numberValue_tmp = numberVectorUsed(i_question);
-    taskType_tmp = taskType(i_question);
+    % define task to perform (based on previous display)
+    if i_question == 1 % first question don't care which side is the answer
+        numberValuePerf_tmp = []; % no need for number for first question
+        taskTypePerf_tmp = 3;
+    else
+        numberValuePerf_tmp = numberVectorUsed(i_question - 1);
+        taskTypePerf_tmp = taskType(i_question - 1);
+    end
+    % define number and task type for the display
+    if iCorrectAnswers < (n_max_to_reach - 1)
+        numberValueDisplay_tmp = numberVectorUsed(i_question);
+        taskTypeDisplay_tmp = taskType(i_question);
+    elseif iCorrectAnswers == (n_max_to_reach - 1) % last number is set to zero with fixed colour
+        numberValueDisplay_tmp = 0;
+        taskTypeDisplay_tmp = 2;
+    end
     
     % display instructions after 2 errors have been made (in case where no
     % instructions on screen)
@@ -186,7 +200,7 @@ while (iCorrectAnswers < n_max_to_reach) &&...
     
     onset_stim = mental_display_stim(scr, stim,...
         startAngle, endAngle,...
-        sideQuestion, taskType_tmp, numberValue_tmp, mental_n_col,...
+        sideQuestion, taskTypeDisplay_tmp, numberValueDisplay_tmp, mental_n_col,...
         learning_instructions_bis);
     
     %% record onset
@@ -215,36 +229,41 @@ while (iCorrectAnswers < n_max_to_reach) &&...
         KbReleaseWait();
         
         %% determine whether the response was correct or not
-        [answerCorrect_tmp] = mental_effort_answer_correct(taskType_tmp,...
-            numberValue_tmp,...
+        [answerCorrect_tmp] = mental_effort_answer_correct(taskTypePerf_tmp,...
+            numberValuePerf_tmp,...
             sideAnswer_tmp, sideQuestion);
         
-        switch answerCorrect_tmp
-            case 0 % error made
-                
-                % version where you reset the timer whenever they make an
-                % error
-                % startAngle = startAngle_currentTrial; % re-initialize
-                % i_max_correct = 0; % if wrong, set back indicators to zero: needs to restart
-                
-                
-                if iCorrectAnswers > 0 % keep equal to zero if you made a mistake the first trial
-                    iCorrectAnswers = iCorrectAnswers - 1; % if wrong, decrement the total number of correct answers
-                    % just (-1) decrement after an error (otherwise too hard)
-                    startAngle = startAngle - totalAngleDistance/n_max_to_reach;
-                else % if error made during the first trial should not move
-                    iCorrectAnswers = 0;
-                    startAngle = startAngle_currentTrial; % if error made during the first question, keep at initial location
-                    % otherwise it means that you increase the difficulty
-                    % when they make an error for the first question
-                end
-                jErrorsMade = jErrorsMade + 1;
-            case 1 % if correct, update the count of correct answers and the angle display
-                startAngle = startAngle + totalAngleDistance/n_max_to_reach;
-                iCorrectAnswers = iCorrectAnswers + 1;
-                jCorrectAnswers = jCorrectAnswers + 1;
+        %% update counters for number of correct answers
+        if i_question > 1
+            % do not update the counter for the first question where they just
+            % should press any button
+            
+            switch answerCorrect_tmp
+                case 0 % error made
+                    
+                    % version where you reset the timer whenever they make an
+                    % error
+                    % startAngle = startAngle_currentTrial; % re-initialize
+                    % i_max_correct = 0; % if wrong, set back indicators to zero: needs to restart
+                    
+                    
+                    if iCorrectAnswers > 0 % keep equal to zero if you made a mistake the first trial
+                        iCorrectAnswers = iCorrectAnswers - 1; % if wrong, decrement the total number of correct answers
+                        % just (-1) decrement after an error (otherwise too hard)
+                        startAngle = startAngle - totalAngleDistance/n_max_to_reach;
+                    else % if error made during the first trial should not move
+                        iCorrectAnswers = 0;
+                        startAngle = startAngle_currentTrial; % if error made during the first question, keep at initial location
+                        % otherwise it means that you increase the difficulty
+                        % when they make an error for the first question
+                    end
+                    jErrorsMade = jErrorsMade + 1;
+                case 1 % if correct, update the count of correct answers and the angle display
+                    startAngle = startAngle + totalAngleDistance/n_max_to_reach;
+                    iCorrectAnswers = iCorrectAnswers + 1;
+                    jCorrectAnswers = jCorrectAnswers + 1;
+            end
         end
-        
         %% define the task type and the number for the next question
         if iCorrectAnswers < n_max_to_reach
             % once the expected amount of correct answers has been reached,

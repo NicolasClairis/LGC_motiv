@@ -59,6 +59,8 @@ switch taskType
         textColor = mental_n_col.oddEven;
     case 1 % lower/higher than 5
         textColor = mental_n_col.lowHigh;
+    case 2
+        textColor = mental_n_col.lastQuestion;
 end
 Screen('TextSize', window, scr.textSize.mentalNumber);
 DrawFormattedText(window, num2str(numberValue),...
