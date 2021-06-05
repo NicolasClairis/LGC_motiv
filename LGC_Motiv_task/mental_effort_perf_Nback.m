@@ -173,8 +173,15 @@ while (iCorrectAnswers < n_max_to_reach) &&...
     % trial informations
     % define task to perform (based on previous display)
     if i_question > 1 % answer to give corresponds to the preceding display for questions coming after the first one
+        %         if iCorrectAnswers < (n_max_to_reach - 1)
         numberVectorUsedPerf(i_question) = numberVectorUsedDisplay(i_question - 1);
         taskTypePerf(i_question) = taskTypeDisplay(i_question - 1);
+        %         elseif iCorrectAnswers == (n_max_to_reach - 1) % in this case, if an error is made, the last displayed number is zero
+        %             % => you need to keep track of the number that was presented
+        %             % before this to avoid weird cases
+        %             numberVectorUsedPerf(i_question) = numberVectorUsedPerf(i_question - 1);
+        %             taskTypePerf(i_question) = taskTypePerf(i_question - 1);
+        %         end
     end
     
     % display instructions after 2 errors have been made (in case where no
@@ -262,7 +269,7 @@ while (iCorrectAnswers < n_max_to_reach) &&...
             end
         end
         %% define the task type and the number for the next question
-        if iCorrectAnswers < (n_max_to_reach - 1)
+        if iCorrectAnswers < n_max_to_reach
             % once the expected amount of correct answers has been reached,
             % there is no need to make more switches
             
@@ -272,13 +279,19 @@ while (iCorrectAnswers < n_max_to_reach) &&...
                 % no change of number after an error to keep the task easy
                 % after an error has been made
                 numberVectorUsedDisplay(i_question + 1) = numberVectorUsedDisplay(i_question);
-            else
-                taskTypeDisplay(i_question + 1) = task_seq(iCorrectAnswers + 1);
+            elseif goodOrBadAnswer(i_question) == 1 % correct answer => update
+                if iCorrectAnswers < (n_max_to_reach - 1)
+                    taskTypeDisplay(i_question + 1) = task_seq(iCorrectAnswers + 2); % take the next element in the sequence
+                elseif iCorrectAnswers == (n_max_to_reach - 1) % keep same task type for last display even if not answered
+                    taskTypeDisplay(i_question + 1) = taskTypeDisplay(i_question); % take the next element in the sequence
+                end
+                % + consider that because of the Nback procedure, you need
+                % to go +1 more because first answer = any number
                 numberVectorUsedDisplay(i_question + 1) = numberVector(jCorrectAnswers + 1);
             end
-        elseif iCorrectAnswers == (n_max_to_reach - 1) % last number is set to zero with fixed colour
-            taskTypeDisplay(i_question + 1) = 2;
-            numberVectorUsedDisplay(i_question + 1) = 0;
+%         elseif iCorrectAnswers == (n_max_to_reach - 1) % last number is set to zero with fixed colour
+%             taskTypeDisplay(i_question + 1) = 2;
+%             numberVectorUsedDisplay(i_question + 1) = 0;
         end % no need to update task type for the next question if the end has been reached
         
         %% update variables of interest
@@ -299,7 +312,8 @@ end % keep performing until number of subsequent answers reaches threshold prede
 questions_done = ~isnan(sideAnswer);
 % record question parameters
 mentalE_perf.numberVector   = numberVector;
-mentalE_perf.numberVectorUsed = numberVectorUsedDisplay(questions_done);
+mentalE_perf.numberVectorUsedDisplay = numberVectorUsedDisplay(questions_done);
+mentalE_perf.numberVectorUsedPerf = numberVectorUsedPerf(questions_done);
 mentalE_perf.taskTypeDisplay= taskTypeDisplay(questions_done);
 mentalE_perf.taskTypePerf   = taskTypePerf(questions_done);
 mentalE_perf.sideAnswer     = sideAnswer(questions_done);
@@ -311,7 +325,7 @@ mentalE_perf.n_errorsMade   = jErrorsMade;
 % record number of questions answered and how many were correct
 mentalE_perf.n_questions_performed = i_question - 1;
 mentalE_perf.n_correctAnswersForDisplay = iCorrectAnswers;
-mentalE_perf.n_correctAnswersProvided = jCorrectAnswers;
+mentalE_perf.n_correctAnswersProvided = jCorrectAnswers - 1; % remove 1 for the first answer (=just pressing any button)
 % record if trial was achieved or interrompted due to time limit (=failure)
 if iCorrectAnswers == n_max_to_reach % reached the top
     trial_success = true;
