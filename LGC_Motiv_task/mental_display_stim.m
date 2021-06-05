@@ -1,10 +1,10 @@
 function[onset_stim] = mental_display_stim(scr, stim,...
     startAngle, endAngle,...
-    sideQuestion, taskType, numberValue, mental_n_col,...
+    sideQuestion, taskTypeDisplay, taskTypePerf, numberValue, mental_n_col,...
     learning_instructions)
 % [onset_stim] = mental_display_stim(scr, stim,...
 %     startAngle, endAngle,...
-%     sideQuestion, taskType, numberValue, mental_n_col,...
+%     sideQuestion, taskTypeDisplay, taskTypePerf, numberValue, mental_n_col,...
 %     learning_instructions)
 % mental_display_stim will display the arc, number to solve,
 % instructions and reward level (all relevant info) according to the inputs
@@ -20,7 +20,11 @@ function[onset_stim] = mental_display_stim(scr, stim,...
 % sideQuestion: structure explaining which side corresponds to which answer
 % for each task (odd/even; lower/higher than 5 vs left/right)
 %
-% taskType: (0) odd/even; (1): lower/higher than 5
+% taskTypeDisplay: (0) odd/even; (1): lower/higher than 5; (2) last question (for N-back version can be ignored = 0 in white)
+% (type of the question displayed on screen which determines the number colour)
+%
+% taskTypePerf: (0) odd/even; (1): lower/higher than 5; (2) first question: any button press
+% (type of the question to answer currently independent of the current display)
 %
 % numberValue: number for the current question
 %
@@ -41,6 +45,7 @@ function[onset_stim] = mental_display_stim(scr, stim,...
 
 %% extract relevant parameters
 window = scr.window;
+blackCol = scr.colours.black;
 % xScreenCenter = scr.xCenter;
 yScreenCenter = scr.yCenter;
 arcCurrLevelColor = stim.difficulty.currLevelColor;
@@ -53,12 +58,20 @@ Screen('FillArc', window,...
     startAngle,...
     endAngle - startAngle);
 
+%%
+if taskTypePerf == 2 % for first question, add a short text to precise that any button press is ok
+    DrawFormattedText(window, 'Appuyez pour commencer.',...
+            'center', yScreenCenter*15/8, blackCol);
+end
+
 %% number to solve
-switch taskType
+switch taskTypeDisplay
     case 0 % odd/even
         textColor = mental_n_col.oddEven;
     case 1 % lower/higher than 5
         textColor = mental_n_col.lowHigh;
+    case 2 % last question
+        textColor = mental_n_col.lastQuestion;
 end
 Screen('TextSize', window, scr.textSize.mentalNumber);
 DrawFormattedText(window, num2str(numberValue),...
@@ -68,7 +81,7 @@ Screen('TextSize', window, scr.textSize.baseline);
 %% instructions
 switch learning_instructions
     case {'fullInstructions','partialInstructions'}
-        mental_effort_task_question_display(scr, taskType, sideQuestion, textColor, learning_instructions);
+        mental_effort_task_question_display(scr, taskTypeDisplay, sideQuestion, textColor, learning_instructions);
 end
 
 %% display on screen

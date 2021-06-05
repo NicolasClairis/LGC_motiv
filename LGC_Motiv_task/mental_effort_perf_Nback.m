@@ -1,14 +1,15 @@
-function[mentalE_perf, trial_success, onsets] = mental_effort_perf(scr, stim, key,...
+function[mentalE_perf, trial_success, onsets] = mental_effort_perf_Nback(scr, stim, key,...
     numberVector, mentalE_prm, n_max_to_reach,...
     learning_col, learning_instructions, time_limit, t_max)
-%[mentalE_perf, trial_success, onsets] = mental_effort_perf(scr, stim, key,...
+%[mentalE_perf, trial_success, onsets] = mental_effort_perf_Nback(scr, stim, key,...
 %     numberVector, mentalE_prm, n_max_to_reach,...
 %     curr_learning_col, curr_learning_instructions, time_limit, t_max)
 %
-% mental_effort_perf corresponds to the actual performance. Can be
+% mental_effort_perf_Nback corresponds to the actual performance. Can be
 % used both for learning period (with or without instructions) and for the
 % actual task. It corresponds to one mental effort trial (either learning,
-% calibration or task trial).
+% calibration or task trial). The task uses a 1-back like procedure where
+% the question asked is based on the previously displayed number
 %
 % INPUTS
 % scr: structure with screen parameters
@@ -98,43 +99,48 @@ end
 %% define moments when the task switches: should be unpredictable and
 % distance between 2 switches should vary between 1 and 4
 n_questions = size(numberVector,2);
-[taskType,...
+[taskTypeDisplay,...
+    taskTypePerf,...
     rt,...
     sideAnswer,...
     goodOrBadAnswer,...
-    numberVectorUsed] = deal( NaN(1, n_questions));
+    numberVectorUsedDisplay,...
+    numberVectorUsedPerf] = deal( NaN(1, n_questions));
 
 % define first trial task type
 switch learning_col
     case 'all'
-        taskType(1) = random_binary; % define randomly the nature of the first trial
+        taskTypeDisplay(1) = random_binary; % define randomly the nature of the first trial
     case 'col1' % start with colour 1
         switch mentalE_prm.mental_n_col.col1
             case 'oddEven'
-                taskType(1) = 0;
+                taskTypeDisplay(1) = 0;
             case 'lowHigh'
-                taskType(1) = 1;
+                taskTypeDisplay(1) = 1;
         end
     case 'col2' % start with colour 2
         switch mentalE_prm.mental_n_col.col2
             case 'oddEven'
-                taskType(1) = 0;
+                taskTypeDisplay(1) = 0;
             case 'lowHigh'
-                taskType(1) = 1;
+                taskTypeDisplay(1) = 1;
         end
 end
 
 % define a STAY/SWITCH sequence
-task_seq = mental_effort_task_switches(taskType(1), n_max_to_reach, n_switch);
+task_seq = mental_effort_task_switches(taskTypeDisplay(1), n_max_to_reach, n_switch);
 % define first number which will appear on screen
-numberVectorUsed(1) = numberVector(1);
+numberVectorUsedDisplay(1) = numberVector(1);
+% precise first trial perf = any button is ok
+taskTypePerf(1) = 2;
+numberVectorUsedPerf(1) = NaN;
 
 %% initialize the counters
 % number of subsequent correct answers
 iCorrectAnswers = 0; % indicator to know when trial is considered as a success
 % (note that iCorrectAnswers will decrease for each error made, but not
 % jCorrectAnswers)
-jCorrectAnswers = 0; % indicator tracking actual real number of correct answers
+jCorrectAnswers = 0; % indicator tracking actual real number of correct answers (used for selection of the number to display)
 % number of questions answered
 i_question = 1;
 
@@ -146,7 +152,7 @@ KbReleaseWait;
 %% initial display to get timing of the start
 [onsetTrial] = mental_display_stim(scr, stim,...
     startAngle_currentTrial, endAngle,...
-    sideQuestion, taskType(1), taskType(1), numberVector(1), mental_n_col,...
+    sideQuestion, taskTypeDisplay(1), taskTypePerf(1), numberVector(1), mental_n_col,...
     learning_instructions);
 onset_question_tmp = onsetTrial; % for the first question
 onsets.nb_1 = onsetTrial;
@@ -165,10 +171,6 @@ while (iCorrectAnswers < n_max_to_reach) &&...
         (time_limit == false) )
     timeNow = GetSecs;
     
-    % trial informations
-    numberValue_tmp = numberVectorUsed(i_question);
-    taskType_tmp = taskType(i_question);
-    
     % display instructions after 2 errors have been made (in case where no
     % instructions on screen)
     if strcmp(learning_instructions,'noInstructions') &&...
@@ -185,7 +187,7 @@ while (iCorrectAnswers < n_max_to_reach) &&...
     
     onset_stim = mental_display_stim(scr, stim,...
         startAngle, endAngle,...
-        sideQuestion, taskType_tmp, taskType_tmp, numberValue_tmp, mental_n_col,...
+        sideQuestion, taskTypeDisplay(i_question), taskTypePerf(i_question), numberVectorUsedDisplay(i_question), mental_n_col,...
         learning_instructions_bis);
     
     %% record onset
@@ -202,9 +204,9 @@ while (iCorrectAnswers < n_max_to_reach) &&...
         % which belongs to the 2 buttons of interest has been pressed
         
         if keyCode(key.left) == 1 && keyCode(key.right) == 0 % left answer
-            sideAnswer_tmp = -1;
+            sideAnswer(i_question) = -1;
         elseif keyCode(key.left) == 0 && keyCode(key.right) == 1 % right answer
-            sideAnswer_tmp = 1;
+            sideAnswer(i_question) = 1;
         end % left or right answer? (ignore the rest = if another key has
         % been pressed or if both pressed in the same time for ex.)
         
@@ -214,51 +216,78 @@ while (iCorrectAnswers < n_max_to_reach) &&...
         KbReleaseWait();
         
         %% determine whether the response was correct or not
-        [answerCorrect_tmp] = mental_effort_answer_correct(taskType_tmp,...
-            numberValue_tmp,...
-            sideAnswer_tmp, sideQuestion);
+        [goodOrBadAnswer(i_question)] = mental_effort_answer_correct(taskTypePerf(i_question),...
+            numberVectorUsedPerf(i_question),...
+            sideAnswer(i_question), sideQuestion);
         
-        switch answerCorrect_tmp
-            case 0 % error made
-                
-                % version where you reset the timer whenever they make an
-                % error
-                % startAngle = startAngle_currentTrial; % re-initialize
-                % i_max_correct = 0; % if wrong, set back indicators to zero: needs to restart
-                
-                
-                if iCorrectAnswers > 0 % keep equal to zero if you made a mistake the first trial
-                    iCorrectAnswers = iCorrectAnswers - 1; % if wrong, decrement the total number of correct answers
-                    % just (-1) decrement after an error (otherwise too hard)
-                    startAngle = startAngle - totalAngleDistance/n_max_to_reach;
-                else % if error made during the first trial should not move
-                    iCorrectAnswers = 0;
-                    startAngle = startAngle_currentTrial; % if error made during the first question, keep at initial location
-                    % otherwise it means that you increase the difficulty
-                    % when they make an error for the first question
-                end
-                jErrorsMade = jErrorsMade + 1;
-            case 1 % if correct, update the count of correct answers and the angle display
-                startAngle = startAngle + totalAngleDistance/n_max_to_reach;
-                iCorrectAnswers = iCorrectAnswers + 1;
+        %% update counters for number of correct answers
+        if i_question == 1 % first answer (provide any answer left or right)
+            if goodOrBadAnswer(i_question) == 1
                 jCorrectAnswers = jCorrectAnswers + 1;
+            end
+        elseif i_question > 1
+            % do not update the counter for the first question where they just
+            % should press any button
+            
+            switch goodOrBadAnswer(i_question)
+                case 0 % error made
+                    
+                    % version where you reset the timer whenever they make an
+                    % error
+                    % startAngle = startAngle_currentTrial; % re-initialize
+                    % i_max_correct = 0; % if wrong, set back indicators to zero: needs to restart
+                    
+                    
+                    if iCorrectAnswers > 0 % keep equal to zero if you made a mistake the first trial
+                        iCorrectAnswers = iCorrectAnswers - 1; % if wrong, decrement the total number of correct answers
+                        % just (-1) decrement after an error (otherwise too hard)
+                        startAngle = startAngle - totalAngleDistance/n_max_to_reach;
+                    else % if error made during the first trial should not move
+                        iCorrectAnswers = 0;
+                        startAngle = startAngle_currentTrial; % if error made during the first question, keep at initial location
+                        % otherwise it means that you increase the difficulty
+                        % when they make an error for the first question
+                    end
+                    jErrorsMade = jErrorsMade + 1;
+                case 1 % if correct, update the count of correct answers and the angle display
+                    startAngle = startAngle + totalAngleDistance/n_max_to_reach;
+                    iCorrectAnswers = iCorrectAnswers + 1;
+                    jCorrectAnswers = jCorrectAnswers + 1;
+            end
         end
-        
         %% define the task type and the number for the next question
         if iCorrectAnswers < n_max_to_reach
             % once the expected amount of correct answers has been reached,
             % there is no need to make more switches
             
-            if answerCorrect_tmp == 0
+            if goodOrBadAnswer(i_question) == 0
                 % no task switch after an error to keep the task easy after an error has been made
-                taskType(i_question + 1) = taskType(i_question);
+                taskTypeDisplay(i_question + 1) = taskTypeDisplay(i_question);
                 % no change of number after an error to keep the task easy
                 % after an error has been made
-                numberVectorUsed(i_question + 1) = numberVectorUsed(i_question);
-            else
-                taskType(i_question + 1) = task_seq(iCorrectAnswers + 1);
-                numberVectorUsed(i_question + 1) = numberVector(jCorrectAnswers + 1);
+                numberVectorUsedDisplay(i_question + 1) = numberVectorUsedDisplay(i_question);
+                % keep same info for performance as in the last question if
+                % an error has been made
+                numberVectorUsedPerf(i_question + 1)    = numberVectorUsedPerf(i_question);
+                taskTypePerf(i_question + 1)            = taskTypePerf(i_question);
+            elseif goodOrBadAnswer(i_question) == 1 % correct answer => update
+                if iCorrectAnswers < (n_max_to_reach - 1)
+                    taskTypeDisplay(i_question + 1) = task_seq(iCorrectAnswers + 2); % take the next element in the sequence
+                elseif iCorrectAnswers == (n_max_to_reach - 1) % keep same task type for last display even if not answered
+                    taskTypeDisplay(i_question + 1) = taskTypeDisplay(i_question); % take the next element in the sequence
+                end
+                % + consider that because of the Nback procedure, you need
+                % to go +1 more because first answer = any number
+                numberVectorUsedDisplay(i_question + 1) = numberVector(jCorrectAnswers + 1);
+                % update performance information: if the answer provided
+                % was correct, then the next performance question is the
+                % previous display question
+                numberVectorUsedPerf(i_question + 1) = numberVectorUsedDisplay(i_question);
+                taskTypePerf(i_question + 1) = taskTypeDisplay(i_question);
             end
+%         elseif iCorrectAnswers == (n_max_to_reach - 1) % last number is set to zero with fixed colour
+%             taskTypeDisplay(i_question + 1) = 2;
+%             numberVectorUsedDisplay(i_question + 1) = 0;
         end % no need to update task type for the next question if the end has been reached
         
         %% update variables of interest
@@ -266,9 +295,6 @@ while (iCorrectAnswers < n_max_to_reach) &&...
         % RT
         rt(i_question) = timeAnswer - onset_question_tmp;
         onset_question_tmp = timeAnswer; % for the next question, the onset corresponds to the answer of the previous question
-        % record side and nature of the answer provided (correct/wrong?)
-        sideAnswer(i_question) = sideAnswer_tmp;
-        goodOrBadAnswer(i_question) = answerCorrect_tmp;
         
         %% update total count of answers in any case
         i_question = i_question + 1;
@@ -282,8 +308,10 @@ end % keep performing until number of subsequent answers reaches threshold prede
 questions_done = ~isnan(sideAnswer);
 % record question parameters
 mentalE_perf.numberVector   = numberVector;
-mentalE_perf.numberVectorUsed = numberVectorUsed(questions_done);
-mentalE_perf.taskType       = taskType(questions_done);
+mentalE_perf.numberVectorUsedDisplay = numberVectorUsedDisplay(questions_done);
+mentalE_perf.numberVectorUsedPerf = numberVectorUsedPerf(questions_done);
+mentalE_perf.taskTypeDisplay= taskTypeDisplay(questions_done);
+mentalE_perf.taskTypePerf   = taskTypePerf(questions_done);
 mentalE_perf.sideAnswer     = sideAnswer(questions_done);
 mentalE_perf.isGoodAnswer   = goodOrBadAnswer(questions_done);
 mentalE_perf.rt             = rt(questions_done);
@@ -293,7 +321,7 @@ mentalE_perf.n_errorsMade   = jErrorsMade;
 % record number of questions answered and how many were correct
 mentalE_perf.n_questions_performed = i_question - 1;
 mentalE_perf.n_correctAnswersForDisplay = iCorrectAnswers;
-mentalE_perf.n_correctAnswersProvided = jCorrectAnswers;
+mentalE_perf.n_correctAnswersProvided = jCorrectAnswers - 1; % remove 1 for the first answer (=just pressing any button)
 % record if trial was achieved or interrompted due to time limit (=failure)
 if iCorrectAnswers == n_max_to_reach % reached the top
     trial_success = true;

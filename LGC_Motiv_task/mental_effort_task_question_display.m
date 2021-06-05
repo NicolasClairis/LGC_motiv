@@ -69,7 +69,7 @@ switch task_trialType
         DrawFormattedText(window,'impair', x_impair, y_coord, textCol );
 %         DrawFormattedText(window,'even', x_pair, y_coord, textCol );
 %         DrawFormattedText(window,'OR', 'center', y_coord, textCol );
-%         DrawFormattedText(window,'odd', x_impair, y_coord, textCol );        
+%         DrawFormattedText(window,'odd', x_impair, y_coord, textCol );
     case 1 % higher/lower than 5?
         if strcmp(learning_instructions,'fullInstructions')
             DrawFormattedText(window, 'Chiffre < ou > 5?',...
@@ -88,6 +88,18 @@ switch task_trialType
         DrawFormattedText(window,'< 5', x_low, y_coord, textCol );
         DrawFormattedText(window,'OU', 'center', y_coord, textCol );
         DrawFormattedText(window,'> 5', x_high, y_coord, textCol );
+        
+    case 2 % first trial for 1-back version
+        if strcmp(learning_instructions,'fullInstructions')
+            DrawFormattedText(window, 'Appuyer sur n''importe quel bouton',...
+                'center', yScreenCenter/3, textCol);
+%             DrawFormattedText(window, 'Press any button',...
+%                 'center', yScreenCenter/3, textCol);
+        end
+
+        DrawFormattedText(window,'Appuyer', x_left, y_coord, textCol );
+        DrawFormattedText(window,'OU', 'center', y_coord, textCol );
+        DrawFormattedText(window,'Appuyer', x_right, y_coord, textCol );
 end % task type
     
 end % function
