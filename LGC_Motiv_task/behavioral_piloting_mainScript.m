@@ -208,7 +208,7 @@ if strcmp(taskToPerform.mental.learning,'on')
     end % learning colour loop
     
     
-    %% extended learning of each difficulty level
+    %% extended learning for each difficulty level (in N-back version now)
     mentalE_prm_extendedLearning = mentalE_prm_learning_and_calib;
     n_repeatsPerEffortLevel = 30;
     % define conditions for the extended learning
@@ -231,7 +231,7 @@ if strcmp(taskToPerform.mental.learning,'on')
     for iExtendedLearningTrial = 1:n_extendedLearningTrials
         % define start angle according to current difficulty level
         mentalE_prm_extendedLearning.startAngle = stim.difficulty.startAngle.(['level_',num2str(learning_effortLevel(iExtendedLearningTrial))]);
-        [learningPerfSummary_Em.extendedLearning.(['trial_',num2str(iExtendedLearningTrial)])] = mental_effort_perf(scr, stim, key_Em,...
+        [learningPerfSummary_Em.extendedLearning.(['trial_',num2str(iExtendedLearningTrial)])] = mental_effort_perf_Nback(scr, stim, key_Em,...
             numberVector_learning(iExtendedLearningTrial,:),...
             mentalE_prm_extendedLearning, learning_effort_n_toReach(iExtendedLearningTrial),...
             'all', 'noInstructions', learning_time_limit);

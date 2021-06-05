@@ -133,6 +133,7 @@ task_seq = mental_effort_task_switches(taskTypeDisplay(1), n_max_to_reach, n_swi
 numberVectorUsedDisplay(1) = numberVector(1);
 % precise first trial perf = any button is ok
 taskTypePerf(1) = 2;
+numberVectorUsedPerf(1) = NaN;
 
 %% initialize the counters
 % number of subsequent correct answers
@@ -169,20 +170,6 @@ while (iCorrectAnswers < n_max_to_reach) &&...
         ( ( (time_limit == true) && (timeNow < onsetTrial + t_max) ) ||...
         (time_limit == false) )
     timeNow = GetSecs;
-    
-    % trial informations
-    % define task to perform (based on previous display)
-    if i_question > 1 % answer to give corresponds to the preceding display for questions coming after the first one
-        %         if iCorrectAnswers < (n_max_to_reach - 1)
-        numberVectorUsedPerf(i_question) = numberVectorUsedDisplay(i_question - 1);
-        taskTypePerf(i_question) = taskTypeDisplay(i_question - 1);
-        %         elseif iCorrectAnswers == (n_max_to_reach - 1) % in this case, if an error is made, the last displayed number is zero
-        %             % => you need to keep track of the number that was presented
-        %             % before this to avoid weird cases
-        %             numberVectorUsedPerf(i_question) = numberVectorUsedPerf(i_question - 1);
-        %             taskTypePerf(i_question) = taskTypePerf(i_question - 1);
-        %         end
-    end
     
     % display instructions after 2 errors have been made (in case where no
     % instructions on screen)
@@ -279,6 +266,10 @@ while (iCorrectAnswers < n_max_to_reach) &&...
                 % no change of number after an error to keep the task easy
                 % after an error has been made
                 numberVectorUsedDisplay(i_question + 1) = numberVectorUsedDisplay(i_question);
+                % keep same info for performance as in the last question if
+                % an error has been made
+                numberVectorUsedPerf(i_question + 1)    = numberVectorUsedPerf(i_question);
+                taskTypePerf(i_question + 1)            = taskTypePerf(i_question);
             elseif goodOrBadAnswer(i_question) == 1 % correct answer => update
                 if iCorrectAnswers < (n_max_to_reach - 1)
                     taskTypeDisplay(i_question + 1) = task_seq(iCorrectAnswers + 2); % take the next element in the sequence
@@ -288,6 +279,11 @@ while (iCorrectAnswers < n_max_to_reach) &&...
                 % + consider that because of the Nback procedure, you need
                 % to go +1 more because first answer = any number
                 numberVectorUsedDisplay(i_question + 1) = numberVector(jCorrectAnswers + 1);
+                % update performance information: if the answer provided
+                % was correct, then the next performance question is the
+                % previous display question
+                numberVectorUsedPerf(i_question + 1) = numberVectorUsedDisplay(i_question);
+                taskTypePerf(i_question + 1) = taskTypeDisplay(i_question);
             end
 %         elseif iCorrectAnswers == (n_max_to_reach - 1) % last number is set to zero with fixed colour
 %             taskTypeDisplay(i_question + 1) = 2;
