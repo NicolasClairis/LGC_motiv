@@ -59,7 +59,7 @@ taskToPerform.physical.task = 'off';
 taskToPerform.mental.learning = 'off';
 taskToPerform.mental.calib = 'on';
 taskToPerform.mental.training = 'on';
-taskToPerform.mental.task = 'off';
+taskToPerform.mental.task = 'on';
 % initialize screen
 [scr, xScreenCenter, yScreenCenter,...
     window, baselineTextSize] = ScreenConfiguration(0, 1);
@@ -91,6 +91,18 @@ n_trainingConditions = length(trainingConditions);
 % load timings for each phase of the experiment
 [trainingTimes_Em, calibTimes_Em, learningTimes_Em, taskTimes_Em, mainTimes] = timings_definition(trainingConditions, n_R_levels, n_E_levels, n_trialsPerSession, 'mental');
 [trainingTimes_Ep, calibTimes_Ep, learningTimes_Ep, taskTimes_Ep, ~] = timings_definition(trainingConditions, n_R_levels, n_E_levels, n_trialsPerSession, 'physical');
+% mental calibration error management: no fail after 3 errors nor
+% mapping display
+% calibration happens in 2 cases:
+% 1) if it hasn't been made yet (during training)
+% 2) before and after each session of the main task
+% therefore you need to set up the parameters for both cases, not just for
+% the main calibration
+if strcmp(taskToPerform.mental.calib,'on') || strcmp(taskToPerform.mental.task,'on')
+    calib_errorLimits_Em.useOfErrorMapping = false;
+    calib_errorLimits_Em.useOfErrorThreshold = false;
+end
+% time for end of session
 t_endSession = mainTimes.endSession;
 
 n_sessions = 4; % 4 blocks in total (2 mental and 2 physical)
@@ -185,6 +197,10 @@ if strcmp(taskToPerform.mental.learning,'on')
     % no time limit for each trial: as long as needed until learning is
     % ok
     learning_time_limit = false;
+    % for learning display the mapping after 2 errors, avoid displaying
+    learning_errorLimits.useOfErrorThreshold = false;
+    learning_errorLimits.useOfErrorMapping = true;
+    learning_errorLimits.errorMappingLimit = 2; % display mapping after this number of errors
     % extract numbers to use for each learning phase
     [numberVector_learning] = mental_numbers(n_learningColours*n_learningInstructions);
     jLearningSession = 0;
@@ -203,7 +219,7 @@ if strcmp(taskToPerform.mental.learning,'on')
             [learningPerfSummary_Em.(learning_sess_nm).(curr_learning_col).(curr_learning_instructions)] = mental_effort_perf(scr, stim, key_Em,...
                 numberVector_learning(jLearningSession,:),...
                 mentalE_prm_learning_and_calib, n_maxLearning.learning_withInstructions,...
-                curr_learning_col, curr_learning_instructions, learning_time_limit);
+                curr_learning_col, curr_learning_instructions, learning_time_limit, learning_errorLimits);
         end % learning instructions loop
     end % learning colour loop
     
@@ -224,6 +240,9 @@ if strcmp(taskToPerform.mental.learning,'on')
     learning_effort_n_toReach = learning_effort_n_toReach(rdmOrderExtendedLearning);
     learning_effortLevel = learning_effortLevel(rdmOrderExtendedLearning);
     [numberVector_learning] = mental_numbers(n_extendedLearningTrials);
+    % error handling for extended learning
+    extendedLearning_errorLimits.useOfErrorThreshold = false;
+    extendedLearning_errorLimits.useOfErrorMapping = false;
     
     % perform the training
     [onsets.endLearningInstructions.(['learning_session',num2str(1 + jLearningSession)]).all.extendedLearning] = mental_learningInstructions(scr,...
@@ -234,7 +253,7 @@ if strcmp(taskToPerform.mental.learning,'on')
         [learningPerfSummary_Em.extendedLearning.(['trial_',num2str(iExtendedLearningTrial)])] = mental_effort_perf_Nback(scr, stim, key_Em,...
             numberVector_learning(iExtendedLearningTrial,:),...
             mentalE_prm_extendedLearning, learning_effort_n_toReach(iExtendedLearningTrial),...
-            'all', 'noInstructions', learning_time_limit);
+            'all', 'noInstructions', learning_time_limit, extendedLearning_errorLimits);
         
         % small break between each answer
         DrawFormattedText(window,'Bravo!','center',yScreenCenter/2,white);
@@ -259,7 +278,7 @@ if strcmp(taskToPerform.mental.calib,'on')
     mentalE_prm_learning_and_calib.startAngle = 0; % for learning always start at zero
     % extract numbers to use for each calibration trial
     [numberVector_calib] = mental_numbers(n_calibTrials_Em);
-    
+        
     % alternatively, use fixed number of correct answers to provide for each effort
     % level
     % repeat calibration until the subject performance is better
@@ -269,7 +288,7 @@ if strcmp(taskToPerform.mental.calib,'on')
     while calibSuccess == false
         calibSession = calibSession + 1;
         [t_min_calib, calibSessionSummary, calibSuccess] = mental_calibTime(scr, stim, key_Em,...
-            numberVector_calib, mentalE_prm_learning_and_calib, n_calibTrials_Em, n_calibMax, calibTimes_Em);
+            numberVector_calib, mentalE_prm_learning_and_calib, n_calibTrials_Em, n_calibMax, calibTimes_Em, calib_errorLimits_Em);
         calibSummary.(['calibSession_',num2str(calibSession)]).calibSummary = calibSessionSummary;
         calibSummary.(['calibSession_',num2str(calibSession)]).calibSuccess = calibSuccess;
         calibSummary.(['calibSession_',num2str(calibSession)]).t_mental_max_perTrial = t_min_calib;
@@ -287,10 +306,13 @@ if strcmp(taskToPerform.mental.training,'on')
         [trainingChoiceOptions_Em_tmp, n_trainingTrials_Em_tmp] = training_options(trainingCond, n_R_levels, n_E_levels, R_money);
         
         % start with reward training alone
-        Em_vars.i_sub = iSubject;
-        Em_vars.n_to_reach = n_to_reach;
+        Em_vars_training.i_sub = iSubject;
+        Em_vars_training.n_to_reach = n_to_reach;
+        % for training: no failures, no display of mapping
+        Em_vars_training.errorLimits.useOfErrorMapping = false;
+        Em_vars_training.errorLimits.useOfErrorThreshold = false;
         [onsets_Em_training.(trainingCond)] = choice_and_perf_trainingInstructions(scr, trainingCond, trainingTimes_Em.instructions);
-        [trainingSummary_Em.(trainingCond)] = choice_and_perf(scr, stim, key_Em, 'mental', Em_vars, R_money,...
+        [trainingSummary_Em.(trainingCond)] = choice_and_perf(scr, stim, key_Em, 'mental', Em_vars_training, R_money,...
             trainingCond, n_trainingTrials_Em_tmp, trainingChoiceOptions_Em_tmp, trainingTimes_Em,...
             results_folder, file_nm_training_Em);
     end % learning condition loop
@@ -357,8 +379,15 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
             % repeat calibration until the subject performance is better
             % than the requested time threshold
             [t_min_calib_preTask.(session_nm), calibSessionSummary_preTask.(session_nm), calibSuccess_preTask.(session_nm)] = mental_calibTime(scr, stim, key_Em,...
-                numberVector_calib_tmp, mentalE_prm_learning_and_calib, n_calibTrials_Em_bis, n_calibMax, calibTimes_Em);
+                numberVector_calib_tmp, mentalE_prm_learning_and_calib, n_calibTrials_Em_bis, n_calibMax, calibTimes_Em, calib_errorLimits_Em);
             % task
+            Em_vars.i_sub = iSubject;
+            Em_vars.n_to_reach = n_to_reach;
+            % for actual task: no display of mapping but consider 3
+            % errors as a trial failure
+            Em_vars.errorLimits.useOfErrorMapping = false;
+            Em_vars.errorLimits.useOfErrorThreshold = true;
+            Em_vars.errorLimits.errorThreshold = 3;
             [perfSummary.mental.(session_nm)] = choice_and_perf(scr, stim, key_Em,...
                 'mental', Em_vars, R_money,...
                 'mainTask', n_trialsPerSession, choiceOptions_tmp, taskTimes_Em,...
@@ -371,7 +400,7 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
             
             % re-measure max perf
             [t_min_calib_postTask.(session_nm), calibSessionSummary_postTask.(session_nm), calibSuccess_postTask.(session_nm)] = mental_calibTime(scr, stim, key_Em,...
-                numberVector_calib_tmp_bis, mentalE_prm_learning_and_calib, n_calibTrials_Em_bis, n_calibMax, calibTimes_Em);
+                numberVector_calib_tmp_bis, mentalE_prm_learning_and_calib, n_calibTrials_Em_bis, n_calibMax, calibTimes_Em, calib_errorLimits_Em);
         end % nature of the task
         
         % display feedback for the current session

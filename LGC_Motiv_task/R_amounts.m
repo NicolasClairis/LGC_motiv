@@ -57,8 +57,8 @@ if strcmp(punishment_yn,'yes')
     end
 end
 
-% also define the amount of money for the loss trials
-R_money.trialFail = 5;
+%% also define the amount of money for the failed trials
+R_money.trialFail = 2;
 disp(['Loss amount = ',num2str(R_money.trialFail),' chf for failure trials']);
 
 end % function
