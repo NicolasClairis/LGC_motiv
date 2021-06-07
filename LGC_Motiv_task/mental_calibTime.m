@@ -183,5 +183,6 @@ calib_summary.t_min_reached_duringCalib = t_min_reached_duringCalib;
 calib_summary.t_min_calibPerf           = t_min_calibPerf;
 calib_summary.onset_fbk                 = onset_fbk;
 calib_summary.onset_fbk_press           = onset_fbk_press;
+calib_summary.mentalE_perf              = mentalE_perf;
 
 end % function
