@@ -262,7 +262,7 @@ if strcmp(taskToPerform.mental.learning,'on')
     
     % perform the training
     [onsets.endLearningInstructions.(['learning_session',num2str(1 + jLearningSession)]).all.extendedLearning] = mental_learningInstructions(scr,...
-                'all', 'extendedLearning', mentalE_prm_learning_and_calib);
+        'all', 'extendedLearning', mentalE_prm_learning_and_calib);
     for iExtendedLearningTrial = 1:n_extendedLearningTrials
         % define start angle according to current difficulty level
         mentalE_prm_extendedLearning.startAngle = stim.difficulty.startAngle.(['level_',num2str(learning_effortLevel(iExtendedLearningTrial))]);
@@ -277,7 +277,7 @@ if strcmp(taskToPerform.mental.learning,'on')
         [~,~,timeExtendedLearningFbk.(['trial_',num2str(iExtendedLearningTrial)])] = Screen(window,'Flip');
         WaitSecs(learningTimes_Em.learning_rest);
         disp([num2str(iExtendedLearningTrial),'/',num2str(n_extendedLearningTrials),' learning trial done']);
-    end % trial loop  
+    end % trial loop
 end
 
 %% calibration mental
@@ -327,7 +327,7 @@ if strcmp(taskToPerform.mental.training,'on')
             results_folder, file_nm_training_Em);
     end % learning condition loop
 end
-   
+
 %% actual task
 
 if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,'on')
@@ -432,8 +432,8 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
                         WaitSecs(t_endSession);
                     end
                 end
-                 totalGain = totalGain + finalGain;
-                 finalGain = 0;
+                totalGain = totalGain + finalGain;
+                finalGain = 0;
             end % session loop
         end % end of all sessions for 1 effort lvl
     end
@@ -461,10 +461,11 @@ end
 % actual performance in the main task sessions
 % record physical main task data
 if strcmp(taskToPerform.physical.task,'on')
-    for iEffort= 1:3 % for all effort levels
+    for iEffort= 1:length(E_right) % for all effort levels
         for iSession = 1:n_sessions/2 % for the physical sessions
-            % save data in all and reformat it in a specific order
+            
             for iRepeat = 1:2
+                % save data in all and reformat it in a specific order
                 all.physical.(['EffortLvl_',num2str(iEffort)]).(['session_nb',num2str(iSession)]).(['repeat_nb',num2str(iRepeat)]).perfSummary = perfSummary.physical.(['repeat_nb',num2str(iRepeat)]).(['session_nb',num2str(iSession)]).(['Effort_lvl',(num2str(iEffort))]);
             end
         end
@@ -472,10 +473,12 @@ if strcmp(taskToPerform.physical.task,'on')
 end
 % record mental main task data
 if strcmp(taskToPerform.mental.task,'on')
-    for iEffort= 1:3 % for all effort levels
+    for iEffort= 1:length(E_right) % for all effort levels
         for iSession = 1:n_sessions/2 % for the mental sessions
-            % save data in all and reformat it in a specific order
-            all.mental.(['EffortLvl_',num2str(iEffort)]).(['session_nb',num2str(iSession)]).(['repeat_nb',num2str(iRepeat)]).perfSummary = perfSummary.mental.(['repeat_nb',num2str(iRepeat)]).(['session_nb',num2str(iSession)]).(['Effort_lvl',(num2str(iEffort))]);
+            for iRepeat = 1:2
+                % save data in all and reformat it in a specific order
+                all.mental.(['EffortLvl_',num2str(iEffort)]).(['session_nb',num2str(iSession)]).(['repeat_nb',num2str(iRepeat)]).perfSummary = perfSummary.mental.(['repeat_nb',num2str(iRepeat)]).(['session_nb',num2str(iSession)]).(['Effort_lvl',(num2str(iEffort))]);
+            end
         end
     end
 end
