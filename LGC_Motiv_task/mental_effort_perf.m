@@ -1,9 +1,9 @@
 function[mentalE_perf, trial_success, onsets] = mental_effort_perf(scr, stim, key,...
     numberVector, mentalE_prm, n_max_to_reach,...
-    learning_col, learning_instructions, time_limit, t_max)
+    learning_col, learning_instructions, time_limit, t_max, errorLimits)
 %[mentalE_perf, trial_success, onsets] = mental_effort_perf(scr, stim, key,...
 %     numberVector, mentalE_prm, n_max_to_reach,...
-%     curr_learning_col, curr_learning_instructions, time_limit, t_max)
+%     curr_learning_col, curr_learning_instructions, time_limit, t_max, errorLimits)
 %
 % mental_effort_perf corresponds to the actual performance. Can be
 % used both for learning period (with or without instructions) and for the
@@ -55,6 +55,17 @@ function[mentalE_perf, trial_success, onsets] = mental_effort_perf(scr, stim, ke
 % t_max: maximum time allowed to reach the requested number of correct
 % answers
 %
+% errorLimits: structure containing information about way to handle
+% errors
+%   .useOfErrorThreshold: if true, means the trial is considered a failure,
+%   if the number of errors set as a threshold is reached
+%   .errorThreshold: consider the trial a failure if more than this number
+%   of errors are made
+%   .useOfErrorMapping: if true, display the mapping where to answer and
+%   type of the trial after a given number of errors has been made
+%   .errorMappingLimit: display the mapping after this number of errors has
+%   been reached
+%
 % OUTPUTS
 % mentalE_perf: structure with summary of mental effort performance
 %   .nTrials: number of trials it took to reach a correct
@@ -93,6 +104,16 @@ if strcmp(learning_col,'all')
     end
 else % no switch if learning session focusing on one single colour
     n_switch = 0;
+end
+
+% extract error management variables
+useOfErrorThreshold = errorLimits.useOfErrorThreshold;
+if useOfErrorThreshold == true
+    errorThreshold = errorLimits.errorThreshold;
+end
+useOfErrorMapping = errorLimits.useOfErrorMapping;
+if useOfErrorMapping == true
+    errorMappingLimit = errorLimits.errorMappingLimit;
 end
 
 %% define moments when the task switches: should be unpredictable and
@@ -162,30 +183,35 @@ jErrorsMade = 0;
 % defined)
 while (iCorrectAnswers < n_max_to_reach) &&...
         ( ( (time_limit == true) && (timeNow < onsetTrial + t_max) ) ||...
-        (time_limit == false) )
+        (time_limit == false) ) &&...
+        ( ( (useOfErrorThreshold == true) && (jErrorsMade < errorThreshold) ) ||...
+        (useOfErrorThreshold == false) )
+    %% get timing
     timeNow = GetSecs;
     
-    % trial informations
-    numberValue_tmp = numberVectorUsed(i_question);
-    taskType_tmp = taskType(i_question);
-    
-    % display instructions after 2 errors have been made (in case where no
+    %% display instructions after 2 errors have been made (in case where no
     % instructions on screen)
-    if strcmp(learning_instructions,'noInstructions') &&...
-            i_question > 1 &&...
-            mod(jErrorsMade, 2) == 0 &&...
-            goodOrBadAnswer(i_question  - 1) == 0
-        % will display instructions for the next question everytime after
-        % 2 errors (can be adapted easily to remain for th whole trial if
-        % necessary)
-        learning_instructions_bis = 'fullInstructions';
-    else
-        learning_instructions_bis = learning_instructions;
+    switch useOfErrorMapping
+        case true
+            if strcmp(learning_instructions,'noInstructions') &&...
+                    i_question > 1 &&...
+                    mod(jErrorsMade, errorMappingLimit) == 0 &&...
+                    goodOrBadAnswer(i_question  - 1) == 0
+                % will display instructions for the next question everytime after
+                % 2 errors (can be adapted easily to remain for th whole trial if
+                % necessary)
+                learning_instructions_bis = 'fullInstructions';
+            else
+                learning_instructions_bis = learning_instructions;
+            end
+        case false
+            learning_instructions_bis = learning_instructions;
     end
     
+    %% display stimulus
     onset_stim = mental_display_stim(scr, stim,...
         startAngle, endAngle,...
-        sideQuestion, taskType_tmp, taskType_tmp, numberValue_tmp, mental_n_col,...
+        sideQuestion, taskType(i_question), taskType(i_question), numberVectorUsed(i_question), mental_n_col,...
         learning_instructions_bis);
     
     %% record onset
@@ -202,9 +228,9 @@ while (iCorrectAnswers < n_max_to_reach) &&...
         % which belongs to the 2 buttons of interest has been pressed
         
         if keyCode(key.left) == 1 && keyCode(key.right) == 0 % left answer
-            sideAnswer_tmp = -1;
+            sideAnswer(i_question) = -1;
         elseif keyCode(key.left) == 0 && keyCode(key.right) == 1 % right answer
-            sideAnswer_tmp = 1;
+            sideAnswer(i_question) = 1;
         end % left or right answer? (ignore the rest = if another key has
         % been pressed or if both pressed in the same time for ex.)
         
@@ -214,11 +240,11 @@ while (iCorrectAnswers < n_max_to_reach) &&...
         KbReleaseWait();
         
         %% determine whether the response was correct or not
-        [answerCorrect_tmp] = mental_effort_answer_correct(taskType_tmp,...
-            numberValue_tmp,...
-            sideAnswer_tmp, sideQuestion);
+        [goodOrBadAnswer(i_question)] = mental_effort_answer_correct(taskType(i_question),...
+            numberVectorUsed(i_question),...
+            sideAnswer(i_question), sideQuestion);
         
-        switch answerCorrect_tmp
+        switch goodOrBadAnswer(i_question)
             case 0 % error made
                 
                 % version where you reset the timer whenever they make an
@@ -249,7 +275,7 @@ while (iCorrectAnswers < n_max_to_reach) &&...
             % once the expected amount of correct answers has been reached,
             % there is no need to make more switches
             
-            if answerCorrect_tmp == 0
+            if goodOrBadAnswer(i_question) == 0
                 % no task switch after an error to keep the task easy after an error has been made
                 taskType(i_question + 1) = taskType(i_question);
                 % no change of number after an error to keep the task easy
@@ -266,9 +292,6 @@ while (iCorrectAnswers < n_max_to_reach) &&...
         % RT
         rt(i_question) = timeAnswer - onset_question_tmp;
         onset_question_tmp = timeAnswer; % for the next question, the onset corresponds to the answer of the previous question
-        % record side and nature of the answer provided (correct/wrong?)
-        sideAnswer(i_question) = sideAnswer_tmp;
-        goodOrBadAnswer(i_question) = answerCorrect_tmp;
         
         %% update total count of answers in any case
         i_question = i_question + 1;

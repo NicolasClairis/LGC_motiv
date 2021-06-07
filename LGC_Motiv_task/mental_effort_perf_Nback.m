@@ -1,9 +1,9 @@
 function[mentalE_perf, trial_success, onsets] = mental_effort_perf_Nback(scr, stim, key,...
     numberVector, mentalE_prm, n_max_to_reach,...
-    learning_col, learning_instructions, time_limit, t_max)
+    learning_col, learning_instructions, time_limit, t_max, errorLimits)
 %[mentalE_perf, trial_success, onsets] = mental_effort_perf_Nback(scr, stim, key,...
 %     numberVector, mentalE_prm, n_max_to_reach,...
-%     curr_learning_col, curr_learning_instructions, time_limit, t_max)
+%     curr_learning_col, curr_learning_instructions, time_limit, t_max, errorLimits)
 %
 % mental_effort_perf_Nback corresponds to the actual performance. Can be
 % used both for learning period (with or without instructions) and for the
@@ -56,6 +56,17 @@ function[mentalE_perf, trial_success, onsets] = mental_effort_perf_Nback(scr, st
 % t_max: maximum time allowed to reach the requested number of correct
 % answers
 %
+% errorLimits: structure containing information about way to handle
+% errors
+%   .useOfErrorThreshold: if true, means the trial is considered a failure,
+%   if the number of errors set as a threshold is reached
+%   .errorThreshold: consider the trial a failure if more than this number
+%   of errors are made
+%   .useOfErrorMapping: if true, display the mapping where to answer and
+%   type of the trial after a given number of errors has been made
+%   .errorMappingLimit: display the mapping after this number of errors has
+%   been reached
+%
 % OUTPUTS
 % mentalE_perf: structure with summary of mental effort performance
 %   .nTrials: number of trials it took to reach a correct
@@ -94,6 +105,16 @@ if strcmp(learning_col,'all')
     end
 else % no switch if learning session focusing on one single colour
     n_switch = 0;
+end
+
+% extract error management variables
+useOfErrorThreshold = errorLimits.useOfErrorThreshold;
+if useOfErrorThreshold == true
+    errorThreshold = errorLimits.errorThreshold;
+end
+useOfErrorMapping = errorLimits.useOfErrorMapping;
+if useOfErrorMapping == true
+    errorMappingLimit = errorLimits.errorMappingLimit;
 end
 
 %% define moments when the task switches: should be unpredictable and
@@ -165,26 +186,36 @@ jErrorsMade = 0;
 
 % loop until relevant number of subsequent correct answers has been reached
 % or that max time limit has been reached (if one time limit has been
-% defined)
+% defined) or that total tolerated number of errors has been reached (if
+% there is a time limit and a threshold on the number of errors)
 while (iCorrectAnswers < n_max_to_reach) &&...
         ( ( (time_limit == true) && (timeNow < onsetTrial + t_max) ) ||...
-        (time_limit == false) )
+        (time_limit == false) ) &&...
+        ( ( (useOfErrorThreshold == true) && (jErrorsMade < errorThreshold) ) ||...
+        (useOfErrorThreshold == false) )
+    %% get timing
     timeNow = GetSecs;
     
-    % display instructions after 2 errors have been made (in case where no
+    %% display instructions after 2 errors have been made (in case where no
     % instructions on screen)
-    if strcmp(learning_instructions,'noInstructions') &&...
-            i_question > 1 &&...
-            mod(jErrorsMade, 2) == 0 &&...
-            goodOrBadAnswer(i_question  - 1) == 0
-        % will display instructions for the next question everytime after
-        % 2 errors (can be adapted easily to remain for th whole trial if
-        % necessary)
-        learning_instructions_bis = 'fullInstructions';
-    else
-        learning_instructions_bis = learning_instructions;
+    switch useOfErrorMapping
+        case true
+            if strcmp(learning_instructions,'noInstructions') &&...
+                    i_question > 1 &&...
+                    mod(jErrorsMade, errorMappingLimit) == 0 &&...
+                    goodOrBadAnswer(i_question  - 1) == 0
+                % will display instructions for the next question everytime after
+                % 2 errors (can be adapted easily to remain for th whole trial if
+                % necessary)
+                learning_instructions_bis = 'fullInstructions';
+            else
+                learning_instructions_bis = learning_instructions;
+            end
+        case false
+            learning_instructions_bis = learning_instructions;
     end
     
+    %% display stimulus
     onset_stim = mental_display_stim(scr, stim,...
         startAngle, endAngle,...
         sideQuestion, taskTypeDisplay(i_question), taskTypePerf(i_question), numberVectorUsedDisplay(i_question), mental_n_col,...
@@ -237,7 +268,6 @@ while (iCorrectAnswers < n_max_to_reach) &&...
                     % startAngle = startAngle_currentTrial; % re-initialize
                     % i_max_correct = 0; % if wrong, set back indicators to zero: needs to restart
                     
-                    
                     if iCorrectAnswers > 0 % keep equal to zero if you made a mistake the first trial
                         iCorrectAnswers = iCorrectAnswers - 1; % if wrong, decrement the total number of correct answers
                         % just (-1) decrement after an error (otherwise too hard)
@@ -263,12 +293,12 @@ while (iCorrectAnswers < n_max_to_reach) &&...
             if goodOrBadAnswer(i_question) == 0
                 % no task switch after an error to keep the task easy after an error has been made
                 taskTypeDisplay(i_question + 1) = taskTypeDisplay(i_question);
-                % no change of number after an error to keep the task easy
-                % after an error has been made
-                numberVectorUsedDisplay(i_question + 1) = numberVectorUsedDisplay(i_question);
-                % keep same info for performance as in the last question if
-                % an error has been made
-                numberVectorUsedPerf(i_question + 1)    = numberVectorUsedPerf(i_question);
+%                 % no change of number after an error to keep the task easy
+%                 % after an error has been made
+%                 numberVectorUsedDisplay(i_question + 1) = numberVectorUsedDisplay(i_question);
+%                 % keep same info for performance as in the last question if
+%                 % an error has been made
+%                 numberVectorUsedPerf(i_question + 1)    = numberVectorUsedPerf(i_question);
                 taskTypePerf(i_question + 1)            = taskTypePerf(i_question);
             elseif goodOrBadAnswer(i_question) == 1 % correct answer => update
                 if iCorrectAnswers < (n_max_to_reach - 1)
@@ -276,18 +306,19 @@ while (iCorrectAnswers < n_max_to_reach) &&...
                 elseif iCorrectAnswers == (n_max_to_reach - 1) % keep same task type for last display even if not answered
                     taskTypeDisplay(i_question + 1) = taskTypeDisplay(i_question); % take the next element in the sequence
                 end
-                % + consider that because of the Nback procedure, you need
-                % to go +1 more because first answer = any number
-                numberVectorUsedDisplay(i_question + 1) = numberVector(jCorrectAnswers + 1);
-                % update performance information: if the answer provided
-                % was correct, then the next performance question is the
-                % previous display question
-                numberVectorUsedPerf(i_question + 1) = numberVectorUsedDisplay(i_question);
+%                 % + consider that because of the Nback procedure, you need
+%                 % to go +1 more because first answer = any number
+%                 numberVectorUsedDisplay(i_question + 1) = numberVector(jCorrectAnswers + 1);
+%                 % update performance information: if the answer provided
+%                 % was correct, then the next performance question is the
+%                 % previous display question
+%                 numberVectorUsedPerf(i_question + 1) = numberVectorUsedDisplay(i_question);
                 taskTypePerf(i_question + 1) = taskTypeDisplay(i_question);
             end
-%         elseif iCorrectAnswers == (n_max_to_reach - 1) % last number is set to zero with fixed colour
-%             taskTypeDisplay(i_question + 1) = 2;
-%             numberVectorUsedDisplay(i_question + 1) = 0;
+            
+            % keep updating the numbers even after an error has been made
+            numberVectorUsedDisplay(i_question + 1) = numberVector(i_question + 1);
+            numberVectorUsedPerf(i_question + 1) = numberVectorUsedDisplay(i_question); % perf for next question depends on the previously displayed number
         end % no need to update task type for the next question if the end has been reached
         
         %% update variables of interest

@@ -1,7 +1,7 @@
 function[t_min_reached_duringCalib, calib_summary, calib_success] = mental_calibTime(scr, stim, key,...
-    numberVector_calib, mentalE_prm, n_calibTrials, n_calibMax, calibTimes)
+    numberVector_calib, mentalE_prm, n_calibTrials, n_calibMax, calibTimes, errorLimits)
 %[t_min_reached_duringCalib, calib_summary, calib_success] = mental_calibTime(scr, stim, key,...
-%     numberVector_calib, mentalE_prm, n_calibTrials, n_calibMax, calibTimes)
+%     numberVector_calib, mentalE_prm, n_calibTrials, n_calibMax, calibTimes, errorLimits)
 %
 % mental_calibTime will extract the maximal amount of time requested
 % for the hardest level of difficulty (ie the highest number of correct
@@ -40,6 +40,17 @@ function[t_min_reached_duringCalib, calib_summary, calib_success] = mental_calib
 %   .instructions: instructions duration
 %   .effort_max: time limit for calibration
 %   .fbk: time to display feedback during calibration
+%
+% errorLimits: structure containing information about way to handle
+% errors
+%   .useOfErrorThreshold: if true, means the trial is considered a failure,
+%   if the number of errors set as a threshold is reached
+%   .errorThreshold: consider the trial a failure if more than this number
+%   of errors are made
+%   .useOfErrorMapping: if true, display the mapping where to answer and
+%   type of the trial after a given number of errors has been made
+%   .errorMappingLimit: display the mapping after this number of errors has
+%   been reached
 %
 % OUTPUTS
 % t_min_reached_duringCalib: minimal time necessary to perform all the
@@ -118,7 +129,7 @@ for iCalibTrial = 1:n_calibTrials
     [mentalE_perf, calibTrial_success] = mental_effort_perf_Nback(scr, stim, key,...
         numberVector_calib(iCalibTrial,:),...
         mentalE_prm, n_calibMax,...
-        'all','noInstructions', calib_time_limit, t_effort_max); % no instruction (calibration as in the real task)
+        'all','noInstructions', calib_time_limit, t_effort_max, errorLimits); % no instruction (calibration as in the real task)
     
     calib_summary.mentalE_perf(iCalibTrial) = mentalE_perf;
     % store current maximum performance
@@ -183,5 +194,6 @@ calib_summary.t_min_reached_duringCalib = t_min_reached_duringCalib;
 calib_summary.t_min_calibPerf           = t_min_calibPerf;
 calib_summary.onset_fbk                 = onset_fbk;
 calib_summary.onset_fbk_press           = onset_fbk_press;
+calib_summary.mentalE_perf              = mentalE_perf;
 
 end % function

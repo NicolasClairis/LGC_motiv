@@ -19,8 +19,8 @@ else
     switch n_E_levels
         case 3
             n_to_reach.E_level_1 = 2;
-            n_to_reach.E_level_2 = 4;
-            n_to_reach.E_level_3 = 6;
+            n_to_reach.E_level_2 = 6;
+            n_to_reach.E_level_3 = 10;
         case 4
             n_to_reach.E_level_1 = 2;
             n_to_reach.E_level_2 = 4;
