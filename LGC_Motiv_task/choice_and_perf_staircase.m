@@ -65,7 +65,7 @@ choiceTimeParameters.timeLimit = false;
 timeLimitPerf = true; % time limit to reach level of force required
 % if there is a time limit for the choices (and/or the performance), extract the time limit you
 % should use
-if timeLimitPerf == true 
+if timeLimitPerf == true
     t_max_effort    = timings.max_effort;
 else
     t_max_effort = [];
@@ -78,6 +78,7 @@ switch effort_type
     case 'mental'
         i_sub = Ep_or_Em_vars.i_sub;
         n_to_reach = Ep_or_Em_vars.n_to_reach;
+        errorLimits = Ep_or_Em_vars.errorLimits;
     case 'physical'
         MVC = Ep_or_Em_vars.MVC;
         dq = Ep_or_Em_vars.dq;
@@ -282,10 +283,10 @@ for iTrial = 1:nTrials
                 n_max_to_reach_perTrial(iTrial) = n_to_reach.(['E_level_',num2str(E_chosen(iTrial))]);
                 [perfSummary{iTrial},...
                     trial_was_successfull(iTrial),...
-                    onsets.effortPeriod{iTrial}] = mental_effort_perf(scr, stim, key,...
+                    onsets.effortPeriod{iTrial}] = mental_effort_perf_Nback(scr, stim, key,...
                     mental_nbers_per_trial(iTrial,:),...
                     mentalE_prm, n_max_to_reach_perTrial(iTrial),...
-                    'all', 'noInstructions', timeLimitPerf, t_max_effort);
+                    'all', 'noInstructions', timeLimitPerf, t_max_effort,errorLimits);
         end % effort type loop
         effortTime(iTrial) = toc;
     end % choice made or not?
@@ -293,11 +294,28 @@ for iTrial = 1:nTrials
     %% Feedback period
     switch trial_was_successfull(iTrial)
         case 0 % trial failed
-            % display message
-            %             DrawFormattedText(window,'Too slow!', xScreenCenter, (1/5)*yScreenCenter);
-            DrawFormattedText(window,'Trop lent!',...
-                'center', (1/5)*yScreenCenter,...
-                white);
+            
+            % trial failure = too slow (for physical effort always)
+            % for mental effort: either too slow or because too many errors
+            % => adapt the feedback accordingly
+            % display error message
+            if strcmp(effort_type,'physical') ||...
+                    (strcmp(effort_type,'mental') &&...
+                    Ep_or_Em_vars.errorLimits.useOfErrorThreshold == true &&...
+                    perfSummary{iTrial}.n_errorsMade < Ep_or_Em_vars.errorLimits.errorThreshold)
+                DrawFormattedText(window,'Trop lent!',...
+                    'center', (1/5)*yScreenCenter,...
+                    white);
+            elseif strcmp(effort_type,'mental') &&...
+                    Ep_or_Em_vars.errorLimits.useOfErrorThreshold == true &&...
+                    perfSummary{iTrial}.n_errorsMade >= Ep_or_Em_vars.errorLimits.errorThreshold
+                % for the mental effort case where too many errors were made,
+                % adapt the error feedback accordingly
+                DrawFormattedText(window,'Trop d''erreurs!',...
+                    'center', (1/5)*yScreenCenter,...
+                    white);
+            end
+            
             % display money loss for failing
             
             [~,onsets.fbk_fail(iTrial)] = Screen(window,'Flip');
@@ -321,9 +339,9 @@ for iTrial = 1:nTrials
                     fbkSign = '-';
                     fbkColour = stim.punishment.text.colour;
             end
-
+            
             drawRewardAmount(scr, stim, R_chosen(iTrial), R_or_P, 'middle_center_start');
-          
+            
             [~,onsets.fbk(iTrial)] = Screen(window,'Flip');
             switch R_or_P
                 case 'R'
