@@ -46,6 +46,10 @@ switch task_type
             answerCorrect = 0;
         end % answer correct or not?
         
+    case 2 % for 1-back version first answer (press any button is fine)
+        if ismember(sideAnswer,[-1,1])
+            answerCorrect = 1;
+        end
 end % task type switch
 
 end % function

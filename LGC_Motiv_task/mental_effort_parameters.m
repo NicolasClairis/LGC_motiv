@@ -29,12 +29,9 @@ sideQuestion.hL.low = -1;
 sideQuestion.hL.high = 1;
 
 %% define colours to use for numbers font
-% col1 = [253 219 199];
-% col2 = [239 138 98];
-% col1 = [0 0 0];
-% col2 = [255 255 255];
 col1 = [233 163 201];
 col2 = [161 215 106];
+NbackLastQuestionCol = [255 255 255];
 
 %% switch percentage = percentage of questions with a switch per
 % trial
@@ -55,6 +52,7 @@ elseif mod(i_sub,2) == 1
     mental_n_col.col1 = 'lowHigh';
     mental_n_col.col2 = 'oddEven';
 end
+mental_n_col.lastQuestion = NbackLastQuestionCol;
 
 %% store all in output
 mentalE_prm.sideQuestion    = sideQuestion;
