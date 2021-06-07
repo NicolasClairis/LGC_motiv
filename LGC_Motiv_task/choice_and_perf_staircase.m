@@ -78,6 +78,7 @@ switch effort_type
     case 'mental'
         i_sub = Ep_or_Em_vars.i_sub;
         n_to_reach = Ep_or_Em_vars.n_to_reach;
+        errorLimits = Ep_or_Em_vars.errorLimits;
     case 'physical'
         MVC = Ep_or_Em_vars.MVC;
         dq = Ep_or_Em_vars.dq;
@@ -282,10 +283,10 @@ for iTrial = 1:nTrials
                 n_max_to_reach_perTrial(iTrial) = n_to_reach.(['E_level_',num2str(E_chosen(iTrial))]);
                 [perfSummary{iTrial},...
                     trial_was_successfull(iTrial),...
-                    onsets.effortPeriod{iTrial}] = mental_effort_perf(scr, stim, key,...
+                    onsets.effortPeriod{iTrial}] = mental_effort_perf_Nback(scr, stim, key,...
                     mental_nbers_per_trial(iTrial,:),...
                     mentalE_prm, n_max_to_reach_perTrial(iTrial),...
-                    'all', 'noInstructions', timeLimitPerf, t_max_effort);
+                    'all', 'noInstructions', timeLimitPerf, t_max_effort,errorLimits);
         end % effort type loop
         effortTime(iTrial) = toc;
     end % choice made or not?
