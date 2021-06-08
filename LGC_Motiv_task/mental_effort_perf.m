@@ -121,6 +121,7 @@ end
 n_questions = size(numberVector,2);
 [taskType,...
     rt,...
+    currentAngle,...
     sideAnswer,...
     goodOrBadAnswer,...
     numberVectorUsed] = deal( NaN(1, n_questions));
@@ -173,7 +174,7 @@ onset_question_tmp = onsetTrial; % for the first question
 onsets.nb_1 = onsetTrial;
 timeNow = onsetTrial;
 
-startAngle = startAngle_currentTrial;
+currentAngle(1) = startAngle_currentTrial;
 
 % keep track of number of errors made during the trial
 jErrorsMade = 0;
@@ -210,7 +211,7 @@ while (iCorrectAnswers < n_max_to_reach) &&...
     
     %% display stimulus
     onset_stim = mental_display_stim(scr, stim,...
-        startAngle, endAngle,...
+        currentAngle(i_question), endAngle,...
         sideQuestion, taskType(i_question), taskType(i_question), numberVectorUsed(i_question), mental_n_col,...
         learning_instructions_bis);
     
@@ -256,16 +257,16 @@ while (iCorrectAnswers < n_max_to_reach) &&...
                 if iCorrectAnswers > 0 % keep equal to zero if you made a mistake the first trial
                     iCorrectAnswers = iCorrectAnswers - 1; % if wrong, decrement the total number of correct answers
                     % just (-1) decrement after an error (otherwise too hard)
-                    startAngle = startAngle - totalAngleDistance/n_max_to_reach;
+                    currentAngle(i_question + 1) = currentAngle(i_question) - totalAngleDistance/n_max_to_reach;
                 else % if error made during the first trial should not move
                     iCorrectAnswers = 0;
-                    startAngle = startAngle_currentTrial; % if error made during the first question, keep at initial location
+                    currentAngle(i_question + 1) = startAngle_currentTrial; % if error made during the first question, keep at initial location
                     % otherwise it means that you increase the difficulty
                     % when they make an error for the first question
                 end
                 jErrorsMade = jErrorsMade + 1;
             case 1 % if correct, update the count of correct answers and the angle display
-                startAngle = startAngle + totalAngleDistance/n_max_to_reach;
+                currentAngle(i_question + 1) = currentAngle(i_question) + totalAngleDistance/n_max_to_reach;
                 iCorrectAnswers = iCorrectAnswers + 1;
                 jCorrectAnswers = jCorrectAnswers + 1;
         end
@@ -313,6 +314,7 @@ mentalE_perf.rt             = rt(questions_done);
 mentalE_perf.n_switch       = n_switch;
 mentalE_perf.n_max_to_reach = n_max_to_reach;
 mentalE_perf.n_errorsMade   = jErrorsMade;
+mentalE_perf.anglePerformance = currentAngle(questions_done);
 % record number of questions answered and how many were correct
 mentalE_perf.n_questions_performed = i_question - 1;
 mentalE_perf.n_correctAnswersForDisplay = iCorrectAnswers;
