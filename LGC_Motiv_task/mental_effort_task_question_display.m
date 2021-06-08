@@ -1,4 +1,4 @@
-function[] = mental_effort_task_question_display(scr, task_trialType, sideQuestion, textCol, learning_instructions)
+function mental_effort_task_question_display(scr, task_trialType, sideQuestion, textCol, learning_instructions)
 % [] = mental_effort_task_question_display(scr, task_trialStart, sideQuestion, textCol, learning_instructions)
 % mental_effort_task_question_display will display question for the
 % mental effort being made according to the current task.
@@ -49,10 +49,9 @@ x_right = xScreenCenter*(3/2);
 switch task_trialType
     case 0 % odd/even
         if strcmp(learning_instructions,'fullInstructions')
-%             DrawFormattedText(window, 'Chiffre pair ou impair?',...
-%                 'center', yScreenCenter/3, textCol);
-             DrawFormattedText(window, 'Number even or odd?',...
+            DrawFormattedText(window, 'Chiffre pair ou impair?',...
                 'center', yScreenCenter/3, textCol);
+
         end
         
         if sideQuestion.oE.pair == -1 && sideQuestion.oE.impair == +1
@@ -67,9 +66,7 @@ switch task_trialType
         DrawFormattedText(window,'pair', x_pair, y_coord, textCol );
         DrawFormattedText(window,'OU', 'center', y_coord, textCol );
         DrawFormattedText(window,'impair', x_impair, y_coord, textCol );
-%         DrawFormattedText(window,'even', x_pair, y_coord, textCol );
-%         DrawFormattedText(window,'OR', 'center', y_coord, textCol );
-%         DrawFormattedText(window,'odd', x_impair, y_coord, textCol );
+
     case 1 % higher/lower than 5?
         if strcmp(learning_instructions,'fullInstructions')
             DrawFormattedText(window, 'Chiffre < ou > 5?',...

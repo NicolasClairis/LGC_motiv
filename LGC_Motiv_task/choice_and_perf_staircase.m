@@ -391,11 +391,11 @@ for iTrial = 1:nTrials
             %
             DrawFormattedText(window,'Temps restant','center',yScreenCenter*(1/2),white);
             % draw one global fixed rectangle showing the total duration
-            Screen('FrameRect',window, black, barTimeWaitRect);
+            Screen('FrameRect',window, white, barTimeWaitRect);
             
             % draw one second rectangle updating dynamically showing the
             % time remaining
-            Screen('FillRect',window, black, barTimeWaitRect_bis);
+            Screen('FillRect',window, white, barTimeWaitRect_bis);
             
             Screen(window,'Flip');
         end % display until time catches up with maximum effort time

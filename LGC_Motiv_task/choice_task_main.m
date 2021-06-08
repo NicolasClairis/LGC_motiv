@@ -373,7 +373,7 @@ if IRM == 0
     end % learning condition loop
     
     DrawFormattedText(window,'Bravo! Votre entraînement est terminé.',...
-        'center','center',scr.colours.black, scr.wrapat);
+        'center','center',scr.colours.white, scr.wrapat);
     [~,onsets.EndTrainingMsg] = Screen('Flip',window); % display the cross on screen
     WaitSecs(trainingTimes.trainingEnd);
     sca; % close PTB if learning out of the MRI
@@ -384,7 +384,7 @@ if IRM == 1 % || IRM == 0 %for piloting
     %% instruction that main task will start soon
     DrawFormattedText(window,...
         'L''expérimentateur va bientôt démarrer la tâche.',...
-        'center', yScreenCenter*(5/3), scr.colours.black, scr.wrapat);
+        'center', yScreenCenter*(5/3), scr.colours.white, scr.wrapat);
     [~, onsets.taskWillStart] = Screen(window, 'Flip');
     disp('Please press space and then launch fMRI (Be careful to respect this order for the T0...');
     [~, ~, keyCode] = KbCheck();
@@ -415,7 +415,7 @@ if IRM == 1 % || IRM == 0 %for piloting
     %% display feedback for the current session
     DrawFormattedText(window,...
         ['Félicitations! Cette session est maintenant terminée.',...
-        'Vous avez obtenu: ',num2str(perfSummary.totalGain(nTrials)),' chf au cours de cette session.']);
+        'Vous avez obtenu: ',num2str(perfSummary.totalGain(nTrials)),' chf au cours de cette session.'],white);
     [~,onsets.endSessionFbk] = Screen(window,'Flip');
     WaitSecs(t_endSession);
         
@@ -454,7 +454,7 @@ if IRM == 1
     DrawFormattedText(window,...
         ['Pour finir cette session, nous allons vous demander ',...
         'd''essayer à nouveau de battre votre record.'],...
-        'center', yScreenCenter*(5/3), scr.colours.black, scr.wrapat);
+        'center', yScreenCenter*(5/3), scr.colours.white, scr.wrapat);
     Screen(window,'Flip');
     % MVC maximum
     nFinalTrial = 1;

@@ -1,4 +1,4 @@
-function[] = disp_realtime_force(scr, F_threshold, F_tolerance, F_now, calib_or_Task)
+function disp_realtime_force(scr, F_threshold, F_tolerance, F_now, calib_or_Task)
 %[] = disp_realtime_force(scr, F_threshold, F_tolerance, F_now, calib_or_Task)
 % disp_realtime_force will display the force being exerted in real-time on
 % the left of the screen. The top of the scale will correspond to the MVC

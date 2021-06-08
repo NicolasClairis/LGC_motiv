@@ -170,7 +170,7 @@ if strcmp(taskToPerform.physical.training,'on')
     end % learning condition loop
     
     DrawFormattedText(window,'Bravo! Votre entraînement physique est terminé.',...
-        'center','center',scr.colours.black, scr.wrapat);
+        'center','center',scr.colours.white, scr.wrapat);
     [~,onsets.EndTrainingMsg] = Screen('Flip',window); % display the cross on screen
     WaitSecs(trainingTimes_Ep.trainingEnd);
 end
@@ -328,7 +328,7 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
     % instruction that main task will start soon
     DrawFormattedText(window,...
         'L''expérimentateur va bientôt démarrer la tâche.',...
-        'center', yScreenCenter*(5/3), scr.colours.black, scr.wrapat);
+        'center', yScreenCenter*(5/3), scr.colours.white, scr.wrapat);
     [~, onsets.taskWillStart] = Screen(window, 'Flip');
     disp('Please press space.');
     [~, ~, keyCode] = KbCheck();
@@ -407,7 +407,7 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
         DrawFormattedText(window,...
             ['Félicitations! Cette session est maintenant terminée.',...
             'Vous avez obtenu: ',num2str(finalGains),' chf au cours de cette session.'],...
-            'center', yScreenCenter*(5/3), scr.colours.black, scr.wrapat);
+            'center', yScreenCenter*(5/3), scr.colours.white, scr.wrapat);t
         Screen(window,'Flip');
         WaitSecs(t_endSession);
     end % session loop
