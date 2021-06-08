@@ -41,7 +41,7 @@ end
 calibTimes.instructions = 5;
 switch effort_type % in case you use different numbers for each effort type
     case 'mental'
-        calibTimes.effort_max = 12; % maximal time to perform the task (calibrated time should be shorter)
+        calibTimes.effort_max = 10; % maximal time to perform the task (calibrated time should be shorter)
     case 'physical'
         calibTimes.instructions_bis = 10;
         calibTimes.effort_max = 5;% time to perform the task
@@ -75,7 +75,7 @@ t_choice = 7;
 t_dispChoice = 3;
 switch effort_type
     case 'physical' % in case you use different numbers for each effort type
-        t_max_effort = 5; % time to perform the task
+        t_max_effort = 6; % time to perform the task
         taskTimes.max_effort = t_max_effort;
         
         % store frame rate for physical effort task
