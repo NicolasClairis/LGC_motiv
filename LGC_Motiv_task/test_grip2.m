@@ -1,12 +1,13 @@
 [scr, xScreenCenter, yScreenCenter, window, baselineTextSize] = ScreenConfiguration(0, 1);
 [key, dq] = relevant_key_definition('physical', 0);
-[stim] = stim_initialize(scr, 3, 3, 'D:\LGC_motiv\LGC_Motiv_task\Coin_PNG\');
+[stim] = stim_initialize(scr, 3);
+
 
 start(dq,"continuous");
 pause(0.125)
 % will need data = read(dq) function only to read the signal
 
-MVC=3.5;
+MVC=1;
 F_threshold = 50;
 t_effort_to_keep=3;
 F_tolerance=3;

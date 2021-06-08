@@ -1,6 +1,6 @@
 [scr, xScreenCenter, yScreenCenter, window, baselineTextSize] = ScreenConfiguration(0, 1);
 [key, dq] = relevant_key_definition('physical', 0);
-[stim] = stim_initialize(scr, 3, 3, 'D:\LGC_motiv\LGC_Motiv_task\Coin_PNG\');
+[stim] = stim_initialize(scr, 3);
 
 start(dq,"continuous");
 pause(0.125)
