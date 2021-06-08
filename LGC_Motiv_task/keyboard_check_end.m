@@ -1,10 +1,13 @@
-function[TTL, keyLeft, keyRight] = keyboard_check_end(TTL, trigger_id)
+function[TTL, keyLeft, keyRight] = keyboard_check_end(TTL, key)
 %[TTL, keyLeft, keyRight] = keyboard_check_end(TTL, trigger_id)
 %
 % INPUTS
 % TTL: vector with initial fMRI TTL timings
 %
-% trigger_id : number corresponding to the key associated to the TTL
+% key: structure with relevant keys
+%   .trigger_id : number corresponding to the key associated to the TTL
+%   .left
+%   .right
 %
 % OUTPUTS
 % TTL: TTL vector updated with all fMRI TTL timings
@@ -26,7 +29,7 @@ keyRight.Release = []; % time when releases right key
 %% release all keys and associated timings
 while KbEventAvail
     [event, n] = KbEventGet;
-    if event.Keycode == trigger_id
+    if event.Keycode == key.trigger_id
         TTL = [TTL; event.Time];
     elseif event.Keycode == key.left % if left key pressed
         if event.Pressed == 1 % record start of press

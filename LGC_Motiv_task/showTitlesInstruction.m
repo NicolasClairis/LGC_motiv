@@ -37,11 +37,17 @@ switch instructionType
         
     case 'training'
         DrawFormattedText(window,...
-            ['Entrainement ',effortType],...
+            ['Entraînement ',effortType],...
             'center',yScreenCenter/2,titleCol);
     case 'task'
+        switch effortType
+            case 'Physique'
+                effortType_bis = effortType;
+            case 'Mental'
+                effortType_bis = 'Mentale';
+        end
         DrawFormattedText(window,...
-            ['Tâche ',effortType],...
+            ['Tâche ',effortType_bis],...
             'center',yScreenCenter/2,titleCol);
 end
 %flip information on the screen
