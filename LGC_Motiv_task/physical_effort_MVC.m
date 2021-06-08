@@ -28,6 +28,7 @@ xScreenCenter = scr.xCenter;
 yScreenCenter = scr.yCenter;
 yScreenSize = yScreenCenter*2;
 GoYlocation = yScreenSize*0.9;
+white = scr.colours.white;
 % text_size_1 = 50;
 % text_size_2 = 75;
 % text_size_3 = 70;
@@ -37,6 +38,9 @@ topScaleLimit       = yScreenCenter*(1/2); % upper limit of the scale
 leftScaleLimit      = xScreenCenter*(3.5/4); % left limit of the scale
 rightScaleLimit     = xScreenCenter*(4.5/4); % right limit of the scale
 graphYSize = bottomScaleLimit - topScaleLimit;
+
+% make sure the first measure of read is ignored
+dummyMeasure = 3;
 
 %% force relevant variables
 F_start = 0; % initial force level at zero
@@ -65,9 +69,9 @@ MVC_perCalibSession = NaN(1,n_MVC_repeat);
 DrawFormattedText(window, ['Avant de commencer l''expérience, ',...
     'nous allons vous demander ',...
     'de serrer la poignée de force au maximum de vos capacités plusieurs ',...
-    'fois d''affilée.'], 'center',yScreenSize*0.7, 1, scr.wrapat);
+    'fois d''affilée.'], 'center',yScreenSize*0.7, white, scr.wrapat);
 % Screen('TextSize', window, text_size_2)
-DrawFormattedText(window, 'Tenez-vous prêt à serrer la poignée.', 'center', yScreenSize*0.3, 1);
+DrawFormattedText(window, 'Tenez-vous prêt à serrer la poignée.', 'center', yScreenSize*0.3, white);
 
 [~,time_disp1,~,~,~] = Screen(window,'Flip');
 onsets.initial_MVC_instructions = time_disp1;
@@ -106,7 +110,7 @@ for iCalib_MVC = 1:n_MVC_repeat
     %     end
     
     %% start displaying effort scale and Go signal
-    DrawFormattedText(window, 'GO !', 'center', GoYlocation, 1);
+    DrawFormattedText(window, 'GO !', 'center', GoYlocation, white);
     disp_realtime_force(scr, F_threshold, F_tolerance, F_start, 'calib');
     [~,timeEffortScaleStart]  = Screen(window,'Flip');
     onsets.effortScale_start(iCalib_MVC) = timeEffortScaleStart;
@@ -124,7 +128,7 @@ for iCalib_MVC = 1:n_MVC_repeat
         % store force levels in the output
         forceCalib.(['calibTrial_',num2str(iCalib_MVC)]) = [forceCalib.(['calibTrial_',num2str(iCalib_MVC)]);...
             [F_now, timeNow, F_now_Voltage, sampleOk_tmp]]; % store F in % of MVC, time and F in Volts
-        DrawFormattedText(window, 'GO !', 'center', GoYlocation, 1);
+        DrawFormattedText(window, 'GO !', 'center', GoYlocation, white);
         disp_realtime_force(scr, F_threshold, F_tolerance, F_now, 'calib');
         
         % for calibration trials coming after the first one, you can also
@@ -141,21 +145,22 @@ for iCalib_MVC = 1:n_MVC_repeat
     end % time for the current calibration trial
     
     %% Show a rest text and give some rest
-    DrawFormattedText(window, 'Reposez-vous quelques secondes.', 'center', yScreenSize*0.8, [0 0.8 0 ]);
+    DrawFormattedText(window, 'Reposez-vous quelques secondes.', 'center', yScreenSize*0.8, white);
     [~,timeNow]  = Screen(window,'Flip');
     onsets.initial_MVC_rest(iCalib_MVC) = timeNow;
     WaitSecs(t_MVC_rest);
     
     %% extract max force for this session (in Voltage)
     MVC_perCalibSession(iCalib_MVC) = nanmax(forceCalib.(['calibTrial_',num2str(iCalib_MVC)])(:,3));
+
+% empty the grip buffer
+flush(dq);
     
 end % calibration loop
 
 %% stop acquisition of biopac handgrip
 % stop acquiring data in the grip buffer
 stop(dq);
-% empty the grip buffer
-flush(dq);
 
 %% store max MVC measure in output
 MVC.forceCalib = forceCalib;

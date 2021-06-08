@@ -1,4 +1,4 @@
-function[] = mental_effort_task_displayQuestion(scr, stim, startAngle, endAngle, task_type, R_chosen, R_or_P, numberValue)
+function mental_effort_task_displayQuestion(scr, stim, startAngle, endAngle, task_type, R_chosen, R_or_P, numberValue)
 %mental_effort_task_displayQuestion(scr, stim, startAngle, endAngle, task_type, R_chosen, R_or_P, numberValue)
 % mental_effort_task_displayQuestion will display all relevant information for mental
 % effort task
@@ -29,6 +29,7 @@ function[] = mental_effort_task_displayQuestion(scr, stim, startAngle, endAngle,
 window = scr.window;
 xScreenCenter = scr.xScreenCenter;
 yScreenCenter = scr.yScreenCenter;
+white = scr.colours.white;
 % reward/punishment display informations
 R_img = stim.reward.texture.(['reward_',num2str(R_chosen)]); % reward image
 R_coords = stim.reward.middle_center.(['reward_',num2str(R_chosen)]); % reward coordinates
@@ -52,7 +53,7 @@ Screen('FillArc', window,...
     endAngle - startAngle);
 
 % display number to solve
-DrawFormattedText(window,num2str(numberValue), 'center', yScreenCenter*(1/6));
+DrawFormattedText(window,num2str(numberValue), 'center', yScreenCenter*(1/6),white);
 
 % display question according to type of task on which to start
 mental_effort_task_question_display(scr, task_type);

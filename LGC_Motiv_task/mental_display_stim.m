@@ -45,7 +45,7 @@ function[onset_stim] = mental_display_stim(scr, stim,...
 
 %% extract relevant parameters
 window = scr.window;
-blackCol = scr.colours.black;
+selectedCol = scr.colours.white;
 % xScreenCenter = scr.xCenter;
 yScreenCenter = scr.yCenter;
 arcCurrLevelColor = stim.difficulty.currLevelColor;
@@ -58,11 +58,11 @@ Screen('FillArc', window,...
     startAngle,...
     endAngle - startAngle);
 
-%%
-if taskTypePerf == 2 % for first question, add a short text to precise that any button press is ok
-    DrawFormattedText(window, 'Appuyez pour commencer.',...
-            'center', yScreenCenter*15/8, blackCol);
-end
+% %%
+% if taskTypePerf == 2 % for first question, add a short text to precise that any button press is ok
+%     DrawFormattedText(window, 'Appuyez pour commencer.',...
+%             'center', yScreenCenter*15/8, selectedCol);
+% end
 
 %% number to solve
 switch taskTypeDisplay
