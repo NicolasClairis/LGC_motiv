@@ -361,7 +361,7 @@ if IRM == 1 && session_nber > 0
     nFinalTrial = 1;
     switch effort_type
         case 'physical'
-            [MVC_last, onsets_MVC_last] = physical_effort_MVC(scr, stim, dq, nFinalTrial, calibTimes);
+            [MVC_last, onsets_MVC_last] = physical_effort_MVC(scr, dq, nFinalTrial, calibTimes);
         case 'mental'
             % extract numbers to use for each calibration trial
             [numberVector_endCalib] = mental_numbers(nFinalTrial);
@@ -406,11 +406,8 @@ if IRM == 1 && session_nber > 0
     switch effort_type
         case 'physical'
             all.physicalPerf = perfSummary;
-            all.learning.perf = learningPerfSummary;
-            all.learning.onsets = learningOnsets;
         case 'mental'
             if IRM == 0
-                all.learningPerf = mentalE_learningPerf;
                 all.mentalE_prm_learning = mentalE_prm_calib;
             end
             all.mentalE_perf = perfSummary;
