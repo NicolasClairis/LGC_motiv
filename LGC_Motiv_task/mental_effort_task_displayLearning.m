@@ -1,4 +1,4 @@
-function[] = mental_effort_task_displayLearning(scr, stim, startAngle, endAngle, task_type, numberValue)
+function mental_effort_task_displayLearning(scr, stim, startAngle, endAngle, task_type, numberValue)
 %mental_effort_task_displayQuestion(scr, stim, startAngle, endAngle, task_type, R_chosen, R_or_P, numberValue)
 % mental_effort_task_displayQuestion will display all relevant information for mental
 % effort task
@@ -24,6 +24,7 @@ window = scr.window;
 xScreenCenter = scr.xScreenCenter;
 yScreenCenter = scr.yScreenCenter;
 
+white = scr.colours.white;
 %% display amount of effort to be done on top of the incentive as an arc
 Screen('FillArc', window,...
     stim.difficulty.currLevelColor,...
@@ -32,7 +33,7 @@ Screen('FillArc', window,...
     endAngle - startAngle);
 
 % display number to solve
-DrawFormattedText(window,num2str(numberValue), xScreenCenter, yScreenCenter*(1/6));
+DrawFormattedText(window,num2str(numberValue), xScreenCenter, yScreenCenter*(1/6),white);
 
 % display question according to type of task on which to start
 mental_effort_task_question_display(scr, task_type, sideQuestion);

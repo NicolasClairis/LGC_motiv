@@ -51,7 +51,7 @@ function[n_mental_max_perTrial, calib_summary] = mental_calibNumbers(scr, stim, 
 % screen parameters
 window = scr.window;
 yScreenCenter = scr.yCenter;
-blackCol = scr.colours.black;
+selectedCol = scr.colours.white;
 wrapat = scr.wrapat;
 
 % define main parameters
@@ -68,7 +68,7 @@ DrawFormattedText(window,...
     ['Désormais vous devrez répondre dans un temps limité. Essayez de compléter',...
     ' le cercle en répondant aussi vite que possible et correctement aux questions posées.',...
     ' Comme précédemment, une réponse incorrecte réinitialisera le compteur.'],...
-    'center', yScreenCenter/3, blackCol, wrapat);
+    'center', yScreenCenter/3, selectedCol, wrapat);
 [~, timeInstru] = Screen(window, 'Flip');
 calib_summary.onset_instructions = timeInstru;
 WaitSecs(calibTimes.instructions);
@@ -79,10 +79,10 @@ DrawFormattedText(window,...
     ['Désormais vous devrez répondre dans un temps limité. Essayez de compléter',...
     ' le cercle en répondant aussi vite que possible et correctement aux questions posées.',...
     ' Comme précédemment, une réponse incorrecte réinitialisera le compteur.'],...
-    'center', yScreenCenter/3, blackCol, wrapat);
+    'center', yScreenCenter/3, selectedCol, wrapat);
 DrawFormattedText(window,...
     'Vous pouvez appuyer quand vous vous sentez prêt(e) à commencer.',...
-    'center', yScreenCenter*(5/3), blackCol, wrapat);
+    'center', yScreenCenter*(5/3), selectedCol, wrapat);
 [~, timeInstru_bis] = Screen(window, 'Flip');
 calib_summary.onset_instructions_press = timeInstru_bis;
 KbWait; % wait for a button press to go to next phase
@@ -130,11 +130,11 @@ for iCalibTrial = 1:n_calibTrials
         case true % reached the top
             DrawFormattedText(window,...
                 'Bravo vous avez tout résolu dans le temps imparti!',...
-                'center', yScreenCenter/3, blackCol, wrapat);
+                'center', yScreenCenter/3, selectedCol, wrapat);
         case false
             DrawFormattedText(window,...
                 'Essayez encore!',...
-                'center', yScreenCenter/3, blackCol, wrapat);
+                'center', yScreenCenter/3, selectedCol, wrapat);
     end
     [~, time_fbk] = Screen(window, 'Flip');
     onset_fbk(iCalibTrial) = time_fbk;
@@ -145,7 +145,7 @@ for iCalibTrial = 1:n_calibTrials
     if iCalibTrial < n_calibTrials
         DrawFormattedText(window,...
             'Vous pouvez appuyer quand vous vous sentez prêt(e) à recommencer.',...
-            'center', yScreenCenter*(5/3), blackCol, wrapat);
+            'center', yScreenCenter*(5/3), selectedCol, wrapat);
         [~, time_fbkPress] = Screen(window, 'Flip');
         onset_fbk_press(iCalibTrial) = time_fbkPress;
         KbWait; % wait for a button press to go to next phase

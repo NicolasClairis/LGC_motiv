@@ -46,10 +46,10 @@ file_nm = ['IP_pilot_data',init,'_sub_',num2str(iSubject)];
 %% general parameters
 IRM = 0;
 % define subparts of the task to perform (on/off)
-taskToPerform.physical.calib = 'on';
-taskToPerform.physical.learning = 'on';
-taskToPerform.physical.training = 'on';
-taskToPerform.physical.task = 'on';
+taskToPerform.physical.calib = 'off';
+taskToPerform.physical.learning = 'off';
+taskToPerform.physical.training = 'off';
+taskToPerform.physical.task = 'off';
 taskToPerform.mental.learning = 'on';
 taskToPerform.mental.calib = 'on';
 taskToPerform.mental.training = 'on';
@@ -174,6 +174,7 @@ end
 
 % learning physical
 if strcmp(taskToPerform.physical.learning,'on')
+    showTitlesInstruction(scr,'learning',false)
     [learningPerfSummary_Ep, learningOnsets_Ep] = physical_learning(scr, stim, dq, n_E_levels, Ep_time_levels,...
         F_threshold, F_tolerance, MVC,...
         n_learningForceRepeats, learningTimes_Ep);
@@ -181,6 +182,7 @@ end
 
 % training physical
 if strcmp(taskToPerform.physical.training,'on')
+    showTitlesInstruction(scr,'training',false)
     for iTrainingCondition = 1:n_trainingConditions
         trainingCond = trainingConditions{iTrainingCondition};
         
@@ -201,7 +203,7 @@ if strcmp(taskToPerform.physical.training,'on')
     end % learning condition loop
     
     DrawFormattedText(window,'Bravo! Votre entraînement physique est terminé.',...
-        'center','center',scr.colours.black, scr.wrapat);
+        'center','center',scr.colours.white, scr.wrapat);
     [~,onsets.EndTrainingMsg] = Screen('Flip',window); % display the cross on screen
     WaitSecs(trainingTimes_Ep.trainingEnd);
 end
@@ -209,6 +211,7 @@ end
 %% mental preparation
 %% learning mental
 if strcmp(taskToPerform.mental.learning,'on')
+    showTitlesInstruction(scr,'learning',true)
     mentalE_prm_learning_and_calib = mental_effort_parameters(iSubject);
     mentalE_prm_learning_and_calib.startAngle = 0; % for learning always start at zero
     % no time limit for each trial: as long as needed until learning is ok
@@ -307,6 +310,7 @@ end
 
 %% training mental
 if strcmp(taskToPerform.mental.training,'on')
+        showTitlesInstruction(scr,'training',true)
     trainingTimes_Em.max_effort = t_min_calib*trainingTimes_Em.t_min_scalingFactor; % allow more time then min performance
     for iTrainingCondition = 1:n_trainingConditions
         trainingCond = trainingConditions{iTrainingCondition};
@@ -371,7 +375,7 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
                 % instruction that main task will start soon
                 DrawFormattedText(window,...
                     'L''expérimentateur va bientôt démarrer la tâche.',...
-                    'center', yScreenCenter*(5/3), scr.colours.black, scr.wrapat);
+                    'center', yScreenCenter*(5/3), scr.colours.white, scr.wrapat);
                 [~, onsets.taskWillStart] = Screen(window, 'Flip');
                 disp('Please press space.');
                 [~, ~, keyCode] = KbCheck();
@@ -386,7 +390,7 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
                 switch mod(iSubject+iSession,2)
                     case 1
                         if strcmp(taskToPerform.physical.task,'on')
-                            
+                                showTitlesInstruction(scr,'task',false)
                             % run physical task
                             [perfSummary.physical.(['repeat_nb',num2str(iRepeat)]).(['session_nb',num2str(iPhysical)]).(['Effort_lvl',(num2str(iEffortLevel))])] = choice_and_perf_staircase(scr, stim, key_Ep,...
                                 'physical', Ep_vars,...
@@ -399,7 +403,7 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
                         
                     case 0
                         if strcmp(taskToPerform.mental.task,'on')
-                            
+                                showTitlesInstruction(scr,'task',true)
                             Em_vars.i_sub = iSubject;
                             Em_vars.n_to_reach = n_to_reach;
                             % for actual task: no display of mapping but consider 3
@@ -426,7 +430,7 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
                         DrawFormattedText(window,...
                             ['Félicitations! Cette session est maintenant terminée.',...
                             'Vous avez obtenu: ',num2str(finalGain),' chf au cours de cette session.'],...
-                            'center', yScreenCenter*(5/3), scr.colours.black, scr.wrapat);
+                            'center', yScreenCenter*(5/3), scr.colours.white, scr.wrapat);
                         Screen(window,'Flip');
                         % give 3min break after 4 IP
                         WaitSecs(t_endSession);
@@ -494,7 +498,7 @@ save([results_folder, file_nm,'.mat'],'all');
 DrawFormattedText(window,...
     ['Félicitations! Cette expérience est maintenant terminée.',...
     'Vous avez obtenu: ',num2str(totalGain),' chf au cours de cette session.'],...
-    'center', yScreenCenter*(5/3), scr.colours.black, scr.wrapat);
+    'center', yScreenCenter*(5/3), scr.colours.white, scr.wrapat);
 Screen(window,'Flip');
 WaitSecs(15);
 %% close PTB

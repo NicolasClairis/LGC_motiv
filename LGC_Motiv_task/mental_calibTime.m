@@ -67,7 +67,7 @@ function[t_min_reached_duringCalib, calib_summary, calib_success] = mental_calib
 % screen parameters
 window = scr.window;
 yScreenCenter = scr.yCenter;
-blackCol = scr.colours.black;
+selectedCol = scr.colours.white;
 wrapat = scr.wrapat;
 
 % define main parameters
@@ -83,12 +83,12 @@ for iInstructionsLoop = 1:2
     DrawFormattedText(window,...
         ['Désormais vous devrez répondre dans un temps limité. Essayez de compléter',...
         ' le cercle en répondant aussi vite que possible et correctement aux questions posées.'],...
-        'center', yScreenCenter/3, blackCol, wrapat);
+        'center', yScreenCenter/3, selectedCol, wrapat);
     % display that participant can press to move on
     if iInstructionsLoop == 2
         DrawFormattedText(window,...
             'Vous pouvez appuyer quand vous vous sentez prêt(e) à commencer.',...
-            'center', yScreenCenter*(5/3), blackCol, wrapat);
+            'center', yScreenCenter*(5/3), selectedCol, wrapat);
     end
     % display text on screen
     [~, timeInstru] = Screen(window, 'Flip');
@@ -146,21 +146,21 @@ for iCalibTrial = 1:n_calibTrials
             DrawFormattedText(window,...
                 ['Bravo vous avez tout résolu dans le temps imparti!',...
                 ' Votre meilleur temps est de ',num2str(t_min_reached_duringCalib),' s.'],...
-                'center', yScreenCenter/3, blackCol, wrapat);
+                'center', yScreenCenter/3, selectedCol, wrapat);
         case false % didn't reach the top in the dedicated time
             if iCalibTrial < n_calibTrials
                 DrawFormattedText(window,...
                     'Essayez encore!',...
-                    'center', yScreenCenter/3, blackCol, wrapat);
+                    'center', yScreenCenter/3, selectedCol, wrapat);
             elseif iCalibTrial == n_calibTrials % last trial
                 if ~isnan(t_min_reached_duringCalib)
                     DrawFormattedText(window,...
                         ['Votre meilleur temps est de ',num2str(t_min_reached_duringCalib),' s.'],...
-                        'center', yScreenCenter/3, blackCol, wrapat);
+                        'center', yScreenCenter/3, selectedCol, wrapat);
                 else
                     DrawFormattedText(window,...
                         'Nous allons refaire cette étape, essayez de faire mieux!',...
-                        'center', yScreenCenter/3, blackCol, wrapat);
+                        'center', yScreenCenter/3, selectedCol, wrapat);
                 end
             end
     end % trial is a success or not?
@@ -180,7 +180,7 @@ for iCalibTrial = 1:n_calibTrials
     if iCalibTrial < n_calibTrials
         DrawFormattedText(window,...
             'Vous pouvez appuyer quand vous vous sentez prêt(e) à recommencer.',...
-            'center', yScreenCenter*(5/3), blackCol, wrapat);
+            'center', yScreenCenter*(5/3), selectedCol, wrapat);
         [~, time_fbkPress] = Screen(window, 'Flip');
         onset_fbk_press(iCalibTrial) = time_fbkPress;
         KbWait; % wait for a button press to go to next phase

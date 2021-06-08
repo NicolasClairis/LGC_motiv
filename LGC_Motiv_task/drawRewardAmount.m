@@ -1,4 +1,4 @@
-function [] = drawRewardAmount(scr, stim, R_amount, R_or_P, xyCoordField)
+function drawRewardAmount(scr, stim, R_amount, R_or_P, xyCoordField)
 % [] = drawRewardAmount(scr, stim, R_amount, R_or_P, xyCoordField)
 % drawRewardAmount draws the money on screen depending on the input
 % parameters
