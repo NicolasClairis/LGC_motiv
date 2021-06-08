@@ -47,13 +47,6 @@ F_start = 0; % initial force level at zero
 F_threshold = 100; % force threshold on top to incentivize the participants
 F_tolerance = 0.25; % will determine the width of the top rectangle
 
-%% start acquiring the data in the background (if you don't use this
-% function, everytime you call the read function, it will take a
-% long time to process)
-start(dq,"continuous");
-% will need data = read(dq) function only to read the signal
-
-
 %% extract timings
 t_MVC_calib_instructions1 = calibTimes.instructions_bis;
 t_MVC_calib = calibTimes.effort_max;
@@ -85,17 +78,16 @@ WaitSecs(t_MVC_calib_instructions1);
 [onsets.effortScale_start,...
     onsets.initial_MVC_rest] = deal(NaN(1,n_MVC_repeat));
 
-%% initialize Force variable
-[F_now_Voltage, timeCheck, sampleOk_tmp] = F_read(dq, t_readWait);
-if sampleOk_tmp == 1
-    % convert force level from Voltage to a percentage of MVC
-    F_now = (F_now_Voltage/maxVoltage)*100;
-else % record when the output of read was empty to know when the force level was kept equal because of read failure
-    F_now = 0;
-end
-
 %% Measure MVC and keep maximal value
 for iCalib_MVC = 1:n_MVC_repeat
+    %% initialize Force variable
+    F_now = 0;
+    
+    %% start acquiring the data in the background (if you don't use this
+    % function, everytime you call the read function, it will take a
+    % long time to process)
+    start(dq,"continuous");
+    % will need data = read(dq) function only to read the signal
     
     %     %% allow subject to decide when to start calibration
     %     DrawFormattedText(window, 'Appuyez sur un des boutons quand vous êtes prêt(e)',...
@@ -112,6 +104,15 @@ for iCalib_MVC = 1:n_MVC_repeat
     %% start displaying effort scale and Go signal
     DrawFormattedText(window, 'GO !', 'center', GoYlocation, white);
     disp_realtime_force(scr, F_threshold, F_tolerance, F_start, 'calib');
+    % for calibration trials coming after the first one, you can also
+    % display the max reached until now to incentivize them to make
+    % better?
+    if iCalib_MVC > 1
+        maxMVCuntilNow = nanmax( MVC_perCalibSession(1:(iCalib_MVC-1)));
+        yThreshold = bottomScaleLimit - graphYSize*(maxMVCuntilNow/maxVoltage);
+        Screen('DrawLine', window, orange, leftScaleLimit, yThreshold, rightScaleLimit, yThreshold,5);
+    end
+    
     [~,timeEffortScaleStart]  = Screen(window,'Flip');
     onsets.effortScale_start(iCalib_MVC) = timeEffortScaleStart;
     
@@ -152,16 +153,15 @@ for iCalib_MVC = 1:n_MVC_repeat
     
     %% extract max force for this session (in Voltage)
     MVC_perCalibSession(iCalib_MVC) = nanmax(forceCalib.(['calibTrial_',num2str(iCalib_MVC)])(:,3));
-
-% empty the grip buffer
-flush(dq);
     
+    %% stop acquisition of biopac handgrip
+    % stop acquiring data in the grip buffer
+    stop(dq);
+    
+    % empty the grip buffer
+    flush(dq);
 end % calibration loop
-
-%% stop acquisition of biopac handgrip
-% stop acquiring data in the grip buffer
-stop(dq);
-
+    
 %% store max MVC measure in output
 MVC.forceCalib = forceCalib;
 MVC.MVC_perCalibSession = MVC_perCalibSession;

@@ -158,13 +158,13 @@ if strcmp(taskToPerform.physical.training,'on')
         [trainingChoiceOptions_Ep_tmp, n_trainingTrials_Ep_tmp] = training_options(trainingCond, n_R_levels, n_E_levels, R_money);
         
         % start with reward training alone
-        Ep_vars.MVC = MVC;
-        Ep_vars.dq = dq;
-        Ep_vars.Ep_time_levels = Ep_time_levels;
-        Ep_vars.F_threshold = F_threshold;
-        Ep_vars.F_tolerance = F_tolerance;
+        Ep_vars_training.MVC = MVC;
+        Ep_vars_training.dq = dq;
+        Ep_vars_training.Ep_time_levels = Ep_time_levels;
+        Ep_vars_training.F_threshold = F_threshold;
+        Ep_vars_training.F_tolerance = F_tolerance;
         [onsets_Ep_training.(trainingCond)] = choice_and_perf_trainingInstructions(scr, trainingCond, trainingTimes_Ep.instructions);
-        [trainingSummary_Ep.(trainingCond)] = choice_and_perf(scr, stim, key_Ep, 'physical', Ep_vars, R_money,...
+        [trainingSummary_Ep.(trainingCond)] = choice_and_perf(scr, stim, key_Ep, 'physical', Ep_vars_training, R_money,...
             trainingCond, n_trainingTrials_Ep_tmp, trainingChoiceOptions_Ep_tmp, trainingTimes_Ep,...
             results_folder, file_nm_training_Ep);
     end % learning condition loop
@@ -323,6 +323,15 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
     % for mental effort timing
     if strcmp(taskToPerform.mental.task,'on')
         taskTimes_Em.max_effort     = t_min_calib*taskTimes_Em.t_min_scalingFactor; % allow more time then min performance
+    end
+    
+    % for physical effort
+    if strcmp(taskToPerform.physical.task,'on')
+        Ep_vars.MVC = MVC;
+        Ep_vars.dq = dq;
+        Ep_vars.Ep_time_levels = Ep_time_levels;
+        Ep_vars.F_threshold = F_threshold;
+        Ep_vars.F_tolerance = F_tolerance;
     end
     
     % instruction that main task will start soon
