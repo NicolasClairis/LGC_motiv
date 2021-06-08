@@ -174,6 +174,7 @@ end
 
 % learning physical
 if strcmp(taskToPerform.physical.learning,'on')
+    showTitlesInstruction(scr,'learning',false)
     [learningPerfSummary_Ep, learningOnsets_Ep] = physical_learning(scr, stim, dq, n_E_levels, Ep_time_levels,...
         F_threshold, F_tolerance, MVC,...
         n_learningForceRepeats, learningTimes_Ep);
@@ -181,6 +182,7 @@ end
 
 % training physical
 if strcmp(taskToPerform.physical.training,'on')
+    showTitlesInstruction(scr,'training',false)
     for iTrainingCondition = 1:n_trainingConditions
         trainingCond = trainingConditions{iTrainingCondition};
         
@@ -209,6 +211,7 @@ end
 %% mental preparation
 %% learning mental
 if strcmp(taskToPerform.mental.learning,'on')
+    showTitlesInstruction(scr,'learning',true)
     mentalE_prm_learning_and_calib = mental_effort_parameters(iSubject);
     mentalE_prm_learning_and_calib.startAngle = 0; % for learning always start at zero
     % no time limit for each trial: as long as needed until learning is ok
@@ -307,6 +310,7 @@ end
 
 %% training mental
 if strcmp(taskToPerform.mental.training,'on')
+        showTitlesInstruction(scr,'training',true)
     trainingTimes_Em.max_effort = t_min_calib*trainingTimes_Em.t_min_scalingFactor; % allow more time then min performance
     for iTrainingCondition = 1:n_trainingConditions
         trainingCond = trainingConditions{iTrainingCondition};
@@ -386,7 +390,7 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
                 switch mod(iSubject+iSession,2)
                     case 1
                         if strcmp(taskToPerform.physical.task,'on')
-                            
+                                showTitlesInstruction(scr,'task',false)
                             % run physical task
                             [perfSummary.physical.(['repeat_nb',num2str(iRepeat)]).(['session_nb',num2str(iPhysical)]).(['Effort_lvl',(num2str(iEffortLevel))])] = choice_and_perf_staircase(scr, stim, key_Ep,...
                                 'physical', Ep_vars, R_money,...
@@ -399,7 +403,7 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
                         
                     case 0
                         if strcmp(taskToPerform.mental.task,'on')
-                            
+                                showTitlesInstruction(scr,'task',true)
                             Em_vars.i_sub = iSubject;
                             Em_vars.n_to_reach = n_to_reach;
                             % for actual task: no display of mapping but consider 3
