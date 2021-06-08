@@ -52,11 +52,11 @@ file_nm = ['pilot_data',init,'_sub_',num2str(iSubject)];
 %% general parameters
 IRM = 0;
 % define subparts of the task to perform (on/off)
-taskToPerform.physical.calib = 'off';
-taskToPerform.physical.learning = 'off';
-taskToPerform.physical.training = 'off';
-taskToPerform.physical.task = 'off';
-taskToPerform.mental.learning = 'off';
+taskToPerform.physical.calib = 'on';
+taskToPerform.physical.learning = 'on';
+taskToPerform.physical.training = 'on';
+taskToPerform.physical.task = 'on';
+taskToPerform.mental.learning = 'on';
 taskToPerform.mental.calib = 'on';
 taskToPerform.mental.training = 'on';
 taskToPerform.mental.task = 'on';
@@ -115,7 +115,7 @@ if strcmp(taskToPerform.physical.calib,'on') ||...
     % define relevant keys and dynamometer module
     [key_Ep, dq] = relevant_key_definition('physical', IRM);
     % define conditions
-    F_threshold = 50; % force should be maintained above this threshold (expressed in % of MVC)
+    F_threshold = 55; % force should be maintained above this threshold (expressed in % of MVC)
     F_tolerance = 2.5; % tolerance allowed around the threshold (expressed in % of MVC)
     % need to define timings for each level of force
     [Ep_time_levels] = physical_effortLevels(n_E_levels);
