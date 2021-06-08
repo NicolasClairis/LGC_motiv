@@ -46,7 +46,7 @@ file_nm = ['IP_pilot_data',init,'_sub_',num2str(iSubject)];
 %% general parameters
 IRM = 0;
 % define subparts of the task to perform (on/off)
-taskToPerform.physical.calib = 'off';
+taskToPerform.physical.calib = 'on';
 taskToPerform.physical.learning = 'on';
 taskToPerform.physical.training = 'on';
 taskToPerform.physical.task = 'on';
