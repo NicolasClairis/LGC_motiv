@@ -180,7 +180,8 @@ onset_question_tmp = onsetTrial; % for the first question
 onsets.nb_1 = onsetTrial;
 timeNow = onsetTrial;
 
-currentAngle(1) = startAngle_currentTrial;
+% initialize the angle for the 2 first questions
+currentAngle(1:2) = startAngle_currentTrial;
 
 % keep track of number of errors made during the trial
 jErrorsMade = 0;
