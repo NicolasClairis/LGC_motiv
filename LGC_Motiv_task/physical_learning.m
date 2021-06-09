@@ -67,7 +67,8 @@ for iForceRepeat = 1:n_learningForceRepeats
             time_limit, timings);
         
         %% Show a rest text and give some rest
-        DrawFormattedText(window, 'Reposez-vous quelques secondes.', 'center', yScreenSize*0.8, [0 0.8 0 ],white);
+        DrawFormattedText(window, 'Reposez-vous quelques secondes.',...
+            'center', yScreenSize*0.8, [0 0.8 0 ],white);
         [~,timeNow]  = Screen(window,'Flip');
         onsets.rest(jTrial) = timeNow;
         WaitSecs(t_learning_rest);

@@ -51,7 +51,7 @@ yScreenCenter = scr.yCenter;
 % xScreenCenter = scr.xCenter;
 
 %% ask question on top
-DrawFormattedText(window,'Que préférez-vous?','center',yScreenCenter/4,white);
+DrawFormattedText(window,'QUE PREFEREZ-VOUS?','center',yScreenCenter/4,white);
 DrawFormattedText(window,'OU','center','center',white);
 
 %% display each difficulty level

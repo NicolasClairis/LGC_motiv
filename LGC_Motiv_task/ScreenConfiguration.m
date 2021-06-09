@@ -50,35 +50,73 @@ Screen('Preference','VisualDebugLevel', 1); % avoid initial Psychtoolbox window
 switch testing_script
     case 0 % CENIR
         Screen('Preference', 'SkipSyncTests', 0); % needs all other processes shut off
-        window = Screen('OpenWindow',whichScreen,screenColour);
     case 1 % my own computer
         Screen('Preference', 'SkipSyncTests', 1); % can work even if other softwares are on but displays an ugly red triangle at start
-        window = Screen('OpenWindow',whichScreen,screenColour);
 end
+        window = Screen('OpenWindow',whichScreen,screenColour);
 
 %% hide mouse cursor
 % HideCursor();
 
+%% extract x and y coordinates of the center of the screen
+[L, H] = Screen('WindowSize',whichScreen);
+xScreenRealCenter = L/2;
+yScreenRealCenter = H/2;
+
+%% for fMRI CIBM shitty screen, fix the location of your stimuli
+if IRM == 0
+    leftBorder = 0;
+    upperBorder = 0;
+    rightBorder = L;
+    lowerBorder = H;
+    xScreenCenter = xScreenRealCenter;
+    yScreenCenter = yScreenRealCenter;
+elseif IRM == 1
+    leftBorder = 100;
+    upperBorder = 100;
+    rightBorder = L-100;
+    lowerBorder = H-100;
+    xScreenCenter = leftBorder + ( rightBorder - leftBorder )/2;
+    yScreenCenter = upperBorder + ( lowerBorder - upperBorder )/2;
+end
+visibleYsize = lowerBorder - upperBorder;
+visibleXsize = rightBorder - leftBorder;
+visibleWindowRectCoord = [leftBorder upperBorder rightBorder lowerBorder];
+
 %% text display properties
-baselineTextSize = 40;
+% rescaling factor for shitty CIBM scanner display screen
+if IRM == 0
+    rescaleCIBM = 1;
+elseif IRM == 1
+    rescaleCIBM_x = (rightBorder - leftBorder)/L;
+    rescaleCIBM_y = (lowerBorder - upperBorder)/H;
+    rescaleCIBM = min(rescaleCIBM_x, rescaleCIBM_y);
+end
+baselineTextSize = 40*rescaleCIBM;
 Screen('TextSize', window, baselineTextSize);
 Screen('TextFont', window, 'arial');
 textSize.baseline = baselineTextSize;
-textSize.mentalNumber = 120;
-textSize.big = 150;
-textSize.middle = 100;
-
-%% extract x and y coordinates of the center of the screen
-[L, H] = Screen('WindowSize',whichScreen);
-xScreenCenter = L/2;
-yScreenCenter = H/2;
+textSize.mentalNumber = 120*rescaleCIBM;
+textSize.big = 150*rescaleCIBM;
+textSize.middle = 100*rescaleCIBM;
+textSize.reward = 70*rescaleCIBM;
 
 %% store main informations inside scr structure
+scr.realXsize = L;
+scr.realYsize = H;
+scr.rescaleCIBM = rescaleCIBM;
 scr.screenNumber = whichScreen;
 scr.textSize = textSize;
 scr.window = window;
 scr.xCenter = xScreenCenter;
 scr.yCenter = yScreenCenter;
+scr.leftBorder = leftBorder;
+scr.lowerBorder = lowerBorder;
+scr.upperBorder = upperBorder;
+scr.rightBorder = rightBorder;
+scr.visibleYsize = visibleYsize;
+scr.visibleXsize = visibleXsize;
+scr.visibleWindow = visibleWindowRectCoord;
 scr.background_colour = screenColour;
 scr.colours.grey = grey;
 scr.colours.white = white;

@@ -65,6 +65,8 @@ taskToPerform.mental.task = 'on';
     window, baselineTextSize] = ScreenConfiguration(0, 1);
 white = scr.colours.white;
 black = scr.colours.black;
+leftBorder = scr.leftBorder;
+upperBorder = scr.upperBorder;
 
 % include punishment condition?
 punishment_yn = 'yes'; % include punishment trials?
@@ -169,7 +171,7 @@ if strcmp(taskToPerform.physical.training,'on')
             results_folder, file_nm_training_Ep);
     end % learning condition loop
     
-    DrawFormattedText(window,'Bravo! Votre entraînement physique est terminé.',...
+    DrawFormattedText(window,'Bravo! Votre entrainement physique est termine.',...
         'center','center',scr.colours.white, scr.wrapat);
     [~,onsets.EndTrainingMsg] = Screen('Flip',window); % display the cross on screen
     WaitSecs(trainingTimes_Ep.trainingEnd);
@@ -197,6 +199,7 @@ if strcmp(taskToPerform.mental.learning,'on')
     % no time limit for each trial: as long as needed until learning is
     % ok
     learning_time_limit = false;
+    learning_timeLimitThreshold = [];
     % for learning display the mapping after 2 errors, avoid displaying
     learning_errorLimits.useOfErrorThreshold = false;
     learning_errorLimits.useOfErrorMapping = true;
@@ -219,7 +222,7 @@ if strcmp(taskToPerform.mental.learning,'on')
             [learningPerfSummary_Em.(learning_sess_nm).(curr_learning_col).(curr_learning_instructions)] = mental_effort_perf(scr, stim, key_Em,...
                 numberVector_learning(jLearningSession,:),...
                 mentalE_prm_learning_and_calib, n_maxLearning.learning_withInstructions,...
-                curr_learning_col, curr_learning_instructions, learning_time_limit, learning_errorLimits);
+                curr_learning_col, curr_learning_instructions, learning_time_limit, learning_timeLimitThreshold, learning_errorLimits);
         end % learning instructions loop
     end % learning colour loop
     
@@ -253,7 +256,7 @@ if strcmp(taskToPerform.mental.learning,'on')
         [learningPerfSummary_Em.extendedLearning.(['trial_',num2str(iExtendedLearningTrial)])] = mental_effort_perf_Nback(scr, stim, key_Em,...
             numberVector_learning(iExtendedLearningTrial,:),...
             mentalE_prm_extendedLearning, learning_effort_n_toReach(iExtendedLearningTrial),...
-            'all', 'noInstructions', learning_time_limit, extendedLearning_errorLimits);
+            'all', 'noInstructions', learning_time_limit, learning_timeLimitThreshold, extendedLearning_errorLimits);
         
         % small break between each answer
         DrawFormattedText(window,'Bravo!','center',yScreenCenter/2,white);
@@ -336,8 +339,8 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
     
     % instruction that main task will start soon
     DrawFormattedText(window,...
-        'L''expérimentateur va bientôt démarrer la tâche.',...
-        'center', yScreenCenter*(5/3), scr.colours.white, scr.wrapat);
+        stim.expWillStart.text,...
+        stim.expWillStart.x, stim.expWillStart.y, scr.colours.white, scr.wrapat);
     [~, onsets.taskWillStart] = Screen(window, 'Flip');
     disp('Please press space.');
     [~, ~, keyCode] = KbCheck();
@@ -414,9 +417,9 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
         
         % display feedback for the current session
         DrawFormattedText(window,...
-            ['Félicitations! Cette session est maintenant terminée.',...
+            ['Felicitations! Cette session est maintenant terminee.',...
             'Vous avez obtenu: ',num2str(finalGains),' chf au cours de cette session.'],...
-            'center', yScreenCenter*(5/3), scr.colours.white, scr.wrapat);t
+            stim.endSessionMessage.x, stim.endSessionMessage.y, scr.colours.white, scr.wrapat);
         Screen(window,'Flip');
         WaitSecs(t_endSession);
     end % session loop
@@ -431,10 +434,9 @@ if strcmp(taskToPerform.physical.calib,'on') ||...
 all.physical.global.MVC = MVC;
 end
 if strcmp(taskToPerform.mental.calib,'on') ||...
-        strcmp(taskToPerform.mental.learning,'on') ||...
         strcmp(taskToPerform.mental.training,'on') ||...
         strcmp(taskToPerform.mental.task,'on')
-all.mental.global.t_min_calib = t_min_calib;
+    all.mental.global.t_min_calib = t_min_calib;
 end
 % learning performance
 if strcmp(taskToPerform.mental.learning,'on')

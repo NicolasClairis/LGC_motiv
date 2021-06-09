@@ -59,12 +59,12 @@ MVC_perCalibSession = NaN(1,n_MVC_repeat);
 
 %% Quick text to introduce MVC calibration
 % Screen('TextSize', window, text_size_1);
-DrawFormattedText(window, ['Avant de commencer l''expérience, ',...
+DrawFormattedText(window, ['Avant de commencer l''experience, ',...
     'nous allons vous demander ',...
-    'de serrer la poignée de force au maximum de vos capacités plusieurs ',...
-    'fois d''affilée.'], 'center',yScreenSize*0.7, white, scr.wrapat);
+    'de serrer la poignee de force au maximum de vos capacites plusieurs ',...
+    'fois d''affilee.'], 'center',yScreenSize*0.7, white, scr.wrapat);
 % Screen('TextSize', window, text_size_2)
-DrawFormattedText(window, 'Tenez-vous prêt à serrer la poignée.', 'center', yScreenSize*0.3, white);
+DrawFormattedText(window, 'Tenez-vous pret a serrer la poignee.', 'center', yScreenSize*0.3, white);
 
 [~,time_disp1,~,~,~] = Screen(window,'Flip');
 onsets.initial_MVC_instructions = time_disp1;
@@ -90,7 +90,7 @@ for iCalib_MVC = 1:n_MVC_repeat
     % will need data = read(dq) function only to read the signal
     
     %     %% allow subject to decide when to start calibration
-    %     DrawFormattedText(window, 'Appuyez sur un des boutons quand vous êtes prêt(e)',...
+    %     DrawFormattedText(window, 'Appuyez sur un des boutons quand vous etes pret(e)',...
     %         'center', yScreenSize*0.8, [0 0.8 0 ]);
     %     [~,timeNow]  = Screen(window,'Flip');
     %     onset.initial_MVC_rest = timeNow;

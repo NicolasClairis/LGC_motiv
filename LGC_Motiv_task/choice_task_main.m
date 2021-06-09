@@ -289,7 +289,7 @@ if IRM == 1 && session_nber > 0
     
     %% instruction that main task will start soon
     DrawFormattedText(window,...
-        'L''expérimentateur va bientôt démarrer la tâche.',...
+        'L''experimentateur va bientot demarrer la tache.',...
         'center', yScreenCenter*(5/3), scr.colours.white, scr.wrapat);
     [~, onsets.taskWillStart] = Screen(window, 'Flip');
     disp('Please press space and then launch fMRI (Be careful to respect this order for the T0...');
@@ -302,7 +302,7 @@ if IRM == 1 && session_nber > 0
     %% start recording fMRI TTL and wait for a given amount of TTL before
     % starting the task in order to calibrate all timings on T0
     if IRM == 1
-        dummy_scans = 4; % number of TTL to wait before starting the task
+        dummy_scans = 1; % number of TTL to wait before starting the task (dummy scans are already integrated in CIBM scanner)
         [T0, TTL] = keyboard_check_start(dummy_scans, key.trigger_id, key);
     end % fMRI check
 
@@ -320,7 +320,7 @@ if IRM == 1 && session_nber > 0
     
     %% display feedback for the current session
     DrawFormattedText(window,...
-        ['Félicitations! Cette session est maintenant terminée.',...
+        ['Felicitations! Cette session est maintenant terminee.',...
         'Vous avez obtenu: ',num2str(perfSummary.totalGain(nTrials)),' chf au cours de cette session.'],white);
     [~,onsets.endSessionFbk] = Screen(window,'Flip');
     WaitSecs(t_endSession);
@@ -354,7 +354,7 @@ if IRM == 1 && session_nber > 0
     % add instructions
     DrawFormattedText(window,...
         ['Pour finir cette session, nous allons vous demander ',...
-        'd''essayer à nouveau de battre votre record.'],...
+        'd''essayer a nouveau de battre votre record.'],...
         'center', yScreenCenter*(5/3), scr.colours.white, scr.wrapat);
     Screen(window,'Flip');
     % MVC maximum
