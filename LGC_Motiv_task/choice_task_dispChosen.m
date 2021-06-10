@@ -36,8 +36,8 @@ DrawFormattedText(window,'Vous avez choisi','center',stim.chosenOption.message_y
 switch R_chosen
     case 0 % no option was selected
         DrawFormattedText(window,...
-            'Trop lent!',...
-            'center', yScreenCenter, white);
+            stim.feedback.error_tooSlow.text,...
+            stim.feedback.error_tooSlow.x, stim.feedback.error_tooSlow.y, white);
     otherwise % one option was selected
         
         % if punishment trial, add also indication to know that money is to be lost

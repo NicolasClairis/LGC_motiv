@@ -1,5 +1,5 @@
-function disp_realtime_force(scr, F_threshold, F_tolerance, F_now, calib_or_Task)
-%[] = disp_realtime_force(scr, F_threshold, F_tolerance, F_now, calib_or_Task)
+function[bottomScaleLimit, topScaleLimit, leftScaleLimit, rightScaleLimit, graphYSize] = disp_realtime_force(scr, F_threshold, F_tolerance, F_now, calib_or_Task)
+%[bottomScaleLimit, topScaleLimit, leftScaleLimit, rightScaleLimit, graphYSize] = disp_realtime_force(scr, F_threshold, F_tolerance, F_now, calib_or_Task)
 % disp_realtime_force will display the force being exerted in real-time on
 % the left of the screen. The top of the scale will correspond to the MVC
 % of the participant. A red bar will be placed on the F_threshold that the
@@ -24,12 +24,24 @@ function disp_realtime_force(scr, F_threshold, F_tolerance, F_now, calib_or_Task
 % 'task': task phase (display on the left)
 %
 % OUTPUTS
+% bottomScaleLimit: coordinate of the bottom of the scale
 %
+% topScaleLimit: coordinate of the top of the scale
+%
+% leftScaleLimit: coordinate of the left of the scale
+%
+% rightScaleLimit: coordinate of the right of the scale
+%
+% graphYSize: size of the scale
 
 %% extract screen relevant parameters
 window = scr.window;
-xScreenCenter = scr.xCenter;
-yScreenCenter = scr.yCenter;
+% xScreenCenter   = scr.xCenter;
+yScreenCenter   = scr.yCenter;
+leftBorder      = scr.leftBorder;
+upperBorder     = scr.upperBorder;
+visibleYsize = scr.visibleYsize;
+visibleXsize = scr.visibleXsize;
 
 %% color parameters
 red = [255 0 0];
@@ -38,26 +50,26 @@ white = [255 255 255];
 orange = [255 153 0];
 
 %% screen coordinates for effort scale
-bottomScaleLimit    = yScreenCenter*(3/2); % bottom limit of the scale
-topScaleLimit       = yScreenCenter*(1/2); % upper limit of the scale
+bottomScaleLimit    = upperBorder + visibleYsize*(3/4); % bottom limit of the scale
+topScaleLimit       = upperBorder + visibleYsize*(1/4); % upper limit of the scale
 graphYSize = bottomScaleLimit - topScaleLimit;
 % size and coordinates of half of the effort scale
 yMetrics = yScreenCenter/2;
 % distance between graduations
-bigGrad = yMetrics/5;
+bigGrad = visibleYsize*(1/5);
 smallGrad = bigGrad/4;
 switch calib_or_Task
     case 'calib' % center the scale
-        leftScaleLimit      = xScreenCenter*(3.5/4); % left limit of the scale
-        rightScaleLimit     = xScreenCenter*(4.5/4); % right limit of the scale
+        leftScaleLimit      = leftBorder + visibleXsize*(3.5/8); % left limit of the scale
+        rightScaleLimit     = leftBorder + visibleXsize*(4.5/8); % right limit of the scale
     case 'task' % put the scale on the left
-        leftScaleLimit      = xScreenCenter*(1/4); % left limit of the scale
-        rightScaleLimit     = xScreenCenter*(2/4); % right limit of the scale
+        leftScaleLimit      = leftBorder + visibleXsize*(1/8); % left limit of the scale
+        rightScaleLimit     = leftBorder + visibleXsize*(1/4); % right limit of the scale
 end
 graphXSize = rightScaleLimit - leftScaleLimit;
 % screen coordinates for the bar representing the realtime force level
-leftBarLimit = leftScaleLimit + graphXSize*(1/4);
-rightBarLimit = leftScaleLimit + graphXSize*(3/4);
+leftBarLimit    = leftScaleLimit + graphXSize*(1/4);
+rightBarLimit   = leftScaleLimit + graphXSize*(3/4);
 
 %% draw a line on the left of the scale (vertical bar)
 % Screen('DrawLine', window, white, leftScaleLimit, topScaleLimit, leftScaleLimit, bottomScaleLimit, 3);
@@ -71,7 +83,7 @@ for yaxis = -yMetrics:smallGrad:yMetrics
         (yScreenCenter+yaxis), 1);
 end
 
-%% ??
+%% draw main graduations of the scale
 for yaxis = (-4*yMetrics/5):(yMetrics/5):yMetrics
     Screen('DrawLine', window, white,...
         leftScaleLimit,...

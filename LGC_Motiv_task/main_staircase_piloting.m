@@ -168,7 +168,7 @@ end
 %% physical preparation
 %% physical MVC
 if strcmp(taskToPerform.physical.calib,'on')
-    [initial_MVC, onsets_initial_MVC] = physical_effort_MVC(scr, dq, n_MVC_repeat, calibTimes_Ep);
+    [initial_MVC, onsets_initial_MVC] = physical_effort_MVC(scr, stim, dq, n_MVC_repeat, calibTimes_Ep);
     MVC = nanmax(initial_MVC.MVC); % expressed in Voltage
 end
 

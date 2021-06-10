@@ -50,10 +50,11 @@ switch instructionType
             ['Tache ',effortType_bis],...
             'center',yScreenCenter/2,titleCol);
 end
-%flip information on the screen
+
+% flip information on the screen
 Screen(window,'Flip');
 WaitSecs(t_wait);
 % put back baseline textsize value
 Screen('TextSize', window, baselineTextSize);
-end
 
+end % function

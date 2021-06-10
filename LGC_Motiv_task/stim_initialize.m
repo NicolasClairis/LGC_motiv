@@ -44,11 +44,11 @@ ySizeText = textSizeR(4) - textSizeR(2);
 stim.reward.xSizeText = xSizeText;
 stim.reward.ySizeText = ySizeText;
 % define where the text will be displayed
-stim.reward.text.top_left_start     = [leftBorder + visibleXsize*(1/4) - xSizeText/2,   upperBorder + visibleYsize*(2/5) - ySizeText/2]; % left option choice period
-stim.reward.text.top_right_start    = [leftBorder + visibleXsize*(3/4) - xSizeText/2,   upperBorder + visibleYsize*(2/5) - ySizeText/2]; % right option choice period
-stim.reward.text.top_center_start   = [xScreenCenter - xSizeText/2,                     upperBorder + visibleYsize*(2/5) - ySizeText/2]; % chosen option display
+stim.reward.text.top_left_start     = [leftBorder + visibleXsize*(1/4) - xSizeText/2,   y_coordinates(upperBorder, visibleYsize, 2/5, textSizeR)]; % left option choice period
+stim.reward.text.top_right_start    = [leftBorder + visibleXsize*(3/4) - xSizeText/2,   y_coordinates(upperBorder, visibleYsize, 2/5, textSizeR)]; % right option choice period
+stim.reward.text.top_center_start   = [x_centerCoordinates(xScreenCenter, textSizeR),   y_coordinates(upperBorder, visibleYsize, 2/5, textSizeR)]; % chosen option display
 % display on middle of the screen for performance feedback
-stim.reward.text.middle_center_start = [xScreenCenter - xSizeText/2,                    upperBorder + (visibleYsize/2) - ySizeText/2]; % feedback
+stim.reward.text.middle_center_start = [x_centerCoordinates(xScreenCenter, textSizeR),  y_coordinates(upperBorder, visibleYsize, 1/2, textSizeR)]; % feedback
 
 % define the colour to use for the text according to the condition
 % (reward/punishment)
@@ -127,7 +127,7 @@ stim.difficulty.ovalWidth       = 3;
 %% square to display for the chosen option
 [~,~,textSizeChosenMsg] = DrawFormattedText(window,'Vous avez choisi','center','center',white);
 ySizeChosenMsg = textSizeChosenMsg(4) - textSizeChosenMsg(2);
-stim.chosenOption.message_yCoord = upperBorder + visibleYsize*(3/16) - ySizeChosenMsg/2;
+stim.chosenOption.message_yCoord = y_coordinates(upperBorder, visibleYsize, 3/16, textSizeChosenMsg);
 stim.chosenOption.reward = stim.reward.text.top_center_start;
 stim.chosenOption.difficulty = stim.difficulty.below_center;
 stim.chosenOption.squareColour = black;
@@ -137,16 +137,21 @@ stim.chosenOption.squareRect = [leftBorder + visibleXsize*(1/3),...
     upperBorder + visibleYsize*(11/12)];
 stim.chosenOption.squareWidth = 10;
 
-%% for the end of the performance period circle to signify end of the trial (win or loss)
-stim.feedback.message_yCoord = upperBorder + visibleYsize*(3/8);
-stim.endTrialcircle  = [0 0 difficultyRectlinearSize+(difficultyRectlinearSize/5) difficultyRectlinearSize+(difficultyRectlinearSize/5)];
-stim.end_trial.middle_center = CenterRectOnPointd(stim.endTrialcircle, xScreenCenter, yScreenCenter);
-
 %% define bar size for the waiting time
 stim.barTimeWaitRect = [leftBorder + visibleXsize*(1/4),...
     upperBorder + visibleYsize*(3/8),...
     leftBorder + visibleXsize*(3/4),...
     upperBorder + visibleYsize*(1/2)];
+stim.barTimeWait.colour = white;
+
+% accompanying text
+remainingTimeText = 'Temps restant';
+[~,~,remainingTimeTextSize] = DrawFormattedText(window,remainingTimeText,'center','center',white);
+stim.remainingTime.text = remainingTimeText;
+stim.remainingTime.x    = x_centerCoordinates(xScreenCenter, remainingTimeTextSize);
+stim.remainingTime.y    = y_coordinates(upperBorder, visibleYsize, 1/4, remainingTimeTextSize);
+stim.remainingTime.colour = white;
+
 
 %% fixation cross coordinates on the screen (code relative to screen Y size)
 cross_length    = visibleYsize/6;
@@ -166,14 +171,124 @@ stim.expWillStart.text = 'L''experimentateur va bientot demarrer la tache.';
 [~,~,textSizeExpWillStart] = DrawFormattedText(window,...
     stim.expWillStart.text,...
     'center', 'center', white, wrapat);
-stim.expWillStart.x = xScreenCenter - (textSizeExpWillStart(3) - textSizeExpWillStart(1))/2;
-stim.expWillStart.y = upperBorder + (5/3)*(visibleYsize/2);
+stim.expWillStart.x = x_centerCoordinates(xScreenCenter, textSizeExpWillStart);
+stim.expWillStart.y = y_coordinates(upperBorder, visibleYsize, 5/6, textSizeExpWillStart);
+
+% reward training instructions
+stim.training.R.text = ['Vous allez a present choisir entre deux options associees a differents niveaux de recompense et d''effort '...
+                'l''option qui vous parait la plus interessante.'];
+[~,~,textSizeRewardTraining] = DrawFormattedText(window,...
+                stim.training.R.text,...
+                'center', 'center', white, wrapat);
+stim.training.R.x = x_centerCoordinates(xScreenCenter, textSizeRewardTraining);
+stim.training.R.y = y_coordinates(upperBorder, visibleYsize, 1/6, textSizeRewardTraining);
+stim.training.R.colour = white;
+
+% punishment training instructions
+stim.training.P.text = ['Vous allez a present choisir entre deux options associees a differents niveaux de pertes et d''effort '...
+                'l''option qui vous parait la moins penible.'];
+[~,~,textSizePunishmentTraining] = DrawFormattedText(window,...
+                stim.training.P.text,...
+                'center', 'center', white, wrapat);
+stim.training.P.x = x_centerCoordinates(xScreenCenter, textSizePunishmentTraining);
+stim.training.P.y = y_coordinates(upperBorder, visibleYsize, 1/6, textSizePunishmentTraining);
+stim.training.P.colour = white;
+
+% reward + punishment training
+stim.training.RP.text = ['Vous allez a present choisir entre deux options associees a differents niveaux de recompenses ou de pertes et d''effort '...
+                'l''option qui vous parait preferable.'];
+[~,~,textSizeRewardAndPunishmentTraining] = DrawFormattedText(window,...
+                stim.training.RP.text,...
+                'center', 'center', white, wrapat);
+stim.training.RP.x = x_centerCoordinates(xScreenCenter, textSizeRewardAndPunishmentTraining);
+stim.training.RP.y = y_coordinates(upperBorder, visibleYsize, 1/6, textSizeRewardAndPunishmentTraining);
+stim.training.RP.colour = white;
+
+% message to press when ready
+stim.pressWhenReady.text = 'Appuyez quand vous etes pret(e) a commencer la tache.';
+[~,~,textSizePressWhenReady] = DrawFormattedText(window, stim.pressWhenReady.text, 'center', 'center', white);
+stim.pressWhenReady.x = x_centerCoordinates(xScreenCenter, textSizePressWhenReady);
+stim.pressWhenReady.y = y_coordinates(upperBorder, visibleYsize, 15/6, textSizePressWhenReady);
+stim.pressWhenReady.colour = white;
 
 % total gains end of session
 [~,~,textSizeEndMsg] = DrawFormattedText(window,['Felicitations! Cette session est maintenant terminee.',...
             'Vous avez obtenu: 0.00 chf au cours de cette session.'],'center','center',white, wrapat);
-stim.endSessionMessage.x = xScreenCenter - (textSizeEndMsg(3) - textSizeEndMsg(1))/2;
-stim.endSessionMessage.y = upperBorder + (5/3)*(visibleYsize/2);
+stim.endSessionMessage.x = x_centerCoordinates(xScreenCenter, textSizeEndMsg);
+stim.endSessionMessage.y = y_coordinates(upperBorder, visibleYsize, 5/6, textSizeEndMsg);
+
+%% MVC calibration for physical effort
+% MVC instructions
+stim.Ep.MVC.instructions.text = ['Avant de commencer l''experience, ',...
+    'nous allons vous demander ',...
+    'de serrer la poignee de force au maximum de vos capacites plusieurs ',...
+    'fois d''affilee.'];
+[~,~,textSizeMVCInstructions] = DrawFormattedText(window, stim.Ep.MVC.instructions.text, 'center','center', white, wrapat);
+stim.Ep.MVC.instructions.x = x_centerCoordinates(xScreenCenter, textSizeMVCInstructions);
+stim.Ep.MVC.instructions.y = y_coordinates(upperBorder, visibleYsize, 7/10, textSizeMVCInstructions);
+stim.Ep.MVC.instructions.colour = white;
+stim.Ep.MVC.instructions_bis.text = 'Tenez-vous pret a serrer la poignee.';
+[~,~,textSizeMVCInstructions_bis] = DrawFormattedText(window, stim.Ep.MVC.instructions_bis.text, 'center', 'center', white);
+stim.Ep.MVC.instructions_bis.x = x_centerCoordinates(xScreenCenter, textSizeMVCInstructions_bis);
+stim.Ep.MVC.instructions_bis.y = y_coordinates(upperBorder, visibleYsize, 3/10, textSizeMVCInstructions_bis);
+stim.Ep.MVC.instructions_bis.colour = white;
+
+% GO instruction
+stim.Ep.MVC.GO.text = 'GO !';
+[~,~,textSizeGO] = DrawFormattedText(window, stim.Ep.MVC.GO.text, 'center', 'center', white);
+stim.Ep.MVC.GO.x = x_centerCoordinates(xScreenCenter, textSizeGO);
+stim.MVC_rest.y = y_coordinates(upperBorder, visibleYsize, 9/10, textSizeGO);
+stim.Ep.MVC.GO.colour = white;
+
+% effort scale
+
+
+% post-effort rest
+stim.MVC_rest.text = 'Reposez-vous quelques secondes.';
+[~,~,textSizeRest] = DrawFormattedText(window, stim.MVC_rest.text, 'center', 'center', white);
+stim.MVC_rest.x = x_centerCoordinates(xScreenCenter, textSizeRest);
+stim.MVC_rest.y = y_coordinates(upperBorder, visibleYsize, 4/5, textSizeRest);
+stim.MVC_rest.colour = white;
+
+%% prepare feedback messages
+% reward feedback
+stim.feedback.reward.text = 'Vous avez obtenu';
+[~,~,textSizeRewardFbkMsg] = DrawFormattedText(window, stim.feedback.reward.text,...
+    'center', 'center',...
+    white);
+stim.feedback.reward.x = x_centerCoordinates(xScreenCenter, textSizeRewardFbkMsg);
+stim.feedback.reward.y = y_coordinates(upperBorder, visibleYsize, 3/8, textSizeRewardFbkMsg);
+stim.feedback.colour = white;
+
+% punishment feedback
+stim.feedback.punishment.text = 'Vous avez perdu';
+[~,~,textSizePunishmentFbkMsg] = DrawFormattedText(window, stim.feedback.punishment.text,...
+    'center', 'center',...
+    white);
+stim.feedback.punishment.x = x_centerCoordinates(xScreenCenter, textSizePunishmentFbkMsg);
+stim.feedback.punishment.y = y_coordinates(upperBorder, visibleYsize, 3/8, textSizePunishmentFbkMsg);
+
+% error: too slow feedback
+stim.feedback.error_tooSlow.text = 'Trop lent!';
+[~,~,textSizeErrorTooSlowFbkMsg] = DrawFormattedText(window, stim.feedback.error_tooSlow.text,...
+    'center', 'center',...
+    white);
+stim.feedback.error_tooSlow.x = x_centerCoordinates(xScreenCenter, textSizeErrorTooSlowFbkMsg);
+stim.feedback.error_tooSlow.y = y_coordinates(upperBorder, visibleYsize, 3/8, textSizeErrorTooSlowFbkMsg); % used to be 1/5*yScreenCenter
+
+% error too many errors feedback
+stim.feedback.error_tooManyErrors.text = 'Trop d''erreurs!';
+[~,~,textSizeErrorTooManyErrorsFbkMsg] = DrawFormattedText(window, stim.feedback.error_tooManyErrors.text,...
+    'center', 'center',...
+    white);
+stim.feedback.error_tooManyErrors.x = x_centerCoordinates(xScreenCenter, textSizeErrorTooManyErrorsFbkMsg);
+stim.feedback.error_tooManyErrors.y = y_coordinates(upperBorder, visibleYsize, 3/8, textSizeErrorTooManyErrorsFbkMsg); % used to be 1/5*yScreenCenter
+
+
+% for the end of the performance period circle to signify end of the trial (win or loss)
+stim.endTrialcircle  = [0, 0, (difficultyRectlinearSize + (difficultyRectlinearSize/5)), (difficultyRectlinearSize + (difficultyRectlinearSize/5) )];
+stim.end_trial.middle_center = CenterRectOnPointd(stim.endTrialcircle, xScreenCenter, yScreenCenter);
+
 
 %% add grey screen on top to be sure that this does not actually appear on
 % the screen
@@ -181,3 +296,17 @@ Screen('FillRect',window, grey, [0 0 xScreenCenter*2 yScreenCenter*2]);
 Screen(window,'Flip');
 
 end % function
+
+function[x] = x_centerCoordinates(xScreenCenter, textSize)
+% to center the coordinates on the screen
+x = xScreenCenter - (textSize(3) - textSize(1))/2;
+end
+
+function[y] = y_coordinates(upperBorder, visibleYsize, YpercentageLocation, textSize)
+% define where the stimulus will be displayed on the Y axis: start after
+% the non-visible part of the upper border, then define the location on the
+% visible part of the screen and center the text on this location
+
+y = upperBorder + visibleYsize*YpercentageLocation - (textSize(4) - textSize(2)/2);
+
+end

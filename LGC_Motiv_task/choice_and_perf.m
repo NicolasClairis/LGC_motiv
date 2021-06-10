@@ -53,9 +53,9 @@ function[summary] = choice_and_perf(scr, stim, key,...
 %% load main paramaters
 window = scr.window;
 white = scr.colours.white;
-black = scr.colours.black;
+% black = scr.colours.black;
 yScreenCenter = scr.yCenter;
-xScreenCenter = scr.xCenter;
+% xScreenCenter = scr.xCenter;
 barTimeWaitRect = stim.barTimeWaitRect;
 
 %% timings
@@ -255,17 +255,17 @@ for iTrial = 1:nTrials
                     ( (Ep_or_Em_vars.errorLimits.useOfErrorThreshold == false) ||...
                     (Ep_or_Em_vars.errorLimits.useOfErrorThreshold == true &&...
                     perfSummary{iTrial}.n_errorsMade < Ep_or_Em_vars.errorLimits.errorThreshold) ) )
-                DrawFormattedText(window,'Trop lent!',...
-                    'center', (1/5)*yScreenCenter,...
-                    white);
+                DrawFormattedText(window, stim.feedback.error_tooSlow.text,...
+                    stim.feedback.error_tooSlow.x, stim.feedback.error_tooSlow.y, ...
+                    stim.feedback.colour);
             elseif strcmp(effort_type,'mental') &&...
-                Ep_or_Em_vars.errorLimits.useOfErrorThreshold == true &&...
-                perfSummary{iTrial}.n_errorsMade >= Ep_or_Em_vars.errorLimits.errorThreshold
-            % for the mental effort case where too many errors were made,
-            % adapt the error feedback accordingly
-                DrawFormattedText(window,'Trop d''erreurs!',...
-                    'center', (1/5)*yScreenCenter,...
-                    white);
+                    Ep_or_Em_vars.errorLimits.useOfErrorThreshold == true &&...
+                    perfSummary{iTrial}.n_errorsMade >= Ep_or_Em_vars.errorLimits.errorThreshold
+                % for the mental effort case where too many errors were made,
+                % adapt the error feedback accordingly
+                DrawFormattedText(window, stim.feedback.error_tooManyErrors.text,...
+                    stim.feedback.error_tooManyErrors.x, stim.feedback.error_tooManyErrors.y, ...
+                    stim.feedback.colour);
             end
             % display money loss for failing
             [~,onsets.fbk_fail(iTrial)] = Screen(window,'Flip');
@@ -277,13 +277,13 @@ for iTrial = 1:nTrials
             % display feedback
             switch R_or_P_tmp
                 case 'R'
-                    DrawFormattedText(window,'Vous avez obtenu',...
-                        'center', stim.feedback.message_yCoord,...
-                        white);
+                    DrawFormattedText(window, stim.feedback.reward.text,...
+                        stim.feedback.reward.x, stim.feedback.reward.y,...
+                        stim.feedback.colour);
                 case 'P'
-                    DrawFormattedText(window,'Vous avez perdu',...
-                        'center', stim.feedback.message_yCoord,...
-                        white);
+                    DrawFormattedText(window, stim.feedback.punishment.text,...
+                        stim.feedback.punishment.x, stim.feedback.punishment.y,...
+                        stim.feedback.colour);
             end
             drawRewardAmount(scr, stim, R_chosen(iTrial), R_or_P_tmp, 'middle_center_start');
         
@@ -334,13 +334,13 @@ for iTrial = 1:nTrials
                 barTimeWaitRect_bis(3) = barTimeWaitRect(1) + 1;
             end
             %
-            DrawFormattedText(window,'Temps restant','center',yScreenCenter*(1/2),white);
+            DrawFormattedText(window, stim.remainingTime.text, stim.remainingTime.x, stim.remainingTime.y, stim.remainingTime.colour);
             % draw one global fixed rectangle showing the total duration
-            Screen('FrameRect',window, white, barTimeWaitRect);
+            Screen('FrameRect',window, stim.barTimeWait.colour, barTimeWaitRect);
             
             % draw one second rectangle updating dynamically showing the
             % time remaining
-            Screen('FillRect',window, white, barTimeWaitRect_bis);
+            Screen('FillRect',window, stim.barTimeWait.colour, barTimeWaitRect_bis);
             
             Screen(window,'Flip');
         end % display until time catches up with maximum effort time

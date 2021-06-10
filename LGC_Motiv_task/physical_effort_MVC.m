@@ -1,10 +1,12 @@
-function[MVC, onsets] = physical_effort_MVC(scr, dq, n_MVC_repeat, calibTimes)
-%[MVC, onsets] = physical_effort_MVC(scr, dq, n_MVC_repeat, calibTimes)
+function[MVC, onsets] = physical_effort_MVC(scr, stim, dq, n_MVC_repeat, calibTimes)
+%[MVC, onsets] = physical_effort_MVC(scr, stim, dq, n_MVC_repeat, calibTimes)
 % MVC_measurement will display the instructions and measure the MVC
 % for the physical effort task.
 %
 % INPUTS
 % scr: structure about main screen parameters (size, window, etc.)
+%
+% stim: structure with stimuli informations
 %
 % dq: device from which the force will be recorded
 %
@@ -24,23 +26,9 @@ function[MVC, onsets] = physical_effort_MVC(scr, dq, n_MVC_repeat, calibTimes)
 
 %% screen relevant variables
 window = scr.window;
-xScreenCenter = scr.xCenter;
-yScreenCenter = scr.yCenter;
-yScreenSize = yScreenCenter*2;
-GoYlocation = yScreenSize*0.9;
-white = scr.colours.white;
-% text_size_1 = 50;
-% text_size_2 = 75;
-% text_size_3 = 70;
+wrapat = scr.wrapat;
 orange = [255 153 0];
-bottomScaleLimit    = yScreenCenter*(3/2); % bottom limit of the scale
-topScaleLimit       = yScreenCenter*(1/2); % upper limit of the scale
-leftScaleLimit      = xScreenCenter*(3.5/4); % left limit of the scale
-rightScaleLimit     = xScreenCenter*(4.5/4); % right limit of the scale
-graphYSize = bottomScaleLimit - topScaleLimit;
 
-% make sure the first measure of read is ignored
-dummyMeasure = 3;
 
 %% force relevant variables
 F_start = 0; % initial force level at zero
@@ -59,16 +47,18 @@ MVC_perCalibSession = NaN(1,n_MVC_repeat);
 
 %% Quick text to introduce MVC calibration
 % Screen('TextSize', window, text_size_1);
-DrawFormattedText(window, ['Avant de commencer l''experience, ',...
-    'nous allons vous demander ',...
-    'de serrer la poignee de force au maximum de vos capacites plusieurs ',...
-    'fois d''affilee.'], 'center',yScreenSize*0.7, white, scr.wrapat);
+DrawFormattedText(window, stim.Ep.MVC.instructions.text,...
+    stim.Ep.MVC.instructions.x, stim.Ep.MVC.instructions.y,...
+    stim.Ep.MVC.instructions.colour, wrapat);
 % Screen('TextSize', window, text_size_2)
-DrawFormattedText(window, 'Tenez-vous pret a serrer la poignee.', 'center', yScreenSize*0.3, white);
+DrawFormattedText(window, stim.Ep.MVC.instructions_bis.text,...
+    stim.Ep.MVC.instructions_bis.x, stim.Ep.MVC.instructions_bis.y,...
+    stim.Ep.MVC.instructions_bis.colour);
 
 [~,time_disp1,~,~,~] = Screen(window,'Flip');
 onsets.initial_MVC_instructions = time_disp1;
 WaitSecs(t_MVC_calib_instructions1);
+[bottomScaleLimit, topScaleLimit, leftScaleLimit, rightScaleLimit, graphYSize] = disp_realtime_force(scr, F_threshold, F_tolerance, F_start, 'calib');
 
 %% Measure MVC
 % Set screen text size
@@ -102,7 +92,8 @@ for iCalib_MVC = 1:n_MVC_repeat
     %     end
     
     %% start displaying effort scale and Go signal
-    DrawFormattedText(window, 'GO !', 'center', GoYlocation, white);
+    DrawFormattedText(window, stim.Ep.MVC.GO.text,...
+        stim.Ep.MVC.GO.x, stim.Ep.MVC.GO.y, stim.Ep.MVC.GO.colour);
     disp_realtime_force(scr, F_threshold, F_tolerance, F_start, 'calib');
     % for calibration trials coming after the first one, you can also
     % display the max reached until now to incentivize them to make
@@ -129,7 +120,7 @@ for iCalib_MVC = 1:n_MVC_repeat
         % store force levels in the output
         forceCalib.(['calibTrial_',num2str(iCalib_MVC)]) = [forceCalib.(['calibTrial_',num2str(iCalib_MVC)]);...
             [F_now, timeNow, F_now_Voltage, sampleOk_tmp]]; % store F in % of MVC, time and F in Volts
-        DrawFormattedText(window, 'GO !', 'center', GoYlocation, white);
+        DrawFormattedText(window, stim.Ep.MVC.GO.text, stim.Ep.MVC.GO.x, stim.Ep.MVC.GO.y, stim.Ep.MVC.GO.colour);
         disp_realtime_force(scr, F_threshold, F_tolerance, F_now, 'calib');
         
         % for calibration trials coming after the first one, you can also
@@ -146,7 +137,8 @@ for iCalib_MVC = 1:n_MVC_repeat
     end % time for the current calibration trial
     
     %% Show a rest text and give some rest
-    DrawFormattedText(window, 'Reposez-vous quelques secondes.', 'center', yScreenSize*0.8, white);
+    DrawFormattedText(window, stim.MVC_rest.text,...
+        stim.MVC_rest.x, stim.MVC_rest.y, stim.MVC_rest.colour);
     [~,timeNow]  = Screen(window,'Flip');
     onsets.initial_MVC_rest(iCalib_MVC) = timeNow;
     WaitSecs(t_MVC_rest);

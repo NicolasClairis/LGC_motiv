@@ -138,7 +138,7 @@ end
 %% physical MVC
 if strcmp(taskToPerform.physical.calib,'on')
     n_MVC_repeat = 3; % number of calibration trials
-    [initial_MVC, onsets_initial_MVC] = physical_effort_MVC(scr, dq, n_MVC_repeat, calibTimes_Ep);
+    [initial_MVC, onsets_initial_MVC] = physical_effort_MVC(scr, stim, dq, n_MVC_repeat, calibTimes_Ep);
     MVC = nanmax(initial_MVC.MVC); % expressed in Voltage
 end
 
@@ -367,7 +367,7 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
                 strcmp(taskToPerform.physical.task,'on')% physical task
             
             % pre-task MVC
-            [MVC_preTask.(session_nm), onsets_preTask_MVC.physical.(session_nm)] = physical_effort_MVC(scr, dq, n_MVC_repeat, calibTimes_Ep);
+            [MVC_preTask.(session_nm), onsets_preTask_MVC.physical.(session_nm)] = physical_effort_MVC(scr, stim, dq, n_MVC_repeat, calibTimes_Ep);
             
             % task
             [perfSummary.physical.(session_nm)] = choice_and_perf(scr, stim, key_Ep,...
@@ -378,7 +378,7 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
             finalGains = perfSummary.physical.(session_nm).totalGain(end);
             
             % post-task MVC
-            [MVC_postTask.(session_nm), onsets_postTask_MVC.physical.(session_nm)] = physical_effort_MVC(scr, dq, n_MVC_repeat, calibTimes_Ep);
+            [MVC_postTask.(session_nm), onsets_postTask_MVC.physical.(session_nm)] = physical_effort_MVC(scr, stim, dq, n_MVC_repeat, calibTimes_Ep);
         elseif (( (mod(iSubject,2) == 0) && ismember(iSession,[2,4]) ) ||...
                 ( (mod(iSubject,2) ~= 0) && ismember(iSession,[1,3]) )) &&...
                 strcmp(taskToPerform.mental.task,'on') % mental task
