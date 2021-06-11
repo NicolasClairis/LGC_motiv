@@ -45,9 +45,6 @@ function[onset_stim] = mental_display_stim(scr, stim,...
 
 %% extract relevant parameters
 window = scr.window;
-selectedCol = scr.colours.white;
-% xScreenCenter = scr.xCenter;
-yScreenCenter = scr.yCenter;
 arcCurrLevelColor = stim.difficulty.currLevelColor;
 arcPosition = stim.difficulty.middle_center;
 
@@ -75,7 +72,7 @@ switch taskTypeDisplay
 end
 Screen('TextSize', window, scr.textSize.mentalNumber);
 DrawFormattedText(window, num2str(numberValue),...
-    'center', yScreenCenter*(9/6), textColor);
+    stim.Em.numberPerf.x, stim.Em.numberPerf.y, textColor);
 Screen('TextSize', window, scr.textSize.baseline);
 
 %% instructions

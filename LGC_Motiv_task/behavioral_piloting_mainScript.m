@@ -171,9 +171,10 @@ if strcmp(taskToPerform.physical.training,'on')
             results_folder, file_nm_training_Ep);
     end % learning condition loop
     
-    DrawFormattedText(window,'Bravo! Votre entrainement physique est termine.',...
-        'center','center',scr.colours.white, scr.wrapat);
-    [~,onsets.EndTrainingMsg] = Screen('Flip',window); % display the cross on screen
+    % display congratulations for finishing the physical effort training
+    DrawFormattedText(window, stim.training.Ep.endMsg.text,...
+        stim.training.Ep.endMsg.x, stim.training.Ep.endMsg.y, stim.training.Ep.endMsg.colour, scr.wrapat);
+    [~,onsets.EndTrainingMsg] = Screen('Flip',window);
     WaitSecs(trainingTimes_Ep.trainingEnd);
 end
 
@@ -259,8 +260,15 @@ if strcmp(taskToPerform.mental.learning,'on')
             'all', 'noInstructions', learning_time_limit, learning_timeLimitThreshold, extendedLearning_errorLimits);
         
         % small break between each answer
-        DrawFormattedText(window,'Bravo!','center',yScreenCenter/2,white);
-        DrawFormattedText(window,'Au suivant!','center','center',white);
+        if iExtendedLearningTrial < n_extendedLearningTrials
+            DrawFormattedText(window, stim.training.Em.endTrialMsg.text,...
+                stim.training.Em.endTrialMsg.x, stim.training.Em.endTrialMsg.y, stim.training.Em.endTrialMsg.colour);
+            DrawFormattedText(window,stim.training.Em.endTrialMsg_bis.text,...
+            stim.training.Em.endTrialMsg_bis.x, stim.training.Em.endTrialMsg_bis.y, stim.training.Em.endTrialMsg_bis.colour);
+        elseif iExtendedLearningTrial == n_extendedLearningTrials
+            DrawFormattedText(window, stim.training.Em.endMsg.text,...
+                stim.training.Em.endMsg.x, stim.training.Em.endMsg.y, stim.training.Em.endMsg.colour, scr.wrapat);
+        end
         [~,~,timeExtendedLearningFbk.(['trial_',num2str(iExtendedLearningTrial)])] = Screen(window,'Flip');
         WaitSecs(learningTimes_Em.learning_rest);
         disp([num2str(iExtendedLearningTrial),'/',num2str(n_extendedLearningTrials),' learning trial done']);

@@ -24,13 +24,11 @@ function[time_dispChoice] = choice_task_dispChosen(scr, stim, R_chosen, E_chosen
 
 %% extract relevant parameters
 window = scr.window;
-xScreenCenter = scr.xCenter;
-yScreenCenter = scr.yCenter;
 white = scr.colours.white;
-black = scr.colours.black;
 
 % remind the option they chose
-DrawFormattedText(window,'Vous avez choisi','center',stim.chosenOption.message_yCoord,white);
+DrawFormattedText(window, stim.chosenOptionMsg.text,...
+    stim.chosenOptionMsg.x, stim.chosenOptionMsg.y, white);
 
 %% display reward and effort level
 switch R_chosen

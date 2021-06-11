@@ -36,67 +36,58 @@ end
 
 %% extract relevant info
 window = scr.window;
-xScreenCenter = scr.xCenter;
-yScreenCenter = scr.yCenter;
-blackCol = [0 0 0];
-
-%% determine x,y coordinates
-y_coord = yScreenCenter*(5/3);
-x_left = xScreenCenter/2;
-x_right = xScreenCenter*(3/2);
 
 %% display on the screen
 switch task_trialType
     case 0 % odd/even
         if strcmp(learning_instructions,'fullInstructions')
-            DrawFormattedText(window, 'Chiffre pair ou impair?',...
-                'center', yScreenCenter/3, textCol);
-
+            DrawFormattedText(window, stim.Em.oddORevenQuestion.text,...
+                stim.Em.oddORevenQuestion.x, stim.Em.oddORevenQuestion.y, textCol);
         end
         
         if sideQuestion.oE.pair == -1 && sideQuestion.oE.impair == +1
-            x_pair = x_left;
-            x_impair = x_right;
+            x_pair      = stim.Em.even_left.x;
+            x_impair    = stim.Em.odd_right.x;
         elseif sideQuestion.oE.pair == +1 && sideQuestion.oE.impair == -1
-            x_pair = x_right;
-            x_impair = x_left;
+            x_pair      = stim.Em.even_right.x;
+            x_impair    = stim.Em.odd_left.x;
         else
             error('error in sideQuestion definition');
         end
-        DrawFormattedText(window,'pair', x_pair, y_coord, textCol );
-        DrawFormattedText(window,'OU', 'center', y_coord, textCol );
-        DrawFormattedText(window,'impair', x_impair, y_coord, textCol );
+        DrawFormattedText(window, stim.Em.even.text, x_pair, stim.Em.even.y, textCol );     % pair
+        DrawFormattedText(window, stim.Em.OR.text, stim.Em.OR.x, stim.Em.OR.y, textCol );   % OR
+        DrawFormattedText(window, stim.Em.odd.text, x_impair, stim.Em.odd.y, textCol );     % impair
 
     case 1 % higher/lower than 5?
         if strcmp(learning_instructions,'fullInstructions')
-            DrawFormattedText(window, 'Chiffre < ou > 5?',...
-                'center', yScreenCenter/3, textCol);
+            DrawFormattedText(window, stim.Em.lowerORhigherQuestion.text,...
+                stim.Em.lowerORhigherQuestion.x, stim.Em.lowerORhigherQuestion.y, textCol);
         end
         
         if sideQuestion.hL.low == -1 && sideQuestion.hL.high == +1
-            x_low = x_left;
-            x_high = x_right;
+            x_low = stim.Em.lower_left.x;
+            x_high = stim.Em.higher_right.x;
         elseif sideQuestion.hL.low == +1 && sideQuestion.hL.high == -1
-            x_low = x_right;
-            x_high = x_left;
+            x_low = stim.Em.lower_right.x;
+            x_high = stim.Em.higher_left.x;
         else
             error('error in sideQuestion definition');
         end
-        DrawFormattedText(window,'< 5', x_low, y_coord, textCol );
-        DrawFormattedText(window,'OU', 'center', y_coord, textCol );
-        DrawFormattedText(window,'> 5', x_high, y_coord, textCol );
+        DrawFormattedText(window, stim.Em.lower.text, x_low, stim.Em.lower.y, textCol );    % < 5
+        DrawFormattedText(window, stim.Em.OR.text, stim.Em.OR.x, stim.Em.OR.y, textCol );   % OR
+        DrawFormattedText(window, stim.Em.higher.text, x_high, stim.Em.higher.y, textCol ); % > 5
         
     case 2 % first trial for 1-back version
         if strcmp(learning_instructions,'fullInstructions')
-            DrawFormattedText(window, 'Appuyer sur n''importe quel bouton',...
-                'center', yScreenCenter/3, textCol);
+            DrawFormattedText(window, stim.Em.pressAnyButtonQuestion.text,...
+                stim.Em.pressAnyButtonQuestion.x, stim.Em.pressAnyButtonQuestion.y, textCol);
 %             DrawFormattedText(window, 'Press any button',...
 %                 'center', yScreenCenter/3, textCol);
         end
 
-        DrawFormattedText(window,'Appuyer', x_left, y_coord, textCol );
-        DrawFormattedText(window,'OU', 'center', y_coord, textCol );
-        DrawFormattedText(window,'Appuyer', x_right, y_coord, textCol );
+        DrawFormattedText(window, stim.Em.pressAnyButton.text, stim.Em.pressAnyButton_left.x, stim.Em.pressAnyButtonQuestion.y, textCol );
+        DrawFormattedText(window, stim.Em.OR.text, stim.Em.OR.x, stim.Em.OR.y, textCol );   % OR
+        DrawFormattedText(window, stim.Em.pressAnyButton.text, stim.Em.pressAnyButton_right.x, stim.Em.pressAnyButtonQuestion.y, textCol );
 end % task type
     
 end % function

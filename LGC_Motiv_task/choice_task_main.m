@@ -288,9 +288,8 @@ if IRM == 1 && session_nber > 0
     
     
     %% instruction that main task will start soon
-    DrawFormattedText(window,...
-        'L''experimentateur va bientot demarrer la tache.',...
-        'center', yScreenCenter*(5/3), scr.colours.white, scr.wrapat);
+    DrawFormattedText(window, stim.expWillStart.text,...
+        stim.expWillStart.x, stim.expWillStart.y, scr.colours.white, scr.wrapat);
     [~, onsets.taskWillStart] = Screen(window, 'Flip');
     disp('Please press space and then launch fMRI (Be careful to respect this order for the T0...');
     [~, ~, keyCode] = KbCheck();
@@ -313,15 +312,16 @@ if IRM == 1 && session_nber > 0
         results_folder, file_nm);
     
     %% add fixation cross to terminate the acquisition (to avoid weird fMRI behavior for last trial)
-    Screen('FillRect',window,white, stim.cross.verticalLine); % vertical line
-    Screen('FillRect',window,white, stim.cross.horizontalLine); % horizontal line
+    Screen('FillRect',window, stim.cross.colour, stim.cross.verticalLine); % vertical line
+    Screen('FillRect',window, stim.cross.colour, stim.cross.horizontalLine); % horizontal line
     [~,onsets.finalCross] = Screen('Flip',window); % display the cross on screen
     WaitSecs(taskTimes.finalCross);
     
     %% display feedback for the current session
     DrawFormattedText(window,...
         ['Felicitations! Cette session est maintenant terminee.',...
-        'Vous avez obtenu: ',num2str(perfSummary.totalGain(nTrials)),' chf au cours de cette session.'],white);
+        'Vous avez obtenu: ',num2str(perfSummary.totalGain(nTrials)),' chf au cours de cette session.'],...
+        stim.endSessionMessage.x, stim.endSessionMessage.y, white);
     [~,onsets.endSessionFbk] = Screen(window,'Flip');
     WaitSecs(t_endSession);
         
@@ -352,10 +352,8 @@ save([results_folder, file_nm,'_messyAllStuff.mat']);
 %% Measure maximum power again at the end of each scan
 if IRM == 1 && session_nber > 0
     % add instructions
-    DrawFormattedText(window,...
-        ['Pour finir cette session, nous allons vous demander ',...
-        'd''essayer a nouveau de battre votre record.'],...
-        'center', yScreenCenter*(5/3), scr.colours.white, scr.wrapat);
+    DrawFormattedText(window, stim.postTaskMVCmeasurement.text,...
+        stim.postTaskMVCmeasurement.x, stim.postTaskMVCmeasurement.y, stim.postTaskMVCmeasurement.colour, scr.wrapat);
     Screen(window,'Flip');
     % MVC maximum
     nFinalTrial = 1;
