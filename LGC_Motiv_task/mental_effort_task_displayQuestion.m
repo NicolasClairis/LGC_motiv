@@ -51,7 +51,8 @@ Screen('FillArc', window,...
     endAngle - startAngle);
 
 % display number to solve
-DrawFormattedText(window,num2str(numberValue), stim.Em.numberPerf.x, stim.Em.numberPerfLearning.y,white);
+DrawFormattedText(window,num2str(numberValue),...
+    stim.Em.numberPerf.x, stim.Em.numberPerfLearning.y,white);
 
 % display question according to type of task on which to start
 mental_effort_task_question_display(scr, task_type);

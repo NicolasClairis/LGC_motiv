@@ -1,10 +1,12 @@
-function[onsets] = choice_and_perf_trainingInstructions(scr, R_or_P_or_RP_condition, t_instructions)
-% [onsets] = choice_and_perf_trainingInstructions(scr, R_or_P_or_RP_condition, t_instructions)
+function[onsets] = choice_and_perf_trainingInstructions(scr, stim, R_or_P_or_RP_condition, t_instructions)
+% [onsets] = choice_and_perf_trainingInstructions(scr, stim, R_or_P_or_RP_condition, t_instructions)
 % choice_and_perf_trainingInstructions will display instructions before
 % starting training for choice and performance.
 %
 % INPUTS
 % scr: structure with screen parameters
+%
+% stim: structure with stimuli informations
 %
 % R_or_P_or_RP_condition: string indicating training condition
 % 'R': pure reward training

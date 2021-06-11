@@ -30,8 +30,15 @@ Screen('FillArc', window,...
     startAngle,...
     endAngle - startAngle);
 
+% increase text size for number
+Screen('TextSize', window, scr.textSize.mentalNumber);
 % display number to solve
-DrawFormattedText(window, num2str(numberValue), stim.Em.numberPerf.x, stim.Em.numberPerfLearning.y, white);
+DrawFormattedText(window, num2str(numberValue),...
+    stim.Em.(['numberPerfLearning_',num2str(numberValue)]).x,...
+    stim.Em.(['numberPerfLearning_',num2str(numberValue)]).y,...
+    white);
+% text size back to baseline
+Screen('TextSize', window, scr.textSize.baseline);
 
 % display question according to type of task on which to start
 mental_effort_task_question_display(scr, task_type, sideQuestion);

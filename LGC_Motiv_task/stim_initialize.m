@@ -67,7 +67,7 @@ stim.difficulty.below_center	= CenterRectOnPointd(difficultyRectXYsize, xScreenC
 stim.difficulty.below_left      = CenterRectOnPointd(difficultyRectXYsize, leftBorder + visibleXsize/4,     upperBorder + visibleYsize*(3/4));
 stim.difficulty.below_right     = CenterRectOnPointd(difficultyRectXYsize, leftBorder + visibleXsize*(3/4), upperBorder + visibleYsize*(3/4));
 % position each ring on the screen (for performance task)
-stim.difficulty.middle_center   = CenterRectOnPointd(difficultyRectXYsize, xScreenCenter, yScreenCenter);
+stim.difficulty.middle_center   = CenterRectOnPointd(difficultyRectXYsize, xScreenCenter, y_coordinates(upperBorder, visibleYsize, 1/2, difficultyRectXYsize));
 stim.difficulty.arcEndAngle = 360;
 
 % define the circle size for each difficulty level depending on the
@@ -256,7 +256,7 @@ stim.training.Em.endTrialMsg.text = 'Bravo!';
 [~,~,textSizeEmTrialEndTraining] = DrawFormattedText(window,stim.training.Em.endTrialMsg.text,...
         'center','center',white, wrapat);
 stim.training.Em.endTrialMsg.x = x_centerCoordinates(xScreenCenter, textSizeEmTrialEndTraining);
-stim.training.Em.endTrialMsg.y = y_coordinates(upperBorder, visibleYsize, 1/2, textSizeEmTrialEndTraining);
+stim.training.Em.endTrialMsg.y = y_coordinates(upperBorder, visibleYsize, 1/4, textSizeEmTrialEndTraining);
 stim.training.Em.endTrialMsg.colour = white;
 stim.training.Em.endTrialMsg_bis.text = 'Au suivant!';
 [~,~,textSizeEmTrialEndTraining_bis] = DrawFormattedText(window,stim.training.Em.endTrialMsg_bis.text,...
@@ -269,14 +269,14 @@ stim.training.Em.endTrialMsg_bis.colour = white;
 stim.pressWhenReady.text = 'Appuyez quand vous etes pret(e) a commencer.';
 [~,~,textSizePressWhenReady] = DrawFormattedText(window, stim.pressWhenReady.text, 'center', 'center', white);
 stim.pressWhenReady.x = x_centerCoordinates(xScreenCenter, textSizePressWhenReady);
-stim.pressWhenReady.y = y_coordinates(upperBorder, visibleYsize, 5/6, textSizePressWhenReady);
+stim.pressWhenReady.y = y_coordinates(upperBorder, visibleYsize, 15/16, textSizePressWhenReady);
 stim.pressWhenReady.colour = white;
 
 % total gains end of session
 [~,~,textSizeEndMsg] = DrawFormattedText(window,['Felicitations! Cette session est maintenant terminee.',...
             'Vous avez obtenu: 0.00 chf au cours de cette session.'],'center','center',white, wrapat);
 stim.endSessionMessage.x = x_centerCoordinates(xScreenCenter, textSizeEndMsg);
-stim.endSessionMessage.y = y_coordinates(upperBorder, visibleYsize, 5/6, textSizeEndMsg);
+stim.endSessionMessage.y = y_coordinates(upperBorder, visibleYsize, 1/2, textSizeEndMsg);
 
 %% MVC calibration for physical effort
 % MVC instructions
@@ -323,7 +323,7 @@ stim.mentalCalibInstructions.text = ['Desormais vous devrez repondre dans un tem
 [~,~,textSizeMentalCalibInstructions] = DrawFormattedText(window, stim.mentalCalibInstructions.text,...
     'center', 'center', white, wrapat);
 stim.mentalCalibInstructions.x = x_centerCoordinates(xScreenCenter, textSizeMentalCalibInstructions);
-stim.mentalCalibInstructions.y = y_coordinates(upperBorder, visibleYsize, 1/6, textSizeMentalCalibInstructions);
+stim.mentalCalibInstructions.y = y_coordinates(upperBorder, visibleYsize, 1/3, textSizeMentalCalibInstructions);
 stim.mentalCalibInstructions.colour = white;
 
 % calibration feedback
@@ -432,40 +432,47 @@ stim.Em.oddORevenQuestion.text = 'Chiffre pair ou impair?';
     'center', 'center', white);
 stim.Em.oddORevenQuestion.x = x_centerCoordinates(xScreenCenter, textSizeOddORevenQuestion);
 stim.Em.oddORevenQuestion.y = y_coordinates(upperBorder, visibleYsize, 1/6, textSizeOddORevenQuestion);
+stim.Em.oddORevenQuestionInstructions.y = y_coordinates(upperBorder, visibleYsize, 1/2, textSizeOddORevenQuestion);
 % EVEN
 stim.Em.even.text = 'pair';
 [~,~,textSizeEven] = DrawFormattedText(window, stim.Em.even.text, 'center', 'center', white );
 stim.Em.even_left.x = leftBorder + visibleXsize*(1/4) - (textSizeEven(3) - textSizeEven(1))/2;
 stim.Em.even_right.x = leftBorder + visibleXsize*(3/4) - (textSizeEven(3) - textSizeEven(1))/2;
 stim.Em.even.y = y_coordinates(upperBorder, visibleYsize, 5/6, textSizeEven);
+stim.Em.evenInstructions.y = y_coordinates(upperBorder, visibleYsize, 5/8, textSizeEven);
 % OR
 stim.Em.OR.text = 'OU';
-[~,~,y] = DrawFormattedText(window, stim.Em.OR.text, 'center', 'center', white );
-stim.Em.OR.x = x_centerCoordinates(xScreenCenter, y);
-stim.Em.OR.y = y_coordinates(upperBorder, visibleYsize, 5/6, y);
+[~,~,textSizeOR] = DrawFormattedText(window, stim.Em.OR.text, 'center', 'center', white );
+stim.Em.OR.x = x_centerCoordinates(xScreenCenter, textSizeOR);
+stim.Em.OR.y = y_coordinates(upperBorder, visibleYsize, 5/6, textSizeOR);
 % ODD
 stim.Em.odd.text = 'impair';
 [~,~,textSizeOdd] = DrawFormattedText(window, stim.Em.odd.text, 'center', 'center', white );
-stim.Em.odd_right.x = leftBorder + visibleXsize*(1/4) - (textSizeOdd(3) - textSizeOdd(1))/2;
+stim.Em.odd_left.x = leftBorder + visibleXsize*(1/4) - (textSizeOdd(3) - textSizeOdd(1))/2;
+stim.Em.odd_right.x = leftBorder + visibleXsize*(3/4) - (textSizeOdd(3) - textSizeOdd(1))/2;
 stim.Em.odd.y = y_coordinates(upperBorder, visibleYsize, 5/6, textSizeOdd);
+stim.Em.oddInstructions.y = y_coordinates(upperBorder, visibleYsize, 5/8, textSizeOdd);
 % question < 5 or > 5
 stim.Em.lowerORhigherQuestion.text = 'Chiffre < ou > 5?';
 [~,~,textSizeLowerHigherQuestion] = DrawFormattedText(window, stim.Em.lowerORhigherQuestion.text,...
     'center', 'center', white);
 stim.Em.lowerORhigherQuestion.x = x_centerCoordinates(xScreenCenter, textSizeLowerHigherQuestion);
 stim.Em.lowerORhigherQuestion.y = y_coordinates(upperBorder, visibleYsize, 1/6, textSizeLowerHigherQuestion);
+stim.Em.lowerORhigherQuestionInstructions.y = y_coordinates(upperBorder, visibleYsize, 3/4, textSizeLowerHigherQuestion);
 % < 5
 stim.Em.lower.text = '< 5';
 [~,~,textSizeLower] = DrawFormattedText(window, stim.Em.lower.text, 'center', 'center', white );
 stim.Em.lower_left.x = leftBorder + visibleXsize*(1/4) - (textSizeLower(3) - textSizeLower(1))/2;
 stim.Em.lower_right.x = leftBorder + visibleXsize*(3/4) - (textSizeLower(3) - textSizeLower(1))/2;
 stim.Em.lower.y = y_coordinates(upperBorder, visibleYsize, 5/6, textSizeLower);
+stim.Em.lowerInstructions.y = y_coordinates(upperBorder, visibleYsize, 7/8, textSizeLower);
 % > 5
 stim.Em.higher.text = '< 5';
 [~,~,textSizeHigher] = DrawFormattedText(window,'> 5', 'center', 'center', white );
 stim.Em.higher_left.x = leftBorder + visibleXsize*(1/4) - (textSizeHigher(3) - textSizeHigher(1))/2;
 stim.Em.higher_right.x = leftBorder + visibleXsize*(3/4) - (textSizeHigher(3) - textSizeHigher(1))/2;
 stim.Em.higher.y = y_coordinates(upperBorder, visibleYsize, 5/6, textSizeHigher);
+stim.Em.higherInstructions.y = y_coordinates(upperBorder, visibleYsize, 7/8, textSizeHigher);
 % press any button
 stim.Em.pressAnyButtonQuestion.text = 'Appuyer sur n''importe quel bouton';
 [~,~,textSizePressAnyButtonQuestion] = DrawFormattedText(window, stim.Em.pressAnyButtonQuestion.text,...
@@ -481,18 +488,24 @@ stim.Em.pressAnyButton_right.x = leftBorder + visibleXsize*(3/4) - (textSizePres
 stim.Em.pressAnyButtonQuestion.y = y_coordinates(upperBorder, visibleYsize, 5/6, textSizePressAnyButton);
 
 % display of the number to solve
-[~,~,textSizeEmNumber] = DrawFormattedText(window, '9',...
-    'center', 'center', white);
-stim.Em.numberPerf.x = x_centerCoordinates(xScreenCenter, textSizeEmNumber);
-stim.Em.numberPerf.y = y_coordinates(upperBorder, visibleYsize, 3/4, textSizeEmNumber);
-stim.Em.numberPerfLearning.y = y_coordinates(upperBorder, visibleYsize, 1/12, textSizeEmNumber);
+% in case you want to adjust center for each number individually
+Screen('TextSize', window, scr.textSize.mentalNumber);
+for iNber = [1:4, 6:9]
+    n_str = num2str(iNber);
+    [~,~,textSizeEmNumber] = DrawFormattedText(window, n_str,...
+        'center', 'center', white);
+    stim.Em.(['numberPerf_',n_str]).x = x_centerCoordinates(xScreenCenter, textSizeEmNumber);
+    stim.Em.(['numberPerf_',n_str]).y = y_coordinates(upperBorder, visibleYsize, 3/4, textSizeEmNumber);
+    stim.Em.(['numberPerfLearning_',n_str]).y = y_coordinates(upperBorder, visibleYsize, 1/12, textSizeEmNumber);
+end
+Screen('TextSize', window, scr.textSize.baseline);
 
 %% prepare feedback messages
 % reward feedback
 stim.feedback.reward.text = 'Vous avez obtenu';
 [~,~,textSizeRewardFbkMsg] = DrawFormattedText(window, stim.feedback.reward.text,...
     'center', 'center',...
-    white);
+    white); 
 stim.feedback.reward.x = x_centerCoordinates(xScreenCenter, textSizeRewardFbkMsg);
 stim.feedback.reward.y = y_coordinates(upperBorder, visibleYsize, 3/8, textSizeRewardFbkMsg);
 stim.feedback.colour = white;
@@ -552,6 +565,7 @@ end % function
 function[x] = x_centerCoordinates(xScreenCenter, textSize)
 % to center the coordinates on the screen
 x = xScreenCenter - (textSize(3) - textSize(1))/2;
+
 end
 
 function[y] = y_coordinates(upperBorder, visibleYsize, YpercentageLocation, textSize)
@@ -559,6 +573,11 @@ function[y] = y_coordinates(upperBorder, visibleYsize, YpercentageLocation, text
 % the non-visible part of the upper border, then define the location on the
 % visible part of the screen and center the text on this location
 
-y = upperBorder + visibleYsize*YpercentageLocation - (textSize(4) - textSize(2)/2);
+y = upperBorder + visibleYsize*YpercentageLocation - (textSize(4) - textSize(2))/2;
+
+% check if y is off-screen
+if (y < upperBorder) || (y > (upperBorder + visibleYsize))
+    error('wtf with these coordinates?');
+end
 
 end

@@ -1,11 +1,13 @@
-function mental_effort_task_question_display(scr, task_trialType, sideQuestion, textCol, learning_instructions)
-% [] = mental_effort_task_question_display(scr, task_trialStart, sideQuestion, textCol, learning_instructions)
+function mental_effort_task_question_display(scr, stim, task_trialType, sideQuestion, textCol, learning_instructions)
+% [] = mental_effort_task_question_display(scr, stim, task_trialStart, sideQuestion, textCol, learning_instructions)
 % mental_effort_task_question_display will display question for the
 % mental effort being made according to the current task.
 %
 % INPUTS
 % scr: structure with screen information (window and x,y coordinates of the
 % middle of the screen
+%
+% stim: structure with stimuli informations
 %
 % task_trialType
 % (0) odd/even task

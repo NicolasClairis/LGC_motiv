@@ -1,7 +1,7 @@
 function[was_a_key_pressed_bf_trial,...
-    onsets_keyReleaseMessage] = check_keys_are_up(scr, key)
+    onsets_keyReleaseMessage] = check_keys_are_up(scr, stim, key)
 % [was_a_key_pressed_bf_trial,...
-%     onsets_keyReleaseMessage] = check_keys_are_up(scr, key)
+%     onsets_keyReleaseMessage] = check_keys_are_up(scr, stim, key)
 % check_keys_are_up checks whether all relevant keys are up before
 % starting the trial. If one of the relevant keys was being pressed before
 % starting, displays an error message and waits for the participant to
@@ -9,6 +9,8 @@ function[was_a_key_pressed_bf_trial,...
 %
 % INPUTS
 % scr: structure with display parameters
+%
+% stim: structure with stimuli informations
 %
 % key: structure with left and right key codes
 %
@@ -34,7 +36,8 @@ while (keyIsDown == 1) &&...
         ( (keyCode(key.left) == 1) || (keyCode(key.right) == 1 ))
     was_a_key_pressed_bf_trial = 1;
     DrawFormattedText(window, stim.releaseButtonsMsg.text,...
-        stim.releaseButtonsMsg.x, stim.releaseButtonsMsg.y, stim.releaseButtonsMsg.colour);
+        stim.releaseButtonsMsg.x, stim.releaseButtonsMsg.y,...
+        stim.releaseButtonsMsg.colour);
     [~, onsets_keyReleaseMessage] = Screen(window,'Flip');
     % keep checking the buttons to know if the keyboard has been released
     % or not

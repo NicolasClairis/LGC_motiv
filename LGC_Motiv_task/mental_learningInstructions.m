@@ -1,9 +1,11 @@
-function[onset_Press] = mental_learningInstructions(scr, learning_col, learning_instructions, mentalE_prm)
-% [onset_Press] = mental_learningInstructions(scr, learning_col, learning_instructions, mentalE_prm)
+function[onset_Press] = mental_learningInstructions(scr, stim, learning_col, learning_instructions, mentalE_prm)
+% [onset_Press] = mental_learningInstructions(scr, stim, learning_col, learning_instructions, mentalE_prm)
 % mental_learningInstructions will display instructions before learning starts.
 %
 % INPUTS
 % scr: structure with screen parameters
+%
+% stim: structure with stimuli informations
 %
 % learning_col:
 % 'col1': learning with colour 1 only
@@ -56,7 +58,7 @@ for iTimeLoop = 1:2
             ( strcmp(learning_col, 'col1') && strcmp(mentalE_prm.mental_n_col.col1,'oddEven')) ||...
             ( strcmp(learning_col, 'col2') && strcmp(mentalE_prm.mental_n_col.col2,'oddEven'))
         DrawFormattedText(window, stim.Em.oddORevenQuestion.text,...
-            stim.Em.oddORevenQuestion.x, stim.Em.oddORevenQuestion.y, oddEven_col);
+            stim.Em.oddORevenQuestion.x, stim.Em.oddORevenQuestionInstructions.y, oddEven_col);
         if sideQuestion.oE.pair == -1 && sideQuestion.oE.impair == +1
             x_pair      = stim.Em.even_left.x;
             x_impair    = stim.Em.odd_right.x;
@@ -66,9 +68,8 @@ for iTimeLoop = 1:2
         else
             error('error in sideQuestion definition');
         end
-        DrawFormattedText(window, stim.Em.even.text, x_pair, stim.Em.even.y, oddEven_col );     % pair
-        DrawFormattedText(window, stim.Em.OR.text, stim.Em.OR.x, stim.Em.OR.y, oddEven_col );   % OR
-        DrawFormattedText(window, stim.Em.odd.text, x_impair, stim.Em.odd.y, oddEven_col );     % impair
+        DrawFormattedText(window, stim.Em.even.text, x_pair, stim.Em.evenInstructions.y, oddEven_col );     % pair
+        DrawFormattedText(window, stim.Em.odd.text, x_impair, stim.Em.oddInstructions.y, oddEven_col );     % impair
     end
     
     % lower/higher than 5 info
@@ -76,7 +77,7 @@ for iTimeLoop = 1:2
             ( strcmp(learning_col, 'col1') && strcmp(mentalE_prm.mental_n_col.col1,'lowHigh')) ||...
             ( strcmp(learning_col, 'col2') && strcmp(mentalE_prm.mental_n_col.col2,'lowHigh'))
         DrawFormattedText(window, stim.Em.lowerORhigherQuestion.text,...
-            stim.Em.lowerORhigherQuestion.x, stim.Em.lowerORhigherQuestion.y, lowHigh_col);
+            stim.Em.lowerORhigherQuestion.x, stim.Em.lowerORhigherQuestionInstructions.y, lowHigh_col);
         if sideQuestion.hL.low == -1 && sideQuestion.hL.high == +1
             x_low = stim.Em.lower_left.x;
             x_high = stim.Em.higher_right.x;
@@ -86,9 +87,8 @@ for iTimeLoop = 1:2
         else
             error('error in sideQuestion definition');
         end
-        DrawFormattedText(window, stim.Em.lower.text, x_low, stim.Em.lower.y, lowHigh_col );    % < 5
-        DrawFormattedText(window, stim.Em.OR.text, stim.Em.OR.x, stim.Em.OR.y, lowHigh_col );   % OR
-        DrawFormattedText(window, stim.Em.higher.text, x_high, stim.Em.higher.y, lowHigh_col ); % > 5
+        DrawFormattedText(window, stim.Em.lower.text, x_low, stim.Em.lowerInstructions.y, lowHigh_col );    % < 5
+        DrawFormattedText(window, stim.Em.higher.text, x_high, stim.Em.higherInstructions.y, lowHigh_col ); % > 5
     end
     
     if iTimeLoop == 1 % force them to read at first

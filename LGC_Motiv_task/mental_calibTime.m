@@ -66,8 +66,6 @@ function[t_min_reached_duringCalib, calib_summary, calib_success] = mental_calib
 %% extract relevant variables
 % screen parameters
 window = scr.window;
-yScreenCenter = scr.yCenter;
-selectedCol = scr.colours.white;
 wrapat = scr.wrapat;
 
 % define main parameters
@@ -143,7 +141,8 @@ for iCalibTrial = 1:n_calibTrials
             DrawFormattedText(window,...
                 ['Bravo vous avez tout resolu dans le temps imparti!',...
                 ' Votre meilleur temps est de ',num2str(t_min_reached_duringCalib),' s.'],...
-                stim.mentalCalibSuccessFbk.x, stim.mentalCalibSuccessFbk.y, stim.mentalCalibSuccessFbk.colour, wrapat);
+                stim.mentalCalibSuccessFbk.x, stim.mentalCalibSuccessFbk.y,...
+                stim.mentalCalibSuccessFbk.colour, wrapat);
         case false % didn't reach the top in the dedicated time
             if iCalibTrial < n_calibTrials
                 DrawFormattedText(window, stim.mentalCalibFailureFbk.text,...

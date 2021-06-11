@@ -138,7 +138,7 @@ for iTrial = 1:nTrials
     
     %% check that no key is being pressed before the choice trial starts
     [was_a_key_pressed_bf_trial(iTrial),...
-        onsets.keyReleaseMessage(iTrial)] = check_keys_are_up(scr, key);
+        onsets.keyReleaseMessage(iTrial)] = check_keys_are_up(scr, stim, key);
     
     % if a key was pressed before starting the trial => show the fixation
     % cross again with a similar amount of time
@@ -214,7 +214,7 @@ for iTrial = 1:nTrials
         % for physical effort: useless since only the grip is required
         if strcmp(effort_type,'mental')
             [was_a_key_pressed_bf_trial(iTrial),...
-                onsets.keyReleaseMessage(iTrial)] = check_keys_are_up(scr, key);
+                onsets.keyReleaseMessage(iTrial)] = check_keys_are_up(scr, stim, key);
         end
         
         %% perform the effort

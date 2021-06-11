@@ -60,8 +60,6 @@ end
 
 %% extract x and y coordinates of the center of the screen
 [L, H] = Screen('WindowSize',whichScreen);
-xScreenRealCenter = L/2;
-yScreenRealCenter = H/2;
 
 %% for fMRI CIBM shitty screen, fix the location of your stimuli
 if IRM == 0
@@ -69,16 +67,14 @@ if IRM == 0
     upperBorder = 0;
     rightBorder = L;
     lowerBorder = H;
-    xScreenCenter = xScreenRealCenter;
-    yScreenCenter = yScreenRealCenter;
 elseif IRM == 1
-    leftBorder = 100;
-    upperBorder = 100;
-    rightBorder = L-100;
-    lowerBorder = H-100;
-    xScreenCenter = leftBorder + ( rightBorder - leftBorder )/2;
-    yScreenCenter = upperBorder + ( lowerBorder - upperBorder )/2;
+    leftBorder = 200;
+    upperBorder = 200;
+    rightBorder = L-200;
+    lowerBorder = H-200;
 end
+xScreenCenter = leftBorder + ( rightBorder - leftBorder )/2;
+yScreenCenter = upperBorder + ( lowerBorder - upperBorder )/2;
 visibleYsize = lowerBorder - upperBorder;
 visibleXsize = rightBorder - leftBorder;
 visibleWindowRectCoord = [leftBorder upperBorder rightBorder lowerBorder];
