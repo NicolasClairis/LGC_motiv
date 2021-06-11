@@ -227,7 +227,7 @@ if session_nber == 0
             
         case 'physical'% for physical effort, ask the MVC
             % record and store global MVC
-            [initial_MVC, onsets_initial_MVC] = physical_effort_MVC(scr, dq, n_calibTrials, calibTimes);
+            [initial_MVC, onsets_initial_MVC] = physical_effort_MVC(scr, stim, dq, n_calibTrials, calibTimes);
             MVC = initial_MVC.MVC; % expressed in Voltage
             save(calibPerf_file_nm,'MVC');
     end
@@ -262,7 +262,7 @@ if session_nber > 0
             % take an initial MVC measurement (even if it has been done in a
             % previous session, will allow us to keep track of the force level
             % of our participants)
-            [initial_MVC, onsets_initial_MVC] = physical_effort_MVC(scr, dq, n_MaxPerfTrials, calibTimes);
+            [initial_MVC, onsets_initial_MVC] = physical_effort_MVC(scr, stim, dq, n_MaxPerfTrials, calibTimes);
     end
 end
 
@@ -288,9 +288,8 @@ if IRM == 1 && session_nber > 0
     
     
     %% instruction that main task will start soon
-    DrawFormattedText(window,...
-        'L''expérimentateur va bientôt démarrer la tâche.',...
-        'center', yScreenCenter*(5/3), scr.colours.white, scr.wrapat);
+    DrawFormattedText(window, stim.expWillStart.text,...
+        stim.expWillStart.x, stim.expWillStart.y, scr.colours.white, scr.wrapat);
     [~, onsets.taskWillStart] = Screen(window, 'Flip');
     disp('Please press space and then launch fMRI (Be careful to respect this order for the T0...');
     [~, ~, keyCode] = KbCheck();
@@ -302,7 +301,7 @@ if IRM == 1 && session_nber > 0
     %% start recording fMRI TTL and wait for a given amount of TTL before
     % starting the task in order to calibrate all timings on T0
     if IRM == 1
-        dummy_scans = 4; % number of TTL to wait before starting the task
+        dummy_scans = 1; % number of TTL to wait before starting the task (dummy scans are already integrated in CIBM scanner)
         [T0, TTL] = keyboard_check_start(dummy_scans, key.trigger_id, key);
     end % fMRI check
 
@@ -313,15 +312,16 @@ if IRM == 1 && session_nber > 0
         results_folder, file_nm);
     
     %% add fixation cross to terminate the acquisition (to avoid weird fMRI behavior for last trial)
-    Screen('FillRect',window,white, stim.cross.verticalLine); % vertical line
-    Screen('FillRect',window,white, stim.cross.horizontalLine); % horizontal line
+    Screen('FillRect',window, stim.cross.colour, stim.cross.verticalLine); % vertical line
+    Screen('FillRect',window, stim.cross.colour, stim.cross.horizontalLine); % horizontal line
     [~,onsets.finalCross] = Screen('Flip',window); % display the cross on screen
     WaitSecs(taskTimes.finalCross);
     
     %% display feedback for the current session
     DrawFormattedText(window,...
-        ['Félicitations! Cette session est maintenant terminée.',...
-        'Vous avez obtenu: ',num2str(perfSummary.totalGain(nTrials)),' chf au cours de cette session.'],white);
+        ['Felicitations! Cette session est maintenant terminee.',...
+        'Vous avez obtenu: ',num2str(perfSummary.totalGain(nTrials)),' chf au cours de cette session.'],...
+        stim.endSessionMessage.x, stim.endSessionMessage.y, white);
     [~,onsets.endSessionFbk] = Screen(window,'Flip');
     WaitSecs(t_endSession);
         
@@ -352,16 +352,14 @@ save([results_folder, file_nm,'_messyAllStuff.mat']);
 %% Measure maximum power again at the end of each scan
 if IRM == 1 && session_nber > 0
     % add instructions
-    DrawFormattedText(window,...
-        ['Pour finir cette session, nous allons vous demander ',...
-        'd''essayer à nouveau de battre votre record.'],...
-        'center', yScreenCenter*(5/3), scr.colours.white, scr.wrapat);
+    DrawFormattedText(window, stim.postTaskMVCmeasurement.text,...
+        stim.postTaskMVCmeasurement.x, stim.postTaskMVCmeasurement.y, stim.postTaskMVCmeasurement.colour, scr.wrapat);
     Screen(window,'Flip');
     % MVC maximum
     nFinalTrial = 1;
     switch effort_type
         case 'physical'
-            [MVC_last, onsets_MVC_last] = physical_effort_MVC(scr, dq, nFinalTrial, calibTimes);
+            [MVC_last, onsets_MVC_last] = physical_effort_MVC(scr, stim, dq, nFinalTrial, calibTimes);
         case 'mental'
             % extract numbers to use for each calibration trial
             [numberVector_endCalib] = mental_numbers(nFinalTrial);

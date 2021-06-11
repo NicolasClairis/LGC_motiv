@@ -24,20 +24,18 @@ function[time_dispChoice] = choice_task_dispChosen(scr, stim, R_chosen, E_chosen
 
 %% extract relevant parameters
 window = scr.window;
-xScreenCenter = scr.xCenter;
-yScreenCenter = scr.yCenter;
 white = scr.colours.white;
-black = scr.colours.black;
 
 % remind the option they chose
-DrawFormattedText(window,'Vous avez choisi','center',stim.chosenOption.message_yCoord,white);
+DrawFormattedText(window, stim.chosenOptionMsg.text,...
+    stim.chosenOptionMsg.x, stim.chosenOptionMsg.y, white);
 
 %% display reward and effort level
 switch R_chosen
     case 0 % no option was selected
         DrawFormattedText(window,...
-            'Trop lent!',...
-            'center', yScreenCenter, white);
+            stim.feedback.error_tooSlow.text,...
+            stim.feedback.error_tooSlow.x, stim.feedback.error_tooSlow.y, white);
     otherwise % one option was selected
         
         % if punishment trial, add also indication to know that money is to be lost

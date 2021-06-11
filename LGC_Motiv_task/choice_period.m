@@ -51,8 +51,8 @@ yScreenCenter = scr.yCenter;
 % xScreenCenter = scr.xCenter;
 
 %% ask question on top
-DrawFormattedText(window,'Que préférez-vous?','center',yScreenCenter/4,white);
-DrawFormattedText(window,'OU','center','center',white);
+DrawFormattedText(window, stim.choice.choiceQuestion.text, stim.choice.choiceQuestion.x, stim.choice.choiceQuestion.y, stim.choice.choiceQuestion.colour);
+DrawFormattedText(window, stim.choice.choiceOR.text, stim.choice.choiceOR.x, stim.choice.choiceOR.y, stim.choice.choiceOR.colour);
 
 %% display each difficulty level
 leftStartAngle = stim.difficulty.startAngle.(['level_',num2str(E_left)]);

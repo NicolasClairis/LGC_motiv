@@ -50,7 +50,8 @@ file_nm_training_Em = ['pilot_data_Em_',init,'_sub_',num2str(iSubject)];
 file_nm_training_Ep = ['pilot_data_Ep_',init,'_sub_',num2str(iSubject)];
 file_nm = ['pilot_data',init,'_sub_',num2str(iSubject)];
 %% general parameters
-IRM = 0;
+IRM = 0; % adapt display for CIBM scanner + record TTL triggers + adapt position of keys
+testing_script = 1;% if testing script, doesn't matter if timings are not perfect => adapt PTB timings accordingly
 % define subparts of the task to perform (on/off)
 taskToPerform.physical.calib = 'on';
 taskToPerform.physical.learning = 'on';
@@ -62,9 +63,11 @@ taskToPerform.mental.training = 'on';
 taskToPerform.mental.task = 'on';
 % initialize screen
 [scr, xScreenCenter, yScreenCenter,...
-    window, baselineTextSize] = ScreenConfiguration(0, 1);
+    window, baselineTextSize] = ScreenConfiguration(IRM, testing_script);
 white = scr.colours.white;
 black = scr.colours.black;
+leftBorder = scr.leftBorder;
+upperBorder = scr.upperBorder;
 
 % include punishment condition?
 punishment_yn = 'yes'; % include punishment trials?
@@ -136,7 +139,7 @@ end
 %% physical MVC
 if strcmp(taskToPerform.physical.calib,'on')
     n_MVC_repeat = 3; % number of calibration trials
-    [initial_MVC, onsets_initial_MVC] = physical_effort_MVC(scr, dq, n_MVC_repeat, calibTimes_Ep);
+    [initial_MVC, onsets_initial_MVC] = physical_effort_MVC(scr, stim, dq, n_MVC_repeat, calibTimes_Ep);
     MVC = nanmax(initial_MVC.MVC); % expressed in Voltage
 end
 
@@ -163,15 +166,16 @@ if strcmp(taskToPerform.physical.training,'on')
         Ep_vars_training.Ep_time_levels = Ep_time_levels;
         Ep_vars_training.F_threshold = F_threshold;
         Ep_vars_training.F_tolerance = F_tolerance;
-        [onsets_Ep_training.(trainingCond)] = choice_and_perf_trainingInstructions(scr, trainingCond, trainingTimes_Ep.instructions);
+        [onsets_Ep_training.(trainingCond)] = choice_and_perf_trainingInstructions(scr, stim, trainingCond, trainingTimes_Ep.instructions);
         [trainingSummary_Ep.(trainingCond)] = choice_and_perf(scr, stim, key_Ep, 'physical', Ep_vars_training, R_money,...
             trainingCond, n_trainingTrials_Ep_tmp, trainingChoiceOptions_Ep_tmp, trainingTimes_Ep,...
             results_folder, file_nm_training_Ep);
     end % learning condition loop
     
-    DrawFormattedText(window,'Bravo! Votre entraînement physique est terminé.',...
-        'center','center',scr.colours.white, scr.wrapat);
-    [~,onsets.EndTrainingMsg] = Screen('Flip',window); % display the cross on screen
+    % display congratulations for finishing the physical effort training
+    DrawFormattedText(window, stim.training.Ep.endMsg.text,...
+        stim.training.Ep.endMsg.x, stim.training.Ep.endMsg.y, stim.training.Ep.endMsg.colour, scr.wrapat);
+    [~,onsets.EndTrainingMsg] = Screen('Flip',window);
     WaitSecs(trainingTimes_Ep.trainingEnd);
 end
 
@@ -197,6 +201,7 @@ if strcmp(taskToPerform.mental.learning,'on')
     % no time limit for each trial: as long as needed until learning is
     % ok
     learning_time_limit = false;
+    learning_timeLimitThreshold = [];
     % for learning display the mapping after 2 errors, avoid displaying
     learning_errorLimits.useOfErrorThreshold = false;
     learning_errorLimits.useOfErrorMapping = true;
@@ -212,14 +217,14 @@ if strcmp(taskToPerform.mental.learning,'on')
             jLearningSession = jLearningSession + 1;
             learning_sess_nm = ['learning_session',num2str(jLearningSession)];
             % display instructions for the current learning type
-            [onsets.endLearningInstructions.(learning_sess_nm).(curr_learning_col).(curr_learning_instructions)] = mental_learningInstructions(scr,...
+            [onsets.endLearningInstructions.(learning_sess_nm).(curr_learning_col).(curr_learning_instructions)] = mental_learningInstructions(scr, stim,...
                 curr_learning_col, curr_learning_instructions, mentalE_prm_learning_and_calib);
             
             % perform the learning
             [learningPerfSummary_Em.(learning_sess_nm).(curr_learning_col).(curr_learning_instructions)] = mental_effort_perf(scr, stim, key_Em,...
                 numberVector_learning(jLearningSession,:),...
                 mentalE_prm_learning_and_calib, n_maxLearning.learning_withInstructions,...
-                curr_learning_col, curr_learning_instructions, learning_time_limit, learning_errorLimits);
+                curr_learning_col, curr_learning_instructions, learning_time_limit, learning_timeLimitThreshold, learning_errorLimits);
         end % learning instructions loop
     end % learning colour loop
     
@@ -245,7 +250,7 @@ if strcmp(taskToPerform.mental.learning,'on')
     extendedLearning_errorLimits.useOfErrorMapping = false;
     
     % perform the training
-    [onsets.endLearningInstructions.(['learning_session',num2str(1 + jLearningSession)]).all.extendedLearning] = mental_learningInstructions(scr,...
+    [onsets.endLearningInstructions.(['learning_session',num2str(1 + jLearningSession)]).all.extendedLearning] = mental_learningInstructions(scr, stim,...
                 'all', 'extendedLearning', mentalE_prm_learning_and_calib);
     for iExtendedLearningTrial = 1:n_extendedLearningTrials
         % define start angle according to current difficulty level
@@ -253,11 +258,18 @@ if strcmp(taskToPerform.mental.learning,'on')
         [learningPerfSummary_Em.extendedLearning.(['trial_',num2str(iExtendedLearningTrial)])] = mental_effort_perf_Nback(scr, stim, key_Em,...
             numberVector_learning(iExtendedLearningTrial,:),...
             mentalE_prm_extendedLearning, learning_effort_n_toReach(iExtendedLearningTrial),...
-            'all', 'noInstructions', learning_time_limit, extendedLearning_errorLimits);
+            'all', 'noInstructions', learning_time_limit, learning_timeLimitThreshold, extendedLearning_errorLimits);
         
         % small break between each answer
-        DrawFormattedText(window,'Bravo!','center',yScreenCenter/2,white);
-        DrawFormattedText(window,'Au suivant!','center','center',white);
+        if iExtendedLearningTrial < n_extendedLearningTrials
+            DrawFormattedText(window, stim.training.Em.endTrialMsg.text,...
+                stim.training.Em.endTrialMsg.x, stim.training.Em.endTrialMsg.y, stim.training.Em.endTrialMsg.colour);
+            DrawFormattedText(window,stim.training.Em.endTrialMsg_bis.text,...
+            stim.training.Em.endTrialMsg_bis.x, stim.training.Em.endTrialMsg_bis.y, stim.training.Em.endTrialMsg_bis.colour);
+        elseif iExtendedLearningTrial == n_extendedLearningTrials
+            DrawFormattedText(window, stim.training.Em.endMsg.text,...
+                stim.training.Em.endMsg.x, stim.training.Em.endMsg.y, stim.training.Em.endMsg.colour, scr.wrapat);
+        end
         [~,~,timeExtendedLearningFbk.(['trial_',num2str(iExtendedLearningTrial)])] = Screen(window,'Flip');
         WaitSecs(learningTimes_Em.learning_rest);
         disp([num2str(iExtendedLearningTrial),'/',num2str(n_extendedLearningTrials),' learning trial done']);
@@ -311,7 +323,7 @@ if strcmp(taskToPerform.mental.training,'on')
         % for training: no failures, no display of mapping
         Em_vars_training.errorLimits.useOfErrorMapping = false;
         Em_vars_training.errorLimits.useOfErrorThreshold = false;
-        [onsets_Em_training.(trainingCond)] = choice_and_perf_trainingInstructions(scr, trainingCond, trainingTimes_Em.instructions);
+        [onsets_Em_training.(trainingCond)] = choice_and_perf_trainingInstructions(scr, stim, trainingCond, trainingTimes_Em.instructions);
         [trainingSummary_Em.(trainingCond)] = choice_and_perf(scr, stim, key_Em, 'mental', Em_vars_training, R_money,...
             trainingCond, n_trainingTrials_Em_tmp, trainingChoiceOptions_Em_tmp, trainingTimes_Em,...
             results_folder, file_nm_training_Em);
@@ -336,8 +348,8 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
     
     % instruction that main task will start soon
     DrawFormattedText(window,...
-        'L''expérimentateur va bientôt démarrer la tâche.',...
-        'center', yScreenCenter*(5/3), scr.colours.white, scr.wrapat);
+        stim.expWillStart.text,...
+        stim.expWillStart.x, stim.expWillStart.y, scr.colours.white, scr.wrapat);
     [~, onsets.taskWillStart] = Screen(window, 'Flip');
     disp('Please press space.');
     [~, ~, keyCode] = KbCheck();
@@ -364,7 +376,7 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
                 strcmp(taskToPerform.physical.task,'on')% physical task
             
             % pre-task MVC
-            [MVC_preTask.(session_nm), onsets_preTask_MVC.physical.(session_nm)] = physical_effort_MVC(scr, dq, n_MVC_repeat, calibTimes_Ep);
+            [MVC_preTask.(session_nm), onsets_preTask_MVC.physical.(session_nm)] = physical_effort_MVC(scr, stim, dq, n_MVC_repeat, calibTimes_Ep);
             
             % task
             [perfSummary.physical.(session_nm)] = choice_and_perf(scr, stim, key_Ep,...
@@ -375,7 +387,7 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
             finalGains = perfSummary.physical.(session_nm).totalGain(end);
             
             % post-task MVC
-            [MVC_postTask.(session_nm), onsets_postTask_MVC.physical.(session_nm)] = physical_effort_MVC(scr, dq, n_MVC_repeat, calibTimes_Ep);
+            [MVC_postTask.(session_nm), onsets_postTask_MVC.physical.(session_nm)] = physical_effort_MVC(scr, stim, dq, n_MVC_repeat, calibTimes_Ep);
         elseif (( (mod(iSubject,2) == 0) && ismember(iSession,[2,4]) ) ||...
                 ( (mod(iSubject,2) ~= 0) && ismember(iSession,[1,3]) )) &&...
                 strcmp(taskToPerform.mental.task,'on') % mental task
@@ -414,9 +426,9 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
         
         % display feedback for the current session
         DrawFormattedText(window,...
-            ['Félicitations! Cette session est maintenant terminée.',...
+            ['Felicitations! Cette session est maintenant terminee.',...
             'Vous avez obtenu: ',num2str(finalGains),' chf au cours de cette session.'],...
-            'center', yScreenCenter*(5/3), scr.colours.white, scr.wrapat);t
+            stim.endSessionMessage.x, stim.endSessionMessage.y, scr.colours.white, scr.wrapat);
         Screen(window,'Flip');
         WaitSecs(t_endSession);
     end % session loop
@@ -431,16 +443,16 @@ if strcmp(taskToPerform.physical.calib,'on') ||...
 all.physical.global.MVC = MVC;
 end
 if strcmp(taskToPerform.mental.calib,'on') ||...
-        strcmp(taskToPerform.mental.learning,'on') ||...
         strcmp(taskToPerform.mental.training,'on') ||...
         strcmp(taskToPerform.mental.task,'on')
-all.mental.global.t_min_calib = t_min_calib;
+    all.mental.global.t_min_calib = t_min_calib;
 end
-% learning performance
-if strcmp(taskToPerform.mental.learning,'on')
+% physical learning performance
+if strcmp(taskToPerform.physical.learning,'on')
     all.physical.learning = learningPerfSummary_Ep;
 end
-if strcmp(taskToPerform.physical.learning,'on')
+% mental learning performance
+if strcmp(taskToPerform.mental.learning,'on')
     all.mental.learning = learningPerfSummary_Em;
 end
 % training performance

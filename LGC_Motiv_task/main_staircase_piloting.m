@@ -168,7 +168,7 @@ end
 %% physical preparation
 %% physical MVC
 if strcmp(taskToPerform.physical.calib,'on')
-    [initial_MVC, onsets_initial_MVC] = physical_effort_MVC(scr, dq, n_MVC_repeat, calibTimes_Ep);
+    [initial_MVC, onsets_initial_MVC] = physical_effort_MVC(scr, stim, dq, n_MVC_repeat, calibTimes_Ep);
     MVC = nanmax(initial_MVC.MVC); % expressed in Voltage
 end
 
@@ -196,7 +196,7 @@ if strcmp(taskToPerform.physical.training,'on')
         Ep_vars_training.Ep_time_levels = Ep_time_levels;
         Ep_vars_training.F_threshold = F_threshold;
         Ep_vars_training.F_tolerance = F_tolerance;
-        [onsets_Ep_training.(trainingCond)] = choice_and_perf_trainingInstructions(scr, trainingCond, trainingTimes_Ep.instructions);
+        [onsets_Ep_training.(trainingCond)] = choice_and_perf_trainingInstructions(scr, stim, trainingCond, trainingTimes_Ep.instructions);
         [trainingSummary_Ep.(trainingCond)] = choice_and_perf(scr, stim, key_Ep, 'physical', Ep_vars_training, R_money,...
             trainingCond, n_trainingTrials_Ep_tmp, trainingChoiceOptions_Ep_tmp, trainingTimes_Ep,...
             results_folder, file_nm_training_Ep);
@@ -232,7 +232,7 @@ if strcmp(taskToPerform.mental.learning,'on')
             jLearningSession = jLearningSession + 1;
             learning_sess_nm = ['learning_session',num2str(jLearningSession)];
             % display instructions for the current learning type
-            [onsets.endLearningInstructions.(learning_sess_nm).(curr_learning_col).(curr_learning_instructions)] = mental_learningInstructions(scr,...
+            [onsets.endLearningInstructions.(learning_sess_nm).(curr_learning_col).(curr_learning_instructions)] = mental_learningInstructions(scr, stim,...
                 curr_learning_col, curr_learning_instructions, mentalE_prm_learning_and_calib);
             
             % perform the learning
@@ -264,7 +264,7 @@ if strcmp(taskToPerform.mental.learning,'on')
     extendedLearning_errorLimits.useOfErrorMapping = false;
     
     % perform the training
-    [onsets.endLearningInstructions.(['learning_session',num2str(1 + jLearningSession)]).all.extendedLearning] = mental_learningInstructions(scr,...
+    [onsets.endLearningInstructions.(['learning_session',num2str(1 + jLearningSession)]).all.extendedLearning] = mental_learningInstructions(scr, stim,...
         'all', 'extendedLearning', mentalE_prm_learning_and_calib);
     for iExtendedLearningTrial = 1:n_extendedLearningTrials
         % define start angle according to current difficulty level
@@ -325,7 +325,7 @@ if strcmp(taskToPerform.mental.training,'on')
         % for training: no failures, no display of mapping
         Em_vars_training.errorLimits.useOfErrorMapping = false;
         Em_vars_training.errorLimits.useOfErrorThreshold = false;
-        [onsets_Em_training.(trainingCond)] = choice_and_perf_trainingInstructions(scr, trainingCond, trainingTimes_Em.instructions);
+        [onsets_Em_training.(trainingCond)] = choice_and_perf_trainingInstructions(scr, stim, trainingCond, trainingTimes_Em.instructions);
         [trainingSummary_Em.(trainingCond)] = choice_and_perf(scr, stim, key_Em, 'mental', Em_vars_training, R_money,...
             trainingCond, n_trainingTrials_Em_tmp, trainingChoiceOptions_Em_tmp, trainingTimes_Em,...
             results_folder, file_nm_training_Em);

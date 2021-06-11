@@ -50,35 +50,70 @@ Screen('Preference','VisualDebugLevel', 1); % avoid initial Psychtoolbox window
 switch testing_script
     case 0 % CENIR
         Screen('Preference', 'SkipSyncTests', 0); % needs all other processes shut off
-        window = Screen('OpenWindow',whichScreen,screenColour);
     case 1 % my own computer
         Screen('Preference', 'SkipSyncTests', 1); % can work even if other softwares are on but displays an ugly red triangle at start
-        window = Screen('OpenWindow',whichScreen,screenColour);
 end
+        window = Screen('OpenWindow',whichScreen,screenColour);
 
 %% hide mouse cursor
 % HideCursor();
 
+%% extract x and y coordinates of the center of the screen
+[L, H] = Screen('WindowSize',whichScreen);
+
+%% for fMRI CIBM shitty screen, fix the location of your stimuli
+if IRM == 0
+    leftBorder = 0;
+    upperBorder = 0;
+    rightBorder = L;
+    lowerBorder = H;
+elseif IRM == 1
+    leftBorder = 200;
+    upperBorder = 200;
+    rightBorder = L-200;
+    lowerBorder = H-200;
+end
+xScreenCenter = leftBorder + ( rightBorder - leftBorder )/2;
+yScreenCenter = upperBorder + ( lowerBorder - upperBorder )/2;
+visibleYsize = lowerBorder - upperBorder;
+visibleXsize = rightBorder - leftBorder;
+visibleWindowRectCoord = [leftBorder upperBorder rightBorder lowerBorder];
+
 %% text display properties
-baselineTextSize = 40;
+% rescaling factor for shitty CIBM scanner display screen
+if IRM == 0
+    rescaleCIBM = 1;
+elseif IRM == 1
+    rescaleCIBM_x = (rightBorder - leftBorder)/L;
+    rescaleCIBM_y = (lowerBorder - upperBorder)/H;
+    rescaleCIBM = min(rescaleCIBM_x, rescaleCIBM_y);
+end
+baselineTextSize = round(40*rescaleCIBM);
 Screen('TextSize', window, baselineTextSize);
 Screen('TextFont', window, 'arial');
 textSize.baseline = baselineTextSize;
-textSize.mentalNumber = 120;
-textSize.big = 150;
-textSize.middle = 100;
-
-%% extract x and y coordinates of the center of the screen
-[L, H] = Screen('WindowSize',whichScreen);
-xScreenCenter = L/2;
-yScreenCenter = H/2;
+textSize.mentalNumber = round(120*rescaleCIBM);
+textSize.big = round(150*rescaleCIBM);
+textSize.middle = round(100*rescaleCIBM);
+textSize.reward = round(70*rescaleCIBM);
+textSize.taskPeriodsTitles = round(80*rescaleCIBM);
 
 %% store main informations inside scr structure
+scr.realXsize = L;
+scr.realYsize = H;
+scr.rescaleCIBM = rescaleCIBM;
 scr.screenNumber = whichScreen;
 scr.textSize = textSize;
 scr.window = window;
 scr.xCenter = xScreenCenter;
 scr.yCenter = yScreenCenter;
+scr.leftBorder = leftBorder;
+scr.lowerBorder = lowerBorder;
+scr.upperBorder = upperBorder;
+scr.rightBorder = rightBorder;
+scr.visibleYsize = visibleYsize;
+scr.visibleXsize = visibleXsize;
+scr.visibleWindow = visibleWindowRectCoord;
 scr.background_colour = screenColour;
 scr.colours.grey = grey;
 scr.colours.white = white;

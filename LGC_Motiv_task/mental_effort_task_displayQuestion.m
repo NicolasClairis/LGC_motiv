@@ -27,8 +27,6 @@ function mental_effort_task_displayQuestion(scr, stim, startAngle, endAngle, tas
 %% extract initial information
 % screen informations
 window = scr.window;
-xScreenCenter = scr.xScreenCenter;
-yScreenCenter = scr.yScreenCenter;
 white = scr.colours.white;
 % reward/punishment display informations
 R_img = stim.reward.texture.(['reward_',num2str(R_chosen)]); % reward image
@@ -53,7 +51,8 @@ Screen('FillArc', window,...
     endAngle - startAngle);
 
 % display number to solve
-DrawFormattedText(window,num2str(numberValue), 'center', yScreenCenter*(1/6),white);
+DrawFormattedText(window,num2str(numberValue),...
+    stim.Em.numberPerf.x, stim.Em.numberPerfLearning.y,white);
 
 % display question according to type of task on which to start
 mental_effort_task_question_display(scr, task_type);

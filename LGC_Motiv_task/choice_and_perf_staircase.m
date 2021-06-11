@@ -144,7 +144,7 @@ for iTrial = 1:nTrials
     
     %% check that no key is being pressed before the choice trial starts
     [was_a_key_pressed_bf_trial(iTrial),...
-        onsets.keyReleaseMessage(iTrial)] = check_keys_are_up(scr, key);
+        onsets.keyReleaseMessage(iTrial)] = check_keys_are_up(scr, stim, key);
     
     % if a key was pressed before starting the trial => show the fixation
     % cross again with a similar amount of time
@@ -260,7 +260,7 @@ for iTrial = 1:nTrials
         % for physical effort: useless since only the grip is required
         if strcmp(effort_type,'mental')
             [was_a_key_pressed_bf_trial(iTrial),...
-                onsets.keyReleaseMessage(iTrial)] = check_keys_are_up(scr, key);
+                onsets.keyReleaseMessage(iTrial)] = check_keys_are_up(scr, stim, key);
         end
         
         %% perform the effort
@@ -296,21 +296,22 @@ for iTrial = 1:nTrials
             % for mental effort: either too slow or because too many errors
             % => adapt the feedback accordingly
             % display error message
-            if strcmp(effort_type,'physical') ||...
+            if choice(iTrial) == 0 ||...
+                    strcmp(effort_type,'physical') ||...
                     (strcmp(effort_type,'mental') &&...
                     Ep_or_Em_vars.errorLimits.useOfErrorThreshold == true &&...
                     perfSummary{iTrial}.n_errorsMade < Ep_or_Em_vars.errorLimits.errorThreshold)
-                DrawFormattedText(window,'Trop lent!',...
-                    'center', (1/5)*yScreenCenter,...
-                    white);
+                DrawFormattedText(window, stim.feedback.error_tooSlow.text,...
+                    stim.feedback.error_tooSlow.x, stim.feedback.error_tooSlow.y, ...
+                    stim.feedback.colour);
             elseif strcmp(effort_type,'mental') &&...
                     Ep_or_Em_vars.errorLimits.useOfErrorThreshold == true &&...
                     perfSummary{iTrial}.n_errorsMade >= Ep_or_Em_vars.errorLimits.errorThreshold
                 % for the mental effort case where too many errors were made,
                 % adapt the error feedback accordingly
-                DrawFormattedText(window,'Trop d''erreurs!',...
-                    'center', (1/5)*yScreenCenter,...
-                    white);
+                DrawFormattedText(window, stim.feedback.error_tooManyErrors.text,...
+                    stim.feedback.error_tooManyErrors.x, stim.feedback.error_tooManyErrors.y, ...
+                    stim.feedback.colour);
             end
             
             % display money loss for failing
@@ -322,21 +323,16 @@ for iTrial = 1:nTrials
             
         case 1 % trial is a success
             % display feedback
-            switch R_or_P
+            switch R_or_P_tmp
                 case 'R'
-                    DrawFormattedText(window,'Vous avez obtenu',...
-                        'center', (1/5)*yScreenCenter,...
-                        white);
-                    fbkSign = '+';
-                    fbkColour = stim.reward.text.colour;
+                    DrawFormattedText(window, stim.feedback.reward.text,...
+                        stim.feedback.reward.x, stim.feedback.reward.y,...
+                        stim.feedback.colour);
                 case 'P'
-                    DrawFormattedText(window,'Vous avez perdu',...
-                        'center', (1/5)*yScreenCenter,...
-                        white);
-                    fbkSign = '-';
-                    fbkColour = stim.punishment.text.colour;
+                    DrawFormattedText(window, stim.feedback.punishment.text,...
+                        stim.feedback.punishment.x, stim.feedback.punishment.y,...
+                        stim.feedback.colour);
             end
-            
             drawRewardAmount(scr, stim, R_chosen(iTrial), R_or_P, 'middle_center_start');
             
             [~,onsets.fbk(iTrial)] = Screen(window,'Flip');
@@ -386,13 +382,13 @@ for iTrial = 1:nTrials
                 barTimeWaitRect_bis(3) = barTimeWaitRect(1) + 1;
             end
             %
-            DrawFormattedText(window,'Temps restant','center',yScreenCenter*(1/2),white);
+            DrawFormattedText(window, stim.remainingTime.text, stim.remainingTime.x, stim.remainingTime.y, stim.remainingTime.colour);
             % draw one global fixed rectangle showing the total duration
-            Screen('FrameRect',window, white, barTimeWaitRect);
+            Screen('FrameRect',window, stim.barTimeWait.colour, barTimeWaitRect);
             
             % draw one second rectangle updating dynamically showing the
             % time remaining
-            Screen('FillRect',window, white, barTimeWaitRect_bis);
+            Screen('FillRect',window, stim.barTimeWait.colour, barTimeWaitRect_bis);
             
             Screen(window,'Flip');
         end % display until time catches up with maximum effort time

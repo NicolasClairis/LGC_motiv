@@ -40,9 +40,6 @@ function[perfSummary, onsets] = physical_learning(scr, stim, dq, n_E_levels, Ep_
 
 %% screen parameters
 window = scr.window;
-yScreenCenter = scr.yCenter;
-yScreenSize = yScreenCenter*2;
-white = scr.colours.white;
 %% time parameters
 time_limit = false; % learning = no time limit
 t_learning_rest = timings.learning_rest;
@@ -67,7 +64,8 @@ for iForceRepeat = 1:n_learningForceRepeats
             time_limit, timings);
         
         %% Show a rest text and give some rest
-        DrawFormattedText(window, 'Reposez-vous quelques secondes.', 'center', yScreenSize*0.8, [0 0.8 0 ],white);
+        DrawFormattedText(window, stim.MVC_rest.text,...
+            stim.MVC_rest.x, stim.MVC_rest.y, stim.MVC_rest.colour);
         [~,timeNow]  = Screen(window,'Flip');
         onsets.rest(jTrial) = timeNow;
         WaitSecs(t_learning_rest);

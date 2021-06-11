@@ -53,8 +53,8 @@ if IRM == 0
 elseif IRM == 1
     %% fMRI key configuration
     KbName('UnifyKeyNames');
-    key.left = 49;        % 49 % DROITE  bleu, left press
-    key.right = 50;       %50   %% GAUCHE JAUNE
+    key.left = 66;        % DROITE  bleu, left press
+    key.right = 90;       % GAUCHE JAUNE
     key.space = KbName('Space');
     key.escape = KbName('escape');
     key.trigger_id = 84; % trigger value corresponding to the TTL code
