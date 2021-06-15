@@ -483,10 +483,10 @@ stim.mentalCalibInstructions.colour = white;
 switch langage
     case 'fr'
         [~,~,textSizeMentalCalibSuccess] = DrawFormattedText(window, ['Bravo vous avez tout resolu dans le temps imparti! ',...
-            'Votre meilleur temps est de 0.0000 s.'],'center', 'center', white, wrapat);
+            'Votre meilleur temps est de 0.000 s.'],'center', 'center', white, wrapat);
     case 'engl'
         [~,~,textSizeMentalCalibSuccess] = DrawFormattedText(window, ['Well done, you solved everything in the allotted time! ',...
-            'Your best timing is 0.0000 s '],'center', 'center', white, wrapat);
+            'Your best timing is 0.000 s '],'center', 'center', white, wrapat);
 end
 stim.mentalCalibSuccessFbk.x = x_centerCoordinates(xScreenCenter, textSizeMentalCalibSuccess);
 stim.mentalCalibSuccessFbk.y = y_coordinates(upperBorder, visibleYsize, 1/6, textSizeMentalCalibSuccess);
@@ -520,10 +520,10 @@ stim.mentalCalibFailureFbk.colour = white;
 switch langage
     case 'fr'
         [~,~,textSizeMentalCalibEnd] = DrawFormattedText(window, ['Bravo! ',...
-            'Votre meilleur temps est de 0.0000 s.'],'center', 'center', white, wrapat);
+            'Votre meilleur temps est de 0.000 s.'],'center', 'center', white, wrapat);
     case 'engl'
         [~,~,textSizeMentalCalibEnd] = DrawFormattedText(window, ['Well done! ',...
-            'Your best timing is 0.0000 s.'],'center', 'center', white, wrapat);
+            'Your best timing is 0.000 s.'],'center', 'center', white, wrapat);
 end
 stim.mentalCalibEnd.x = x_centerCoordinates(xScreenCenter, textSizeMentalCalibEnd);
 stim.mentalCalibEnd.y = y_coordinates(upperBorder, visibleYsize, 1/6, textSizeMentalCalibEnd);

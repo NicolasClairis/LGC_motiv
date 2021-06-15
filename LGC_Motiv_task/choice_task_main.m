@@ -26,6 +26,9 @@ clc;
 % computer (0)
 testing_script = 1;
 
+%% langage to display instructions
+langage = 'fr';
+
 %% working directories
 % main_folder = ['D:' filesep 'Matlab_codes' filesep]; % Arthur's laptop path
 % main_folder = ['C:',filesep,'Users',filesep,'Loco',filesep,...
@@ -110,9 +113,6 @@ IRM = 1;
 
 %% include punishment condition?
 punishment_yn = 'yes'; % include punishment trials?
-
-%% langage
-langage = 'fr'; % 'fr'/'engl' french or english?
 
 %% task parameters
 % initialize screen
@@ -219,7 +219,7 @@ if session_nber == 0
             while calibSuccess == false
                 calibSession = calibSession + 1;
                 [t_min_calib, calibSessionSummary, calibSuccess] = mental_calibTime(scr, stim, key,...
-                    numberVector_calib, mentalE_prm_calib, n_calibTrials, n_calibMax, calibTimes, calib_errorLimits_Em);
+                    numberVector_calib, mentalE_prm_calib, n_calibTrials, n_calibMax, calibTimes, calib_errorLimits_Em, langage);
                 calibSummary.(['calibSession_',num2str(calibSession)]).calibSummary = calibSessionSummary;
                 calibSummary.(['calibSession_',num2str(calibSession)]).calibSuccess = calibSuccess;
                 calibSummary.(['calibSession_',num2str(calibSession)]).t_mental_max_perTrial = t_min_calib;
@@ -260,7 +260,7 @@ if session_nber > 0
             % perform max perf
             [numberVector_initialMaxPerf] = mental_numbers(n_MaxPerfTrials);
             [t_min_initialMaxPerf, initialMaxPerfSessionSummary, initialMaxPerfSuccess] = mental_calibTime(scr, stim, key,...
-                numberVector_initialMaxPerf, mentalE_prm_calib, n_MaxPerfTrials, n_calibMax, calibTimes, calib_errorLimits_Em);
+                numberVector_initialMaxPerf, mentalE_prm_calib, n_MaxPerfTrials, n_calibMax, calibTimes, calib_errorLimits_Em, langage);
         case 'physical'
             % take an initial MVC measurement (even if it has been done in a
             % previous session, will allow us to keep track of the force level
@@ -372,7 +372,7 @@ if IRM == 1 && session_nber > 0
             % repeat calibration until the subject performance is better
             % than the requested time threshold
             [t_min_finalMaxPerf, finalMaxPerf_SessionSummary, finalMaxPerf_calibSuccess] = mental_calibTime(scr, stim, key,...
-                numberVector_endCalib, mentalE_prm_calib, nFinalTrial, n_calibMax, calibTimes, calib_errorLimits_Em);
+                numberVector_endCalib, mentalE_prm_calib, nFinalTrial, n_calibMax, calibTimes, calib_errorLimits_Em, langage);
             calibEndSessionSummary.calibEndSession.calibSummary = finalMaxPerf_SessionSummary;
             calibEndSessionSummary.calibEndSession.calibSuccess = finalMaxPerf_calibSuccess;
             calibEndSessionSummary.calibEndSession.t_mental_max_perTrial = t_min_finalMaxPerf;

@@ -301,7 +301,7 @@ if strcmp(taskToPerform.mental.calib,'on')
     while calibSuccess == false
         calibSession = calibSession + 1;
         [t_min_calib, calibSessionSummary, calibSuccess] = mental_calibTime(scr, stim, key_Em,...
-            numberVector_calib, mentalE_prm_learning_and_calib, n_calibTrials_Em, n_calibMax, calibTimes_Em, calib_errorLimits_Em);
+            numberVector_calib, mentalE_prm_learning_and_calib, n_calibTrials_Em, n_calibMax, calibTimes_Em, calib_errorLimits_Em, langage);
         calibSummary.(['calibSession_',num2str(calibSession)]).calibSummary = calibSessionSummary;
         calibSummary.(['calibSession_',num2str(calibSession)]).calibSuccess = calibSuccess;
         calibSummary.(['calibSession_',num2str(calibSession)]).t_mental_max_perTrial = t_min_calib;
@@ -401,7 +401,7 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
             % repeat calibration until the subject performance is better
             % than the requested time threshold
             [t_min_calib_preTask.(session_nm), calibSessionSummary_preTask.(session_nm), calibSuccess_preTask.(session_nm)] = mental_calibTime(scr, stim, key_Em,...
-                numberVector_calib_tmp, mentalE_prm_learning_and_calib, n_calibTrials_Em_bis, n_calibMax, calibTimes_Em, calib_errorLimits_Em);
+                numberVector_calib_tmp, mentalE_prm_learning_and_calib, n_calibTrials_Em_bis, n_calibMax, calibTimes_Em, calib_errorLimits_Em, langage);
             % task
             Em_vars.i_sub = iSubject;
             Em_vars.n_to_reach = n_to_reach;
@@ -422,7 +422,7 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
             
             % re-measure max perf
             [t_min_calib_postTask.(session_nm), calibSessionSummary_postTask.(session_nm), calibSuccess_postTask.(session_nm)] = mental_calibTime(scr, stim, key_Em,...
-                numberVector_calib_tmp_bis, mentalE_prm_learning_and_calib, n_calibTrials_Em_bis, n_calibMax, calibTimes_Em, calib_errorLimits_Em);
+                numberVector_calib_tmp_bis, mentalE_prm_learning_and_calib, n_calibTrials_Em_bis, n_calibMax, calibTimes_Em, calib_errorLimits_Em, langage);
         end % nature of the task
         
         % display feedback for the current session
