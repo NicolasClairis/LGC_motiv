@@ -54,6 +54,7 @@ taskToPerform.mental.learning = 'on';
 taskToPerform.mental.calib = 'on';
 taskToPerform.mental.training = 'on';
 taskToPerform.mental.task = 'on';
+langage = 'fr'; % 'fr'/'engl' french or english?
 % initialize screen
 [scr, xScreenCenter, yScreenCenter,...
     window, baselineTextSize] = ScreenConfiguration(0, 1);
@@ -83,7 +84,7 @@ n_trialsPerSession = 5;
 R_money = R_amounts(n_R_levels, punishment_yn);
 
 % initialize visual stimuli to use in the experiment
-[stim] = stim_initialize(scr, n_E_levels);
+[stim] = stim_initialize(scr, n_E_levels, langage);
 
 % define number of training conditions
 switch punishment_yn
@@ -202,8 +203,8 @@ if strcmp(taskToPerform.physical.training,'on')
             results_folder, file_nm_training_Ep);
     end % learning condition loop
     
-    DrawFormattedText(window,'Bravo! Votre entraînement physique est terminé.',...
-        'center','center',scr.colours.white, scr.wrapat);
+    DrawFormattedText(window, stim.training.Ep.endMsg.text,...
+        'center','center',stim.training.Ep.endMsg.colour, scr.wrapat);
     [~,onsets.EndTrainingMsg] = Screen('Flip',window); % display the cross on screen
     WaitSecs(trainingTimes_Ep.trainingEnd);
 end
@@ -275,8 +276,8 @@ if strcmp(taskToPerform.mental.learning,'on')
             'all', 'noInstructions', learning_time_limit, [], extendedLearning_errorLimits);
         
         % small break between each answer
-        DrawFormattedText(window,'Bravo!','center',yScreenCenter/2,white);
-        DrawFormattedText(window,'Au suivant!','center','center',white);
+        DrawFormattedText(window, stim.training.Em.endTrialMsg.text,'center',yScreenCenter/2,white);
+        DrawFormattedText(window,stim.training.Em.endTrialMsg_bis.text,'center','center',white);
         [~,~,timeExtendedLearningFbk.(['trial_',num2str(iExtendedLearningTrial)])] = Screen(window,'Flip');
         WaitSecs(learningTimes_Em.learning_rest);
         disp([num2str(iExtendedLearningTrial),'/',num2str(n_extendedLearningTrials),' learning trial done']);
@@ -301,7 +302,7 @@ if strcmp(taskToPerform.mental.calib,'on')
     while calibSuccess == false
         calibSession = calibSession + 1;
         [t_min_calib, calibSessionSummary, calibSuccess] = mental_calibTime(scr, stim, key_Em,...
-            numberVector_calib, mentalE_prm_learning_and_calib, n_calibTrials_Em, n_calibMax, calibTimes_Em, calib_errorLimits_Em);
+            numberVector_calib, mentalE_prm_learning_and_calib, n_calibTrials_Em, n_calibMax, calibTimes_Em, calib_errorLimits_Em, langage);
         calibSummary.(['calibSession_',num2str(calibSession)]).calibSummary = calibSessionSummary;
         calibSummary.(['calibSession_',num2str(calibSession)]).calibSuccess = calibSuccess;
         calibSummary.(['calibSession_',num2str(calibSession)]).t_mental_max_perTrial = t_min_calib;
@@ -383,7 +384,7 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
                 
                 % instruction that main task will start soon
                 DrawFormattedText(window,...
-                    'L''expérimentateur va bientôt démarrer la tâche.',...
+                    stim.expWillStart.text,...
                     'center', yScreenCenter*(5/3), scr.colours.white, scr.wrapat);
                 [~, onsets.taskWillStart] = Screen(window, 'Flip');
                 disp('Please press space.');
@@ -436,10 +437,19 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
                     if mod(iSubject+iSession,2) == 0
                         
                         % display feedback for the current session
-                        DrawFormattedText(window,...
-                            ['Félicitations! Cette session est maintenant terminée.',...
-                            'Vous avez obtenu: ',num2str(finalGain),' chf au cours de cette session.'],...
-                            'center', yScreenCenter*(5/3), scr.colours.white, scr.wrapat);
+                        finalGain_str = sprintf('0.2%',finalGain);
+                        switch langage
+                            case 'fr'
+                                DrawFormattedText(window,...
+                                    ['Félicitations! Cette session est maintenant terminée.',...
+                                    'Vous avez obtenu: ',finalGain_str,' chf au cours de cette session.'],...
+                                    'center', yScreenCenter*(5/3), scr.colours.white, scr.wrapat);
+                            case 'engl'
+                                DrawFormattedText(window,...
+                                    ['Congratulations! This session is now completed.',...
+                                    'You got: ',finalGain_str,' chf during this session.'],...
+                                'center', yScreenCenter*(5/3), scr.colours.white, scr.wrapat);
+                        end
                         Screen(window,'Flip');
                         % give 3min break after 4 IP
                         WaitSecs(t_endSession);
@@ -502,12 +512,20 @@ save([results_folder, file_nm,'.mat'],'all');
 
 
 %% Show a final screen
-
+totalGain_str = sprintf('%0.2f',totalGain);
 % display feedback for the current session
-DrawFormattedText(window,...
-    ['Félicitations! Cette expérience est maintenant terminée.',...
-    'Vous avez obtenu: ',num2str(totalGain),' chf au cours de cette session.'],...
-    'center', yScreenCenter*(5/3), scr.colours.white, scr.wrapat);
+switch langage
+    case 'fr'
+        DrawFormattedText(window,...
+            ['Félicitations! Cette expérience est maintenant terminée.',...
+            'Vous avez obtenu: ',totalGain_str,' chf au cours de cette session.'],...
+            'center', yScreenCenter*(5/3), scr.colours.white, scr.wrapat);
+    case 'engl'
+        DrawFormattedText(window,...
+            ['Congratulations! This session is now completed.',...
+            'Vous avez obtenu: ',totalGain_str,' chf during this session.'],...
+            'center', yScreenCenter*(5/3), scr.colours.white, scr.wrapat);
+end
 Screen(window,'Flip');
 WaitSecs(15);
 %% close PTB

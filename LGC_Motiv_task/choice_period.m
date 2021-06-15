@@ -46,9 +46,6 @@ function[choice_trial, onsetDispChoiceOptions, onsetChoice, stoptask] = choice_p
 window = scr.window;
 stoptask = 0;
 white = scr.colours.white;
-% black = scr.colours.black;
-yScreenCenter = scr.yCenter;
-% xScreenCenter = scr.xCenter;
 
 %% ask question on top
 DrawFormattedText(window, stim.choice.choiceQuestion.text, stim.choice.choiceQuestion.x, stim.choice.choiceQuestion.y, stim.choice.choiceQuestion.colour);

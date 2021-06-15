@@ -61,6 +61,7 @@ taskToPerform.mental.learning = 'on';
 taskToPerform.mental.calib = 'on';
 taskToPerform.mental.training = 'on';
 taskToPerform.mental.task = 'on';
+langage = 'fr'; % 'fr'/'engl' french or english?
 % initialize screen
 [scr, xScreenCenter, yScreenCenter,...
     window, baselineTextSize] = ScreenConfiguration(IRM, testing_script);
@@ -80,7 +81,7 @@ n_trialsPerSession = 44;
 R_money = R_amounts(n_R_levels, punishment_yn);
 
 % initialize visual stimuli to use in the experiment
-[stim] = stim_initialize(scr, n_E_levels);
+[stim] = stim_initialize(scr, n_E_levels, langage);
 
 % define number of training conditions
 switch punishment_yn
@@ -300,7 +301,7 @@ if strcmp(taskToPerform.mental.calib,'on')
     while calibSuccess == false
         calibSession = calibSession + 1;
         [t_min_calib, calibSessionSummary, calibSuccess] = mental_calibTime(scr, stim, key_Em,...
-            numberVector_calib, mentalE_prm_learning_and_calib, n_calibTrials_Em, n_calibMax, calibTimes_Em, calib_errorLimits_Em);
+            numberVector_calib, mentalE_prm_learning_and_calib, n_calibTrials_Em, n_calibMax, calibTimes_Em, calib_errorLimits_Em, langage);
         calibSummary.(['calibSession_',num2str(calibSession)]).calibSummary = calibSessionSummary;
         calibSummary.(['calibSession_',num2str(calibSession)]).calibSuccess = calibSuccess;
         calibSummary.(['calibSession_',num2str(calibSession)]).t_mental_max_perTrial = t_min_calib;
@@ -400,7 +401,7 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
             % repeat calibration until the subject performance is better
             % than the requested time threshold
             [t_min_calib_preTask.(session_nm), calibSessionSummary_preTask.(session_nm), calibSuccess_preTask.(session_nm)] = mental_calibTime(scr, stim, key_Em,...
-                numberVector_calib_tmp, mentalE_prm_learning_and_calib, n_calibTrials_Em_bis, n_calibMax, calibTimes_Em, calib_errorLimits_Em);
+                numberVector_calib_tmp, mentalE_prm_learning_and_calib, n_calibTrials_Em_bis, n_calibMax, calibTimes_Em, calib_errorLimits_Em, langage);
             % task
             Em_vars.i_sub = iSubject;
             Em_vars.n_to_reach = n_to_reach;
@@ -421,14 +422,22 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
             
             % re-measure max perf
             [t_min_calib_postTask.(session_nm), calibSessionSummary_postTask.(session_nm), calibSuccess_postTask.(session_nm)] = mental_calibTime(scr, stim, key_Em,...
-                numberVector_calib_tmp_bis, mentalE_prm_learning_and_calib, n_calibTrials_Em_bis, n_calibMax, calibTimes_Em, calib_errorLimits_Em);
+                numberVector_calib_tmp_bis, mentalE_prm_learning_and_calib, n_calibTrials_Em_bis, n_calibMax, calibTimes_Em, calib_errorLimits_Em, langage);
         end % nature of the task
         
         % display feedback for the current session
-        DrawFormattedText(window,...
-            ['Felicitations! Cette session est maintenant terminee.',...
-            'Vous avez obtenu: ',num2str(finalGains),' chf au cours de cette session.'],...
-            stim.endSessionMessage.x, stim.endSessionMessage.y, scr.colours.white, scr.wrapat);
+        finalGains_str = sprintf('%0.2f',finalGains);
+        switch langage
+            case 'fr'
+                DrawFormattedText(window,...
+                    ['Felicitations! Cette session est maintenant terminee.',...
+                    'Vous avez obtenu: ',finalGains_str,' chf au cours de cette session.'],...
+                    stim.endSessionMessage.x, stim.endSessionMessage.y, scr.colours.white, scr.wrapat);
+            case 'engl'
+                DrawFormattedText(window,['Congratulations! This session is now completed.',...
+                    'You got: ',finalGains_str,' chf during this session.'],...
+                    stim.endSessionMessage.x, stim.endSessionMessage.y, scr.colours.white, scr.wrapat);
+        end
         Screen(window,'Flip');
         WaitSecs(t_endSession);
     end % session loop
