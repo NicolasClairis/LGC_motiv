@@ -61,6 +61,7 @@ taskToPerform.mental.learning = 'on';
 taskToPerform.mental.calib = 'on';
 taskToPerform.mental.training = 'on';
 taskToPerform.mental.task = 'on';
+langage = 'fr'; % 'fr'/'engl' french or english?
 % initialize screen
 [scr, xScreenCenter, yScreenCenter,...
     window, baselineTextSize] = ScreenConfiguration(IRM, testing_script);
@@ -80,7 +81,7 @@ n_trialsPerSession = 44;
 R_money = R_amounts(n_R_levels, punishment_yn);
 
 % initialize visual stimuli to use in the experiment
-[stim] = stim_initialize(scr, n_E_levels);
+[stim] = stim_initialize(scr, n_E_levels, langage);
 
 % define number of training conditions
 switch punishment_yn
@@ -425,10 +426,18 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
         end % nature of the task
         
         % display feedback for the current session
-        DrawFormattedText(window,...
-            ['Felicitations! Cette session est maintenant terminee.',...
-            'Vous avez obtenu: ',num2str(finalGains),' chf au cours de cette session.'],...
-            stim.endSessionMessage.x, stim.endSessionMessage.y, scr.colours.white, scr.wrapat);
+        finalGains_str = sprintf('%0.2f',finalGains);
+        switch langage
+            case 'fr'
+                DrawFormattedText(window,...
+                    ['Felicitations! Cette session est maintenant terminee.',...
+                    'Vous avez obtenu: ',finalGains_str,' chf au cours de cette session.'],...
+                    stim.endSessionMessage.x, stim.endSessionMessage.y, scr.colours.white, scr.wrapat);
+            case 'engl'
+                DrawFormattedText(window,['Congratulations! This session is now completed.',...
+                    'You got: ',finalGains_str,' chf during this session.'],...
+                    stim.endSessionMessage.x, stim.endSessionMessage.y, scr.colours.white, scr.wrapat);
+        end
         Screen(window,'Flip');
         WaitSecs(t_endSession);
     end % session loop

@@ -111,6 +111,9 @@ IRM = 1;
 %% include punishment condition?
 punishment_yn = 'yes'; % include punishment trials?
 
+%% langage
+langage = 'fr'; % 'fr'/'engl' french or english?
+
 %% task parameters
 % initialize screen
 [scr, xScreenCenter, yScreenCenter,...
@@ -172,7 +175,7 @@ switch effort_type
 end
 
 % stimulus related variables for the display
-[stim] = stim_initialize(scr, n_E_levels);
+[stim] = stim_initialize(scr, n_E_levels, langage);
 barTimeWaitRect = stim.barTimeWaitRect;
 
 % define number of training conditions
