@@ -152,6 +152,9 @@ for iCalib_MVC = 1:n_MVC_repeat
     
     % empty the grip buffer
     flush(dq);
+    
+    %% display number of trials done for the experimenter
+    disp(['Physical calibration trial ',num2str(iCalib_MVC),'/',num2str(n_MVC_repeat),' done']);
 end % calibration loop
     
 %% store max MVC measure in output

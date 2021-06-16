@@ -69,6 +69,9 @@ for iForceRepeat = 1:n_learningForceRepeats
         [~,timeNow]  = Screen(window,'Flip');
         onsets.rest(jTrial) = timeNow;
         WaitSecs(t_learning_rest);
+        
+        %% display number of trials done for the experimenter
+        disp(['Physical learning trial ',num2str(jTrial),'/',num2str(n_learningTrials),' done']);
     end % effort level loop
 end % loop of learning repetitions
         

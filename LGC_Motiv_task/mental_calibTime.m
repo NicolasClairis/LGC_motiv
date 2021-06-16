@@ -191,7 +191,10 @@ for iCalibTrial = 1:n_calibTrials
     onset_fbk(iCalibTrial) = time_fbk;
     WaitSecs(calibTimes.fbk);
     
-    % allow the participant to restart whenever he/she feels ready by
+    %% display number of trials done for the experimenter
+    disp(['Mental calibration trial ',num2str(iCalibTrial),'/',num2str(n_calibTrials),' done']);
+    
+    %% allow the participant to restart whenever he/she feels ready by
     % pressing a button (no sense for the last trial though)
     if iCalibTrial < n_calibTrials
         DrawFormattedText(window, stim.pressWhenReady.text,...

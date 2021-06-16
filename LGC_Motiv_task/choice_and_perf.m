@@ -28,7 +28,8 @@ function[summary] = choice_and_perf(scr, stim, key,...
 %   for each effort level
 %
 % R_money: structure with equivalence between reward levels and reward
-% money to compute gain within the session
+% money to compute gain within the session and includes money loss amount
+% for errors
 %
 % training_R_P_RP_or_mainTask:
 % 'R': reward only training
@@ -54,7 +55,7 @@ function[summary] = choice_and_perf(scr, stim, key,...
 window = scr.window;
 white = scr.colours.white;
 % black = scr.colours.black;
-yScreenCenter = scr.yCenter;
+% yScreenCenter = scr.yCenter;
 % xScreenCenter = scr.xCenter;
 barTimeWaitRect = stim.barTimeWaitRect;
 
@@ -267,6 +268,11 @@ for iTrial = 1:nTrials
                     stim.feedback.error_tooManyErrors.x, stim.feedback.error_tooManyErrors.y, ...
                     stim.feedback.colour);
             end
+            % display amount of money lost because participant was too
+            % slow/did too many mistakes
+            DrawFormattedText(window, stim.feedback.error_moneyLoss.text,...
+                stim.feedback.error_moneyLoss.x, stim.feedback.error_moneyLoss.y,...
+                stim.feedback.error_moneyLoss.colour);
             % display money loss for failing
             [~,onsets.fbk_fail(iTrial)] = Screen(window,'Flip');
             

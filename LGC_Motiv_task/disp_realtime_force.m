@@ -54,9 +54,9 @@ bottomScaleLimit    = upperBorder + visibleYsize*(3/4); % bottom limit of the sc
 topScaleLimit       = upperBorder + visibleYsize*(1/4); % upper limit of the scale
 graphYSize = bottomScaleLimit - topScaleLimit;
 % size and coordinates of half of the effort scale
-yMetrics = yScreenCenter/2;
+yMetrics = visibleYsize/4;
 % distance between graduations
-bigGrad = visibleYsize*(1/5);
+bigGrad = yMetrics*(1/5);
 smallGrad = bigGrad/4;
 switch calib_or_Task
     case 'calib' % center the scale

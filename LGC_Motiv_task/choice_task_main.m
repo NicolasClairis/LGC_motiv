@@ -162,7 +162,7 @@ choiceOptions = choice_option_design(n_R_levels, n_E_levels, punishment_yn, nTri
 
 switch effort_type
     case 'physical'
-        F_threshold = 55; % force should be maintained above this threshold (expressed in % of MVC)
+        F_threshold = 50; % force should be maintained above this threshold (expressed in % of MVC)
         F_tolerance = 2.5; % tolerance allowed around the threshold (expressed in % of MVC)
         % need to define timings for each level of force
         [Ep_time_levels] = physical_effortLevels(n_E_levels);
@@ -175,7 +175,7 @@ switch effort_type
 end
 
 % stimulus related variables for the display
-[stim] = stim_initialize(scr, n_E_levels, langage);
+[stim] = stim_initialize(scr, n_E_levels, langage, R_money);
 barTimeWaitRect = stim.barTimeWaitRect;
 
 % define number of training conditions

@@ -81,7 +81,7 @@ n_trialsPerSession = 44;
 R_money = R_amounts(n_R_levels, punishment_yn);
 
 % initialize visual stimuli to use in the experiment
-[stim] = stim_initialize(scr, n_E_levels, langage);
+[stim] = stim_initialize(scr, n_E_levels, langage, R_money);
 
 % define number of training conditions
 switch punishment_yn
@@ -119,7 +119,7 @@ if strcmp(taskToPerform.physical.calib,'on') ||...
     % define relevant keys and dynamometer module
     [key_Ep, dq] = relevant_key_definition('physical', IRM);
     % define conditions
-    F_threshold = 55; % force should be maintained above this threshold (expressed in % of MVC)
+    F_threshold = 50; % force should be maintained above this threshold (expressed in % of MVC)
     F_tolerance = 2.5; % tolerance allowed around the threshold (expressed in % of MVC)
     % need to define timings for each level of force
     [Ep_time_levels] = physical_effortLevels(n_E_levels);
@@ -154,6 +154,13 @@ end
 
 % training physical
 if strcmp(taskToPerform.physical.training,'on')
+    % initialize training parameters
+    Ep_vars_training.MVC = MVC;
+    Ep_vars_training.dq = dq;
+    Ep_vars_training.Ep_time_levels = Ep_time_levels;
+    Ep_vars_training.F_threshold = F_threshold;
+    Ep_vars_training.F_tolerance = F_tolerance;
+    
     for iTrainingCondition = 1:n_trainingConditions
         trainingCond = trainingConditions{iTrainingCondition};
         
@@ -162,11 +169,6 @@ if strcmp(taskToPerform.physical.training,'on')
         [trainingChoiceOptions_Ep_tmp, n_trainingTrials_Ep_tmp] = training_options(trainingCond, n_R_levels, n_E_levels, R_money);
         
         % start with reward training alone
-        Ep_vars_training.MVC = MVC;
-        Ep_vars_training.dq = dq;
-        Ep_vars_training.Ep_time_levels = Ep_time_levels;
-        Ep_vars_training.F_threshold = F_threshold;
-        Ep_vars_training.F_tolerance = F_tolerance;
         [onsets_Ep_training.(trainingCond)] = choice_and_perf_trainingInstructions(scr, stim, trainingCond, trainingTimes_Ep.instructions);
         [trainingSummary_Ep.(trainingCond)] = choice_and_perf(scr, stim, key_Ep, 'physical', Ep_vars_training, R_money,...
             trainingCond, n_trainingTrials_Ep_tmp, trainingChoiceOptions_Ep_tmp, trainingTimes_Ep,...
@@ -210,6 +212,7 @@ if strcmp(taskToPerform.mental.learning,'on')
     % extract numbers to use for each learning phase
     [numberVector_learning] = mental_numbers(n_learningColours*n_learningInstructions);
     jLearningSession = 0;
+    jMentalLearningTrial = 0;
     for iCol = 1:n_learningColours
         curr_learning_col = learning_cols{iCol};
         for iLearning_Instructions = 1:n_learningInstructions
@@ -226,6 +229,10 @@ if strcmp(taskToPerform.mental.learning,'on')
                 numberVector_learning(jLearningSession,:),...
                 mentalE_prm_learning_and_calib, n_maxLearning.learning_withInstructions,...
                 curr_learning_col, curr_learning_instructions, learning_time_limit, learning_timeLimitThreshold, learning_errorLimits);
+            jMentalLearningTrial = jMentalLearningTrial + 1;
+            
+            % for experimenter display how many trials have been performed
+            disp(['Mental learning trial ',num2str(jMentalLearningTrial),'/',num2str(nMentalLearning_totalTrials),' done']);
         end % learning instructions loop
     end % learning colour loop
     
@@ -273,7 +280,7 @@ if strcmp(taskToPerform.mental.learning,'on')
         end
         [~,~,timeExtendedLearningFbk.(['trial_',num2str(iExtendedLearningTrial)])] = Screen(window,'Flip');
         WaitSecs(learningTimes_Em.learning_rest);
-        disp([num2str(iExtendedLearningTrial),'/',num2str(n_extendedLearningTrials),' learning trial done']);
+        disp(['Mental extended learning trial ',num2str(iExtendedLearningTrial),'/',num2str(n_extendedLearningTrials),' done']);
     end % trial loop
 end
 
