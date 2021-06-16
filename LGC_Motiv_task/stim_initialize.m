@@ -1,6 +1,7 @@
-function[stim] = stim_initialize(scr, n_E_levels, langage)
-%[stim] = stim_initialize(scr, n_E_levels, langage)
-%stim_initialize will initialize the v
+function[stim] = stim_initialize(scr, n_E_levels, langage, R_money)
+%[stim] = stim_initialize(scr, n_E_levels, langage, R_money)
+%stim_initialize will initialize most of the visual stimuli used in the
+%task.
 %
 % INPUTS
 % scr: structure with main screen informations (size, center, window, etc.
@@ -10,6 +11,9 @@ function[stim] = stim_initialize(scr, n_E_levels, langage)
 % langage:
 % 'fr': display instructions in french
 % 'engl': display instructions in english
+%
+% R_money: structure with reward amounts and amount of money lost when
+% trial is failed
 %
 % OUTPUTS
 % stim: structure with stimulus informations
@@ -132,7 +136,7 @@ end
 [~,~,textSizeEpLearningTitle] = DrawFormattedText(window, stim.Ep.learning.title.text,...
     'center','center',white);
 stim.Ep.learning.title.x = x_centerCoordinates(xScreenCenter, textSizeEpLearningTitle);
-stim.Ep.learning.title.y = y_coordinates(upperBorder, visibleYsize, 1/4, textSizeEpLearningTitle);
+stim.Ep.learning.title.y = y_coordinates(upperBorder, visibleYsize, 1/2, textSizeEpLearningTitle);
 stim.Ep.learning.title.colour = white;
 % learning mental
 switch langage
@@ -144,7 +148,7 @@ end
 [~,~,textSizeEmLearningTitle] = DrawFormattedText(window, stim.Em.learning.title.text,...
     'center','center',white);
 stim.Em.learning.title.x = x_centerCoordinates(xScreenCenter, textSizeEmLearningTitle);
-stim.Em.learning.title.y = y_coordinates(upperBorder, visibleYsize, 1/4, textSizeEmLearningTitle);
+stim.Em.learning.title.y = y_coordinates(upperBorder, visibleYsize, 1/2, textSizeEmLearningTitle);
 stim.Em.learning.title.colour = white;
 % training physical
 switch langage
@@ -157,7 +161,7 @@ end
 [~,~,textSizeEpTrainingTitle] = DrawFormattedText(window, stim.Ep.training.title.text,...
     'center','center',white);
 stim.Ep.training.title.x = x_centerCoordinates(xScreenCenter, textSizeEpTrainingTitle);
-stim.Ep.training.title.y = y_coordinates(upperBorder, visibleYsize, 1/4, textSizeEpTrainingTitle);
+stim.Ep.training.title.y = y_coordinates(upperBorder, visibleYsize, 1/2, textSizeEpTrainingTitle);
 stim.Ep.training.title.colour = white;
 % training mental
 switch langage
@@ -169,7 +173,7 @@ end
 [~,~,textSizeEmTrainingTitle] = DrawFormattedText(window, stim.Em.training.title.text,...
     'center','center',white);
 stim.Em.training.title.x = x_centerCoordinates(xScreenCenter, textSizeEmTrainingTitle);
-stim.Em.training.title.y = y_coordinates(upperBorder, visibleYsize, 1/4, textSizeEmTrainingTitle);
+stim.Em.training.title.y = y_coordinates(upperBorder, visibleYsize, 1/2, textSizeEmTrainingTitle);
 stim.Em.training.title.colour = white;
 % task physical
 switch langage
@@ -182,7 +186,7 @@ end
 [~,~,textSizeEpTaskTitle] = DrawFormattedText(window, stim.Ep.task.title.text,...
     'center','center',white);
 stim.Ep.task.title.x = x_centerCoordinates(xScreenCenter, textSizeEpTaskTitle);
-stim.Ep.task.title.y = y_coordinates(upperBorder, visibleYsize, 1/4, textSizeEpTaskTitle);
+stim.Ep.task.title.y = y_coordinates(upperBorder, visibleYsize, 1/2, textSizeEpTaskTitle);
 stim.Ep.task.title.colour = white;
 % task mental
 switch langage
@@ -194,7 +198,7 @@ end
 [~,~,textSizeEmTaskTitle] = DrawFormattedText(window, stim.Em.task.title.text,...
     'center','center',white);
 stim.Em.task.title.x = x_centerCoordinates(xScreenCenter, textSizeEmTaskTitle);
-stim.Em.task.title.y = y_coordinates(upperBorder, visibleYsize, 1/4, textSizeEmTaskTitle);
+stim.Em.task.title.y = y_coordinates(upperBorder, visibleYsize, 1/2, textSizeEmTaskTitle);
 stim.Em.task.title.colour = white;
 
 % set back baseline text size
@@ -207,7 +211,7 @@ switch langage
             'l''option qui vous parait la plus interessante.'];
     case 'engl'
         stim.training.R.text = ['You will now choose between two options associated with different levels of reward and effort ',...
-            'the option which seems the most interesting to you.'];
+            'the option which seems the most interesting for you.'];
 end
 [~,~,textSizeRewardTraining] = DrawFormattedText(window,...
     stim.training.R.text,...
@@ -223,7 +227,7 @@ switch langage
             'l''option qui vous parait la moins penible.'];
     case 'engl'
         stim.training.P.text = ['You will now choose between two options associated with different levels of reward and effort ',...
-            'the option which seems the least aversive to you.'];
+            'the option which seems the least aversive for you.'];
 end
 [~,~,textSizePunishmentTraining] = DrawFormattedText(window,...
     stim.training.P.text,...
@@ -239,7 +243,7 @@ switch langage
             'l''option qui vous parait preferable.'];
     case 'engl'
         stim.training.RP.text = ['You will now choose between two options associated with different levels of reward and effort ',...
-            'the option which seems the better option to you.'];
+            'the option which seems the best for you.'];
 end
 [~,~,textSizeRewardAndPunishmentTraining] = DrawFormattedText(window,...
     stim.training.RP.text,...
@@ -411,12 +415,12 @@ switch langage
             'fois d''affilee.'];
     case 'engl'
         stim.Ep.MVC.instructions.text = ['Before starting the experience, ',...
-            'we will ask you to tighten the grip to the maximum of your ability ',...
+            'we will ask you to tighten the grip at your maximum ',...
             'several times in a row.'];
 end
 [~,~,textSizeMVCInstructions] = DrawFormattedText(window, stim.Ep.MVC.instructions.text, 'center','center', white, wrapat);
 stim.Ep.MVC.instructions.x = x_centerCoordinates(xScreenCenter, textSizeMVCInstructions);
-stim.Ep.MVC.instructions.y = y_coordinates(upperBorder, visibleYsize, 7/10, textSizeMVCInstructions);
+stim.Ep.MVC.instructions.y = y_coordinates(upperBorder, visibleYsize, 3/10, textSizeMVCInstructions);
 stim.Ep.MVC.instructions.colour = white;
 switch langage
     case 'fr'
@@ -426,14 +430,14 @@ switch langage
 end
 [~,~,textSizeMVCInstructions_bis] = DrawFormattedText(window, stim.Ep.MVC.instructions_bis.text, 'center', 'center', white);
 stim.Ep.MVC.instructions_bis.x = x_centerCoordinates(xScreenCenter, textSizeMVCInstructions_bis);
-stim.Ep.MVC.instructions_bis.y = y_coordinates(upperBorder, visibleYsize, 3/10, textSizeMVCInstructions_bis);
+stim.Ep.MVC.instructions_bis.y = y_coordinates(upperBorder, visibleYsize, 7/10, textSizeMVCInstructions_bis);
 stim.Ep.MVC.instructions_bis.colour = white;
 
 % GO instruction
 stim.Ep.MVC.GO.text = 'GO !';
 [~,~,textSizeGO] = DrawFormattedText(window, stim.Ep.MVC.GO.text, 'center', 'center', white);
-stim.Ep.MVC.GO.x = x_centerCoordinates(xScreenCenter, textSizeGO);
-stim.MVC_rest.y = y_coordinates(upperBorder, visibleYsize, 9/10, textSizeGO);
+stim.Ep.MVC.GO.x = x_centerCoordinates(xScreenCenter, textSizeGO);stim.Ep.MVC.GO.x = x_centerCoordinates(xScreenCenter, textSizeGO);
+stim.Ep.MVC.GO.y = y_coordinates(upperBorder, visibleYsize, 9/10, textSizeGO);
 stim.Ep.MVC.GO.colour = white;
 
 % post-effort rest
@@ -556,10 +560,11 @@ stim.choice.choiceOR.colour = white;
 % win option
 switch langage
     case 'fr'
-        [~,~,textSizeWin] = DrawFormattedText(window,'Gagner','center','center',white);
+        stim.choice.win.text = 'Gagner';
     case 'engl'
-        [~,~,textSizeWin] = DrawFormattedText(window,'Win','center','center',white);
+        stim.choice.win.text = 'Win';
 end
+[~,~,textSizeWin] = DrawFormattedText(window,stim.choice.win.text,'center','center',white);
 xSizeWin = textSizeWin(3) - textSizeWin(1);
 ySizeWin = textSizeWin(4) - textSizeWin(2);
 stim.textRectSize.xSizeWin = xSizeWin;
@@ -567,10 +572,11 @@ stim.textRectSize.ySizeWin = ySizeWin;
 % lose option
 switch langage
     case 'fr'
-        [~,~,textSizeLose] = DrawFormattedText(window,'Perdre','center','center',white);
+        stim.choice.lose.text = 'Perdre';
     case 'engl'
-        [~,~,textSizeLose] = DrawFormattedText(window,'Lose','center','center',white);
+        stim.choice.lose.text = 'Lose';
 end
+[~,~,textSizeLose] = DrawFormattedText(window, stim.choice.lose.text, 'center','center',white);
 xSizeLose = textSizeLose(3) - textSizeLose(1);
 ySizeLose = textSizeLose(4) - textSizeLose(2);
 stim.textRectSize.xSizeLose = xSizeLose;
@@ -578,10 +584,11 @@ stim.textRectSize.ySizeLose = ySizeLose;
 % effort
 switch langage
     case 'fr'
-        [~,~,textSizeForEffort] = DrawFormattedText(window,'pour','center','center',white);
+        stim.choice.for.text = 'pour';
     case 'engl'
-        [~,~,textSizeForEffort] = DrawFormattedText(window,'for','center','center',white);
+        stim.choice.for.text = 'for';
 end
+[~,~,textSizeForEffort] = DrawFormattedText(window,stim.choice.for.text,'center','center',white);
 xSizeForEffort = textSizeForEffort(3) - textSizeForEffort(1);
 ySizeForEffort = textSizeForEffort(4) - textSizeForEffort(2);
 stim.textRectSize.xSizeForEffort = xSizeForEffort;
@@ -793,6 +800,14 @@ end
     white);
 stim.feedback.error_tooManyErrors.x = x_centerCoordinates(xScreenCenter, textSizeErrorTooManyErrorsFbkMsg);
 stim.feedback.error_tooManyErrors.y = y_coordinates(upperBorder, visibleYsize, 3/8, textSizeErrorTooManyErrorsFbkMsg); % used to be 1/5*yScreenCenter
+
+% error: display amount lost because of too slow or too many errors
+moneyFail = sprintf('%0.2f',R_money.trialFail);
+stim.feedback.error_moneyLoss.text = ['-',moneyFail,' CHF'];
+[~,~,textSizeErrorMoneyLoss] = DrawFormattedText(window, stim.feedback.error_moneyLoss.text, 'center', 'center', white);
+stim.feedback.error_moneyLoss.x = x_centerCoordinates(xScreenCenter, textSizeErrorMoneyLoss);
+stim.feedback.error_moneyLoss.y = y_coordinates(upperBorder, visibleYsize, 1/2, textSizeErrorMoneyLoss);
+stim.feedback.error_moneyLoss.colour = stim.punishment.text.colour;
 
 % for the end of the performance period circle to signify end of the trial (win or loss)
 stim.endTrialcircle  = [0, 0, (difficultyRectlinearSize + (difficultyRectlinearSize/5)), (difficultyRectlinearSize + (difficultyRectlinearSize/5) )];

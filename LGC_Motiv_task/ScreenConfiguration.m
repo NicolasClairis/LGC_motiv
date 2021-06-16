@@ -53,7 +53,7 @@ switch testing_script
     case 1 % my own computer
         Screen('Preference', 'SkipSyncTests', 1); % can work even if other softwares are on but displays an ugly red triangle at start
 end
-        window = Screen('OpenWindow',whichScreen,screenColour);
+window = Screen('OpenWindow',whichScreen,screenColour);
 
 %% hide mouse cursor
 % HideCursor();

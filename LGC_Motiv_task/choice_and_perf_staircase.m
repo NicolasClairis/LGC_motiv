@@ -1,10 +1,10 @@
 function[summary] = choice_and_perf_staircase(scr, stim, key,...
-    effort_type, Ep_or_Em_vars,...
-    training_R_P_RP_or_mainTask,R_or_P,E_right,E_left, nTrials, timings,...
+    effort_type, Ep_or_Em_vars, R_money,...
+    training_R_P_RP_or_mainTask, R_or_P, E_right, E_left, nTrials, timings,...
     results_folder, file_nm)
-% [summary] = choice_and_perf(scr, stim, key,...
-%     effort_type, Ep_or_Em_vars,...
-%     R_or_P_or_RP_condition, nTrials, choiceOptions, timings,...
+% [summary] = choice_and_perf_staircase(scr, stim, key,...
+%     effort_type, Ep_or_Em_vars, R_money,...
+%     training_R_P_RP_or_mainTask, R_or_P, E_right, E_left, nTrials, timings,...
 %     results_folder, file_nm)
 % choice_and_perf: script to perform choice and effort performance.
 %
@@ -27,15 +27,20 @@ function[summary] = choice_and_perf_staircase(scr, stim, key,...
 %   n_to_reach: structure telling the number of correct answers to reach to
 %   for each effort level
 %
+% R_money: structure with equivalence between reward levels and reward
+% money to compute gain within the session and includes money loss amount
+% for errors
+%
 % training_R_P_RP_or_mainTask:
 % 'R': reward only training
 % 'P': punishment only training
 % 'RP': reward and punishment training
 %
-% nTrials: number of trials
+% R_or_P: reward ('R') or punishment ('P') trial
 %
-% choiceOptions: reward and effort level to display for each option (left/right) for
-% each trial
+% E_right, E_left: effort level for right and left option
+%
+% nTrials: number of trials
 %
 % timings: structure with information about the relevant timings
 %
@@ -50,9 +55,6 @@ function[summary] = choice_and_perf_staircase(scr, stim, key,...
 %% load main paramaters
 window = scr.window;
 white = scr.colours.white;
-black = scr.colours.black;
-yScreenCenter = scr.yCenter;
-xScreenCenter = scr.xCenter;
 barTimeWaitRect = stim.barTimeWaitRect;
 
 t_cross         = timings.cross.(training_R_P_RP_or_mainTask);
@@ -176,9 +178,6 @@ for iTrial = 1:nTrials
             choiceTimeParameters, key);
     end
     
-    
-    
-    
     % extract choice made
     switch choice(iTrial)
         case -1 % choice = left option
@@ -211,7 +210,8 @@ for iTrial = 1:nTrials
             if R_right_baseline <= R_right_tmp
                 R_right_tmp = R_right_baseline;
             end
-            % if it is a punishment trial
+            
+        % if it is a punishment trial
         case 'P'
             % case it is a punishment trial
             if choice(iTrial) == -1
@@ -313,17 +313,19 @@ for iTrial = 1:nTrials
                     stim.feedback.error_tooManyErrors.x, stim.feedback.error_tooManyErrors.y, ...
                     stim.feedback.colour);
             end
-            
-            % display money loss for failing
-            
+            % display amount of money lost because participant was too
+            % slow/did too many mistakes
+            DrawFormattedText(window, stim.feedback.error_moneyLoss.text,...
+                stim.feedback.error_moneyLoss.x, stim.feedback.error_moneyLoss.y,...
+                stim.feedback.error_moneyLoss.colour);
             [~,onsets.fbk_fail(iTrial)] = Screen(window,'Flip');
             
             % record loss for the current trial
-            gain(iTrial) = -5;
+            gain(iTrial) = -R_money.trialFail;
             
         case 1 % trial is a success
             % display feedback
-            switch R_or_P_tmp
+            switch R_or_P
                 case 'R'
                     DrawFormattedText(window, stim.feedback.reward.text,...
                         stim.feedback.reward.x, stim.feedback.reward.y,...
