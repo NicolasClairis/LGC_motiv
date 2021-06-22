@@ -68,10 +68,10 @@ if IRM == 0
     rightBorder = L;
     lowerBorder = H;
 elseif IRM == 1
-    leftBorder = 200;
-    upperBorder = 200;
-    rightBorder = L-200;
-    lowerBorder = H-200;
+    leftBorder = 0;
+    upperBorder = 160;
+    rightBorder = L;
+    lowerBorder = 934;
 end
 xScreenCenter = leftBorder + ( rightBorder - leftBorder )/2;
 yScreenCenter = upperBorder + ( lowerBorder - upperBorder )/2;
@@ -86,7 +86,7 @@ if IRM == 0
 elseif IRM == 1
     rescaleCIBM_x = (rightBorder - leftBorder)/L;
     rescaleCIBM_y = (lowerBorder - upperBorder)/H;
-    rescaleCIBM = min(rescaleCIBM_x, rescaleCIBM_y);
+    rescaleCIBM = max(rescaleCIBM_x, rescaleCIBM_y);
 end
 baselineTextSize = round(40*rescaleCIBM);
 Screen('TextSize', window, baselineTextSize);
