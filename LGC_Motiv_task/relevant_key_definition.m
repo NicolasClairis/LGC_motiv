@@ -53,11 +53,12 @@ if IRM == 0
 elseif IRM == 1
     %% fMRI key configuration
     KbName('UnifyKeyNames');
-    key.left = 66;        % DROITE  bleu, left press
-    key.right = 90;       % GAUCHE JAUNE
+    key.left = 66; % LEFT BUTTON = blue, letter 'b'
+    key.right = 90; % RIGHT BUTTON = yellow, letter 'z' with swiss or english keyboard
+%     key.right = 89; % RIGHT BUTTON = yellow, letter 'y' with french keyboard
     key.space = KbName('Space');
     key.escape = KbName('escape');
-    key.trigger_id = 84; % trigger value corresponding to the TTL code
+    key.trigger_id = 84; % trigger value corresponding to the TTL code (letter 't')
 end
 
 end % function

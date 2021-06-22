@@ -88,14 +88,14 @@ elseif IRM == 1
     rescaleCIBM_y = (lowerBorder - upperBorder)/H;
     rescaleCIBM = max(rescaleCIBM_x, rescaleCIBM_y);
 end
-baselineTextSize = round(40*rescaleCIBM);
+baselineTextSize = round(50*rescaleCIBM);
 Screen('TextSize', window, baselineTextSize);
 Screen('TextFont', window, 'arial');
 textSize.baseline = baselineTextSize;
-textSize.mentalNumber = round(120*rescaleCIBM);
-textSize.big = round(150*rescaleCIBM);
-textSize.middle = round(100*rescaleCIBM);
-textSize.reward = round(70*rescaleCIBM);
+textSize.mentalNumber = round(130*rescaleCIBM);
+textSize.big = round(160*rescaleCIBM);
+textSize.middle = round(110*rescaleCIBM);
+textSize.reward = round(80*rescaleCIBM);
 textSize.taskPeriodsTitles = round(80*rescaleCIBM);
 
 %% store main informations inside scr structure
