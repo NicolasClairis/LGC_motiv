@@ -111,13 +111,15 @@ t_endSession = mainTimes.endSession;
 
 n_sessions = 4; % 4 blocks in total (2 mental and 2 physical)
 
+n_buttonsChoice = 2;
+
 %% physical parameters
 if strcmp(taskToPerform.physical.calib,'on') ||...
         strcmp(taskToPerform.physical.learning,'on') ||...
         strcmp(taskToPerform.physical.training,'on') ||...
         strcmp(taskToPerform.physical.task,'on')
     % define relevant keys and dynamometer module
-    [key_Ep, dq] = relevant_key_definition('physical', IRM);
+    [key_Ep, dq] = relevant_key_definition('physical', IRM, n_buttonsChoice);
     % define conditions
     F_threshold = 50; % force should be maintained above this threshold (expressed in % of MVC)
     F_tolerance = 2.5; % tolerance allowed around the threshold (expressed in % of MVC)
@@ -131,7 +133,7 @@ if strcmp(taskToPerform.mental.calib,'on') ||...
         strcmp(taskToPerform.mental.training,'on') ||...
         strcmp(taskToPerform.mental.task,'on')
     % define relevant keys and dynamometer module
-    key_Em = relevant_key_definition('mental', IRM);
+    key_Em = relevant_key_definition('mental', IRM, n_buttonsChoice);
     % define number of pairs to solve for each level of difficulty
     n_to_reach = mental_N_answersPerLevel(n_E_levels);
 end

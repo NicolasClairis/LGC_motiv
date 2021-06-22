@@ -179,10 +179,10 @@ for iTrial = 1:nTrials
     
     % extract choice made
     switch choice(iTrial)
-        case -1 % choice = left option
+        case {-2,-1} % choice = left option (sure or unsure)
             R_chosen(iTrial) = R_left_tmp;
             E_chosen(iTrial) = E_left_tmp;
-        case 1 % choice = right option
+        case {1,2} % choice = right option (sure or unsure)
             R_chosen(iTrial) = R_right_tmp;
             E_chosen(iTrial) = E_right_tmp;
         case 0 % no option was selected
@@ -209,7 +209,7 @@ for iTrial = 1:nTrials
     if choice(iTrial) == 0 % no choice was made => failure
         trial_was_successfull(iTrial) = 0;
         
-    elseif ismember(choice(iTrial), [-1,1]) % choice done => perform the corresponding effort
+    elseif ismember(choice(iTrial), [-2, -1, 1, 2]) % choice done => perform the corresponding effort
         
         %% mental effort: check no key is being pressed before the start of the effort period
         % for physical effort: useless since only the grip is required
@@ -358,6 +358,7 @@ end % trial loop
 
 %% extract relevant training data
 summary.onsets = onsets;
+summary.choice = choice;
 summary.choiceOptions = choiceOptions;
 summary.R_chosen = R_chosen;
 summary.E_chosen = E_chosen;
