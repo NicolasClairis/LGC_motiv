@@ -358,6 +358,7 @@ end % trial loop
 
 %% extract relevant training data
 summary.onsets = onsets;
+summary.choice = choice;
 summary.choiceOptions = choiceOptions;
 summary.R_chosen = R_chosen;
 summary.E_chosen = E_chosen;
