@@ -124,9 +124,9 @@ black = scr.colours.black;
 % define relevant keys and dynamometer
 switch effort_type
     case 'mental'
-        key = relevant_key_definition('mental', IRM);
+        key = relevant_key_definition('mental', IRM, n_buttonsChoice);
     case 'physical' % need dq output to record the handgrip data
-        [key, dq] = relevant_key_definition('physical', IRM);
+        [key, dq] = relevant_key_definition('physical', IRM, n_buttonsChoice);
 end
 
 % initial calibration
@@ -144,6 +144,9 @@ n_MaxPerfTrials = 1;
 n_R_levels = 3;
 n_E_levels = 3;
 nTrials = 44;
+
+% how many possible answers 
+n_buttonsChoice = 2;
 
 % extract money amount corresponding to each reward level for the
 % computation of the gains

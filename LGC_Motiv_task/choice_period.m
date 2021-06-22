@@ -130,26 +130,75 @@ while choicePeriodOver == 0
     
     %% some key was pressed
     if keyisdown == 1
-        %% left option chosen
-        if keycode(key.left) == 1 &&...
-                keycode(key.right) == 0
-            % record time of chosen option
-            timedown = secs;
-            % record side of chosen option
-            choice_trial = -1;
-            choicePeriodOver = 1;
-            %% right option chosen
-        elseif keycode(key.left) == 0 &&...
-                keycode(key.right) == 1
-            % record time of chosen option
-            timedown = secs;
-            % record side of chosen option
-            choice_trial = 1;
-            choicePeriodOver = 1;
-        %% stop the task
-        elseif keycode(key.escape) == 1
-            choicePeriodOver = 1;
-            stoptask = 1;
+        if key.n_buttonsChoice == 2
+            %% left option chosen
+            if keycode(key.left) == 1 &&...
+                    keycode(key.right) == 0
+                % record time of chosen option
+                timedown = secs;
+                % record side of chosen option
+                choice_trial = -1;
+                choicePeriodOver = 1;
+                %% right option chosen
+            elseif keycode(key.left) == 0 &&...
+                    keycode(key.right) == 1
+                % record time of chosen option
+                timedown = secs;
+                % record side of chosen option
+                choice_trial = 1;
+                choicePeriodOver = 1;
+                %% stop the task
+            elseif keycode(key.escape) == 1
+                choicePeriodOver = 1;
+                stoptask = 1;
+            end
+            
+        elseif key.n_buttonsChoice == 4
+            %% LEFT SURE option chosen
+            if keycode(key.leftSure) == 1 &&...
+                    keycode(key.leftUnsure) == 0 &&...
+                    keycode(key.rightUnsure) == 0 &&...
+                    keycode(key.rightSure) == 0
+                % record time of chosen option
+                timedown = secs;
+                % record side of chosen option
+                choice_trial = -2;
+                choicePeriodOver = 1;
+                %% LEFT UNSURE option chosen
+            elseif keycode(key.leftSure) == 0 &&...
+                    keycode(key.leftUnsure) == 1 &&...
+                    keycode(key.rightUnsure) == 0 &&...
+                    keycode(key.rightSure) == 0
+                % record time of chosen option
+                timedown = secs;
+                % record side of chosen option
+                choice_trial = -1;
+                choicePeriodOver = 1;
+                %% RIGHT UNSURE option chosen
+            elseif keycode(key.leftSure) == 0 &&...
+                    keycode(key.leftUnsure) == 0 &&...
+                    keycode(key.rightUnsure) == 1 &&...
+                    keycode(key.rightSure) == 0
+                % record time of chosen option
+                timedown = secs;
+                % record side of chosen option
+                choice_trial = 1;
+                choicePeriodOver = 1;
+                %% RIGHT SURE option chosen
+            elseif keycode(key.leftSure) == 0 &&...
+                    keycode(key.leftUnsure) == 0 &&...
+                    keycode(key.rightUnsure) == 0 &&...
+                    keycode(key.rightSure) == 1
+                % record time of chosen option
+                timedown = secs;
+                % record side of chosen option
+                choice_trial = 2;
+                choicePeriodOver = 1;
+                %% stop the task
+            elseif keycode(key.escape) == 1
+                choicePeriodOver = 1;
+                stoptask = 1;
+            end
         end
     end % some key was pressed
     

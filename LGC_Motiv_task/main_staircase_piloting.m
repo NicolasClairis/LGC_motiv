@@ -102,6 +102,9 @@ n_trainingConditions = length(trainingConditions);
 % number of times we apply a staircase procedure. (2 mental (R or P) 2 physical (R or P))
 n_sessions = 4;
 
+% number of buttons to answer
+n_buttonsChoice = 2;
+
 % mental calibration error management: no fail after 3 errors nor
 % mapping display
 % calibration happens in 2 cases:
@@ -124,7 +127,7 @@ if strcmp(taskToPerform.physical.calib,'on') ||...
         strcmp(taskToPerform.physical.training,'on') ||...
         strcmp(taskToPerform.physical.task,'on')
     % define relevant keys and dynamometer module
-    [key_Ep, dq] = relevant_key_definition('physical', IRM);
+    [key_Ep, dq] = relevant_key_definition('physical', IRM, n_buttonsChoice);
     % define conditions
     n_MVC_repeat = 3;
     n_learningForceRepeats = 3; % number of learning repetitions for each level of difficulty (= each level of force)
@@ -140,7 +143,7 @@ if strcmp(taskToPerform.mental.calib,'on') ||...
         strcmp(taskToPerform.mental.training,'on') ||...
         strcmp(taskToPerform.mental.task,'on')
     % define relevant keys and dynamometer module
-    key_Em = relevant_key_definition('mental', IRM);
+    key_Em = relevant_key_definition('mental', IRM, n_buttonsChoice);
     % define number of pairs to solve for each level of difficulty
     n_to_reach = mental_N_answersPerLevel(n_E_levels);
     

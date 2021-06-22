@@ -1,5 +1,5 @@
-function [key, dq] = relevant_key_definition(effort_type, IRM)
-%[key, dq] = relevant_key_definition(effort_type, IRM)
+function [key, dq] = relevant_key_definition(effort_type, IRM, n_buttonsChoice)
+%[key, dq] = relevant_key_definition(effort_type, IRM, n_buttonsChoice)
 % relevant_key_definition defines keyboard, handgrip and TTL relevant
 % code.
 %
@@ -12,6 +12,9 @@ function [key, dq] = relevant_key_definition(effort_type, IRM)
 % IRM:
 % (0) use keyboard arrows
 % (1) use button pad from the MRI
+%
+% n_buttonsChoice: define the number of buttons to use for the choice (2 or
+% 4?) and define buttons accordingly
 %
 % OUTPUTS
 % key: structure with mapping for the keys to consider for the experiment
@@ -46,19 +49,49 @@ end
 if IRM == 0
     %% key configuration
     KbName('UnifyKeyNames');
-    key.left = KbName('LeftArrow');
-    key.right = KbName('RightArrow');
+    switch n_buttonsChoice
+        case 2
+            key.left = KbName('LeftArrow');
+            key.right = KbName('RightArrow');
+        case 4
+            key.leftSure    = KbName('1');
+            key.leftUnsure  = KbName('2');
+            key.rightUnsure = KbName('3');
+            key.rightSure   = KbName('4');
+            % also need the left/right buttons for the mental effort task
+            if strcmp(effort_type,'mental')
+                key.left = KbName('LeftArrow');
+                key.right = KbName('RightArrow');
+            end
+    end
     key.space = KbName('Space');
     key.escape= KbName('escape');
 elseif IRM == 1
     %% fMRI key configuration
     KbName('UnifyKeyNames');
-    key.left = 66; % LEFT BUTTON = blue, letter 'b'
-    key.right = 90; % RIGHT BUTTON = yellow, letter 'z' with swiss or english keyboard
-%     key.right = 89; % RIGHT BUTTON = yellow, letter 'y' with french keyboard
+    switch n_buttonsChoice
+        case 2
+            key.left = 66; % LEFT BUTTON = blue, letter 'b'
+            key.right = 90; % RIGHT BUTTON = yellow, letter 'z' with swiss or english keyboard
+            %     key.right = 89; % RIGHT BUTTON = yellow, letter 'y' with french keyboard
+        case 4
+            error('need to define the two missing buttons');
+%             key.leftSure    = ; % 
+%             key.leftUnsure  = ; % 
+            key.rightUnsure = 66; % blue button letter 'b'
+            key.rightSure   = 90; % yellow button letter 'z' swiss or 'y' french
+            % also need the left/right buttons for the mental effort task
+            if strcmp(effort_type,'mental')
+                key.left = 66;
+                key.right = 90;
+            end
+    end
     key.space = KbName('Space');
     key.escape = KbName('escape');
     key.trigger_id = 84; % trigger value corresponding to the TTL code (letter 't')
 end
+
+%% store how many buttons to answer there are
+key.n_buttonsChoice = n_buttonsChoice;
 
 end % function

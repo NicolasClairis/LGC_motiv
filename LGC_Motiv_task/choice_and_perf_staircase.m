@@ -180,10 +180,10 @@ for iTrial = 1:nTrials
     
     % extract choice made
     switch choice(iTrial)
-        case -1 % choice = left option
+        case {-2,-1} % choice = left option
             R_chosen(iTrial) = R_left;
             E_chosen(iTrial) = E_left;
-        case 1 % choice = right option
+        case {1,2} % choice = right option
             R_chosen(iTrial) = R_right_tmp;
             E_chosen(iTrial) = E_right;
         case 0 % no option was selected
@@ -196,15 +196,16 @@ for iTrial = 1:nTrials
         % If it is a reward trial
         case 'R'
             % if right values becomes higher than baseline (cause they were lazy) put back baseline
-            if choice(iTrial) == -1
-                R_right_tmp = R_right_tmp + (R_right_tmp - R_left)/2;
-            elseif choice(iTrial) == 1
-                R_right_tmp = R_right_tmp - (R_right_tmp - R_left)/2;
-            elseif choice(iTrial) == 0
-                % if no choice was made, keep same value
-                R_right_tmp = R_right_tmp;
-            else
-                error('Il y a un bug dans la partie choix');
+            switch choice(iTrial)
+                case {-2,-1}
+                    R_right_tmp = R_right_tmp + (R_right_tmp - R_left)/2;
+                case {1,2}
+                    R_right_tmp = R_right_tmp - (R_right_tmp - R_left)/2;
+                case 0
+                    % if no choice was made, keep same value
+                    R_right_tmp = R_right_tmp;
+                otherwise
+                    error('Il y a un bug dans la partie choix');
             end
             % In case computed value is higher than baseline, put it back to baseline
             if R_right_baseline <= R_right_tmp
@@ -214,15 +215,16 @@ for iTrial = 1:nTrials
         % if it is a punishment trial
         case 'P'
             % case it is a punishment trial
-            if choice(iTrial) == -1
-                R_right_tmp = R_right_tmp - (R_left - R_right_tmp)/2;
-            elseif choice(iTrial) == 1
-                R_right_tmp = R_right_tmp + (R_left - R_right_tmp)/2;
-            elseif choice(iTrial) == 0
-                % if no choice was made, keep same value for next trial
-                R_right_tmp = R_right_tmp;
-            else
-                error('Il y a un bug dans la partie choix');
+            switch choice(iTrial)
+                case {-2,-1}
+                    R_right_tmp = R_right_tmp - (R_left - R_right_tmp)/2;
+                case {1,2}
+                    R_right_tmp = R_right_tmp + (R_left - R_right_tmp)/2;
+                case 0
+                    % if no choice was made, keep same value for next trial
+                    R_right_tmp = R_right_tmp;
+                otherwise
+                    error('Il y a un bug dans la partie choix');
             end
             
             % In case computed value is lower than baseline, put it back to baseline
@@ -254,7 +256,7 @@ for iTrial = 1:nTrials
     if choice(iTrial) == 0 % no choice was made => failure
         trial_was_successfull(iTrial) = 0;
         
-    elseif ismember(choice(iTrial), [-1,1]) % choice done => perform the corresponding effort
+    elseif ismember(choice(iTrial), [-2, -1, 1, 2]) % choice done => perform the corresponding effort
         
         %% mental effort: check no key is being pressed before the start of the effort period
         % for physical effort: useless since only the grip is required
