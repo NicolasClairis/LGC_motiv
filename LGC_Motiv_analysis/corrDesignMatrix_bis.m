@@ -1,8 +1,11 @@
-function [Rcorr_bestMatrix, m_R, sd_R, bestMatrix, Rcorr] = corrDesignMatrix()
-% [Rcorr_bestMatrix, m_R, sd_R, bestMatrix, Rcorr] = corrDesignMatrix()
-% corrDesignMatrix will perform the correlation between the variables of
+function [Rcorr_bestMatrix, m_R, sd_R, bestMatrix, Rcorr] = corrDesignMatrix_bis()
+% [Rcorr_bestMatrix, m_R, sd_R, bestMatrix, Rcorr] = corrDesignMatrix_bis()
+% corrDesignMatrix_bis will perform the correlation between the variables of
 % the design matrix (delta reward and delta effort and also between
-% rewards, efforts and trial number).
+% rewards, efforts and the effort*trial number interaction).
+% Note: corrDesignMatrix checks the correlation with trial number while corrDesignMatrix_bis
+% will check the correlation with the interaction between deltaE and trial
+% number.
 %
 % OUTPUTS
 % Rcorr_bestMatrix: structure with correlation coefficients for the best
@@ -32,10 +35,8 @@ trialN_vec = 1:n_trials;
 
 [Rcorr_deltaR_vs_deltaE,...
     Rcorr_deltaP_vs_deltaE,...
-    Rcorr_deltaR_vs_trialN,...
-    Rcorr_deltaP_vs_trialN,...
-    Rcorr_deltaE_vs_trialN_R,...
-    Rcorr_deltaE_vs_trialN_P,...
+    Rcorr_deltaE_vs_deltaEtrialN_R,...
+    Rcorr_deltaE_vs_deltatrialN_P,...
     Rcorr_RPtrials_vs_trialN,...
     Rcorr_global] = deal( NaN(1, n_designMatrix) );
 
@@ -58,21 +59,16 @@ for iTest = 1:n_designMatrix
     Rcorr_deltaR_vs_deltaE(iTest)   = RE_matrix_tmp(1,2);
     PE_matrix_tmp = corrcoef(deltaP, deltaE_P);
     Rcorr_deltaP_vs_deltaE(iTest)   = PE_matrix_tmp(1,2);
-    Rtrial_matrix_tmp = corrcoef(deltaR, trialN_R);
-    Rcorr_deltaR_vs_trialN(iTest)   = Rtrial_matrix_tmp(1,2);
-    Ptrial_matrix_tmp = corrcoef(deltaP, trialN_P);
-    Rcorr_deltaP_vs_trialN(iTest)   = Ptrial_matrix_tmp(1,2);
-    Etrial_matrix_tmp = corrcoef(deltaE_R, trialN_R);
-    Rcorr_deltaE_vs_trialN_R(iTest) = Etrial_matrix_tmp(1,2);
-    Etrial_matrix_tmp = corrcoef(deltaE_P, trialN_P);
-    Rcorr_deltaE_vs_trialN_P(iTest) = Etrial_matrix_tmp(1,2);
+    Etrial_R_matrix_tmp = corrcoef(deltaE_R, trialN_R.*deltaE_R);
+    Rcorr_deltaE_vs_deltaEtrialN_R(iTest) = Etrial_R_matrix_tmp(1,2);
+    Etrial_P_matrix_tmp = corrcoef(deltaE_P, trialN_P.*deltaE_P);
+    Rcorr_deltaE_vs_deltatrialN_P(iTest) = Etrial_P_matrix_tmp(1,2);
     RPtrialN_matrix_tmp = corrcoef(R_trials, trialN_vec);
     Rcorr_RPtrials_vs_trialN(iTest) = RPtrialN_matrix_tmp(1,2);
     
     % check sum of correlations
     Rcorr_global(iTest) = Rcorr_deltaR_vs_deltaE(iTest)^2 + Rcorr_deltaP_vs_deltaE(iTest)^2 +...
-        Rcorr_deltaR_vs_trialN(iTest)^2 + Rcorr_deltaP_vs_trialN(iTest)^2 +...
-        Rcorr_deltaE_vs_trialN_R(iTest)^2 + Rcorr_deltaE_vs_trialN_P(iTest)^2 +...
+        Rcorr_deltaE_vs_deltaEtrialN_R(iTest)^2 + Rcorr_deltaE_vs_deltatrialN_P(iTest)^2 +...
         Rcorr_RPtrials_vs_trialN(iTest)^2;
 end % test loop
 
@@ -80,27 +76,21 @@ end % test loop
 % mean
 m_R.Rcorr_deltaR_vs_deltaE     = mean(Rcorr_deltaR_vs_deltaE, 2);
 m_R.Rcorr_deltaP_vs_deltaE     = mean(Rcorr_deltaP_vs_deltaE, 2);
-m_R.Rcorr_deltaR_vs_trialN     = mean(Rcorr_deltaR_vs_trialN, 2);
-m_R.Rcorr_deltaP_vs_trialN     = mean(Rcorr_deltaP_vs_trialN, 2);
-m_R.Rcorr_deltaE_vs_trialN_R   = mean(Rcorr_deltaE_vs_trialN_R, 2);
-m_R.Rcorr_deltaE_vs_trialN_P   = mean(Rcorr_deltaE_vs_trialN_P, 2);
+m_R.Rcorr_deltaE_vs_deltaEtrialN_R   = mean(Rcorr_deltaE_vs_deltaEtrialN_R, 2);
+m_R.Rcorr_deltaE_vs_deltatrialN_P   = mean(Rcorr_deltaE_vs_deltatrialN_P, 2);
 m_R.Rcorr_RPtrials_vs_trialN   = mean(Rcorr_RPtrials_vs_trialN, 2);
 % SD
 sd_R.Rcorr_deltaR_vs_deltaE    = std(Rcorr_deltaR_vs_deltaE);
 sd_R.Rcorr_deltaP_vs_deltaE    = std(Rcorr_deltaP_vs_deltaE);
-sd_R.Rcorr_deltaR_vs_trialN    = std(Rcorr_deltaR_vs_trialN);
-sd_R.Rcorr_deltaP_vs_trialN    = std(Rcorr_deltaP_vs_trialN);
-sd_R.Rcorr_deltaE_vs_trialN_R  = std(Rcorr_deltaE_vs_trialN_R);
-sd_R.Rcorr_deltaE_vs_trialN_P  = std(Rcorr_deltaE_vs_trialN_P);
+sd_R.Rcorr_deltaE_vs_deltaEtrialN_R  = std(Rcorr_deltaE_vs_deltaEtrialN_R);
+sd_R.Rcorr_deltaE_vs_deltatrialN_P  = std(Rcorr_deltaE_vs_deltatrialN_P);
 sd_R.Rcorr_RPtrials_vs_trialN  = std(Rcorr_RPtrials_vs_trialN);
 
 % store all correlation matrices
 Rcorr.Rcorr_deltaR_vs_deltaE = Rcorr_deltaR_vs_deltaE;
 Rcorr.deltaP_vs_deltaE      = Rcorr_deltaP_vs_deltaE;
-Rcorr.deltaR_vs_trialN      = Rcorr_deltaR_vs_trialN;
-Rcorr.deltaP_vs_trialN      = Rcorr_deltaP_vs_trialN;
-Rcorr.deltaE_vs_trialN_R    = Rcorr_deltaE_vs_trialN_R;
-Rcorr.deltaE_vs_trialN_P    = Rcorr_deltaE_vs_trialN_P;
+Rcorr.deltaE_vs_deltaEtrialN_R    = Rcorr_deltaE_vs_deltaEtrialN_R;
+Rcorr.deltaE_vs_deltatrialN_P    = Rcorr_deltaE_vs_deltatrialN_P;
 Rcorr.RPtrials_vs_trialN    = Rcorr_RPtrials_vs_trialN;
 
 %% compute the matrix for which all correlations are minimized
