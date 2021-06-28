@@ -389,9 +389,16 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
                 end
                 
                 % instruction that main task will start soon
-                DrawFormattedText(window,...
-                    stim.expWillStart.text,...
-                    'center', yScreenCenter*(5/3), scr.colours.white, scr.wrapat);
+                switch langage
+                    case 'fr'
+                        DrawFormattedText(window,...
+                            'Appuyez sur espace quand vous êtes prêt(e) à démarrer.',...
+                            'center', yScreenCenter*(5/3), scr.colours.white, scr.wrapat);
+                    case 'engl'
+                        DrawFormattedText(window,...
+                            'Press any key when you are ready to start.',...
+                            'center', yScreenCenter*(5/3), scr.colours.white, scr.wrapat);
+                end
                 [~, onsets.taskWillStart] = Screen(window, 'Flip');
                 disp('Please press space.');
                 [~, ~, keyCode] = KbCheck();
@@ -406,7 +413,24 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
                 switch mod(iSubject+iSession,2)
                     case 1
                         if strcmp(taskToPerform.physical.task,'on')
-                                showTitlesInstruction(scr,stim,'task',false)
+                            showTitlesInstruction(scr,stim,'task',false);
+                            switch langage
+                                case 'fr'
+                                    DrawFormattedText(window,...
+                                        'Appuyez sur espace quand vous êtes prêt(e) à démarrer.',...
+                                        'center', yScreenCenter*(5/3), scr.colours.white, scr.wrapat);
+                                case 'engl'
+                                    DrawFormattedText(window,...
+                                        'Press any key when you are ready to start.',...
+                                        'center', yScreenCenter*(5/3), scr.colours.white, scr.wrapat);
+                            end
+                            Screen(window,'Flip');
+                            [~, ~, keyCode] = KbCheck();
+                            while(keyCode(key_Em.space) ~= 1)
+                                % wait until the key has been pressed
+                                [~, ~, keyCode] = KbCheck();
+                            end
+                            
                             % run physical task
                             [perfSummary.physical.(['repeat_nb',num2str(iRepeat)]).(['session_nb',num2str(iPhysical)]).(['Effort_lvl',(num2str(iEffortLevel))])] = choice_and_perf_staircase(scr, stim, key_Ep,...
                                 'physical', Ep_vars, R_money,...
@@ -419,7 +443,9 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
                         
                     case 0
                         if strcmp(taskToPerform.mental.task,'on')
-                                showTitlesInstruction(scr,stim,'task',true)
+                            showTitlesInstruction(scr,stim,'task',true);
+                            
+                            % perform the task
                             Em_vars.i_sub = iSubject;
                             Em_vars.n_to_reach = n_to_reach;
                             % for actual task: no display of mapping but consider 3
@@ -427,6 +453,7 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
                             Em_vars.errorLimits.useOfErrorMapping = false;
                             Em_vars.errorLimits.useOfErrorThreshold = true;
                             Em_vars.errorLimits.errorThreshold = 3;
+                            [onset_Press] = mental_learningInstructions(scr, stim, 'all', 'extendedLearning', Em_vars);
                             % run mental task
                             [perfSummary.mental.(['repeat_nb',num2str(iRepeat)]).(['session_nb',num2str(iMental)]).(['Effort_lvl',(num2str(iEffortLevel))])] = choice_and_perf_staircase(scr, stim, key_Em,...
                                 'mental', Em_vars, R_money,...

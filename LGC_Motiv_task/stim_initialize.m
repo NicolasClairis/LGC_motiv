@@ -61,7 +61,8 @@ stim.reward.text.middle_center_start = [x_centerCoordinates(xScreenCenter, textS
 % define the colour to use for the text according to the condition
 % (reward/punishment)
 stim.reward.text.colour = white;
-stim.punishment.text.colour = [239 138 98];
+% stim.punishment.text.colour = [239 138 98];
+stim.punishment.text.colour = white;
 
 % set text back to baseline size
 Screen('TextSize', window, scr.textSize.baseline);
