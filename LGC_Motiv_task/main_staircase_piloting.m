@@ -54,7 +54,7 @@ taskToPerform.mental.learning = 'on';
 taskToPerform.mental.calib = 'on';
 taskToPerform.mental.training = 'on';
 taskToPerform.mental.task = 'on';
-langage = 'engl'; % 'fr'/'engl' french or english?
+langage = 'fr'; % 'fr'/'engl' french or english?
 % initialize screen
 [scr, xScreenCenter, yScreenCenter,...
     window, baselineTextSize] = ScreenConfiguration(0, 1);
@@ -118,7 +118,7 @@ if strcmp(taskToPerform.mental.calib,'on') || strcmp(taskToPerform.mental.task,'
 end
 % time for end of session
 % t_endSession = mainTimes.endSession;
-t_endSession = 5;
+t_endSession = 180;
 warning('modified time between blocks for debuging, put it back at 180s');
 
 %% physical parameters
@@ -160,8 +160,8 @@ if strcmp(taskToPerform.mental.calib,'on') ||...
     learning_instructions = {'fullInstructions','noInstructions'}; %,'partialInstructions'
     n_learningInstructions = length(learning_instructions);
     % initial learning: careful to enter a pair number here
-    n_maxLearning.learning_withInstructions = 8;
-    n_maxLearning.learning_withoutInstructions = 8;
+    n_maxLearning.learning_withInstructions = 20;
+    n_maxLearning.learning_withoutInstructions = 20;
 end
 
 %% physical preparation
