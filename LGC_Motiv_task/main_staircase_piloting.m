@@ -89,7 +89,7 @@ R_money = R_amounts(n_R_levels, punishment_yn);
 % define number of training conditions
 switch punishment_yn
     case 'yes'
-        trainingConditions = {'R','P','RP'};
+        trainingConditions = {'R','P'}; % ,'RP'
     case 'no'
         trainingConditions = {'R'};
 end
@@ -160,8 +160,8 @@ if strcmp(taskToPerform.mental.calib,'on') ||...
     learning_instructions = {'fullInstructions','noInstructions'}; %,'partialInstructions'
     n_learningInstructions = length(learning_instructions);
     % initial learning: careful to enter a pair number here
-    n_maxLearning.learning_withInstructions = 8;
-    n_maxLearning.learning_withoutInstructions = 8;
+    n_maxLearning.learning_withInstructions = 20;
+    n_maxLearning.learning_withoutInstructions = 20;
 end
 
 %% physical preparation
@@ -467,6 +467,35 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
         end % end of all sessions for 1 effort lvl
     end
 end
+
+%% re-measure calibration
+% physical MVC re-measure
+if strcmp(taskToPerform.physical.task,'on')
+    [last_MVC, onsets_last_MVC] = physical_effort_MVC(scr, stim, dq, n_MVC_repeat, calibTimes_Ep);
+end
+
+% mental re-calibration
+if strcmp(taskToPerform.mental.task,'on')
+    mentalE_prm_learning_and_calib = mental_effort_parameters(iSubject);
+    mentalE_prm_learning_and_calib.startAngle = 0; % for learning always start at zero
+    % extract numbers to use for each calibration trial
+    [numberVector_calib] = mental_numbers(n_calibTrials_Em);
+    % alternatively, use fixed number of correct answers to provide for each effort
+    % level
+    % repeat calibration until the subject performance is better
+    % than the requested time threshold
+    calibSuccess = false;
+    calibSession = 0;
+    while calibSuccess == false
+        calibSession = calibSession + 1;
+        [t_min_lastCalib, lastCalibSessionSummary, lastCalibSuccess] = mental_calibTime(scr, stim, key_Em,...
+            numberVector_calib, mentalE_prm_learning_and_calib, n_calibTrials_Em, n_calibMax, calibTimes_Em, calib_errorLimits_Em, langage);
+        lastCalibSummary.(['calibSession_',num2str(calibSession)]).calibSummary = lastCalibSessionSummary;
+        lastCalibSummary.(['calibSession_',num2str(calibSession)]).calibSuccess = lastCalibSuccess;
+        lastCalibSummary.(['calibSession_',num2str(calibSession)]).t_mental_max_perTrial = t_min_lastCalib;
+    end
+end
+
 %% save the data
 
 % learning performance
