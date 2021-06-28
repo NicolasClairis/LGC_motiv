@@ -109,7 +109,7 @@ end
 % take also a few samples from the trivial parts of the matrix (where RL-RR
 % and EL-ER have opposite signs = when more rewarded option is also the
 % less effortful)
-n_samples_matrix_irrelevantParts = 3; % = number of samples for each subpart of the matrix where data is less relevant for the estimation
+n_samples_matrix_irrelevantParts = 4; % = number of samples for each subpart of the matrix where data is less relevant for the estimation
 % check number of boxes per subpart of the matrix
 n_irrelevant_boxes = (n_E_levels - 1)*(n_RP_levels - 1);
 

@@ -61,7 +61,8 @@ stim.reward.text.middle_center_start = [x_centerCoordinates(xScreenCenter, textS
 % define the colour to use for the text according to the condition
 % (reward/punishment)
 stim.reward.text.colour = white;
-stim.punishment.text.colour = [239 138 98];
+% stim.punishment.text.colour = [239 138 98];
+stim.punishment.text.colour = white;
 
 % set text back to baseline size
 Screen('TextSize', window, scr.textSize.baseline);
@@ -704,7 +705,7 @@ stim.Em.lower_right.x = leftBorder + visibleXsize*(3/4) - (textSizeLower(3) - te
 stim.Em.lower.y = y_coordinates(upperBorder, visibleYsize, 5/6, textSizeLower);
 stim.Em.lowerInstructions.y = y_coordinates(upperBorder, visibleYsize, 7/8, textSizeLower);
 % > 5
-stim.Em.higher.text = '< 5';
+stim.Em.higher.text = '> 5';
 [~,~,textSizeHigher] = DrawFormattedText(window,'> 5', 'center', 'center', white );
 stim.Em.higher_left.x = leftBorder + visibleXsize*(1/4) - (textSizeHigher(3) - textSizeHigher(1))/2;
 stim.Em.higher_right.x = leftBorder + visibleXsize*(3/4) - (textSizeHigher(3) - textSizeHigher(1))/2;
