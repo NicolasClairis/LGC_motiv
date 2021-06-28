@@ -47,12 +47,12 @@ file_nm = ['IP_pilot_data',init,'_sub_',num2str(iSubject)];
 IRM = 0;
 % define subparts of the task to perform (on/off)
 taskToPerform.physical.calib = 'on';
-taskToPerform.physical.learning = 'on';
-taskToPerform.physical.training = 'on';
+taskToPerform.physical.learning = 'off';
+taskToPerform.physical.training = 'off';   
 taskToPerform.physical.task = 'on';
-taskToPerform.mental.learning = 'on';
+taskToPerform.mental.learning = 'off';
 taskToPerform.mental.calib = 'on';
-taskToPerform.mental.training = 'on';
+taskToPerform.mental.training = 'off';
 taskToPerform.mental.task = 'on';
 langage = 'fr'; % 'fr'/'engl' french or english?
 % initialize screen
@@ -79,7 +79,8 @@ nbRepeat = 2;
 totalGain = 0;
 finalGain = 0;
 % define number of trials per staircase procedure
-n_trialsPerSession = 5;
+n_trialsPerSession =5;
+
 % mapping between reward levels and actual monetary amounts
 R_money = R_amounts(n_R_levels, punishment_yn);
 
@@ -119,7 +120,7 @@ end
 % time for end of session
 % t_endSession = mainTimes.endSession;
 t_endSession = 180;
-warning('modified time between blocks for debuging, put it back at 180s');
+
 
 %% physical parameters
 if strcmp(taskToPerform.physical.calib,'on') ||...
@@ -162,11 +163,29 @@ if strcmp(taskToPerform.mental.calib,'on') ||...
     % initial learning: careful to enter a pair number here
     n_maxLearning.learning_withInstructions = 20;
     n_maxLearning.learning_withoutInstructions = 20;
+
 end
 
 %% physical preparation
 %% physical MVC
 if strcmp(taskToPerform.physical.calib,'on')
+    switch langage
+        case 'fr'
+            DrawFormattedText(window,...
+                'Appuyez sur espace quand vous êtes prêt(e) à démarrer.',...
+                'center', yScreenCenter*(5/3), scr.colours.white, scr.wrapat);
+        case 'engl'
+            DrawFormattedText(window,...
+                'Press space key when you are ready to start.',...
+                'center', yScreenCenter*(5/3), scr.colours.white, scr.wrapat);
+    end
+    Screen(window,'Flip');
+    [~, ~, keyCode] = KbCheck();
+    while(keyCode(key_Em.space) ~= 1)
+        % wait until the key has been pressed
+        [~, ~, keyCode] = KbCheck();
+    end
+    
     [initial_MVC, onsets_initial_MVC] = physical_effort_MVC(scr, stim, dq, n_MVC_repeat, calibTimes_Ep);
     MVC = nanmax(initial_MVC.MVC); % expressed in Voltage
 end
@@ -253,6 +272,7 @@ if strcmp(taskToPerform.mental.learning,'on')
     %% extended learning for each difficulty level (in N-back version now)
     mentalE_prm_extendedLearning = mentalE_prm_learning_and_calib;
     n_repeatsPerEffortLevel = 30;
+
     % define conditions for the extended learning
     [learning_effortLevel, learning_effort_n_toReach] = deal(NaN(1,n_repeatsPerEffortLevel*n_E_levels));
     for iE_level = 1:n_E_levels
@@ -396,7 +416,7 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
                             'center', yScreenCenter*(5/3), scr.colours.white, scr.wrapat);
                     case 'engl'
                         DrawFormattedText(window,...
-                            'Press any key when you are ready to start.',...
+                            'Press space when you are ready to start.',...
                             'center', yScreenCenter*(5/3), scr.colours.white, scr.wrapat);
                 end
                 [~, onsets.taskWillStart] = Screen(window, 'Flip');
@@ -421,7 +441,7 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
                                         'center', yScreenCenter*(5/3), scr.colours.white, scr.wrapat);
                                 case 'engl'
                                     DrawFormattedText(window,...
-                                        'Press any key when you are ready to start.',...
+                                        'Press space when you are ready to start.',...
                                         'center', yScreenCenter*(5/3), scr.colours.white, scr.wrapat);
                             end
                             Screen(window,'Flip');
@@ -445,16 +465,19 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
                         if strcmp(taskToPerform.mental.task,'on')
                             showTitlesInstruction(scr,stim,'task',true);
                             
-                            % perform the task
+                            
+                            % instructions
+                            mentalE_prm_instruDisplay = mental_effort_parameters(iSubject);
+                            [onset_Press] = mental_learningInstructions(scr, stim, 'all', 'extendedLearning', mentalE_prm_instruDisplay);
                             Em_vars.i_sub = iSubject;
                             Em_vars.n_to_reach = n_to_reach;
+                            
+                            % run mental task
                             % for actual task: no display of mapping but consider 3
                             % errors as a trial failure
                             Em_vars.errorLimits.useOfErrorMapping = false;
                             Em_vars.errorLimits.useOfErrorThreshold = true;
                             Em_vars.errorLimits.errorThreshold = 3;
-                            [onset_Press] = mental_learningInstructions(scr, stim, 'all', 'extendedLearning', Em_vars);
-                            % run mental task
                             [perfSummary.mental.(['repeat_nb',num2str(iRepeat)]).(['session_nb',num2str(iMental)]).(['Effort_lvl',(num2str(iEffortLevel))])] = choice_and_perf_staircase(scr, stim, key_Em,...
                                 'mental', Em_vars, R_money,...
                                 'mainTask',R_or_P,E_right((iEffortLevel)),E_left((iEffortLevel)), n_trialsPerSession, taskTimes_Em,...
@@ -511,10 +534,10 @@ if strcmp(taskToPerform.mental.task,'on')
     % level
     % repeat calibration until the subject performance is better
     % than the requested time threshold
-    calibSuccess = false;
-    calibSession = 0;
-    while calibSuccess == false
-        calibSession = calibSession + 1;
+    lastCalibSuccess = false;
+    lastCalibSession = 0;
+    while lastCalibSuccess == false
+        lastCalibSession = lastCalibSession + 1;
         [t_min_lastCalib, lastCalibSessionSummary, lastCalibSuccess] = mental_calibTime(scr, stim, key_Em,...
             numberVector_calib, mentalE_prm_learning_and_calib, n_calibTrials_Em, n_calibMax, calibTimes_Em, calib_errorLimits_Em, langage);
         lastCalibSummary.(['calibSession_',num2str(calibSession)]).calibSummary = lastCalibSessionSummary;
@@ -569,7 +592,7 @@ if strcmp(taskToPerform.mental.task,'on')
 end
 
 % actually save the data
-save([results_folder, file_nm,'.mat'],'all');
+save([results_folder, file_nm,'.mat']);
 
 
 
