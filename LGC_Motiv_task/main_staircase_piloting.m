@@ -47,16 +47,16 @@ file_nm = ['IP_pilot_data',init,'_sub_',num2str(iSubject)];
 IRM = 0;
 % define subparts of the task to perform (on/off)
 taskToPerform.physical.calib = 'on';
-taskToPerform.physical.learning = 'off';
-taskToPerform.physical.training = 'off';   
+taskToPerform.physical.learning = 'on';
+taskToPerform.physical.training = 'on';   
 taskToPerform.physical.task = 'on';
-taskToPerform.mental.learning = 'off';
+taskToPerform.mental.learning = 'on';
 taskToPerform.mental.calib = 'on';
-taskToPerform.mental.training = 'off';
+taskToPerform.mental.training = 'on';
 taskToPerform.mental.task = 'on';
 langage = 'fr'; % 'fr'/'engl' french or english?
 % initialize screen
-[scr, xScreenCenter, yScreenCenter,...
+[scr, xScreenCex nter, yScreenCenter,...
     window, baselineTextSize] = ScreenConfiguration(0, 1);
 white = scr.colours.white;
 black = scr.colours.black;
