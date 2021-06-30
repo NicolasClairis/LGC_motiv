@@ -215,6 +215,7 @@ if strcmp(taskToPerform.mental.learning,'on')
     [numberVector_learning] = mental_numbers(n_learningColours*n_learningInstructions);
     jLearningSession = 0;
     jMentalLearningTrial = 0;
+    nMentalLearning_totalTrials = n_learningColours*n_learningInstructions;
     for iCol = 1:n_learningColours
         curr_learning_col = learning_cols{iCol};
         for iLearning_Instructions = 1:n_learningInstructions
