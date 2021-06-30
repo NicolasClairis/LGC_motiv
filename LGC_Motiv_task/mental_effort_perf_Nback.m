@@ -175,7 +175,7 @@ jCorrectAnswers = 0; % indicator tracking actual real number of correct answers 
 
 % number of questions answered
 i_question = 1;
-j_seq = 1;
+j_seq = 2; % first trial type already defined!
 
 %% wait all keys are released before starting
 KbReleaseWait;
