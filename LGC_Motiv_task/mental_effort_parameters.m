@@ -37,6 +37,9 @@ NbackLastQuestionCol = [255 255 255];
 % trial
 switchPerc = 1/2;
 
+%% N-back: define how many answers before you need to answer
+mentalE_prm.Nback = 2;
+
 %% define colours to use for the font of the numbers according to
 %  subject number to alternate the type of colour used
 if mod(i_sub,2) == 0
