@@ -175,6 +175,7 @@ jCorrectAnswers = 0; % indicator tracking actual real number of correct answers 
 
 % number of questions answered
 i_question = 1;
+j_seq = 1;
 
 %% wait all keys are released before starting
 KbReleaseWait;
@@ -310,15 +311,13 @@ while (iCorrectAnswers < n_max_to_reach) &&...
 %                 % no change of number after an error to keep the task easy
 %                 % after an error has been made
 %                 numberVectorUsedDisplay(i_question + 1) = numberVectorUsedDisplay(i_question);
-%                 % keep same info for performance as in the last question if
-%                 % an error has been made
 %                 numberVectorUsedPerf(i_question + 1)    = numberVectorUsedPerf(i_question);
-                taskTypePerf(i_question + 1)            = taskTypePerf(i_question);
             elseif goodOrBadAnswer(i_question) == 1 % correct answer => update
-                if iCorrectAnswers < (n_max_to_reach - 1)
-                    taskTypeDisplay(i_question + 1) = task_seq(iCorrectAnswers + 2); % take the next element in the sequence
-                elseif iCorrectAnswers == (n_max_to_reach - 1) % keep same task type for last display even if not answered
-                    taskTypeDisplay(i_question + 1) = taskTypeDisplay(i_question); % take the next element in the sequence
+                if j_seq <= length(task_seq) % keep taking next element of the task_seq vector
+                    taskTypeDisplay(i_question + 1) = task_seq(j_seq);
+                    j_seq = j_seq + 1;
+                else % when all the sequence has already been passed, keep the same task
+                    taskTypeDisplay(i_question + 1) = taskTypeDisplay(i_question);
                 end
 %                 % + consider that because of the Nback procedure, you need
 %                 % to go +1 more because first answer = any number
