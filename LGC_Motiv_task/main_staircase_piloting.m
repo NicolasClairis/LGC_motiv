@@ -56,8 +56,8 @@ taskToPerform.mental.training = 'on';
 taskToPerform.mental.task = 'on';
 langage = 'fr'; % 'fr'/'engl' french or english?
 % initialize screen
-[scr, xScreenCex nter, yScreenCenter,...
-    window, baselineTextSize] = ScreenConfiguration(0, 1);
+[scr, xScreenCenter, yScreenCenter,...
+    window, baselineTextSize] = ScreenConfiguration(0,1);
 white = scr.colours.white;
 black = scr.colours.black;
 
