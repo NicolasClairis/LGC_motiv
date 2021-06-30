@@ -95,6 +95,7 @@ totalAngleDistance = endAngle - startAngle_currentTrial;
 sideQuestion = mentalE_prm.sideQuestion;
 mental_n_col = mentalE_prm.mental_n_col;
 switchPerc = mentalE_prm.switchPerc;
+Nback       = mentalE_prm.Nback;
 
 % determine number of switches to implement in a given sequence
 % with instructions
@@ -153,16 +154,25 @@ end
 task_seq = mental_effort_task_switches(taskTypeDisplay(1), n_max_to_reach, n_switch);
 % define first number which will appear on screen
 numberVectorUsedDisplay(1) = numberVector(1);
-% precise first trial perf = any button is ok
-taskTypePerf(1) = 2;
-numberVectorUsedPerf(1) = NaN;
+% precise that for first questions of Nback, pressing any button is ok
+switch Nback
+    case 1
+        taskTypePerf(1) = 2;
+        numberVectorUsedPerf(1) = NaN;
+    case 2
+        taskTypePerf(1:2) = 2;
+        numberVectorUsedPerf(1:2) = NaN;
+end
 
 %% initialize the counters
+
 % number of subsequent correct answers
 iCorrectAnswers = 0; % indicator to know when trial is considered as a success
 % (note that iCorrectAnswers will decrease for each error made, but not
 % jCorrectAnswers)
+
 jCorrectAnswers = 0; % indicator tracking actual real number of correct answers (used for selection of the number to display)
+
 % number of questions answered
 i_question = 1;
 
@@ -180,8 +190,9 @@ onset_question_tmp = onsetTrial; % for the first question
 onsets.nb_1 = onsetTrial;
 timeNow = onsetTrial;
 
-% initialize the angle for the 2 first questions
-currentAngle(1:2) = startAngle_currentTrial;
+% initialize the angle for the first questions (should not move for first
+% questions of Nback where no real question is asked)
+currentAngle(1:(1+Nback)) = startAngle_currentTrial;
 
 % keep track of number of errors made during the trial
 jErrorsMade = 0;
@@ -254,11 +265,11 @@ while (iCorrectAnswers < n_max_to_reach) &&...
             sideAnswer(i_question), sideQuestion);
         
         %% update counters for number of correct answers
-        if i_question == 1 % first answer (provide any answer left or right)
+        if i_question <= Nback % first questions of Nback = provide any answer left or right (no correct answer)
             if goodOrBadAnswer(i_question) == 1
                 jCorrectAnswers = jCorrectAnswers + 1;
             end
-        elseif i_question > 1
+        elseif i_question > Nback
             % do not update the counter for the first question where they just
             % should press any button
             
@@ -295,6 +306,7 @@ while (iCorrectAnswers < n_max_to_reach) &&...
             if goodOrBadAnswer(i_question) == 0
                 % no task switch after an error to keep the task easy after an error has been made
                 taskTypeDisplay(i_question + 1) = taskTypeDisplay(i_question);
+                
 %                 % no change of number after an error to keep the task easy
 %                 % after an error has been made
 %                 numberVectorUsedDisplay(i_question + 1) = numberVectorUsedDisplay(i_question);
@@ -315,12 +327,16 @@ while (iCorrectAnswers < n_max_to_reach) &&...
 %                 % was correct, then the next performance question is the
 %                 % previous display question
 %                 numberVectorUsedPerf(i_question + 1) = numberVectorUsedDisplay(i_question);
-                taskTypePerf(i_question + 1) = taskTypeDisplay(i_question);
             end
             
-            % keep updating the numbers even after an error has been made
+            % the question answered in [Nback] questions is the one
+            % displayed in the current question
+            taskTypePerf(i_question + Nback) = taskTypeDisplay(i_question);
+            
+            % keep updating the numbers displayed even after an error has been made
             numberVectorUsedDisplay(i_question + 1) = numberVector(i_question + 1);
-            numberVectorUsedPerf(i_question + 1) = numberVectorUsedDisplay(i_question); % perf for next question depends on the previously displayed number
+            % number for perf is to answer in [Nback] questions
+            numberVectorUsedPerf(i_question + Nback) = numberVectorUsedDisplay(i_question); % perf for next question depends on the previously displayed number
         end % no need to update task type for the next question if the end has been reached
         
         %% update variables of interest
