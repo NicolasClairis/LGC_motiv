@@ -1,7 +1,7 @@
 % script for behavioral pilots
 
 %% clean workspace before starting
-sca;
+sca;0
 clearvars;
 close all;
 instrreset; % Disconnect and delete all instrument objects
