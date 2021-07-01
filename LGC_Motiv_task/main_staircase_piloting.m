@@ -207,6 +207,7 @@ if strcmp(taskToPerform.physical.training,'on')
     Ep_vars_training.Ep_time_levels = Ep_time_levels;
     Ep_vars_training.F_threshold = F_threshold;
     Ep_vars_training.F_tolerance = F_tolerance;
+    Ep_vars_training.timeRemainingEndTrial_ONOFF = 0;
     
     for iTrainingCondition = 1:n_trainingConditions
         trainingCond = trainingConditions{iTrainingCondition};
@@ -352,6 +353,7 @@ if strcmp(taskToPerform.mental.training,'on')
         % for training: no failures, no display of mapping
         Em_vars_training.errorLimits.useOfErrorMapping = false;
         Em_vars_training.errorLimits.useOfErrorThreshold = false;
+        Em_vars_training.timeRemainingEndTrial_ONOFF = 0;
         [onsets_Em_training.(trainingCond)] = choice_and_perf_trainingInstructions(scr, stim, trainingCond, trainingTimes_Em.instructions);
         [trainingSummary_Em.(trainingCond)] = choice_and_perf(scr, stim, key_Em, 'mental', Em_vars_training, R_money,...
             trainingCond, n_trainingTrials_Em_tmp, trainingChoiceOptions_Em_tmp, trainingTimes_Em,...
@@ -370,6 +372,7 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
         Ep_vars.Ep_time_levels = Ep_time_levels;
         Ep_vars.F_threshold = F_threshold;
         Ep_vars.F_tolerance = F_tolerance;
+        Ep_vars.timeRemainingEndTrial_ONOFF = 0;
     end
     
     % keep track of which block was first
@@ -478,6 +481,8 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
                             Em_vars.errorLimits.useOfErrorMapping = false;
                             Em_vars.errorLimits.useOfErrorThreshold = true;
                             Em_vars.errorLimits.errorThreshold = 3;
+                            
+                            Em_vars.timeRemainingEndTrial_ONOFF = 0;
                             [perfSummary.mental.(['repeat_nb',num2str(iRepeat)]).(['session_nb',num2str(iMental)]).(['Effort_lvl',(num2str(iEffortLevel))])] = choice_and_perf_staircase(scr, stim, key_Em,...
                                 'mental', Em_vars, R_money,...
                                 'mainTask',R_or_P,E_right((iEffortLevel)),E_left((iEffortLevel)), n_trialsPerSession, taskTimes_Em,...
