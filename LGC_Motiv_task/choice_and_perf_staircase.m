@@ -85,7 +85,7 @@ switch effort_type
         F_threshold = Ep_or_Em_vars.F_threshold;
         F_tolerance = Ep_or_Em_vars.F_tolerance;
 end
-
+timeRemainingEndTrial_ONOFF = Ep_or_Em_vars.timeRemainingEndTrial_ONOFF;
 
 %% initialize onsets
 [onsets.cross,...
@@ -367,36 +367,38 @@ for iTrial = 1:nTrials
     % this period allows to de-confound effort and delay, ie even if lower
     % effort has been selected and performed quicker, a short waiting time
     % will force to wait
-    if effortTime(iTrial) < t_max_effort
-        tic;
-        onsets.timeBarWait(iTrial) = GetSecs; % record start of time bar
-        
-        % show a dynamic waiting bar until the timing ends
-        while toc <= (t_max_effort - effortTime(iTrial))
-            timeSinceStart_tmp = toc;
-            % update bar with time remaining
-            percTimeAchieved = (timeSinceStart_tmp + effortTime(iTrial))./t_max_effort;
-            barTimeWaitRect_bis = barTimeWaitRect;
-            % start on the right corner of the bar + percentage already
-            % achieved and move to the left
-            if percTimeAchieved > 0 && percTimeAchieved < 1
-                barTimeWaitRect_bis(3) = barTimeWaitRect(3) - percTimeAchieved*(barTimeWaitRect(3) - barTimeWaitRect(1));
-            elseif percTimeAchieved > 1
-                warning('you should get out of the loop when the time spent is too long but it seems there was a bug, display of timebar was locked to zero to compensate');
-                barTimeWaitRect_bis(3) = barTimeWaitRect(1) + 1;
-            end
-            %
-            DrawFormattedText(window, stim.remainingTime.text, stim.remainingTime.x, stim.remainingTime.y, stim.remainingTime.colour);
-            % draw one global fixed rectangle showing the total duration
-            Screen('FrameRect',window, stim.barTimeWait.colour, barTimeWaitRect);
+    if timeRemainingEndTrial_ONOFF == 1
+        if effortTime(iTrial) < t_max_effort
+            tic;
+            onsets.timeBarWait(iTrial) = GetSecs; % record start of time bar
             
-            % draw one second rectangle updating dynamically showing the
-            % time remaining
-            Screen('FillRect',window, stim.barTimeWait.colour, barTimeWaitRect_bis);
-            
-            Screen(window,'Flip');
-        end % display until time catches up with maximum effort time
-    end % if all time taken, no need for time penalty
+            % show a dynamic waiting bar until the timing ends
+            while toc <= (t_max_effort - effortTime(iTrial))
+                timeSinceStart_tmp = toc;
+                % update bar with time remaining
+                percTimeAchieved = (timeSinceStart_tmp + effortTime(iTrial))./t_max_effort;
+                barTimeWaitRect_bis = barTimeWaitRect;
+                % start on the right corner of the bar + percentage already
+                % achieved and move to the left
+                if percTimeAchieved > 0 && percTimeAchieved < 1
+                    barTimeWaitRect_bis(3) = barTimeWaitRect(3) - percTimeAchieved*(barTimeWaitRect(3) - barTimeWaitRect(1));
+                elseif percTimeAchieved > 1
+                    warning('you should get out of the loop when the time spent is too long but it seems there was a bug, display of timebar was locked to zero to compensate');
+                    barTimeWaitRect_bis(3) = barTimeWaitRect(1) + 1;
+                end
+                %
+                DrawFormattedText(window, stim.remainingTime.text, stim.remainingTime.x, stim.remainingTime.y, stim.remainingTime.colour);
+                % draw one global fixed rectangle showing the total duration
+                Screen('FrameRect',window, stim.barTimeWait.colour, barTimeWaitRect);
+                
+                % draw one second rectangle updating dynamically showing the
+                % time remaining
+                Screen('FillRect',window, stim.barTimeWait.colour, barTimeWaitRect_bis);
+                
+                Screen(window,'Flip');
+            end % display until time catches up with maximum effort time
+        end % if all time taken, no need for time penalty
+    end % if a time limit is added
     
     %% display number of trials done for the experimenter
     disp(['Trial ',num2str(iTrial),'/',num2str(nTrials),' done']);

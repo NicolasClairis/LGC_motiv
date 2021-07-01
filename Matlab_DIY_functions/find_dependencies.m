@@ -2,7 +2,7 @@
 % will give the list of all the scripts in the current folder (or any other folder 
 % you define) which call this expression (whether used or in comments)
 %
-% Written by Jules and NicoC 16/01/17
+% Written by Jules Brochard and Nicolas Clairis - 16/01/17
 
 expression = input(['Name of the script? \n Please add a ( if it''s a function ',...
     'and you want to ignore comments. \n Example: script( \n'],'s');

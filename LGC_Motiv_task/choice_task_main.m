@@ -291,7 +291,7 @@ if IRM == 1 && session_nber > 0
             Ep_or_Em_vars.F_threshold = F_threshold;
             Ep_or_Em_vars.F_tolerance = F_tolerance;
     end
-    
+    Ep_or_Em_vars.timeRemainingEndTrial_ONOFF = 0;
     
     %% instruction that main task will start soon
     DrawFormattedText(window, stim.expWillStart.text,...
