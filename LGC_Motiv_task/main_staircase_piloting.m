@@ -1,7 +1,7 @@
 % script for behavioral pilots
 
 %% clean workspace before starting
-sca;0
+sca;
 clearvars;
 close all;
 instrreset; % Disconnect and delete all instrument objects
@@ -479,7 +479,7 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
                             % for actual task: no display of mapping but consider 3
                             % errors as a trial failure
                             Em_vars.errorLimits.useOfErrorMapping = false;
-                            Em_vars.errorLimits.useOfErrorThreshold = true;
+                            Em_vars.errorLimits.useOfErrorThreshold = false;
                             Em_vars.errorLimits.errorThreshold = 3;
                             
                             Em_vars.timeRemainingEndTrial_ONOFF = 0;
