@@ -8,9 +8,9 @@ function [predictedForce] = Emax_morpho(pli_a,pli_p,circ,length)
 % % OUTPUT:
 %     - predictedForce: maximal theoretical force (Newton)
  
-% physiological cross sectional area: arm section area minus fat section area minus bone section area
+% physiological cross sectional area (PCSA): arm section area minus fat section area minus bone section area
 % bone section from litterature, eg Hsu et al, 1993 J.Biomechanics
-pli = pli_a + pli_p; 
+pli = pli_a + pli_p;
 pcsa = pi*(circ/(2*pi) - (pli)/40)^2 - (.82 + .98);
  
 % force is proportional to pcsa + correction form arm length
