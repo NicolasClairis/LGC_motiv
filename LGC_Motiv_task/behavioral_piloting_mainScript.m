@@ -76,7 +76,7 @@ punishment_yn = 'yes'; % include punishment trials?
 % number of reward and effort conditions
 n_R_levels = 3;
 n_E_levels = 3;
-n_trialsPerSession = 44;
+n_trialsPerSession = 48;
 % mapping between reward levels and actual monetary amounts
 R_money = R_amounts(n_R_levels, punishment_yn);
 
