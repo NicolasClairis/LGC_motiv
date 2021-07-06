@@ -54,7 +54,15 @@ taskToPerform.mental.learning = 'on';
 taskToPerform.mental.calib = 'on';
 taskToPerform.mental.training = 'on';
 taskToPerform.mental.task = 'on';
-langage = 'engl'; % 'fr'/'engl' french or english?
+langue = input('Which langage? Press ''f'' for french and ''e'' for english please.','s');
+switch langue
+    case 'f'
+        langage = 'fr';
+    case 'e'
+        langage = 'engl'; % 'fr'/'engl' french or english?
+    otherwise
+        error('langage not recognised');
+end
 % initialize screen
 [scr, xScreenCenter, yScreenCenter,...
     window, baselineTextSize] = ScreenConfiguration(0,1);
