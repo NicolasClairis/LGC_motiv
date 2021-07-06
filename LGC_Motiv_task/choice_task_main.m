@@ -343,10 +343,18 @@ end % MRI only (not for training out of fMRI)
 
 %% get all TTL from the task
 if IRM == 1 && session_nber > 0
-    [TTL, keyLeft, keyRight] = keyboard_check_end(TTL, key);
+    [TTL, keyLeft, keyRight,...
+        keyLeftUnsure, keyLeftSure, keyRightUnsure, keyRightSure] = keyboard_check_end(TTL, key);
     % key storage of when left/right key have been pressed
     all.keys.keyLeft    = keyLeft;
     all.keys.keyRight   = keyRight;
+    if key.n_buttonsChoice == 4
+        all.keys.keyLeftUnsure    = keyLeftUnsure;
+        all.keys.keyLeftSure    = keyLeftSure;
+        all.keys.keyRightUnsure   = keyRightUnsure;
+        all.keys.keyRightSure   = keyRightSure;
+    end
+    
     % store T0 and TTL timings in onsets structure
     onsets.T0 = T0;
     onsets.TTL = TTL;
