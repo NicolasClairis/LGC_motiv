@@ -10,7 +10,8 @@ clc;
 cd ..
 main_folder                 = [pwd filesep]; % you have to be sure that you are in the correct path when you launch the script
 main_task_folder            = [main_folder, 'LGC_Motiv_task' filesep];
-results_folder              = [main_folder, 'LGC_Motiv_results' filesep 'pilots_v1_IP_Nback1' filesep];
+folder_to_open              = ['pilots_v1_IP_Nback1'];
+results_folder              = [main_folder, 'LGC_Motiv_results' filesep folder_to_open filesep];
 
 main_task_folder = 'D:\LGC_motiv\LGC_Motiv_task\';
 
@@ -20,17 +21,20 @@ addpath(genpath(results_folder));
 cd(results_folder)
 
 %% find the number of participants and initialize parameters
-fstruct = dir('IP_pilot_data*_sub_*.mat')
-name_tmp = fstruct(1).name;
+fstruct = dir('IP_pilot_data*_sub_*.mat');
 
+nb_files_per_pilot = 19;
+% find the number of participants in the folder 
+nb_pilots = round(size(fstruct,1)/nb_files_per_pilot);
+% pilot_ID = linspace(1,nb_pilots,nb_pilots);
 
-nb_pilots = str2double(name_tmp(21));
-% nb_pilots = 1;
-
-pilot_ID = [1 2 3 4];
-
-% % go back to folder with scripts
-% cd(main_task_folder);
+% find the ID of pilots
+for i = 1:nb_pilots*19
+    name_tmp = fstruct(i).name;
+    ID_tmp(i) = str2double(name_tmp(25));
+end
+    pilot_ID = unique(ID_tmp);
+% pilot_ID = [1 2 3 4];
 
 %% extract relevant features
 % IP matrice has as columns : 
