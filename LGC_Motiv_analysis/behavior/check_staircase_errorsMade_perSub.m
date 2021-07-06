@@ -1,10 +1,11 @@
 % script to check average proportion of errors made
 
-root = fullfile('C:','Users','Loco','Documents','GitHub','LGC_motiv','LGC_Motiv_results');
-groupFolder = 'pilots_v2_IP_Nback2';
+% root = fullfile('C:','Users','Loco','Documents','GitHub','LGC_motiv','LGC_Motiv_results');
+root = fullfile('C:','Users','clairis','Desktop','GitHub','LGC_motiv','LGC_Motiv_results');
+groupFolder = 'pilots_v3_IP_Nback2';
 subFolder = [root, filesep, groupFolder, filesep];
 sub = 1;
-init = 'SR';
+init = 'DU';
 
 loadStruct = load([subFolder,'IP_pilot_data',init,'_sub_',num2str(sub),'.mat']);
 n_trialsPerStaircase = 5;
