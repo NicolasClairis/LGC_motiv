@@ -156,7 +156,8 @@ if strcmp(taskToPerform.mental.calib,'on') ||...
     % perform 2 learning sessions, one with instructions and then one without
     % (left/right) vs (odd/even) and (lower/higher than 5) - mapping indicated the first time)
     % need to remind the mapping the second time
-    learning_cols = {'col1','col2','all'};
+%     learning_cols = {'col1','col2','all'};
+    learning_cols = {'col1'};
     n_learningColours = length(learning_cols);
     learning_instructions = {'fullInstructions','noInstructions'}; %,'partialInstructions'
     n_learningInstructions = length(learning_instructions);
@@ -273,7 +274,10 @@ if strcmp(taskToPerform.mental.learning,'on')
     %% extended learning for each difficulty level (in N-back version now)
     mentalE_prm_extendedLearning = mentalE_prm_learning_and_calib;
     n_repeatsPerEffortLevel = 30;
-
+    % Nback version
+    Nback_str = num2str(mentalE_prm_extendedLearning.Nback);
+    learningVersion = ['extendedLearning_Nback',Nback_str];
+    
     % define conditions for the extended learning
     [learning_effortLevel, learning_effort_n_toReach] = deal(NaN(1,n_repeatsPerEffortLevel*n_E_levels));
     for iE_level = 1:n_E_levels
@@ -293,14 +297,14 @@ if strcmp(taskToPerform.mental.learning,'on')
     
     % perform the training
     [onsets.endLearningInstructions.(['learning_session',num2str(1 + jLearningSession)]).all.extendedLearning] = mental_learningInstructions(scr, stim,...
-        'all', 'extendedLearning', mentalE_prm_learning_and_calib);
+        'col1', learningVersion, mentalE_prm_learning_and_calib);
     for iExtendedLearningTrial = 1:n_extendedLearningTrials
         % define start angle according to current difficulty level
         mentalE_prm_extendedLearning.startAngle = stim.difficulty.startAngle.(['level_',num2str(learning_effortLevel(iExtendedLearningTrial))]);
         [learningPerfSummary_Em.extendedLearning.(['trial_',num2str(iExtendedLearningTrial)])] = mental_effort_perf_Nback(scr, stim, key_Em,...
             numberVector_learning(iExtendedLearningTrial,:),...
             mentalE_prm_extendedLearning, learning_effort_n_toReach(iExtendedLearningTrial),...
-            'all', 'noInstructions', learning_time_limit, [], extendedLearning_errorLimits);
+            'col1', 'noInstructions', learning_time_limit, [], extendedLearning_errorLimits);
         
         % small break between each answer
         DrawFormattedText(window, stim.training.Em.endTrialMsg.text,'center',yScreenCenter/2,white);
@@ -471,7 +475,10 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
                             
                             % instructions
                             mentalE_prm_instruDisplay = mental_effort_parameters(iSubject);
-                            [onset_Press] = mental_learningInstructions(scr, stim, 'all', 'extendedLearning', mentalE_prm_instruDisplay);
+                            % Nback version
+                            Nback_str = num2str(mentalE_prm_instruDisplay.Nback);
+                            learningVersion = ['extendedLearning_Nback',Nback_str];
+                            [onset_Press] = mental_learningInstructions(scr, stim, 'col1', learningVersion, mentalE_prm_instruDisplay);
                             Em_vars.i_sub = iSubject;
                             Em_vars.n_to_reach = n_to_reach;
                             
