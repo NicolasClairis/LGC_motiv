@@ -40,21 +40,28 @@ switchPerc = 1/2;
 %% N-back: define how many answers before you need to answer
 mentalE_prm.Nback = 2;
 
-%% define colours to use for the font of the numbers according to
+%% task switching version: define colours to use for the font of the numbers according to
 %  subject number to alternate the type of colour used
-if mod(i_sub,2) == 0
-    mental_n_col.oddEven = col1;
-    mental_n_col.lowHigh = col2;
-    % record mapping with name also (for learning phase)
-    mental_n_col.col1 = 'oddEven';
-    mental_n_col.col2 = 'lowHigh';
-elseif mod(i_sub,2) == 1
-    mental_n_col.oddEven = col2;
-    mental_n_col.lowHigh = col1;
-    % record mapping with name also (for learning phase)
-    mental_n_col.col1 = 'lowHigh';
-    mental_n_col.col2 = 'oddEven';
-end
+
+% if mod(i_sub,2) == 0
+%     mental_n_col.oddEven = col1;
+%     mental_n_col.lowHigh = col2;
+%     % record mapping with name also (for learning phase)
+%     mental_n_col.col1 = 'oddEven';
+%     mental_n_col.col2 = 'lowHigh';
+% elseif mod(i_sub,2) == 1
+%     mental_n_col.oddEven = col2;
+%     mental_n_col.lowHigh = col1;
+%     % record mapping with name also (for learning phase)
+%     mental_n_col.col1 = 'lowHigh';
+%     mental_n_col.col2 = 'oddEven';
+% end
+
+% NO task switching
+mental_n_col.lowHigh = col2;
+mental_n_col.oddEven = col1;
+% record mapping with name also (for learning phase)
+mental_n_col.col1 = 'lowHigh';
 mental_n_col.lastQuestion = NbackLastQuestionCol;
 
 %% store all in output

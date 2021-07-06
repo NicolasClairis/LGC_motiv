@@ -39,8 +39,15 @@ end
 %% record all subsequent TTL in the whole task
 keysOfInterest = zeros(1,256);
 keysOfInterest(trigger_id) = 1; % check TTL
-keysOfInterest(key.left) = 1; % check all left key press
-keysOfInterest(key.right) = 1; % check all right key press
+% check also all relevant keyboard presses
+keysOfInterest(key.left) = 1;
+keysOfInterest(key.right) = 1;
+if key.n_buttonsChoice == 4
+    keysOfInterest(key.leftSure) = 1;
+    keysOfInterest(key.leftUnsure) = 1;
+    keysOfInterest(key.rightUnsure) = 1;
+    keysOfInterest(key.rightSure) = 1;
+end
 KbQueueCreate(0,keysOfInterest); % checks TTL and keys of pad
 KbQueueStart; % starts checking
 

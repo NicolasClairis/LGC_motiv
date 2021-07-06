@@ -202,7 +202,7 @@ end
 %% check that the number of samples matches the total number of trials
 n_trials_to_sample = sum(sum(sample_mtrx));
 if n_trials_to_sample ~= n_trials
-    error(['number of trials = ',num2str(n_trials),' while design matrix only includes ',num2str(n_trials_to_sample)]);
+    error(['number of trials = ',num2str(n_trials),' while design matrix includes ',num2str(n_trials_to_sample)]);
 end
 
 %% extract the relevant trials
