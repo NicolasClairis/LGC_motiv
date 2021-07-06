@@ -30,7 +30,7 @@ sideQuestion.hL.high = 1;
 
 %% define colours to use for numbers font
 col1 = [233 163 201];
-% col2 = [161 215 106];
+col2 = [161 215 106];
 NbackLastQuestionCol = [255 255 255];
 
 %% switch percentage = percentage of questions with a switch per
@@ -58,7 +58,8 @@ mentalE_prm.Nback = 2;
 % end
 
 % NO task switching
-mental_n_col.lowHigh = col1;
+mental_n_col.lowHigh = col2;
+mental_n_col.oddEven = col1;
 % record mapping with name also (for learning phase)
 mental_n_col.col1 = 'lowHigh';
 mental_n_col.lastQuestion = NbackLastQuestionCol;
