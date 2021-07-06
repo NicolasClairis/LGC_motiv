@@ -10,7 +10,7 @@ clc;
 cd ..
 main_folder                 = [pwd filesep]; % you have to be sure that you are in the correct path when you launch the script
 main_task_folder            = [main_folder, 'LGC_Motiv_task' filesep];
-results_folder              = [main_folder, 'LGC_Motiv_results' filesep 'pilots_v1_IP' filesep];
+results_folder              = [main_folder, 'LGC_Motiv_results' filesep 'pilots_v2_IP_Nback2' filesep];
 
 main_task_folder = 'D:\LGC_motiv\LGC_Motiv_task\';
 
@@ -22,7 +22,12 @@ cd(results_folder)
 %% find the number of participants and initialize parameters
 fstruct = dir('IP_pilot_data*_sub_*.mat')
 name_tmp = fstruct(1).name;
+
+
 nb_pilots = str2double(name_tmp(21));
+% nb_pilots = 1;
+
+pilot_ID = [5];
 
 % % go back to folder with scripts
 % cd(main_task_folder);
@@ -36,7 +41,7 @@ nb_pilots = str2double(name_tmp(21));
 % E2PR1,E2PR2, E2MR1, E2MR2, E2PP1, E2PP2, E2MP1, E2MP2
 
 for i_pilot = 1:nb_pilots
-    loading_file_nm_tmp = ['*',num2str(i_pilot),'.mat'];
+    loading_file_nm_tmp = ['*',num2str(pilot_ID(i_pilot)),'.mat'];
     load(dir(loading_file_nm_tmp).name)
     delta_IP(i_pilot,1) = -1.5 + all.physical.EffortLvl_1.session_nb1.repeat_nb1.perfSummary.IP;
     delta_IP(i_pilot,2) = -1.5 + all.physical.EffortLvl_1.session_nb1.repeat_nb2.perfSummary.IP;
@@ -83,3 +88,5 @@ bar(delta_MVM)
 figure()
 
 bar([E1_P_R; E1_M_R; E1_P_P; E1_M_P;E2_P_R; E2_M_R; E2_P_P; E2_M_P])
+set(gca,'XTick',[1 2 3 4 5 6 7 8])
+set(gca,'XTickLabel',{'E1PR','E1MR','E1PP','E2MP','E2PR','E2MR','E2PP','E2MP'})
