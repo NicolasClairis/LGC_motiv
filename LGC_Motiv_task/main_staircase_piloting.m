@@ -400,10 +400,11 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
             iMental = 1;
             iPhysical = 1;
             
+            % number of runs 
             for iSession = 1:n_sessions
                 
                 % define if they will see a punishment or reward trial
-                % always start with a reward, they have ton win money first
+                % always start with a reward, they have to win money first
                 session_nm = ['session_nb',num2str(iSession)];
                 if ismember(iSession,[1,2])
                     R_or_P = 'R';
@@ -422,6 +423,7 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
                             'Press space when you are ready to start.',...
                             'center', yScreenCenter*(5/3), scr.colours.white, scr.wrapat);
                 end
+                
                 [~, onsets.taskWillStart] = Screen(window, 'Flip');
                 disp('Please press space.');
                 [~, ~, keyCode] = KbCheck();

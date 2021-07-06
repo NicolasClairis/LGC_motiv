@@ -10,7 +10,7 @@ clc;
 cd ..
 main_folder                 = [pwd filesep]; % you have to be sure that you are in the correct path when you launch the script
 main_task_folder            = [main_folder, 'LGC_Motiv_task' filesep];
-results_folder              = [main_folder, 'LGC_Motiv_results' filesep 'pilots_v2_IP_Nback2' filesep];
+results_folder              = [main_folder, 'LGC_Motiv_results' filesep 'pilots_v1_IP_Nback1' filesep];
 
 main_task_folder = 'D:\LGC_motiv\LGC_Motiv_task\';
 
@@ -27,7 +27,7 @@ name_tmp = fstruct(1).name;
 nb_pilots = str2double(name_tmp(21));
 % nb_pilots = 1;
 
-pilot_ID = [5];
+pilot_ID = [1 2 3 4];
 
 % % go back to folder with scripts
 % cd(main_task_folder);
@@ -71,10 +71,10 @@ for i_pilot = 1:nb_pilots
     E1_M_R(i_pilot) = mean(delta_IP(i_pilot,3:4),2);
     E1_P_P(i_pilot) = mean(delta_IP(i_pilot,5:6),2);
     E1_M_P(i_pilot) = mean(delta_IP(i_pilot,7:8),2);
-    E2_P_R(i_pilot) = mean(delta_IP(i_pilot,1:2),2);
-    E2_M_R(i_pilot) = mean(delta_IP(i_pilot,3:4),2);
-    E2_P_P(i_pilot) = mean(delta_IP(i_pilot,5:6),2);
-    E2_M_P(i_pilot) = mean(delta_IP(i_pilot,7:8),2);
+    E2_P_R(i_pilot) = mean(delta_IP(i_pilot,9:10),2);
+    E2_M_R(i_pilot) = mean(delta_IP(i_pilot,11:12),2);
+    E2_P_P(i_pilot) = mean(delta_IP(i_pilot,13:14),2);
+    E2_M_P(i_pilot) = mean(delta_IP(i_pilot,15:16),2);
 end
 
 
@@ -89,4 +89,10 @@ figure()
 
 bar([E1_P_R; E1_M_R; E1_P_P; E1_M_P;E2_P_R; E2_M_R; E2_P_P; E2_M_P])
 set(gca,'XTick',[1 2 3 4 5 6 7 8])
-set(gca,'XTickLabel',{'E1PR','E1MR','E1PP','E2MP','E2PR','E2MR','E2PP','E2MP'})
+set(gca,'XTickLabel',{'E1PR','E1MR','E1PP','E1MP','E2PR','E2MR','E2PP','E2MP'})
+
+
+
+% % go back to folder with scripts
+cd(main_task_folder);
+
