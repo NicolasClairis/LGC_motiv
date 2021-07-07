@@ -526,4 +526,5 @@ end
 save([results_folder, file_nm,'.mat'],'all');
 
 %% close PTB
+ShowCursor;
 sca;

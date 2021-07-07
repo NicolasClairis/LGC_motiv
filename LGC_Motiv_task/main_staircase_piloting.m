@@ -636,4 +636,5 @@ end
 Screen(window,'Flip');
 WaitSecs(15);
 %% close PTB
+ShowCursor;
 sca;

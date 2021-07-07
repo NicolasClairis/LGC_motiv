@@ -56,7 +56,7 @@ end
 window = Screen('OpenWindow',whichScreen,screenColour);
 
 %% hide mouse cursor
-% HideCursor();
+HideCursor();
 
 %% extract x and y coordinates of the center of the screen
 [L, H] = Screen('WindowSize',whichScreen);
