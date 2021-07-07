@@ -14,6 +14,7 @@
 % mental_effort_perf.m
 
 %% Clear the workspace and the screen, instrreset resets the udp channels
+ShowCursor;
 sca; % close all PTB screens
 close all; % close all windows
 clearvars; % clear variables from memory
@@ -24,7 +25,7 @@ clc;
 % (no need to have correct timings and everything in PTB)
 % or if this is the actual experiment => use optimal timings of the
 % computer (0)
-testing_script = 1;
+testing_script = 0;
 
 %% langage to display instructions
 langage = 'fr';
@@ -134,7 +135,7 @@ switch effort_type
     case 'physical'
         n_calibTrials = 5;
     case 'mental'
-        n_calibTrials = 3;
+        n_calibTrials = 5;
 end
 
 % calibration before/after end of each fMRI session
@@ -143,7 +144,7 @@ n_MaxPerfTrials = 1;
 % actual task
 n_R_levels = 3;
 n_E_levels = 3;
-nTrials = 44;
+nTrials = 48;
 
 % how many possible answers 
 n_buttonsChoice = 2;
@@ -282,7 +283,7 @@ if IRM == 1 && session_nber > 0
             % for actual task: no display of mapping but consider 3
             % errors as a trial failure
             Ep_or_Em_vars.errorLimits.useOfErrorMapping = false;
-            Ep_or_Em_vars.errorLimits.useOfErrorThreshold = true;
+            Ep_or_Em_vars.errorLimits.useOfErrorThreshold = false;
             Ep_or_Em_vars.errorLimits.errorThreshold = 3;
         case 'physical'
             Ep_or_Em_vars.MVC = MVC;
@@ -349,9 +350,9 @@ if IRM == 1 && session_nber > 0
     all.keys.keyLeft    = keyLeft;
     all.keys.keyRight   = keyRight;
     if key.n_buttonsChoice == 4
-        all.keys.keyLeftUnsure    = keyLeftUnsure;
+        all.keys.keyLeftUnsure  = keyLeftUnsure;
         all.keys.keyLeftSure    = keyLeftSure;
-        all.keys.keyRightUnsure   = keyRightUnsure;
+        all.keys.keyRightUnsure = keyRightUnsure;
         all.keys.keyRightSure   = keyRightSure;
     end
     
