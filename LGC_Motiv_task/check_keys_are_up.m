@@ -1,14 +1,16 @@
 function[was_a_key_pressed_bf_trial,...
-    onsets_keyReleaseMessage] = LGCM_check_keys_are_up(scr, key)
+    onsets_keyReleaseMessage] = check_keys_are_up(scr, stim, key)
 % [was_a_key_pressed_bf_trial,...
-%     onsets_keyReleaseMessage] = LGCM_check_keys_are_up(scr, key)
-% LGCM_check_keys_are_up checks whether all relevant keys are up before
+%     onsets_keyReleaseMessage] = check_keys_are_up(scr, stim, key)
+% check_keys_are_up checks whether all relevant keys are up before
 % starting the trial. If one of the relevant keys was being pressed before
 % starting, displays an error message and waits for the participant to
 % release all relevant keys before continuing the task.
 %
 % INPUTS
 % scr: structure with display parameters
+%
+% stim: structure with stimuli informations
 %
 % key: structure with left and right key codes
 %
@@ -25,19 +27,21 @@ function[was_a_key_pressed_bf_trial,...
 was_a_key_pressed_bf_trial = 0;
 onsets_keyReleaseMessage = NaN;
 
-white = scr.colours.white;
+window = scr.window;
 %% check key presses
-[keyIsDown, secs, keyCode] = KbCheck();
+[keyIsDown, ~, keyCode] = KbCheck();
 
 %% if one of the relevant keys is being pressed => display release message
 while (keyIsDown == 1) &&...
         ( (keyCode(key.left) == 1) || (keyCode(key.right) == 1 ))
     was_a_key_pressed_bf_trial = 1;
-    DrawFormattedText(scr.window, 'Relâchez les boutons svp','center','center',white)
-    [~, onsets_keyReleaseMessage] = Screen(scr.window,'Flip');
+    DrawFormattedText(window, stim.releaseButtonsMsg.text,...
+        stim.releaseButtonsMsg.x, stim.releaseButtonsMsg.y,...
+        stim.releaseButtonsMsg.colour);
+    [~, onsets_keyReleaseMessage] = Screen(window,'Flip');
     % keep checking the buttons to know if the keyboard has been released
     % or not
-    [keyIsDown, secs, keyCode] = KbCheck();
+    [keyIsDown, ~, keyCode] = KbCheck();
 end % some relevant key is being pressed
 
 end % function

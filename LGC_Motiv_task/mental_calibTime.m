@@ -1,7 +1,7 @@
 function[t_min_reached_duringCalib, calib_summary, calib_success] = mental_calibTime(scr, stim, key,...
-    numberVector_calib, mentalE_prm, n_calibTrials, n_calibMax, calibTimes, errorLimits)
+    numberVector_calib, mentalE_prm, n_calibTrials, n_calibMax, calibTimes, errorLimits, langage)
 %[t_min_reached_duringCalib, calib_summary, calib_success] = mental_calibTime(scr, stim, key,...
-%     numberVector_calib, mentalE_prm, n_calibTrials, n_calibMax, calibTimes, errorLimits)
+%     numberVector_calib, mentalE_prm, n_calibTrials, n_calibMax, calibTimes, errorLimits, langage)
 %
 % mental_calibTime will extract the maximal amount of time requested
 % for the hardest level of difficulty (ie the highest number of correct
@@ -52,6 +52,11 @@ function[t_min_reached_duringCalib, calib_summary, calib_success] = mental_calib
 %   .errorMappingLimit: display the mapping after this number of errors has
 %   been reached
 %
+% langage: string indicating the langage with which to display the
+% instructions and feedback
+% 'fr': french
+% 'engl': english
+%
 % OUTPUTS
 % t_min_reached_duringCalib: minimal time necessary to perform all the
 % requested questions during the calibration
@@ -66,8 +71,6 @@ function[t_min_reached_duringCalib, calib_summary, calib_success] = mental_calib
 %% extract relevant variables
 % screen parameters
 window = scr.window;
-yScreenCenter = scr.yCenter;
-selectedCol = scr.colours.white;
 wrapat = scr.wrapat;
 
 % define main parameters
@@ -80,15 +83,12 @@ calib_time_limit = true; % time will be limited (as opposed to learning where ti
 
 %% display instructions for the calibration
 for iInstructionsLoop = 1:2
-    DrawFormattedText(window,...
-        ['Désormais vous devrez répondre dans un temps limité. Essayez de compléter',...
-        ' le cercle en répondant aussi vite que possible et correctement aux questions posées.'],...
-        'center', yScreenCenter/3, selectedCol, wrapat);
+    DrawFormattedText(window, stim.mentalCalibInstructions.text,...
+        stim.mentalCalibInstructions.x, stim.mentalCalibInstructions.y, stim.mentalCalibInstructions.colour, wrapat);
     % display that participant can press to move on
     if iInstructionsLoop == 2
-        DrawFormattedText(window,...
-            'Vous pouvez appuyer quand vous vous sentez prêt(e) à commencer.',...
-            'center', yScreenCenter*(5/3), selectedCol, wrapat);
+        DrawFormattedText(window, stim.pressWhenReady.text,...
+            stim.pressWhenReady.x, stim.pressWhenReady.y, stim.pressWhenReady.colour, wrapat);
     end
     % display text on screen
     [~, timeInstru] = Screen(window, 'Flip');
@@ -129,7 +129,7 @@ for iCalibTrial = 1:n_calibTrials
     [mentalE_perf, calibTrial_success] = mental_effort_perf_Nback(scr, stim, key,...
         numberVector_calib(iCalibTrial,:),...
         mentalE_prm, n_calibMax,...
-        'all','noInstructions', calib_time_limit, t_effort_max, errorLimits); % no instruction (calibration as in the real task)
+        'col1','noInstructions', calib_time_limit, t_effort_max, errorLimits); % no instruction (calibration as in the real task)
     
     calib_summary.mentalE_perf(iCalibTrial) = mentalE_perf;
     % store current maximum performance
@@ -140,27 +140,43 @@ for iCalibTrial = 1:n_calibTrials
     
     % extract best timing
     t_min_reached_duringCalib = nanmin(t_min_calibPerf);
+    t_min_reached_duringCalib_str = sprintf('%0.3f',t_min_reached_duringCalib);
     % display feedback accordingly
     switch calibTrial_success
         case true % reached the top
-            DrawFormattedText(window,...
-                ['Bravo vous avez tout résolu dans le temps imparti!',...
-                ' Votre meilleur temps est de ',num2str(t_min_reached_duringCalib),' s.'],...
-                'center', yScreenCenter/3, selectedCol, wrapat);
+            switch langage
+                case 'fr'
+                    DrawFormattedText(window,...
+                        ['Bravo vous avez tout resolu dans le temps imparti! ',...
+                        'Votre meilleur temps est de ',t_min_reached_duringCalib_str,' s.'],...
+                        stim.mentalCalibSuccessFbk.x, stim.mentalCalibSuccessFbk.y,...
+                        stim.mentalCalibSuccessFbk.colour, wrapat);
+                case 'engl'
+                    DrawFormattedText(window,...
+                        ['Well done, you solved everything in the allotted time! ',...
+                        'Your best timing is ',t_min_reached_duringCalib_str,' s.'],...
+                        stim.mentalCalibSuccessFbk.x, stim.mentalCalibSuccessFbk.y,...
+                        stim.mentalCalibSuccessFbk.colour, wrapat);
+            end
         case false % didn't reach the top in the dedicated time
             if iCalibTrial < n_calibTrials
-                DrawFormattedText(window,...
-                    'Essayez encore!',...
-                    'center', yScreenCenter/3, selectedCol, wrapat);
+                DrawFormattedText(window, stim.mentalCalibFailureFbk.text,...
+                    stim.mentalCalibFailureFbk.x, stim.mentalCalibFailureFbk.y, stim.mentalCalibFailureFbk.colour, wrapat);
             elseif iCalibTrial == n_calibTrials % last trial
                 if ~isnan(t_min_reached_duringCalib)
-                    DrawFormattedText(window,...
-                        ['Votre meilleur temps est de ',num2str(t_min_reached_duringCalib),' s.'],...
-                        'center', yScreenCenter/3, selectedCol, wrapat);
+                    switch langage
+                        case 'fr'
+                            DrawFormattedText(window,...
+                                ['Bravo! Votre meilleur temps est de ',t_min_reached_duringCalib_str,' s.'],...
+                                stim.mentalCalibEnd.x, stim.mentalCalibEnd.y, stim.mentalCalibEnd.colour, wrapat);
+                        case 'engl'
+                            DrawFormattedText(window,...
+                                ['Well done! Your best timing is ',t_min_reached_duringCalib_str,' s.'],...
+                                stim.mentalCalibEnd.x, stim.mentalCalibEnd.y, stim.mentalCalibEnd.colour, wrapat);
+                    end
                 else
-                    DrawFormattedText(window,...
-                        'Nous allons refaire cette étape, essayez de faire mieux!',...
-                        'center', yScreenCenter/3, selectedCol, wrapat);
+                    DrawFormattedText(window, stim.mentalCalibFailureFbk.text,...
+                        stim.mentalCalibFailureFbk.x, stim.mentalCalibFailureFbk.y, stim.mentalCalibFailureFbk.colour, wrapat);
                 end
             end
     end % trial is a success or not?
@@ -175,12 +191,14 @@ for iCalibTrial = 1:n_calibTrials
     onset_fbk(iCalibTrial) = time_fbk;
     WaitSecs(calibTimes.fbk);
     
-    % allow the participant to restart whenever he/she feels ready by
+    %% display number of trials done for the experimenter
+    disp(['Mental calibration trial ',num2str(iCalibTrial),'/',num2str(n_calibTrials),' done']);
+    
+    %% allow the participant to restart whenever he/she feels ready by
     % pressing a button (no sense for the last trial though)
     if iCalibTrial < n_calibTrials
-        DrawFormattedText(window,...
-            'Vous pouvez appuyer quand vous vous sentez prêt(e) à recommencer.',...
-            'center', yScreenCenter*(5/3), selectedCol, wrapat);
+        DrawFormattedText(window, stim.pressWhenReady.text,...
+            stim.pressWhenReady.x, stim.pressWhenReady.y, stim.pressWhenReady.colour, wrapat);
         [~, time_fbkPress] = Screen(window, 'Flip');
         onset_fbk_press(iCalibTrial) = time_fbkPress;
         KbWait; % wait for a button press to go to next phase

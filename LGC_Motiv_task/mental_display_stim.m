@@ -45,9 +45,6 @@ function[onset_stim] = mental_display_stim(scr, stim,...
 
 %% extract relevant parameters
 window = scr.window;
-selectedCol = scr.colours.white;
-% xScreenCenter = scr.xCenter;
-yScreenCenter = scr.yCenter;
 arcCurrLevelColor = stim.difficulty.currLevelColor;
 arcPosition = stim.difficulty.middle_center;
 
@@ -73,15 +70,20 @@ switch taskTypeDisplay
     case 2 % last question
         textColor = mental_n_col.lastQuestion;
 end
+% increase text size for number
 Screen('TextSize', window, scr.textSize.mentalNumber);
+% display number on screen
 DrawFormattedText(window, num2str(numberValue),...
-    'center', yScreenCenter*(9/6), textColor);
+    stim.Em.(['numberPerf_',num2str(numberValue)]).x,...
+    stim.Em.(['numberPerf_',num2str(numberValue)]).y,...
+    textColor);
+% text size back to baseline
 Screen('TextSize', window, scr.textSize.baseline);
 
 %% instructions
 switch learning_instructions
     case {'fullInstructions','partialInstructions'}
-        mental_effort_task_question_display(scr, taskTypeDisplay, sideQuestion, textColor, learning_instructions);
+        mental_effort_task_question_display(scr, stim, taskTypeDisplay, sideQuestion, textColor, learning_instructions);
 end
 
 %% display on screen

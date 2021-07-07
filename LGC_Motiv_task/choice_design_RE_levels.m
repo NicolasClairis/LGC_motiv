@@ -109,98 +109,100 @@ end
 % take also a few samples from the trivial parts of the matrix (where RL-RR
 % and EL-ER have opposite signs = when more rewarded option is also the
 % less effortful)
-n_samples_matrix_irrelevantParts = 3; % = number of samples for each subpart of the matrix where data is less relevant for the estimation
+n_samples_matrix_irrelevantParts = 4; % = number of samples for each subpart of the matrix where data is less relevant for the estimation
 % check number of boxes per subpart of the matrix
 n_irrelevant_boxes = (n_E_levels - 1)*(n_RP_levels - 1);
 
-switch RP_condition
-    case 'R'
-        if n_samples_matrix_irrelevantParts == n_irrelevant_boxes
-            % if you have a match => extract uniformly the whole space of
-            % irrelevant options
-            jRleft_Rright = 0;
-            for iRleft_Rright = -(n_RP_levels - 1):(n_RP_levels - 1)
-                jRleft_Rright = jRleft_Rright + 1;
-                jEleft_Eright = 0;
-                for iEL_ER = -(n_E_levels - 1):(n_E_levels - 1)
-                    jEleft_Eright = jEleft_Eright + 1;
-                    if iRleft_Rright*iEL_ER < 0 % opposite sign only
-                        sample_mtrx(jEleft_Eright, jRleft_Rright) = 1;
-                    end % sign RL-RR vs EL-ER
-                end % EL-ER loop
-            end % RL-RR loop
-            
-        elseif n_samples_matrix_irrelevantParts < n_irrelevant_boxes
-            % select randomly which parts of the matrix will be included (to do
-            % twice, once one each part of the graph)
-            
-            % do for RL-RR>0 and EL-ER<0
-            vec_irrel1 = randperm(n_irrelevant_boxes, n_samples_matrix_irrelevantParts); % pick 1 box randomly over all the possible boxes
-            [E_idx, R_idx] = ind2sub([(n_E_levels - 1), (n_RP_levels - 1)], vec_irrel1); % extract the indexes for the selected box
-            for iSample = 1:n_samples_matrix_irrelevantParts
-                sample_mtrx(E_idx(iSample) + n_E_levels, R_idx(iSample)) = 1; % set 1 sample for each box selected (in the correct space)
+if n_samples_matrix_irrelevantParts > 0
+    switch RP_condition
+        case 'R'
+            if n_samples_matrix_irrelevantParts == n_irrelevant_boxes
+                % if you have a match => extract uniformly the whole space of
+                % irrelevant options
+                jRleft_Rright = 0;
+                for iRleft_Rright = -(n_RP_levels - 1):(n_RP_levels - 1)
+                    jRleft_Rright = jRleft_Rright + 1;
+                    jEleft_Eright = 0;
+                    for iEL_ER = -(n_E_levels - 1):(n_E_levels - 1)
+                        jEleft_Eright = jEleft_Eright + 1;
+                        if iRleft_Rright*iEL_ER < 0 % opposite sign only
+                            sample_mtrx(jEleft_Eright, jRleft_Rright) = 1;
+                        end % sign RL-RR vs EL-ER
+                    end % EL-ER loop
+                end % RL-RR loop
+                
+            elseif n_samples_matrix_irrelevantParts < n_irrelevant_boxes
+                % select randomly which parts of the matrix will be included (to do
+                % twice, once one each part of the graph)
+                
+                % do for RL-RR>0 and EL-ER<0
+                vec_irrel1 = randperm(n_irrelevant_boxes, n_samples_matrix_irrelevantParts); % pick 1 box randomly over all the possible boxes
+                [E_idx, R_idx] = ind2sub([(n_E_levels - 1), (n_RP_levels - 1)], vec_irrel1); % extract the indexes for the selected box
+                for iSample = 1:n_samples_matrix_irrelevantParts
+                    sample_mtrx(E_idx(iSample) + n_E_levels, R_idx(iSample)) = 1; % set 1 sample for each box selected (in the correct space)
+                end
+                
+                % same for RL-RR<0 and EL-ER>0
+                vec_irrel2 = randperm(n_irrelevant_boxes, n_samples_matrix_irrelevantParts); % pick 1 box randomly over all the possible boxes
+                [E_idx, R_idx] = ind2sub([(n_E_levels - 1), (n_RP_levels - 1)], vec_irrel2); % extract the indexes for the selected box
+                for iSample = 1:n_samples_matrix_irrelevantParts
+                    sample_mtrx(E_idx(iSample), R_idx(iSample) + n_RP_levels) = 1; % set 1 sample for each box selected (in the correct space)
+                end
+                
+            elseif n_samples_matrix_irrelevantParts > n_irrelevant_boxes
+                error('case not ready yet: why so many useless trials?');
+                % if you can, just distribute samples uniformly, if not possible
+                % set uniform distribution as much as possible and then select
+                % randomly the other samples
             end
             
-            % same for RL-RR<0 and EL-ER>0
-            vec_irrel2 = randperm(n_irrelevant_boxes, n_samples_matrix_irrelevantParts); % pick 1 box randomly over all the possible boxes
-            [E_idx, R_idx] = ind2sub([(n_E_levels - 1), (n_RP_levels - 1)], vec_irrel2); % extract the indexes for the selected box
-            for iSample = 1:n_samples_matrix_irrelevantParts
-                sample_mtrx(E_idx(iSample), R_idx(iSample) + n_RP_levels) = 1; % set 1 sample for each box selected (in the correct space)
+        case 'P' % punishment
+            if n_samples_matrix_irrelevantParts == n_irrelevant_boxes
+                % if you have a match => extract uniformly the whole space of
+                % irrelevant options
+                jPleft_Pright = 0;
+                for iPleft_Pright = -(n_RP_levels - 1):(n_RP_levels - 1)
+                    jPleft_Pright = jPleft_Pright + 1;
+                    jEleft_Eright = 0;
+                    for iEL_ER = -(n_E_levels - 1):(n_E_levels - 1)
+                        jEleft_Eright = jEleft_Eright + 1;
+                        if iPleft_Pright*iEL_ER > 0 % same sign only
+                            sample_mtrx(jEleft_Eright, jPleft_Pright) = 1;
+                        end % sign RL-RR vs EL-ER
+                    end % EL-ER loop
+                end % PL-PR loop
+                
+            elseif n_samples_matrix_irrelevantParts < n_irrelevant_boxes
+                % select randomly which parts of the matrix will be included (to do
+                % twice, once one each part of the graph)
+                
+                % do for PL-PR<0 and EL-ER<0
+                vec_irrel1 = randperm(n_irrelevant_boxes, n_samples_matrix_irrelevantParts); % pick 1 box randomly over all the possible boxes
+                [E_idx, P_idx] = ind2sub([(n_E_levels - 1), (n_RP_levels - 1)], vec_irrel1); % extract the indexes for the selected box
+                for iSample = 1:n_samples_matrix_irrelevantParts
+                    sample_mtrx(E_idx(iSample), P_idx(iSample)) = 1; % set 1 sample for each box selected (in the correct space)
+                end
+                
+                % same for PL-PR>0 and EL-ER>0
+                vec_irrel2 = randperm(n_irrelevant_boxes, n_samples_matrix_irrelevantParts); % pick 1 box randomly over all the possible boxes
+                [E_idx, P_idx] = ind2sub([(n_E_levels - 1), (n_RP_levels - 1)], vec_irrel2); % extract the indexes for the selected box
+                for iSample = 1:n_samples_matrix_irrelevantParts
+                    sample_mtrx(E_idx(iSample) + n_E_levels, P_idx(iSample) + n_RP_levels) = 1; % set 1 sample for each box selected (in the correct space)
+                end
+                
+            elseif n_samples_matrix_irrelevantParts > n_irrelevant_boxes
+                error('case not ready yet: why so many useless trials?');
+                % if you can, just distribute samples uniformly, if not possible
+                % set uniform distribution as much as possible and then select
+                % randomly the other samples
             end
-            
-        elseif n_samples_matrix_irrelevantParts > n_irrelevant_boxes
-            error('case not ready yet: why so many useless trials?');
-            % if you can, just distribute samples uniformly, if not possible
-            % set uniform distribution as much as possible and then select
-            % randomly the other samples
-        end
-        
-    case 'P' % punishment
-        if n_samples_matrix_irrelevantParts == n_irrelevant_boxes
-            % if you have a match => extract uniformly the whole space of
-            % irrelevant options
-            jPleft_Pright = 0;
-            for iPleft_Pright = -(n_RP_levels - 1):(n_RP_levels - 1)
-                jPleft_Pright = jPleft_Pright + 1;
-                jEleft_Eright = 0;
-                for iEL_ER = -(n_E_levels - 1):(n_E_levels - 1)
-                    jEleft_Eright = jEleft_Eright + 1;
-                    if iPleft_Pright*iEL_ER > 0 % same sign only
-                        sample_mtrx(jEleft_Eright, jPleft_Pright) = 1;
-                    end % sign RL-RR vs EL-ER
-                end % EL-ER loop
-            end % PL-PR loop
-            
-        elseif n_samples_matrix_irrelevantParts < n_irrelevant_boxes
-            % select randomly which parts of the matrix will be included (to do
-            % twice, once one each part of the graph)
-            
-            % do for PL-PR<0 and EL-ER<0
-            vec_irrel1 = randperm(n_irrelevant_boxes, n_samples_matrix_irrelevantParts); % pick 1 box randomly over all the possible boxes
-            [E_idx, P_idx] = ind2sub([(n_E_levels - 1), (n_RP_levels - 1)], vec_irrel1); % extract the indexes for the selected box
-            for iSample = 1:n_samples_matrix_irrelevantParts
-                sample_mtrx(E_idx(iSample), P_idx(iSample)) = 1; % set 1 sample for each box selected (in the correct space)
-            end
-            
-            % same for PL-PR>0 and EL-ER>0
-            vec_irrel2 = randperm(n_irrelevant_boxes, n_samples_matrix_irrelevantParts); % pick 1 box randomly over all the possible boxes
-            [E_idx, P_idx] = ind2sub([(n_E_levels - 1), (n_RP_levels - 1)], vec_irrel2); % extract the indexes for the selected box
-            for iSample = 1:n_samples_matrix_irrelevantParts
-                sample_mtrx(E_idx(iSample) + n_E_levels, P_idx(iSample) + n_RP_levels) = 1; % set 1 sample for each box selected (in the correct space)
-            end
-            
-        elseif n_samples_matrix_irrelevantParts > n_irrelevant_boxes
-            error('case not ready yet: why so many useless trials?');
-            % if you can, just distribute samples uniformly, if not possible
-            % set uniform distribution as much as possible and then select
-            % randomly the other samples
-        end
+    end
 end
 
 %% check that the number of samples matches the total number of trials
 n_trials_to_sample = sum(sum(sample_mtrx));
 if n_trials_to_sample ~= n_trials
-    error(['number of trials = ',num2str(n_trials),' while design matrix only includes ',num2str(n_trials_to_sample)]);
+    error(['number of trials = ',num2str(n_trials),' while design matrix includes ',num2str(n_trials_to_sample)]);
 end
 
 %% extract the relevant trials

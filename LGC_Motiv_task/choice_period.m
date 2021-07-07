@@ -46,13 +46,10 @@ function[choice_trial, onsetDispChoiceOptions, onsetChoice, stoptask] = choice_p
 window = scr.window;
 stoptask = 0;
 white = scr.colours.white;
-% black = scr.colours.black;
-yScreenCenter = scr.yCenter;
-% xScreenCenter = scr.xCenter;
 
 %% ask question on top
-DrawFormattedText(window,'Que préférez-vous?','center',yScreenCenter/4,white);
-DrawFormattedText(window,'OU','center','center',white);
+DrawFormattedText(window, stim.choice.choiceQuestion.text, stim.choice.choiceQuestion.x, stim.choice.choiceQuestion.y, stim.choice.choiceQuestion.colour);
+DrawFormattedText(window, stim.choice.choiceOR.text, stim.choice.choiceOR.x, stim.choice.choiceOR.y, stim.choice.choiceOR.colour);
 
 %% display each difficulty level
 leftStartAngle = stim.difficulty.startAngle.(['level_',num2str(E_left)]);
@@ -80,20 +77,20 @@ Screen('FrameOval', window, stim.difficulty.maxColor,...
 %% display each monetary incentive level
 switch R_or_P
     case 'R'
-        DrawFormattedText(window,'Gagner',...
+        DrawFormattedText(window,stim.choice.win.text,...
             stim.winRewardText.top_left(1),...
             stim.winRewardText.top_left(2),...
             white);
-        DrawFormattedText(window,'Gagner',...
+        DrawFormattedText(window,stim.choice.win.text,...
             stim.winRewardText.top_right(1),...
             stim.winRewardText.top_right(2),...
             white);
     case 'P'
-        DrawFormattedText(window,'Perdre',...
+        DrawFormattedText(window,stim.choice.lose.text,...
             stim.loseRewardText.top_left(1),...
             stim.loseRewardText.top_left(2),...
             white);
-        DrawFormattedText(window,'Perdre',...
+        DrawFormattedText(window,stim.choice.lose.text,...
             stim.loseRewardText.top_right(1),...
             stim.loseRewardText.top_right(2),...
             white);
@@ -103,11 +100,11 @@ drawRewardAmount(scr, stim, R_left, R_or_P, 'top_left_start');
 drawRewardAmount(scr, stim, R_right, R_or_P, 'top_right_start');
 
 % display corresponding effort text
-DrawFormattedText(window,'pour',...
+DrawFormattedText(window,stim.choice.for.text,...
     stim.effort_introText.bottom_left(1),...
     stim.effort_introText.bottom_left(2),...
     white);
-DrawFormattedText(window,'pour',...
+DrawFormattedText(window,stim.choice.for.text,...
     stim.effort_introText.bottom_right(1),...
     stim.effort_introText.bottom_right(2),...
     white);
@@ -133,26 +130,75 @@ while choicePeriodOver == 0
     
     %% some key was pressed
     if keyisdown == 1
-        %% left option chosen
-        if keycode(key.left) == 1 &&...
-                keycode(key.right) == 0
-            % record time of chosen option
-            timedown = secs;
-            % record side of chosen option
-            choice_trial = -1;
-            choicePeriodOver = 1;
-            %% right option chosen
-        elseif keycode(key.left) == 0 &&...
-                keycode(key.right) == 1
-            % record time of chosen option
-            timedown = secs;
-            % record side of chosen option
-            choice_trial = 1;
-            choicePeriodOver = 1;
-        %% stop the task
-        elseif keycode(key.escape) == 1
-            choicePeriodOver = 1;
-            stoptask = 1;
+        if key.n_buttonsChoice == 2
+            %% left option chosen
+            if keycode(key.left) == 1 &&...
+                    keycode(key.right) == 0
+                % record time of chosen option
+                timedown = secs;
+                % record side of chosen option
+                choice_trial = -1;
+                choicePeriodOver = 1;
+                %% right option chosen
+            elseif keycode(key.left) == 0 &&...
+                    keycode(key.right) == 1
+                % record time of chosen option
+                timedown = secs;
+                % record side of chosen option
+                choice_trial = 1;
+                choicePeriodOver = 1;
+                %% stop the task
+            elseif keycode(key.escape) == 1
+                choicePeriodOver = 1;
+                stoptask = 1;
+            end
+            
+        elseif key.n_buttonsChoice == 4
+            %% LEFT SURE option chosen
+            if keycode(key.leftSure) == 1 &&...
+                    keycode(key.leftUnsure) == 0 &&...
+                    keycode(key.rightUnsure) == 0 &&...
+                    keycode(key.rightSure) == 0
+                % record time of chosen option
+                timedown = secs;
+                % record side of chosen option
+                choice_trial = -2;
+                choicePeriodOver = 1;
+                %% LEFT UNSURE option chosen
+            elseif keycode(key.leftSure) == 0 &&...
+                    keycode(key.leftUnsure) == 1 &&...
+                    keycode(key.rightUnsure) == 0 &&...
+                    keycode(key.rightSure) == 0
+                % record time of chosen option
+                timedown = secs;
+                % record side of chosen option
+                choice_trial = -1;
+                choicePeriodOver = 1;
+                %% RIGHT UNSURE option chosen
+            elseif keycode(key.leftSure) == 0 &&...
+                    keycode(key.leftUnsure) == 0 &&...
+                    keycode(key.rightUnsure) == 1 &&...
+                    keycode(key.rightSure) == 0
+                % record time of chosen option
+                timedown = secs;
+                % record side of chosen option
+                choice_trial = 1;
+                choicePeriodOver = 1;
+                %% RIGHT SURE option chosen
+            elseif keycode(key.leftSure) == 0 &&...
+                    keycode(key.leftUnsure) == 0 &&...
+                    keycode(key.rightUnsure) == 0 &&...
+                    keycode(key.rightSure) == 1
+                % record time of chosen option
+                timedown = secs;
+                % record side of chosen option
+                choice_trial = 2;
+                choicePeriodOver = 1;
+                %% stop the task
+            elseif keycode(key.escape) == 1
+                choicePeriodOver = 1;
+                stoptask = 1;
+            end
         end
     end % some key was pressed
     

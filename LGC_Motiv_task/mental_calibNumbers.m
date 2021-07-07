@@ -50,8 +50,6 @@ function[n_mental_max_perTrial, calib_summary] = mental_calibNumbers(scr, stim, 
 %% extract relevant variables
 % screen parameters
 window = scr.window;
-yScreenCenter = scr.yCenter;
-selectedCol = scr.colours.white;
 wrapat = scr.wrapat;
 
 % define main parameters
@@ -64,29 +62,24 @@ instructions_disp = 0; % no instructions anymore, goal is to calibrate as if it 
     onset_fbk_press] = deal( NaN(1, n_calibTrials) ); % maximal perf at each calibration trial
 
 %% display instructions for the calibration
-DrawFormattedText(window,...
-    ['Désormais vous devrez répondre dans un temps limité. Essayez de compléter',...
-    ' le cercle en répondant aussi vite que possible et correctement aux questions posées.',...
-    ' Comme précédemment, une réponse incorrecte réinitialisera le compteur.'],...
-    'center', yScreenCenter/3, selectedCol, wrapat);
-[~, timeInstru] = Screen(window, 'Flip');
-calib_summary.onset_instructions = timeInstru;
-WaitSecs(calibTimes.instructions);
-
-% allow the participant to start whenever he/she feels ready by
-% pressing a button
-DrawFormattedText(window,...
-    ['Désormais vous devrez répondre dans un temps limité. Essayez de compléter',...
-    ' le cercle en répondant aussi vite que possible et correctement aux questions posées.',...
-    ' Comme précédemment, une réponse incorrecte réinitialisera le compteur.'],...
-    'center', yScreenCenter/3, selectedCol, wrapat);
-DrawFormattedText(window,...
-    'Vous pouvez appuyer quand vous vous sentez prêt(e) à commencer.',...
-    'center', yScreenCenter*(5/3), selectedCol, wrapat);
-[~, timeInstru_bis] = Screen(window, 'Flip');
-calib_summary.onset_instructions_press = timeInstru_bis;
-KbWait; % wait for a button press to go to next phase
-KbReleaseWait; % wait button press to be off to avoid it being recorder as an answer
+for iInstructionsLoop = 1:2
+    DrawFormattedText(window, stim.mentalCalibInstructions.text,...
+        stim.mentalCalibInstructions.x, stim.mentalCalibInstructions.y, stim.mentalCalibInstructions.colour, wrapat);
+    if iInstructionsLoop == 1
+        [~, timeInstru] = Screen(window, 'Flip');
+        calib_summary.onset_instructions = timeInstru;
+        WaitSecs(calibTimes.instructions);
+    elseif iInstructionsLoop == 2
+        % allow the participant to start whenever he/she feels ready by
+        % pressing a button
+        DrawFormattedText(window, stim.pressWhenReady.text,...
+            stim.pressWhenReady.x, stim.pressWhenReady.y, stim.pressWhenReady.colour, wrapat);
+        [~, timeInstru_bis] = Screen(window, 'Flip');
+        calib_summary.onset_instructions_press = timeInstru_bis;
+        KbWait; % wait for a button press to go to next phase
+        KbReleaseWait; % wait button press to be off to avoid it being recorder as an answer
+    end
+end
 
 %% perform calibration
 for iCalibTrial = 1:n_calibTrials
@@ -128,13 +121,11 @@ for iCalibTrial = 1:n_calibTrials
     % force to watch feedback for a short amount of time
     switch calibTrial_success
         case true % reached the top
-            DrawFormattedText(window,...
-                'Bravo vous avez tout résolu dans le temps imparti!',...
-                'center', yScreenCenter/3, selectedCol, wrapat);
+            DrawFormattedText(window, stim.mentalCalibSuccessFbk_bis.text,...
+                stim.mentalCalibSuccessFbk_bis.x, stim.mentalCalibSuccessFbk_bis.y, stim.mentalCalibSuccessFbk_bis.colour, wrapat);
         case false
-            DrawFormattedText(window,...
-                'Essayez encore!',...
-                'center', yScreenCenter/3, selectedCol, wrapat);
+            DrawFormattedText(window, stim.mentalCalibFailureFbk.text,...
+                stim.mentalCalibFailureFbk.x, stim.mentalCalibFailureFbk.y, stim.mentalCalibFailureFbk.colour, wrapat);
     end
     [~, time_fbk] = Screen(window, 'Flip');
     onset_fbk(iCalibTrial) = time_fbk;
@@ -143,9 +134,8 @@ for iCalibTrial = 1:n_calibTrials
     % allow the participant to restart whenever he/she feels ready by
     % pressing a button (no sense for the last trial though)
     if iCalibTrial < n_calibTrials
-        DrawFormattedText(window,...
-            'Vous pouvez appuyer quand vous vous sentez prêt(e) à recommencer.',...
-            'center', yScreenCenter*(5/3), selectedCol, wrapat);
+        DrawFormattedText(window, stim.pressWhenReady.text,...
+            stim.pressWhenReady.x, stim.pressWhenReady.y, stim.pressWhenReady.colour, wrapat);
         [~, time_fbkPress] = Screen(window, 'Flip');
         onset_fbk_press(iCalibTrial) = time_fbkPress;
         KbWait; % wait for a button press to go to next phase

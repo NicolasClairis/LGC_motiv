@@ -1,10 +1,10 @@
 function[summary] = choice_and_perf_staircase(scr, stim, key,...
-    effort_type, Ep_or_Em_vars,...
-    training_R_P_RP_or_mainTask,R_or_P,E_right,E_left, nTrials, timings,...
+    effort_type, Ep_or_Em_vars, R_money,...
+    training_R_P_RP_or_mainTask, R_or_P, E_right, E_left, nTrials, timings,...
     results_folder, file_nm)
-% [summary] = choice_and_perf(scr, stim, key,...
+% [summary] = choice_and_perf_staircase(scr, stim, key,...
 %     effort_type, Ep_or_Em_vars, R_money,...
-%     R_or_P_or_RP_condition, nTrials, choiceOptions, timings,...
+%     training_R_P_RP_or_mainTask, R_or_P, E_right, E_left, nTrials, timings,...
 %     results_folder, file_nm)
 % choice_and_perf: script to perform choice and effort performance.
 %
@@ -28,17 +28,19 @@ function[summary] = choice_and_perf_staircase(scr, stim, key,...
 %   for each effort level
 %
 % R_money: structure with equivalence between reward levels and reward
-% money to compute gain within the session
+% money to compute gain within the session and includes money loss amount
+% for errors
 %
 % training_R_P_RP_or_mainTask:
 % 'R': reward only training
 % 'P': punishment only training
 % 'RP': reward and punishment training
 %
-% nTrials: number of trials
+% R_or_P: reward ('R') or punishment ('P') trial
 %
-% choiceOptions: reward and effort level to display for each option (left/right) for
-% each trial
+% E_right, E_left: effort level for right and left option
+%
+% nTrials: number of trials
 %
 % timings: structure with information about the relevant timings
 %
@@ -53,9 +55,6 @@ function[summary] = choice_and_perf_staircase(scr, stim, key,...
 %% load main paramaters
 window = scr.window;
 white = scr.colours.white;
-black = scr.colours.black;
-yScreenCenter = scr.yCenter;
-xScreenCenter = scr.xCenter;
 barTimeWaitRect = stim.barTimeWaitRect;
 
 t_cross         = timings.cross.(training_R_P_RP_or_mainTask);
@@ -86,7 +85,7 @@ switch effort_type
         F_threshold = Ep_or_Em_vars.F_threshold;
         F_tolerance = Ep_or_Em_vars.F_tolerance;
 end
-
+timeRemainingEndTrial_ONOFF = Ep_or_Em_vars.timeRemainingEndTrial_ONOFF;
 
 %% initialize onsets
 [onsets.cross,...
@@ -147,7 +146,7 @@ for iTrial = 1:nTrials
     
     %% check that no key is being pressed before the choice trial starts
     [was_a_key_pressed_bf_trial(iTrial),...
-        onsets.keyReleaseMessage(iTrial)] = check_keys_are_up(scr, key);
+        onsets.keyReleaseMessage(iTrial)] = check_keys_are_up(scr, stim, key);
     
     % if a key was pressed before starting the trial => show the fixation
     % cross again with a similar amount of time
@@ -179,15 +178,12 @@ for iTrial = 1:nTrials
             choiceTimeParameters, key);
     end
     
-    
-    
-    
     % extract choice made
     switch choice(iTrial)
-        case -1 % choice = left option
+        case {-2,-1} % choice = left option
             R_chosen(iTrial) = R_left;
             E_chosen(iTrial) = E_left;
-        case 1 % choice = right option
+        case {1,2} % choice = right option
             R_chosen(iTrial) = R_right_tmp;
             E_chosen(iTrial) = E_right;
         case 0 % no option was selected
@@ -200,32 +196,35 @@ for iTrial = 1:nTrials
         % If it is a reward trial
         case 'R'
             % if right values becomes higher than baseline (cause they were lazy) put back baseline
-            if choice(iTrial) == -1
-                R_right_tmp = R_right_tmp + (R_right_tmp - R_left)/2;
-            elseif choice(iTrial) == 1
-                R_right_tmp = R_right_tmp - (R_right_tmp - R_left)/2;
-            elseif choice(iTrial) == 0
-                % if no choice was made, keep same value
-                R_right_tmp = R_right_tmp;
-            else
-                error('Il y a un bug dans la partie choix');
+            switch choice(iTrial)
+                case {-2,-1}
+                    R_right_tmp = R_right_tmp + (R_right_tmp - R_left)/2;
+                case {1,2}
+                    R_right_tmp = R_right_tmp - (R_right_tmp - R_left)/2;
+                case 0
+                    % if no choice was made, keep same value
+                    R_right_tmp = R_right_tmp;
+                otherwise
+                    error('Il y a un bug dans la partie choix');
             end
             % In case computed value is higher than baseline, put it back to baseline
             if R_right_baseline <= R_right_tmp
                 R_right_tmp = R_right_baseline;
             end
-            % if it is a punishment trial
+            
+        % if it is a punishment trial
         case 'P'
             % case it is a punishment trial
-            if choice(iTrial) == -1
-                R_right_tmp = R_right_tmp - (R_left - R_right_tmp)/2;
-            elseif choice(iTrial) == 1
-                R_right_tmp = R_right_tmp + (R_left - R_right_tmp)/2;
-            elseif choice(iTrial) == 0
-                % if no choice was made, keep same value for next trial
-                R_right_tmp = R_right_tmp;
-            else
-                error('Il y a un bug dans la partie choix');
+            switch choice(iTrial)
+                case {-2,-1}
+                    R_right_tmp = R_right_tmp - (R_left - R_right_tmp)/2;
+                case {1,2}
+                    R_right_tmp = R_right_tmp + (R_left - R_right_tmp)/2;
+                case 0
+                    % if no choice was made, keep same value for next trial
+                    R_right_tmp = R_right_tmp;
+                otherwise
+                    error('Il y a un bug dans la partie choix');
             end
             
             % In case computed value is lower than baseline, put it back to baseline
@@ -257,13 +256,13 @@ for iTrial = 1:nTrials
     if choice(iTrial) == 0 % no choice was made => failure
         trial_was_successfull(iTrial) = 0;
         
-    elseif ismember(choice(iTrial), [-1,1]) % choice done => perform the corresponding effort
+    elseif ismember(choice(iTrial), [-2, -1, 1, 2]) % choice done => perform the corresponding effort
         
         %% mental effort: check no key is being pressed before the start of the effort period
         % for physical effort: useless since only the grip is required
         if strcmp(effort_type,'mental')
             [was_a_key_pressed_bf_trial(iTrial),...
-                onsets.keyReleaseMessage(iTrial)] = check_keys_are_up(scr, key);
+                onsets.keyReleaseMessage(iTrial)] = check_keys_are_up(scr, stim, key);
         end
         
         %% perform the effort
@@ -286,7 +285,7 @@ for iTrial = 1:nTrials
                     onsets.effortPeriod{iTrial}] = mental_effort_perf_Nback(scr, stim, key,...
                     mental_nbers_per_trial(iTrial,:),...
                     mentalE_prm, n_max_to_reach_perTrial(iTrial),...
-                    'all', 'noInstructions', timeLimitPerf, t_max_effort,errorLimits);
+                    'col1', 'noInstructions', timeLimitPerf, t_max_effort,errorLimits);
         end % effort type loop
         effortTime(iTrial) = toc;
     end % choice made or not?
@@ -299,47 +298,45 @@ for iTrial = 1:nTrials
             % for mental effort: either too slow or because too many errors
             % => adapt the feedback accordingly
             % display error message
-            if strcmp(effort_type,'physical') ||...
+            if choice(iTrial) == 0 ||...
+                    strcmp(effort_type,'physical') ||...
                     (strcmp(effort_type,'mental') &&...
                     Ep_or_Em_vars.errorLimits.useOfErrorThreshold == true &&...
                     perfSummary{iTrial}.n_errorsMade < Ep_or_Em_vars.errorLimits.errorThreshold)
-                DrawFormattedText(window,'Trop lent!',...
-                    'center', (1/5)*yScreenCenter,...
-                    white);
+                DrawFormattedText(window, stim.feedback.error_tooSlow.text,...
+                    stim.feedback.error_tooSlow.x, stim.feedback.error_tooSlow.y, ...
+                    stim.feedback.colour);
             elseif strcmp(effort_type,'mental') &&...
                     Ep_or_Em_vars.errorLimits.useOfErrorThreshold == true &&...
                     perfSummary{iTrial}.n_errorsMade >= Ep_or_Em_vars.errorLimits.errorThreshold
                 % for the mental effort case where too many errors were made,
                 % adapt the error feedback accordingly
-                DrawFormattedText(window,'Trop d''erreurs!',...
-                    'center', (1/5)*yScreenCenter,...
-                    white);
+                DrawFormattedText(window, stim.feedback.error_tooManyErrors.text,...
+                    stim.feedback.error_tooManyErrors.x, stim.feedback.error_tooManyErrors.y, ...
+                    stim.feedback.colour);
             end
-            
-            % display money loss for failing
-            
+            % display amount of money lost because participant was too
+            % slow/did too many mistakes
+            DrawFormattedText(window, stim.feedback.error_moneyLoss.text,...
+                stim.feedback.error_moneyLoss.x, stim.feedback.error_moneyLoss.y,...
+                stim.feedback.error_moneyLoss.colour);
             [~,onsets.fbk_fail(iTrial)] = Screen(window,'Flip');
             
             % record loss for the current trial
-            gain(iTrial) = -5;
+            gain(iTrial) = -R_money.trialFail;
             
         case 1 % trial is a success
             % display feedback
             switch R_or_P
                 case 'R'
-                    DrawFormattedText(window,'Vous avez obtenu',...
-                        'center', (1/5)*yScreenCenter,...
-                        white);
-                    fbkSign = '+';
-                    fbkColour = stim.reward.text.colour;
+                    DrawFormattedText(window, stim.feedback.reward.text,...
+                        stim.feedback.reward.x, stim.feedback.reward.y,...
+                        stim.feedback.colour);
                 case 'P'
-                    DrawFormattedText(window,'Vous avez perdu',...
-                        'center', (1/5)*yScreenCenter,...
-                        white);
-                    fbkSign = '-';
-                    fbkColour = stim.punishment.text.colour;
+                    DrawFormattedText(window, stim.feedback.punishment.text,...
+                        stim.feedback.punishment.x, stim.feedback.punishment.y,...
+                        stim.feedback.colour);
             end
-            
             drawRewardAmount(scr, stim, R_chosen(iTrial), R_or_P, 'middle_center_start');
             
             [~,onsets.fbk(iTrial)] = Screen(window,'Flip');
@@ -370,36 +367,38 @@ for iTrial = 1:nTrials
     % this period allows to de-confound effort and delay, ie even if lower
     % effort has been selected and performed quicker, a short waiting time
     % will force to wait
-    if effortTime(iTrial) < t_max_effort
-        tic;
-        onsets.timeBarWait(iTrial) = GetSecs; % record start of time bar
-        
-        % show a dynamic waiting bar until the timing ends
-        while toc <= (t_max_effort - effortTime(iTrial))
-            timeSinceStart_tmp = toc;
-            % update bar with time remaining
-            percTimeAchieved = (timeSinceStart_tmp + effortTime(iTrial))./t_max_effort;
-            barTimeWaitRect_bis = barTimeWaitRect;
-            % start on the right corner of the bar + percentage already
-            % achieved and move to the left
-            if percTimeAchieved > 0 && percTimeAchieved < 1
-                barTimeWaitRect_bis(3) = barTimeWaitRect(3) - percTimeAchieved*(barTimeWaitRect(3) - barTimeWaitRect(1));
-            elseif percTimeAchieved > 1
-                warning('you should get out of the loop when the time spent is too long but it seems there was a bug, display of timebar was locked to zero to compensate');
-                barTimeWaitRect_bis(3) = barTimeWaitRect(1) + 1;
-            end
-            %
-            DrawFormattedText(window,'Temps restant','center',yScreenCenter*(1/2),white);
-            % draw one global fixed rectangle showing the total duration
-            Screen('FrameRect',window, white, barTimeWaitRect);
+    if timeRemainingEndTrial_ONOFF == 1
+        if effortTime(iTrial) < t_max_effort
+            tic;
+            onsets.timeBarWait(iTrial) = GetSecs; % record start of time bar
             
-            % draw one second rectangle updating dynamically showing the
-            % time remaining
-            Screen('FillRect',window, white, barTimeWaitRect_bis);
-            
-            Screen(window,'Flip');
-        end % display until time catches up with maximum effort time
-    end % if all time taken, no need for time penalty
+            % show a dynamic waiting bar until the timing ends
+            while toc <= (t_max_effort - effortTime(iTrial))
+                timeSinceStart_tmp = toc;
+                % update bar with time remaining
+                percTimeAchieved = (timeSinceStart_tmp + effortTime(iTrial))./t_max_effort;
+                barTimeWaitRect_bis = barTimeWaitRect;
+                % start on the right corner of the bar + percentage already
+                % achieved and move to the left
+                if percTimeAchieved > 0 && percTimeAchieved < 1
+                    barTimeWaitRect_bis(3) = barTimeWaitRect(3) - percTimeAchieved*(barTimeWaitRect(3) - barTimeWaitRect(1));
+                elseif percTimeAchieved > 1
+                    warning('you should get out of the loop when the time spent is too long but it seems there was a bug, display of timebar was locked to zero to compensate');
+                    barTimeWaitRect_bis(3) = barTimeWaitRect(1) + 1;
+                end
+                %
+                DrawFormattedText(window, stim.remainingTime.text, stim.remainingTime.x, stim.remainingTime.y, stim.remainingTime.colour);
+                % draw one global fixed rectangle showing the total duration
+                Screen('FrameRect',window, stim.barTimeWait.colour, barTimeWaitRect);
+                
+                % draw one second rectangle updating dynamically showing the
+                % time remaining
+                Screen('FillRect',window, stim.barTimeWait.colour, barTimeWaitRect_bis);
+                
+                Screen(window,'Flip');
+            end % display until time catches up with maximum effort time
+        end % if all time taken, no need for time penalty
+    end % if a time limit is added
     
     %% display number of trials done for the experimenter
     disp(['Trial ',num2str(iTrial),'/',num2str(nTrials),' done']);

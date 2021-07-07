@@ -1,10 +1,12 @@
-function[onsets] = choice_and_perf_trainingInstructions(scr, R_or_P_or_RP_condition, t_instructions)
-% [onsets] = choice_and_perf_trainingInstructions(scr, R_or_P_or_RP_condition, t_instructions)
+function[onsets] = choice_and_perf_trainingInstructions(scr, stim, R_or_P_or_RP_condition, t_instructions)
+% [onsets] = choice_and_perf_trainingInstructions(scr, stim, R_or_P_or_RP_condition, t_instructions)
 % choice_and_perf_trainingInstructions will display instructions before
 % starting training for choice and performance.
 %
 % INPUTS
 % scr: structure with screen parameters
+%
+% stim: structure with stimuli informations
 %
 % R_or_P_or_RP_condition: string indicating training condition
 % 'R': pure reward training
@@ -19,34 +21,22 @@ function[onsets] = choice_and_perf_trainingInstructions(scr, R_or_P_or_RP_condit
 
 %% load main paramaters
 window = scr.window;
-black = scr.colours.black;
-yScreenCenter = scr.yCenter;
+wrapat = scr.wrapat;
 
 %% instruction that main task will start soon
 for iTimeLoop = 1:2
-    switch R_or_P_or_RP_condition
-        case 'R'
-            DrawFormattedText(window,...
-                ['Vous allez à présent choisir entre deux options associées à différents niveaux de récompense et d''effort '...
-                'l''option qui vous paraît la plus intéressante.'],...
-                'center', yScreenCenter/3, white, scr.wrapat);
-        case 'P'
-            DrawFormattedText(window,...
-                ['Vous allez à présent choisir entre deux options associées à différents niveaux de pertes et d''effort '...
-                'l''option qui vous paraît la moins pénible.'],...
-                'center', yScreenCenter/3, white, scr.wrapat);
-        case 'RP'
-            DrawFormattedText(window,...
-                ['Vous allez à présent choisir entre deux options associées à différents niveaux de récompenses ou de pertes et d''effort '...
-                'l''option qui vous paraît préférable.'],...
-                'center', yScreenCenter/3, white, scr.wrapat);
-    end
+    DrawFormattedText(window,...
+                stim.training.(R_or_P_or_RP_condition).text,...
+                stim.training.(R_or_P_or_RP_condition).x,...
+                stim.training.(R_or_P_or_RP_condition).y,...
+                stim.training.(R_or_P_or_RP_condition).colour, wrapat);
     if iTimeLoop == 1 % force them to read at first
         [~, onsets.trainingWillStart] = Screen(window, 'Flip');
         WaitSecs(t_instructions);
     elseif iTimeLoop == 2 % after t_instructions seconds, they can manually start
-        DrawFormattedText(window, 'Appuyez quand vous êtes prêts à commencer la tâche.',...
-            'center', yScreenCenter*15/8, white);
+        % display text: Press when you are ready to start
+        DrawFormattedText(window, stim.pressWhenReady.text,...
+            stim.pressWhenReady.x, stim.pressWhenReady.y, stim.pressWhenReady.colour);
         [~, onsets.trainingWillStart_bis] = Screen(window, 'Flip');
         KbWait;
     end

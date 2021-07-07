@@ -1,44 +1,50 @@
-function showTitlesInstruction(scr,instructionType,isMental)
+function showTitlesInstruction(scr, stim, instructionType, isMental)
+%showTitlesInstruction(scr, stim, instructionType, isMental)
 % Function to display information of the next things to do
 %
-% Scr = screen informations
+% scr = screen informations
+% 
+% stim: structure with stimuli informations
+%
 % instructionType = what is the next step
 % "Learning" participants are understanding how to do the effort
 % "training" is when you perform the full trial and the results do not matter
 % "task" is when you launch a block of trials, the core of the experiment
+%
 % isMental = define if we are working on physical or mental effort
-% 
-% 
-% 
+%
+%
+%
+
+%% initialize relevant parameters
+window = scr.window;
+titleTextSize = scr.textSize.taskPeriodsTitles;
+baselineTextSize = scr.textSize.baseline;
+
+%% define title settings
 
 t_wait = 3;
-Screen('TextSize', scr.window, 80);
+
+% change text size
+Screen('TextSize', window, titleTextSize);
+% define effort type
 if isMental == true
-    effortType = 'Mental';
+    effortType = 'Em';
 elseif isMental == false
-    effortType = 'Physique';
+    effortType = 'Ep';
 end
 
 % Announce what is next
-switch instructionType
-    case 'learning'
-        DrawFormattedText(window,...
-            ['Apprentissage ',effortType],...
-            'center',yScreenCenter/2,blackCol, wrapat);
-        
-    case 'Training'
-        DrawFormattedText(window,...
-            ['Entrainement ',effortType],...
-            'center',yScreenCenter/2,blackCol, wrapat);
-    case 'Task'
-        DrawFormattedText(window,...
-            ['Tâche ',effortType],...
-            'center',yScreenCenter/2,blackCol, wrapat);
-end
-%flip information on the screen
-Screen(scr.window,'Flip');
-WaitSecs(t_wait);
-% put back baseline textsize value
-Screen('TextSize', window, 40);
-end
+DrawFormattedText(window, stim.(effortType).(instructionType).title.text,...
+            stim.(effortType).(instructionType).title.x,...
+            stim.(effortType).(instructionType).title.y,...
+            stim.(effortType).(instructionType).title.colour);
 
+% flip information on the screen
+Screen(window,'Flip');
+WaitSecs(t_wait);
+
+%% put back baseline textsize value
+Screen('TextSize', window, baselineTextSize);
+
+end % function
