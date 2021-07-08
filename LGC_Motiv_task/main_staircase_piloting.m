@@ -328,7 +328,8 @@ if strcmp(taskToPerform.mental.calib,'on')
     mentalE_prm_learning_and_calib = mental_effort_parameters(iSubject);
     mentalE_prm_learning_and_calib.startAngle = 0; % for learning always start at zero
     % extract numbers to use for each calibration trial
-    [numberVector_calib] = mental_numbers(n_calibTrials_Em);
+%     [numberVector_calib] = mental_numbers(n_calibTrials_Em);
+    [numberVector_calib] = mental_calibNumberVector(n_calibTrials_Em, n_calibMax);
     % error handling for extended learning
     extendedLearning_errorLimits.useOfErrorThreshold = false;
     extendedLearning_errorLimits.useOfErrorMapping = false;
@@ -551,7 +552,8 @@ if strcmp(taskToPerform.mental.task,'on')
     mentalE_prm_learning_and_calib = mental_effort_parameters(iSubject);
     mentalE_prm_learning_and_calib.startAngle = 0; % for learning always start at zero
     % extract numbers to use for each calibration trial
-    [numberVector_calib] = mental_numbers(n_calibTrials_Em);
+%     [numberVector_calib] = mental_numbers(n_calibTrials_Em);
+[numberVector_calib] = mental_calibNumberVector(n_calibTrials_Em, n_calibMax);
     % alternatively, use fixed number of correct answers to provide for each effort
     % level
     % repeat calibration until the subject performance is better

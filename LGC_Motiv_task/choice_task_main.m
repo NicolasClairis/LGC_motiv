@@ -212,7 +212,8 @@ if session_nber == 0
         case 'mental'
             %% max performance measurement
             % extract numbers to use for each calibration trial
-            [numberVector_calib] = mental_numbers(n_calibTrials);
+%             [numberVector_calib] = mental_numbers(n_calibTrials);
+            [numberVector_calib] = mental_calibNumberVector(n_calibTrials, n_calibMax);
             
             %% alternatively, use fixed number of correct answers to provide for each effort
             % level
@@ -377,7 +378,8 @@ if IRM == 1 && session_nber > 0
             [MVC_last, onsets_MVC_last] = physical_effort_MVC(scr, stim, dq, nFinalTrial, calibTimes);
         case 'mental'
             % extract numbers to use for each calibration trial
-            [numberVector_endCalib] = mental_numbers(nFinalTrial);
+%             [numberVector_endCalib] = mental_numbers(nFinalTrial);
+            [numberVector_endCalib] = mental_calibNumberVector(nFinalTrial, n_calibMax);
             
             % use fixed number of correct answers to provide for each effort
             % level
