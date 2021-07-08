@@ -305,8 +305,9 @@ if strcmp(taskToPerform.mental.calib,'on')
     mentalE_prm_learning_and_calib = mental_effort_parameters(iSubject);
     mentalE_prm_learning_and_calib.startAngle = 0; % for learning always start at zero
     % extract numbers to use for each calibration trial
-    [numberVector_calib] = mental_numbers(n_calibTrials_Em);
-        
+%     [numberVector_calib] = mental_numbers(n_calibTrials_Em);
+    [numberVector_calib] = mental_calibNumberVector(n_calibTrials_Em, n_calibMax);
+    
     % alternatively, use fixed number of correct answers to provide for each effort
     % level
     % repeat calibration until the subject performance is better
@@ -411,7 +412,8 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
                 strcmp(taskToPerform.mental.task,'on') % mental task
             % pre-task max perf
             % extract numbers to use for each calibration trial
-            [numberVector_calib_tmp] = mental_numbers(n_calibTrials_Em_bis);
+%             [numberVector_calib_tmp] = mental_numbers(n_calibTrials_Em_bis);
+            [numberVector_calib_tmp] = mental_calibNumberVector(n_calibTrials_Em_bis, n_calibMax);
             
             % alternatively, use fixed number of correct answers to provide for each effort
             % level
@@ -436,7 +438,8 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
             finalGains = perfSummary.mental.(session_nm).totalGain(end);
             
             % post-task max perf
-            [numberVector_calib_tmp_bis] = mental_numbers(n_calibTrials_Em_bis);
+%             [numberVector_calib_tmp_bis] = mental_numbers(n_calibTrials_Em_bis);
+            [numberVector_calib_tmp_bis] = mental_calibNumberVector(n_calibTrials_Em_bis, n_calibMax);
             
             % re-measure max perf
             [t_min_calib_postTask.(session_nm), calibSessionSummary_postTask.(session_nm), calibSuccess_postTask.(session_nm)] = mental_calibTime(scr, stim, key_Em,...
