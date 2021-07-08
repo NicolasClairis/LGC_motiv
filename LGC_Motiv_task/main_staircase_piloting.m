@@ -140,7 +140,7 @@ if strcmp(taskToPerform.physical.calib,'on') ||...
     % define conditions
     n_MVC_repeat = 3;
     n_learningForceRepeats = 3; % number of learning repetitions for each level of difficulty (= each level of force)
-    F_threshold = 50; % force should be maintained above this threshold (expressed in % of MVC)
+    F_threshold = 55; % force should be maintained above this threshold (expressed in % of MVC)
     F_tolerance = 2.5; % tolerance allowed around the threshold (expressed in % of MVC)
     % need to define timings for each level of force
     [Ep_time_levels] = physical_effortLevels(n_E_levels);
