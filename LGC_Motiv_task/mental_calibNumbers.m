@@ -93,7 +93,7 @@ for iCalibTrial = 1:n_calibTrials
         case 1
             n_max = n_calibMax;
         otherwise % next trials use initial participant max + 3
-            max_perf_reached_duringCalib = nanmax(n_max_calibPerf);
+            max_perf_reached_duringCalib = max(n_max_calibPerf);
             if max_perf_reached_duringCalib < n_calibMax
                 n_max = n_calibMax;
             else % increase difficulty to push towards
@@ -145,7 +145,7 @@ for iCalibTrial = 1:n_calibTrials
 end % number of tests to try to get max
 
 %% get maximum for the participant
-n_mental_max_perTrial = nanmax(n_max_calibPerf);
+n_mental_max_perTrial = max(n_max_calibPerf);
 
 %% store all relevant variables in the output
 calib_summary.n_mental_max_perTrial = n_mental_max_perTrial;

@@ -75,15 +75,14 @@ elseif IRM == 1
             key.right = 90; % RIGHT BUTTON = yellow, letter 'z' with swiss or english keyboard
             %     key.right = 89; % RIGHT BUTTON = yellow, letter 'y' with french keyboard
         case 4
-            error('need to define the two missing buttons');
-%             key.leftSure    = ; % 
-%             key.leftUnsure  = ; % 
-            key.rightUnsure = 66; % blue button letter 'b'
-            key.rightSure   = 90; % yellow button letter 'z' swiss or 'y' french
+            key.leftSure    = 71; % 
+            key.leftUnsure  = 82; % 
+            key.rightUnsure = 66; %
+            key.rightSure   = 90; % or 89 depending on the language of the keyboard
             % also need the left/right buttons for the mental effort task
             if strcmp(effort_type,'mental')
-                key.left = 66;
-                key.right = 90;
+                key.left = 71;
+                key.right = 82;
             end
     end
     key.space = KbName('Space');

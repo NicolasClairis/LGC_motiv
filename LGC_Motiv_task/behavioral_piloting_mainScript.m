@@ -143,7 +143,7 @@ end
 if strcmp(taskToPerform.physical.calib,'on')
     n_MVC_repeat = 3; % number of calibration trials
     [initial_MVC, onsets_initial_MVC] = physical_effort_MVC(scr, stim, dq, n_MVC_repeat, calibTimes_Ep);
-    MVC = nanmax(initial_MVC.MVC); % expressed in Voltage
+    MVC = max(initial_MVC.MVC); % expressed in Voltage
 end
 
 % learning physical
