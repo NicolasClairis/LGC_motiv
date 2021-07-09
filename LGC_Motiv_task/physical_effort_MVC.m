@@ -99,7 +99,7 @@ for iCalib_MVC = 1:n_MVC_repeat
     % display the max reached until now to incentivize them to make
     % better?
     if iCalib_MVC > 1
-        maxMVCuntilNow = nanmax( MVC_perCalibSession(1:(iCalib_MVC-1)));
+        maxMVCuntilNow = max( MVC_perCalibSession(1:(iCalib_MVC-1)));
         yThreshold = bottomScaleLimit - graphYSize*(maxMVCuntilNow/maxVoltage);
         Screen('DrawLine', window, orange, leftScaleLimit, yThreshold, rightScaleLimit, yThreshold,5);
     end
@@ -127,7 +127,7 @@ for iCalib_MVC = 1:n_MVC_repeat
         % display the max reached until now to incentivize them to make
         % better?
         if iCalib_MVC > 1
-            maxMVCuntilNow = nanmax( MVC_perCalibSession(1:(iCalib_MVC-1)));
+            maxMVCuntilNow = max( MVC_perCalibSession(1:(iCalib_MVC-1)));
             yThreshold = bottomScaleLimit - graphYSize*(maxMVCuntilNow/maxVoltage);
             Screen('DrawLine', window, orange, leftScaleLimit, yThreshold, rightScaleLimit, yThreshold,5);
         end
@@ -144,7 +144,7 @@ for iCalib_MVC = 1:n_MVC_repeat
     WaitSecs(t_MVC_rest);
     
     %% extract max force for this session (in Voltage)
-    MVC_perCalibSession(iCalib_MVC) = nanmax(forceCalib.(['calibTrial_',num2str(iCalib_MVC)])(:,3));
+    MVC_perCalibSession(iCalib_MVC) = max(forceCalib.(['calibTrial_',num2str(iCalib_MVC)])(:,3));
     
     %% stop acquisition of biopac handgrip
     % stop acquiring data in the grip buffer
@@ -160,6 +160,6 @@ end % calibration loop
 %% store max MVC measure in output
 MVC.forceCalib = forceCalib;
 MVC.MVC_perCalibSession = MVC_perCalibSession;
-MVC.MVC = nanmax(MVC_perCalibSession);
+MVC.MVC = max(MVC_perCalibSession);
 
 end % function

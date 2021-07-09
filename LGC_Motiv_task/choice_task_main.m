@@ -122,6 +122,9 @@ punishment_yn = 'yes'; % include punishment trials?
 white = scr.colours.white;
 black = scr.colours.black;
 
+% how many possible answers 
+n_buttonsChoice = 4;
+
 % define relevant keys and dynamometer
 switch effort_type
     case 'mental'
@@ -145,9 +148,6 @@ n_MaxPerfTrials = 1;
 n_R_levels = 3;
 n_E_levels = 3;
 nTrials = 48;
-
-% how many possible answers 
-n_buttonsChoice = 2;
 
 % extract money amount corresponding to each reward level for the
 % computation of the gains
