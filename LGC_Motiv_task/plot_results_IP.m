@@ -10,7 +10,7 @@ clc;
 cd ..
 main_folder                 = [pwd filesep]; % you have to be sure that you are in the correct path when you launch the script
 main_task_folder_analysis            = [main_folder, 'LGC_Motiv_task' filesep];
-folder_to_open              = ['pilots_v4_IP_Nback2_NOtaskSwitching'];
+folder_to_open              = ['pilots_v5_IP_Nback2_NOtask_switching'];
 results_folder              = [main_folder, 'LGC_Motiv_results' filesep folder_to_open filesep];
 
 main_task_folder_analysis = 'D:\LGC_motiv\LGC_Motiv_task\';
