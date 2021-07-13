@@ -33,8 +33,8 @@ cd(main_task_folder);
 % Insert the initials, the number of the participants
 [init, iSubject] = deal([]);
 while isempty(init) || isempty(iSubject) % repeat until both are answered
-    info = inputdlg({'Initials', 'Subject ID'});
-    [init, iSubject] = info{[1,2]};
+    info = inputdlg({'Initials', 'Subject ID','Language (fr or en)'});
+    [init, iSubject,language] = info{[1,2,3]};
 end
 
 % Create subjectCodeName which is used as a file saving name
@@ -46,19 +46,18 @@ file_nm = ['IP_pilot_data',init,'_sub_',num2str(iSubject)];
 %% general parameters
 IRM = 0;
 % define subparts of the task to perform (on/off)
-taskToPerform.physical.calib = 'on';
-taskToPerform.physical.learning = 'on';
-taskToPerform.physical.training = 'on';   
-taskToPerform.physical.task = 'on';
-taskToPerform.mental.learning = 'on';
+taskToPerform.physical.calib = 'off';
+taskToPerform.physical.learning = 'off';
+taskToPerform.physical.training = 'off';   
+taskToPerform.physical.task = 'off';
+taskToPerform.mental.learning = 'off';
 taskToPerform.mental.calib = 'on';
-taskToPerform.mental.training = 'on';
+taskToPerform.mental.training = 'off';
 taskToPerform.mental.task = 'on';
-langue = input('Which langage? Press ''f'' for french and ''e'' for english please.','s');
-switch langue
-    case 'f'
+switch language
+    case 'fr'
         langage = 'fr';
-    case 'e'
+    case 'en'
         langage = 'engl'; % 'fr'/'engl' french or english?
     otherwise
         error('langage not recognised');

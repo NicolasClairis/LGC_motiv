@@ -831,18 +831,18 @@ end
 stim.feedback.error_tooSlow.x = x_centerCoordinates(xScreenCenter, textSizeErrorTooSlowFbkMsg);
 stim.feedback.error_tooSlow.y = y_coordinates(upperBorder, visibleYsize, 3/8, textSizeErrorTooSlowFbkMsg); % used to be 1/5*yScreenCenter
 
-% error too many errors feedback
+% error try again feedback, can be displayed with too many errors and too slow
 switch langage
     case 'fr'
-        stim.feedback.error_tooManyErrors.text = 'Trop d''erreurs!';
+        stim.feedback.error_tryAgain.text = 'Concentrez vous et reessayez!';
     case 'engl'
-        stim.feedback.error_tooManyErrors.text = 'Too many errors!';
+        stim.feedback.error_tryAgain.text = 'Focus and try again!';
 end
-[~,~,textSizeErrorTooManyErrorsFbkMsg] = DrawFormattedText(window, stim.feedback.error_tooManyErrors.text,...
+[~,~,textSizeErrorTryAgainFbkMsg] = DrawFormattedText(window, stim.feedback.error_tryAgain.text,...
     'center', 'center',...
     white);
-stim.feedback.error_tooManyErrors.x = x_centerCoordinates(xScreenCenter, textSizeErrorTooManyErrorsFbkMsg);
-stim.feedback.error_tooManyErrors.y = y_coordinates(upperBorder, visibleYsize, 3/8, textSizeErrorTooManyErrorsFbkMsg); % used to be 1/5*yScreenCenter
+stim.feedback.error_tryAgain.x = x_centerCoordinates(xScreenCenter, textSizeErrorTryAgainFbkMsg);
+stim.feedback.error_tryAgain.y = y_coordinates(upperBorder, visibleYsize, 4/8, textSizeErrorTryAgainFbkMsg); % used to be 1/5*yScreenCenter
 
 % error: display amount lost because of too slow or too many errors
 moneyFail = sprintf('%0.2f',R_money.trialFail);
