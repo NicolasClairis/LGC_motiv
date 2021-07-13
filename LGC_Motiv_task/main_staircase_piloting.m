@@ -33,8 +33,8 @@ cd(main_task_folder);
 % Insert the initials, the number of the participants
 [init, iSubject] = deal([]);
 while isempty(init) || isempty(iSubject) % repeat until both are answered
-    info = inputdlg({'Initials', 'Subject ID'});
-    [init, iSubject] = info{[1,2]};
+    info = inputdlg({'Initials', 'Subject ID','Language (fr or en)'});
+    [init, iSubject,language] = info{[1,2,3]};
 end
 
 % Create subjectCodeName which is used as a file saving name
@@ -54,11 +54,10 @@ taskToPerform.mental.learning = 'on';
 taskToPerform.mental.calib = 'on';
 taskToPerform.mental.training = 'on';
 taskToPerform.mental.task = 'on';
-langue = input('Which langage? Press ''f'' for french and ''e'' for english please.','s');
-switch langue
-    case 'f'
+switch language
+    case 'fr'
         langage = 'fr';
-    case 'e'
+    case 'en'
         langage = 'engl'; % 'fr'/'engl' french or english?
     otherwise
         error('langage not recognised');
