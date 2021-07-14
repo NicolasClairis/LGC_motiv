@@ -79,6 +79,7 @@ t_dispChoice    = timings.dispChoice;
 t_fbk           = timings.feedback;
 
 %% specific variables
+
 switch effort_type
     case 'mental'
         i_sub = Ep_or_Em_vars.i_sub;
@@ -91,7 +92,7 @@ switch effort_type
         F_threshold = Ep_or_Em_vars.F_threshold;
         F_tolerance = Ep_or_Em_vars.F_tolerance;
 end
-timeRemainingEndTrial_ONOFF = Ep_or_Em_vars.timeRemainingEndTrial_ONOFF;
+ timeRemainingEndTrial_ONOFF = Ep_or_Em_vars.timeRemainingEndTrial_ONOFF;
 
 %% initialize onsets
 [onsets.cross,...
@@ -136,6 +137,8 @@ for iTrial = 1:nTrials
     trial_success = 0;
     redo_limit = 100;
     time_to_wait_between_failure = 3;
+%     % in case it is not defined
+%     errorLimits = 0;
     
     %% fixation cross period
     Screen('FillRect',window, white, stim.cross.verticalLine); % vertical line
@@ -277,7 +280,7 @@ for iTrial = 1:nTrials
                         failed_trials{i_trial_failed}.trial_was_successfull = trial_was_successfull(iTrial);
                         failed_trials{i_trial_failed}.onset.effortPeriod =  onsets.effortPeriod{iTrial};
                         failed_trials{i_trial_failed}.i_trial_idx = iTrial;
-                        if perfSummary.n_errorsMade >= errorLimits
+                        if perfSummary{iTrial}.n_errorsMade >= errorLimits.errorThreshold
                             % for the mental effort case where too many errors were made,
                             % adapt the error feedback accordingly
                             
@@ -294,8 +297,9 @@ for iTrial = 1:nTrials
                             DrawFormattedText(window,stim.feedback.error_tryAgain.text,...
                                 stim.feedback.error_tryAgain.x, stim.feedback.error_tryAgain.y, ...
                                 stim.feedback.colour);
-                            [~,onsets.fbk_fail(iTrial)] = Screen(window,'Flip');
+                            
                         end
+                        [~,onsets.fbk_fail(iTrial)] = Screen(window,'Flip');
                         WaitSecs(time_to_wait_between_failure);
                     end
                 end
