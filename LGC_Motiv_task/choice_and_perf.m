@@ -276,7 +276,7 @@ for iTrial = 1:nTrials
                         failed_trials{i_trial_failed}.trial_was_successfull = trial_was_successfull(iTrial);
                         failed_trials{i_trial_failed}.onset.effortPeriod =  onsets.effortPeriod{iTrial};
                         failed_trials{i_trial_failed}.i_trial_idx = iTrial;
-                        if (errorLimits.useOfErrorThreshold == true) && (perfSummary.n_errorsMade >= errorLimits.errorThreshold)
+                        if (errorLimits.useOfErrorThreshold == true) && (perfSummary{iTrial}.n_errorsMade >= errorLimits.errorThreshold)
                             % for the mental effort case where too many errors were made
                             DrawFormattedText(window, stim.feedback.error_tooManyErrors.text,...
                                 stim.feedback.error_tooManyErrors.x, stim.feedback.error_tooManyErrors.y, ...
