@@ -104,7 +104,8 @@ n_trainingConditions = length(trainingConditions);
 % the main calibration
 if strcmp(taskToPerform.mental.calib,'on') || strcmp(taskToPerform.mental.task,'on')
     calib_errorLimits_Em.useOfErrorMapping = false;
-    calib_errorLimits_Em.useOfErrorThreshold = false;
+    calib_errorLimits_Em.useOfErrorThreshold = true;
+    calib_errorLimits_Em.errorThreshold = 20;
 end
 % time for end of session
 t_endSession = mainTimes.endSession;

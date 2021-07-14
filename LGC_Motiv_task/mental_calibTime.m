@@ -118,7 +118,7 @@ for iCalibTrial = 1:n_calibTrials
             t_effort_max = calibTimes.effort_max;
 %             t_min_reached_duringCalib = t_effort_max;
 %         otherwise % next trials use the shortest time until now
-%             t_min_reached_duringCalib = nanmin(t_min_calibPerf);
+%             t_min_reached_duringCalib = min(t_min_calibPerf);
 %             % if minimal time reached during calibration
 %             if isnan(t_min_reached_duringCalib)
 %                 t_min_reached_duringCalib = t_effort_max;
@@ -139,7 +139,7 @@ for iCalibTrial = 1:n_calibTrials
     % force to watch feedback for a short amount of time
     
     % extract best timing
-    t_min_reached_duringCalib = nanmin(t_min_calibPerf);
+    t_min_reached_duringCalib = min(t_min_calibPerf);
     t_min_reached_duringCalib_str = sprintf('%0.3f',t_min_reached_duringCalib);
     % display feedback accordingly
     switch calibTrial_success
