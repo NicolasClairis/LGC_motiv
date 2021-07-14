@@ -31,8 +31,8 @@ cd(main_task_folder);
 %% Define subject ID
 
 % Insert the initials, the number of the participants
-[init, iSubject] = deal([]);
-while isempty(init) || isempty(iSubject) % repeat until both are answered
+[init, iSubject,language] = deal([]);
+while isempty(init) || isempty(iSubject) || isempty(language) % repeat until both are answered
     info = inputdlg({'Initials', 'Subject ID','Language (fr or en)'});
     [init, iSubject,language] = info{[1,2,3]};
 end
