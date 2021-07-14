@@ -262,8 +262,12 @@ if IRM == 1 && session_nb > 0
             % for actual task: no display of mapping but consider 3
             % errors as a trial failure
             Ep_or_Em_vars.errorLimits.useOfErrorMapping = false;
-            Ep_or_Em_vars.errorLimits.useOfErrorThreshold = true;
-            Ep_or_Em_vars.errorLimits.errorThreshold = 3;
+            if session_nb == 0
+                Ep_or_Em_vars.errorLimits.useOfErrorThreshold = true;
+                Ep_or_Em_vars.errorLimits.errorThreshold = 20;
+            else
+                Ep_or_Em_vars.errorLimits.useOfErrorThreshold = false;
+            end
         case 'physical'
             Ep_or_Em_vars.MVC = MVC;
             Ep_or_Em_vars.dq = dq;

@@ -93,7 +93,7 @@ switch effort_type
         F_threshold = Ep_or_Em_vars.F_threshold;
         F_tolerance = Ep_or_Em_vars.F_tolerance;
 end
- timeRemainingEndTrial_ONOFF = Ep_or_Em_vars.timeRemainingEndTrial_ONOFF;
+timeRemainingEndTrial_ONOFF = Ep_or_Em_vars.timeRemainingEndTrial_ONOFF;
 
 %% initialize onsets
 [onsets.cross,...
