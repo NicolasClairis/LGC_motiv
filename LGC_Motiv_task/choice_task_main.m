@@ -55,20 +55,20 @@ end
 % go back to folder with scripts
 cd(main_task_folder);
 
-%% task type (physical/mental effort) + subject + session identification
-[effort_type_letter,...
-    session_nm] = deal('');
-
-% effort type?
-while ~ismember(effort_type_letter,{'p','m'})
-    effort_type_letter = input('effort type? For physical, press ''p'', for mental press ''m''.','s');
-end
-switch effort_type_letter
-    case 'p'
-        effort_type = 'physical';
-    case 'm'
-        effort_type = 'mental';
-end
+% %% task type (physical/mental effort) + subject + session identification
+% [effort_type_letter,...
+%     session_nm] = deal('');
+% 
+% % effort type?
+% while ~ismember(effort_type_letter,{'p','m'})
+%     effort_type_letter = input('effort type? For physical, press ''p'', for mental press ''m''.','s');
+% end
+% switch effort_type_letter
+%     case 'p'
+%         effort_type = 'physical';
+%     case 'm'
+%         effort_type = 'mental';
+% end
 
 % subject
 % while isempty(sub_initials)
@@ -81,27 +81,34 @@ end
 %% Define subject ID
 
 % Insert the initials, the number of the participants
-[init, iSubject] = deal([]);
-while isempty(init) || isempty(iSubject) % repeat until both are answered
-    info = inputdlg({'Initials', 'Subject ID'});
-    [init, iSubject] = info{[1,2]};
+[init, iSubject, effort_type,session_nb] = deal([]);
+while isempty(init) || isempty(iSubject) || isempty(effort_type) || isempty(session_nb) % repeat until both are answered
+    info = inputdlg({'Initials', 'Subject ID','Type d''effort p/m','Session number(0-4) (0 for calib)'});
+    [init, iSubject,effort_type, session_nb] = info{[1,2,3,4]}
+end
+session_nb = str2double(session_nb);
+switch effort_type
+    case 'p'
+        effort_type = 'physical';
+    case 'm'
+        effort_type = 'mental';
 end
 
 % Create subjectCodeName which is used as a file saving name
 subjectCodeName = strcat(init,'_s',iSubject);
 
-% ask session number (especially for fMRI mapping with behavioral data)
-n_sess_max = 5; % maximal number of sessions
-while isempty(session_nm) ||...
-        str2double(session_nm) < 0 ||...
-        str2double(session_nm) > n_sess_max
-    session_nm = input('Session number? (write 0 if calibration session)','s');
-    session_nber = str2double(session_nm);
-end
+% % ask session number (especially for fMRI mapping with behavioral data)
+% n_sess_max = 5; % maximal number of sessions
+% while isempty(session_nb) ||...
+%         str2double(session_nb) < 0 ||...
+%         str2double(session_nb) > n_sess_max
+%     session_nb = input('Session number? (write 0 if calibration session)','s');
+%     session_nb = str2double(session_nb);
+% end
 
 % file name
-file_nm = [subjectCodeName,'_session',session_nm,'_',effort_type,'_task'];
-% verify the files do not already exist
+file_nm = [subjectCodeName,'_session',session_nb,'_',effort_type,'_task'];
+% verify the files do not already gexist
 if exist([results_folder, file_nm,'.mat'],'file')
     error(['The file name ',file_nm,'.mat already exists.',...
         ' Please relaunch with a new file name or delete the previous data.']);
@@ -136,9 +143,9 @@ end
 % initial calibration
 switch effort_type
     case 'physical'
-        n_calibTrials = 5;
+        n_calibTrials = 3;
     case 'mental'
-        n_calibTrials = 5;
+        n_calibTrials = 3;
 end
 
 % calibration before/after end of each fMRI session
@@ -207,7 +214,7 @@ if strcmp(effort_type,'mental')
     calib_errorLimits_Em.useOfErrorThreshold = true;
     calib_errorLimits_Em.errorThreshold = 20;
 end
-if session_nber == 0
+ if session_nb == 0
     
     switch effort_type
         case 'mental'
@@ -260,7 +267,7 @@ end
 
 %% max perf measurement before start of each session
 % (not for training out of MRI)
-if session_nber > 0
+if session_nb > 0
     switch effort_type
         case 'mental'
             % perform max perf
@@ -276,7 +283,7 @@ if session_nber > 0
 end
 
 %% launch main task
-if IRM == 1 && session_nber > 0
+if IRM == 1 && session_nb > 0
     %% define task parameters
     switch effort_type
         case 'mental'
@@ -345,7 +352,7 @@ if IRM == 1 && session_nber > 0
 end % MRI only (not for training out of fMRI)
 
 %% get all TTL from the task
-if IRM == 1 && session_nber > 0
+if IRM == 1 && session_nb > 0
     [TTL, keyLeft, keyRight,...
         keyLeftUnsure, keyLeftSure, keyRightUnsure, keyRightSure] = keyboard_check_end(TTL, key);
     % key storage of when left/right key have been pressed
@@ -367,7 +374,7 @@ end
 save([results_folder, file_nm,'_messyAllStuff.mat']);
 
 %% Measure maximum power again at the end of each scan
-if IRM == 1 && session_nber > 0
+if IRM == 1 && session_nb > 0
     % add instructions
     DrawFormattedText(window, stim.postTaskMVCmeasurement.text,...
         stim.postTaskMVCmeasurement.x, stim.postTaskMVCmeasurement.y, stim.postTaskMVCmeasurement.colour, scr.wrapat);
@@ -398,7 +405,7 @@ end
 sca;
 
 %% Save Data
-if IRM == 1 && session_nber > 0
+if IRM == 1 && session_nb > 0
     % store all relevant data in final output variable
     all.choice_opt = choiceOptions; % choice options
     % store max before and after the session
@@ -407,7 +414,7 @@ if IRM == 1 && session_nber > 0
             all.start_maxPerf.MVC = initial_MVC;
             all.start_maxPerf.onsets = onsets_initial_MVC;
         case 'mental'
-            if session_nber == 0
+            if session_nb == 0
                 all.calibSummary = calibSummary;
             else
                 all.start_maxPerf.t_min = t_min_initialMaxPerf;
