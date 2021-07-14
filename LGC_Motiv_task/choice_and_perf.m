@@ -80,6 +80,7 @@ t_fbk           = timings.feedback;
 t_fail_and_repeat_fbk = timings.t_fail_and_repeat_fbk;
 
 %% specific variables
+
 switch effort_type
     case 'mental'
         i_sub = Ep_or_Em_vars.i_sub;
@@ -92,7 +93,7 @@ switch effort_type
         F_threshold = Ep_or_Em_vars.F_threshold;
         F_tolerance = Ep_or_Em_vars.F_tolerance;
 end
-timeRemainingEndTrial_ONOFF = Ep_or_Em_vars.timeRemainingEndTrial_ONOFF;
+ timeRemainingEndTrial_ONOFF = Ep_or_Em_vars.timeRemainingEndTrial_ONOFF;
 
 %% initialize onsets
 [onsets.cross,...
@@ -276,8 +277,10 @@ for iTrial = 1:nTrials
                         failed_trials{i_trial_failed}.trial_was_successfull = trial_was_successfull(iTrial);
                         failed_trials{i_trial_failed}.onset.effortPeriod =  onsets.effortPeriod{iTrial};
                         failed_trials{i_trial_failed}.i_trial_idx = iTrial;
+
                         if (errorLimits.useOfErrorThreshold == true) && (perfSummary{iTrial}.n_errorsMade >= errorLimits.errorThreshold)
                             % for the mental effort case where too many errors were made
+
                             DrawFormattedText(window, stim.feedback.error_tooManyErrors.text,...
                                 stim.feedback.error_tooManyErrors.x, stim.feedback.error_tooManyErrors.y, ...
                                 stim.feedback.colour);
