@@ -71,6 +71,7 @@ else
 end
 t_dispChoice    = timings.dispChoice;
 t_fbk           = timings.feedback;
+t_fail_and_repeat_fbk = timings.t_fail_and_repeat_fbk;
 
 % specific variables
 switch effort_type
@@ -94,7 +95,6 @@ timeRemainingEndTrial_ONOFF = Ep_or_Em_vars.timeRemainingEndTrial_ONOFF;
     onsets.keyReleaseMessage,...
     onsets.cross_after_buttonRelease,...
     onsets.fbk, onsets.fbk_win, onsets.fbk_loss,...
-    onsets.fbk_fail,...
     onsets.timeBarWait] = deal(NaN(1,nTrials));
 % variables during effort period should record the data for each trial
 [onsets.effortPeriod,...
@@ -135,7 +135,7 @@ elseif strcmp('P',R_or_P)
 end
 % remember initial baseline value for the right value as it will change due to staircase
 R_right_baseline = R_right_tmp;
-failed_trials={};
+failed_trials = {};
 
 for iTrial = 1:nTrials
     
@@ -162,7 +162,6 @@ for iTrial = 1:nTrials
     i_trial_failed = 0;
     trial_success = 0;
     redo_limit = 100;
-    time_to_wait_between_failure = 3;
     %% choice period
     if ~strcmp(training_R_P_RP_or_mainTask,'mainTask')
         % for training: keep choice period until a choice is done
@@ -290,8 +289,8 @@ for iTrial = 1:nTrials
                         failed_trials{i_trial_failed}.trial_was_successfull = trial_was_successfull(iTrial);
                         failed_trials{i_trial_failed}.onset.effortPeriod =  onsets.effortPeriod{iTrial};
                         failed_trials{i_trial_failed}.i_trial_idx = iTrial;
-                        % for the mental effort case where too many errors were made,
-                        % adapt the error feedback accordingly
+                        % for the physical effort, when participant was too
+                        % slow
                         
                         DrawFormattedText(window, stim.feedback.error_tooSlow.text,...
                             stim.feedback.error_tooSlow.x, stim.feedback.error_tooSlow.y, ...
@@ -300,8 +299,8 @@ for iTrial = 1:nTrials
                         DrawFormattedText(window,stim.feedback.error_tryAgain.text,...
                             stim.feedback.error_tryAgain.x, stim.feedback.error_tryAgain.y, ...
                             stim.feedback.colour);
-                        [~,onsets.fbk_fail(iTrial)] = Screen(window,'Flip');
-                        WaitSecs(time_to_wait_between_failure);
+                        [~,onsets.(['fbk_fail_trial_',num2str(iTrial)]).(['fail_',num2str(i_trial_failed)])] = Screen(window,'Flip');
+                        WaitSecs(t_fail_and_repeat_fbk);
                     end
                 end
                 
@@ -324,8 +323,8 @@ for iTrial = 1:nTrials
                         failed_trials{i_trial_failed}.trial_was_successfull = trial_was_successfull(iTrial);
                         failed_trials{i_trial_failed}.onset.effortPeriod =  onsets.effortPeriod{iTrial};
                         failed_trials{i_trial_failed}.i_trial_idx = iTrial;
-                        % for the mental effort case where too many errors were made,
-                        % adapt the error feedback accordingly
+                        % for the mental effort case where too subject was
+                        % too slow
                         DrawFormattedText(window, stim.feedback.error_tooSlow.text,...
                             stim.feedback.error_tooSlow.x, stim.feedback.error_tooSlow.y, ...
                             stim.feedback.colour);
@@ -333,8 +332,8 @@ for iTrial = 1:nTrials
                         DrawFormattedText(window,stim.feedback.error_tryAgain.text,...
                             stim.feedback.error_tryAgain.x, stim.feedback.error_tryAgain.y, ...
                             stim.feedback.colour);
-                        [~,onsets.fbk_fail(iTrial)] = Screen(window,'Flip');
-                        WaitSecs(time_to_wait_between_failure);
+                        [~,onsets.(['fbk_fail_trial_',num2str(iTrial)]).(['fail_',num2str(i_trial_failed)])] = Screen(window,'Flip');
+                        WaitSecs(t_fail_and_repeat_fbk);
                     end
                 end
         end % effort type loop

@@ -77,6 +77,7 @@ else
 end
 t_dispChoice    = timings.dispChoice;
 t_fbk           = timings.feedback;
+t_fail_and_repeat_fbk = timings.t_fail_and_repeat_fbk;
 
 %% specific variables
 
@@ -101,7 +102,6 @@ end
     onsets.keyReleaseMessage,...
     onsets.cross_after_buttonRelease,...
     onsets.fbk, onsets.fbk_win, onsets.fbk_loss,...
-    onsets.fbk_fail,...
     onsets.timeBarWait] = deal(NaN(1,nTrials));
 % variables during effort period should record the data for each trial
 [onsets.effortPeriod,...
@@ -129,16 +129,13 @@ switch effort_type
         n_max_to_reach_perTrial = NaN(1,nTrials);
 end
 
-failed_trials={};
+failed_trials = {};
 for iTrial = 1:nTrials
     
     % initialize variables in case of failure on this trial
     i_trial_failed = 0;
     trial_success = 0;
     redo_limit = 100;
-    time_to_wait_between_failure = 3;
-%     % in case it is not defined
-%     errorLimits = 0;
     
     %% fixation cross period
     Screen('FillRect',window, white, stim.cross.verticalLine); % vertical line
@@ -247,8 +244,8 @@ for iTrial = 1:nTrials
                         failed_trials{i_trial_failed}.trial_was_successfull = trial_was_successfull(iTrial);
                         failed_trials{i_trial_failed}.onset.effortPeriod =  onsets.effortPeriod{iTrial};
                         failed_trials{i_trial_failed}.i_trial_idx = iTrial;
-                        % for the mental effort case where too many errors were made,
-                        % adapt the error feedback accordingly
+                        % for the physical effort, when participant was too
+                        % slow
                         DrawFormattedText(window, stim.feedback.error_tooSlow.text,...
                             stim.feedback.error_tooSlow.x, stim.feedback.error_tooSlow.y, ...
                             stim.feedback.colour);
@@ -256,8 +253,8 @@ for iTrial = 1:nTrials
                         DrawFormattedText(window,stim.feedback.error_tryAgain.text,...
                             stim.feedback.error_tryAgain.x, stim.feedback.error_tryAgain.y, ...
                             stim.feedback.colour);
-                        [~,onsets.fbk_fail(iTrial)] = Screen(window,'Flip');
-                        WaitSecs(time_to_wait_between_failure);
+                        [~,onsets.(['fbk_fail_trial_',num2str(iTrial)]).(['fail_',num2str(i_trial_failed)])] = Screen(window,'Flip');
+                        WaitSecs(t_fail_and_repeat_fbk);
                     end
                 end
                 
@@ -275,32 +272,30 @@ for iTrial = 1:nTrials
                     trial_success = trial_was_successfull(iTrial);
                     % Save the data if it was an uncessfull trial, to prevent rewriting of the data
                     if trial_success == 0
-                        i_trial_failed = i_trial_failed +1;
+                        i_trial_failed = i_trial_failed + 1;
                         failed_trials{i_trial_failed}.perfSummary = perfSummary{iTrial};
                         failed_trials{i_trial_failed}.trial_was_successfull = trial_was_successfull(iTrial);
                         failed_trials{i_trial_failed}.onset.effortPeriod =  onsets.effortPeriod{iTrial};
                         failed_trials{i_trial_failed}.i_trial_idx = iTrial;
-                        if perfSummary{iTrial}.n_errorsMade >= errorLimits.errorThreshold
-                            % for the mental effort case where too many errors were made,
-                            % adapt the error feedback accordingly
-                            
+
+                        if (errorLimits.useOfErrorThreshold == true) && (perfSummary{iTrial}.n_errorsMade >= errorLimits.errorThreshold)
+                            % for the mental effort case where too many errors were made
+
                             DrawFormattedText(window, stim.feedback.error_tooManyErrors.text,...
                                 stim.feedback.error_tooManyErrors.x, stim.feedback.error_tooManyErrors.y, ...
                                 stim.feedback.colour);
                         else
-                            % for the mental effort case where too many errors were made,
-                            % adapt the error feedback accordingly
+                            % for the mental effort case where the
+                            % participant was too slow to answer
                             DrawFormattedText(window, stim.feedback.error_tooSlow.text,...
                                 stim.feedback.error_tooSlow.x, stim.feedback.error_tooSlow.y, ...
                                 stim.feedback.colour);
-                            
-                            DrawFormattedText(window,stim.feedback.error_tryAgain.text,...
-                                stim.feedback.error_tryAgain.x, stim.feedback.error_tryAgain.y, ...
-                                stim.feedback.colour);
-                            
                         end
-                        [~,onsets.fbk_fail(iTrial)] = Screen(window,'Flip');
-                        WaitSecs(time_to_wait_between_failure);
+                        DrawFormattedText(window,stim.feedback.error_tryAgain.text,...
+                            stim.feedback.error_tryAgain.x, stim.feedback.error_tryAgain.y, ...
+                            stim.feedback.colour);
+                        [~,onsets.(['fbk_fail_trial_',num2str(iTrial)]).(['fail_',num2str(i_trial_failed)])] = Screen(window,'Flip');
+                        WaitSecs(t_fail_and_repeat_fbk);
                     end
                 end
         end % effort type loop
