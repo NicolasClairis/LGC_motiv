@@ -292,6 +292,7 @@ for iTrial = 1:nTrials
                         failed_trials{i_trial_failed}.i_trial_idx = iTrial;
                         % for the mental effort case where too many errors were made,
                         % adapt the error feedback accordingly
+                        
                         DrawFormattedText(window, stim.feedback.error_tooSlow.text,...
                             stim.feedback.error_tooSlow.x, stim.feedback.error_tooSlow.y, ...
                             stim.feedback.colour);

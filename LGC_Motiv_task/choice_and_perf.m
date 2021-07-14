@@ -46,7 +46,7 @@ function[summary] = choice_and_perf(scr, stim, key,...
 % results_folder: path where data needs to be saved
 %
 % file_nm: file name for results
-% 
+%
 % OUTPUTS
 % summary: structure with most relevant variables extracted during
 % the performance
@@ -70,7 +70,7 @@ timeLimitPerf = true; % time limit to reach level of force required
 if choiceTimeParameters.timeLimit == true
     choiceTimeParameters.t_choice = timings.choice;
 end
-if timeLimitPerf == true 
+if timeLimitPerf == true
     t_max_effort    = timings.max_effort;
 else
     t_max_effort = [];
@@ -123,14 +123,14 @@ switch effort_type
         
         % randomize the type of the first trial (odd/even or higher/lower
         % than 5)
-%         mental_taskType_trialStart = mental_task_start(nTrials);
+        %         mental_taskType_trialStart = mental_task_start(nTrials);
         % number of good answers to reach at each trial
         n_max_to_reach_perTrial = NaN(1,nTrials);
 end
 
 failed_trials={};
 for iTrial = 1:nTrials
-   
+    
     % initialize variables in case of failure on this trial
     i_trial_failed = 0;
     trial_success = 0;
@@ -257,7 +257,7 @@ for iTrial = 1:nTrials
                         WaitSecs(time_to_wait_between_failure);
                     end
                 end
-
+                
             case 'mental'
                 mentalE_prm.startAngle = stim.difficulty.startAngle.(['level_',num2str(E_chosen(iTrial))]); % adapt start angle to current level of difficulty
                 n_max_to_reach_perTrial(iTrial) = n_to_reach.(['E_level_',num2str(E_chosen(iTrial))]);
@@ -277,16 +277,25 @@ for iTrial = 1:nTrials
                         failed_trials{i_trial_failed}.trial_was_successfull = trial_was_successfull(iTrial);
                         failed_trials{i_trial_failed}.onset.effortPeriod =  onsets.effortPeriod{iTrial};
                         failed_trials{i_trial_failed}.i_trial_idx = iTrial;
-                        % for the mental effort case where too many errors were made,
-                        % adapt the error feedback accordingly
-                        DrawFormattedText(window, stim.feedback.error_tooSlow.text,...
-                            stim.feedback.error_tooSlow.x, stim.feedback.error_tooSlow.y, ...
-                            stim.feedback.colour);
-                        
-                        DrawFormattedText(window,stim.feedback.error_tryAgain.text,...
-                            stim.feedback.error_tryAgain.x, stim.feedback.error_tryAgain.y, ...
-                            stim.feedback.colour);
-                        [~,onsets.fbk_fail(iTrial)] = Screen(window,'Flip');
+                        if perfSummary.n_errorsMade >= errorLimits
+                            % for the mental effort case where too many errors were made,
+                            % adapt the error feedback accordingly
+                            
+                            DrawFormattedText(window, stim.feedback.error_tooManyErrors.text,...
+                                stim.feedback.error_tooManyErrors.x, stim.feedback.error_tooManyErrors.y, ...
+                                stim.feedback.colour);
+                        else
+                            % for the mental effort case where too many errors were made,
+                            % adapt the error feedback accordingly
+                            DrawFormattedText(window, stim.feedback.error_tooSlow.text,...
+                                stim.feedback.error_tooSlow.x, stim.feedback.error_tooSlow.y, ...
+                                stim.feedback.colour);
+                            
+                            DrawFormattedText(window,stim.feedback.error_tryAgain.text,...
+                                stim.feedback.error_tryAgain.x, stim.feedback.error_tryAgain.y, ...
+                                stim.feedback.colour);
+                            [~,onsets.fbk_fail(iTrial)] = Screen(window,'Flip');
+                        end
                         WaitSecs(time_to_wait_between_failure);
                     end
                 end
@@ -343,7 +352,7 @@ for iTrial = 1:nTrials
                         stim.feedback.colour);
             end
             drawRewardAmount(scr, stim, R_chosen(iTrial), R_or_P_tmp, 'middle_center_start');
-        
+            
             [~,onsets.fbk(iTrial)] = Screen(window,'Flip');
             switch R_or_P_tmp
                 case 'R'
