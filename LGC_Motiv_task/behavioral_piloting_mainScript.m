@@ -53,13 +53,13 @@ file_nm = ['pilot_data',init,'_sub_',num2str(iSubject)];
 IRM = 0; % adapt display for CIBM scanner + record TTL triggers + adapt position of keys
 testing_script = 1;% if testing script, doesn't matter if timings are not perfect => adapt PTB timings accordingly
 % define subparts of the task to perform (on/off)
-taskToPerform.physical.calib = 'on';
-taskToPerform.physical.learning = 'on';
-taskToPerform.physical.training = 'on';
-taskToPerform.physical.task = 'on';
-taskToPerform.mental.learning = 'on';
+taskToPerform.physical.calib = 'off';
+taskToPerform.physical.learning = 'off';
+taskToPerform.physical.training = 'off';
+taskToPerform.physical.task = 'off';
+taskToPerform.mental.learning = 'off';
 taskToPerform.mental.calib = 'on';
-taskToPerform.mental.training = 'on';
+taskToPerform.mental.training = 'off';
 taskToPerform.mental.task = 'on';
 langage = 'fr'; % 'fr'/'engl' french or english?
 % initialize screen
