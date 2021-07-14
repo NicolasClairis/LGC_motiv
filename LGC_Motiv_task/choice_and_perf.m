@@ -128,7 +128,7 @@ switch effort_type
         n_max_to_reach_perTrial = NaN(1,nTrials);
 end
 
-
+failed_trials={};
 for iTrial = 1:nTrials
    
     % initialize variables in case of failure on this trial

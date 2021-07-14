@@ -135,7 +135,7 @@ elseif strcmp('P',R_or_P)
 end
 % remember initial baseline value for the right value as it will change due to staircase
 R_right_baseline = R_right_tmp;
-
+failed_trials={};
 
 for iTrial = 1:nTrials
     
