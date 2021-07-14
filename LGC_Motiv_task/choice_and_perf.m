@@ -130,6 +130,12 @@ end
 
 
 for iTrial = 1:nTrials
+   
+    % initialize variables in case of failure on this trial
+    i_trial_failed = 0;
+    trial_success = 0;
+    redo_limit = 100;
+    time_to_wait_between_failure = 3;
     
     %% fixation cross period
     Screen('FillRect',window, white, stim.cross.verticalLine); % vertical line
@@ -233,12 +239,35 @@ for iTrial = 1:nTrials
             case 'mental'
                 mentalE_prm.startAngle = stim.difficulty.startAngle.(['level_',num2str(E_chosen(iTrial))]); % adapt start angle to current level of difficulty
                 n_max_to_reach_perTrial(iTrial) = n_to_reach.(['E_level_',num2str(E_chosen(iTrial))]);
-                [perfSummary{iTrial},...
-                    trial_was_successfull(iTrial),...
-                    onsets.effortPeriod{iTrial}] = mental_effort_perf_Nback(scr, stim, key,...
-                    mental_nbers_per_trial(iTrial,:),...
-                    mentalE_prm, n_max_to_reach_perTrial(iTrial),...
-                    'col1', 'noInstructions', timeLimitPerf, t_max_effort, errorLimits);
+                % If participant do not finish effort in time, redo the trial.
+                while trial_success == 0 || i_trial_failed >= redo_limit
+                    [perfSummary{iTrial},...
+                        trial_was_successfull(iTrial),...
+                        onsets.effortPeriod{iTrial}] = mental_effort_perf_Nback(scr, stim, key,...
+                        mental_nbers_per_trial(iTrial,:),...
+                        mentalE_prm, n_max_to_reach_perTrial(iTrial),...
+                        'col1', 'noInstructions', timeLimitPerf, t_max_effort, errorLimits);
+                    trial_success = trial_was_successfull(iTrial);
+                    % Save the data if it was an uncessfull trial, to prevent rewriting of the data
+                    if trial_success == 0
+                        i_trial_failed = i_trial_failed +1;
+                        failed_trials{i_trial_failed}.perfSummary = perfSummary{iTrial};
+                        failed_trials{i_trial_failed}.trial_was_successfull = trial_was_successfull(iTrial);
+                        failed_trials{i_trial_failed}.onset.effortPeriod =  onsets.effortPeriod{iTrial};
+                        failed_trials{i_trial_failed}.i_trial_idx = iTrial;
+                        % for the mental effort case where too many errors were made,
+                        % adapt the error feedback accordingly
+                        DrawFormattedText(window, stim.feedback.error_tooSlow.text,...
+                            stim.feedback.error_tooSlow.x, stim.feedback.error_tooSlow.y, ...
+                            stim.feedback.colour);
+                        
+                        DrawFormattedText(window,stim.feedback.error_tryAgain.text,...
+                            stim.feedback.error_tryAgain.x, stim.feedback.error_tryAgain.y, ...
+                            stim.feedback.colour);
+                        [~,onsets.fbk_fail(iTrial)] = Screen(window,'Flip');
+                        WaitSecs(time_to_wait_between_failure);
+                    end
+                end
         end % effort type loop
         effortTime(iTrial) = toc;
     end % choice made or not?
@@ -369,6 +398,7 @@ summary.gain = gain;
 summary.totalGain = totalGain;
 summary.trial_was_successfull = trial_was_successfull;
 summary.effortTime = effortTime;
+summary.failed_trials = failed_trials;
 switch effort_type
     case 'mental'
         summary.mentalE_prm = mentalE_prm;
