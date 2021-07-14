@@ -204,7 +204,8 @@ if strcmp(effort_type,'mental')
     % no error threshold nor mapping of answers when errors are
     % made
     calib_errorLimits_Em.useOfErrorMapping = false;
-    calib_errorLimits_Em.useOfErrorThreshold = false;
+    calib_errorLimits_Em.useOfErrorThreshold = true;
+    calib_errorLimits_Em.errorThreshold = 20;
 end
 if session_nber == 0
     
