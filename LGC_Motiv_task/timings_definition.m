@@ -50,6 +50,7 @@ switch effort_type % in case you use different numbers for each effort type
         calibTimes.ifi = t_ifi; % manual definition to match with read frame rate
 end
 calibTimes.fbk = 2;
+calibTimes.fail_and_repeat_fbk = 5;
 
 %% learning timings
 switch effort_type % in case you use different numbers for each effort type
@@ -62,6 +63,7 @@ switch effort_type % in case you use different numbers for each effort type
         learningTimes.learning_rest = 1;
         warning('for real subjects update resting time, now short for Arthur');
 end
+learningTimes.fail_and_repeat_fbk = 5;
 
 %% main task timings
 jitterMin = 0.5;
@@ -90,11 +92,13 @@ switch effort_type
         taskTimes.t_min_scalingFactor = 150/100; % multiply calibrated minimal time by this value
 end
 t_fbk = 1; % feedback display
+t_fail_and_repeat_fbk = 3; % feedback after a failure => repeat the effort after that
 taskTimes.cross.mainTask = t_cross;
 taskTimes.choice = t_choice;
 taskTimes.dispChoice = t_dispChoice;
 taskTimes.feedback = t_fbk;
 taskTimes.finalCross = t_finalCross;
+taskTimes.fail_and_repeat_fbk = t_fail_and_repeat_fbk;
 
 %% training timings
 trainingTimes.instructions = 5;
@@ -126,9 +130,10 @@ switch effort_type
     case 'mental'
         trainingTimes.t_min_scalingFactor = 150/100; % multiply calibrated minimal time by this value
 end
-trainingTimes.choice        = t_choice;
-trainingTimes.dispChoice    = t_dispChoice;
-trainingTimes.feedback      = t_fbk;
+trainingTimes.choice                = t_choice;
+trainingTimes.dispChoice            = t_dispChoice;
+trainingTimes.feedback              = t_fbk;
+trainingTimes.fail_and_repeat_fbk   = t_fail_and_repeat_fbk;
 
 %% time feedback end of a block
 mainTimes.endSession = 180;

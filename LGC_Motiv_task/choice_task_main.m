@@ -55,38 +55,17 @@ end
 % go back to folder with scripts
 cd(main_task_folder);
 
-% %% task type (physical/mental effort) + subject + session identification
-% [effort_type_letter,...
-%     session_nm] = deal('');
-% 
-% % effort type?
-% while ~ismember(effort_type_letter,{'p','m'})
-%     effort_type_letter = input('effort type? For physical, press ''p'', for mental press ''m''.','s');
-% end
-% switch effort_type_letter
-%     case 'p'
-%         effort_type = 'physical';
-%     case 'm'
-%         effort_type = 'mental';
-% end
-
-% subject
-% while isempty(sub_initials)
-%     sub_initials = input('Subject initials?','s');
-% end
-% while isempty(sub_nber) || length(sub_nber) ~= 3
-%     sub_nber_str = input('Subject id number? (3 numbers)','s'); % string
-% %     number of the subject
-% end
 %% Define subject ID
 
 % Insert the initials, the number of the participants
-[init, iSubject, effort_type,session_nb] = deal([]);
-while isempty(init) || isempty(iSubject) || isempty(effort_type) || isempty(session_nb) % repeat until both are answered
+[init, iSubject, effort_type,session_nm] = deal([]);
+while isempty(init) || isempty(iSubject) ||...
+        isempty(effort_type) || ~ismember(effort_type,{'p','m'}) ||...
+        isempty(session_nm) || str2double(session_nm) < 0 % repeat until both are answered
     info = inputdlg({'Initials', 'Subject ID','Type d''effort p/m','Session number(0-4) (0 for calib)'});
-    [init, iSubject,effort_type, session_nb] = info{[1,2,3,4]}
+    [init, iSubject,effort_type, session_nm] = info{[1,2,3,4]};
 end
-session_nb = str2double(session_nb);
+session_nb = str2double(session_nm);
 switch effort_type
     case 'p'
         effort_type = 'physical';
@@ -97,17 +76,8 @@ end
 % Create subjectCodeName which is used as a file saving name
 subjectCodeName = strcat(init,'_s',iSubject);
 
-% % ask session number (especially for fMRI mapping with behavioral data)
-% n_sess_max = 5; % maximal number of sessions
-% while isempty(session_nb) ||...
-%         str2double(session_nb) < 0 ||...
-%         str2double(session_nb) > n_sess_max
-%     session_nb = input('Session number? (write 0 if calibration session)','s');
-%     session_nb = str2double(session_nb);
-% end
-
 % file name
-file_nm = [subjectCodeName,'_session',session_nb,'_',effort_type,'_task'];
+file_nm = [subjectCodeName,'_session',session_nm,'_',effort_type,'_task'];
 % verify the files do not already gexist
 if exist([results_folder, file_nm,'.mat'],'file')
     error(['The file name ',file_nm,'.mat already exists.',...
