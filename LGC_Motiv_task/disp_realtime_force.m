@@ -84,7 +84,7 @@ for yaxis = -yMetrics:smallGrad:yMetrics
 end
 
 %% draw main graduations of the scale
-for yaxis = (-4*yMetrics/5):(yMetrics/5):yMetrics
+for yaxis = -yMetrics:(yMetrics/5):yMetrics
     Screen('DrawLine', window, white,...
         leftScaleLimit,...
         (yScreenCenter+yaxis),...
@@ -114,7 +114,7 @@ Screen('FillRect', window, red,...
 % Screen('DrawLine', window, weakRed, leftScaleLimit, yThresholdTolerance, rightScaleLimit, yThresholdTolerance,3);
 
 %% draw an orange bar with the actual level of force
-yActualLevelBottom = bottomScaleLimit + 10;
+yActualLevelBottom = bottomScaleLimit;% + 10;
 if F_now > 0 && F_now < 100
     yActualLevelTop = bottomScaleLimit - (F_now/100)*graphYSize;
 elseif F_now <= 0 % bound to bottom of the scale

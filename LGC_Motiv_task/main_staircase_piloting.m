@@ -158,7 +158,7 @@ if strcmp(taskToPerform.mental.calib,'on') ||...
     
     % calibration: calibrate the maximal duration required for the top effort
     n_calibMax = n_to_reach.(['E_level_',num2str(n_E_levels)]);
-    n_calibTrials_Em = 5;
+    n_calibTrials_Em = 3;
     
     % learning
     % perform 2 learning sessions, one with instructions and then one without
