@@ -31,10 +31,10 @@ cd(main_task_folder);
 %% Define subject ID
 
 % Insert the initials, the number of the participants
-[init, iSubject,language] = deal([]);
-while isempty(init) || isempty(iSubject) || isempty(language) || ~ismember(language,{'fr','en'}) % repeat until both are answered
-    info = inputdlg({'Initials', 'Subject ID','Language (fr or en)'});
-    [init, iSubject,language] = info{[1,2,3]};
+[init, iSubject,langue] = deal([]);
+while isempty(init) || isempty(iSubject) || isempty(langue) || ~ismember(langue,{'f','e'}) % repeat until both are answered
+    info = inputdlg({'Initials', 'Subject ID','Language (f or e)'});
+    [init, iSubject,langue] = info{[1,2,3]};
 end
 
 % Create subjectCodeName which is used as a file saving name
@@ -54,10 +54,10 @@ taskToPerform.mental.learning = 'on';
 taskToPerform.mental.calib = 'on';
 taskToPerform.mental.training = 'on';
 taskToPerform.mental.task = 'on';
-switch language
-    case 'fr'
+switch langue
+    case 'f'
         langage = 'fr';
-    case 'en'
+    case 'e'
         langage = 'engl'; % 'fr'/'engl' french or english?
     otherwise
         error('langage not recognised');
@@ -123,7 +123,7 @@ n_buttonsChoice = 2;
 if strcmp(taskToPerform.mental.calib,'on') || strcmp(taskToPerform.mental.task,'on')
     calib_errorLimits_Em.useOfErrorMapping = false;
     calib_errorLimits_Em.useOfErrorThreshold = true;
-    calib_errorLimits_Em.errorThreshold = 20;
+    calib_errorLimits_Em.errorThreshold = 15;
 end
 % time for end of session
 % t_endSession = mainTimes.endSession;
