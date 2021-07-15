@@ -47,20 +47,29 @@ stim.reward.textSizeForPTB = scr.textSize.reward;
 Screen('TextSize', window, stim.reward.textSizeForPTB);
 % extract reward amount text size (for choice)
 [~,~,textSizeR] = DrawFormattedText(window,'+0.00 CHF', 'center', 'center', white);
-xSizeText = textSizeR(3) - textSizeR(1);
-ySizeText = textSizeR(4) - textSizeR(2);
-stim.reward.xSizeText = xSizeText;
-stim.reward.ySizeText = ySizeText;
-% define where the text will be displayed
-stim.reward.text.top_left_start     = [leftBorder + visibleXsize*(1/4) - xSizeText/2,   y_coordinates(upperBorder, visibleYsize, 2/5, textSizeR)]; % left option choice period
-stim.reward.text.top_right_start    = [leftBorder + visibleXsize*(3/4) - xSizeText/2,   y_coordinates(upperBorder, visibleYsize, 2/5, textSizeR)]; % right option choice period
-stim.reward.text.top_center_start   = [x_centerCoordinates(xScreenCenter, textSizeR),   y_coordinates(upperBorder, visibleYsize, 2/5, textSizeR)]; % chosen option display
+xSizeTextR = textSizeR(3) - textSizeR(1);
+ySizeTextR = textSizeR(4) - textSizeR(2);
+stim.reward.xSizeText = xSizeTextR;
+stim.reward.ySizeText = ySizeTextR;
+% define where the text will be displayed during choice
+stim.reward.text.top_left_start     = [leftBorder + visibleXsize*(1/4) - xSizeTextR/2,   y_coordinates(upperBorder, visibleYsize, 2/5, textSizeR)]; % left option choice period
+stim.reward.text.top_right_start    = [leftBorder + visibleXsize*(3/4) - xSizeTextR/2,   y_coordinates(upperBorder, visibleYsize, 2/5, textSizeR)]; % right option choice period
 % display on middle of the screen for performance feedback
 stim.reward.text.middle_center_start = [x_centerCoordinates(xScreenCenter, textSizeR),  y_coordinates(upperBorder, visibleYsize, 1/2, textSizeR)]; % feedback
-
-% define the colour to use for the text according to the condition
-% (reward/punishment)
+% colour for the text
 stim.reward.text.colour = white;
+
+% same for punishments
+[~,~,textSizeP] = DrawFormattedText(window,'-0.00 CHF', 'center', 'center', white);
+xSizeTextP = textSizeP(3) - textSizeP(1);
+ySizeTextP = textSizeP(4) - textSizeP(2);
+stim.punishment.xSizeText = xSizeTextP;
+stim.punishment.ySizeText = ySizeTextP;
+% define where the text will be displayed during choice
+stim.punishment.text.top_left_start     = [leftBorder + visibleXsize*(1/4) - xSizeTextR/2,   y_coordinates(upperBorder, visibleYsize, 2/5, textSizeP)]; % left option choice period
+stim.punishment.text.top_right_start    = [leftBorder + visibleXsize*(3/4) - xSizeTextR/2,   y_coordinates(upperBorder, visibleYsize, 2/5, textSizeP)]; % right option choice period
+% display on middle of the screen for performance feedback
+stim.punishment.text.middle_center_start = [x_centerCoordinates(xScreenCenter, textSizeP),  y_coordinates(upperBorder, visibleYsize, 1/2, textSizeP)]; % feedback
 % stim.punishment.text.colour = [239 138 98];
 stim.punishment.text.colour = white;
 
@@ -641,8 +650,8 @@ stim.textRectSize.ySizeForEffort = ySizeForEffort;
 % extract x/y coordinates for the display of the corresponding text
 stim.winRewardText.top_left         = [leftBorder + visibleXsize/4 - xSizeWin/2,            stim.reward.text.top_left_start(2) - ySizeWin*2.5];
 stim.winRewardText.top_right        = [leftBorder + visibleXsize*(3/4) - xSizeWin/2,        stim.reward.text.top_right_start(2) - ySizeWin*2.5];
-stim.loseRewardText.top_left        = [leftBorder + visibleXsize/4 - xSizeLose/2,           stim.reward.text.top_left_start(2) - ySizeLose*2.5];
-stim.loseRewardText.top_right       = [leftBorder + visibleXsize*(3/4) - xSizeLose/2,       stim.reward.text.top_right_start(2) - ySizeLose*2.5];
+stim.loseRewardText.top_left        = [leftBorder + visibleXsize/4 - xSizeLose/2,           stim.punishment.text.top_left_start(2) - ySizeLose*2.5];
+stim.loseRewardText.top_right       = [leftBorder + visibleXsize*(3/4) - xSizeLose/2,       stim.punishment.text.top_right_start(2) - ySizeLose*2.5];
 stim.effort_introText.bottom_left   = [leftBorder + visibleXsize/4 - xSizeForEffort/2,      stim.difficulty.below_left(2) - ySizeForEffort];
 stim.effort_introText.bottom_right  = [leftBorder + visibleXsize*(3/4) - xSizeForEffort/2,  stim.difficulty.below_right(2)  - ySizeForEffort];
 
@@ -670,17 +679,24 @@ stim.chosenOptionMsg.x = x_centerCoordinates(xScreenCenter, textSizeChosenMsg);
 stim.chosenOptionMsg.y = y_coordinates(upperBorder, visibleYsize, 3/16, textSizeChosenMsg);
 % place reward amount and difficulty level accordingly
 ySizeChosenMsg = textSizeChosenMsg(4) - textSizeChosenMsg(2);
-stim.chosenOption.reward = stim.reward.text.top_center_start;
-stim.chosenOption.difficulty = stim.difficulty.below_center;
-stim.chosenOption.squareColour = black;
+% square surrounding chosen option
 stim.chosenOption.squareRect = [leftBorder + visibleXsize*(1/3),...
     upperBorder + visibleYsize*(3/16) + ySizeChosenMsg,...
     leftBorder + visibleXsize*(2/3),...
     upperBorder + visibleYsize*(11/12)];
+% Win/Lose text message
+stim.winRewardText.top_center       = [xScreenCenter - xSizeWin/2,  stim.chosenOption.squareRect(2) + ySizeWin*1.5];
+stim.loseRewardText.top_center      = [xScreenCenter - xSizeLose/2, stim.chosenOption.squareRect(2) + ySizeWin*1.5];
+% amount of money to Win/Lose
+stim.chosenOption.reward   = [x_centerCoordinates(xScreenCenter, textSizeR),  stim.winRewardText.top_center(2) + ySizeTextR*1.5]; % chosen option display
+stim.reward.text.top_center_start = stim.chosenOption.reward;
+stim.chosenOption.punishment   = [x_centerCoordinates(xScreenCenter, textSizeP),  stim.loseRewardText.top_center(2) + ySizeTextP*1.5]; % chosen option display
+stim.punishment.text.top_center_start = stim.chosenOption.punishment;
+% effort informations
+stim.chosenOption.difficulty = stim.difficulty.below_center;
+stim.chosenOption.squareColour = black;
 stim.chosenOption.squareWidth = 10;
-stim.winRewardText.top_center       = [xScreenCenter - xSizeWin/2,                          stim.reward.text.top_center_start(2) - ySizeWin*2.5];
-stim.loseRewardText.top_center      = [xScreenCenter - xSizeLose/2,                         stim.reward.text.top_center_start(2) - ySizeLose*2.5];
-stim.effort_introText.bottom_center = [xScreenCenter - xSizeForEffort/2,                    stim.difficulty.below_center(2)  - ySizeForEffort];
+stim.effort_introText.bottom_center = [xScreenCenter - xSizeForEffort/2, stim.difficulty.below_center(2)  - ySizeForEffort];
 
 %% mental effort performance
 % display of the relevant instructions
