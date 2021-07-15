@@ -10,7 +10,7 @@ clc;
 cd ..
 main_folder                 = [pwd filesep]; % you have to be sure that you are in the correct path when you launch the script
 main_task_folder_analysis            = [main_folder, 'LGC_Motiv_task' filesep];
-folder_to_open              = ['pilots_v5_IP_Nback2_NOtask_switching'];
+folder_to_open              = ['pilots_v6_IP_Nback2_NOtaskSwitching_NOriskRepeatAfterFail'];
 results_folder              = [main_folder, 'LGC_Motiv_results' filesep folder_to_open filesep];
 
 main_task_folder_analysis = 'D:\LGC_motiv\LGC_Motiv_task\';
@@ -29,7 +29,7 @@ nb_pilots = round(size(fstruct,1)/nb_files_per_pilot);
 % pilot_ID = linspace(1,nb_pilots,nb_pilots);
 
 % find the ID of pilots
-for i = 1:nb_pilots*19
+for i = 1:length(fstruct)
     name_tmp = fstruct(i).name;
     ID_tmp(i) = str2double(name_tmp(25));
 end
@@ -63,11 +63,11 @@ for i_pilot = 1:nb_pilots
     delta_IP(i_pilot,14) = 1.5 - all.physical.EffortLvl_2.session_nb2.repeat_nb2.perfSummary.IP;
     delta_IP(i_pilot,15) = 1.5 - all.mental.EffortLvl_2.session_nb2.repeat_nb1.perfSummary.IP;
     delta_IP(i_pilot,16) = 1.5 - all.mental.EffortLvl_2.session_nb2.repeat_nb2.perfSummary.IP;
-    if exist('initial_MVC')
+    if exist('initial_MVC') && exist('last_MVC') 
         delta_MVC(i_pilot) = (initial_MVC.MVC - last_MVC.MVC)/ initial_MVC.MVC * 100;
     end
     
-    if exist('t_min_calib')
+    if exist('t_min_calib') && exist('t_min_lastCalib')
         delta_MVM(i_pilot) = t_min_lastCalib - t_min_calib;
     end
     
