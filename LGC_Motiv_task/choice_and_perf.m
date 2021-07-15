@@ -77,7 +77,7 @@ else
 end
 t_dispChoice    = timings.dispChoice;
 t_fbk           = timings.feedback;
-t_fail_and_repeat_fbk = timings.t_fail_and_repeat_fbk;
+t_fail_and_repeat_fbk = timings.fail_and_repeat_fbk;
 
 %% specific variables
 
