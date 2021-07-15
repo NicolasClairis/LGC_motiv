@@ -14,9 +14,9 @@ function[R_money] = R_amounts(n_R_levels, punishment_yn)
 %% rewards
 switch n_R_levels
     case 3
-        R_money.R_1 = 1.50;
-        R_money.R_2 = 1.70;
-        R_money.R_3 = 1.90;
+        R_money.R_1 = 1.70;
+        R_money.R_2 = 1.85;
+        R_money.R_3 = 2.00;
     case 4
         R_money.R_1 = 0.20;
         R_money.R_2 = 0.50;
@@ -37,8 +37,8 @@ end
 if strcmp(punishment_yn,'yes')
     switch n_R_levels
         case 3
-            R_money.P_1 = 1.10;
-            R_money.P_2 = 1.30;
+            R_money.P_1 = 1.20;
+            R_money.P_2 = 1.35;
             R_money.P_3 = 1.50;
         case 4
             R_money.P_1 = 0.2;
