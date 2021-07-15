@@ -14,7 +14,7 @@ main_folder                 = [pwd filesep]; % you have to be sure that you are 
 main_task_folder            = [main_folder, 'LGC_Motiv_task' filesep];
 results_folder              = [main_folder, 'LGC_Motiv_results' filesep];
 % BioPac_folder               = [main_folder, 'BioPac_functions' filesep];
-pics_folder                 = [main_task_folder, 'Coin_PNG', filesep];
+% pics_folder                 = [main_task_folder, 'Coin_PNG', filesep];
 Matlab_DIY_functions_folder = [main_folder, 'Matlab_DIY_functions', filesep];
 
 % add personal functions (needed for PTB opening at least)
