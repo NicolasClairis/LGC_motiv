@@ -621,23 +621,25 @@ save([results_folder, file_nm,'.mat']);
 
 
 
-%% Show a final screen
-totalGain_str = sprintf('%0.2f',totalGain);
-% display feedback for the current session
-switch langage
-    case 'fr'
-        DrawFormattedText(window,...
-            ['Félicitations! Cette expérience est maintenant terminée.',...
-            'Vous avez obtenu: ',totalGain_str,' chf au cours de cette session.'],...
-            'center', 'center', scr.colours.white, scr.wrapat);
-    case 'engl'
-        DrawFormattedText(window,...
-            ['Congratulations! This session is now completed.',...
-            'You got: ',totalGain_str,' chf during this session.'],...
-            'center', 'center', scr.colours.white, scr.wrapat);
+%% Show a final screen if and only if they performed the task or nonsense since no amount involved
+if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,'on')
+    totalGain_str = sprintf('%0.2f',totalGain);
+    % display feedback for the current session
+    switch langage
+        case 'fr'
+            DrawFormattedText(window,...
+                ['Félicitations! Cette expérience est maintenant terminée.',...
+                'Vous avez obtenu: ',totalGain_str,' chf au cours de cette session.'],...
+                'center', 'center', scr.colours.white, scr.wrapat);
+        case 'engl'
+            DrawFormattedText(window,...
+                ['Congratulations! This session is now completed.',...
+                'You got: ',totalGain_str,' chf during this session.'],...
+                'center', 'center', scr.colours.white, scr.wrapat);
+    end
+    Screen(window,'Flip');
+    WaitSecs(15);
 end
-Screen(window,'Flip');
-WaitSecs(15);
 %% close PTB
 ShowCursor;
 sca;
