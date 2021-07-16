@@ -285,6 +285,7 @@ elseif session_nb > 0
         % wait until the key has been pressed
         [~, ~, keyCode] = KbCheck();
     end
+    disp('OK - space was pressed');
     
     %% start recording fMRI TTL and wait for a given amount of TTL before
     % starting the task in order to calibrate all timings on T0
@@ -322,6 +323,7 @@ elseif session_nb > 0
         % wait until the key has been pressed
         [~, ~, keyCode] = KbCheck();
     end
+    disp('OK - space was pressed');
     
     %% get all TTL from the task
     if IRM == 1
