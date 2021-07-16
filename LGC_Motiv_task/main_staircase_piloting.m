@@ -13,7 +13,7 @@ main_folder                 = [pwd filesep]; % you have to be sure that you are 
 main_task_folder            = [main_folder, 'LGC_Motiv_task' filesep];
 results_folder              = [main_folder, 'LGC_Motiv_results' filesep];
 % BioPac_folder               = [main_folder, 'BioPac_functions' filesep];
-pics_folder                 = [main_task_folder, 'Coin_PNG', filesep];
+% pics_folder                 = [main_task_folder, 'Coin_PNG', filesep];
 Matlab_DIY_functions_folder = [main_folder, 'Matlab_DIY_functions', filesep];
 
 % add personal functions (needed for PTB opening at least)
@@ -31,10 +31,10 @@ cd(main_task_folder);
 %% Define subject ID
 
 % Insert the initials, the number of the participants
-[init, iSubject,language] = deal([]);
-while isempty(init) || isempty(iSubject) || isempty(language) % repeat until both are answered
-    info = inputdlg({'Initials', 'Subject ID','Language (fr or en)'});
-    [init, iSubject,language] = info{[1,2,3]};
+[init, iSubject,langue] = deal([]);
+while isempty(init) || isempty(iSubject) || isempty(langue) || ~ismember(langue,{'f','e'}) % repeat until both are answered
+    info = inputdlg({'Initials', 'Subject ID','Language (f or e)'});
+    [init, iSubject,langue] = info{[1,2,3]};
 end
 
 % Create subjectCodeName which is used as a file saving name
@@ -54,10 +54,10 @@ taskToPerform.mental.learning = 'on';
 taskToPerform.mental.calib = 'on';
 taskToPerform.mental.training = 'on';
 taskToPerform.mental.task = 'on';
-switch language
-    case 'fr'
+switch langue
+    case 'f'
         langage = 'fr';
-    case 'en'
+    case 'e'
         langage = 'engl'; % 'fr'/'engl' french or english?
     otherwise
         error('langage not recognised');
@@ -123,7 +123,7 @@ n_buttonsChoice = 2;
 if strcmp(taskToPerform.mental.calib,'on') || strcmp(taskToPerform.mental.task,'on')
     calib_errorLimits_Em.useOfErrorMapping = false;
     calib_errorLimits_Em.useOfErrorThreshold = true;
-    calib_errorLimits_Em.errorThreshold = 20;
+    calib_errorLimits_Em.errorThreshold = 15;
 end
 % time for end of session
 % t_endSession = mainTimes.endSession;
@@ -196,7 +196,7 @@ if strcmp(taskToPerform.physical.calib,'on')
     end
     
     [initial_MVC, onsets_initial_MVC] = physical_effort_MVC(scr, stim, dq, n_MVC_repeat, calibTimes_Ep);
-    MVC = nanmax(initial_MVC.MVC); % expressed in Voltage
+    MVC = max(initial_MVC.MVC); % expressed in Voltage
 end
 
 % learning physical
@@ -621,23 +621,25 @@ save([results_folder, file_nm,'.mat']);
 
 
 
-%% Show a final screen
-totalGain_str = sprintf('%0.2f',totalGain);
-% display feedback for the current session
-switch langage
-    case 'fr'
-        DrawFormattedText(window,...
-            ['Félicitations! Cette expérience est maintenant terminée.',...
-            'Vous avez obtenu: ',totalGain_str,' chf au cours de cette session.'],...
-            'center', 'center', scr.colours.white, scr.wrapat);
-    case 'engl'
-        DrawFormattedText(window,...
-            ['Congratulations! This session is now completed.',...
-            'You got: ',totalGain_str,' chf during this session.'],...
-            'center', 'center', scr.colours.white, scr.wrapat);
+%% Show a final screen if and only if they performed the task or nonsense since no amount involved
+if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,'on')
+    totalGain_str = sprintf('%0.2f',totalGain);
+    % display feedback for the current session
+    switch langage
+        case 'fr'
+            DrawFormattedText(window,...
+                ['Félicitations! Cette expérience est maintenant terminée.',...
+                'Vous avez obtenu: ',totalGain_str,' chf au cours de cette session.'],...
+                'center', 'center', scr.colours.white, scr.wrapat);
+        case 'engl'
+            DrawFormattedText(window,...
+                ['Congratulations! This session is now completed.',...
+                'You got: ',totalGain_str,' chf during this session.'],...
+                'center', 'center', scr.colours.white, scr.wrapat);
+    end
+    Screen(window,'Flip');
+    WaitSecs(15);
 end
-Screen(window,'Flip');
-WaitSecs(15);
 %% close PTB
 ShowCursor;
 sca;

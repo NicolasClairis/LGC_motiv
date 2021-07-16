@@ -46,13 +46,20 @@ grey = [128 128 128];
 screenColour = grey;
 
 %% open PTB window + set debug parameters
-Screen('Preference','VisualDebugLevel', 1); % avoid initial Psychtoolbox window
+
+% remove initial Psychtoolbox welcome and warning window
+Screen('Preference','VisualDebugLevel', 0);
+
+% require the computer to have best timing performance only when not
+% testing
 switch testing_script
     case 0 % CENIR
         Screen('Preference', 'SkipSyncTests', 0); % needs all other processes shut off
     case 1 % my own computer
         Screen('Preference', 'SkipSyncTests', 1); % can work even if other softwares are on but displays an ugly red triangle at start
 end
+
+% open PTB window
 window = Screen('OpenWindow',whichScreen,screenColour);
 
 %% hide mouse cursor
