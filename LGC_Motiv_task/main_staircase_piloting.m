@@ -2,7 +2,7 @@
 
 %% clean workspace before starting
 sca;
-clearvars;
+clearvars; 
 close all;
 instrreset; % Disconnect and delete all instrument objects
 clc;
@@ -36,7 +36,9 @@ while isempty(init) || isempty(iSubject) || isempty(langue) || ~ismember(langue,
     info = inputdlg({'Initials', 'Subject ID','Language (f or e)'});
     [init, iSubject,langue] = info{[1,2,3]};
 end
-
+if ischar(iSubject)
+    iSubject = str2double(iSubject);
+end
 % Create subjectCodeName which is used as a file saving name
 subjectCodeName = strcat(init,'_s',iSubject);
 
