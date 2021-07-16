@@ -450,6 +450,19 @@ stim.pressWhenReady.x = x_centerCoordinates(xScreenCenter, textSizePressWhenRead
 stim.pressWhenReady.y = y_coordinates(upperBorder, visibleYsize, 15/16, textSizePressWhenReady);
 stim.pressWhenReady.colour = white;
 
+% end of session (before last calibration)
+switch langage
+    case 'fr'
+        stim.endfMRIMessage.text = ['Nous allons maintenant vous demander ',...
+            ' de refaire votre maximum après quelques secondes de pause.'];
+    case 'engl'
+        stim.endfMRIMessage.text = ['We will nos ask you ',...
+            'to perform your maximum after a few seconds of break.'];
+end
+[~,~,textSizeEndfMRIMsg] = DrawFormattedText(window,stim.endfMRIMessage.text,'center','center',white, wrapat);
+stim.endfMRIMessage.x = x_centerCoordinates(xScreenCenter, textSizeEndfMRIMsg);
+stim.endfMRIMessage.y = y_coordinates(upperBorder, visibleYsize, 1/2, textSizeEndfMRIMsg);
+
 % total gains end of session
 switch langage
     case 'fr'

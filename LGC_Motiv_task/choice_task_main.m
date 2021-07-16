@@ -174,6 +174,7 @@ n_trainingConditions = length(trainingConditions);
 
 %% load timings for each phase of the experiment
 [~, calibTimes, ~, taskTimes, mainTimes] = timings_definition(trainingConditions, n_R_levels, n_E_levels, nTrials, effort_type);
+t_endfMRI = mainTimes.endfMRI;
 t_endSession = mainTimes.endSession;
 
 %% calibration (before the MRI)
@@ -306,15 +307,12 @@ elseif session_nb > 0
     [~,onsets.finalCross] = Screen('Flip',window); % display the cross on screen
     WaitSecs(taskTimes.finalCross);
     
-    %% display feedback for the current session
-    DrawFormattedText(window,...
-        ['Felicitations! Cette session est maintenant terminee.',...
-        'Vous avez obtenu: ',num2str(perfSummary.totalGain(nTrials)),...
-        ' chf au cours de cette session.'],...
-        stim.endSessionMessage.x, stim.endSessionMessage.y,...
+    %% display feedback to prepare for last calibration and to inform for wait of end of fMRI acquisition
+    DrawFormattedText(window, stim.endfMRIMessage.text,...
+        stim.endfMRIMessage.x, stim.endfMRIMessage.y,...
         white, scr.wrapat);
     [~,onsets.endSessionFbk] = Screen(window,'Flip');
-    WaitSecs(t_endSession);
+    WaitSecs(t_endfMRI);
     
     % indicate to the experimenter when to stop the fMRI acquisition
     disp('You can stop the fMRI acquisition now. When and only when fMRI acquisition has been stopped, please press space.');
@@ -374,6 +372,15 @@ elseif session_nb > 0
             calibEndSessionSummary.calibEndSession.t_mental_max_perTrial = t_min_finalMaxPerf;
     end
     
+    %% display feedback for the current session
+    DrawFormattedText(window,...
+        ['Felicitations! Cette session est maintenant terminee.',...
+        'Vous avez obtenu: ',num2str(perfSummary.totalGain(nTrials)),...
+        ' chf au cours de cette session.'],...
+        stim.endSessionMessage.x, stim.endSessionMessage.y,...
+        white, scr.wrapat);
+    [~,onsets.endSessionFbk] = Screen(window,'Flip');
+    WaitSecs(t_endSession);
     
     %% Save Data
     if IRM == 1
