@@ -72,7 +72,7 @@ jitters = linspace(jitterMin, jitterMax, nTrials);
 jitterRdmPerm = randperm(nTrials);
 t_cross = jitters(jitterRdmPerm);
 
-t_finalCross = 5;
+t_finalCross = 10;
 t_choice = 7;
 t_dispChoice = 3;
 switch effort_type
@@ -136,6 +136,7 @@ trainingTimes.feedback              = t_fbk;
 trainingTimes.fail_and_repeat_fbk   = t_fail_and_repeat_fbk;
 
 %% time feedback end of a block
-mainTimes.endSession = 180;
+mainTimes.endfMRI = 20; % to get end of fMRI response and avoid artifacts
+mainTimes.endSession = 3; % display of the total amount of money obtained
 
 end % function

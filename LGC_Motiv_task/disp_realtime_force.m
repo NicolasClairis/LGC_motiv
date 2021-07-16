@@ -74,8 +74,8 @@ rightBarLimit   = leftScaleLimit + graphXSize*(3/4);
 %% draw a line on the left of the scale (vertical bar)
 % Screen('DrawLine', window, white, leftScaleLimit, topScaleLimit, leftScaleLimit, bottomScaleLimit, 3);
 
-%% draw the scale (horizontal bars)
-for yaxis = -yMetrics:smallGrad:yMetrics
+%% draw the scale (horizontal bars every 2.5% of Fmax)
+for yaxis = -(yMetrics - smallGrad):smallGrad:(yMetrics - smallGrad)
     Screen('DrawLine', window, weakRed,...
         leftScaleLimit,...
         (yScreenCenter+yaxis),...
@@ -83,7 +83,7 @@ for yaxis = -yMetrics:smallGrad:yMetrics
         (yScreenCenter+yaxis), 1);
 end
 
-%% draw main graduations of the scale
+%% draw main graduations of the scale (every 10% of Fmax)
 for yaxis = -yMetrics:(yMetrics/5):yMetrics
     Screen('DrawLine', window, white,...
         leftScaleLimit,...

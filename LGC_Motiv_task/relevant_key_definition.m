@@ -59,10 +59,10 @@ if IRM == 0
             key.rightUnsure = KbName('3');
             key.rightSure   = KbName('4');
             % also need the left/right buttons for the mental effort task
-            if strcmp(effort_type,'mental')
-                key.left = KbName('LeftArrow');
-                key.right = KbName('RightArrow');
-            end
+            %             if strcmp(effort_type,'mental')
+            key.left = KbName('LeftArrow');
+            key.right = KbName('RightArrow');
+            %             end
     end
     key.space = KbName('Space');
     key.escape= KbName('escape');
