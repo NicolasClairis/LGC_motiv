@@ -136,6 +136,6 @@ trainingTimes.feedback              = t_fbk;
 trainingTimes.fail_and_repeat_fbk   = t_fail_and_repeat_fbk;
 
 %% time feedback end of a block
-mainTimes.endSession = 180;
+mainTimes.endSession = 30;
 
 end % function
