@@ -161,7 +161,7 @@ for iTrial = 1:nTrials
     % initialize variables in case of failure on this trial
     i_trial_failed = 0;
     trial_success = 0;
-    redo_limit = 100;
+    redo_limit = 5;
     %% choice period
     if ~strcmp(training_R_P_RP_or_mainTask,'mainTask')
         % for training: keep choice period until a choice is done
@@ -357,8 +357,9 @@ for iTrial = 1:nTrials
                     stim.feedback.error_tooSlow.x, stim.feedback.error_tooSlow.y, ...
                     stim.feedback.colour);
             elseif strcmp(effort_type,'mental') &&...
-                    Ep_or_Em_vars.errorLimits.useOfErrorThreshold == true &&...
-                    perfSummary{iTrial}.n_errorsMade >= Ep_or_Em_vars.errorLimits.errorThreshold
+                    (Ep_or_Em_vars.errorLimits.useOfErrorThreshold == true &&...
+                    perfSummary{iTrial}.n_errorsMade >= Ep_or_Em_vars.errorLimits.errorThreshold) ||...
+                    (i_trial_failed > redo_limit)
                 % for the mental effort case where too many errors were made,
                 % adapt the error feedback accordingly
                 DrawFormattedText(window, stim.feedback.error_tooManyErrors.text,...
