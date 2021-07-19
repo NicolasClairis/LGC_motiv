@@ -125,7 +125,7 @@ n_buttonsChoice = 2;
 if strcmp(taskToPerform.mental.calib,'on') || strcmp(taskToPerform.mental.task,'on')
     calib_errorLimits_Em.useOfErrorMapping = false;
     calib_errorLimits_Em.useOfErrorThreshold = true;
-    calib_errorLimits_Em.errorThreshold = 15;
+    calib_errorLimits_Em.errorThreshold = 10;
 end
 % time for end of session
 % t_endSession = mainTimes.endSession;
