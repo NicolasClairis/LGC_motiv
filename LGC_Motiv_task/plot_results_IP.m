@@ -65,10 +65,12 @@ for i_pilot = 1:nb_pilots
     delta_IP(i_pilot,16) = 1.5 - all.mental.EffortLvl_2.session_nb2.repeat_nb2.perfSummary.IP;
     if exist('initial_MVC') && exist('last_MVC') 
         delta_MVC(i_pilot) = (initial_MVC.MVC - last_MVC.MVC)/ initial_MVC.MVC * 100;
+        init_MVC(i_pilot) = initial_MVC.MVC;
     end
     
     if exist('t_min_calib') && exist('t_min_lastCalib')
         delta_MVM(i_pilot) = t_min_lastCalib - t_min_calib;
+        MVM(i_pilot) = t_min_calib;
     end
     
     for i_mean = 1:length(delta_IP)/2
