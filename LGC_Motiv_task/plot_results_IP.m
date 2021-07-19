@@ -31,7 +31,11 @@ nb_pilots = round(size(fstruct,1)/nb_files_per_pilot);
 % find the ID of pilots
 for i = 1:length(fstruct)
     name_tmp = fstruct(i).name;
-    ID_tmp(i) = str2double(name_tmp(25));
+    if name_tmp(22) ~= '1' || name_tmp(22) ~= '2' || name_tmp(22) ~= '3' || name_tmp(22) ~= '4' || name_tmp(22) ~= '5' || name_tmp(22) ~= '6' || name_tmp(22) ~= '7' || name_tmp(22) ~= '8' || name_tmp(22) ~= '9'
+    ID_tmp(i) = str2double(name_tmp(21:22));
+    else
+        ID_tmp(i) = str2double(name_tmp(21));
+    end
 end
 pilot_ID = unique(ID_tmp);
 % pilot_ID = [1 2 3 4];
@@ -45,8 +49,9 @@ pilot_ID = unique(ID_tmp);
 % E2PR1,E2PR2, E2MR1, E2MR2, E2PP1, E2PP2, E2MP1, E2MP2
 
 for i_pilot = 1:nb_pilots
-    loading_file_nm_tmp = ['*',num2str(pilot_ID(i_pilot)),'.mat'];
+    loading_file_nm_tmp = ['*_',num2str(pilot_ID(i_pilot)),'.mat'];
     load(dir(loading_file_nm_tmp).name)
+
     delta_IP(i_pilot,1) = -1.5 + all.physical.EffortLvl_1.session_nb1.repeat_nb1.perfSummary.IP;
     delta_IP(i_pilot,2) = -1.5 + all.physical.EffortLvl_1.session_nb1.repeat_nb2.perfSummary.IP;
     delta_IP(i_pilot,3) = -1.5 + all.mental.EffortLvl_1.session_nb1.repeat_nb1.perfSummary.IP;
@@ -64,7 +69,7 @@ for i_pilot = 1:nb_pilots
     delta_IP(i_pilot,15) = 1.5 - all.mental.EffortLvl_2.session_nb2.repeat_nb1.perfSummary.IP;
     delta_IP(i_pilot,16) = 1.5 - all.mental.EffortLvl_2.session_nb2.repeat_nb2.perfSummary.IP;
     if exist('initial_MVC') && exist('last_MVC') 
-        delta_MVC(i_pilot) = (initial_MVC.MVC - last_MVC.MVC)/ initial_MVC.MVC * 100;
+        delta_MVC(i_pilot) = (last_MVC.MVC - initial_MVC.MVC)/ initial_MVC.MVC * 100;
         init_MVC(i_pilot) = initial_MVC.MVC;
     end
     
