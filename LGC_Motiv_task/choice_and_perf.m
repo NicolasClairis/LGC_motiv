@@ -61,9 +61,9 @@ barTimeWaitRect = stim.barTimeWaitRect;
 
 switch key.n_buttonsChoice
     case 2
-        confidence.display = false;
+        confidenceDispChosen.display = false;
     case 4
-        confidence.display = true;
+        confidenceDispChosen.display = true;
         conf.lowOrHigh = NaN(1,nTrials);
 end
 
@@ -206,7 +206,7 @@ for iTrial = 1:nTrials
     
     % in the case where confidence is measured, also extract confidence
     % level
-    if confidence.display == true
+    if confidenceDispChosen.display == true
         switch choice(iTrial)
             case {-2,2} % high confidence
                 conf.lowOrHigh(iTrial) = 1;
@@ -215,7 +215,7 @@ for iTrial = 1:nTrials
             otherwise % no choice made = as if low confidence
                 conf.lowOrHigh(iTrial) = 0;
         end
-        confidence.lowOrHigh = conf.lowOrHigh(iTrial);
+        confidenceDispChosen.lowOrHigh = conf.lowOrHigh(iTrial);
     end
     
     %% check if escape was pressed => stop everything if so
@@ -226,7 +226,7 @@ for iTrial = 1:nTrials
     end
     
     %% chosen option display period
-    [time_dispChoice] = choice_task_dispChosen(scr, stim, R_chosen(iTrial), E_chosen(iTrial), R_or_P_tmp, confidence);
+    [time_dispChoice] = choice_task_dispChosen(scr, stim, R_chosen(iTrial), E_chosen(iTrial), R_or_P_tmp, confidenceDispChosen);
     onsets.dispChoice(iTrial) = time_dispChoice;
     WaitSecs(t_dispChoice);
     
@@ -442,10 +442,10 @@ end % trial loop
 %% extract relevant training data
 summary.onsets = onsets;
 summary.choice = choice;
-if confidence.display == true
+if confidenceDispChosen.display == true
     summary.confidence = conf;
 end
-summary.confidence_bis = confidence;
+summary.confidence_bis = confidenceDispChosen;
 summary.choiceOptions = choiceOptions;
 summary.R_chosen = R_chosen;
 summary.E_chosen = E_chosen;
