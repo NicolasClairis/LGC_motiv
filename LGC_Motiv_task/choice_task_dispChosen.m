@@ -1,6 +1,6 @@
 function[time_dispChoice] = choice_task_dispChosen(scr, stim, R_chosen, E_chosen, R_or_P)
-% [time_dispChoice] = choice_task_dispChosen(scr, stim, choice_opt, choice,...
-%     R_or_P, iTrial)
+% [time_dispChoice] = choice_task_dispChosen(scr, stim, R_chosen, E_chosen,...
+%     R_or_P, confidence)
 % choice_task_dispChosen will display the chosen option
 %
 % INPUTS
@@ -16,6 +16,12 @@ function[time_dispChoice] = choice_task_dispChosen(scr, stim, R_chosen, E_chosen
 % R_or_P: character indicating the nature of the current trial
 % 'R': reward trial
 % 'P': punishment trial
+%
+% confidence: structure with indication about confidence
+%   .displayON: true/false depending on if you want to have a confidence
+%   display
+%   .lowOrHigh: 0/1 depending on if low or high confidence for the current
+%   trial
 %
 % OUTPUTS
 % time_dispChoice: onset of the display of the chosen option on the screen
