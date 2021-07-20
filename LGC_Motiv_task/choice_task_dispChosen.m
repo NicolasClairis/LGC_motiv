@@ -1,6 +1,6 @@
-function[time_dispChoice] = choice_task_dispChosen(scr, stim, R_chosen, E_chosen, R_or_P)
-% [time_dispChoice] = choice_task_dispChosen(scr, stim, choice_opt, choice,...
-%     R_or_P, iTrial)
+function[time_dispChoice] = choice_task_dispChosen(scr, stim, R_chosen, E_chosen, R_or_P, confidence)
+% [time_dispChoice] = choice_task_dispChosen(scr, stim, R_chosen, E_chosen,...
+%     R_or_P, confidence)
 % choice_task_dispChosen will display the chosen option
 %
 % INPUTS
@@ -16,6 +16,12 @@ function[time_dispChoice] = choice_task_dispChosen(scr, stim, R_chosen, E_chosen
 % R_or_P: character indicating the nature of the current trial
 % 'R': reward trial
 % 'P': punishment trial
+%
+% confidence: structure with indication about confidence
+%   .display: true/false depending on if you want to have a confidence
+%   display
+%   .lowOrHigh: 0/1 depending on if low or high confidence for the current
+%   trial
 %
 % OUTPUTS
 % time_dispChoice: onset of the display of the chosen option on the screen
@@ -75,10 +81,19 @@ switch R_chosen
 end
 
 %% display a square on top of selected reward and effort
-Screen('FrameRect', window,...
-    stim.chosenOption.squareColour,...
-    stim.chosenOption.squareRect,...
-    stim.chosenOption.squareWidth);
+if confidence.display == false ||...
+        (confidence.display == true && confidence.lowOrHigh == 1)
+    % square frame around the selected option
+    Screen('FrameRect', window,...
+        stim.chosenOption.squareColour,...
+        stim.chosenOption.squareRect,...
+        stim.chosenOption.squareWidth);
+elseif confidence.display == true && confidence.lowOrHigh == 0
+    % dotted lines square around the selected option
+    Screen('DrawLines', window, stim.chosenOption.dottedSquare.xyLines,...
+        stim.chosenOption.squareWidth,...
+        stim.chosenOption.squareColour);
+end
 
 %% display on screen and extract timing
 [~,time_dispChoice] = Screen('Flip',window);

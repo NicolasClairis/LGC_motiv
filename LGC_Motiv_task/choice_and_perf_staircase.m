@@ -57,6 +57,10 @@ window = scr.window;
 white = scr.colours.white;
 barTimeWaitRect = stim.barTimeWaitRect;
 
+% no confidence display for the staircase pilots
+confidence.display = false;
+
+%% timings
 t_cross         = timings.cross.(training_R_P_RP_or_mainTask);
 % precise if the choice and the performance periods will have a time
 % constraint
@@ -250,7 +254,7 @@ for iTrial = 1:nTrials
     end
     
     %% chosen option display period
-    [time_dispChoice] = choice_task_dispChosen(scr, stim, R_chosen(iTrial), E_chosen(iTrial), R_or_P);
+    [time_dispChoice] = choice_task_dispChosen(scr, stim, R_chosen(iTrial), E_chosen(iTrial), R_or_P, confidence);
     onsets.dispChoice(iTrial) = time_dispChoice;
     WaitSecs(t_dispChoice);
     

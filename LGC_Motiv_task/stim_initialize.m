@@ -667,7 +667,47 @@ stim.loseRewardText.top_left        = [leftBorder + visibleXsize/4 - xSizeLose/2
 stim.loseRewardText.top_right       = [leftBorder + visibleXsize*(3/4) - xSizeLose/2,       stim.punishment.text.top_right_start(2) - ySizeLose*2.5];
 stim.effort_introText.bottom_left   = [leftBorder + visibleXsize/4 - xSizeForEffort/2,      stim.difficulty.below_left(2) - ySizeForEffort];
 stim.effort_introText.bottom_right  = [leftBorder + visibleXsize*(3/4) - xSizeForEffort/2,  stim.difficulty.below_right(2)  - ySizeForEffort];
-
+% display of confidence mapping
+switch langage
+    case 'fr'
+        stim.leftSure.text      = 'SUR';
+        stim.leftUnsure.text    = 'PEU SUR';
+        stim.rightUnsure.text   = 'PEU SUR';
+        stim.rightSure.text     = 'SUR';
+    case 'engl'
+        stim.leftSure.text      = 'SURE';
+        stim.leftUnsure.text    = 'NOT SURE';
+        stim.rightUnsure.text   = 'NOT SURE';
+        stim.rightSure.text     = 'SURE';
+end
+% left sure
+[~,~,textSizeLeftSure] = DrawFormattedText(window,stim.leftSure.text,'center','center',white);
+xSizeLeftSure = textSizeLeftSure(3) - textSizeLeftSure(1);
+ySizeLeftSure = textSizeLeftSure(4) - textSizeLeftSure(2);
+stim.leftSure.x = leftBorder + visibleXsize*(1/4) - xSizeLeftSure*(3/2);
+stim.leftSure.y = upperBorder + visibleYsize*(19/20) - ySizeLeftSure/2;
+stim.leftSure.colour = [0 255 0]; % colour corresponding to extreme left button
+% left unsure
+[~,~,textSizeLeftUnsure] = DrawFormattedText(window,stim.leftUnsure.text,'center','center',white);
+xSizeLeftUnsure = textSizeLeftUnsure(3) - textSizeLeftUnsure(1);
+ySizeLeftUnsure = textSizeLeftUnsure(4) - textSizeLeftUnsure(2);
+stim.leftUnsure.x = leftBorder + visibleXsize*(1/4) + xSizeLeftSure/2;
+stim.leftUnsure.y = upperBorder + visibleYsize*(19/20) - ySizeLeftUnsure/2;
+stim.leftUnsure.colour = [255 0 0]; % colour corresponding to middle left button
+% right unsure
+[~,~,textSizeRightUnsure] = DrawFormattedText(window,stim.rightUnsure.text,'center','center',white);
+xSizeRightUnsure = textSizeRightUnsure(3) - textSizeRightUnsure(1);
+ySizeRightUnsure = textSizeRightUnsure(4) - textSizeRightUnsure(2);
+stim.rightUnsure.x = leftBorder + visibleXsize*(3/4) - xSizeRightUnsure*(3/2);
+stim.rightUnsure.y = upperBorder + visibleYsize*(19/20) - ySizeRightUnsure/2;
+stim.rightUnsure.colour = [0 0 255]; % colour corresponding to middle right button
+% right sure
+[~,~,textSizeRightSure] = DrawFormattedText(window,stim.rightSure.text,'center','center',white);
+xSizeRightSure = textSizeRightSure(3) - textSizeRightSure(1);
+ySizeRightSure = textSizeRightSure(4) - textSizeRightSure(2);
+stim.rightSure.x = leftBorder + visibleXsize*(3/4) + xSizeRightUnsure/2;
+stim.rightSure.y = upperBorder + visibleYsize*(19/20) - ySizeRightSure/2;
+stim.rightSure.colour = [255 255 0]; % colour corresponding to extreme right button
 %% release buttons message
 switch langage
     case 'fr'
@@ -697,6 +737,29 @@ stim.chosenOption.squareRect = [leftBorder + visibleXsize*(1/3),...
     upperBorder + visibleYsize*(3/16) + ySizeChosenMsg,...
     leftBorder + visibleXsize*(2/3),...
     upperBorder + visibleYsize*(11/12)];
+stim.chosenOption.squareColour = black;
+stim.chosenOption.squareWidth = 10;
+% dotted lines square surrounding chosen option
+lineLength = visibleXsize/30;
+stim.chosenOption.dottedSquare.xyLines = [];
+for iVerticalLines = (stim.chosenOption.squareRect(2)+lineLength/2):(2*lineLength):(stim.chosenOption.squareRect(4) - lineLength)
+    xVerticalLeft = stim.chosenOption.squareRect(1); % same as for square
+    yStartVertical = iVerticalLines;
+    xVerticalRight = stim.chosenOption.squareRect(3);
+    yEndVertical = yStartVertical + lineLength;
+    stim.chosenOption.dottedSquare.xyLines = [stim.chosenOption.dottedSquare.xyLines,...
+        [xVerticalLeft, xVerticalLeft, xVerticalRight, xVerticalRight;...
+        yStartVertical, yEndVertical, yStartVertical, yEndVertical]];
+end % vertical lines
+for iHorizontalLines = (stim.chosenOption.squareRect(1)+lineLength/2):(2*lineLength):(stim.chosenOption.squareRect(3) - lineLength)
+    xStartHorizontal = iHorizontalLines;
+    yHorizontalTop = stim.chosenOption.squareRect(2); % same as for square
+    xEndHorizontal = xStartHorizontal + lineLength;
+    yHorizontalBottom = stim.chosenOption.squareRect(4); % same as for square
+    stim.chosenOption.dottedSquare.xyLines = [stim.chosenOption.dottedSquare.xyLines,...
+        [xStartHorizontal, xEndHorizontal, xStartHorizontal, xEndHorizontal;...
+        yHorizontalTop, yHorizontalTop, yHorizontalBottom, yHorizontalBottom]];
+end % horizontal lines
 % Win/Lose text message
 stim.winRewardText.top_center       = [xScreenCenter - xSizeWin/2,  stim.chosenOption.squareRect(2) + ySizeWin*1.5];
 stim.loseRewardText.top_center      = [xScreenCenter - xSizeLose/2, stim.chosenOption.squareRect(2) + ySizeWin*1.5];
@@ -707,8 +770,6 @@ stim.chosenOption.punishment   = [x_centerCoordinates(xScreenCenter, textSizeP),
 stim.punishment.text.top_center_start = stim.chosenOption.punishment;
 % effort informations
 stim.chosenOption.difficulty = stim.difficulty.below_center;
-stim.chosenOption.squareColour = black;
-stim.chosenOption.squareWidth = 10;
 stim.effort_introText.bottom_center = [xScreenCenter - xSizeForEffort/2, stim.difficulty.below_center(2)  - ySizeForEffort];
 
 %% mental effort performance
