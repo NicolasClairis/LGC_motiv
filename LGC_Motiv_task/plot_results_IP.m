@@ -31,7 +31,11 @@ nb_pilots = round(size(fstruct,1)/nb_files_per_pilot);
 % find the ID of pilots
 for i = 1:length(fstruct)
     name_tmp = fstruct(i).name;
-    ID_tmp(i) = str2double(name_tmp(25));
+    if name_tmp(22) ~= '1' || name_tmp(22) ~= '2' || name_tmp(22) ~= '3' || name_tmp(22) ~= '4' || name_tmp(22) ~= '5' || name_tmp(22) ~= '6' || name_tmp(22) ~= '7' || name_tmp(22) ~= '8' || name_tmp(22) ~= '9'
+    ID_tmp(i) = str2double(name_tmp(21:22));
+    else
+        ID_tmp(i) = str2double(name_tmp(21));
+    end
 end
 pilot_ID = unique(ID_tmp);
 % pilot_ID = [1 2 3 4];
@@ -45,8 +49,9 @@ pilot_ID = unique(ID_tmp);
 % E2PR1,E2PR2, E2MR1, E2MR2, E2PP1, E2PP2, E2MP1, E2MP2
 
 for i_pilot = 1:nb_pilots
-    loading_file_nm_tmp = ['*',num2str(pilot_ID(i_pilot)),'.mat'];
+    loading_file_nm_tmp = ['*_',num2str(pilot_ID(i_pilot)),'.mat'];
     load(dir(loading_file_nm_tmp).name)
+
     delta_IP(i_pilot,1) = -1.5 + all.physical.EffortLvl_1.session_nb1.repeat_nb1.perfSummary.IP;
     delta_IP(i_pilot,2) = -1.5 + all.physical.EffortLvl_1.session_nb1.repeat_nb2.perfSummary.IP;
     delta_IP(i_pilot,3) = -1.5 + all.mental.EffortLvl_1.session_nb1.repeat_nb1.perfSummary.IP;
@@ -64,13 +69,15 @@ for i_pilot = 1:nb_pilots
     delta_IP(i_pilot,15) = 1.5 - all.mental.EffortLvl_2.session_nb2.repeat_nb1.perfSummary.IP;
     delta_IP(i_pilot,16) = 1.5 - all.mental.EffortLvl_2.session_nb2.repeat_nb2.perfSummary.IP;
     if exist('initial_MVC') && exist('last_MVC') 
-        delta_MVC(i_pilot) = (initial_MVC.MVC - last_MVC.MVC)/ initial_MVC.MVC * 100;
+        delta_MVC(i_pilot) = (last_MVC.MVC - initial_MVC.MVC)/ initial_MVC.MVC * 100;
         init_MVC(i_pilot) = initial_MVC.MVC;
+        end_MVC(i_pilot) = last_MVC.MVC;
     end
     
     if exist('t_min_calib') && exist('t_min_lastCalib')
         delta_MVM(i_pilot) = t_min_lastCalib - t_min_calib;
-        MVM(i_pilot) = t_min_calib;
+        init_MVM(i_pilot) = t_min_calib;
+        end_MVM(i_pilot) = t_min_lastCalib;
     end
     
     for i_mean = 1:length(delta_IP)/2
@@ -78,7 +85,59 @@ for i_pilot = 1:nb_pilots
         std_IP(i_pilot, i_mean) = std(delta_IP(i_pilot,(i_mean-1)*2 + 1:i_mean*2));
        
     end
+    
+    % prepare data for the difference in reward and punishment for low effort
+    t_test_re_pu_E1(i_pilot,1) = mean(delta_IP(i_pilot,1:2),2);
+    t_test_re_pu_E1(i_pilot,2) = mean(delta_IP(i_pilot,3:4),2);
+    
+    % prepare data for the difference in physical and mental low efforts
+    t_test_ph_me_E1(i_pilot,1) = mean(delta_IP(i_pilot,[1,3]),2);
+    t_test_ph_me_E1(i_pilot,2) = mean(delta_IP(i_pilot,[2,4]),2);
+    
+    % prepare data for the difference in reward and punishment for high effort
+    t_test_re_pu_E2(i_pilot,1) = mean(delta_IP(i_pilot,5:6),2);
+    t_test_re_pu_E2(i_pilot,2) = mean(delta_IP(i_pilot,7:8),2);
+    
+    % prepare data for the difference in physical and mental high effort
+    t_test_ph_me_E2(i_pilot,1) = mean(delta_IP(i_pilot,[5,7]),2);
+    t_test_ph_me_E2(i_pilot,2) = mean(delta_IP(i_pilot,[6,8]),2);
+    
+    % prepare data for the difference between low and high efforts, indep of other conditions
+    t_test_E2(i_pilot,1) = mean(delta_IP(i_pilot,1:4),2);
+    t_test_E2(i_pilot,2) = mean(delta_IP(i_pilot,5:8),2);
+    
+    % prepare data for the difference in reward and punishment, indep of other conditions
+    t_test_re_pu(i_pilot,1) = mean(delta_IP(i_pilot,[1,2,5,6]),2);
+    t_test_re_pu(i_pilot,2) = mean(delta_IP(i_pilot,[3,4,7,8]),2);
+    
+    % prepare data for the difference in physical and mental effort, indep of other conditions
+    t_test_ph_me(i_pilot,1) = mean(delta_IP(i_pilot,[1,3,5,7]),2);
+    t_test_ph_me(i_pilot,2) = mean(delta_IP(i_pilot,[2,4,6,8]),2);
+
 end
+
+%% t-test on our pilots. between conditions and calibrations
+% test with a t test the difference in reward and punishment for low effort
+[h_re_pu_E1, p_re_pu_E1] = ttest(t_test_re_pu_E1(:,1),t_test_re_pu_E1(:,2))
+% test with a t test the difference in physical and mental low efforts
+[h_ph_me_E1, p_ph_me_E1] = ttest(t_test_re_pu_E1(:,1),t_test_re_pu_E1(:,2))
+
+% test with a t test the difference in reward and punishment for high effort
+[h_re_pu_E2, p_re_pu_E2] = ttest(t_test_re_pu_E2(:,1),t_test_re_pu_E2(:,2))
+% test with a t test the difference in physical and mental high effort
+[h_ph_me_E2, p_ph_me_E2] = ttest(t_test_re_pu_E2(:,1),t_test_re_pu_E2(:,2))
+
+% test with a t test the difference in reward and punishment, indep of other conditions
+[h_re_pu,p_re_pu] = ttest(t_test_re_pu(:,1),t_test_re_pu(:,2))
+% test with a t test the difference in physical and mental effort, indep of other conditions
+[h_ph_me,p_ph_me] = ttest(t_test_ph_me(:,1),t_test_ph_me(:,2))
+% test with a t test the difference between low and high efforts, indep of other conditions
+[h_E2, p_E2] = ttest(t_test_E2(:,1),t_test_E2(:,2))
+
+% test with t test if MVC is reduced in participants
+[h_MVC, p_MVC] = ttest(init_MVC,end_MVC)
+% test with t test if MVM is better in participants
+[h_MVM, p_MVM] = ttest(init_MVM,end_MVM)
 
 
 %% plots
