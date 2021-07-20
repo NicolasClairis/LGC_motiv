@@ -59,6 +59,14 @@ white = scr.colours.white;
 % xScreenCenter = scr.xCenter;
 barTimeWaitRect = stim.barTimeWaitRect;
 
+switch key.n_buttonsChoice
+    case 2
+        confidence.display = false;
+    case 4
+        confidence.display = true;
+        confidence.lowOrHigh = NaN(1,nTrials);
+end
+
 %% timings
 t_cross         = timings.cross.(training_R_P_RP_or_mainTask);
 % precise if the choice and the performance periods will have a time
@@ -80,7 +88,6 @@ t_fbk           = timings.feedback;
 t_fail_and_repeat_fbk = timings.fail_and_repeat_fbk;
 
 %% specific variables
-
 switch effort_type
     case 'mental'
         i_sub = Ep_or_Em_vars.i_sub;
@@ -197,6 +204,20 @@ for iTrial = 1:nTrials
             E_chosen(iTrial) = 0;
     end
     
+    % in the case where confidence is measured, also extract confidence
+    % level
+    if confidence.display == true
+        switch choice(iTrial)
+            case {-2,2} % high confidence
+                conf.lowOrHigh(iTrial) = 1;
+            case {-1,1} % low confidence
+                conf.lowOrHigh(iTrial) = 0;
+            otherwise % no choice made = as if low confidence
+                conf.lowOrHigh(iTrial) = 0;
+        end
+        confidence.lowOrHigh = conf.lowOrHigh(iTrial);
+    end
+    
     %% check if escape was pressed => stop everything if so
     if stoptask == 1
         % save all the data in case you still want to analyze it
@@ -205,7 +226,7 @@ for iTrial = 1:nTrials
     end
     
     %% chosen option display period
-    [time_dispChoice] = choice_task_dispChosen(scr, stim, R_chosen(iTrial), E_chosen(iTrial), R_or_P_tmp);
+    [time_dispChoice] = choice_task_dispChosen(scr, stim, R_chosen(iTrial), E_chosen(iTrial), R_or_P_tmp, confidence);
     onsets.dispChoice(iTrial) = time_dispChoice;
     WaitSecs(t_dispChoice);
     
@@ -421,6 +442,10 @@ end % trial loop
 %% extract relevant training data
 summary.onsets = onsets;
 summary.choice = choice;
+if confidence.display == true
+    summary.confidence = conf;
+end
+summary.confidence_bis = confidence;
 summary.choiceOptions = choiceOptions;
 summary.R_chosen = R_chosen;
 summary.E_chosen = E_chosen;
