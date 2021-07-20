@@ -64,7 +64,7 @@ switch key.n_buttonsChoice
         confidence.display = false;
     case 4
         confidence.display = true;
-        confidence.lowOrHigh = NaN(1,nTrials);
+        conf.lowOrHigh = NaN(1,nTrials);
 end
 
 %% timings
