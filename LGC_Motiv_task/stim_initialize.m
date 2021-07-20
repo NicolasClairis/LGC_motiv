@@ -670,40 +670,44 @@ stim.effort_introText.bottom_right  = [leftBorder + visibleXsize*(3/4) - xSizeFo
 % display of confidence mapping
 switch langage
     case 'fr'
-        stim.leftSure.text      = 'Sur';
-        stim.leftUnsure.text    = 'Peu sur';
-        stim.rightUnsure.text   = 'Peu sur';
-        stim.rightSure.text     = 'Sur';
+        stim.leftSure.text      = 'SUR';
+        stim.leftUnsure.text    = 'PEU SUR';
+        stim.rightUnsure.text   = 'PEU SUR';
+        stim.rightSure.text     = 'SUR';
     case 'engl'
-        stim.leftSure.text      = 'Sure';
-        stim.leftUnsure.text    = 'Not sure';
-        stim.rightUnsure.text   = 'Not sure';
-        stim.rightSure.text     = 'Sure';
+        stim.leftSure.text      = 'SURE';
+        stim.leftUnsure.text    = 'NOT SURE';
+        stim.rightUnsure.text   = 'NOT SURE';
+        stim.rightSure.text     = 'SURE';
 end
 % left sure
 [~,~,textSizeLeftSure] = DrawFormattedText(window,stim.leftSure.text,'center','center',white);
 xSizeLeftSure = textSizeLeftSure(3) - textSizeLeftSure(1);
 ySizeLeftSure = textSizeLeftSure(4) - textSizeLeftSure(2);
-stim.leftSure.xy = [leftBorder + visibleXsize*(1/6) - xSizeLeftSure/2,...
-    upperBorder + visibleYsize*(5/6) - ySizeLeftSure/2];
+stim.leftSure.x = leftBorder + visibleXsize*(1/4) - xSizeLeftSure*(3/2);
+stim.leftSure.y = upperBorder + visibleYsize*(19/20) - ySizeLeftSure/2;
+stim.leftSure.colour = [0 255 0]; % colour corresponding to extreme left button
 % left unsure
 [~,~,textSizeLeftUnsure] = DrawFormattedText(window,stim.leftUnsure.text,'center','center',white);
 xSizeLeftUnsure = textSizeLeftUnsure(3) - textSizeLeftUnsure(1);
 ySizeLeftUnsure = textSizeLeftUnsure(4) - textSizeLeftUnsure(2);
-stim.leftUnsure.xy = [leftBorder + visibleXsize*(2/6) - xSizeLeftUnsure/2,...
-    upperBorder + visibleYsize*(5/6) - ySizeLeftUnsure/2];
+stim.leftUnsure.x = leftBorder + visibleXsize*(1/4) + xSizeLeftSure/2;
+stim.leftUnsure.y = upperBorder + visibleYsize*(19/20) - ySizeLeftUnsure/2;
+stim.leftUnsure.colour = [255 0 0]; % colour corresponding to middle left button
 % right unsure
 [~,~,textSizeRightUnsure] = DrawFormattedText(window,stim.rightUnsure.text,'center','center',white);
 xSizeRightUnsure = textSizeRightUnsure(3) - textSizeRightUnsure(1);
 ySizeRightUnsure = textSizeRightUnsure(4) - textSizeRightUnsure(2);
-stim.rightUnsure.xy = [leftBorder + visibleXsize*(4/6) - xSizeRightUnsure/2,...
-    upperBorder + visibleYsize*(5/6) - ySizeRightUnsure/2];
+stim.rightUnsure.x = leftBorder + visibleXsize*(3/4) - xSizeRightUnsure*(3/2);
+stim.rightUnsure.y = upperBorder + visibleYsize*(19/20) - ySizeRightUnsure/2;
+stim.rightUnsure.colour = [0 0 255]; % colour corresponding to middle right button
 % right sure
 [~,~,textSizeRightSure] = DrawFormattedText(window,stim.rightSure.text,'center','center',white);
 xSizeRightSure = textSizeRightSure(3) - textSizeRightSure(1);
 ySizeRightSure = textSizeRightSure(4) - textSizeRightSure(2);
-stim.rightSure.xy = [leftBorder + visibleXsize/6 - xSizeRightSure/2,...
-    upperBorder + visibleYsize*(5/6) - ySizeRightSure/2];
+stim.rightSure.x = leftBorder + visibleXsize*(3/4) + xSizeRightUnsure/2;
+stim.rightSure.y = upperBorder + visibleYsize*(19/20) - ySizeRightSure/2;
+stim.rightSure.colour = [255 255 0]; % colour corresponding to extreme right button
 %% release buttons message
 switch langage
     case 'fr'

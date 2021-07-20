@@ -51,8 +51,8 @@ stoptask = 0;
 white = scr.colours.white;
 
 % if only 2 button for answer or no input, no confidence mapping display
-if (key.n_buttonsChoice == 2) || ~exist('confDisp','var') || (isempty(confDip))
-    confDisp = false;
+if (key.n_buttonsChoice == 2) || ~exist('confidenceDisp','var') || (isempty(confidenceDisp))
+    confidenceDisp = false;
 end
     
 %% ask question on top
@@ -118,15 +118,23 @@ DrawFormattedText(window,stim.choice.for.text,...
     white);
 
 %% add mapping for confidence
-if confDisp == true
+if confidenceDisp == true
     % left sure
-    
+    DrawFormattedText(window,stim.leftSure.text,...
+        stim.leftSure.x,stim.leftSure.y,...
+        stim.leftSure.colour);
     % left unsure
-    
+    DrawFormattedText(window,stim.leftUnsure.text,...
+        stim.leftUnsure.x,stim.leftUnsure.y,...
+        stim.leftUnsure.colour);
     % right unsure
-    
+    DrawFormattedText(window,stim.rightUnsure.text,...
+        stim.rightUnsure.x,stim.rightUnsure.y,...
+        stim.rightUnsure.colour);
     % right sure
-    
+    DrawFormattedText(window,stim.rightSure.text,...
+        stim.rightSure.x,stim.rightSure.y,...
+        stim.rightSure.colour);
 end
 
 %% display everything on the screen and record the timing

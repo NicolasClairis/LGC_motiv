@@ -75,10 +75,12 @@ elseif IRM == 1
             key.right = 90; % RIGHT BUTTON = yellow, letter 'z' with swiss or english keyboard
             %     key.right = 89; % RIGHT BUTTON = yellow, letter 'y' with french keyboard
         case 4
-            key.leftSure    = 71; % 
-            key.leftUnsure  = 82; % 
-            key.rightUnsure = 66; %
+            key.leftSure    = 71; % green button (g)
+            key.leftUnsure  = 82; % red button (r)
+            key.rightUnsure = 66; % blue button (b)
             key.rightSure   = 90; % or 89 depending on the language of the keyboard
+            % corresponds to 'y' or 'z' (for yellow)
+            
             % also need the left/right buttons for the mental effort task
             if strcmp(effort_type,'mental')
                 key.left = 71;
