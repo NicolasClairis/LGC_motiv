@@ -670,15 +670,15 @@ stim.effort_introText.bottom_right  = [leftBorder + visibleXsize*(3/4) - xSizeFo
 % display of confidence mapping
 switch langage
     case 'fr'
-        stim.leftSure.text = 'Sur';
-        stim.leftUnsure.text = 'Peu sur';
-        stim.rightSure.text = 'Peu sur';
-        stim.leftUnsure.text = 'Sur';
+        stim.leftSure.text      = 'Sur';
+        stim.leftUnsure.text    = 'Peu sur';
+        stim.rightUnsure.text   = 'Peu sur';
+        stim.rightSure.text     = 'Sur';
     case 'engl'
-        stim.leftSure.text = 'Sure';
-        stim.leftUnsure.text = 'Not sure';
-        stim.rightSure.text = 'Not sure';
-        stim.leftUnsure.text = 'Sure';
+        stim.leftSure.text      = 'Sure';
+        stim.leftUnsure.text    = 'Not sure';
+        stim.rightUnsure.text   = 'Not sure';
+        stim.rightSure.text     = 'Sure';
 end
 % left sure
 [~,~,textSizeLeftSure] = DrawFormattedText(window,stim.leftSure.text,'center','center',white);
@@ -738,27 +738,23 @@ stim.chosenOption.squareWidth = 10;
 % dotted lines square surrounding chosen option
 lineLength = visibleXsize/30;
 stim.chosenOption.dottedSquare.xyLines = [];
-for iVerticalLines = (stim.chosenOption.squareRect(2)):(2*lineLength):(stim.chosenOption.squareRect(4))
+for iVerticalLines = (stim.chosenOption.squareRect(2)+lineLength/2):(2*lineLength):(stim.chosenOption.squareRect(4) - lineLength)
     xVerticalLeft = stim.chosenOption.squareRect(1); % same as for square
-    yStartVertical = stim.chosenOption.squareRect(2) + iVerticalLines;
-    xVerticalRight = xVerticalLeft;
+    yStartVertical = iVerticalLines;
+    xVerticalRight = stim.chosenOption.squareRect(3);
     yEndVertical = yStartVertical + lineLength;
-    stim.chosenOption.dottedSquare.xyLines = [stim.chosenOption.dottedSquare.verticalLines;...
-        xVerticalLeft, yStartVertical;...
-        xVerticalLeft, yEndVertical;...
-        xVerticalRight, yStartVertical;...
-        xVerticalRight, yEndVertical];
+    stim.chosenOption.dottedSquare.xyLines = [stim.chosenOption.dottedSquare.xyLines,...
+        [xVerticalLeft, xVerticalLeft, xVerticalRight, xVerticalRight;...
+        yStartVertical, yEndVertical, yStartVertical, yEndVertical]];
 end % vertical lines
-for iHorizontalLines = (stim.chosenOption.squareRect(1)):(2*lineLength):(stim.chosenOption.squareRect(3))
-    xStartHorizontal = stim.chosenOption.squareRect(1) + iHorizontalLines;
+for iHorizontalLines = (stim.chosenOption.squareRect(1)+lineLength/2):(2*lineLength):(stim.chosenOption.squareRect(3) - lineLength)
+    xStartHorizontal = iHorizontalLines;
     yHorizontalTop = stim.chosenOption.squareRect(2); % same as for square
     xEndHorizontal = xStartHorizontal + lineLength;
     yHorizontalBottom = stim.chosenOption.squareRect(4); % same as for square
-    stim.chosenOption.dottedSquare.xyLines = [stim.chosenOption.dottedSquare.verticalLines;...
-        xStartHorizontal, yHorizontalTop;...
-        xEndHorizontal, yHorizontalTop;...
-        xStartHorizontal, yHorizontalBottom;...
-        xEndHorizontal, yHorizontalBottom];
+    stim.chosenOption.dottedSquare.xyLines = [stim.chosenOption.dottedSquare.xyLines,...
+        [xStartHorizontal, xEndHorizontal, xStartHorizontal, xEndHorizontal;...
+        yHorizontalTop, yHorizontalTop, yHorizontalBottom, yHorizontalBottom]];
 end % horizontal lines
 % Win/Lose text message
 stim.winRewardText.top_center       = [xScreenCenter - xSizeWin/2,  stim.chosenOption.squareRect(2) + ySizeWin*1.5];
