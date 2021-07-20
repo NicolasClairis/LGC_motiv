@@ -71,11 +71,13 @@ for i_pilot = 1:nb_pilots
     if exist('initial_MVC') && exist('last_MVC') 
         delta_MVC(i_pilot) = (last_MVC.MVC - initial_MVC.MVC)/ initial_MVC.MVC * 100;
         init_MVC(i_pilot) = initial_MVC.MVC;
+        end_MVC(i_pilot) = last_MVC.MVC;
     end
     
     if exist('t_min_calib') && exist('t_min_lastCalib')
         delta_MVM(i_pilot) = t_min_lastCalib - t_min_calib;
-        MVM(i_pilot) = t_min_calib;
+        init_MVM(i_pilot) = t_min_calib;
+        end_MVM(i_pilot) = t_min_lastCalib;
     end
     
     for i_mean = 1:length(delta_IP)/2
@@ -83,7 +85,59 @@ for i_pilot = 1:nb_pilots
         std_IP(i_pilot, i_mean) = std(delta_IP(i_pilot,(i_mean-1)*2 + 1:i_mean*2));
        
     end
+    
+    % prepare data for the difference in reward and punishment for low effort
+    t_test_re_pu_E1(i_pilot,1) = mean(delta_IP(i_pilot,1:2),2);
+    t_test_re_pu_E1(i_pilot,2) = mean(delta_IP(i_pilot,3:4),2);
+    
+    % prepare data for the difference in physical and mental low efforts
+    t_test_ph_me_E1(i_pilot,1) = mean(delta_IP(i_pilot,[1,3]),2);
+    t_test_ph_me_E1(i_pilot,2) = mean(delta_IP(i_pilot,[2,4]),2);
+    
+    % prepare data for the difference in reward and punishment for high effort
+    t_test_re_pu_E2(i_pilot,1) = mean(delta_IP(i_pilot,5:6),2);
+    t_test_re_pu_E2(i_pilot,2) = mean(delta_IP(i_pilot,7:8),2);
+    
+    % prepare data for the difference in physical and mental high effort
+    t_test_ph_me_E2(i_pilot,1) = mean(delta_IP(i_pilot,[5,7]),2);
+    t_test_ph_me_E2(i_pilot,2) = mean(delta_IP(i_pilot,[6,8]),2);
+    
+    % prepare data for the difference between low and high efforts, indep of other conditions
+    t_test_E2(i_pilot,1) = mean(delta_IP(i_pilot,1:4),2);
+    t_test_E2(i_pilot,2) = mean(delta_IP(i_pilot,5:8),2);
+    
+    % prepare data for the difference in reward and punishment, indep of other conditions
+    t_test_re_pu(i_pilot,1) = mean(delta_IP(i_pilot,[1,2,5,6]),2);
+    t_test_re_pu(i_pilot,2) = mean(delta_IP(i_pilot,[3,4,7,8]),2);
+    
+    % prepare data for the difference in physical and mental effort, indep of other conditions
+    t_test_ph_me(i_pilot,1) = mean(delta_IP(i_pilot,[1,3,5,7]),2);
+    t_test_ph_me(i_pilot,2) = mean(delta_IP(i_pilot,[2,4,6,8]),2);
+
 end
+
+%% t-test on our pilots. between conditions and calibrations
+% test with a t test the difference in reward and punishment for low effort
+[h_re_pu_E1, p_re_pu_E1] = ttest(t_test_re_pu_E1(:,1),t_test_re_pu_E1(:,2))
+% test with a t test the difference in physical and mental low efforts
+[h_ph_me_E1, p_ph_me_E1] = ttest(t_test_re_pu_E1(:,1),t_test_re_pu_E1(:,2))
+
+% test with a t test the difference in reward and punishment for high effort
+[h_re_pu_E2, p_re_pu_E2] = ttest(t_test_re_pu_E2(:,1),t_test_re_pu_E2(:,2))
+% test with a t test the difference in physical and mental high effort
+[h_ph_me_E2, p_ph_me_E2] = ttest(t_test_re_pu_E2(:,1),t_test_re_pu_E2(:,2))
+
+% test with a t test the difference in reward and punishment, indep of other conditions
+[h_re_pu,p_re_pu] = ttest(t_test_re_pu(:,1),t_test_re_pu(:,2))
+% test with a t test the difference in physical and mental effort, indep of other conditions
+[h_ph_me,p_ph_me] = ttest(t_test_ph_me(:,1),t_test_ph_me(:,2))
+% test with a t test the difference between low and high efforts, indep of other conditions
+[h_E2, p_E2] = ttest(t_test_E2(:,1),t_test_E2(:,2))
+
+% test with t test if MVC is reduced in participants
+[h_MVC, p_MVC] = ttest(init_MVC,end_MVC)
+% test with t test if MVM is better in participants
+[h_MVM, p_MVM] = ttest(init_MVM,end_MVM)
 
 
 %% plots
