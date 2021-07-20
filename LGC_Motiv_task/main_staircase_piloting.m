@@ -9,7 +9,7 @@ clc;
 %% working directories
 % launch within the folder where scripts are stored or will not work
 cd ..
-main_folder                 = [pwd fil2esep]; % you have to be sure that you are in the correct path when you launch the script
+main_folder                 = [pwd filesep]; % you have to be sure that you are in the correct path when you launch the script
 main_task_folder            = [main_folder, 'LGC_Motiv_task' filesep];
 results_folder              = [main_folder, 'LGC_Motiv_results' filesep];
 % BioPac_folder               = [main_folder, 'BioPac_functions' filesep];
