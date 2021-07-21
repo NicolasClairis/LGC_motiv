@@ -31,10 +31,11 @@ cd(main_task_folder);
 %% Define subject ID
 
 % Insert the initials, the number of the participants
-[init, iSubject,langue] = deal([]);
+[init, iSubject, langue] = deal([]);
 while isempty(init) || isempty(iSubject) || isempty(langue) || ~ismember(langue,{'f','e'}) % repeat until both are answered
     info = inputdlg({'Initials', 'Subject ID','Language (f or e)'});
     [init, iSubject,langue] = info{[1,2,3]};
+    warning('one real experiment starts, remember to block in french');
 end
 if ischar(iSubject)
     iSubject = str2double(iSubject);
@@ -50,12 +51,22 @@ IRM = 0;
 % define subparts of the task to perform (on/off)
 taskToPerform.physical.calib = 'on';
 taskToPerform.physical.learning = 'on';
-taskToPerform.physical.training = 'on';   
-taskToPerform.physical.task = 'on';
+taskToPerform.physical.training = 'on';
+switch IRM
+    case 0
+        taskToPerform.physical.task = 'on';
+    case 1 % task will be done in the scanner after the training
+        taskToPerform.physical.task = 'off';
+end
 taskToPerform.mental.learning = 'on';
 taskToPerform.mental.calib = 'on';
 taskToPerform.mental.training = 'on';
-taskToPerform.mental.task = 'on';
+switch IRM
+    case 0
+        taskToPerform.mental.task = 'on';
+    case 1 % task will be done in the scanner after the training
+        taskToPerform.mental.task = 'off';
+end
 switch langue
     case 'f'
         langage = 'fr';
@@ -113,7 +124,12 @@ n_trainingConditions = length(trainingConditions);
 n_sessions = 4;
 
 % number of buttons to answer
-n_buttonsChoice = 2;
+switch IRM
+    case 0
+        n_buttonsChoice = 2;
+    case 1 % test buttons
+        n_buttonsChoice = 4;
+end
 
 % mental calibration error management: no fail after 3 errors nor
 % mapping display
