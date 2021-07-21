@@ -539,9 +539,11 @@ stim.postTaskMVCmeasurement.colour = white;
 switch langage
     case 'fr'
         stim.mentalCalibInstructions.text = ['Essayez de completer',...
-            ' le cercle en repondant aussi vite que possible et correctement aux questions posees.'];
+            ' le cercle en repondant aussi vite que possible et ',...
+            'correctement aux questions posees.'];
     case 'engl'
-        stim.mentalCalibInstructions.text = ['Try to complete the circle by answering the questions as quickly and correctly as possible.'];
+        stim.mentalCalibInstructions.text = ['Try to complete the circle ',...
+            'by answering the questions as quickly and correctly as possible.'];
 end
 [~,~,textSizeMentalCalibInstructions] = DrawFormattedText(window, stim.mentalCalibInstructions.text,...
     'center', 'center', white, wrapat);
