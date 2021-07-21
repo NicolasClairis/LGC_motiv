@@ -262,7 +262,7 @@ if strcmp(taskToPerform.physical.training,'on')
         [onsets_Ep_training.(trainingCond)] = choice_and_perf_trainingInstructions(scr, stim, trainingCond, trainingTimes_Ep.instructions);
         [trainingSummary_Ep.(trainingCond)] = choice_and_perf(scr, stim, key_Ep, 'physical', Ep_vars_training, R_money,...
             trainingCond, n_trainingTrials_Ep_tmp, trainingChoiceOptions_Ep_tmp, confidenceChoiceDisplay,...
-            rainingTimes_Ep,...
+            trainingTimes_Ep,...
             results_folder, file_nm_training_Ep);
     end % learning condition loop
     
@@ -392,9 +392,9 @@ if strcmp(taskToPerform.mental.training,'on')
         trainingCond = trainingConditions{iTrainingCondition};
         % display confidence mapping only for first training sessions and
         % only for fMRI experiment
-        if ~strcmp(trainingCond,'RP') || IRM == 0 || n_buttonsChoice == 2
+        if strcmp(trainingCond,'RP') || IRM == 0 || n_buttonsChoice == 2
             confidenceChoiceDisplay = false;
-        elseif strcmp(trainingCond,'RP') && IRM == 1 && n_buttonsChoice == 1
+        elseif ~strcmp(trainingCond,'RP') && IRM == 1 && n_buttonsChoice == 4
             confidenceChoiceDisplay = true;
         end
         
