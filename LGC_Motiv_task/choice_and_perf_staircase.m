@@ -59,6 +59,7 @@ barTimeWaitRect = stim.barTimeWaitRect;
 
 % no confidence display for the staircase pilots
 confidence.display = false;
+confidenceChoiceDisp = false;
 
 %% timings
 t_cross         = timings.cross.(training_R_P_RP_or_mainTask);
@@ -175,7 +176,7 @@ for iTrial = 1:nTrials
                 onsets.choice(iTrial),...
                 stoptask] = choice_period(scr, stim,...
                 R_left, R_right_tmp, E_left, E_right, R_or_P,...
-                choiceTimeParameters, key);
+                choiceTimeParameters, key, confidenceChoiceDisp);
         end % keep performing the trial until a choice is made
     else % for actual task, if they don't answer in time, consider the trial as a failure
         [choice(iTrial),...
@@ -183,7 +184,7 @@ for iTrial = 1:nTrials
             onsets.choice(iTrial),...
             stoptask] = choice_period(scr, stim,...
             R_left, R_right_tmp, E_left, E_right, R_or_P,...
-            choiceTimeParameters, key);
+            choiceTimeParameters, key, confidenceChoiceDisp);
     end
     
     % extract choice made
