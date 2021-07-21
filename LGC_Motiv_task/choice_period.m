@@ -50,10 +50,10 @@ window = scr.window;
 stoptask = 0;
 white = scr.colours.white;
 
-% if only 2 button for answer or no input, no confidence mapping display
-if (key.n_buttonsChoice == 2) || ~exist('confidenceDisp','var') || (isempty(confidenceDisp))
-    confidenceDisp = false;
-end
+% % if only 2 button for answer or no input, no confidence mapping display
+% if (key.n_buttonsChoice == 2) || ~exist('confidenceDisp','var') || (isempty(confidenceDisp))
+%     confidenceDisp = false;
+% end
     
 %% ask question on top
 DrawFormattedText(window, stim.choice.choiceQuestion.text, stim.choice.choiceQuestion.x, stim.choice.choiceQuestion.y, stim.choice.choiceQuestion.colour);
