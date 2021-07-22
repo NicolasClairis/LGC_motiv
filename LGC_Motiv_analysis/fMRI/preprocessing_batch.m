@@ -77,6 +77,17 @@ for iS = 1:NS % loop through subjects
     %% extract folders where functional runs are stored
     cd(subj_scans_folder);
     subj_scan_folders_names = ls('*_run*'); % takes all functional runs folders
+    % remove AP/PA corrective runs
+    % erase REFBLIP runs from the list (made only for Romain topup
+    % correction)
+    for iRunCorrect = size(subj_scan_folders_names,1):-1:1
+        % delete references from the list (made for preprocessing with AP/PA correction of distorsions)
+        if strcmp(subj_scan_folders_names(iRunCorrect,end-11:end-8),'_PA_') ||...
+                strcmp(subj_scan_folders_names(iRunCorrect,end-13:end-10),'_PA_')
+            subj_scan_folders_names(iRunCorrect,:) = [];
+        end
+        
+    end
     %%
     cd(subj_analysis_folder)
     %% define number of sessions to analyze
@@ -88,11 +99,10 @@ for iS = 1:NS % loop through subjects
     cd(subj_scans_folder);
     for iRun = 1:nb_runs % loop through runs for 3 ratings, 3 choices 1D, 3 choices 2D runs
         cd(subj_scan_folders_names(iRun,:)); % go to run folder
-        filenames = cellstr(spm_select('ExtFPList',pwd,'^f.*\.img$')); % extracts all the f-files
+        filenames = cellstr(spm_select('ExtFPList',pwd,'^LGCM_.*\.nii$')); % extracts all the f-files
         runFileNames.(['run_',num2str(iRun)]) = filenames;
         cd(subj_scans_folder);
     end
-    % create file for storing all preprocessed files
     
     %% realignement
     cd(subj_scans_folder);
