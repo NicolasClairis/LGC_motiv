@@ -11,23 +11,26 @@ checking = 1;
 % GLM number
 GLM = 1;
 GLMprm = which_GLM(GLM);
-add_drv = GLMprm.add_drv;
-grey_mask = GLMprm.grey_mask;
+add_drv = GLMprm.gal.add_drv;
+grey_mask = GLMprm.gal.grey_mask;
 
+% repetition time for fMRI
 TR = 2.00;
 
 nb_runs = 2;
 nb_batch_per_subj = 2; % model + estimate
 
-matlabbatch = cell(nb_batch_per_subj*NS,1);
-
 %% working directories
-behavioralResults_folder =  'C:\Users\Loco\Documents\GitHub\LGC_motiv\LGC_Motiv_results\fMRI_pilots';
-fMRIResults_folder = 'C:\Users\Loco\Downloads\nifti_pilot002';
+computer_root = fullfile('C:','Users','Loco');
+scripts_folder = fullfile(computer_root,'Documents','GitHub','LGC_motiv','LGC_Motiv_analysis','fMRI');
+addpath(scripts_folder);
+root = fullfile(computer_root,'Downloads','nifti_pilot002');
 
 %% list subjects to analyze
-
+subject_id = {'nifti_pilot002'};
+NS = length(subject_id);
 %% loop through subjects
+matlabbatch = cell(nb_batch_per_subj*NS,1);
 for iS = 1:NS
     sub_nm = subject_id{iS};
     % define working folders
@@ -55,7 +58,7 @@ for iS = 1:NS
     end
     
     %% starting 1st level GLM batch
-    sub_idx = nb_batch_per_subj*(iSub-1) + 1 ;
+    sub_idx = nb_batch_per_subj*(iS-1) + 1 ;
     matlabbatch{sub_idx}.spm.stats.fmri_spec.dir            = {resultsFolderName};
     matlabbatch{sub_idx}.spm.stats.fmri_spec.timing.units   = 'secs';
     matlabbatch{sub_idx}.spm.stats.fmri_spec.timing.RT      = TR;
@@ -64,7 +67,7 @@ for iS = 1:NS
     
     % loop through runs and tasks
     for iRun = 1:nb_runs
-        runname = num2str(iRun);
+        run_nm = num2str(iRun);
         % erase useless spaces from folder with run name
         n_char = size(subj_scan_folders_names(iRun,:),2);
         for iLetter = 1:n_char
@@ -78,13 +81,22 @@ for iS = 1:NS
         preprocessed_filenames = cellstr(spm_select('ExtFPList',pwd,'^swrf.*\.nii$')); % extracts all the preprocessed swrf files (smoothed, normalized, realigned)
         matlabbatch{sub_idx}.spm.stats.fmri_spec.sess(iRun).scans = preprocessed_filenames;
         
-        %% load behavioral data
-        switch taskType
-            case 'physical'
-                
-            case 'mental'
-                
-        end % task type
+        %% load regressors of interest
+        % 1) identify which task corresponds to the current run
+        currRunBehaviorFileNames = ls([subj_behavior_folder,'*_session',num2str(iRun),'_*_task.mat']);
+        if size(currRunBehaviorFileNames,1) > 1
+            error(['problem file identification: too many files popping out with run number',run_nm]);
+        end
+        if strcmp(currRunBehaviorFileNames(16:23),'physical') || strcmp(currRunBehaviorFileNames(17:24),'physical')
+            task_nm = 'physical';
+        elseif strcmp(currRunBehaviorFileNames(16:21),'mental') || strcmp(currRunBehaviorFileNames(17:22),'mental')
+            task_nm = 'mental';
+        else
+            error('problem in identifying task type because file name doesn''t match');
+        end
+        % perform 1st level
+        matlabbatch = First_level_loadRegressors(matlabbatch, GLMprm, sub_idx, iRun,...
+            subj_behavior_folder, currRunBehaviorFileNames, task_nm);
         
         %% global run parameters (rp movement file, etc.)
         matlabbatch{sub_idx}.spm.stats.fmri_spec.sess(iRun).multi = {''};

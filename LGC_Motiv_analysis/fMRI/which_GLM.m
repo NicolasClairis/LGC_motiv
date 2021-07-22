@@ -14,8 +14,9 @@ function [GLMprm] = which_GLM(GLM)
 %% initialize all variables
 
 % general parameters: derivative, grey matter filtering
-[GLMprm.add_drv,...
-    GLMprm.grey_mask] = deal(0);
+[GLMprm.gal.add_drv,...
+    GLMprm.gal.grey_mask,...
+    GLMprm.gal.orth_vars] = deal(0);
 
 % onsets: not modelled (none), modelled as stick function (stick) or as
 % boxcar function (boxcar)
@@ -23,23 +24,27 @@ function [GLMprm] = which_GLM(GLM)
     GLMprm.model_onset.Ep.choice,...
     GLMprm.model_onset.Ep.chosen,...
     GLMprm.model_onset.Ep.Eperf,...
+    GLMprm.model_onset.Ep.fbk,...
     GLMprm.model_onset.Em.cross,...
     GLMprm.model_onset.Em.choice,...
     GLMprm.model_onset.Em.chosen,...
-    GLMprm.model_onset.Em.Eperf] = deal('none');
+    GLMprm.model_onset.Em.Eperf,...
+    GLMprm.model_onset.Em.fbk] = deal('none');
 
 
 % initialize all modulators of interest at 0
 %
 % use same conditions for physical and mental effort and pool reward and
 % punishment trials or split reward and punishment trials
-Ep_Em_Epm = {'Ep','Em','Epm'}; % apply same or different conditions to physical and mental effort
-for iEpm = 1:length(EP_Em_Epm)
-    EpEm_nm = Ep_Em_Epm{iEpm};
+Ep_Em = {'Ep','Em'}; % apply same or different conditions to physical and mental effort
+for iEpm = 1:length(Ep_Em)
+    EpEm_nm = Ep_Em{iEpm};
     RPconditions = {'R','P','RP'};
-    GLMprm.choice.Epm.RPpool = 1; % pool reward and punishment together (default)
     for iRP = 1:length(RPconditions)
         RP_nm = RPconditions{iRP};
+        
+        % pool reward and punishment together (default)
+        GLMprm.choice.(EpEm_nm).RPpool = 1;
         [GLMprm.choice.(EpEm_nm).(RP_nm).money_left,...
             GLMprm.choice.(EpEm_nm).(RP_nm).money_right,...
             GLMprm.choice.(EpEm_nm).(RP_nm).money_chosen,...
@@ -51,16 +56,21 @@ for iEpm = 1:length(EP_Em_Epm)
             GLMprm.choice.(EpEm_nm).(RP_nm).E_chosen,...
             GLMprm.choice.(EpEm_nm).(RP_nm).E_unchosen,...
             GLMprm.choice.(EpEm_nm).(RP_nm).E_ch_min_unch,...
-            GLMprm.choice.(EpEm_nm).(RP_nm).E_sum] = deal(0);
+            GLMprm.choice.(EpEm_nm).(RP_nm).E_sum,...
+            GLMprm.choice.(EpEm_nm).(RP_nm).RT] = deal(0);
         
         % chosen option display
+        % pool reward and punishment together (default)
+        GLMprm.chosen.(EpEm_nm).RPpool = 1;
         [GLMprm.chosen.(EpEm_nm).money_chosen,...
             GLMprm.chosen.(EpEm_nm).E_chosen,...
             GLMprm.chosen.(EpEm_nm).certainty] = deal(0);
         
         % effort performance
+        % pool reward and punishment together (default)
+        GLMprm.Eperf.(EpEm_nm).RPpool = 1;
         [GLMprm.Eperf.(EpEm_nm).money,...
-            GLMprm.Eperf.(EpEm_nm).effort_level,...
+            GLMprm.Eperf.(EpEm_nm).effort,...
             GLMprm.Eperf.(EpEm_nm).RT_1stAnswer] = deal(0);
         % specific variables for each effort type
         switch EpEm_nm
@@ -73,20 +83,48 @@ for iEpm = 1:length(EP_Em_Epm)
                 [GLMprm.Eperf.Em.RT_avg,...
                     GLMprm.Eperf.Em.n_errors] = deal(0);
         end
+        
+        % feedback
+        % pool reward and punishment together (default)
+        GLMprm.fbk.(EpEm_nm).RPpool = 1;
+        [GLMprm.fbk.(EpEm_nm).money_obtained,...
+            GLMprm.fbk.(EpEm_nm).E_made,...
+            GLMprm.fbk.(EpEm_nm).certainty] = deal(0);
     end % RP
 end % effort type
     
 %% define variables according to GLM number
 switch GLM
     case 1
-        GLMprm.model_onset.cross = 'stick';
-        GLMprm.model_onset.choice = 'stick';
-        GLMprm.choice.Epm.RP.money_sum = 1;
-        GLMprm.choice.Epm.RP.E_sum = 1;
-        GLMprm.model_onset.chosen = 'stick';
-        GLMprm.chosen.Epm.RP.money_chosen = 1;
-        GLMprm.chosen.(EpEm_nm).E_chosen = 1;
-        GLMprm.model_onset.Eperf = 'stick';
+        % general parameters
+        GLMprm.gal.orth_vars = 1;
+        % cross
+        GLMprm.model_onset.Ep.cross = 'stick';
+        GLMprm.model_onset.Em.cross = 'stick';
+        % choice
+        GLMprm.model_onset.Ep.choice = 'stick';
+        GLMprm.model_onset.Em.choice = 'stick';
+        GLMprm.choice.Ep.RP.money_sum = 1;
+        GLMprm.choice.Em.RP.money_sum = 1;
+        GLMprm.choice.Ep.RP.E_sum = 1;
+        GLMprm.choice.Em.RP.E_sum = 1;
+        GLMprm.choice.Ep.RP.RT = 1;
+        GLMprm.choice.Em.RP.RT = 1;
+        % disp chosen
+        GLMprm.model_onset.Ep.chosen = 'stick';
+        GLMprm.model_onset.Em.chosen = 'stick';
+        GLMprm.chosen.Ep.RP.money_chosen = 1;
+        GLMprm.chosen.Em.RP.money_chosen = 1;
+        GLMprm.chosen.Ep.E_chosen = 1;
+        GLMprm.chosen.Em.E_chosen = 1;
+        % effort perf
+        GLMprm.model_onset.Ep.Eperf = 'stick';
+        GLMprm.model_onset.Em.Eperf = 'stick';
+        % feedback
+        GLMprm.model_onset.Ep.fbk = 'stick';
+        GLMprm.model_onset.Em.fbk = 'stick';
+        GLMprm.fbk.Ep.money_obtained = 1;
+        GLMprm.fbk.Em.money_obtained = 1;
 end
 
 
