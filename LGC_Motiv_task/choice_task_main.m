@@ -32,16 +32,13 @@ testing_script = 0;
 langage = 'fr';
 
 %% working directories
+scripts_folderName = 'LGC_Motiv_task';
 % check that you are in the correct path when you launch the script
-currPath = pwd;
-currPathSplit = split(currPath, filesep);
-if ~strcmp(currPathSplit{end,1},'LGC_Motiv_task')
-    error('you should launch the script within the LGC_Motiv_task folder');
-end
+check_currPath(scripts_folderName);
 % define working directories
 cd ..
 main_folder                 = [pwd filesep];
-main_task_folder            = [main_folder, 'LGC_Motiv_task' filesep];
+main_task_folder            = [main_folder, scripts_folderName filesep];
 results_folder              = [main_folder, 'LGC_Motiv_results' filesep];
 % BioPac_folder               = [main_folder, 'BioPac_functions' filesep];
 % pics_folder                 = [main_task_folder, 'Coin_PNG', filesep];
