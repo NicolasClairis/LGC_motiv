@@ -39,14 +39,14 @@ if n_mods > 0
         matlabbatch{sub_idx}.spm.stats.fmri_spec.sess(iRun).cond(iCond).pmod(iMod).param = mod_vals(iMod,:);
         matlabbatch{sub_idx}.spm.stats.fmri_spec.sess(iRun).cond(iCond).pmod(iMod).poly = 1;
     end
-end
-
-% orthogonalize regressors
-switch orth_vars
-    case 0
-        matlabbatch{sub_idx}.spm.stats.fmri_spec.sess(iRun).cond(iCond).orth = 0;
-    case 1
-        matlabbatch{sub_idx}.spm.stats.fmri_spec.sess(iRun).cond(iCond).orth = 1;
+    
+    % orthogonalize regressors
+    switch orth_vars
+        case 0
+            matlabbatch{sub_idx}.spm.stats.fmri_spec.sess(iRun).cond(iCond).orth = 0;
+        case 1
+            matlabbatch{sub_idx}.spm.stats.fmri_spec.sess(iRun).cond(iCond).orth = 1;
+    end
 end
 
 end % function

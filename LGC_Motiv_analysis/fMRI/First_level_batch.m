@@ -72,13 +72,13 @@ for iS = 1:NS
         n_char = size(subj_scan_folders_names(iRun,:),2);
         for iLetter = 1:n_char
             if strcmp(subj_scan_folders_names(iRun,iLetter),' ') == 0 % erase space
-                subj_runFoldername(iLetter) = subj_scan_folders_names(iRun, iLetter);
+                subj_runFoldername_tmp(iLetter) = subj_scan_folders_names(iRun, iLetter);
             end
         end
         
         % load scans in the GLM
-        cd([subj_scans_folder filesep subj_runFoldername, filesep]); % go to run folder
-        preprocessed_filenames = cellstr(spm_select('ExtFPList',pwd,'^swrf.*\.nii$')); % extracts all the preprocessed swrf files (smoothed, normalized, realigned)
+        cd([subj_scans_folder filesep subj_runFoldername_tmp, filesep]); % go to run folder
+        preprocessed_filenames = cellstr(spm_select('ExtFPList',pwd,'^swr.*\.nii$')); % extracts all the preprocessed swrf files (smoothed, normalized, realigned)
         matlabbatch{sub_idx}.spm.stats.fmri_spec.sess(iRun).scans = preprocessed_filenames;
         
         %% load regressors of interest
@@ -101,11 +101,14 @@ for iS = 1:NS
         %% global run parameters (rp movement file, etc.)
         matlabbatch{sub_idx}.spm.stats.fmri_spec.sess(iRun).multi = {''};
         matlabbatch{sub_idx}.spm.stats.fmri_spec.sess(iRun).regress = struct('name', {}, 'val', {});
-        mvmtFolder = [subj_scans_folder, filesep, subj_runFoldername, filesep];
+        mvmtFolder = [subj_scans_folder, filesep, subj_runFoldername_tmp, filesep];
         movement_file = ls([mvmtFolder, 'rp*']);
         movement_filePath = [mvmtFolder, movement_file];
         matlabbatch{sub_idx}.spm.stats.fmri_spec.sess(iRun).multi_reg = {movement_filePath};
         matlabbatch{sub_idx}.spm.stats.fmri_spec.sess(iRun).hpf = 128;
+        
+        %% clear run name to avoid bugs across runs
+        clear('subj_runFoldername_tmp');
     end % run loop
     
     %% global parameters for subject batch
