@@ -1,18 +1,15 @@
-% preprocessing NicoC batch
-%% preprocessing for subjects with runs all with classical EPI (TR=2.01s) (MotiScan1) or all with multiband (MotiScan2)
+% preprocessing for fMRI data
 % enter subject identification in 'subject_id' (sXX_ddMMyy dd: day,
 % MM: month, yy: year) and preprocessing number in 'preproc'
 % preproc: 0: "raw" preprocessing (grey matter saved during segmentation)
-%          1: added FIELD-MAP correction
+%          1: added AP-PA correction
 %
 % all data is stored in the fMRI_scans folders + the script also creates
 % fMRI_analysis folder where the anatomical files are copied for the
 % preprocessing + functional folder created for 1st level analysis
 %
-% Be careful for s20 from MotiScan1: run 9 has to be made separately from the others
-%
-% See also First_level_NicoC_batch, contrasts_NicoC_batch and
-% Second_level_NicoC_batch
+% See also First_level_batch, contrasts_batch and
+% Second_level_batch
 
 clear;
 
@@ -42,7 +39,7 @@ for iSubject = 1:NS % loop through subjects
     if exist('fMRI_analysis','dir') ~= 7
         mkdir fMRI_analysis;
     end
-    subj_analysis_folder = [root,subject_id{iSubject},'\fMRI_analysis'];
+    subj_analysis_folder = [root,subject_id{iSubject},filesep,'fMRI_analysis'];
     cd(subj_analysis_folder);
     if exist('anatomical','dir') ~= 7
         mkdir anatomical;
@@ -50,10 +47,10 @@ for iSubject = 1:NS % loop through subjects
     if exist('functional','dir') ~= 7
         mkdir functional;
     end
-    subj_scans_folder = [root,subject_id{iSubject},'\fMRI_scans'];
+    subj_scans_folder = [root,subject_id{iSubject},filesep,'fMRI_scans'];
     cd(subj_scans_folder);
     anat_folder = ls('*t1*');
-    copyfile(anat_folder,[subj_analysis_folder,'\anatomical\']); % copies the contempt of the anatomical folder
+    copyfile(anat_folder,[subj_analysis_folder,filesep,'anatomical\']); % copies the contempt of the anatomical folder
     
     %%
     cd(subj_scans_folder);
