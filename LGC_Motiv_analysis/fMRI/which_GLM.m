@@ -115,16 +115,16 @@ switch GLM
         GLMprm.model_onset.Em.chosen = 'stick';
         GLMprm.chosen.Ep.RP.money_chosen = 1;
         GLMprm.chosen.Em.RP.money_chosen = 1;
-        GLMprm.chosen.Ep.E_chosen = 1;
-        GLMprm.chosen.Em.E_chosen = 1;
+        GLMprm.chosen.Ep.RP.E_chosen = 1;
+        GLMprm.chosen.Em.RP.E_chosen = 1;
         % effort perf
         GLMprm.model_onset.Ep.Eperf = 'stick';
         GLMprm.model_onset.Em.Eperf = 'stick';
         % feedback
         GLMprm.model_onset.Ep.fbk = 'stick';
         GLMprm.model_onset.Em.fbk = 'stick';
-        GLMprm.fbk.Ep.money_obtained = 1;
-        GLMprm.fbk.Em.money_obtained = 1;
+        GLMprm.fbk.Ep.RP.money_obtained = 1;
+        GLMprm.fbk.Em.RP.money_obtained = 1;
 end
 
 

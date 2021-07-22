@@ -79,7 +79,7 @@ E_chosen = behavioralDataStruct.(task_behavioral_id).E_chosen;
 money_obtained = behavioralDataStruct.(task_behavioral_id).gain;
 
 %% load the batch according to GLMprm variables
-orth_vars = GLMprm.gal.orth;
+orth_vars = GLMprm.gal.orth_vars;
 choice_RPpool = GLMprm.choice.(task_id).RPpool;
 switch choice_RPpool
     case 0
@@ -130,12 +130,13 @@ end
 %% choice period
 choiceModel = GLMprm.model_onset.(task_id).choice;
 if ismember(choiceModel,{'stick','boxcar'})
-    choiceModel_moneySum = GLMprm.choice.(task_id).money_sum;
-    choiceModel_E_sum = GLMprm.choice.(task_id).E_sum;
-    choiceModel_RT = GLMprm.choice.(task_id).RT;
     
     for iRP_choice = 1:length(RPchoiceCond)
         RP_choice_nm = RPchoiceCond{iRP_choice};
+        choiceModel_moneySum = GLMprm.choice.(task_id).(RP_choice_nm).money_sum;
+        choiceModel_E_sum = GLMprm.choice.(task_id).(RP_choice_nm).E_sum;
+        choiceModel_RT = GLMprm.choice.(task_id).(RP_choice_nm).RT;
+        
         if ~strcmp(RP_choice_nm,'RP')
             error('just split onsets and regressors depending on reward/punishment trial');
         end
@@ -180,11 +181,13 @@ end % model choice
 %% chosen period
 chosenModel = GLMprm.model_onset.(task_id).chosen;
 if ismember(chosenModel,{'stick','boxcar'})
-    chosenModel_moneyChosen = GLMprm.chosen.(task_id).money_chosen;
-    chosenModel_Echosen = GLMprm.chosen.(task_id).E_chosen;
     
     for iRP_chosen = 1:length(RPchosenCond)
         RP_chosen_nm = RPchosenCond{iRP_chosen};
+        
+        chosenModel_moneyChosen = GLMprm.chosen.(task_id).(RP_chosen_nm).money_chosen;
+        chosenModel_Echosen = GLMprm.chosen.(task_id).(RP_chosen_nm).E_chosen;
+        
         if ~strcmp(RP_chosen_nm,'RP')
             error('just split onsets and regressors depending on reward/punishment trial');
         end
@@ -223,12 +226,14 @@ end % model chosen period
 %% effort performance
 EperfModel = GLMprm.model_onset.(task_id).Eperf;
 if ismember(EperfModel,{'stick','boxcar'})
-    EperfModel_money = GLMprm.Eperf.(task_id).money;
-    EperfModel_effort = GLMprm.Eperf.(task_id).effort;
-    EperfModel_RT1stAnswer = GLMprm.Eperf.(task_id).RT_1stAnswer;
     
     for iRP_Eperf = 1:length(RPperfCond)
         RP_Eperf_nm = RPperfCond{iRP_Eperf};
+        %
+        EperfModel_money = GLMprm.Eperf.(task_id).(RP_Eperf_nm).money;
+        EperfModel_effort = GLMprm.Eperf.(task_id).(RP_Eperf_nm).effort;
+        EperfModel_RT1stAnswer = GLMprm.Eperf.(task_id).(RP_Eperf_nm).RT_1stAnswer;
+        
         if ~strcmp(RP_Eperf_nm,'RP')
             error('just split onsets and regressors depending on reward/punishment trial');
         end
@@ -273,11 +278,13 @@ end % model chosen period
 %% feedback
 fbkModel = GLMprm.model_onset.(task_id).fbk;
 if ismember(fbkModel,{'stick','boxcar'})
-    fbkModel_moneyObtained = GLMprm.fbk.(task_id).money_obtained;
-    fbkModel_Emade = GLMprm.fbk.(task_id).E_made;
     
     for iRP_fbk = 1:length(RPfbkCond)
         RP_fbk_nm = RPfbkCond{iRP_fbk};
+        %
+        fbkModel_moneyObtained = GLMprm.fbk.(task_id).(RP_fbk_nm).money_obtained;
+        fbkModel_Emade = GLMprm.fbk.(task_id).(RP_fbk_nm).E_made;
+        
         if ~strcmp(RP_fbk_nm,'RP')
             error('just split onsets and regressors depending on reward/punishment trial');
         end
