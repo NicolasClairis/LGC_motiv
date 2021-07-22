@@ -32,10 +32,10 @@ screens = Screen('Screens');
 if IRM == 0
     whichScreen = max(screens);
 elseif IRM == 1
-    if testing_script == 0
-        whichScreen = 1; % 1 if 2 screens, 0 if one screen
-    elseif testing_script == 1 % my own computer
-        whichScreen = max(screens);
+    if testing_script == 0 % for fMRI experiment, display on the projector
+        whichScreen = max(screens); % 1 if 2 screens, 0 if one screen
+    elseif testing_script == 1 % for fMRI training display on screen 1
+        whichScreen = 1;
     end
 end
 
