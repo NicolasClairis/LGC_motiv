@@ -78,8 +78,6 @@ for iS = 1:NS % loop through subjects
     cd(subj_scans_folder);
     subj_scan_folders_names = ls('*_run*'); % takes all functional runs folders
     % remove AP/PA corrective runs
-    % erase REFBLIP runs from the list (made only for Romain topup
-    % correction)
     for iRunCorrect = size(subj_scan_folders_names,1):-1:1
         % delete references from the list (made for preprocessing with AP/PA correction of distorsions)
         if strcmp(subj_scan_folders_names(iRunCorrect,end-11:end-8),'_PA_') ||...
