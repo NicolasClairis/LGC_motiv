@@ -9,7 +9,7 @@ spm_jobman('initcfg');
 % check the batch before launching the script?
 checking = 1;
 % GLM number
-GLM = 1;
+GLM = 2;
 GLMprm = which_GLM(GLM);
 add_drv = GLMprm.gal.add_drv;
 grey_mask = GLMprm.gal.grey_mask;

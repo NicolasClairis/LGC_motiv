@@ -88,6 +88,7 @@ for iEpm = 1:length(Ep_Em)
         % pool reward and punishment together (default)
         GLMprm.fbk.(EpEm_nm).RPpool = 1;
         [GLMprm.fbk.(EpEm_nm).(RP_nm).money_obtained,...
+            GLMprm.fbk.(EpEm_nm).(RP_nm).win_vs_loss,...
             GLMprm.fbk.(EpEm_nm).(RP_nm).E_made,...
             GLMprm.fbk.(EpEm_nm).(RP_nm).certainty] = deal(0);
     end % RP
@@ -125,6 +126,32 @@ switch GLM
         GLMprm.model_onset.Em.fbk = 'stick';
         GLMprm.fbk.Ep.RP.money_obtained = 1;
         GLMprm.fbk.Em.RP.money_obtained = 1;
+    case 2
+        % general parameters
+        GLMprm.gal.orth_vars = 1;
+        % cross
+        GLMprm.model_onset.Ep.cross = 'stick';
+        GLMprm.model_onset.Em.cross = 'stick';
+        % choice
+        GLMprm.model_onset.Ep.choice = 'stick';
+        GLMprm.model_onset.Em.choice = 'stick';
+        GLMprm.choice.Ep.RP.RT = 1;
+        GLMprm.choice.Em.RP.RT = 1;
+        % disp chosen
+        GLMprm.model_onset.Ep.chosen = 'stick';
+        GLMprm.model_onset.Em.chosen = 'stick';
+        GLMprm.chosen.Ep.RP.money_chosen = 1;
+        GLMprm.chosen.Em.RP.money_chosen = 1;
+        GLMprm.chosen.Ep.RP.E_chosen = 1;
+        GLMprm.chosen.Em.RP.E_chosen = 1;
+        % effort perf
+        GLMprm.model_onset.Ep.Eperf = 'stick';
+        GLMprm.model_onset.Em.Eperf = 'stick';
+        % feedback
+        GLMprm.model_onset.Ep.fbk = 'stick';
+        GLMprm.model_onset.Em.fbk = 'stick';
+        GLMprm.fbk.Ep.RP.win_vs_loss = 1;
+        GLMprm.fbk.Em.RP.win_vs_loss = 1;
 end
 
 

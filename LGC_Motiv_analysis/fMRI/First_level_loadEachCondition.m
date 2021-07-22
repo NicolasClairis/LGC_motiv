@@ -32,21 +32,24 @@ matlabbatch{sub_idx}.spm.stats.fmri_spec.sess(iRun).cond(iCond).name = cond_nm;
 matlabbatch{sub_idx}.spm.stats.fmri_spec.sess(iRun).cond(iCond).onset = cond_onsets;
 matlabbatch{sub_idx}.spm.stats.fmri_spec.sess(iRun).cond(iCond).duration = cond_dur;
 matlabbatch{sub_idx}.spm.stats.fmri_spec.sess(iRun).cond(iCond).tmod = 0;
-% add parametric modulators eventually
+
+% add parametric modulators (if there are some)
+% pmod need to be initialized, otherwise SPM is not happy
+matlabbatch{sub_idx}.spm.stats.fmri_spec.sess(iRun).cond(iCond).pmod = struct('name',{''},'param',{},'poly',{});
 if n_mods > 0
     for iMod = 1:n_mods
         matlabbatch{sub_idx}.spm.stats.fmri_spec.sess(iRun).cond(iCond).pmod(iMod).name = mod_nm{iMod};
         matlabbatch{sub_idx}.spm.stats.fmri_spec.sess(iRun).cond(iCond).pmod(iMod).param = mod_vals(iMod,:);
         matlabbatch{sub_idx}.spm.stats.fmri_spec.sess(iRun).cond(iCond).pmod(iMod).poly = 1;
     end
-    
-    % orthogonalize regressors
-    switch orth_vars
-        case 0
-            matlabbatch{sub_idx}.spm.stats.fmri_spec.sess(iRun).cond(iCond).orth = 0;
-        case 1
-            matlabbatch{sub_idx}.spm.stats.fmri_spec.sess(iRun).cond(iCond).orth = 1;
-    end
+end
+
+% orthogonalize regressors
+switch orth_vars
+    case 0
+        matlabbatch{sub_idx}.spm.stats.fmri_spec.sess(iRun).cond(iCond).orth = 0;
+    case 1
+        matlabbatch{sub_idx}.spm.stats.fmri_spec.sess(iRun).cond(iCond).orth = 1;
 end
 
 end % function

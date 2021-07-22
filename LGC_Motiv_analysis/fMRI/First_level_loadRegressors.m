@@ -77,6 +77,7 @@ money_chosen = behavioralDataStruct.(task_behavioral_id).R_chosen;
 E_chosen = behavioralDataStruct.(task_behavioral_id).E_chosen;
 % E_unchosen = ;
 money_obtained = behavioralDataStruct.(task_behavioral_id).gain;
+win_vs_loss_fbk = money_obtained > 0;
 
 %% load the batch according to GLMprm variables
 orth_vars = GLMprm.gal.orth_vars;
@@ -283,6 +284,7 @@ if ismember(fbkModel,{'stick','boxcar'})
         RP_fbk_nm = RPfbkCond{iRP_fbk};
         %
         fbkModel_moneyObtained = GLMprm.fbk.(task_id).(RP_fbk_nm).money_obtained;
+        fbkModel_winVSloss = GLMprm.fbk.(task_id).(RP_fbk_nm).win_vs_loss;
         fbkModel_Emade = GLMprm.fbk.(task_id).(RP_fbk_nm).E_made;
         
         if ~strcmp(RP_fbk_nm,'RP')
@@ -305,6 +307,12 @@ if ismember(fbkModel,{'stick','boxcar'})
             n_fbkMods = n_fbkMods + 1;
             fbk_modNames{n_fbkMods} = 'money obtained';
             fbk_modVals(n_fbkMods,:) = money_obtained;
+        end
+        % win vs loss
+        if fbkModel_winVSloss == 1
+            n_fbkMods = n_fbkMods + 1;
+            fbk_modNames{n_fbkMods} = 'win vs loss';
+            fbk_modVals(n_fbkMods,:) = win_vs_loss_fbk;
         end
         % effort chosen
         if fbkModel_Emade == 1
