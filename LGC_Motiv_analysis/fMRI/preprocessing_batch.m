@@ -129,7 +129,7 @@ for iS = 1:NS % loop through subjects
     coreg_step = nb_preprocessingSteps*(iS-1) + preproc_step;
     matlabbatch{coreg_step}.spm.spatial.coreg.estimate.ref(1) = cfg_dep('Realign: Estimate & Reslice: Mean Image', substruct('.','val', '{}',{realign_step}, '.','val', '{}',{1}, '.','val', '{}',{1}, '.','val', '{}',{1}), substruct('.','rmean'));
     cd(newAnatFolder);
-    anat_file = ls('s*.img');
+    anat_file = ls('LGCM_*.nii');
     matlabbatch{coreg_step}.spm.spatial.coreg.estimate.source = {[newAnatFolder, anat_file]};
     cd(subj_scans_folder);
     matlabbatch{coreg_step}.spm.spatial.coreg.estimate.other = {''};
