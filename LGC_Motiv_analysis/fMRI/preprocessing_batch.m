@@ -81,15 +81,7 @@ for iS = 1:NS % loop through subjects
     cd(subj_scans_folder);
     subj_scan_folders_names = ls('*_run*'); % takes all functional runs folders
     % remove AP/PA corrective runs
-    for iRunCorrect = size(subj_scan_folders_names,1):-1:1
-        % delete references from the list (made for preprocessing with AP/PA correction of distorsions)
-        if strcmp(subj_scan_folders_names(iRunCorrect,end-11:end-8),'_PA_') ||...
-                strcmp(subj_scan_folders_names(iRunCorrect,end-13:end-10),'_PA_') ||...
-                strcmp(subj_scan_folders_names(iRunCorrect,11:17),'_topup_')
-            subj_scan_folders_names(iRunCorrect,:) = [];
-        end
-        
-    end
+    [subj_scan_folders_names] = clear_topup_fromFileList(subj_scan_folders_names);
     %%
     cd(subj_analysis_folder)
     %% define number of sessions to analyze

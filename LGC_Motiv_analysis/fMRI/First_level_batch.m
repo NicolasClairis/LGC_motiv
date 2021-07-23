@@ -9,7 +9,13 @@ spm_jobman('initcfg');
 % check the batch before launching the script?
 checking = 1;
 % GLM number
-GLM = 2;
+[GLM_nm] = deal([]);
+while isempty(GLM_nm)
+    % repeat until all questions are answered
+    info = inputdlg({'GLM number?'});
+    [GLM_nm] = info{1};
+end
+GLM = str2double(GLM_nm);
 GLMprm = which_GLM(GLM);
 add_drv = GLMprm.gal.add_drv;
 grey_mask = GLMprm.gal.grey_mask;
@@ -21,13 +27,13 @@ nb_runs = 2;
 nb_batch_per_subj = 2; % model + estimate
 
 %% working directories
-computer_root = fullfile('C:','Users','Loco');
-scripts_folder = fullfile(computer_root,'Documents','GitHub','LGC_motiv','LGC_Motiv_analysis','fMRI');
+computer_root = fullfile('C:','Users','clairis','Desktop');
+scripts_folder = fullfile(computer_root,'GitHub','LGC_motiv','LGC_Motiv_analysis','fMRI');
 addpath(scripts_folder);
-root = fullfile(computer_root,'Downloads','nifti_pilot002');
+root = fullfile(computer_root,'study1','fMRI_pilots');
 
 %% list subjects to analyze
-subject_id = {'nifti_pilot002'};
+subject_id = {'pilot_s1'};%'pilot_s1','pilot_s2'
 NS = length(subject_id);
 %% loop through subjects
 matlabbatch = cell(nb_batch_per_subj*NS,1);
@@ -48,14 +54,7 @@ for iS = 1:NS
     %% load fMRI data
     subj_scan_folders_names = ls([subj_scans_folder, filesep, '*_run*']); % takes all functional runs folders
     % remove AP/PA corrective runs
-    for iRunCorrect = size(subj_scan_folders_names,1):-1:1
-        % delete references from the list (made for preprocessing with AP/PA correction of distorsions)
-        if strcmp(subj_scan_folders_names(iRunCorrect,end-11:end-8),'_PA_') ||...
-                strcmp(subj_scan_folders_names(iRunCorrect,end-13:end-10),'_PA_')
-            subj_scan_folders_names(iRunCorrect,:) = [];
-        end
-        
-    end
+    [subj_scan_folders_names] = clear_topup_fromFileList(subj_scan_folders_names);
     
     %% starting 1st level GLM batch
     sub_idx = nb_batch_per_subj*(iS-1) + 1 ;
