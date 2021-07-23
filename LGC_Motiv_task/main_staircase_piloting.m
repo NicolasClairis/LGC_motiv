@@ -12,7 +12,7 @@ cd ..
 main_folder                 = [pwd filesep]; % you have to be sure that you are in the correct path when you launch the script
 main_task_folder            = [main_folder, 'LGC_Motiv_task' filesep];
 results_folder              = [main_folder, 'LGC_Motiv_results' filesep];
-% BioPac_folder               = [main_folder, 'BioPac_functions' filesep];
+% BioPac_folder               = [main_fo lder, 'BioPac_functions' filesep];
 % pics_folder                 = [main_task_folder, 'Coin_PNG', filesep];
 Matlab_DIY_functions_folder = [main_folder, 'Matlab_DIY_functions', filesep];
 
@@ -52,23 +52,23 @@ file_nm_training_Ep = ['IP_pilot_data_Ep_',init,'_sub_',num2str(iSubject)];
 file_nm = ['IP_pilot_data',init,'_sub_',num2str(iSubject)];
 %% general parameters
 % define subparts of the task to perform (on/off)
-taskToPerform.physical.calib = 'off';
-taskToPerform.physical.learning = 'off';
-taskToPerform.physical.training = 'off';
+taskToPerform.physical.calib = 'on';
+taskToPerform.physical.learning = 'on';
+taskToPerform.physical.training = 'on';
 switch IRM
     case 0
-        taskToPerform.physical.task = 'off';
+        taskToPerform.physical.task = 'on';
     case 1 % task will be done in the scanner after the training
-        taskToPerform.physical.task = 'off';
+        taskToPerform.physical.task = 'on';
 end
-taskToPerform.mental.learning = 'off';
+taskToPerform.mental.learning = 'on';
 taskToPerform.mental.calib = 'on';
 taskToPerform.mental.training = 'on';
 switch IRM
     case 0
         taskToPerform.mental.task = 'on';
     case 1 % task will be done in the scanner after the training
-        taskToPerform.mental.task = 'off';
+        taskToPerform.mental.task = 'on';
 end
 switch langue
     case 'f'
