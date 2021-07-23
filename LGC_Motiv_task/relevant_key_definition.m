@@ -82,10 +82,8 @@ elseif IRM == 1
             % corresponds to 'y' or 'z' (for yellow)
             
             % also need the left/right buttons for the mental effort task
-            if strcmp(effort_type,'mental')
-                key.left = 71;
-                key.right = 82;
-            end
+            key.left = 71;
+            key.right = 82;
     end
     key.space = KbName('Space');
     key.escape = KbName('escape');
