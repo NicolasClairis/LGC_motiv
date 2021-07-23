@@ -23,7 +23,6 @@ grey_mask = GLMprm.gal.grey_mask;
 % repetition time for fMRI
 TR = 2.00;
 
-nb_runs = 2;
 nb_batch_per_subj = 2; % model + estimate
 
 %% working directories
@@ -33,7 +32,7 @@ addpath(scripts_folder);
 root = fullfile(computer_root,'study1','fMRI_pilots');
 
 %% list subjects to analyze
-subject_id = {'pilot_s1'};%'pilot_s1','pilot_s2'
+subject_id = {'pilot_s2'};%'pilot_s1','pilot_s2'
 NS = length(subject_id);
 %% loop through subjects
 matlabbatch = cell(nb_batch_per_subj*NS,1);
@@ -50,6 +49,16 @@ for iS = 1:NS
     resultsFolderName = [subj_analysis_folder 'functional', filesep,...
         'GLM',num2str(GLM)];
     mkdir(resultsFolderName);
+    
+    %% define number of runs
+    switch sub_nm
+        case 'pilot_s1'
+            nb_runs = 2;
+        case 'pilot_s2'
+            nb_runs = 1;
+        otherwise
+            nb_runs = 4;
+    end
     
     %% load fMRI data
     subj_scan_folders_names = ls([subj_scans_folder, filesep, '*_run*']); % takes all functional runs folders
@@ -86,9 +95,11 @@ for iS = 1:NS
         if size(currRunBehaviorFileNames,1) > 1
             error(['problem file identification: too many files popping out with run number',run_nm]);
         end
-        if strcmp(currRunBehaviorFileNames(16:23),'physical') || strcmp(currRunBehaviorFileNames(17:24),'physical')
+        if strcmp(currRunBehaviorFileNames(16:23),'physical') ||...
+                strcmp(currRunBehaviorFileNames(17:24),'physical')
             task_nm = 'physical';
-        elseif strcmp(currRunBehaviorFileNames(16:21),'mental') || strcmp(currRunBehaviorFileNames(17:22),'mental')
+        elseif strcmp(currRunBehaviorFileNames(16:21),'mental') ||...
+                strcmp(currRunBehaviorFileNames(17:22),'mental')
             task_nm = 'mental';
         else
             error('problem in identifying task type because file name doesn''t match');

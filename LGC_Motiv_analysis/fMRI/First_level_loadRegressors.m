@@ -42,8 +42,8 @@ T0 = behavioralDataStruct.onsets.T0;
 initialCrossOnsets      = behavioralDataStruct.(task_behavioral_id).onsets.cross - T0; % only cross appearing BEFORE the start of each trial
 crossOnsets             = [initialCrossOnsets, behavioralDataStruct.onsets.finalCross - T0]; % add final cross (at the end of the experiment)
 dispChoiceOptionOnsets  = behavioralDataStruct.(task_behavioral_id).onsets.dispChoiceOptions - T0;
-choiceOnsets             = behavioralDataStruct.(task_behavioral_id).onsets.choice - T0;
-dispChosenOnsets         = behavioralDataStruct.(task_behavioral_id).onsets.dispChoice - T0;
+choiceOnsets            = behavioralDataStruct.(task_behavioral_id).onsets.choice - T0;
+dispChosenOnsets        = behavioralDataStruct.(task_behavioral_id).onsets.dispChoice - T0;
 n_trials = length(dispChosenOnsets);
 
 EperfOnset = NaN(1,n_trials);
@@ -55,7 +55,7 @@ for iTrial = 1:n_trials
             EperfOnset(iTrial) = behavioralDataStruct.(task_behavioral_id).onsets.effortPeriod{1,iTrial}.nb_1 - T0;
     end
 end
-fbkOnsets                = behavioralDataStruct.(task_behavioral_id).onsets.fbk - T0;
+fbkOnsets = behavioralDataStruct.(task_behavioral_id).onsets.fbk - T0;
 % durations of each event
 crossDur = dispChoiceOptionOnsets - initialCrossOnsets;
 dispChoiceDur = dispChosenOnsets - dispChoiceOptionOnsets;
