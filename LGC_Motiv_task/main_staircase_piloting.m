@@ -12,7 +12,7 @@ cd ..
 main_folder                 = [pwd filesep]; % you have to be sure that you are in the correct path when you launch the script
 main_task_folder            = [main_folder, 'LGC_Motiv_task' filesep];
 results_folder              = [main_folder, 'LGC_Motiv_results' filesep];
-% BioPac_folder               = [main_folder, 'BioPac_functions' filesep];
+% BioPac_folder               = [main_fo lder, 'BioPac_functions' filesep];
 % pics_folder                 = [main_task_folder, 'Coin_PNG', filesep];
 Matlab_DIY_functions_folder = [main_folder, 'Matlab_DIY_functions', filesep];
 
@@ -57,9 +57,9 @@ taskToPerform.physical.learning = 'on';
 taskToPerform.physical.training = 'on';
 switch IRM
     case 0
-        taskToPerform.physical.task = 'off';
+        taskToPerform.physical.task = 'on';
     case 1 % task will be done in the scanner after the training
-        taskToPerform.physical.task = 'off';
+        taskToPerform.physical.task = 'on';
 end
 taskToPerform.mental.learning = 'on';
 taskToPerform.mental.calib = 'on';
@@ -68,7 +68,7 @@ switch IRM
     case 0
         taskToPerform.mental.task = 'on';
     case 1 % task will be done in the scanner after the training
-        taskToPerform.mental.task = 'off';
+        taskToPerform.mental.task = 'on';
 end
 switch langue
     case 'f'
