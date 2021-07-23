@@ -52,16 +52,16 @@ file_nm_training_Ep = ['IP_pilot_data_Ep_',init,'_sub_',num2str(iSubject)];
 file_nm = ['IP_pilot_data',init,'_sub_',num2str(iSubject)];
 %% general parameters
 % define subparts of the task to perform (on/off)
-taskToPerform.physical.calib = 'off';
-taskToPerform.physical.learning = 'off';
-taskToPerform.physical.training = 'off';
+taskToPerform.physical.calib = 'on';
+taskToPerform.physical.learning = 'on';
+taskToPerform.physical.training = 'on';
 switch IRM
     case 0
         taskToPerform.physical.task = 'off';
     case 1 % task will be done in the scanner after the training
         taskToPerform.physical.task = 'off';
 end
-taskToPerform.mental.learning = 'off';
+taskToPerform.mental.learning = 'on';
 taskToPerform.mental.calib = 'on';
 taskToPerform.mental.training = 'on';
 switch IRM
