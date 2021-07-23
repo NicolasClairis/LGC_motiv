@@ -26,17 +26,20 @@ spm_jobman('initcfg');
 %% define subjects and working directories
 % dACC_or_Str_study = input('dACC (1) or Striatum (2) study?');
 dACC_or_Str_study = 1;
-subject_id = {'nifti_pilot002'};
+subject_id = {'pilot_s2'}; % 'pilot_s1','pilot_s2'
 switch dACC_or_Str_study
     case 1
-        root = 'C:\Users\Loco\Downloads\nifti_pilot002\'; % for pilot analysis
+        % for pilot analysis
+        root = [fullfile('C:','Users','clairis','Desktop','study1','fMRI_pilots'),filesep];
     case 2
-        
+        error('study 2 path not ready yet');
 end
 NS = length(subject_id); % nber of subjects
 
 % give path for anatomical template
-spmTemplatePath = fullfile('C:','Program Files','MATLAB','spm','spm12','spm12','tpm','TPM.nii');
+% spmFolderPath = fullfile('C:','Program Files','MATLAB','spm');
+spmFolderPath = fullfile('C:','Users','clairis','Desktop');
+spmTemplatePath = fullfile(spmFolderPath,'spm12','spm12','tpm','TPM.nii');
 
 %% define number of preprocessing steps
 nb_preprocessingSteps = 6;
@@ -78,18 +81,11 @@ for iS = 1:NS % loop through subjects
     cd(subj_scans_folder);
     subj_scan_folders_names = ls('*_run*'); % takes all functional runs folders
     % remove AP/PA corrective runs
-    for iRunCorrect = size(subj_scan_folders_names,1):-1:1
-        % delete references from the list (made for preprocessing with AP/PA correction of distorsions)
-        if strcmp(subj_scan_folders_names(iRunCorrect,end-11:end-8),'_PA_') ||...
-                strcmp(subj_scan_folders_names(iRunCorrect,end-13:end-10),'_PA_')
-            subj_scan_folders_names(iRunCorrect,:) = [];
-        end
-        
-    end
+    [subj_scan_folders_names] = clear_topup_fromFileList(subj_scan_folders_names);
     %%
     cd(subj_analysis_folder)
     %% define number of sessions to analyze
-    if ismember(sub_nm, {'nifti_pilot002'}) % only 2 sessions for this pilot
+    if ismember(sub_nm, {'pilot_s1','pilot_s2'}) % only 2 sessions for these pilots
         nb_runs = 2;
     else
         nb_runs = 4;
@@ -97,7 +93,11 @@ for iS = 1:NS % loop through subjects
     cd(subj_scans_folder);
     for iRun = 1:nb_runs % loop through runs for 3 ratings, 3 choices 1D, 3 choices 2D runs
         cd(subj_scan_folders_names(iRun,:)); % go to run folder
-        filenames = cellstr(spm_select('ExtFPList',pwd,'^LGCM_.*\.nii$')); % extracts all the f-files
+        if ismember(sub_nm,{'pilot_s1'})
+            filenames = cellstr(spm_select('ExtFPList',pwd,'^LGCM_.*\.nii$'));
+        else
+            filenames = cellstr(spm_select('ExtFPList',pwd,'^run.*\.nii$'));
+        end
         runFileNames.(['run_',num2str(iRun)]) = filenames;
         cd(subj_scans_folder);
     end
@@ -127,7 +127,11 @@ for iS = 1:NS % loop through subjects
     coreg_step = nb_preprocessingSteps*(iS-1) + preproc_step;
     matlabbatch{coreg_step}.spm.spatial.coreg.estimate.ref(1) = cfg_dep('Realign: Estimate & Reslice: Mean Image', substruct('.','val', '{}',{realign_step}, '.','val', '{}',{1}, '.','val', '{}',{1}, '.','val', '{}',{1}), substruct('.','rmean'));
     cd(newAnatFolder);
-    anat_file = ls('LGCM_*.nii');
+    if ismember(sub_nm,{'pilot_s1'})
+        anat_file = ls('LGCM_*.nii');
+    else
+        anat_file = ls('mp2rage_*.nii');
+    end
     matlabbatch{coreg_step}.spm.spatial.coreg.estimate.source = {[newAnatFolder, anat_file]};
     cd(subj_scans_folder);
     matlabbatch{coreg_step}.spm.spatial.coreg.estimate.other = {''};

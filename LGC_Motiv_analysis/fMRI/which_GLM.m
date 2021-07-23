@@ -57,7 +57,8 @@ for iEpm = 1:length(Ep_Em)
             GLMprm.choice.(EpEm_nm).(RP_nm).E_unchosen,...
             GLMprm.choice.(EpEm_nm).(RP_nm).E_ch_min_unch,...
             GLMprm.choice.(EpEm_nm).(RP_nm).E_sum,...
-            GLMprm.choice.(EpEm_nm).(RP_nm).RT] = deal(0);
+            GLMprm.choice.(EpEm_nm).(RP_nm).RT,...
+            GLMprm.choice.(EpEm_nm).(RP_nm).R_vs_P] = deal(0);
         
         % chosen option display
         % pool reward and punishment together (default)
@@ -152,6 +153,32 @@ switch GLM
         GLMprm.model_onset.Em.fbk = 'stick';
         GLMprm.fbk.Ep.RP.win_vs_loss = 1;
         GLMprm.fbk.Em.RP.win_vs_loss = 1;
+    case 3
+        % general parameters
+        GLMprm.gal.orth_vars = 1;
+        % cross
+        GLMprm.model_onset.Ep.cross = 'stick';
+        GLMprm.model_onset.Em.cross = 'stick';
+        % choice
+        GLMprm.model_onset.Ep.choice = 'stick';
+        GLMprm.model_onset.Em.choice = 'stick';
+        GLMprm.choice.Ep.RP.R_vs_P = 1;
+        GLMprm.choice.Em.RP.R_vs_P = 1;
+        GLMprm.choice.Ep.RP.RT = 1;
+        GLMprm.choice.Em.RP.RT = 1;
+        % disp chosen
+        GLMprm.model_onset.Ep.chosen = 'stick';
+        GLMprm.model_onset.Em.chosen = 'stick';
+        GLMprm.chosen.Ep.RP.money_chosen = 1;
+        GLMprm.chosen.Em.RP.money_chosen = 1;
+        GLMprm.chosen.Ep.RP.E_chosen = 1;
+        GLMprm.chosen.Em.RP.E_chosen = 1;
+        % effort perf
+        GLMprm.model_onset.Ep.Eperf = 'stick';
+        GLMprm.model_onset.Em.Eperf = 'stick';
+        % feedback
+        GLMprm.model_onset.Ep.fbk = 'stick';
+        GLMprm.model_onset.Em.fbk = 'stick';
 end
 
 

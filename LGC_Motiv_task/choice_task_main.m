@@ -141,6 +141,8 @@ end
 %
 % determine reward/punishment and effort level combinations for each trial
 choiceOptions = choice_option_design(n_R_levels, n_E_levels, punishment_yn, nTrials, R_money);
+% display of different answers only during the training
+confDispDuringChoice = false;
 
 switch effort_type
     case 'physical'
@@ -295,7 +297,8 @@ elseif session_nb > 0
     %% perform choice and performance task
     [perfSummary] = choice_and_perf(scr, stim, key,...
         effort_type, Ep_or_Em_vars, R_money,...
-        'mainTask', nTrials, choiceOptions, taskTimes,...
+        'mainTask', nTrials, choiceOptions, confDispDuringChoice,...
+        taskTimes,...
         results_folder, file_nm);
     
     %% add fixation cross to terminate the acquisition (to avoid weird fMRI behavior for last trial)
