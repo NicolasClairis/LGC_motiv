@@ -7,7 +7,7 @@ spm_jobman('initcfg');
 
 %% general parameters
 % check the batch before launching the script?
-checking = 1;
+checking = 0;
 % GLM number
 GLM = 2;
 GLMprm = which_GLM(GLM);
