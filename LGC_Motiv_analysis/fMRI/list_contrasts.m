@@ -5,8 +5,11 @@ GLMprm = which_GLM(GLM);
 % extract number of regressors
 n_con = 0;
 
+%% fixation cross
 n_con = n_con + 1;
 list_con{n_con} = 'cross';
 con_vec(n_con,:) = 
+
+%%
 
 end % function

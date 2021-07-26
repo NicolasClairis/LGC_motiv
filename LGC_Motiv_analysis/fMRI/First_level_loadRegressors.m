@@ -42,8 +42,8 @@ T0 = behavioralDataStruct.onsets.T0;
 initialCrossOnsets      = behavioralDataStruct.(task_behavioral_id).onsets.cross - T0; % only cross appearing BEFORE the start of each trial
 crossOnsets             = [initialCrossOnsets, behavioralDataStruct.onsets.finalCross - T0]; % add final cross (at the end of the experiment)
 dispChoiceOptionOnsets  = behavioralDataStruct.(task_behavioral_id).onsets.dispChoiceOptions - T0;
-choiceOnsets             = behavioralDataStruct.(task_behavioral_id).onsets.choice - T0;
-dispChosenOnsets         = behavioralDataStruct.(task_behavioral_id).onsets.dispChoice - T0;
+choiceOnsets            = behavioralDataStruct.(task_behavioral_id).onsets.choice - T0;
+dispChosenOnsets        = behavioralDataStruct.(task_behavioral_id).onsets.dispChoice - T0;
 n_trials = length(dispChosenOnsets);
 
 EperfOnset = NaN(1,n_trials);
@@ -55,7 +55,7 @@ for iTrial = 1:n_trials
             EperfOnset(iTrial) = behavioralDataStruct.(task_behavioral_id).onsets.effortPeriod{1,iTrial}.nb_1 - T0;
     end
 end
-fbkOnsets                = behavioralDataStruct.(task_behavioral_id).onsets.fbk - T0;
+fbkOnsets = behavioralDataStruct.(task_behavioral_id).onsets.fbk - T0;
 % durations of each event
 crossDur = dispChoiceOptionOnsets - initialCrossOnsets;
 dispChoiceDur = dispChosenOnsets - dispChoiceOptionOnsets;
@@ -64,8 +64,9 @@ dispChosenDur = EperfOnset - dispChosenOnsets;
 EperfDur = fbkOnsets - EperfOnset;
 fbkDur = crossOnsets(2:end) - fbkOnsets;
 % extract regressors of interest
-RP_var = strcmp( behavioralDataStruct.(task_behavioral_id).choiceOptions.R_or_P, 'R');
-RP_var(RP_var == 0) = -1;
+RP_var_binary = strcmp( behavioralDataStruct.(task_behavioral_id).choiceOptions.R_or_P, 'R');
+RP_var = RP_var_binary;
+RP_var(RP_var_binary == 0) = -1;
 money_amount_left = behavioralDataStruct.(task_behavioral_id).choiceOptions.monetary_amount.left.*RP_var;
 money_amount_right = behavioralDataStruct.(task_behavioral_id).choiceOptions.monetary_amount.right.*RP_var;
 monetary_amount_sum = money_amount_left + money_amount_right;
@@ -134,6 +135,7 @@ if ismember(choiceModel,{'stick','boxcar'})
     
     for iRP_choice = 1:length(RPchoiceCond)
         RP_choice_nm = RPchoiceCond{iRP_choice};
+        choiceModel_RP = GLMprm.choice.(task_id).(RP_choice_nm).R_vs_P;
         choiceModel_moneySum = GLMprm.choice.(task_id).(RP_choice_nm).money_sum;
         choiceModel_E_sum = GLMprm.choice.(task_id).(RP_choice_nm).E_sum;
         choiceModel_RT = GLMprm.choice.(task_id).(RP_choice_nm).RT;
@@ -153,6 +155,12 @@ if ismember(choiceModel,{'stick','boxcar'})
         n_choiceMods = 0;
         choice_modNames = cell(1,1);
         choice_modVals = [];
+        % reward vs punishments
+        if choiceModel_RP == 1
+            n_choiceMods = n_choiceMods + 1;
+            choice_modNames{n_choiceMods} = 'R vs P';
+            choice_modVals(n_choiceMods,:) = RP_var_binary;
+        end
         % sum of money
         if choiceModel_moneySum == 1
             n_choiceMods = n_choiceMods + 1;

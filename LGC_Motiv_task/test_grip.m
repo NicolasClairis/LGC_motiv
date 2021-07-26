@@ -1,6 +1,8 @@
 [scr, xScreenCenter, yScreenCenter, window, baselineTextSize] = ScreenConfiguration(0, 1);
-[key, dq] = relevant_key_definition('physical', 0);
-[stim] = stim_initialize(scr, 3);
+
+[key, dq] = relevant_key_definition('physical', 0, 2);
+R_money = R_amounts(3,'yes');
+[stim] = stim_initialize(scr, 3, 'fr', R_money);
 
 
 start(dq,"continuous");
