@@ -196,6 +196,9 @@ if ismember(chosenModel,{'stick','boxcar'})
         
         chosenModel_moneyChosen = GLMprm.chosen.(task_id).(RP_chosen_nm).money_chosen;
         chosenModel_Echosen = GLMprm.chosen.(task_id).(RP_chosen_nm).E_chosen;
+        chosenModel_moneyUnchosen = GLMprm.chosen.(task_id).(RP_chosen_nm).money_unchosen;
+        chosenModel_Eunchosen = GLMprm.chosen.(task_id).(RP_chosen_nm).E_unchosen;
+        chosenModel_confidence = GLMprm.chosen.(task_id).(RP_chosen_nm).confidence;
         
         if ~strcmp(RP_chosen_nm,'RP')
             error('just split onsets and regressors depending on reward/punishment trial');
@@ -224,7 +227,28 @@ if ismember(chosenModel,{'stick','boxcar'})
             chosen_modNames{n_chosenMods} = 'effort chosen';
             chosen_modVals(n_chosenMods,:) = E_chosen;
         end
-        
+        % money unchosen
+        if chosenModel_moneyUnchosen == 1
+            error('not ready yet');
+            n_chosenMods = n_chosenMods + 1;
+            chosen_modNames{n_chosenMods} = 'money unchosen';
+            chosen_modVals(n_chosenMods,:) = money_unchosen;
+        end
+        % effort unchosen
+        if chosenModel_Eunchosen == 1
+            error('not ready yet');
+            n_chosenMods = n_chosenMods + 1;
+            chosen_modNames{n_chosenMods} = 'effort unchosen';
+            chosen_modVals(n_chosenMods,:) = E_unchosen;
+        end
+        % confidence
+        if chosenModel_confidence == 1
+            error('not ready yet');
+            n_chosenMods = n_chosenMods + 1;
+            chosen_modNames{n_chosenMods} = 'confidence';
+            chosen_modVals(n_chosenMods,:) = confidence;
+        end
+            
         [matlabbatch] = First_level_loadEachCondition(matlabbatch, sub_idx, iRun, iCond,...
             ['dispChosen_',RP_chosen_nm], dispChosenOnsets, modelChosenDur,...
             n_chosenMods, chosen_modNames, chosen_modVals,...
@@ -270,6 +294,8 @@ if ismember(EperfModel,{'stick','boxcar'})
             Eperf_modNames{n_EperfMods} = 'effort chosen';
             Eperf_modVals(n_EperfMods,:) = E_chosen;
         end
+        %
+        % RT 1st answer
         if EperfModel_RT1stAnswer == 1
             n_EperfMods = n_EperfMods + 1;
             Eperf_modNames{n_EperfMods} = 'RT 1st answer';
@@ -310,19 +336,19 @@ if ismember(fbkModel,{'stick','boxcar'})
         n_fbkMods = 0;
         fbk_modNames = cell(1,1);
         fbk_modVals = [];
-        % money chosen
-        if fbkModel_moneyObtained == 1
-            n_fbkMods = n_fbkMods + 1;
-            fbk_modNames{n_fbkMods} = 'money obtained';
-            fbk_modVals(n_fbkMods,:) = money_obtained;
-        end
         % win vs loss
         if fbkModel_winVSloss == 1
             n_fbkMods = n_fbkMods + 1;
             fbk_modNames{n_fbkMods} = 'win vs loss';
             fbk_modVals(n_fbkMods,:) = win_vs_loss_fbk;
         end
-        % effort chosen
+        % money chosen
+        if fbkModel_moneyObtained == 1
+            n_fbkMods = n_fbkMods + 1;
+            fbk_modNames{n_fbkMods} = 'money obtained';
+            fbk_modVals(n_fbkMods,:) = money_obtained;
+        end
+        % effort performed
         if fbkModel_Emade == 1
             n_fbkMods = n_fbkMods + 1;
             fbk_modNames{n_fbkMods} = 'effort made';
