@@ -17,8 +17,8 @@ function[con_names, con_vector] = LGCM_contrasts(study_nm, sub_nm, GLM)
 
 
 %% working directories
-% computer_root = fullfile('C:','Users','clairis','Desktop');
-computer_root = fullfile('C:','Users','Loco','Downloads');
+computer_root = fullfile('C:','Users','clairis','Desktop');
+% computer_root = fullfile('C:','Users','Loco','Downloads');
 switch study_nm
     case 'fMRI_pilots'
         root = fullfile(computer_root,'fMRI_pilots');

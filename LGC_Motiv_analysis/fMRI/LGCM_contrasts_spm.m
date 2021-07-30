@@ -14,8 +14,8 @@ function[] = LGCM_contrasts_spm(study_nm, GLM, checking)
 close all; clc;
 
 %% working directories
-% computer_root = fullfile('C:','Users','clairis','Desktop');
-computer_root = fullfile('C:','Users','Loco','Downloads');
+computer_root = fullfile('C:','Users','clairis','Desktop');
+% computer_root = fullfile('C:','Users','Loco','Downloads');
 switch study_nm
     case 'fMRI_pilots'
         root = fullfile(computer_root,'fMRI_pilots');
