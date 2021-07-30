@@ -195,6 +195,21 @@ switch GLM
         % feedback
         GLMprm.model_onset.Ep.fbk = 'stick';
         GLMprm.model_onset.Em.fbk = 'stick';
+    case 4
+        % general parameters
+        GLMprm.gal.orth_vars = 1;
+        % choice
+        GLMprm.model_onset.Ep.choice = 'stick';
+        GLMprm.model_onset.Em.choice = 'stick';
+        GLMprm.choice.Ep.RP.R_vs_P = 1;
+        GLMprm.choice.Em.RP.R_vs_P = 1;
+        GLMprm.choice.Ep.RP.money_chosen = 1;
+        GLMprm.choice.Em.RP.money_chosen = 1;
+        GLMprm.choice.Ep.RP.E_chosen = 1;
+        GLMprm.choice.Em.RP.E_chosen = 1;
+        % effort perf
+        GLMprm.model_onset.Ep.Eperf = 'stick';
+        GLMprm.model_onset.Em.Eperf = 'stick';
 end
 
 
