@@ -210,6 +210,17 @@ switch GLM
         % effort perf
         GLMprm.model_onset.Ep.Eperf = 'stick';
         GLMprm.model_onset.Em.Eperf = 'stick';
+    case 5
+        % general parameters
+        GLMprm.gal.orth_vars = 1;
+        % choice
+        GLMprm.model_onset.Ep.choice = 'stick';
+        GLMprm.model_onset.Em.choice = 'stick';
+        GLMprm.choice.Ep.RP.R_vs_P = 1;
+        GLMprm.choice.Em.RP.R_vs_P = 1;
+        % effort perf
+        GLMprm.model_onset.Ep.Eperf = 'stick';
+        GLMprm.model_onset.Em.Eperf = 'stick';
 end
 
 
