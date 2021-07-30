@@ -29,10 +29,10 @@ nb_batch_per_subj = 2; % model + estimate
 computer_root = fullfile('C:','Users','clairis','Desktop');
 scripts_folder = fullfile(computer_root,'GitHub','LGC_motiv','LGC_Motiv_analysis','fMRI');
 addpath(scripts_folder);
-root = fullfile(computer_root,'study1','fMRI_pilots');
+root = fullfile(computer_root,'fMRI_pilots');
 
 %% list subjects to analyze
-subject_id = {'pilot_s2'};%'pilot_s1','pilot_s2'
+subject_id = {'pilot_s1'};%'pilot_s1','pilot_s2'
 NS = length(subject_id);
 %% loop through subjects
 matlabbatch = cell(nb_batch_per_subj*NS,1);

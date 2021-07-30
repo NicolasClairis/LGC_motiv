@@ -111,6 +111,16 @@ for iEpm = 1:2
             n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
             
             %choice regressors
+            
+            % Reward > Punishment
+            if GLMprm.choice.(task_id_nm).(RP_nm).R_vs_P == 1
+                n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG choice - R min P';
+                disp([num2str(n_regs.(task_id_nm)),') choice - Reward>Punishment ']);
+                % if derivative added => add derivatives
+                n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+            end
+            
             % money left
             switch GLMprm.choice.(task_id_nm).(RP_nm).money_left
                 case 1
@@ -137,6 +147,12 @@ for iEpm = 1:2
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                     reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG choice - money chosen';
                     disp([num2str(n_regs.(task_id_nm)),') choice - money chosen ']);
+                    % if derivative added => add derivatives
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                case 2
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG choice - money chosen';
+                    disp([num2str(n_regs.(task_id_nm)),') choice - |money chosen| ']);
                     % if derivative added => add derivatives
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
             end
@@ -299,15 +315,6 @@ for iEpm = 1:2
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
             end
             
-            % Reward > Punishment
-            if GLMprm.choice.(task_id_nm).(RP_nm).R_vs_P == 1
-                n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
-                reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG choice - R min P';
-                disp([num2str(n_regs.(task_id_nm)),') choice - Reward>Punishment ']);
-                % if derivative added => add derivatives
-                n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
-            end
-            
         end % loop reward/punishment
     end % choice onset
     
@@ -340,6 +347,12 @@ for iEpm = 1:2
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                     reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG chosen - money chosen';
                     disp([num2str(n_regs.(task_id_nm)),') chosen - money chosen (levels) ']);
+                    % if derivative added => add derivatives
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                case 2
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG chosen - money chosen';
+                    disp([num2str(n_regs.(task_id_nm)),') chosen - |money chosen| (levels) ']);
                     % if derivative added => add derivatives
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
             end
@@ -416,6 +429,12 @@ for iEpm = 1:2
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                     reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG effort - money chosen';
                     disp([num2str(n_regs.(task_id_nm)),') effort period - money chosen (levels) ']);
+                    % if derivative added => add derivatives
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                case 2
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG effort - money chosen';
+                    disp([num2str(n_regs.(task_id_nm)),') effort period - |money chosen| (levels) ']);
                     % if derivative added => add derivatives
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
             end

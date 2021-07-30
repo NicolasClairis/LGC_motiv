@@ -74,6 +74,7 @@ E_left = behavioralDataStruct.(task_behavioral_id).choiceOptions.E.left.*RP_var;
 E_right = behavioralDataStruct.(task_behavioral_id).choiceOptions.E.left.*RP_var;
 E_sum = E_left + E_right;
 money_chosen = behavioralDataStruct.(task_behavioral_id).R_chosen;
+abs_money_chosen = abs(money_chosen);
 % money_unchosen = ;
 E_chosen = behavioralDataStruct.(task_behavioral_id).E_chosen;
 % E_unchosen = ;
@@ -138,6 +139,8 @@ if ismember(choiceModel,{'stick','boxcar'})
         choiceModel_RP = GLMprm.choice.(task_id).(RP_choice_nm).R_vs_P;
         choiceModel_moneySum = GLMprm.choice.(task_id).(RP_choice_nm).money_sum;
         choiceModel_E_sum = GLMprm.choice.(task_id).(RP_choice_nm).E_sum;
+        choiceModel_moneyChosen = GLMprm.choice.(task_id).(RP_choice_nm).money_chosen;
+        choiceModel_E_chosen = GLMprm.choice.(task_id).(RP_choice_nm).E_chosen;
         choiceModel_RT = GLMprm.choice.(task_id).(RP_choice_nm).RT;
         
         if ~strcmp(RP_choice_nm,'RP')
@@ -161,18 +164,55 @@ if ismember(choiceModel,{'stick','boxcar'})
             choice_modNames{n_choiceMods} = 'R vs P';
             choice_modVals(n_choiceMods,:) = RP_var_binary;
         end
+        % money left
+        % money right
+        % money chosen
+        switch choiceModel_moneyChosen
+            case 1
+                n_choiceMods = n_choiceMods + 1;
+                choice_modNames{n_choiceMods} = 'money chosen';
+                choice_modVals(n_choiceMods,:) = money_chosen;
+            case 2
+                n_choiceMods = n_choiceMods + 1;
+                choice_modNames{n_choiceMods} = 'money chosen';
+                choice_modVals(n_choiceMods,:) = abs_money_chosen;
+        end
+        
+        % money unchosen
+        
+        % money chosen - money unchosen
+        
         % sum of money
         if choiceModel_moneySum == 1
             n_choiceMods = n_choiceMods + 1;
             choice_modNames{n_choiceMods} = 'money sum';
             choice_modVals(n_choiceMods,:) = monetary_amount_sum;
         end
+        
+        % effort left
+        
+        % effort right
+        
+        % effort chosen
+        if choiceModel_E_chosen == 1
+            n_choiceMods = n_choiceMods + 1;
+            choice_modNames{n_choiceMods} = 'effort chosen';
+            choice_modVals(n_choiceMods,:) = E_chosen;
+        end
+        
+        % effort unchosen
+        
+        % effort chosen - unchosen
+        
         % sum of efforts
         if choiceModel_E_sum == 1
             n_choiceMods = n_choiceMods + 1;
             choice_modNames{n_choiceMods} = 'effort sum';
             choice_modVals(n_choiceMods,:) = E_sum;
         end
+        
+        % choice confidence
+        
         % RT
         if choiceModel_RT == 1
             n_choiceMods = n_choiceMods + 1;
@@ -216,10 +256,15 @@ if ismember(chosenModel,{'stick','boxcar'})
         chosen_modNames = cell(1,1);
         chosen_modVals = [];
         % money chosen
-        if chosenModel_moneyChosen == 1
-            n_chosenMods = n_chosenMods + 1;
-            chosen_modNames{n_chosenMods} = 'money chosen';
-            chosen_modVals(n_chosenMods,:) = money_chosen;
+        switch chosenModel_moneyChosen
+            case 1
+                n_chosenMods = n_chosenMods + 1;
+                chosen_modNames{n_chosenMods} = 'money chosen';
+                chosen_modVals(n_chosenMods,:) = money_chosen;
+            case 2
+                n_chosenMods = n_chosenMods + 1;
+                chosen_modNames{n_chosenMods} = 'money chosen';
+                chosen_modVals(n_chosenMods,:) = abs_money_chosen;
         end
         % effort chosen
         if chosenModel_Echosen == 1
@@ -263,8 +308,8 @@ if ismember(EperfModel,{'stick','boxcar'})
     for iRP_Eperf = 1:length(RPperfCond)
         RP_Eperf_nm = RPperfCond{iRP_Eperf};
         %
-        EperfModel_money = GLMprm.Eperf.(task_id).(RP_Eperf_nm).money;
-        EperfModel_effort = GLMprm.Eperf.(task_id).(RP_Eperf_nm).effort;
+        EperfModel_money_chosen = GLMprm.Eperf.(task_id).(RP_Eperf_nm).money_chosen;
+        EperfModel_effort_chosen = GLMprm.Eperf.(task_id).(RP_Eperf_nm).E_chosen;
         EperfModel_RT1stAnswer = GLMprm.Eperf.(task_id).(RP_Eperf_nm).RT_1stAnswer;
         
         if ~strcmp(RP_Eperf_nm,'RP')
@@ -283,13 +328,18 @@ if ismember(EperfModel,{'stick','boxcar'})
         Eperf_modNames = cell(1,1);
         Eperf_modVals = [];
         % money chosen
-        if EperfModel_money == 1
-            n_EperfMods = n_EperfMods + 1;
-            Eperf_modNames{n_EperfMods} = 'money chosen';
-            Eperf_modVals(n_EperfMods,:) = money_chosen;
+        switch EperfModel_money_chosen
+            case 1
+                n_EperfMods = n_EperfMods + 1;
+                Eperf_modNames{n_EperfMods} = 'money chosen';
+                Eperf_modVals(n_EperfMods,:) = money_chosen;
+            case 2
+                n_EperfMods = n_EperfMods + 1;
+                Eperf_modNames{n_EperfMods} = 'money chosen';
+                Eperf_modVals(n_EperfMods,:) = abs_money_chosen;
         end
         % effort chosen
-        if EperfModel_effort == 1
+        if EperfModel_effort_chosen == 1
             n_EperfMods = n_EperfMods + 1;
             Eperf_modNames{n_EperfMods} = 'effort chosen';
             Eperf_modVals(n_EperfMods,:) = E_chosen;
