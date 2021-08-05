@@ -63,26 +63,53 @@ choice_RT = choiceOnsets - dispChoiceOptionOnsets;
 dispChosenDur = EperfOnset - dispChosenOnsets;
 EperfDur = fbkOnsets - EperfOnset;
 fbkDur = crossOnsets(2:end) - fbkOnsets;
+
 % extract regressors of interest
+% loading R vs P trial
 RP_var_binary = strcmp( behavioralDataStruct.(task_behavioral_id).choiceOptions.R_or_P, 'R');
 RP_var = RP_var_binary;
 RP_var(RP_var_binary == 0) = -1;
+% loading money choice
 money_amount_left = behavioralDataStruct.(task_behavioral_id).choiceOptions.monetary_amount.left.*RP_var;
 money_amount_right = behavioralDataStruct.(task_behavioral_id).choiceOptions.monetary_amount.right.*RP_var;
 monetary_amount_sum = money_amount_left + money_amount_right;
+% loading effort choice
 E_left = behavioralDataStruct.(task_behavioral_id).choiceOptions.E.left.*RP_var;
 E_right = behavioralDataStruct.(task_behavioral_id).choiceOptions.E.left.*RP_var;
 E_sum = E_left + E_right;
+% loading chosen option
+choice_LRandConf = behavioralDataStruct.(task_behavioral_id).choice;
+% transform into one variable equal to -1 when choice = left and 1 when
+% choice = right
+choice_LR = choice_LRandConf;
+choice_LR(choice_LRandConf == -2) = -1;
+choice_LR(choice_LRandConf == 2) = 1;
+confidence = abs(choice_LRandConf) == 2; % 0 when low confidence and 1 when high confidence
+% loading chosen variables
+E_chosen = behavioralDataStruct.(task_behavioral_id).E_chosen;
+E_unchosen = E_left.*(choice_LR == 1) + E_right.*(choice_LR == -1);
+E_chosen_min_E_unchosen = E_chosen - E_unchosen;
 money_chosen = behavioralDataStruct.(task_behavioral_id).R_chosen;
 abs_money_chosen = abs(money_chosen);
-% money_unchosen = ;
-E_chosen = behavioralDataStruct.(task_behavioral_id).E_chosen;
-% E_unchosen = ;
-money_obtained = behavioralDataStruct.(task_behavioral_id).gain;
+money_unchosen = money_amount_left.*(choice_LR == 1) + money_amount_right.*(choice_LR == -1);
+moneyChosen_min_moneyUnchosen = money_chosen - money_unchosen;
+absMoneyChosen_min_moneyUnchosen = abs(money_chosen - money_unchosen);
+% loading feedback
+money_obtained = behavioralDataStruct.(task_behavioral_id).gain; % could be different from reward chosen (in case of failure) but mostly similar
 win_vs_loss_fbk = money_obtained > 0;
 
 %% load the batch according to GLMprm variables
+% load general GLM parameters
 orth_vars = GLMprm.gal.orth_vars;
+zPerRun = GLMprm.gal.zPerRun;
+switch zPerRun
+    case 0 % raw data = no change
+        raw_or_z = @(x) x;
+    case 1 % zscore all variables per run
+        raw_or_z = @(x) zscore(x);
+end
+
+% GLM parameters for choice
 choice_RPpool = GLMprm.choice.(task_id).RPpool;
 switch choice_RPpool
     case 0
@@ -140,8 +167,13 @@ if ismember(choiceModel,{'stick','boxcar'})
         choiceModel_moneySum = GLMprm.choice.(task_id).(RP_choice_nm).money_sum;
         choiceModel_E_sum = GLMprm.choice.(task_id).(RP_choice_nm).E_sum;
         choiceModel_moneyChosen = GLMprm.choice.(task_id).(RP_choice_nm).money_chosen;
+        choiceModel_moneyUnchosen = GLMprm.choice.(task_id).(RP_choice_nm).money_unchosen;
+        choiceModel_money_chosen_min_money_unchosen = GLMprm.choice.(task_id).(RP_choice_nm).money_ch_min_unch;
         choiceModel_E_chosen = GLMprm.choice.(task_id).(RP_choice_nm).E_chosen;
+        choiceModel_E_unchosen = GLMprm.choice.(task_id).(RP_choice_nm).E_unchosen;
+        choiceModel_E_chosen_min_E_unchosen = GLMprm.choice.(task_id).(RP_choice_nm).E_ch_min_unch;
         choiceModel_RT = GLMprm.choice.(task_id).(RP_choice_nm).RT;
+        choiceModel_conf = GLMprm.choice.(task_id).(RP_choice_nm).confidence;
         
         if ~strcmp(RP_choice_nm,'RP')
             error('just split onsets and regressors depending on reward/punishment trial');
@@ -158,35 +190,50 @@ if ismember(choiceModel,{'stick','boxcar'})
         n_choiceMods = 0;
         choice_modNames = cell(1,1);
         choice_modVals = [];
+        
         % reward vs punishments
         if choiceModel_RP == 1
             n_choiceMods = n_choiceMods + 1;
             choice_modNames{n_choiceMods} = 'R vs P';
-            choice_modVals(n_choiceMods,:) = RP_var_binary;
+            choice_modVals(n_choiceMods,:) = RP_var_binary; % binary variable => no zscore
         end
+        
         % money left
         % money right
+        
         % money chosen
         switch choiceModel_moneyChosen
             case 1
                 n_choiceMods = n_choiceMods + 1;
                 choice_modNames{n_choiceMods} = 'money chosen';
-                choice_modVals(n_choiceMods,:) = money_chosen;
+                choice_modVals(n_choiceMods,:) = raw_or_z(money_chosen);
             case 2
                 n_choiceMods = n_choiceMods + 1;
                 choice_modNames{n_choiceMods} = 'money chosen';
-                choice_modVals(n_choiceMods,:) = abs_money_chosen;
+                choice_modVals(n_choiceMods,:) = raw_or_z(abs_money_chosen);
         end
         
         % money unchosen
+        switch choiceModel_moneyUnchosen
+            case 1
+                n_choiceMods = n_choiceMods + 1;
+                choice_modNames{n_choiceMods} = 'money unchosen';
+                choice_modVals(n_choiceMods,:) = raw_or_z(money_unchosen);
+        end
         
         % money chosen - money unchosen
+        switch choiceModel_money_chosen_min_money_unchosen
+            case 1
+                n_choiceMods = n_choiceMods + 1;
+                choice_modNames{n_choiceMods} = 'money chosen - unchosen';
+                choice_modVals(n_choiceMods,:) = raw_or_z(moneyChosen_min_moneyUnchosen);
+        end
         
         % sum of money
         if choiceModel_moneySum == 1
             n_choiceMods = n_choiceMods + 1;
             choice_modNames{n_choiceMods} = 'money sum';
-            choice_modVals(n_choiceMods,:) = monetary_amount_sum;
+            choice_modVals(n_choiceMods,:) = raw_or_z(monetary_amount_sum);
         end
         
         % effort left
@@ -197,27 +244,45 @@ if ismember(choiceModel,{'stick','boxcar'})
         if choiceModel_E_chosen == 1
             n_choiceMods = n_choiceMods + 1;
             choice_modNames{n_choiceMods} = 'effort chosen';
-            choice_modVals(n_choiceMods,:) = E_chosen;
+            choice_modVals(n_choiceMods,:) = raw_or_z(E_chosen);
         end
         
         % effort unchosen
+        switch choiceModel_E_unchosen
+            case 1
+                n_choiceMods = n_choiceMods + 1;
+                choice_modNames{n_choiceMods} = 'effort unchosen';
+                choice_modVals(n_choiceMods,:) = raw_or_z(E_unchosen);
+        end
         
         % effort chosen - unchosen
+        switch choiceModel_E_chosen_min_E_unchosen
+            case 1
+                n_choiceMods = n_choiceMods + 1;
+                choice_modNames{n_choiceMods} = 'effort chosen - unchosen';
+                choice_modVals(n_choiceMods,:) = raw_or_z(E_chosen_min_E_unchosen);
+        end
         
         % sum of efforts
         if choiceModel_E_sum == 1
             n_choiceMods = n_choiceMods + 1;
             choice_modNames{n_choiceMods} = 'effort sum';
-            choice_modVals(n_choiceMods,:) = E_sum;
+            choice_modVals(n_choiceMods,:) = raw_or_z(E_sum);
         end
         
         % choice confidence
+        switch choiceModel_conf
+            case 1
+                n_choiceMods = n_choiceMods + 1;
+                choice_modNames{n_choiceMods} = 'confidence';
+                choice_modVals(n_choiceMods,:) = confidence; % binary variable => no zscore
+        end
         
         % RT
         if choiceModel_RT == 1
             n_choiceMods = n_choiceMods + 1;
             choice_modNames{n_choiceMods} = 'choice RT';
-            choice_modVals(n_choiceMods,:) = choice_RT;
+            choice_modVals(n_choiceMods,:) = raw_or_z(choice_RT);
         end
         
         [matlabbatch] = First_level_loadEachCondition(matlabbatch, sub_idx, iRun, iCond,...
@@ -260,38 +325,35 @@ if ismember(chosenModel,{'stick','boxcar'})
             case 1
                 n_chosenMods = n_chosenMods + 1;
                 chosen_modNames{n_chosenMods} = 'money chosen';
-                chosen_modVals(n_chosenMods,:) = money_chosen;
+                chosen_modVals(n_chosenMods,:) = raw_or_z(money_chosen);
             case 2
                 n_chosenMods = n_chosenMods + 1;
                 chosen_modNames{n_chosenMods} = 'money chosen';
-                chosen_modVals(n_chosenMods,:) = abs_money_chosen;
+                chosen_modVals(n_chosenMods,:) = raw_or_z(abs_money_chosen);
         end
         % effort chosen
         if chosenModel_Echosen == 1
             n_chosenMods = n_chosenMods + 1;
             chosen_modNames{n_chosenMods} = 'effort chosen';
-            chosen_modVals(n_chosenMods,:) = E_chosen;
+            chosen_modVals(n_chosenMods,:) = raw_or_z(E_chosen);
         end
         % money unchosen
         if chosenModel_moneyUnchosen == 1
-            error('not ready yet');
             n_chosenMods = n_chosenMods + 1;
             chosen_modNames{n_chosenMods} = 'money unchosen';
-            chosen_modVals(n_chosenMods,:) = money_unchosen;
+            chosen_modVals(n_chosenMods,:) = raw_or_z(money_unchosen);
         end
         % effort unchosen
         if chosenModel_Eunchosen == 1
-            error('not ready yet');
             n_chosenMods = n_chosenMods + 1;
             chosen_modNames{n_chosenMods} = 'effort unchosen';
-            chosen_modVals(n_chosenMods,:) = E_unchosen;
+            chosen_modVals(n_chosenMods,:) = raw_or_z(E_unchosen);
         end
         % confidence
         if chosenModel_confidence == 1
-            error('not ready yet');
             n_chosenMods = n_chosenMods + 1;
             chosen_modNames{n_chosenMods} = 'confidence';
-            chosen_modVals(n_chosenMods,:) = confidence;
+            chosen_modVals(n_chosenMods,:) = confidence; % binary variable => no zscore
         end
             
         [matlabbatch] = First_level_loadEachCondition(matlabbatch, sub_idx, iRun, iCond,...
@@ -332,17 +394,17 @@ if ismember(EperfModel,{'stick','boxcar'})
             case 1
                 n_EperfMods = n_EperfMods + 1;
                 Eperf_modNames{n_EperfMods} = 'money chosen';
-                Eperf_modVals(n_EperfMods,:) = money_chosen;
+                Eperf_modVals(n_EperfMods,:) = raw_or_z(money_chosen);
             case 2
                 n_EperfMods = n_EperfMods + 1;
                 Eperf_modNames{n_EperfMods} = 'money chosen';
-                Eperf_modVals(n_EperfMods,:) = abs_money_chosen;
+                Eperf_modVals(n_EperfMods,:) = raw_or_z(abs_money_chosen);
         end
         % effort chosen
         if EperfModel_effort_chosen == 1
             n_EperfMods = n_EperfMods + 1;
             Eperf_modNames{n_EperfMods} = 'effort chosen';
-            Eperf_modVals(n_EperfMods,:) = E_chosen;
+            Eperf_modVals(n_EperfMods,:) = raw_or_z(E_chosen);
         end
         %
         % RT 1st answer
@@ -390,13 +452,13 @@ if ismember(fbkModel,{'stick','boxcar'})
         if fbkModel_winVSloss == 1
             n_fbkMods = n_fbkMods + 1;
             fbk_modNames{n_fbkMods} = 'win vs loss';
-            fbk_modVals(n_fbkMods,:) = win_vs_loss_fbk;
+            fbk_modVals(n_fbkMods,:) = win_vs_loss_fbk; % binary variable => no zscore
         end
         % money chosen
         if fbkModel_moneyObtained == 1
             n_fbkMods = n_fbkMods + 1;
             fbk_modNames{n_fbkMods} = 'money obtained';
-            fbk_modVals(n_fbkMods,:) = money_obtained;
+            fbk_modVals(n_fbkMods,:) = raw_or_z(money_obtained);
         end
         % effort performed
         if fbkModel_Emade == 1

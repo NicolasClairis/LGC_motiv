@@ -66,7 +66,7 @@ if runs.nb_runs.Ep > 0
     for iReg_Ep = 1:n_regsPerTask.Ep
         reg_nm = reg_names.Ep{iReg_Ep};
         
-        if ~strcmp(reg_nm,'movement') % ignore movement regressors
+        if ~strcmp(reg_nm,'movement') && ~isempty(reg_nm) % ignore movement regressors (labelled as 'movement') and temporal derivative regressors (empty name)
             
             % define basic contrasts per task (pool runs of the same task)
             if runs.nb_runs.Ep == 2 && runs.nb_runs.Em == 2 % default case = 2 Ep runs & 2 Em runs
@@ -121,15 +121,15 @@ if runs.nb_runs.Ep > 0
             
             % positive contrast
             jReg = jReg + 1;
-            con_names{jReg} = ['Ep - ',reg_nm];
+            con_names{jReg} = ['Ep ',reg_nm];
             con_vector(jReg, 1:n_totalRegs) = con_vec_Ep_tmp;
             
             % negative contrast
             jReg = jReg + 1;
-            con_names{jReg} = ['Ep - -',reg_nm];
+            con_names{jReg} = ['Ep -',reg_nm];
             con_vector(jReg, 1:n_totalRegs) = -con_vec_Ep_tmp;
             
-        end % movement filter
+        end % movement and derivative filter
     end % loop through physical effort regressors
 end % physical effort performed at least in one full run?
 
@@ -138,7 +138,7 @@ if runs.nb_runs.Em > 0
     for iReg_Em = 1:n_regsPerTask.Em
         reg_nm = reg_names.Em{iReg_Em};
         
-        if ~strcmp(reg_nm,'movement') % ignore movement regressors
+        if ~strcmp(reg_nm,'movement') && ~isempty(reg_nm) % ignore movement regressors (labelled as 'movement') and temporal derivative regressors (empty name)
             
             % define basic contrasts per task (pool runs of the same task)
             if runs.nb_runs.Ep == 2 && runs.nb_runs.Em == 2 % default case = 2 Ep runs & 2 Em runs
@@ -193,15 +193,15 @@ if runs.nb_runs.Em > 0
             
             % positive contrast
             jReg = jReg + 1;
-            con_names{jReg} = ['Em - ',reg_nm];
+            con_names{jReg} = ['Em ',reg_nm];
             con_vector(jReg, 1:n_totalRegs) = con_vec_Em_tmp;
             
             % negative contrast
             jReg = jReg + 1;
-            con_names{jReg} = ['Em - -',reg_nm];
+            con_names{jReg} = ['Em -',reg_nm];
             con_vector(jReg, 1:n_totalRegs) = -con_vec_Em_tmp;
             
-        end % movement filter
+        end % movement and derivative filter
     end % loop through mental effort regressors
 end % mental effort performed at least in one full run?
 
@@ -210,23 +210,24 @@ if runs.nb_runs.Em > 0 && runs.nb_runs.Ep > 0
     
     for iReg_Ep_bis = 1:n_regsPerTask.Ep
         reg_nm = reg_names.Ep{iReg_Ep_bis};
-        if sum(strcmp(reg_names.Em, reg_nm)) > 0 && ~strcmp(reg_nm,'movement')
+        if sum(strcmp(reg_names.Em, reg_nm)) > 0 &&...
+                ~strcmp(reg_nm,'movement') && ~isempty(reg_nm) % ignore movement regressors (labelled as 'movement') and temporal derivative regressors (empty name)
             % extract previously defined contrast for each task
-            jReg_Ep = strcmp(con_names,['Ep - ',reg_nm]);
-            jReg_Em = strcmp(con_names,['Em - ',reg_nm]);
+            jReg_Ep = strcmp(con_names,['Ep ',reg_nm]);
+            jReg_Em = strcmp(con_names,['Em ',reg_nm]);
             % pool the two contrasts
             con_vec_EpEm_tmp = con_vector(jReg_Ep, :) + con_vector(jReg_Em, :);
             
             % positive contrast
             jReg = jReg + 1;
-            con_names{jReg} = ['Ep+Em - ',reg_nm];
+            con_names{jReg} = ['Ep+Em ',reg_nm];
             con_vector(jReg, 1:n_totalRegs) = con_vec_EpEm_tmp;
             
             % negative contrast
             jReg = jReg + 1;
-            con_names{jReg} = ['Ep+Em - -',reg_nm];
+            con_names{jReg} = ['Ep+Em -',reg_nm];
             con_vector(jReg, 1:n_totalRegs) = -con_vec_EpEm_tmp;
-        end % check if contrast exists for both tasks
+        end % check if contrast exists for both tasks (+ ignore movement and derivative regressors)
     end % loop through Ep regressors
     
 end % at least one run of each task has been performed?
