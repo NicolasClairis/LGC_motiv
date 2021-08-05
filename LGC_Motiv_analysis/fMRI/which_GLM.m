@@ -221,6 +221,26 @@ switch GLM
         % effort perf
         GLMprm.model_onset.Ep.Eperf = 'stick';
         GLMprm.model_onset.Em.Eperf = 'stick';
+    case 6 % testing Vchosen - Vunchosen during choice + adding temporal derivative
+        % general parameters
+        GLMprm.gal.orth_vars = 1;
+        GLMprm.gal.add_drv = 1;
+        % choice
+        GLMprm.model_onset.Ep.choice = 'stick';
+        GLMprm.model_onset.Em.choice = 'stick';
+        GLMprm.choice.Ep.RP.money_ch_min_unch = 1;
+        GLMprm.choice.Em.RP.money_ch_min_unch = 1;
+        GLMprm.choice.Ep.RP.E_ch_min_unch = 1;
+        GLMprm.choice.Em.RP.E_ch_min_unch = 1;
+        % chosen
+        GLMprm.model_onset.Ep.chosen = 'stick';
+        GLMprm.model_onset.Em.chosen = 'stick';
+        % effort perf
+        GLMprm.model_onset.Ep.Eperf = 'stick';
+        GLMprm.model_onset.Em.Eperf = 'stick';
+        % feedback
+        GLMprm.model_onset.Ep.fbk = 'stick';
+        GLMprm.model_onset.Em.fbk = 'stick';
 end
 
 
