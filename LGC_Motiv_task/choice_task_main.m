@@ -140,7 +140,9 @@ if strcmp(punishment_yn,'yes') && mod(nTrials,2) ~= 0
 end
 %
 % determine reward/punishment and effort level combinations for each trial
-choiceOptions = choice_option_design(n_R_levels, n_E_levels, punishment_yn, nTrials, R_money);
+% choiceOptions = choice_option_design(n_R_levels, n_E_levels, punishment_yn, nTrials, R_money);
+error('please add bestMatrix.mat in the correct path to make the script work');
+choiceOptions = getfield( load([main_task_folder,'bestMatrix.mat']),'choiceOptions');
 % display of different answers only during the training
 confDispDuringChoice = false;
 
