@@ -33,8 +33,6 @@ langage = 'fr';
 
 %% working directories
 scripts_folderName = 'LGC_Motiv_task';
-% check that you are in the correct path when you launch the script
-check_currPath(scripts_folderName);
 % define working directories
 cd ..
 main_folder                 = [pwd filesep];
@@ -141,7 +139,7 @@ end
 %
 % determine reward/punishment and effort level combinations for each trial
 % choiceOptions = choice_option_design(n_R_levels, n_E_levels, punishment_yn, nTrials, R_money);
-choiceOptions = getfield( load([main_task_folder,'bestMatrix.mat'],'bestMatrix'),'bestMatrix');
+choiceOptions = getfield( load([main_task_folder,'DaBestDesignMat.mat'],'bestMatrix'),'bestMatrix');
 % display of different answers only during the training
 confDispDuringChoice = false;
 
