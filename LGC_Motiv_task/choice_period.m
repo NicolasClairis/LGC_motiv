@@ -1,9 +1,9 @@
 function[choice_trial, onsetDispChoiceOptions, onsetChoice, stoptask] = choice_period(scr, stim,...
     R_left, R_right, E_left, E_right, R_or_P,...
-    timeParameter, key)
+    timeParameter, key, confidenceDisp)
 % [choice_trial, onsetDispChoiceOptions, onsetChoice] = choice_period(scr, stim, choice_opt,...
 %     R_left, R_right, E_left, E_right, R_or_P, R_amounts,...
-%     timeParameter, key)
+%     timeParameter, key, confidenceDisp)
 % choice_period will display the choice options and then wait for the 
 % choice to be made (or the time limit to be reached. Provides timings and 
 % choice made in output.
@@ -28,6 +28,9 @@ function[choice_trial, onsetDispChoiceOptions, onsetChoice, stoptask] = choice_p
 %
 % key: code for left/right keys
 %
+% confidenceDisp: true/false to know whether the mapping of the confidence
+% should be displayed or not
+%
 % OUTPUTS
 % choice_trial:
 % (-1): left option chosen
@@ -47,6 +50,11 @@ window = scr.window;
 stoptask = 0;
 white = scr.colours.white;
 
+% % if only 2 button for answer or no input, no confidence mapping display
+% if (key.n_buttonsChoice == 2) || ~exist('confidenceDisp','var') || (isempty(confidenceDisp))
+%     confidenceDisp = false;
+% end
+    
 %% ask question on top
 DrawFormattedText(window, stim.choice.choiceQuestion.text, stim.choice.choiceQuestion.x, stim.choice.choiceQuestion.y, stim.choice.choiceQuestion.colour);
 DrawFormattedText(window, stim.choice.choiceOR.text, stim.choice.choiceOR.x, stim.choice.choiceOR.y, stim.choice.choiceOR.colour);
@@ -109,6 +117,27 @@ DrawFormattedText(window,stim.choice.for.text,...
     stim.effort_introText.bottom_right(2),...
     white);
 
+%% add mapping for confidence
+if confidenceDisp == true
+    % left sure
+    DrawFormattedText(window,stim.leftSure.text,...
+        stim.leftSure.x, stim.leftSure.y,...
+        stim.leftSure.colour);
+    % left unsure
+    DrawFormattedText(window,stim.leftUnsure.text,...
+        stim.leftUnsure.x, stim.leftUnsure.y,...
+        stim.leftUnsure.colour);
+    % right unsure
+    DrawFormattedText(window,stim.rightUnsure.text,...
+        stim.rightUnsure.x, stim.rightUnsure.y,...
+        stim.rightUnsure.colour);
+    % right sure
+    DrawFormattedText(window,stim.rightSure.text,...
+        stim.rightSure.x, stim.rightSure.y,...
+        stim.rightSure.colour);
+end
+
+%% display everything on the screen and record the timing
 [~,onsetDispChoiceOptions] = Screen('Flip',window);
 
 %% wait for choice to be made or time limit to be reached

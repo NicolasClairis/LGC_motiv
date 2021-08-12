@@ -47,20 +47,29 @@ stim.reward.textSizeForPTB = scr.textSize.reward;
 Screen('TextSize', window, stim.reward.textSizeForPTB);
 % extract reward amount text size (for choice)
 [~,~,textSizeR] = DrawFormattedText(window,'+0.00 CHF', 'center', 'center', white);
-xSizeText = textSizeR(3) - textSizeR(1);
-ySizeText = textSizeR(4) - textSizeR(2);
-stim.reward.xSizeText = xSizeText;
-stim.reward.ySizeText = ySizeText;
-% define where the text will be displayed
-stim.reward.text.top_left_start     = [leftBorder + visibleXsize*(1/4) - xSizeText/2,   y_coordinates(upperBorder, visibleYsize, 2/5, textSizeR)]; % left option choice period
-stim.reward.text.top_right_start    = [leftBorder + visibleXsize*(3/4) - xSizeText/2,   y_coordinates(upperBorder, visibleYsize, 2/5, textSizeR)]; % right option choice period
-stim.reward.text.top_center_start   = [x_centerCoordinates(xScreenCenter, textSizeR),   y_coordinates(upperBorder, visibleYsize, 2/5, textSizeR)]; % chosen option display
+xSizeTextR = textSizeR(3) - textSizeR(1);
+ySizeTextR = textSizeR(4) - textSizeR(2);
+stim.reward.xSizeText = xSizeTextR;
+stim.reward.ySizeText = ySizeTextR;
+% define where the text will be displayed during choice
+stim.reward.text.top_left_start     = [leftBorder + visibleXsize*(1/4) - xSizeTextR/2,   y_coordinates(upperBorder, visibleYsize, 2/5, textSizeR)]; % left option choice period
+stim.reward.text.top_right_start    = [leftBorder + visibleXsize*(3/4) - xSizeTextR/2,   y_coordinates(upperBorder, visibleYsize, 2/5, textSizeR)]; % right option choice period
 % display on middle of the screen for performance feedback
 stim.reward.text.middle_center_start = [x_centerCoordinates(xScreenCenter, textSizeR),  y_coordinates(upperBorder, visibleYsize, 1/2, textSizeR)]; % feedback
-
-% define the colour to use for the text according to the condition
-% (reward/punishment)
+% colour for the text
 stim.reward.text.colour = white;
+
+% same for punishments
+[~,~,textSizeP] = DrawFormattedText(window,'-0.00 CHF', 'center', 'center', white);
+xSizeTextP = textSizeP(3) - textSizeP(1);
+ySizeTextP = textSizeP(4) - textSizeP(2);
+stim.punishment.xSizeText = xSizeTextP;
+stim.punishment.ySizeText = ySizeTextP;
+% define where the text will be displayed during choice
+stim.punishment.text.top_left_start     = [leftBorder + visibleXsize*(1/4) - xSizeTextR/2,   y_coordinates(upperBorder, visibleYsize, 2/5, textSizeP)]; % left option choice period
+stim.punishment.text.top_right_start    = [leftBorder + visibleXsize*(3/4) - xSizeTextR/2,   y_coordinates(upperBorder, visibleYsize, 2/5, textSizeP)]; % right option choice period
+% display on middle of the screen for performance feedback
+stim.punishment.text.middle_center_start = [x_centerCoordinates(xScreenCenter, textSizeP),  y_coordinates(upperBorder, visibleYsize, 1/2, textSizeP)]; % feedback
 % stim.punishment.text.colour = [239 138 98];
 stim.punishment.text.colour = white;
 
@@ -271,16 +280,18 @@ stim.training.Ep.endMsg.colour = white;
 switch langage
     case 'fr'
         stim.Em.learning.fullInstructions.text = ['Vous allez pouvoir vous entrainer a effectuer la tache. ',...
-            'La couleur du chiffre represente la question posee. ',...
             'Vous pouvez repondre avec les boutons. ',...
             'La correspondance entre la position des boutons et la ',...
             'reponse que vous souhaitez donner est la suivante:'];
+        %'La couleur du chiffre represente la question posee. ',... only
+        %for task switching version
     case 'engl'
         stim.Em.learning.fullInstructions.text = ['You can now train to perform the task. ',...
-            'The colour of the number represents the nature of the question. ',...
             'You can respond with the buttons. ',...
             'The correspondence between the position of the buttons and ',...
             'the answer you want to provide is as follows:'];
+%         'The colour of the number represents the nature of the question.
+%         ',... only for task switching version
 end
 [~,~,textSizeEmLearningFullInstructions] = DrawFormattedText(window,...
     stim.Em.learning.fullInstructions.text,...
@@ -291,13 +302,20 @@ stim.Em.learning.fullInstructions.colour = white;
 % partial help instructions
 switch langage
     case 'fr'
+%         stim.Em.learning.partialInstructions.text = ['Vous allez pouvoir vous entrainer a effectuer la tache mais vous ',...
+%             'devrez vous rappeler de la correspondance entre les couleurs et la ',...
+%             'question a laquelle il faut repondre. Pour rappel:'];
         stim.Em.learning.partialInstructions.text = ['Vous allez pouvoir vous entrainer a effectuer la tache mais vous ',...
-            'devrez vous rappeler de la correspondance entre les couleurs et la ',...
-            'question a laquelle il faut repondre. Pour rappel:'];
+            'devrez vous rappeler de la correspondance entre chaque bouton et la ',...
+            'reponse correspondante. Pour rappel:'];
+
     case 'engl'
-        stim.Em.learning.partialInstructions.text = ['You can now train to perform the task but you ',...
-            'will need to remember the mapping between the colours and ',...
-            'the nature of the question. Here is a quick reminder before starting:'];
+%         stim.Em.learning.partialInstructions.text = ['You can now train to perform the task but you ',...
+%             'will need to remember the mapping between the colours and ',...
+%             'the nature of the question. Here is a quick reminder before starting:'];
+stim.Em.learning.partialInstructions.text = ['You can now train to perform the task but you ',...
+            'will need to remember the mapping between each button and the corresponding answer. ',...
+            'Here is a quick reminder before starting:'];
 end
 [~,~,textSizeEmLearningPartialInstructions] = DrawFormattedText(window,...
     stim.Em.learning.partialInstructions.text,...
@@ -308,13 +326,19 @@ stim.Em.learning.partialInstructions.colour = white;
 % no help instructions
 switch langage
     case 'fr'
+%         stim.Em.learning.noInstructions.text = ['Vous allez pouvoir vous entrainer a effectuer la tache mais vous ',...
+%             'devrez vous rappeler de la correspondance entre les couleurs et la ',...
+%             'question a laquelle il faut repondre. Pour rappel:'];
         stim.Em.learning.noInstructions.text = ['Vous allez pouvoir vous entrainer a effectuer la tache mais vous ',...
-            'devrez vous rappeler de la correspondance entre les couleurs et la ',...
-            'question a laquelle il faut repondre. Pour rappel:'];
+            'devrez vous rappeler de la correspondance entre chaque bouton et la ',...
+            'reponse correspondante. Pour rappel:'];
     case 'engl'
+%         stim.Em.learning.noInstructions.text = ['You can now train to perform the task but you ',...
+%             'will need to remember the mapping between the colours and ',...
+%             'the nature of the question. Here is a quick reminder before starting:'];
         stim.Em.learning.noInstructions.text = ['You can now train to perform the task but you ',...
-            'will need to remember the mapping between the colours and ',...
-            'the nature of the question. Here is a quick reminder before starting:'];
+            'will need to remember the mapping between each button and the corresponding answer. ',...
+            'Here is a quick reminder before starting:'];
 end
 [~,~,textSizeEmLearningNoInstructions] = DrawFormattedText(window,...
     stim.Em.learning.noInstructions.text,...
@@ -426,6 +450,19 @@ stim.pressWhenReady.x = x_centerCoordinates(xScreenCenter, textSizePressWhenRead
 stim.pressWhenReady.y = y_coordinates(upperBorder, visibleYsize, 15/16, textSizePressWhenReady);
 stim.pressWhenReady.colour = white;
 
+% end of session (before last calibration)
+switch langage
+    case 'fr'
+        stim.endfMRIMessage.text = ['Nous allons maintenant vous demander ',...
+            ' de refaire votre maximum après quelques secondes de pause.'];
+    case 'engl'
+        stim.endfMRIMessage.text = ['We will nos ask you ',...
+            'to perform your maximum after a few seconds of break.'];
+end
+[~,~,textSizeEndfMRIMsg] = DrawFormattedText(window,stim.endfMRIMessage.text,'center','center',white, wrapat);
+stim.endfMRIMessage.x = x_centerCoordinates(xScreenCenter, textSizeEndfMRIMsg);
+stim.endfMRIMessage.y = y_coordinates(upperBorder, visibleYsize, 1/2, textSizeEndfMRIMsg);
+
 % total gains end of session
 switch langage
     case 'fr'
@@ -442,13 +479,11 @@ stim.endSessionMessage.y = y_coordinates(upperBorder, visibleYsize, 1/2, textSiz
 % MVC instructions
 switch langage
     case 'fr'
-        stim.Ep.MVC.instructions.text = ['Avant de commencer l''experience, ',...
-            'nous allons vous demander ',...
+        stim.Ep.MVC.instructions.text = ['Nous allons maintenant vous demander ',...
             'de serrer la poignee de force au maximum de vos capacites plusieurs ',...
             'fois d''affilee.'];
     case 'engl'
-        stim.Ep.MVC.instructions.text = ['Before starting the experience, ',...
-            'we will ask you to tighten the grip at your maximum ',...
+        stim.Ep.MVC.instructions.text = ['We will now ask you to tighten the grip at your maximum ',...
             'several times in a row.'];
 end
 [~,~,textSizeMVCInstructions] = DrawFormattedText(window, stim.Ep.MVC.instructions.text, 'center','center', white, wrapat);
@@ -503,11 +538,12 @@ stim.postTaskMVCmeasurement.colour = white;
 %% mental calibration
 switch langage
     case 'fr'
-        stim.mentalCalibInstructions.text = ['Desormais vous devrez repondre dans un temps limite. Essayez de completer',...
-            ' le cercle en repondant aussi vite que possible et correctement aux questions posees.'];
+        stim.mentalCalibInstructions.text = ['Essayez de completer',...
+            ' le cercle en repondant aussi vite que possible et ',...
+            'correctement aux questions posees.'];
     case 'engl'
-        stim.mentalCalibInstructions.text = ['From now on, you will have to answer within a time limit. ',...
-            'Try to complete the circle by answering the questions as quickly and correctly as possible.'];
+        stim.mentalCalibInstructions.text = ['Try to complete the circle ',...
+            'by answering the questions as quickly and correctly as possible.'];
 end
 [~,~,textSizeMentalCalibInstructions] = DrawFormattedText(window, stim.mentalCalibInstructions.text,...
     'center', 'center', white, wrapat);
@@ -629,11 +665,51 @@ stim.textRectSize.ySizeForEffort = ySizeForEffort;
 % extract x/y coordinates for the display of the corresponding text
 stim.winRewardText.top_left         = [leftBorder + visibleXsize/4 - xSizeWin/2,            stim.reward.text.top_left_start(2) - ySizeWin*2.5];
 stim.winRewardText.top_right        = [leftBorder + visibleXsize*(3/4) - xSizeWin/2,        stim.reward.text.top_right_start(2) - ySizeWin*2.5];
-stim.loseRewardText.top_left        = [leftBorder + visibleXsize/4 - xSizeLose/2,           stim.reward.text.top_left_start(2) - ySizeLose*2.5];
-stim.loseRewardText.top_right       = [leftBorder + visibleXsize*(3/4) - xSizeLose/2,       stim.reward.text.top_right_start(2) - ySizeLose*2.5];
+stim.loseRewardText.top_left        = [leftBorder + visibleXsize/4 - xSizeLose/2,           stim.punishment.text.top_left_start(2) - ySizeLose*2.5];
+stim.loseRewardText.top_right       = [leftBorder + visibleXsize*(3/4) - xSizeLose/2,       stim.punishment.text.top_right_start(2) - ySizeLose*2.5];
 stim.effort_introText.bottom_left   = [leftBorder + visibleXsize/4 - xSizeForEffort/2,      stim.difficulty.below_left(2) - ySizeForEffort];
 stim.effort_introText.bottom_right  = [leftBorder + visibleXsize*(3/4) - xSizeForEffort/2,  stim.difficulty.below_right(2)  - ySizeForEffort];
-
+% display of confidence mapping
+switch langage
+    case 'fr'
+        stim.leftSure.text      = 'SUR';
+        stim.leftUnsure.text    = 'PEU SUR';
+        stim.rightUnsure.text   = 'PEU SUR';
+        stim.rightSure.text     = 'SUR';
+    case 'engl'
+        stim.leftSure.text      = 'SURE';
+        stim.leftUnsure.text    = 'NOT SURE';
+        stim.rightUnsure.text   = 'NOT SURE';
+        stim.rightSure.text     = 'SURE';
+end
+% left sure
+[~,~,textSizeLeftSure] = DrawFormattedText(window,stim.leftSure.text,'center','center',white);
+xSizeLeftSure = textSizeLeftSure(3) - textSizeLeftSure(1);
+ySizeLeftSure = textSizeLeftSure(4) - textSizeLeftSure(2);
+stim.leftSure.x = leftBorder + visibleXsize*(1/4) - xSizeLeftSure*(3/2);
+stim.leftSure.y = upperBorder + visibleYsize*(19/20) - ySizeLeftSure/2;
+stim.leftSure.colour = [0 255 0]; % colour corresponding to extreme left button
+% left unsure
+[~,~,textSizeLeftUnsure] = DrawFormattedText(window,stim.leftUnsure.text,'center','center',white);
+xSizeLeftUnsure = textSizeLeftUnsure(3) - textSizeLeftUnsure(1);
+ySizeLeftUnsure = textSizeLeftUnsure(4) - textSizeLeftUnsure(2);
+stim.leftUnsure.x = leftBorder + visibleXsize*(1/4) + xSizeLeftSure/2;
+stim.leftUnsure.y = upperBorder + visibleYsize*(19/20) - ySizeLeftUnsure/2;
+stim.leftUnsure.colour = [255 0 0]; % colour corresponding to middle left button
+% right unsure
+[~,~,textSizeRightUnsure] = DrawFormattedText(window,stim.rightUnsure.text,'center','center',white);
+xSizeRightUnsure = textSizeRightUnsure(3) - textSizeRightUnsure(1);
+ySizeRightUnsure = textSizeRightUnsure(4) - textSizeRightUnsure(2);
+stim.rightUnsure.x = leftBorder + visibleXsize*(3/4) - xSizeRightUnsure*(3/2);
+stim.rightUnsure.y = upperBorder + visibleYsize*(19/20) - ySizeRightUnsure/2;
+stim.rightUnsure.colour = [0 0 255]; % colour corresponding to middle right button
+% right sure
+[~,~,textSizeRightSure] = DrawFormattedText(window,stim.rightSure.text,'center','center',white);
+xSizeRightSure = textSizeRightSure(3) - textSizeRightSure(1);
+ySizeRightSure = textSizeRightSure(4) - textSizeRightSure(2);
+stim.rightSure.x = leftBorder + visibleXsize*(3/4) + xSizeRightUnsure/2;
+stim.rightSure.y = upperBorder + visibleYsize*(19/20) - ySizeRightSure/2;
+stim.rightSure.colour = [255 255 0]; % colour corresponding to extreme right button
 %% release buttons message
 switch langage
     case 'fr'
@@ -658,17 +734,45 @@ stim.chosenOptionMsg.x = x_centerCoordinates(xScreenCenter, textSizeChosenMsg);
 stim.chosenOptionMsg.y = y_coordinates(upperBorder, visibleYsize, 3/16, textSizeChosenMsg);
 % place reward amount and difficulty level accordingly
 ySizeChosenMsg = textSizeChosenMsg(4) - textSizeChosenMsg(2);
-stim.chosenOption.reward = stim.reward.text.top_center_start;
-stim.chosenOption.difficulty = stim.difficulty.below_center;
-stim.chosenOption.squareColour = black;
+% square surrounding chosen option
 stim.chosenOption.squareRect = [leftBorder + visibleXsize*(1/3),...
     upperBorder + visibleYsize*(3/16) + ySizeChosenMsg,...
     leftBorder + visibleXsize*(2/3),...
     upperBorder + visibleYsize*(11/12)];
+stim.chosenOption.squareColour = black;
 stim.chosenOption.squareWidth = 10;
-stim.winRewardText.top_center       = [xScreenCenter - xSizeWin/2,                          stim.reward.text.top_center_start(2) - ySizeWin*2.5];
-stim.loseRewardText.top_center      = [xScreenCenter - xSizeLose/2,                         stim.reward.text.top_center_start(2) - ySizeLose*2.5];
-stim.effort_introText.bottom_center = [xScreenCenter - xSizeForEffort/2,                    stim.difficulty.below_center(2)  - ySizeForEffort];
+% dotted lines square surrounding chosen option
+lineLength = visibleXsize/30;
+stim.chosenOption.dottedSquare.xyLines = [];
+for iVerticalLines = (stim.chosenOption.squareRect(2)+lineLength/2):(2*lineLength):(stim.chosenOption.squareRect(4) - lineLength)
+    xVerticalLeft = stim.chosenOption.squareRect(1); % same as for square
+    yStartVertical = iVerticalLines;
+    xVerticalRight = stim.chosenOption.squareRect(3);
+    yEndVertical = yStartVertical + lineLength;
+    stim.chosenOption.dottedSquare.xyLines = [stim.chosenOption.dottedSquare.xyLines,...
+        [xVerticalLeft, xVerticalLeft, xVerticalRight, xVerticalRight;...
+        yStartVertical, yEndVertical, yStartVertical, yEndVertical]];
+end % vertical lines
+for iHorizontalLines = (stim.chosenOption.squareRect(1)+lineLength/2):(2*lineLength):(stim.chosenOption.squareRect(3) - lineLength)
+    xStartHorizontal = iHorizontalLines;
+    yHorizontalTop = stim.chosenOption.squareRect(2); % same as for square
+    xEndHorizontal = xStartHorizontal + lineLength;
+    yHorizontalBottom = stim.chosenOption.squareRect(4); % same as for square
+    stim.chosenOption.dottedSquare.xyLines = [stim.chosenOption.dottedSquare.xyLines,...
+        [xStartHorizontal, xEndHorizontal, xStartHorizontal, xEndHorizontal;...
+        yHorizontalTop, yHorizontalTop, yHorizontalBottom, yHorizontalBottom]];
+end % horizontal lines
+% Win/Lose text message
+stim.winRewardText.top_center       = [xScreenCenter - xSizeWin/2,  stim.chosenOption.squareRect(2) + ySizeWin*1.5];
+stim.loseRewardText.top_center      = [xScreenCenter - xSizeLose/2, stim.chosenOption.squareRect(2) + ySizeWin*1.5];
+% amount of money to Win/Lose
+stim.chosenOption.reward   = [x_centerCoordinates(xScreenCenter, textSizeR),  stim.winRewardText.top_center(2) + ySizeTextR*1.5]; % chosen option display
+stim.reward.text.top_center_start = stim.chosenOption.reward;
+stim.chosenOption.punishment   = [x_centerCoordinates(xScreenCenter, textSizeP),  stim.loseRewardText.top_center(2) + ySizeTextP*1.5]; % chosen option display
+stim.punishment.text.top_center_start = stim.chosenOption.punishment;
+% effort informations
+stim.chosenOption.difficulty = stim.difficulty.below_center;
+stim.effort_introText.bottom_center = [xScreenCenter - xSizeForEffort/2, stim.difficulty.below_center(2)  - ySizeForEffort];
 
 %% mental effort performance
 % display of the relevant instructions
@@ -819,7 +923,7 @@ end
     'center', 'center',...
     white);
 stim.feedback.error_tooSlow.x = x_centerCoordinates(xScreenCenter, textSizeErrorTooSlowFbkMsg);
-stim.feedback.error_tooSlow.y = y_coordinates(upperBorder, visibleYsize, 3/8, textSizeErrorTooSlowFbkMsg); % used to be 1/5*yScreenCenter
+stim.feedback.error_tooSlow.y = y_coordinates(upperBorder, visibleYsize, 3/8, textSizeErrorTooSlowFbkMsg);
 
 % error too many errors feedback
 switch langage
@@ -832,7 +936,21 @@ end
     'center', 'center',...
     white);
 stim.feedback.error_tooManyErrors.x = x_centerCoordinates(xScreenCenter, textSizeErrorTooManyErrorsFbkMsg);
-stim.feedback.error_tooManyErrors.y = y_coordinates(upperBorder, visibleYsize, 3/8, textSizeErrorTooManyErrorsFbkMsg); % used to be 1/5*yScreenCenter
+stim.feedback.error_tooManyErrors.y = y_coordinates(upperBorder, visibleYsize, 3/8, textSizeErrorTooManyErrorsFbkMsg);
+
+
+% error try again feedback, can be displayed with too many errors and too slow
+switch langage
+    case 'fr'
+        stim.feedback.error_tryAgain.text = 'Concentrez-vous et reessayez!';
+    case 'engl'
+        stim.feedback.error_tryAgain.text = 'Focus and try again!';
+end
+[~,~,textSizeErrorTryAgainFbkMsg] = DrawFormattedText(window, stim.feedback.error_tryAgain.text,...
+    'center', 'center',...
+    white);
+stim.feedback.error_tryAgain.x = x_centerCoordinates(xScreenCenter, textSizeErrorTryAgainFbkMsg);
+stim.feedback.error_tryAgain.y = y_coordinates(upperBorder, visibleYsize, 4/8, textSizeErrorTryAgainFbkMsg);
 
 % error: display amount lost because of too slow or too many errors
 moneyFail = sprintf('%0.2f',R_money.trialFail);

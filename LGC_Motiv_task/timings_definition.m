@@ -41,7 +41,7 @@ end
 calibTimes.instructions = 5;
 switch effort_type % in case you use different numbers for each effort type
     case 'mental'
-        calibTimes.effort_max = 15; % maximal time to perform the task (calibrated time should be shorter)
+        calibTimes.effort_max = 12; % maximal time to perform the task (calibrated time should be shorter)
     case 'physical'
         calibTimes.instructions_bis = 10;
         calibTimes.effort_max = 5;% time to perform the task
@@ -50,6 +50,7 @@ switch effort_type % in case you use different numbers for each effort type
         calibTimes.ifi = t_ifi; % manual definition to match with read frame rate
 end
 calibTimes.fbk = 2;
+calibTimes.fail_and_repeat_fbk = 5;
 
 %% learning timings
 switch effort_type % in case you use different numbers for each effort type
@@ -62,17 +63,27 @@ switch effort_type % in case you use different numbers for each effort type
         learningTimes.learning_rest = 1;
         warning('for real subjects update resting time, now short for Arthur');
 end
+learningTimes.fail_and_repeat_fbk = 5;
 
 %% main task timings
-jitterMin = 0.5;
-jitterMax = 3.5;
-jitters = linspace(jitterMin, jitterMax, nTrials);
-jitterRdmPerm = randperm(nTrials);
-t_cross = jitters(jitterRdmPerm);
 
-t_finalCross = 5;
+% initial cross
+jitterMin_choiceCross = 0.5;
+jitterMax_choiceCross = 3.5;
+jitters_choiceCross = linspace(jitterMin_choiceCross, jitterMax_choiceCross, nTrials);
+jitterRdmPerm_choiceCross = randperm(nTrials);
+t_choiceCross = jitters_choiceCross(jitterRdmPerm_choiceCross);
+
+% cross between choice and effort
+jitterMin_effortCross = 0.5;
+jitterMax_effortCross = 1.5;
+jitters_effortCross = linspace(jitterMin_effortCross, jitterMax_effortCross, nTrials);
+jitterRdmPerm_effortCross = randperm(nTrials);
+t_effortCross = jitters_effortCross(jitterRdmPerm_effortCross);
+
+t_finalCross = 10;
 t_choice = 7;
-t_dispChoice = 3;
+t_dispChoice = 2;
 switch effort_type
     case 'physical' % in case you use different numbers for each effort type
         t_max_effort = 6; % time to perform the task
@@ -90,11 +101,14 @@ switch effort_type
         taskTimes.t_min_scalingFactor = 150/100; % multiply calibrated minimal time by this value
 end
 t_fbk = 1; % feedback display
-taskTimes.cross.mainTask = t_cross;
+t_fail_and_repeat_fbk = 3; % feedback after a failure => repeat the effort after that
+taskTimes.preChoiceCross.mainTask = t_choiceCross;
+taskTimes.preEffortCross.mainTask = t_effortCross;
 taskTimes.choice = t_choice;
 taskTimes.dispChoice = t_dispChoice;
 taskTimes.feedback = t_fbk;
 taskTimes.finalCross = t_finalCross;
+taskTimes.fail_and_repeat_fbk = t_fail_and_repeat_fbk;
 
 %% training timings
 trainingTimes.instructions = 5;
@@ -104,10 +118,17 @@ n_trainingCond = length(trainingConditions);
 for iTraining = 1:n_trainingCond
     trainingCond = trainingConditions{iTraining};
     [~, n_trainingTrials] = training_options(trainingCond, n_R_levels, n_E_levels);
-    jittersTraining = linspace(jitterMin, jitterMax, n_trainingTrials);
-    jitterTrainingRdmPerm = randperm(n_trainingTrials);
-    t_trainingCross = jittersTraining(jitterTrainingRdmPerm);
-    trainingTimes.cross.(trainingCond) = t_trainingCross;
+    % initial cross before choice
+    jittersTrainingChoice = linspace(jitterMin_choiceCross, jitterMax_choiceCross, n_trainingTrials);
+    jitterTrainingChoiceRdmPerm = randperm(n_trainingTrials);
+    t_trainingChoiceCross = jittersTrainingChoice(jitterTrainingChoiceRdmPerm);
+    % cross before effort
+    jittersTrainingEffort = linspace(jitterMin_effortCross, jitterMax_effortCross, n_trainingTrials);
+    jitterTrainingEffortRdmPerm = randperm(n_trainingTrials);
+    t_trainingEffortCross = jittersTrainingEffort(jitterTrainingEffortRdmPerm);
+    % store timings
+    trainingTimes.preChoiceCross.(trainingCond) = t_trainingChoiceCross;
+    trainingTimes.preEffortCross.(trainingCond) = t_trainingEffortCross;
 end
 % other times
 switch effort_type
@@ -126,11 +147,13 @@ switch effort_type
     case 'mental'
         trainingTimes.t_min_scalingFactor = 150/100; % multiply calibrated minimal time by this value
 end
-trainingTimes.choice        = t_choice;
-trainingTimes.dispChoice    = t_dispChoice;
-trainingTimes.feedback      = t_fbk;
+trainingTimes.choice                = t_choice;
+trainingTimes.dispChoice            = t_dispChoice;
+trainingTimes.feedback              = t_fbk;
+trainingTimes.fail_and_repeat_fbk   = t_fail_and_repeat_fbk;
 
 %% time feedback end of a block
-mainTimes.endSession = 180;
+mainTimes.endfMRI = 20; % to get end of fMRI response and avoid artifacts
+mainTimes.endSession = 3; % display of the total amount of money obtained
 
 end % function

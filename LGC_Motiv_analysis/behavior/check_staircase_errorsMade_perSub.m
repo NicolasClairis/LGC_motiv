@@ -1,11 +1,25 @@
+function[n_AVGerrorsEffort, n_success, nChoice] = check_staircase_errorsMade_perSub(subFolder, init, sub)
+% [n_AVGerrorsEffort, n_success, nChoice] = check_staircase_errorsMade_perSub(subFolder, init, sub)
 % script to check average proportion of errors made
+%
+% INPUTS
+%
+%
+%
+% OUTPUTS
+% n_AVGerrorsEffort: average proportion of errors for each effort level
+%
+% n_success: percentage success for each effort level
+%
+% nChoice: number of times each effort level has been selected
+%
 
 % root = fullfile('C:','Users','Loco','Documents','GitHub','LGC_motiv','LGC_Motiv_results');
-root = fullfile('C:','Users','clairis','Desktop','GitHub','LGC_motiv','LGC_Motiv_results');
-groupFolder = 'pilots_v4_IP_Nback2_NOtaskSwitching'; % 'pilots_v3_IP_Nback2'
-subFolder = [root, filesep, groupFolder, filesep];
-sub = 1;
-init = 'SN'; % 'DU'/'SN'/'AD'/
+% root = fullfile('C:','Users','clairis','Desktop','GitHub','LGC_motiv','LGC_Motiv_results');
+% groupFolder = 'pilots_v4_IP_Nback2_NOtaskSwitching'; % 'pilots_v3_IP_Nback2'
+% subFolder = [root, filesep, groupFolder, filesep];
+% sub = 3;
+% init = 'JA'; % 'DU'/'SN'/'AD'/
 
 loadStruct = load([subFolder,'IP_pilot_data',init,'_sub_',num2str(sub),'.mat']);
 n_trialsPerStaircase = 5;
@@ -69,3 +83,5 @@ n_AVGerrorsEffort.E3 = mean(n_errorsEffort.E3);
 n_success.E1 = sum(n_trialSuccess.E1)/length(n_trialSuccess.E1);
 n_success.E2 = sum(n_trialSuccess.E2)/length(n_trialSuccess.E2);
 n_success.E3 = sum(n_trialSuccess.E3)/length(n_trialSuccess.E3);
+
+end % function

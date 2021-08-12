@@ -23,12 +23,13 @@ baselineTextSize = scr.textSize.baseline;
 % calibrate reward number to be in the "+X.XX CHF" format
 switch R_or_P
     case 'R'
+        RP_type = 'reward';
         moneySign = '+';
-        moneyColour = stim.reward.text.colour;
     case 'P'
+        RP_type = 'punishment';
         moneySign = '-';
-        moneyColour = stim.punishment.text.colour;
 end
+moneyColour = stim.(RP_type).text.colour;
 trialMoneyObtained = sprintf('%0.2f',R_amount );
 
 %% adapt text size for rewards to appear bigger
@@ -36,8 +37,8 @@ Screen('TextSize', window, moneyTextSize);
 
 %% display money won/lost
 DrawFormattedText(window, [moneySign, trialMoneyObtained,' CHF'],...
-    stim.reward.text.(xyCoordField)(1),...
-    stim.reward.text.(xyCoordField)(2),...
+    stim.(RP_type).text.(xyCoordField)(1),...
+    stim.(RP_type).text.(xyCoordField)(2),...
     moneyColour);
 
 %% reset baseline text size

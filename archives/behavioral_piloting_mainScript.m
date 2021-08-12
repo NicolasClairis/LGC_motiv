@@ -14,7 +14,7 @@ main_folder                 = [pwd filesep]; % you have to be sure that you are 
 main_task_folder            = [main_folder, 'LGC_Motiv_task' filesep];
 results_folder              = [main_folder, 'LGC_Motiv_results' filesep];
 % BioPac_folder               = [main_folder, 'BioPac_functions' filesep];
-pics_folder                 = [main_task_folder, 'Coin_PNG', filesep];
+% pics_folder                 = [main_task_folder, 'Coin_PNG', filesep];
 Matlab_DIY_functions_folder = [main_folder, 'Matlab_DIY_functions', filesep];
 
 % add personal functions (needed for PTB opening at least)
@@ -104,7 +104,8 @@ n_trainingConditions = length(trainingConditions);
 % the main calibration
 if strcmp(taskToPerform.mental.calib,'on') || strcmp(taskToPerform.mental.task,'on')
     calib_errorLimits_Em.useOfErrorMapping = false;
-    calib_errorLimits_Em.useOfErrorThreshold = false;
+    calib_errorLimits_Em.useOfErrorThreshold = true;
+    calib_errorLimits_Em.errorThreshold = 20;
 end
 % time for end of session
 t_endSession = mainTimes.endSession;
@@ -121,7 +122,7 @@ if strcmp(taskToPerform.physical.calib,'on') ||...
     % define relevant keys and dynamometer module
     [key_Ep, dq] = relevant_key_definition('physical', IRM, n_buttonsChoice);
     % define conditions
-    F_threshold = 50; % force should be maintained above this threshold (expressed in % of MVC)
+    F_threshold = 55; % force should be maintained above this threshold (expressed in % of MVC)
     F_tolerance = 2.5; % tolerance allowed around the threshold (expressed in % of MVC)
     % need to define timings for each level of force
     [Ep_time_levels] = physical_effortLevels(n_E_levels);
@@ -143,7 +144,7 @@ end
 if strcmp(taskToPerform.physical.calib,'on')
     n_MVC_repeat = 3; % number of calibration trials
     [initial_MVC, onsets_initial_MVC] = physical_effort_MVC(scr, stim, dq, n_MVC_repeat, calibTimes_Ep);
-    MVC = nanmax(initial_MVC.MVC); % expressed in Voltage
+    MVC = max(initial_MVC.MVC); % expressed in Voltage
 end
 
 % learning physical
@@ -305,8 +306,9 @@ if strcmp(taskToPerform.mental.calib,'on')
     mentalE_prm_learning_and_calib = mental_effort_parameters(iSubject);
     mentalE_prm_learning_and_calib.startAngle = 0; % for learning always start at zero
     % extract numbers to use for each calibration trial
-    [numberVector_calib] = mental_numbers(n_calibTrials_Em);
-        
+%     [numberVector_calib] = mental_numbers(n_calibTrials_Em);
+    [numberVector_calib] = mental_calibNumberVector(n_calibTrials_Em, n_calibMax);
+    
     % alternatively, use fixed number of correct answers to provide for each effort
     % level
     % repeat calibration until the subject performance is better
@@ -411,7 +413,8 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
                 strcmp(taskToPerform.mental.task,'on') % mental task
             % pre-task max perf
             % extract numbers to use for each calibration trial
-            [numberVector_calib_tmp] = mental_numbers(n_calibTrials_Em_bis);
+%             [numberVector_calib_tmp] = mental_numbers(n_calibTrials_Em_bis);
+            [numberVector_calib_tmp] = mental_calibNumberVector(n_calibTrials_Em_bis, n_calibMax);
             
             % alternatively, use fixed number of correct answers to provide for each effort
             % level
@@ -436,7 +439,8 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
             finalGains = perfSummary.mental.(session_nm).totalGain(end);
             
             % post-task max perf
-            [numberVector_calib_tmp_bis] = mental_numbers(n_calibTrials_Em_bis);
+%             [numberVector_calib_tmp_bis] = mental_numbers(n_calibTrials_Em_bis);
+            [numberVector_calib_tmp_bis] = mental_calibNumberVector(n_calibTrials_Em_bis, n_calibMax);
             
             % re-measure max perf
             [t_min_calib_postTask.(session_nm), calibSessionSummary_postTask.(session_nm), calibSuccess_postTask.(session_nm)] = mental_calibTime(scr, stim, key_Em,...

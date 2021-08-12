@@ -2,7 +2,7 @@
 
 %% clean workspace before starting
 sca;
-clearvars;
+clearvars; 
 close all;
 instrreset; % Disconnect and delete all instrument objects
 clc;
@@ -13,7 +13,7 @@ main_folder                 = [pwd filesep]; % you have to be sure that you are 
 main_task_folder            = [main_folder, 'LGC_Motiv_task' filesep];
 results_folder              = [main_folder, 'LGC_Motiv_results' filesep];
 % BioPac_folder               = [main_folder, 'BioPac_functions' filesep];
-pics_folder                 = [main_task_folder, 'Coin_PNG', filesep];
+% pics_folder                 = [main_task_folder, 'Coin_PNG', filesep];
 Matlab_DIY_functions_folder = [main_folder, 'Matlab_DIY_functions', filesep];
 
 % add personal functions (needed for PTB opening at least)
@@ -31,12 +31,19 @@ cd(main_task_folder);
 %% Define subject ID
 
 % Insert the initials, the number of the participants
-[init, iSubject] = deal([]);
-while isempty(init) || isempty(iSubject) % repeat until both are answered
-    info = inputdlg({'Initials', 'Subject ID'});
-    [init, iSubject] = info{[1,2]};
+[init, iSubject, langue, IRM] = deal([]);
+while isempty(init) || isempty(iSubject) || isempty(langue) || ~ismember(langue,{'f','e'}) || isempty(IRM) || ~ismember(str2double(IRM),[0,1])
+    % repeat until all questions are answered
+    info = inputdlg({'Initials', 'Subject ID','Language (f or e)','IRM (0/1)'});
+    [init, iSubject,langue, IRM] = info{[1, 2, 3, 4]};
+    warning('one real experiment starts, remember to block in french and IRM = 1');
 end
-
+if ischar(iSubject)
+    iSubject = str2double(iSubject);
+end
+if ischar(IRM)
+    IRM = str2double(IRM);
+end
 % Create subjectCodeName which is used as a file saving name
 subjectCodeName = strcat(init,'_s',iSubject);
 
@@ -44,17 +51,25 @@ file_nm_training_Em = ['IP_pilot_data_Em_',init,'_sub_',num2str(iSubject)];
 file_nm_training_Ep = ['IP_pilot_data_Ep_',init,'_sub_',num2str(iSubject)];
 file_nm = ['IP_pilot_data',init,'_sub_',num2str(iSubject)];
 %% general parameters
-IRM = 0;
 % define subparts of the task to perform (on/off)
 taskToPerform.physical.calib = 'on';
 taskToPerform.physical.learning = 'on';
-taskToPerform.physical.training = 'on';   
-taskToPerform.physical.task = 'on';
+taskToPerform.physical.training = 'on';
+switch IRM
+    case 0
+        taskToPerform.physical.task = 'on';
+    case 1 % task will be done in the scanner after the training
+        taskToPerform.physical.task = 'off';
+end
 taskToPerform.mental.learning = 'on';
 taskToPerform.mental.calib = 'on';
 taskToPerform.mental.training = 'on';
-taskToPerform.mental.task = 'on';
-langue = input('Which langage? Press ''f'' for french and ''e'' for english please.','s');
+switch IRM
+    case 0
+        taskToPerform.mental.task = 'on';
+    case 1 % task will be done in the scanner after the training
+        taskToPerform.mental.task = 'off';
+end
 switch langue
     case 'f'
         langage = 'fr';
@@ -65,7 +80,7 @@ switch langue
 end
 % initialize screen
 [scr, xScreenCenter, yScreenCenter,...
-    window, baselineTextSize] = ScreenConfiguration(0,1);
+    window, baselineTextSize] = ScreenConfiguration(IRM, 1);
 white = scr.colours.white;
 black = scr.colours.black;
 
@@ -87,7 +102,7 @@ nbRepeat = 2;
 totalGain = 0;
 finalGain = 0;
 % define number of trials per staircase procedure
-n_trialsPerSession =5;
+n_trialsPerSession = 5;
 
 % mapping between reward levels and actual monetary amounts
 R_money = R_amounts(n_R_levels, punishment_yn);
@@ -98,21 +113,31 @@ R_money = R_amounts(n_R_levels, punishment_yn);
 % define number of training conditions
 switch punishment_yn
     case 'yes'
-        trainingConditions = {'R','P'}; % ,'RP'
+        switch IRM
+            case 0
+                trainingConditions = {'R','P'};
+            case 1
+                trainingConditions = {'R','P','RP'};
+        end
     case 'no'
         trainingConditions = {'R'};
 end
 n_trainingConditions = length(trainingConditions);
 
 % load timings for each phase of the experiment
-[trainingTimes_Em, calibTimes_Em, learningTimes_Em, taskTimes_Em, mainTimes] = timings_definition(trainingConditions, n_R_levels, n_E_levels, n_trialsPerSession, 'mental');
+[trainingTimes_Em, calibTimes_Em, learningTimes_Em, taskTimes_Em] = timings_definition(trainingConditions, n_R_levels, n_E_levels, n_trialsPerSession, 'mental');
 [trainingTimes_Ep, calibTimes_Ep, learningTimes_Ep, taskTimes_Ep, mainTimes] = timings_definition(trainingConditions, n_R_levels, n_E_levels, n_trialsPerSession, 'physical');
 
 % number of times we apply a staircase procedure. (2 mental (R or P) 2 physical (R or P))
 n_sessions = 4;
 
 % number of buttons to answer
-n_buttonsChoice = 2;
+switch IRM
+    case 0
+        n_buttonsChoice = 2;
+    case 1 % test buttons
+        n_buttonsChoice = 4;
+end
 
 % mental calibration error management: no fail after 3 errors nor
 % mapping display
@@ -123,7 +148,8 @@ n_buttonsChoice = 2;
 % the main calibration
 if strcmp(taskToPerform.mental.calib,'on') || strcmp(taskToPerform.mental.task,'on')
     calib_errorLimits_Em.useOfErrorMapping = false;
-    calib_errorLimits_Em.useOfErrorThreshold = false;
+    calib_errorLimits_Em.useOfErrorThreshold = true;
+    calib_errorLimits_Em.errorThreshold = 10;
 end
 % time for end of session
 % t_endSession = mainTimes.endSession;
@@ -140,7 +166,7 @@ if strcmp(taskToPerform.physical.calib,'on') ||...
     % define conditions
     n_MVC_repeat = 3;
     n_learningForceRepeats = 3; % number of learning repetitions for each level of difficulty (= each level of force)
-    F_threshold = 50; % force should be maintained above this threshold (expressed in % of MVC)
+    F_threshold = 55; % force should be maintained above this threshold (expressed in % of MVC)
     F_tolerance = 2.5; % tolerance allowed around the threshold (expressed in % of MVC)
     % need to define timings for each level of force
     [Ep_time_levels] = physical_effortLevels(n_E_levels);
@@ -196,7 +222,7 @@ if strcmp(taskToPerform.physical.calib,'on')
     end
     
     [initial_MVC, onsets_initial_MVC] = physical_effort_MVC(scr, stim, dq, n_MVC_repeat, calibTimes_Ep);
-    MVC = nanmax(initial_MVC.MVC); % expressed in Voltage
+    MVC = max(initial_MVC.MVC); % expressed in Voltage
 end
 
 % learning physical
@@ -220,6 +246,13 @@ if strcmp(taskToPerform.physical.training,'on')
     
     for iTrainingCondition = 1:n_trainingConditions
         trainingCond = trainingConditions{iTrainingCondition};
+        % display confidence mapping only for first training sessions and
+        % only for fMRI experiment
+        if strcmp(trainingCond,'RP') || IRM == 0 || n_buttonsChoice == 2
+            confidenceChoiceDisplay = false;
+        elseif ~strcmp(trainingCond,'RP') && IRM == 1 && n_buttonsChoice == 4
+            confidenceChoiceDisplay = true;
+        end
         
         % define parameters for the training
         % reward/punishment and effort levels
@@ -228,7 +261,8 @@ if strcmp(taskToPerform.physical.training,'on')
         % start with reward training alone
         [onsets_Ep_training.(trainingCond)] = choice_and_perf_trainingInstructions(scr, stim, trainingCond, trainingTimes_Ep.instructions);
         [trainingSummary_Ep.(trainingCond)] = choice_and_perf(scr, stim, key_Ep, 'physical', Ep_vars_training, R_money,...
-            trainingCond, n_trainingTrials_Ep_tmp, trainingChoiceOptions_Ep_tmp, trainingTimes_Ep,...
+            trainingCond, n_trainingTrials_Ep_tmp, trainingChoiceOptions_Ep_tmp, confidenceChoiceDisplay,...
+            trainingTimes_Ep,...
             results_folder, file_nm_training_Ep);
     end % learning condition loop
     
@@ -328,7 +362,8 @@ if strcmp(taskToPerform.mental.calib,'on')
     mentalE_prm_learning_and_calib = mental_effort_parameters(iSubject);
     mentalE_prm_learning_and_calib.startAngle = 0; % for learning always start at zero
     % extract numbers to use for each calibration trial
-    [numberVector_calib] = mental_numbers(n_calibTrials_Em);
+%     [numberVector_calib] = mental_numbers(n_calibTrials_Em);
+    [numberVector_calib] = mental_calibNumberVector(n_calibTrials_Em, n_calibMax);
     % error handling for extended learning
     extendedLearning_errorLimits.useOfErrorThreshold = false;
     extendedLearning_errorLimits.useOfErrorMapping = false;
@@ -341,7 +376,8 @@ if strcmp(taskToPerform.mental.calib,'on')
     while calibSuccess == false
         calibSession = calibSession + 1;
         [t_min_calib, calibSessionSummary, calibSuccess] = mental_calibTime(scr, stim, key_Em,...
-            numberVector_calib, mentalE_prm_learning_and_calib, n_calibTrials_Em, n_calibMax, calibTimes_Em, calib_errorLimits_Em, langage);
+            numberVector_calib, mentalE_prm_learning_and_calib, n_calibTrials_Em, n_calibMax,...
+            calibTimes_Em, calib_errorLimits_Em, langage);
         calibSummary.(['calibSession_',num2str(calibSession)]).calibSummary = calibSessionSummary;
         calibSummary.(['calibSession_',num2str(calibSession)]).calibSuccess = calibSuccess;
         calibSummary.(['calibSession_',num2str(calibSession)]).t_mental_max_perTrial = t_min_calib;
@@ -354,6 +390,13 @@ if strcmp(taskToPerform.mental.training,'on')
     trainingTimes_Em.max_effort = t_min_calib*trainingTimes_Em.t_min_scalingFactor; % allow more time then min performance
     for iTrainingCondition = 1:n_trainingConditions
         trainingCond = trainingConditions{iTrainingCondition};
+        % display confidence mapping only for first training sessions and
+        % only for fMRI experiment
+        if strcmp(trainingCond,'RP') || IRM == 0 || n_buttonsChoice == 2
+            confidenceChoiceDisplay = false;
+        elseif ~strcmp(trainingCond,'RP') && IRM == 1 && n_buttonsChoice == 4
+            confidenceChoiceDisplay = true;
+        end
         
         % define parameters for the training
         % reward/punishment and effort levels
@@ -368,7 +411,8 @@ if strcmp(taskToPerform.mental.training,'on')
         Em_vars_training.timeRemainingEndTrial_ONOFF = 0;
         [onsets_Em_training.(trainingCond)] = choice_and_perf_trainingInstructions(scr, stim, trainingCond, trainingTimes_Em.instructions);
         [trainingSummary_Em.(trainingCond)] = choice_and_perf(scr, stim, key_Em, 'mental', Em_vars_training, R_money,...
-            trainingCond, n_trainingTrials_Em_tmp, trainingChoiceOptions_Em_tmp, trainingTimes_Em,...
+            trainingCond, n_trainingTrials_Em_tmp, trainingChoiceOptions_Em_tmp, confidenceChoiceDisplay,...
+            trainingTimes_Em,...
             results_folder, file_nm_training_Em);
     end % learning condition loop
 end
@@ -551,7 +595,8 @@ if strcmp(taskToPerform.mental.task,'on')
     mentalE_prm_learning_and_calib = mental_effort_parameters(iSubject);
     mentalE_prm_learning_and_calib.startAngle = 0; % for learning always start at zero
     % extract numbers to use for each calibration trial
-    [numberVector_calib] = mental_numbers(n_calibTrials_Em);
+%     [numberVector_calib] = mental_numbers(n_calibTrials_Em);
+[numberVector_calib] = mental_calibNumberVector(n_calibTrials_Em, n_calibMax);
     % alternatively, use fixed number of correct answers to provide for each effort
     % level
     % repeat calibration until the subject performance is better
@@ -618,23 +663,25 @@ save([results_folder, file_nm,'.mat']);
 
 
 
-%% Show a final screen
-totalGain_str = sprintf('%0.2f',totalGain);
-% display feedback for the current session
-switch langage
-    case 'fr'
-        DrawFormattedText(window,...
-            ['Félicitations! Cette expérience est maintenant terminée.',...
-            'Vous avez obtenu: ',totalGain_str,' chf au cours de cette session.'],...
-            'center', 'center', scr.colours.white, scr.wrapat);
-    case 'engl'
-        DrawFormattedText(window,...
-            ['Congratulations! This session is now completed.',...
-            'You got: ',totalGain_str,' chf during this session.'],...
-            'center', 'center', scr.colours.white, scr.wrapat);
+%% Show a final screen if and only if they performed the task or nonsense since no amount involved
+if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,'on')
+    totalGain_str = sprintf('%0.2f',totalGain);
+    % display feedback for the current session
+    switch langage
+        case 'fr'
+            DrawFormattedText(window,...
+                ['Félicitations! Cette expérience est maintenant terminée.',...
+                'Vous avez obtenu: ',totalGain_str,' chf au cours de cette session.'],...
+                'center', 'center', scr.colours.white, scr.wrapat);
+        case 'engl'
+            DrawFormattedText(window,...
+                ['Congratulations! This session is now completed.',...
+                'You got: ',totalGain_str,' chf during this session.'],...
+                'center', 'center', scr.colours.white, scr.wrapat);
+    end
+    Screen(window,'Flip');
+    WaitSecs(15);
 end
-Screen(window,'Flip');
-WaitSecs(15);
 %% close PTB
 ShowCursor;
 sca;
