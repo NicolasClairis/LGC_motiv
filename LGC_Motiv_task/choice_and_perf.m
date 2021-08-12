@@ -59,6 +59,7 @@ function[summary] = choice_and_perf(scr, stim, key,...
 %% load main paramaters
 window = scr.window;
 white = scr.colours.white;
+black = scr.colours.black;
 % black = scr.colours.black;
 % yScreenCenter = scr.yCenter;
 % xScreenCenter = scr.xCenter;
@@ -73,7 +74,8 @@ switch key.n_buttonsChoice
 end
 
 %% timings
-t_cross         = timings.cross.(training_R_P_RP_or_mainTask);
+t_preChoiceCross = timings.preChoiceCross.(training_R_P_RP_or_mainTask);
+t_preEffortCross = timings.preEffortCross.(training_R_P_RP_or_mainTask);
 % precise if the choice and the performance periods will have a time
 % constraint
 choiceTimeParameters.timeLimit = true;
@@ -108,11 +110,14 @@ end
 timeRemainingEndTrial_ONOFF = Ep_or_Em_vars.timeRemainingEndTrial_ONOFF;
 
 %% initialize onsets
-[onsets.cross,...
+[onsets.preChoiceCross,...
     onsets.dispChoiceOptions,...
     onsets.choice,...
-    onsets.keyReleaseMessage,...
-    onsets.cross_after_buttonRelease,...
+    onsets.preChoiceCross_keyReleaseMessage,...
+    onsets.preChoiceCross_after_buttonRelease,...
+    onsets.preEffortCross,...
+    onsets.preEffortCross_keyReleaseMessage,...
+    onsets.preEffortCross_after_buttonRelease,...
     onsets.fbk, onsets.fbk_win, onsets.fbk_loss,...
     onsets.timeBarWait] = deal(NaN(1,nTrials));
 % variables during effort period should record the data for each trial
@@ -149,23 +154,23 @@ for iTrial = 1:nTrials
     trial_success = 0;
     redo_limit = 5;
     
-    %% fixation cross period
+    %% fixation cross pre-choice period
     Screen('FillRect',window, white, stim.cross.verticalLine); % vertical line
     Screen('FillRect',window, white, stim.cross.horizontalLine); % horizontal line
-    [~,onsets.cross(iTrial)] = Screen('Flip',window); % display the cross on screen
-    WaitSecs(t_cross(iTrial));
+    [~,onsets.preChoiceCross(iTrial)] = Screen('Flip',window); % display the cross on screen
+    WaitSecs(t_preChoiceCross(iTrial));
     
     %% check that no key is being pressed before the choice trial starts
     [was_a_key_pressed_bf_trial(iTrial),...
-        onsets.keyReleaseMessage(iTrial)] = check_keys_are_up(scr, stim, key);
+        onsets.preChoiceCross_keyReleaseMessage(iTrial)] = check_keys_are_up(scr, stim, key);
     
     % if a key was pressed before starting the trial => show the fixation
     % cross again with a similar amount of time
     if was_a_key_pressed_bf_trial(iTrial) == 1
-        Screen('FillRect',window,white, stim.cross.verticalLine); % vertical line
-        Screen('FillRect',window,white, stim.cross.horizontalLine); % horizontal line
-        [~,onsets.cross_after_buttonRelease(iTrial)] = Screen('Flip',window); % display the cross on screen
-        WaitSecs(t_cross(iTrial));
+        Screen('FillRect',window, white, stim.cross.verticalLine); % vertical line
+        Screen('FillRect',window, white, stim.cross.horizontalLine); % horizontal line
+        [~,onsets.preChoiceCross_after_buttonRelease(iTrial)] = Screen('Flip',window); % display the cross on screen
+        WaitSecs(t_preChoiceCross(iTrial));
     end
     
     %% extract monetary incentive, effort level and reward/punishment condition
@@ -235,6 +240,24 @@ for iTrial = 1:nTrials
     onsets.dispChoice(iTrial) = time_dispChoice;
     WaitSecs(t_dispChoice);
     
+    %% fixation cross pre-effort period
+    Screen('FillRect',window, black, stim.cross.verticalLine); % vertical line
+    Screen('FillRect',window, black, stim.cross.horizontalLine); % horizontal line
+    [~,onsets.preEffortCross(iTrial)] = Screen('Flip',window); % display the cross on screen
+    WaitSecs(t_preEffortCross(iTrial));
+    
+    %% check that no key is being pressed before the choice trial starts
+    [was_a_key_pressed_bf_trial(iTrial),...
+        onsets.preEffortCross_keyReleaseMessage(iTrial)] = check_keys_are_up(scr, stim, key);
+    
+    % if a key was pressed before starting the trial => show the fixation
+    % cross again with a similar amount of time
+    if was_a_key_pressed_bf_trial(iTrial) == 1
+        Screen('FillRect',window, black, stim.cross.verticalLine); % vertical line
+        Screen('FillRect',window, black, stim.cross.horizontalLine); % horizontal line
+        [~,onsets.preEffortCross_after_buttonRelease(iTrial)] = Screen('Flip',window); % display the cross on screen
+        WaitSecs(t_preEffortCross(iTrial));
+    end
     %% Effort period
     % perform the effort if a choice was made, otherwise punish the
     % subject for not answering to the choice

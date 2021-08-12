@@ -30,7 +30,7 @@ subject_id = {'pilot_s2'}; % 'pilot_s1','pilot_s2'
 switch dACC_or_Str_study
     case 1
         % for pilot analysis
-        root = [fullfile('C:','Users','clairis','Desktop','study1','fMRI_pilots'),filesep];
+        root = [fullfile('C:','Users','clairis','Desktop','fMRI_pilots'),filesep];
     case 2
         error('study 2 path not ready yet');
 end

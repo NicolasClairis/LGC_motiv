@@ -83,7 +83,7 @@ for iEpm = 1:2
     if ~strcmp(GLMprm.model_onset.(task_id_nm).cross,'none')
         n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
         reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'ONSET fixation cross';
-        disp([num2str(n_regs.(task_id_nm)),') ONSET cross - ',GLMprm.model_onset.(task_id_nm).cross,' ']);
+        disp([num2str(n_regs.(task_id_nm)),') ONSET cross: ',GLMprm.model_onset.(task_id_nm).cross,' ']);
         % if derivative added => add derivatives
         n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
     end % cross
@@ -105,8 +105,8 @@ for iEpm = 1:2
             
             % choice onset
             n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
-            reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['ONSET choice display options - ',RP_nm];
-            disp([num2str(n_regs.(task_id_nm)),') ONSET choice display options ',RP_nm,' - ',GLMprm.model_onset.(task_id_nm).choice,' ']);
+            reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['ONSET choice display options: ',RP_nm];
+            disp([num2str(n_regs.(task_id_nm)),') ONSET choice display options ',RP_nm,': ',GLMprm.model_onset.(task_id_nm).choice,' ']);
             % if derivative added => add derivatives
             n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
             
@@ -115,8 +115,8 @@ for iEpm = 1:2
             % Reward > Punishment
             if GLMprm.choice.(task_id_nm).(RP_nm).R_vs_P == 1
                 n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
-                reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG choice - R min P';
-                disp([num2str(n_regs.(task_id_nm)),') choice - Reward>Punishment ']);
+                reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG choice: R-P';
+                disp([num2str(n_regs.(task_id_nm)),') choice: Reward>Punishment ']);
                 % if derivative added => add derivatives
                 n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
             end
@@ -125,8 +125,8 @@ for iEpm = 1:2
             switch GLMprm.choice.(task_id_nm).(RP_nm).money_left
                 case 1
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
-                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG choice - money left';
-                    disp([num2str(n_regs.(task_id_nm)),') choice - money left ']);
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG choice: money left';
+                    disp([num2str(n_regs.(task_id_nm)),') choice: money left ']);
                     % if derivative added => add derivatives
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
             end
@@ -135,8 +135,8 @@ for iEpm = 1:2
             switch GLMprm.choice.(task_id_nm).(RP_nm).money_right
                 case 1
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
-                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG choice - money right';
-                    disp([num2str(n_regs.(task_id_nm)),') choice - money right ']);
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG choice: money right';
+                    disp([num2str(n_regs.(task_id_nm)),') choice: money right ']);
                     % if derivative added => add derivatives
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
             end
@@ -145,14 +145,14 @@ for iEpm = 1:2
             switch GLMprm.choice.(task_id_nm).(RP_nm).money_chosen
                 case 1
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
-                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG choice - money chosen';
-                    disp([num2str(n_regs.(task_id_nm)),') choice - money chosen ']);
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG choice: money chosen';
+                    disp([num2str(n_regs.(task_id_nm)),') choice: money chosen ']);
                     % if derivative added => add derivatives
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
                 case 2
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
-                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG choice - money chosen';
-                    disp([num2str(n_regs.(task_id_nm)),') choice - |money chosen| ']);
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG choice: money chosen';
+                    disp([num2str(n_regs.(task_id_nm)),') choice: |money chosen| ']);
                     % if derivative added => add derivatives
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
             end
@@ -161,8 +161,8 @@ for iEpm = 1:2
             switch GLMprm.choice.(task_id_nm).(RP_nm).money_unchosen
                 case 1
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
-                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG choice - money unchosen';
-                    disp([num2str(n_regs.(task_id_nm)),') choice - money unchosen ']);
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG choice: money unchosen';
+                    disp([num2str(n_regs.(task_id_nm)),') choice: money unchosen ']);
                     % if derivative added => add derivatives
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
             end
@@ -171,8 +171,8 @@ for iEpm = 1:2
             switch GLMprm.choice.(task_id_nm).(RP_nm).money_ch_min_unch
                 case 1
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
-                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG choice - money ch-unch';
-                    disp([num2str(n_regs.(task_id_nm)),') choice - money ch-unch ']);
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG choice: money ch-unch';
+                    disp([num2str(n_regs.(task_id_nm)),') choice: money ch-unch ']);
                     % if derivative added => add derivatives
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
             end
@@ -181,8 +181,8 @@ for iEpm = 1:2
             switch GLMprm.choice.(task_id_nm).(RP_nm).money_sum
                 case 1
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
-                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG choice - money sum';
-                    disp([num2str(n_regs.(task_id_nm)),') choice - money sum ']);
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG choice: money sum';
+                    disp([num2str(n_regs.(task_id_nm)),') choice: money sum ']);
                     % if derivative added => add derivatives
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
             end
@@ -191,14 +191,14 @@ for iEpm = 1:2
             switch GLMprm.choice.(task_id_nm).(RP_nm).E_left
                 case 1
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
-                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG choice - effort left';
-                    disp([num2str(n_regs.(task_id_nm)),') choice - effort left (level) ']);
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG choice: effort left';
+                    disp([num2str(n_regs.(task_id_nm)),') choice: effort left (level) ']);
                     % if derivative added => add derivatives
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
                 case 2
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
-                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG choice - effort left';
-                    disp([num2str(n_regs.(task_id_nm)),') choice - effort left (durations) ']);
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG choice: effort left';
+                    disp([num2str(n_regs.(task_id_nm)),') choice: effort left (durations) ']);
                     % if derivative added => add derivatives
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
             end
@@ -207,14 +207,14 @@ for iEpm = 1:2
             switch GLMprm.choice.(task_id_nm).(RP_nm).E_right
                 case 1
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
-                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG choice - effort right';
-                    disp([num2str(n_regs.(task_id_nm)),') choice - effort right (level) ']);
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG choice: effort right';
+                    disp([num2str(n_regs.(task_id_nm)),') choice: effort right (level) ']);
                     % if derivative added => add derivatives
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
                 case 2
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
-                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG choice - effort right';
-                    disp([num2str(n_regs.(task_id_nm)),') choice - effort right (durations) ']);
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG choice: effort right';
+                    disp([num2str(n_regs.(task_id_nm)),') choice: effort right (durations) ']);
                     % if derivative added => add derivatives
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
             end
@@ -223,14 +223,14 @@ for iEpm = 1:2
             switch GLMprm.choice.(task_id_nm).(RP_nm).E_chosen
                 case 1
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
-                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG choice - effort chosen';
-                    disp([num2str(n_regs.(task_id_nm)),') choice - effort chosen (levels) ']);
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG choice: effort chosen';
+                    disp([num2str(n_regs.(task_id_nm)),') choice: effort chosen (levels) ']);
                     % if derivative added => add derivatives
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
                 case 2
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
-                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG choice - effort chosen';
-                    disp([num2str(n_regs.(task_id_nm)),') choice - effort chosen (durations) ']);
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG choice: effort chosen';
+                    disp([num2str(n_regs.(task_id_nm)),') choice: effort chosen (durations) ']);
                     % if derivative added => add derivatives
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
             end
@@ -239,14 +239,14 @@ for iEpm = 1:2
             switch GLMprm.choice.(task_id_nm).(RP_nm).money_unchosen
                 case 1
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
-                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG choice - effort unchosen';
-                    disp([num2str(n_regs.(task_id_nm)),') choice - effort unchosen (levels) ']);
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG choice: effort unchosen';
+                    disp([num2str(n_regs.(task_id_nm)),') choice: effort unchosen (levels) ']);
                     % if derivative added => add derivatives
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
                 case 2
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
-                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG choice - effort unchosen';
-                    disp([num2str(n_regs.(task_id_nm)),') choice - effort unchosen (durations) ']);
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG choice: effort unchosen';
+                    disp([num2str(n_regs.(task_id_nm)),') choice: effort unchosen (durations) ']);
                     % if derivative added => add derivatives
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
             end
@@ -255,14 +255,14 @@ for iEpm = 1:2
             switch GLMprm.choice.(task_id_nm).(RP_nm).E_ch_min_unch
                 case 1
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
-                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG choice - effort ch-unch';
-                    disp([num2str(n_regs.(task_id_nm)),') choice - effort ch-unch (levels) ']);
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG choice: effort ch-unch';
+                    disp([num2str(n_regs.(task_id_nm)),') choice: effort ch-unch (levels) ']);
                     % if derivative added => add derivatives
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
                 case 2
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
-                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG choice - effort ch-unch';
-                    disp([num2str(n_regs.(task_id_nm)),') choice - effort ch-unch (durations) ']);
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG choice: effort ch-unch';
+                    disp([num2str(n_regs.(task_id_nm)),') choice: effort ch-unch (durations) ']);
                     % if derivative added => add derivatives
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
             end
@@ -271,14 +271,14 @@ for iEpm = 1:2
             switch GLMprm.choice.(task_id_nm).(RP_nm).E_sum
                 case 1
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
-                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG choice - effort sum';
-                    disp([num2str(n_regs.(task_id_nm)),') choice - effort sum (levels) ']);
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG choice: effort sum';
+                    disp([num2str(n_regs.(task_id_nm)),') choice: effort sum (levels) ']);
                     % if derivative added => add derivatives
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
                 case 2
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
-                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG choice - effort sum';
-                    disp([num2str(n_regs.(task_id_nm)),') choice - effort sum (durations) ']);
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG choice: effort sum';
+                    disp([num2str(n_regs.(task_id_nm)),') choice: effort sum (durations) ']);
                     % if derivative added => add derivatives
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
             end
@@ -287,8 +287,8 @@ for iEpm = 1:2
             switch GLMprm.choice.(task_id_nm).(RP_nm).confidence
                 case 1
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
-                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG choice - confidence';
-                    disp([num2str(n_regs.(task_id_nm)),') choice - confidence (levels) ']);
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG choice: confidence';
+                    disp([num2str(n_regs.(task_id_nm)),') choice: confidence (levels) ']);
                     % if derivative added => add derivatives
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
             end
@@ -297,20 +297,20 @@ for iEpm = 1:2
             switch GLMprm.choice.(task_id_nm).(RP_nm).RT
                 case 1
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
-                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG choice - RT';
-                    disp([num2str(n_regs.(task_id_nm)),') choice - RT (raw) ']);
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG choice: RT';
+                    disp([num2str(n_regs.(task_id_nm)),') choice: RT (raw) ']);
                     % if derivative added => add derivatives
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
                 case 2
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
-                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG choice - RT';
-                    disp([num2str(n_regs.(task_id_nm)),') choice - RT (zscored per run) ']);
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG choice: RT';
+                    disp([num2str(n_regs.(task_id_nm)),') choice: RT (zscored per run) ']);
                     % if derivative added => add derivatives
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
                 case 3
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
-                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG choice - RT';
-                    disp([num2str(n_regs.(task_id_nm)),') choice - RT (zscored per subject ie across all runs) ']);
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG choice: RT';
+                    disp([num2str(n_regs.(task_id_nm)),') choice: RT (zscored per subject ie across all runs) ']);
                     % if derivative added => add derivatives
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
             end
@@ -335,8 +335,8 @@ for iEpm = 1:2
             
             % chosen onset
             n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
-            reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['ONSET chosen option display - ',RP_nm];
-            disp([num2str(n_regs.(task_id_nm)),') ONSET chosen option display ',RP_nm,' - ',GLMprm.model_onset.(task_id_nm).chosen,' ']);
+            reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['ONSET chosen option display: ',RP_nm];
+            disp([num2str(n_regs.(task_id_nm)),') ONSET chosen option display ',RP_nm,': ',GLMprm.model_onset.(task_id_nm).chosen,' ']);
             % if derivative added => add derivatives
             n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
             
@@ -345,14 +345,14 @@ for iEpm = 1:2
             switch GLMprm.chosen.(task_id_nm).(RP_nm).money_chosen
                 case 1
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
-                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG chosen - money chosen';
-                    disp([num2str(n_regs.(task_id_nm)),') chosen - money chosen (levels) ']);
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG chosen: money chosen';
+                    disp([num2str(n_regs.(task_id_nm)),') chosen: money chosen (levels) ']);
                     % if derivative added => add derivatives
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
                 case 2
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
-                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG chosen - money chosen';
-                    disp([num2str(n_regs.(task_id_nm)),') chosen - |money chosen| (levels) ']);
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG chosen: money chosen';
+                    disp([num2str(n_regs.(task_id_nm)),') chosen: |money chosen| (levels) ']);
                     % if derivative added => add derivatives
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
             end
@@ -361,8 +361,8 @@ for iEpm = 1:2
             switch GLMprm.chosen.(task_id_nm).(RP_nm).E_chosen
                 case 1
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
-                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG chosen - effort chosen';
-                    disp([num2str(n_regs.(task_id_nm)),') chosen - effort chosen (levels) ']);
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG chosen: effort chosen';
+                    disp([num2str(n_regs.(task_id_nm)),') chosen: effort chosen (levels) ']);
                     % if derivative added => add derivatives
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
             end
@@ -371,8 +371,8 @@ for iEpm = 1:2
             switch GLMprm.chosen.(task_id_nm).(RP_nm).money_unchosen
                 case 1
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
-                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG chosen - money unchosen';
-                    disp([num2str(n_regs.(task_id_nm)),') chosen - money unchosen (levels) ']);
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG chosen: money unchosen';
+                    disp([num2str(n_regs.(task_id_nm)),') chosen: money unchosen (levels) ']);
                     % if derivative added => add derivatives
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
             end
@@ -381,8 +381,8 @@ for iEpm = 1:2
             switch GLMprm.chosen.(task_id_nm).(RP_nm).E_unchosen
                 case 1
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
-                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG chosen - effort unchosen';
-                    disp([num2str(n_regs.(task_id_nm)),') chosen - effort unchosen (levels) ']);
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG chosen: effort unchosen';
+                    disp([num2str(n_regs.(task_id_nm)),') chosen: effort unchosen (levels) ']);
                     % if derivative added => add derivatives
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
             end
@@ -391,8 +391,8 @@ for iEpm = 1:2
             switch GLMprm.chosen.(task_id_nm).(RP_nm).confidence
                 case 1
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
-                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG chosen - confidence';
-                    disp([num2str(n_regs.(task_id_nm)),') chosen - confidence (levels) ']);
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG chosen: confidence';
+                    disp([num2str(n_regs.(task_id_nm)),') chosen: confidence (levels) ']);
                     % if derivative added => add derivatives
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
             end
@@ -417,8 +417,8 @@ for iEpm = 1:2
             
             % effort period onset
             n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
-            reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['ONSET effort period - ',RP_nm];
-            disp([num2str(n_regs.(task_id_nm)),') ONSET effort period ',RP_nm,' - ',GLMprm.model_onset.(task_id_nm).Eperf,' ']);
+            reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['ONSET effort period: ',RP_nm];
+            disp([num2str(n_regs.(task_id_nm)),') ONSET effort period ',RP_nm,': ',GLMprm.model_onset.(task_id_nm).Eperf,' ']);
             % if derivative added => add derivatives
             n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
             
@@ -427,14 +427,14 @@ for iEpm = 1:2
             switch GLMprm.Eperf.(task_id_nm).(RP_nm).money_chosen
                 case 1
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
-                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG effort - money chosen';
-                    disp([num2str(n_regs.(task_id_nm)),') effort period - money chosen (levels) ']);
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG effort: money chosen';
+                    disp([num2str(n_regs.(task_id_nm)),') effort period: money chosen (levels) ']);
                     % if derivative added => add derivatives
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
                 case 2
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
-                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG effort - money chosen';
-                    disp([num2str(n_regs.(task_id_nm)),') effort period - |money chosen| (levels) ']);
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG effort: money chosen';
+                    disp([num2str(n_regs.(task_id_nm)),') effort period: |money chosen| (levels) ']);
                     % if derivative added => add derivatives
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
             end
@@ -443,8 +443,8 @@ for iEpm = 1:2
             switch GLMprm.Eperf.(task_id_nm).(RP_nm).E_chosen
                 case 1
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
-                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG effort - effort chosen';
-                    disp([num2str(n_regs.(task_id_nm)),') effort period - effort chosen (levels) ']);
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG effort: effort chosen';
+                    disp([num2str(n_regs.(task_id_nm)),') effort period: effort chosen (levels) ']);
                     % if derivative added => add derivatives
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
             end
@@ -455,8 +455,8 @@ for iEpm = 1:2
                     switch GLMprm.Eperf.(task_id_nm).(RP_nm).F_peak
                         case 1
                             n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
-                            reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG effort - force peak';
-                            disp([num2str(n_regs.(task_id_nm)),') effort period - force peak ']);
+                            reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG effort: force peak';
+                            disp([num2str(n_regs.(task_id_nm)),') effort period: force peak ']);
                             % if derivative added => add derivatives
                             n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
                     end
@@ -465,8 +465,8 @@ for iEpm = 1:2
                     switch GLMprm.Eperf.(task_id_nm).(RP_nm).F_integral
                         case 1
                             n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
-                            reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG effort - force integral';
-                            disp([num2str(n_regs.(task_id_nm)),') effort period - force integral ']);
+                            reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG effort: force integral';
+                            disp([num2str(n_regs.(task_id_nm)),') effort period: force integral ']);
                             % if derivative added => add derivatives
                             n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
                     end
@@ -476,8 +476,8 @@ for iEpm = 1:2
                     switch GLMprm.Eperf.(task_id_nm).(RP_nm).RT_avg
                         case 1
                             n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
-                            reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG effort - average RT effort';
-                            disp([num2str(n_regs.(task_id_nm)),') effort period - average RT effort ']);
+                            reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG effort: average RT effort';
+                            disp([num2str(n_regs.(task_id_nm)),') effort period: average RT effort ']);
                             % if derivative added => add derivatives
                             n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
                     end
@@ -486,8 +486,8 @@ for iEpm = 1:2
                     switch GLMprm.Eperf.(task_id_nm).(RP_nm).n_errors
                         case 1
                             n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
-                            reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG effort - number of errors';
-                            disp([num2str(n_regs.(task_id_nm)),') effort period - number of errors ']);
+                            reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG effort: number of errors';
+                            disp([num2str(n_regs.(task_id_nm)),') effort period: number of errors ']);
                             % if derivative added => add derivatives
                             n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
                     end
@@ -497,8 +497,8 @@ for iEpm = 1:2
             switch GLMprm.Eperf.(task_id_nm).(RP_nm).RT_1stAnswer
                 case 1
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
-                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG effort - RT 1st answer';
-                    disp([num2str(n_regs.(task_id_nm)),') effort period - RT 1st answer (raw) ']);
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG effort: RT 1st answer';
+                    disp([num2str(n_regs.(task_id_nm)),') effort period: RT 1st answer (raw) ']);
                     % if derivative added => add derivatives
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
             end
@@ -523,8 +523,8 @@ for iEpm = 1:2
             
             % feedback onset
             n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
-            reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['ONSET feedback - ',RP_nm];
-            disp([num2str(n_regs.(task_id_nm)),') ONSET feedback ',RP_nm,' - ',GLMprm.model_onset.(task_id_nm).fbk,' ']);
+            reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['ONSET feedback: ',RP_nm];
+            disp([num2str(n_regs.(task_id_nm)),') ONSET feedback ',RP_nm,': ',GLMprm.model_onset.(task_id_nm).fbk,' ']);
             % if derivative added => add derivatives
             n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
             
@@ -533,8 +533,8 @@ for iEpm = 1:2
             switch GLMprm.fbk.(task_id_nm).(RP_nm).win_vs_loss
                 case 1
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
-                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG feedback - win min loss';
-                    disp([num2str(n_regs.(task_id_nm)),') feedback - win min loss ']);
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG feedback: win-loss';
+                    disp([num2str(n_regs.(task_id_nm)),') feedback: win-loss ']);
                     % if derivative added => add derivatives
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
             end
@@ -542,8 +542,8 @@ for iEpm = 1:2
             switch GLMprm.fbk.(task_id_nm).(RP_nm).money_obtained
                 case 1
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
-                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG feedback - money obtained';
-                    disp([num2str(n_regs.(task_id_nm)),') feedback - money obtained (levels) ']);
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG feedback: money obtained';
+                    disp([num2str(n_regs.(task_id_nm)),') feedback: money obtained (levels) ']);
                     % if derivative added => add derivatives
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
             end
@@ -552,8 +552,8 @@ for iEpm = 1:2
             switch GLMprm.fbk.(task_id_nm).(RP_nm).E_made
                 case 1
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
-                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG feedback - effort performed';
-                    disp([num2str(n_regs.(task_id_nm)),') feedback - effort performed (levels) ']);
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG feedback: effort performed';
+                    disp([num2str(n_regs.(task_id_nm)),') feedback: effort performed (levels) ']);
                     % if derivative added => add derivatives
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
             end
@@ -562,8 +562,8 @@ for iEpm = 1:2
             switch GLMprm.fbk.(task_id_nm).(RP_nm).confidence
                 case 1
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
-                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG feedback - confidence';
-                    disp([num2str(n_regs.(task_id_nm)),') feedback - confidence (levels) ']);
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG feedback: confidence';
+                    disp([num2str(n_regs.(task_id_nm)),') feedback: confidence (levels) ']);
                     % if derivative added => add derivatives
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
             end
