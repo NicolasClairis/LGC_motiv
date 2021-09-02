@@ -30,7 +30,7 @@ subject_id = {'pilot_s2'}; % 'pilot_s1','pilot_s2'
 switch dACC_or_Str_study
     case 1
         % for pilot analysis
-        root = [fullfile('C:','Users','clairis','Desktop','fMRI_pilots'),filesep];
+        root = ['\\svfas5.epfl.ch\Sandi-Lab\Arthur\dACC AI EXP 1\Data\pilots\fMRI_pilots',filesep];
     case 2
         error('study 2 path not ready yet');
 end
@@ -38,8 +38,8 @@ NS = length(subject_id); % nber of subjects
 
 % give path for anatomical template
 % spmFolderPath = fullfile('C:','Program Files','MATLAB','spm');
-spmFolderPath = fullfile('C:','Users','clairis','Desktop');
-spmTemplatePath = fullfile(spmFolderPath,'spm12','spm12','tpm','TPM.nii');
+spmFolderPath = 'D:\Matlab extensions';
+spmTemplatePath = fullfile(spmFolderPath,'spm12','tpm','TPM.nii');
 
 %% define number of preprocessing steps
 nb_preprocessingSteps = 6;
@@ -55,6 +55,7 @@ nb_preprocessingSteps = 6;
  matlabbatch = cell(nb_preprocessingSteps*NS,1);
 
 for iS = 1:NS % loop through subjects
+    disp(iS);
     sub_nm = subject_id{iS};
     
     % create working directories and copy anat. file inside

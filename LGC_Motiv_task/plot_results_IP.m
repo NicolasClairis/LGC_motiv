@@ -224,7 +224,36 @@ ylabel('Indifference Point (IP) CHF')
 title('E1/E2 low/high effort level, Ph/Me physical mental, Re/Pu reward punishment')
 
 
+%% Import fmax_theoritical
+opts = spreadsheetImportOptions("NumVariables", 4);
 
+% Specify sheet and range
+opts.Sheet = "Sheet1";
+opts.DataRange = "C2:F17";
+
+% Specify column names and types
+opts.VariableNames = ["Pliantrieur", "Plipostriur", "Longueurdelavantbras", "Circonfrence"];
+opts.VariableTypes = ["double", "double", "double", "double"];
+
+% Import the data
+Fmaxtheorique1 = readtable("D:\LGC_motiv\LGC_Motiv_results\pilots_v6_IP_Nback2_NOtaskSwitching_NOriskRepeatAfterFail\Fmax_theorique.xlsx", opts, "UseExcel", false);
+Fmaxtheorique1 = table2array(Fmaxtheorique1);
+
+% Clear temporary variables
+clear opts
+
+% compute fmax_theoritical
+for j = 1:nb_pilots
+    predictedForce(j) = Emax_morpho(Fmaxtheorique1(j,1),Fmaxtheorique1(j,2),Fmaxtheorique1(j,4),Fmaxtheorique1(j,3));
+end
+%plot and compute correlation between initial/final MVC and theoritical strength
+figure()
+scatter(init_MVC,predictedForce)
+corrcoef(init_MVC,predictedForce)
+
+figure()
+scatter(end_MVC,predictedForce)
+corrcoef(end_MVC,predictedForce)
 % % go back to folder with scripts
 cd(main_task_folder_analysis);
 
