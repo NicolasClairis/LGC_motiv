@@ -48,6 +48,7 @@ end
 % give path for anatomical template
 spmTemplatePath = fullfile(spmFolderPath,'spm12','spm12','tpm','TPM.nii');
 
+
 %% define number of preprocessing steps
 nb_preprocessingSteps = 6;
  % nb of preprocessing steps per subject:
@@ -62,6 +63,7 @@ nb_preprocessingSteps = 6;
  matlabbatch = cell(nb_preprocessingSteps*NS,1);
 
 for iS = 1:NS % loop through subjects
+    disp(iS);
     sub_nm = subject_id{iS};
     
     % create working directories and copy anat. file inside
@@ -212,7 +214,7 @@ for iS = 1:NS % loop through subjects
     preproc_step = 6;
     smooth_step = nb_preprocessingSteps*(iS-1) + preproc_step;
     matlabbatch{smooth_step}.spm.spatial.smooth.data(1) = cfg_dep('Normalise: Write: Normalised Images (Subj 1)', substruct('.','val', '{}',{normf_step}, '.','val', '{}',{1}, '.','val', '{}',{1}, '.','val', '{}',{1}), substruct('()',{1}, '.','files'));
-    matlabbatch{smooth_step}.spm.spatial.smooth.fwhm = [5 5 5];
+    matlabbatch{smooth_step}.spm.spatial.smooth.fwhm = [4 4 4];
     matlabbatch{smooth_step}.spm.spatial.smooth.dtype = 0;
     matlabbatch{smooth_step}.spm.spatial.smooth.im = 0;
     matlabbatch{smooth_step}.spm.spatial.smooth.prefix = 's';

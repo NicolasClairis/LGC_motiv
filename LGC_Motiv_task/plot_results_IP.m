@@ -49,6 +49,7 @@ pilot_ID = unique(ID_tmp);
 % E2PR1,E2PR2, E2MR1, E2MR2, E2PP1, E2PP2, E2MP1, E2MP2
 
 for i_pilot = 1:nb_pilots
+
     loading_file_nm_tmp = ['*_',num2str(pilot_ID(i_pilot)),'.mat'];
     load(dir(loading_file_nm_tmp).name)
 
@@ -83,39 +84,90 @@ for i_pilot = 1:nb_pilots
     for i_mean = 1:length(delta_IP)/2
         mean_IP(i_pilot, i_mean) = mean(delta_IP(i_pilot,(i_mean-1)*2 + 1:i_mean*2),2);
         std_IP(i_pilot, i_mean) = std(delta_IP(i_pilot,(i_mean-1)*2 + 1:i_mean*2));
-       
+        %  1       2       3       4       5      6       7        8
+        % E1PhRe, E1MeRe, E1PhPu, E1MePu, E2PhRe, E2MeRe, E2PhPu, E2MePu
     end
-    
-    % prepare data for the difference in reward and punishment for low effort
-    t_test_re_pu_E1(i_pilot,1) = mean(delta_IP(i_pilot,1:2),2);
-    t_test_re_pu_E1(i_pilot,2) = mean(delta_IP(i_pilot,3:4),2);
+        % prepare data for the difference in reward and punishment for low effort
+    t_test_re_pu_E1(i_pilot,1) = mean(mean_IP(i_pilot,1:2),2);
+    t_test_re_pu_E1(i_pilot,2) = mean(mean_IP(i_pilot,3:4),2);
     
     % prepare data for the difference in physical and mental low efforts
-    t_test_ph_me_E1(i_pilot,1) = mean(delta_IP(i_pilot,[1,3]),2);
-    t_test_ph_me_E1(i_pilot,2) = mean(delta_IP(i_pilot,[2,4]),2);
+    t_test_ph_me_E1(i_pilot,1) = mean(mean_IP(i_pilot,[1,3]),2);
+    t_test_ph_me_E1(i_pilot,2) = mean(mean_IP(i_pilot,[2,4]),2);
     
     % prepare data for the difference in reward and punishment for high effort
-    t_test_re_pu_E2(i_pilot,1) = mean(delta_IP(i_pilot,5:6),2);
-    t_test_re_pu_E2(i_pilot,2) = mean(delta_IP(i_pilot,7:8),2);
+    t_test_re_pu_E2(i_pilot,1) = mean(mean_IP(i_pilot,5:6),2);
+    t_test_re_pu_E2(i_pilot,2) = mean(mean_IP(i_pilot,7:8),2);
     
     % prepare data for the difference in physical and mental high effort
-    t_test_ph_me_E2(i_pilot,1) = mean(delta_IP(i_pilot,[5,7]),2);
-    t_test_ph_me_E2(i_pilot,2) = mean(delta_IP(i_pilot,[6,8]),2);
+    t_test_ph_me_E2(i_pilot,1) = mean(mean_IP(i_pilot,[5,7]),2);
+    t_test_ph_me_E2(i_pilot,2) = mean(mean_IP(i_pilot,[6,8]),2);
     
     % prepare data for the difference between low and high efforts, indep of other conditions
-    t_test_E2(i_pilot,1) = mean(delta_IP(i_pilot,1:4),2);
-    t_test_E2(i_pilot,2) = mean(delta_IP(i_pilot,5:8),2);
+    t_test_E2(i_pilot,1) = mean(mean_IP(i_pilot,1:4),2);
+    t_test_E2(i_pilot,2) = mean(mean_IP(i_pilot,5:8),2);
     
     % prepare data for the difference in reward and punishment, indep of other conditions
-    t_test_re_pu(i_pilot,1) = mean(delta_IP(i_pilot,[1,2,5,6]),2);
-    t_test_re_pu(i_pilot,2) = mean(delta_IP(i_pilot,[3,4,7,8]),2);
+    t_test_re_pu(i_pilot,1) = mean(mean_IP(i_pilot,[1,2,5,6]),2);
+    t_test_re_pu(i_pilot,2) = mean(mean_IP(i_pilot,[3,4,7,8]),2);
     
     % prepare data for the difference in physical and mental effort, indep of other conditions
-    t_test_ph_me(i_pilot,1) = mean(delta_IP(i_pilot,[1,3,5,7]),2);
-    t_test_ph_me(i_pilot,2) = mean(delta_IP(i_pilot,[2,4,6,8]),2);
+    t_test_ph_me(i_pilot,1) = mean(mean_IP(i_pilot,[1,3,5,7]),2);
+    t_test_ph_me(i_pilot,2) = mean(mean_IP(i_pilot,[2,4,6,8]),2);
+%     % prepare data for the difference in reward and punishment for low effort
+%     t_test_re_pu_E1(i_pilot,1) = mean(delta_IP(i_pilot,1:2),2);
+%     t_test_re_pu_E1(i_pilot,2) = mean(delta_IP(i_pilot,3:4),2);
+%     
+%     % prepare data for the difference in physical and mental low efforts
+%     t_test_ph_me_E1(i_pilot,1) = mean(delta_IP(i_pilot,[1,3]),2);
+%     t_test_ph_me_E1(i_pilot,2) = mean(delta_IP(i_pilot,[2,4]),2);
+%     
+%     % prepare data for the difference in reward and punishment for high effort
+%     t_test_re_pu_E2(i_pilot,1) = mean(delta_IP(i_pilot,5:6),2);
+%     t_test_re_pu_E2(i_pilot,2) = mean(delta_IP(i_pilot,7:8),2);
+%     
+%     % prepare data for the difference in physical and mental high effort
+%     t_test_ph_me_E2(i_pilot,1) = mean(delta_IP(i_pilot,[5,7]),2);
+%     t_test_ph_me_E2(i_pilot,2) = mean(delta_IP(i_pilot,[6,8]),2);
+%     
+%     % prepare data for the difference between low and high efforts, indep of other conditions
+%     t_test_E2(i_pilot,1) = mean(delta_IP(i_pilot,1:4),2);
+%     t_test_E2(i_pilot,2) = mean(delta_IP(i_pilot,5:8),2);
+%     
+%     % prepare data for the difference in reward and punishment, indep of other conditions
+%     t_test_re_pu(i_pilot,1) = mean(delta_IP(i_pilot,[1,2,5,6]),2);
+%     t_test_re_pu(i_pilot,2) = mean(delta_IP(i_pilot,[3,4,7,8]),2);
+%     
+%     % prepare data for the difference in physical and mental effort, indep of other conditions
+%     t_test_ph_me(i_pilot,1) = mean(delta_IP(i_pilot,[1,3,5,7]),2);
+%     t_test_ph_me(i_pilot,2) = mean(delta_IP(i_pilot,[2,4,6,8]),2);
 
-end
+    end
+    
 
+    %% remove outlier
+    i_outlier = 9;
+    remove_outlier = false;
+    if remove_outlier == true
+    delta_IP(i_outlier,:) = [];
+    delta_MVC(i_outlier) = [];
+    delta_MVM(i_outlier) = [];
+    mean_IP(i_outlier,:) = [];
+    std_IP(i_outlier,:) = [];
+    init_MVC(i_outlier) = [];
+    end_MVC(i_outlier) = [];
+    init_MVM(i_outlier) = [];
+    end_MVM(i_outlier) = [];
+    
+
+    t_test_re_pu_E1(i_outlier,:) = [];
+    t_test_ph_me_E1(i_outlier,:) = [];
+    t_test_re_pu_E2(i_outlier,:) = [];
+    t_test_ph_me_E2(i_outlier,:) = [];
+    t_test_E2(i_outlier,:) = [];
+    t_test_re_pu(i_outlier,:) = [];
+    t_test_ph_me(i_outlier,:) = [];
+    end
 %% t-test on our pilots. between conditions and calibrations
 % test with a t test the difference in reward and punishment for low effort
 [h_re_pu_E1, p_re_pu_E1] = ttest(t_test_re_pu_E1(:,1),t_test_re_pu_E1(:,2))
@@ -172,7 +224,36 @@ ylabel('Indifference Point (IP) CHF')
 title('E1/E2 low/high effort level, Ph/Me physical mental, Re/Pu reward punishment')
 
 
+%% Import fmax_theoritical
+opts = spreadsheetImportOptions("NumVariables", 4);
 
+% Specify sheet and range
+opts.Sheet = "Sheet1";
+opts.DataRange = "C2:F17";
+
+% Specify column names and types
+opts.VariableNames = ["Pliantrieur", "Plipostriur", "Longueurdelavantbras", "Circonfrence"];
+opts.VariableTypes = ["double", "double", "double", "double"];
+
+% Import the data
+Fmaxtheorique1 = readtable("D:\LGC_motiv\LGC_Motiv_results\pilots_v6_IP_Nback2_NOtaskSwitching_NOriskRepeatAfterFail\Fmax_theorique.xlsx", opts, "UseExcel", false);
+Fmaxtheorique1 = table2array(Fmaxtheorique1);
+
+% Clear temporary variables
+clear opts
+
+% compute fmax_theoritical
+for j = 1:nb_pilots
+    predictedForce(j) = Emax_morpho(Fmaxtheorique1(j,1),Fmaxtheorique1(j,2),Fmaxtheorique1(j,4),Fmaxtheorique1(j,3));
+end
+%plot and compute correlation between initial/final MVC and theoritical strength
+figure()
+scatter(init_MVC,predictedForce)
+corrcoef(init_MVC,predictedForce)
+
+figure()
+scatter(end_MVC,predictedForce)
+corrcoef(end_MVC,predictedForce)
 % % go back to folder with scripts
 cd(main_task_folder_analysis);
 
