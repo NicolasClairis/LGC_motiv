@@ -1,3 +1,5 @@
+function[] = preprocessing_batch(study_nm)
+%[] = preprocessing_batch(study_nm)
 % preprocessing for fMRI data
 % enter subject identification in 'subject_id' (sXX_ddMMyy dd: day,
 % MM: month, yy: year) and preprocessing number in 'preproc'
@@ -10,6 +12,12 @@
 %
 % Preprocessing entails 1) realignement, 2) co-registration, 3)
 % segmentation, 4-5) normalisation in MNI space, 6) spatial smoothing
+%
+% INPUTS
+% study_nm: definition of the study on which you want to analyze the data
+% 'fMRI_pilots': pilots
+% 'study1': first study (dmPFC + AI)
+% 'study2': second study (clinical trial)
 %
 % See also First_level_batch, contrasts_batch and
 % Second_level_batch
@@ -24,22 +32,22 @@ spm('defaults','fmri');
 spm_jobman('initcfg');
 
 %% define subjects and working directories
-% dACC_or_Str_study = input('dACC (1) or Striatum (2) study?');
-dACC_or_Str_study = 1;
-subject_id = {'pilot_s2'}; % 'pilot_s1','pilot_s2'
-switch dACC_or_Str_study
-    case 1
-        % for pilot analysis
-        root = ['\\svfas5.epfl.ch\Sandi-Lab\Arthur\dACC AI EXP 1\Data\pilots\fMRI_pilots',filesep];
-    case 2
-        error('study 2 path not ready yet');
+[computerRoot, spmFolderPath] = LGCM_root_paths();
+switch study_nm
+    case 'fMRI_pilots' % pilots
+        root = [fullfile(computerRoot,'fMRI_pilots'),filesep];
+    case 'study1'
+        root = [fullfile(computerRoot,'study1'),filesep];
+    case 'study2'
+        root = [fullfile(computerRoot,'study2'),filesep];
 end
-NS = length(subject_id); % nber of subjects
+% subject_id = {'pilot_s2'}; % 'pilot_s1','pilot_s2'
+% NS = length(subject_id); % nber of subjects
+[subject_id, NS] = LGCM_subject_selection(study_nm);
 
 % give path for anatomical template
-% spmFolderPath = fullfile('C:','Program Files','MATLAB','spm');
-spmFolderPath = 'D:\Matlab extensions';
-spmTemplatePath = fullfile(spmFolderPath,'spm12','tpm','TPM.nii');
+spmTemplatePath = fullfile(spmFolderPath,'spm12','spm12','tpm','TPM.nii');
+
 
 %% define number of preprocessing steps
 nb_preprocessingSteps = 6;
