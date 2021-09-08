@@ -4,7 +4,10 @@ function[] = LGCM_contrasts_spm(study_nm, GLM, checking)
 % contrasts in each individual of the study
 %
 % INPUTS
-% study_nm: study name
+% study_nm: definition of the study on which you want to analyze the data
+% 'fMRI_pilots': pilots
+% 'study1': first study (dmPFC + AI)
+% 'study2': second study (clinical trial)
 %
 % GLM: GLM number
 %
@@ -21,7 +24,7 @@ switch study_nm
         root = fullfile(computer_root,'fMRI_pilots');
     case 'study1'
         root = fullfile(computer_root,'study1');
-    case 'study2_clinical'
+    case 'study2'
         root = fullfile(computer_root,'study2');
 end
 

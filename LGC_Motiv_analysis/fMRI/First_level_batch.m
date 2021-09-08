@@ -1,4 +1,12 @@
-
+function[] = First_level_batch(study_nm)
+% First_level_batch will perform 1st level for LGC motivation fMRI studies.
+%
+% INPUTS
+% study_nm: definition of the study on which you want to analyze the data
+% 'fMRI_pilots': pilots
+% 'study1': first study (dmPFC + AI)
+% 'study2': second study (clinical trial)
+%
 clc; close all;
 
 %% iniate spm
@@ -26,14 +34,21 @@ TR = 2.00;
 nb_batch_per_subj = 2; % model + estimate
 
 %% working directories
-computer_root = fullfile('C:','Users','clairis','Desktop');
+computer_root = LGCM_root_paths();
 scripts_folder = fullfile(computer_root,'GitHub','LGC_motiv','LGC_Motiv_analysis','fMRI');
 addpath(scripts_folder);
-root = fullfile(computer_root,'fMRI_pilots');
+switch study_nm
+    case 'fMRI_pilots'
+        root = fullfile(computer_root,'fMRI_pilots');
+    case 'study1'
+        root = fullfile(computer_root,'study1');
+    case 'study2'
+        root = fullfile(computer_root,'study2');
+end
 
 %% list subjects to analyze
-subject_id = {'pilot_s1'};%'pilot_s1','pilot_s2'
-NS = length(subject_id);
+% subject_id = {'pilot_s1'};%'pilot_s1','pilot_s2'
+[subject_id, NS] = LGCM_subject_selection(study_nm);
 %% loop through subjects
 matlabbatch = cell(nb_batch_per_subj*NS,1);
 for iS = 1:NS
