@@ -31,12 +31,14 @@ cd(main_task_folder);
 %% Define subject ID
 
 % Insert the initials, the number of the participants
-[init, iSubject, langue, IRM] = deal([]);
-while isempty(init) || isempty(iSubject) || isempty(langue) || ~ismember(langue,{'f','e'}) || isempty(IRM) || ~ismember(str2double(IRM),[0,1])
+[init, iSubject] = deal([]);
+langue = 'f';
+IRM = 1;
+while isempty(init) || isempty(iSubject)
     % repeat until all questions are answered
-    info = inputdlg({'Initials', 'Subject ID','Language (f or e)','IRM (0/1)'});
-    [init, iSubject,langue, IRM] = info{[1, 2, 3, 4]};
-    warning('one real experiment starts, remember to block in french and IRM = 1');
+    info = inputdlg({'Initials', 'Subject ID'});
+    [init, iSubject] = info{[1, 2]};
+%     warning('when real experiment starts, remember to block in french and IRM = 1');
 end
 if ischar(iSubject)
     iSubject = str2double(iSubject);
