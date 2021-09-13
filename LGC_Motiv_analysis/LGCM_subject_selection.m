@@ -17,7 +17,7 @@ function[subject_id, NS] = LGCM_subject_selection(study_nm)
 switch study_nm
     case 'fMRI_pilots'
         subject_id = {'pilot_s1','pilot_s2'};
-%         subject_id = {'pilot_s1'};
+%         subject_id = {'pilot_s1','pilot_s2'};
     case 'study1'
         subject_id = {};
     case 'study2'
