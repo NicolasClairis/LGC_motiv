@@ -1,5 +1,5 @@
-function[minTotalToObtain, maxTotalToObtain] = minMaxMoneyToGet()
-%[minTotalToObtain, maxTotalToObtain] = minMaxMoneyToGet()
+function[minTotalToObtain, maxTotalToObtain, baselineAmountBasedOnRPDifference] = minMaxMoneyToGet()
+%[minTotalToObtain, maxTotalToObtain, baselineAmountBasedOnRPDifference] = minMaxMoneyToGet()
 % minMaxMoneyToGet will compute the total money you can obtain by
 % performing the LGC motivation task
 %
@@ -10,6 +10,8 @@ function[minTotalToObtain, maxTotalToObtain] = minMaxMoneyToGet()
 %
 % maxTotalToObtain: maximum obtainable
 %
+% baselineAmountBasedOnRPDifference: baseline difference between rewards
+% and punishments which provides with baseline money
 
 %% define number of trials
 nTrialsPerSession = 48;
@@ -41,17 +43,18 @@ minR = nanmin( [RmoneyLeft; RmoneyRight]);
 minP = nanmin( [PmoneyLeft; PmoneyRight]);
 maxP = nanmax( [PmoneyLeft; PmoneyRight]);
 % convert reward/punishment levels in money
-[maxRmoney, minRmoney, maxPmoney, minPmoney] = deal(NaN(nTrialsPerConditionPerSession,1));
+[maxRmoney, minRmoney,...
+    maxPmoney, minPmoney] = deal(NaN(nTrialsPerConditionPerSession,1));
 for iTrial = 1:nTrialsPerConditionPerSession
     maxRmoney(iTrial) = R_money.(['R_',num2str(maxR(iTrial))]);
     minRmoney(iTrial) = R_money.(['R_',num2str(minR(iTrial))]);
     minPmoney(iTrial) = R_money.(['P_',num2str(minP(iTrial))]);
     maxPmoney(iTrial) = R_money.(['P_',num2str(maxP(iTrial))]);
 end
-sumMaxRP = sum(maxRmoney - minPmoney)*nSessions;
-sumMinRP = sum(minRmoney - maxPmoney)*nSessions;
+sumMaxRP = (sum(maxRmoney) - sum(minPmoney))*nSessions;
+sumMinRP = (sum(minRmoney) - sum(maxPmoney))*nSessions;
 
 %% compute total
-maxTotalToObtain = baselineAmountBasedOnRPDifference + sumMaxRP;
-minTotalToObtain = baselineAmountBasedOnRPDifference + sumMinRP;
+maxTotalToObtain = sumMaxRP;
+minTotalToObtain = sumMinRP;
 end % function
