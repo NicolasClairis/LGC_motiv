@@ -169,8 +169,10 @@ for i_pilot = 1:nb_pilots
     t_test_ph_me(i_outlier,:) = [];
     end
 %% t-test on our pilots. between conditions and calibrations
+figure()
 % test with a t test the difference in reward and punishment for low effort
 [h_re_pu_E1, p_re_pu_E1] = ttest(t_test_re_pu_E1(:,1),t_test_re_pu_E1(:,2))
+
 % test with a t test the difference in physical and mental low efforts
 [h_ph_me_E1, p_ph_me_E1] = ttest(t_test_re_pu_E1(:,1),t_test_re_pu_E1(:,2))
 
@@ -181,17 +183,42 @@ for i_pilot = 1:nb_pilots
 
 % test with a t test the difference in reward and punishment, indep of other conditions
 [h_re_pu,p_re_pu] = ttest(t_test_re_pu(:,1),t_test_re_pu(:,2))
+subplot(1,3,1)
+boxplot([t_test_re_pu(:,1) t_test_re_pu(:,2)],'Labels',{'Reward','Punishment'})
+   ax = gca; 
+   ax.FontSize = 16;
+   ylabel('Indifference point (IP)')
 % test with a t test the difference in physical and mental effort, indep of other conditions
 [h_ph_me,p_ph_me] = ttest(t_test_ph_me(:,1),t_test_ph_me(:,2))
+subplot(1,3,2)
+boxplot([t_test_ph_me(:,1) t_test_ph_me(:,2)],'Labels',{'Physical','Mental'})
+   ax = gca; 
+   ax.FontSize = 16;
+      ylabel('Indifference point (IP)')
 % test with a t test the difference between low and high efforts, indep of other conditions
 [h_E2, p_E2] = ttest(t_test_E2(:,1),t_test_E2(:,2))
-
+subplot(1,3,3)
+boxplot([t_test_E2(:,1) t_test_E2(:,2)],'Labels',{'Low effort','High effort'})
+   ax = gca; 
+   ax.FontSize = 16;
+      ylabel('Indifference point (IP)')
+      
+figure()
 % test with t test if MVC is reduced in participants
 [h_MVC, p_MVC] = ttest(init_MVC,end_MVC)
+subplot(1,2,1)
+boxplot([init_MVC; end_MVC]','Labels',{'Initial MVC','Final MVC'})
+   ax = gca; 
+   ax.FontSize = 16;
+      ylabel('Output (Volt)')
+
 % test with t test if MVM is better in participants
 [h_MVM, p_MVM] = ttest(init_MVM,end_MVM)
-
-
+subplot(1,2,2)
+boxplot([init_MVM; end_MVM]','Labels',{'Initial MVM','Final MVM'})
+   ax = gca; 
+   ax.FontSize = 16;
+      ylabel('Time to finish (sec)')
 %% plots
 figure()
 bar(delta_MVC)
@@ -246,6 +273,11 @@ clear opts
 for j = 1:nb_pilots
     predictedForce(j) = Emax_morpho(Fmaxtheorique1(j,1),Fmaxtheorique1(j,2),Fmaxtheorique1(j,4),Fmaxtheorique1(j,3));
 end
+
+% transform MVC into Newtons (you have Volts. Divide by nominal output (782 microV/kgf *gain of the
+% machine 200) then transform kgf into netwton by dividing by 0.1019716
+init_MVC = ((init_MVC/(0.1564))/0.1019716 )* 3.128
+
 %plot and compute correlation between initial/final MVC and theoritical strength
 figure()
 scatter(init_MVC,predictedForce)
