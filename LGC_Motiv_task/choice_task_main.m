@@ -275,6 +275,15 @@ elseif session_nb > 0
     end
     Ep_or_Em_vars.timeRemainingEndTrial_ONOFF = 0;
     
+    %% launch physiological recording
+    disp('Please start physiological recording and then press space.');
+    [~, ~, keyCode] = KbCheck();
+    while(keyCode(key.space) ~= 1)
+        % wait until the key has been pressed
+        [~, ~, keyCode] = KbCheck();
+    end
+    disp('OK - space was pressed, physio recording started');
+    
     %% instruction that main task will start soon
     DrawFormattedText(window, stim.expWillStart.text,...
         stim.expWillStart.x, stim.expWillStart.y, scr.colours.white, scr.wrapat);
@@ -429,6 +438,15 @@ elseif session_nb > 0
     end
     
 end % session number (calibration vs actual task)
+
+%% STOP physiological recording
+disp('Please stop physiological recording and then press space.');
+[~, ~, keyCode] = KbCheck();
+while(keyCode(key.space) ~= 1)
+    % wait until the key has been pressed
+    [~, ~, keyCode] = KbCheck();
+end
+disp('OK - space was pressed, physio recording stopped');
 
 %% Clear the PTB screen
 sca;
