@@ -139,7 +139,8 @@ end
 %
 % determine reward/punishment and effort level combinations for each trial
 % choiceOptions = choice_option_design(n_R_levels, n_E_levels, punishment_yn, nTrials, R_money);
-choiceOptions = getfield( load([main_task_folder,'DaBestDesignMat.mat'],'bestMatrix'),'bestMatrix');
+bestMatrix = getfield( load([main_task_folder,'DaBestDesignMat.mat'],'bestMatrix'),'bestMatrix');
+choiceOptions = RP_moneyLevels(bestMatrix, R_money);
 % display of different answers only during the training
 confDispDuringChoice = false;
 
