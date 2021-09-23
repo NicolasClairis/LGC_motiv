@@ -57,12 +57,12 @@ cd(main_task_folder);
 %% Define subject ID
 
 % Insert the initials, the number of the participants
-[init, iSubject, effort_type, session_nm] = deal([]);
-while isempty(init) || isempty(iSubject) ||...
+[iSubject, effort_type, session_nm] = deal([]);
+while isempty(iSubject) ||...
         isempty(effort_type) || ~ismember(effort_type,{'p','m'}) ||...
         isempty(session_nm) || str2double(session_nm) < 0 % repeat until both are answered
-    info = inputdlg({'Initials', 'Subject ID','Type d''effort (p/m)','Session number(0-4) (0 for initial calibration)'});
-    [init, iSubject, effort_type, session_nm] = info{[1,2,3,4]};
+    info = inputdlg({'Subject ID','Type d''effort (p/m)','Session number(0-4) (0 for initial calibration)'});
+    [iSubject, effort_type, session_nm] = info{[1,2,3]};
 end
 session_nb = str2double(session_nm);
 switch effort_type
@@ -73,7 +73,7 @@ switch effort_type
 end
 
 % Create subjectCodeName which is used as a file saving name
-subjectCodeName = strcat(init,'_s',iSubject);
+subjectCodeName = strcat('_CID',iSubject);
 
 % file name
 file_nm = [subjectCodeName,'_session',session_nm,'_',effort_type,'_task'];
@@ -178,7 +178,7 @@ t_endSession = mainTimes.endSession;
 
 %% calibration (before the MRI)
 % calibration performance file name
-calibPerf_file_nm = [results_folder,effort_type,'_calibPerf_sub',subjectCodeName,'.mat'];
+calibPerf_file_nm = [results_folder,effort_type,'_calibPerf_CID',subjectCodeName,'.mat'];
 if strcmp(effort_type,'mental')
     mentalE_prm_calib = mental_effort_parameters(iSubject);
     mentalE_prm_calib.startAngle = 0; % for learning always start at zero
