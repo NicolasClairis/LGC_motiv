@@ -107,8 +107,12 @@ for iS = 1:NS % loop through subjects
         cd(subj_scan_folders_names(iRun,:)); % go to run folder
         if ismember(sub_nm,{'pilot_s1'})
             filenames = cellstr(spm_select('ExtFPList',pwd,'^LGCM_.*\.nii$'));
-        else
+        elseif ismember(sub_nm,{'pilot_s2'})
             filenames = cellstr(spm_select('ExtFPList',pwd,'^run.*\.nii$'));
+        elseif ismember(sub_nm,{'pilot_s3'})
+            filenames = cellstr(spm_select('ExtFPList',pwd,'^ABNC.*\.img$'));
+        else
+            error('please check the format (nii/img) and the start of the name of each run because it has to be stabilized now...');
         end
         runFileNames.(['run_',num2str(iRun)]) = filenames;
         cd(subj_scans_folder);
