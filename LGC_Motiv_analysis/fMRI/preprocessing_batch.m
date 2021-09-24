@@ -88,7 +88,7 @@ for iS = 1:NS % loop through subjects
     
     %% extract folders where functional runs are stored
     cd(subj_scans_folder);
-    subj_scan_folders_names = ls('*_run*'); % takes all functional runs folders
+    subj_scan_folders_names = ls('*run*'); % takes all functional runs folders
     % remove AP/PA top-up corrective runs when they were performed (only 2
     % first pilots)
     if strcmp(study_nm,'fMRI_pilots') && ismember(sub_nm,{'pilot_s1','pilot_s2'})
