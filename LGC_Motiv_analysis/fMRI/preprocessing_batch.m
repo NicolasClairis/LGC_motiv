@@ -22,10 +22,10 @@ function[] = preprocessing_batch(study_nm)
 % See also First_level_batch, contrasts_batch and
 % Second_level_batch
 
-clear;
+% clear;
 
-%% preprocessing number
-preproc = 0; % see intro
+% %% preprocessing number in case you want to have several versions of it
+% preproc = 0; % see intro
 
 %% iniate spm
 spm('defaults','fmri');
@@ -89,8 +89,11 @@ for iS = 1:NS % loop through subjects
     %% extract folders where functional runs are stored
     cd(subj_scans_folder);
     subj_scan_folders_names = ls('*_run*'); % takes all functional runs folders
-    % remove AP/PA corrective runs
-    [subj_scan_folders_names] = clear_topup_fromFileList(subj_scan_folders_names);
+    % remove AP/PA top-up corrective runs when they were performed (only 2
+    % first pilots)
+    if strcmp(study_nm,'fMRI_pilots') && ismember(sub_nm,{'pilot_s1','pilot_s2'})
+        [subj_scan_folders_names] = clear_topup_fromFileList(subj_scan_folders_names);
+    end
     %%
     cd(subj_analysis_folder)
     %% define number of sessions to analyze
