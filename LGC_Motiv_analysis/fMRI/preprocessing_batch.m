@@ -22,10 +22,10 @@ function[] = preprocessing_batch(study_nm)
 % See also First_level_batch, contrasts_batch and
 % Second_level_batch
 
-clear;
+% clear;
 
-%% preprocessing number
-preproc = 0; % see intro
+% %% preprocessing number in case you want to have several versions of it
+% preproc = 0; % see intro
 
 %% iniate spm
 spm('defaults','fmri');
@@ -88,13 +88,16 @@ for iS = 1:NS % loop through subjects
     
     %% extract folders where functional runs are stored
     cd(subj_scans_folder);
-    subj_scan_folders_names = ls('*_run*'); % takes all functional runs folders
-    % remove AP/PA corrective runs
-    [subj_scan_folders_names] = clear_topup_fromFileList(subj_scan_folders_names);
+    subj_scan_folders_names = ls('*run*'); % takes all functional runs folders
+    % remove AP/PA top-up corrective runs when they were performed (only 2
+    % first pilots)
+    if strcmp(study_nm,'fMRI_pilots') && ismember(sub_nm,{'pilot_s1','pilot_s2'})
+        [subj_scan_folders_names] = clear_topup_fromFileList(subj_scan_folders_names);
+    end
     %%
     cd(subj_analysis_folder)
     %% define number of sessions to analyze
-    if ismember(sub_nm, {'pilot_s1','pilot_s2'}) % only 2 sessions for these pilots
+    if ismember(sub_nm, {'pilot_s1','pilot_s2','pilot_s3'}) % only 2 sessions for these pilots
         nb_runs = 2;
     else
         nb_runs = 4;
@@ -104,8 +107,12 @@ for iS = 1:NS % loop through subjects
         cd(subj_scan_folders_names(iRun,:)); % go to run folder
         if ismember(sub_nm,{'pilot_s1'})
             filenames = cellstr(spm_select('ExtFPList',pwd,'^LGCM_.*\.nii$'));
-        else
+        elseif ismember(sub_nm,{'pilot_s2'})
             filenames = cellstr(spm_select('ExtFPList',pwd,'^run.*\.nii$'));
+        elseif ismember(sub_nm,{'pilot_s3'})
+            filenames = cellstr(spm_select('ExtFPList',pwd,'^ABNC.*\.img$'));
+        else
+            error('please check the format (nii/img) and the start of the name of each run because it has to be stabilized now...');
         end
         runFileNames.(['run_',num2str(iRun)]) = filenames;
         cd(subj_scans_folder);
@@ -138,6 +145,8 @@ for iS = 1:NS % loop through subjects
     cd(newAnatFolder);
     if ismember(sub_nm,{'pilot_s1'})
         anat_file = ls('LGCM_*.nii');
+    elseif ismember(sub_nm,{'pilot_s3'})
+        anat_file = ls('ABNC_*.img');
     else
         anat_file = ls('mp2rage_*.nii');
     end
