@@ -145,6 +145,8 @@ for iS = 1:NS % loop through subjects
     cd(newAnatFolder);
     if ismember(sub_nm,{'pilot_s1'})
         anat_file = ls('LGCM_*.nii');
+    elseif ismember(sub_nm,{'pilot_s3'})
+        anat_file = ls('ABNC_*.img');
     else
         anat_file = ls('mp2rage_*.nii');
     end
