@@ -97,7 +97,7 @@ for iS = 1:NS % loop through subjects
     %%
     cd(subj_analysis_folder)
     %% define number of sessions to analyze
-    if ismember(sub_nm, {'pilot_s1','pilot_s2'}) % only 2 sessions for these pilots
+    if ismember(sub_nm, {'pilot_s1','pilot_s2','pilot_s3'}) % only 2 sessions for these pilots
         nb_runs = 2;
     else
         nb_runs = 4;
