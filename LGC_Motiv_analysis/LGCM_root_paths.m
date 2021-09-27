@@ -28,7 +28,7 @@ computerRoot = rootPathList{rootListIdx};
 %% path where SPM anatomical template is (for preprocessing)
 switch computerRoot
     case Nicolas_homePath
-        spmFolderPath = fullfile('C:','Program Files','MATLAB','spm','spm12');
+        spmFolderPath = fullfile('C:','Program Files','MATLAB','spm');
     case Nicolas_labPath
         spmFolderPath = fullfile('C:','Users','clairis','Desktop');
     case Arthur_serverPath
@@ -40,7 +40,7 @@ switch computerRoot
     case human_serverPath
         % need to define where SPM is in this case
         spmPathList = {fullfile('C:','Users','clairis','Desktop'),...
-            fullfile('C:','Program Files','MATLAB','spm','spm12'),...
+            fullfile('C:','Program Files','MATLAB','spm'),...
             fullfile('D:','Matlab extensions'),...
             fullfile('Catherine_ordi')};
         spmListIdx = listdlg('ListString',spmPathList);
