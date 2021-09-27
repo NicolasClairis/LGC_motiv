@@ -63,7 +63,7 @@ nb_preprocessingSteps = 6;
  matlabbatch = cell(nb_preprocessingSteps*NS,1);
 
 for iS = 1:NS % loop through subjects
-    disp(iS);
+    disp(['loading batch for preprocessing subject ',num2str(iS),'/',num2str(NS)]);
     sub_nm = subject_id{iS};
     
     % create working directories and copy anat. file inside
@@ -229,7 +229,6 @@ for iS = 1:NS % loop through subjects
     matlabbatch{smooth_step}.spm.spatial.smooth.prefix = 's';
 
     cd(root);
-    
 end
 
 % display spm batch before running it
