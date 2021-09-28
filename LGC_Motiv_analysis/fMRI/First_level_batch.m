@@ -47,12 +47,14 @@ switch study_nm
 end
 
 %% list subjects to analyze
-% subject_id = {'pilot_s1'};%'pilot_s1','pilot_s2'
 [subject_id, NS] = LGCM_subject_selection(study_nm);
 %% loop through subjects
 matlabbatch = cell(nb_batch_per_subj*NS,1);
 for iS = 1:NS
     sub_nm = subject_id{iS};
+    % check incompatibility between some GLM and some subjects
+    checkGLM_and_subjectIncompatibility(study_nm, sub_nm, GLMprm);
+    
     % define working folders
     subj_folder             = [root, filesep, sub_nm];
     subj_analysis_folder    = [subj_folder, filesep, 'fMRI_analysis' filesep];
@@ -67,7 +69,7 @@ for iS = 1:NS
     
     %% define number of runs
     switch sub_nm
-        case 'pilot_s1'
+        case {'pilot_s1','pilot_s3'}
             nb_runs = 2;
         case 'pilot_s2'
             nb_runs = 1;
@@ -76,9 +78,12 @@ for iS = 1:NS
     end
     
     %% load fMRI data
-    subj_scan_folders_names = ls([subj_scans_folder, filesep, '*_run*']); % takes all functional runs folders
-    % remove AP/PA corrective runs
-    [subj_scan_folders_names] = clear_topup_fromFileList(subj_scan_folders_names);
+    subj_scan_folders_names = ls([subj_scans_folder, filesep, '*run*']); % takes all functional runs folders
+    % remove AP/PA corrective runs when they were performed (only 2
+    % first pilots)
+    if strcmp(study_nm,'fMRI_pilots') && ismember(sub_nm,{'pilot_s1','pilot_s2'})
+        [subj_scan_folders_names] = clear_topup_fromFileList(subj_scan_folders_names);
+    end
     
     %% starting 1st level GLM batch
     sub_idx = nb_batch_per_subj*(iS-1) + 1 ;
