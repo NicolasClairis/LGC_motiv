@@ -16,7 +16,7 @@ function [GLMprm] = which_GLM(GLM)
 %       on individual grey matter; 2: use SPM template grey matter mask)
 %       .orth_vars: orthogonalize variables of the GLM (1) or not (0)
 %   .model_onset: indicate for each task (Ep/Em: physical/mental) for each
-%   event (cross/choice/chosen/Eperf/fbk) if it should be modelled as a
+%   event (preChoiceCross/choice/chosen/preEffortCross/Eperf/fbk) if it should be modelled as a
 %   stick ('stick') as a boxcar ('boxcar') or not included in the GLM
 %   ('none')
 %   .choice/chosen/Eperf/fbk: for each event and each task (Ep/Em) indicate
@@ -33,12 +33,14 @@ function [GLMprm] = which_GLM(GLM)
 
 % onsets: not modelled (none), modelled as stick function (stick) or as
 % boxcar function (boxcar)
-[GLMprm.model_onset.Ep.cross,...
+[GLMprm.model_onset.Ep.preChoiceCross,...
+    GLMprm.model_onset.Ep.preEffortCross,...
     GLMprm.model_onset.Ep.choice,...
     GLMprm.model_onset.Ep.chosen,...
     GLMprm.model_onset.Ep.Eperf,...
     GLMprm.model_onset.Ep.fbk,...
-    GLMprm.model_onset.Em.cross,...
+    GLMprm.model_onset.Em.preChoiceCross,...
+    GLMprm.model_onset.Em.preEffortCross,...
     GLMprm.model_onset.Em.choice,...
     GLMprm.model_onset.Em.chosen,...
     GLMprm.model_onset.Em.Eperf,...
@@ -117,8 +119,8 @@ switch GLM
         % general parameters
         GLMprm.gal.orth_vars = 1;
         % cross
-        GLMprm.model_onset.Ep.cross = 'stick';
-        GLMprm.model_onset.Em.cross = 'stick';
+        GLMprm.model_onset.Ep.preChoiceCross = 'stick';
+        GLMprm.model_onset.Em.preChoiceCross = 'stick';
         % choice
         GLMprm.model_onset.Ep.choice = 'stick';
         GLMprm.model_onset.Em.choice = 'stick';
@@ -147,8 +149,8 @@ switch GLM
         % general parameters
         GLMprm.gal.orth_vars = 1;
         % cross
-        GLMprm.model_onset.Ep.cross = 'stick';
-        GLMprm.model_onset.Em.cross = 'stick';
+        GLMprm.model_onset.Ep.preChoiceCross = 'stick';
+        GLMprm.model_onset.Em.preChoiceCross = 'stick';
         % choice
         GLMprm.model_onset.Ep.choice = 'stick';
         GLMprm.model_onset.Em.choice = 'stick';
@@ -173,8 +175,8 @@ switch GLM
         % general parameters
         GLMprm.gal.orth_vars = 1;
         % cross
-        GLMprm.model_onset.Ep.cross = 'stick';
-        GLMprm.model_onset.Em.cross = 'stick';
+        GLMprm.model_onset.Ep.preChoiceCross = 'stick';
+        GLMprm.model_onset.Em.preChoiceCross = 'stick';
         % choice
         GLMprm.model_onset.Ep.choice = 'stick';
         GLMprm.model_onset.Em.choice = 'stick';

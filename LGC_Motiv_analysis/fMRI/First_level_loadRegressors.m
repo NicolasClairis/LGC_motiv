@@ -36,11 +36,21 @@ switch task_nm
 end
 
 %% load data
+warning('script needs to be updated to take failed trials into account and modelled separately');
 behavioralDataStruct = load([subj_behavior_folder, currRunBehaviorFileName]);
 % extract all onsets of interest and corresponding durations
 T0 = behavioralDataStruct.onsets.T0;
-initialCrossOnsets      = behavioralDataStruct.(task_behavioral_id).onsets.cross - T0; % only cross appearing BEFORE the start of each trial
-crossOnsets             = [initialCrossOnsets, behavioralDataStruct.onsets.finalCross - T0]; % add final cross (at the end of the experiment)
+if ismember(subj_behavior_folder((end-30):end),...
+        {[filesep,'fMRI_pilots',filesep,'pilot_s1',filesep,'behavior',filesep],...
+        [filesep,'fMRI_pilots',filesep,'pilot_s2',filesep,'behavior',filesep]})
+    % for pilots s1 & s2 where there was only 1 fixation cross before
+    % choice, no cross before effort
+    preChoiceCrossOnsets    = behavioralDataStruct.(task_behavioral_id).onsets.cross - T0; % only cross appearing BEFORE the start of each trial
+else% for all other subjects
+    preChoiceCrossOnsets    = behavioralDataStruct.(task_behavioral_id).onsets.preChoiceCross - T0; % only cross appearing BEFORE the start of each trial
+    preEffortCrossOnsets    = behavioralDataStruct.(task_behavioral_id).onsets.preEffortCross - T0;
+end
+whiteCrossOnsets        = [preChoiceCrossOnsets, behavioralDataStruct.onsets.finalCross - T0]; % add final cross (at the end of the experiment)
 dispChoiceOptionOnsets  = behavioralDataStruct.(task_behavioral_id).onsets.dispChoiceOptions - T0;
 choiceOnsets            = behavioralDataStruct.(task_behavioral_id).onsets.choice - T0;
 dispChosenOnsets        = behavioralDataStruct.(task_behavioral_id).onsets.dispChoice - T0;
@@ -57,12 +67,20 @@ for iTrial = 1:n_trials
 end
 fbkOnsets = behavioralDataStruct.(task_behavioral_id).onsets.fbk - T0;
 % durations of each event
-crossDur = dispChoiceOptionOnsets - initialCrossOnsets;
+preChoiceCrossDur = dispChoiceOptionOnsets - preChoiceCrossOnsets;
 dispChoiceDur = dispChosenOnsets - dispChoiceOptionOnsets;
 choice_RT = choiceOnsets - dispChoiceOptionOnsets;
-dispChosenDur = EperfOnset - dispChosenOnsets;
+if ismember(subj_behavior_folder((end-30):end),...
+        {[filesep,'fMRI_pilots',filesep,'pilot_s1',filesep,'behavior',filesep],...
+        [filesep,'fMRI_pilots',filesep,'pilot_s2',filesep,'behavior',filesep]})
+    % pilot s1 & s2 no fixation cross before effort
+    dispChosenDur = EperfOnset - dispChosenOnsets;
+else
+    dispChosenDur = preEffortCrossOnsets - dispChosenOnsets;
+    preEffortCrossDur = EperfOnset - preEffortCrossOnsets;
+end
 EperfDur = fbkOnsets - EperfOnset;
-fbkDur = crossOnsets(2:end) - fbkOnsets;
+fbkDur = whiteCrossOnsets(2:end) - fbkOnsets;
 
 % extract regressors of interest
 % loading R vs P trial
@@ -142,18 +160,18 @@ end
 %% initialize conditions
 iCond = 0;
 
-%% fixation cross
-crossModel = GLMprm.model_onset.(task_id).cross;
-if ismember(crossModel,{'stick','boxcar'})
+%% fixation cross before choice
+preChoiceCrossModel = GLMprm.model_onset.(task_id).preChoiceCross;
+if ismember(preChoiceCrossModel,{'stick','boxcar'})
     iCond = iCond + 1;
-    switch crossModel
+    switch preChoiceCrossModel
         case 'stick'
-            modelCrossdur = 0;
+            modelPreChoiceCrossdur = 0;
         case 'boxcar'
-            modelCrossdur = crossDur;
+            modelPreChoiceCrossdur = preChoiceCrossDur;
     end
     [matlabbatch] = First_level_loadEachCondition(matlabbatch, sub_idx, iRun, iCond,...
-        'fixation cross', crossOnsets, modelCrossdur, 0, '', [], orth_vars);
+        'preChoice fixation cross', whiteCrossOnsets, modelPreChoiceCrossdur, 0, '', [], orth_vars);
 end
 
 
@@ -362,6 +380,20 @@ if ismember(chosenModel,{'stick','boxcar'})
             orth_vars);
     end % RP
 end % model chosen period
+
+%% fixation cross before effort
+preEffortCrossModel = GLMprm.model_onset.(task_id).preEffortCross;
+if ismember(preEffortCrossModel,{'stick','boxcar'})
+    iCond = iCond + 1;
+    switch preEffortCrossModel
+        case 'stick'
+            modelPreEffortCrossdur = 0;
+        case 'boxcar'
+            modelPreEffortCrossdur = preEffortCrossDur;
+    end
+    [matlabbatch] = First_level_loadEachCondition(matlabbatch, sub_idx, iRun, iCond,...
+        'preEffort fixation cross', preEffortCrossOnsets, modelPreEffortCrossdur, 0, '', [], orth_vars);
+end
 
 %% effort performance
 EperfModel = GLMprm.model_onset.(task_id).Eperf;
