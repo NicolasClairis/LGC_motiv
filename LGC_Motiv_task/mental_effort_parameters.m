@@ -1,10 +1,9 @@
-function[mentalE_prm] = mental_effort_parameters(i_sub)
-%[mentalE_prm] = mental_effort_parameters(i_sub)
+function[mentalE_prm] = mental_effort_parameters()
+%[mentalE_prm] = mental_effort_parameters()
 % mental_effort_parameters definition of the main parameters for the
 % mental effort task.
 %
 % INPUTS
-% i_sub: subject number (to define colours used)
 %
 % OUTPUTS
 % mentalE_prm: structure with main mental effort parameters

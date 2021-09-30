@@ -55,13 +55,12 @@ calibTimes.fail_and_repeat_fbk = 5;
 %% learning timings
 switch effort_type % in case you use different numbers for each effort type
     case 'mental'
-        learningTimes.learning_rest = 1.5;
+        learningTimes.learning_rest = 3;
     case 'physical'
         learningTimes.ifi = t_ifi;
         learningTimes.max_effort = [];
         learningTimes.physicalReadWait = t_readWait;
-        learningTimes.learning_rest = 1;
-        warning('for real subjects update resting time, now short for Arthur');
+        learningTimes.learning_rest = 3;
 end
 learningTimes.fail_and_repeat_fbk = 5;
 

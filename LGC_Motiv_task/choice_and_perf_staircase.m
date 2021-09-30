@@ -117,7 +117,7 @@ was_a_key_pressed_bf_trial = NaN(1,nTrials);
 switch effort_type
     case 'mental'
         % initialize main parameters of the task
-        mentalE_prm = mental_effort_parameters(i_sub);
+        mentalE_prm = mental_effort_parameters();
         % randomize the order of the numbers appearing on screen
         mental_nbers_per_trial = mental_numbers(nTrials);
         

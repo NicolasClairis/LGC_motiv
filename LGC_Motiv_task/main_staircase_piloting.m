@@ -31,27 +31,28 @@ cd(main_task_folder);
 %% Define subject ID
 
 % Insert the initials, the number of the participants
-[init, iSubject] = deal([]);
+iSubject = [];
 langue = 'f';
 IRM = 1;
-while isempty(init) || isempty(iSubject)
+while isempty(iSubject) || length(iSubject) ~= 3
     % repeat until all questions are answered
-    info = inputdlg({'Initials', 'Subject ID'});
-    [init, iSubject] = info{[1, 2]};
+    info = inputdlg({'Subject CID (XXX)'});
+    [iSubject] = info{1};
 %     warning('when real experiment starts, remember to block in french and IRM = 1');
-end
-if ischar(iSubject)
-    iSubject = str2double(iSubject);
 end
 if ischar(IRM)
     IRM = str2double(IRM);
 end
 % Create subjectCodeName which is used as a file saving name
-subjectCodeName = strcat(init,'_s',iSubject);
+subjectCodeName = strcat('CID',iSubject);
 
-file_nm_training_Em = ['IP_pilot_data_Em_',init,'_sub_',num2str(iSubject)];
-file_nm_training_Ep = ['IP_pilot_data_Ep_',init,'_sub_',num2str(iSubject)];
-file_nm = ['IP_pilot_data',init,'_sub_',num2str(iSubject)];
+file_nm_training_Em = ['IP_pilot_data_Em_CID',num2str(iSubject)];
+file_nm_training_Ep = ['IP_pilot_data_Ep_CID',num2str(iSubject)];
+file_nm = ['IP_pilot_data_CID',num2str(iSubject)];
+% convert subject CID into number (only if used to perform actual task)
+% if ischar(iSubject)
+%     iSubject = str2double(iSubject);
+% end
 %% general parameters
 % define subparts of the task to perform (on/off)
 taskToPerform.physical.calib = 'on';
@@ -278,7 +279,7 @@ end
 %% learning mental
 if strcmp(taskToPerform.mental.learning,'on')
     showTitlesInstruction(scr,stim,'learning',true)
-    mentalE_prm_learning_and_calib = mental_effort_parameters(iSubject);
+    mentalE_prm_learning_and_calib = mental_effort_parameters();
     mentalE_prm_learning_and_calib.startAngle = 0; % for learning always start at zero
     % no time limit for each trial: as long as needed until learning is ok
     learning_time_limit = false;
@@ -361,7 +362,7 @@ end
 
 %% calibration mental
 if strcmp(taskToPerform.mental.calib,'on')
-    mentalE_prm_learning_and_calib = mental_effort_parameters(iSubject);
+    mentalE_prm_learning_and_calib = mental_effort_parameters();
     mentalE_prm_learning_and_calib.startAngle = 0; % for learning always start at zero
     % extract numbers to use for each calibration trial
 %     [numberVector_calib] = mental_numbers(n_calibTrials_Em);
@@ -530,7 +531,7 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
                             
                             
                             % instructions
-                            mentalE_prm_instruDisplay = mental_effort_parameters(iSubject);
+                            mentalE_prm_instruDisplay = mental_effort_parameters();
                             % Nback version
                             Nback_str = num2str(mentalE_prm_instruDisplay.Nback);
                             learningVersion = ['extendedLearning_Nback',Nback_str];
@@ -594,7 +595,7 @@ end
 
 % mental re-calibration
 if strcmp(taskToPerform.mental.task,'on')
-    mentalE_prm_learning_and_calib = mental_effort_parameters(iSubject);
+    mentalE_prm_learning_and_calib = mental_effort_parameters();
     mentalE_prm_learning_and_calib.startAngle = 0; % for learning always start at zero
     % extract numbers to use for each calibration trial
 %     [numberVector_calib] = mental_numbers(n_calibTrials_Em);

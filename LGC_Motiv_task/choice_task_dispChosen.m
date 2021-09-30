@@ -1,5 +1,5 @@
-function[time_dispChoice] = choice_task_dispChosen(scr, stim, R_chosen, E_chosen, R_or_P, confidence)
-% [time_dispChoice] = choice_task_dispChosen(scr, stim, R_chosen, E_chosen,...
+function[onset_dispChoice] = choice_task_dispChosen(scr, stim, R_chosen, E_chosen, R_or_P, confidence)
+% [onset_dispChoice] = choice_task_dispChosen(scr, stim, R_chosen, E_chosen,...
 %     R_or_P, confidence)
 % choice_task_dispChosen will display the chosen option
 %
@@ -24,7 +24,7 @@ function[time_dispChoice] = choice_task_dispChosen(scr, stim, R_chosen, E_chosen
 %   trial
 %
 % OUTPUTS
-% time_dispChoice: onset of the display of the chosen option on the screen
+% onset_dispChoice: onset of the display of the chosen option on the screen
 %
 % See also choice_task_main.m
 
@@ -96,6 +96,6 @@ elseif confidence.display == true && confidence.lowOrHigh == 0
 end
 
 %% display on screen and extract timing
-[~,time_dispChoice] = Screen('Flip',window);
+[~,onset_dispChoice] = Screen('Flip',window);
 
 end % function
