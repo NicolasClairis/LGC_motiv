@@ -180,7 +180,7 @@ t_endSession = mainTimes.endSession;
 % calibration performance file name
 calibPerf_file_nm = [results_folder,effort_type,'_calibPerf_CID',subjectCodeName,'.mat'];
 if strcmp(effort_type,'mental')
-    mentalE_prm_calib = mental_effort_parameters(iSubject);
+    mentalE_prm_calib = mental_effort_parameters();
     mentalE_prm_calib.startAngle = 0; % for learning always start at zero
     % no error threshold nor mapping of answers when errors are
     % made
