@@ -73,7 +73,7 @@ switch effort_type
 end
 
 % Create subjectCodeName which is used as a file saving name
-subjectCodeName = strcat('_CID',iSubject);
+subjectCodeName = strcat('CID',iSubject);
 
 % file name
 file_nm = [subjectCodeName,'_session',session_nm,'_',effort_type,'_task'];
@@ -176,9 +176,9 @@ n_trainingConditions = length(trainingConditions);
 t_endfMRI = mainTimes.endfMRI;
 t_endSession = mainTimes.endSession;
 
-%% calibration (before the MRI)
+%% calibration (before the MRI) 
 % calibration performance file name
-calibPerf_file_nm = [results_folder,effort_type,'_calibPerf_CID',subjectCodeName,'.mat'];
+calibPerf_file_nm = [results_folder,effort_type,'_calibPerf_',subjectCodeName,'.mat'];
 if strcmp(effort_type,'mental')
     mentalE_prm_calib = mental_effort_parameters();
     mentalE_prm_calib.startAngle = 0; % for learning always start at zero
@@ -241,6 +241,15 @@ elseif session_nb > 0
             MVC = getfield(load(calibPerf_file_nm,'MVC'),'MVC'); % expressed in Voltage
     end
     
+    %% launch physiological recording
+    disp('Please start physiological recording and then press space.');
+    [~, ~, keyCode] = KbCheck();
+    while(keyCode(key.space) ~= 1)
+        % wait until the key has been pressed
+        [~, ~, keyCode] = KbCheck();
+    end
+    disp('OK - space was pressed, physio recording started');
+    
     %% max perf measurement before start of each session
     % (not for training out of MRI)
     switch effort_type
@@ -274,15 +283,6 @@ elseif session_nb > 0
             Ep_or_Em_vars.F_tolerance = F_tolerance;
     end
     Ep_or_Em_vars.timeRemainingEndTrial_ONOFF = 0;
-    
-    %% launch physiological recording
-    disp('Please start physiological recording and then press space.');
-    [~, ~, keyCode] = KbCheck();
-    while(keyCode(key.space) ~= 1)
-        % wait until the key has been pressed
-        [~, ~, keyCode] = KbCheck();
-    end
-    disp('OK - space was pressed, physio recording started');
     
     %% instruction that main task will start soon
     DrawFormattedText(window, stim.expWillStart.text,...
@@ -437,16 +437,16 @@ elseif session_nb > 0
         save([results_folder, file_nm,'.mat'],'-struct','all');
     end
     
-end % session number (calibration vs actual task)
-
-%% STOP physiological recording
-disp('Please stop physiological recording and then press space.');
-[~, ~, keyCode] = KbCheck();
-while(keyCode(key.space) ~= 1)
-    % wait until the key has been pressed
+    %% STOP physiological recording
+    disp('Please stop physiological recording and then press space.');
     [~, ~, keyCode] = KbCheck();
-end
-disp('OK - space was pressed, physio recording stopped');
+    while(keyCode(key.space) ~= 1)
+        % wait until the key has been pressed
+        [~, ~, keyCode] = KbCheck();
+    end
+    disp('OK - space was pressed, physio recording stopped');
+    
+end % session number (calibration vs actual task)
 
 %% Clear the PTB screen
 sca;
