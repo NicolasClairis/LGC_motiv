@@ -295,6 +295,7 @@ elseif session_nb > 0
         [~, ~, keyCode] = KbCheck();
     end
     disp('OK - space was pressed');
+    disp('Now waiting for first TTL to start');
     
     %% start recording fMRI TTL and wait for a given amount of TTL before
     % starting the task in order to calibrate all timings on T0
