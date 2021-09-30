@@ -454,7 +454,7 @@ stim.pressWhenReady.colour = white;
 switch langage
     case 'fr'
         stim.endfMRIMessage.text = ['Nous allons maintenant vous demander ',...
-            ' de refaire votre maximum apres quelques secondes de pause.'];
+            'de refaire votre maximum apres quelques secondes de pause.'];
     case 'engl'
         stim.endfMRIMessage.text = ['We will now ask you ',...
             'to perform your maximum after a few seconds of break.'];
