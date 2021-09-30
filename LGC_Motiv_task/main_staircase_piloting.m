@@ -34,10 +34,10 @@ cd(main_task_folder);
 iSubject = [];
 langue = 'f';
 IRM = 1;
-while isempty(iSubject)
+while isempty(iSubject) || length(iSubject) ~= 3
     % repeat until all questions are answered
-    info = inputdlg({'Subject ID'});
-    [iSubject] = info{[1]};
+    info = inputdlg({'Subject CID (XXX)'});
+    [iSubject] = info{1};
 %     warning('when real experiment starts, remember to block in french and IRM = 1');
 end
 if ischar(IRM)

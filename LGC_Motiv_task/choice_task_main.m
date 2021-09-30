@@ -58,10 +58,10 @@ cd(main_task_folder);
 
 % Insert the initials, the number of the participants
 [iSubject, effort_type, session_nm] = deal([]);
-while isempty(iSubject) ||...
+while isempty(iSubject) || length(iSubject) ~= 3 ||...
         isempty(effort_type) || ~ismember(effort_type,{'p','m'}) ||...
         isempty(session_nm) || str2double(session_nm) < 0 % repeat until both are answered
-    info = inputdlg({'Subject ID','Type d''effort (p/m)','Session number(0-4) (0 for initial calibration)'});
+    info = inputdlg({'Subject CID (XXX)','Type d''effort (p/m)','Session number(0-4) (0 for initial calibration)'});
     [iSubject, effort_type, session_nm] = info{[1,2,3]};
 end
 session_nb = str2double(session_nm);
