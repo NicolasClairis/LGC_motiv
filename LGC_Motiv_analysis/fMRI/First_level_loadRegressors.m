@@ -38,7 +38,8 @@ end
 %% load data
 warning('script needs to be updated to take failed trials into account and modelled separately');
 behavioralDataStruct = load([subj_behavior_folder, currRunBehaviorFileName]);
-% extract all onsets of interest and corresponding durations
+
+%% extract all onsets of interest
 T0 = behavioralDataStruct.onsets.T0;
 if ismember(subj_behavior_folder((end-30):end),...
         {[filesep,'fMRI_pilots',filesep,'pilot_s1',filesep,'behavior',filesep],...
@@ -56,33 +57,54 @@ choiceOnsets            = behavioralDataStruct.(task_behavioral_id).onsets.choic
 dispChosenOnsets        = behavioralDataStruct.(task_behavioral_id).onsets.dispChoice - T0;
 n_trials = length(dispChosenOnsets);
 
+% extract trials where no choice was made
+choiceMissedTrials = isnan(choiceOnsets);
+
+% extract onsets when the effort was performed
 EperfOnset = NaN(1,n_trials);
 for iTrial = 1:n_trials
-    switch task_nm
-        case 'physical'
-            EperfOnset(iTrial) = behavioralDataStruct.(task_behavioral_id).onsets.effortPeriod{1,iTrial}.effort_phase - T0;
-        case 'mental'
-            EperfOnset(iTrial) = behavioralDataStruct.(task_behavioral_id).onsets.effortPeriod{1,iTrial}.nb_1 - T0;
+    if choiceMissedTrials(iTrial) == 0 % if no choice was made during this trial, no effort was made either
+        switch task_nm
+            case 'physical'
+                EperfOnset(iTrial) = behavioralDataStruct.(task_behavioral_id).onsets.effortPeriod{1,iTrial}.effort_phase - T0;
+            case 'mental'
+                EperfOnset(iTrial) = behavioralDataStruct.(task_behavioral_id).onsets.effortPeriod{1,iTrial}.nb_1 - T0;
+        end
     end
 end
+% feedback onsets
 fbkOnsets = behavioralDataStruct.(task_behavioral_id).onsets.fbk - T0;
-% durations of each event
-preChoiceCrossDur = dispChoiceOptionOnsets - preChoiceCrossOnsets;
-dispChoiceDur = dispChosenOnsets - dispChoiceOptionOnsets;
-choice_RT = choiceOnsets - dispChoiceOptionOnsets;
+
+%% durations of each event
 if ismember(subj_behavior_folder((end-30):end),...
         {[filesep,'fMRI_pilots',filesep,'pilot_s1',filesep,'behavior',filesep],...
-        [filesep,'fMRI_pilots',filesep,'pilot_s2',filesep,'behavior',filesep]})
-    % pilot s1 & s2 no fixation cross before effort
-    dispChosenDur = EperfOnset - dispChosenOnsets;
+        [filesep,'fMRI_pilots',filesep,'pilot_s2',filesep,'behavior',filesep],...
+        [filesep,'fMRI_pilots',filesep,'pilot_s3',filesep,'behavior',filesep]})
+     % duration not recorded yet in those pilots
+    preChoiceCrossDur = dispChoiceOptionOnsets - preChoiceCrossOnsets;
+    dispChoiceOptionsDur = dispChosenOnsets - dispChoiceOptionOnsets;
+    if ismember(subj_behavior_folder((end-30):end),...
+            {[filesep,'fMRI_pilots',filesep,'pilot_s1',filesep,'behavior',filesep],...
+            [filesep,'fMRI_pilots',filesep,'pilot_s2',filesep,'behavior',filesep]})
+        % pilot s1 & s2 no fixation cross before effort
+        dispChosenDur = EperfOnset - dispChosenOnsets;
+    else
+        dispChosenDur = preEffortCrossOnsets - dispChosenOnsets;
+        preEffortCrossDur = EperfOnset - preEffortCrossOnsets;
+    end
+    EperfDur = fbkOnsets - EperfOnset;
+    fbkDur = whiteCrossOnsets(2:end) - fbkOnsets;
 else
-    dispChosenDur = preEffortCrossOnsets - dispChosenOnsets;
-    preEffortCrossDur = EperfOnset - preEffortCrossOnsets;
+    preChoiceCrossDur = behavioralDataStruct.(task_behavioral_id).durations.preChoiceCross;
+    dispChoiceOptionsDur = behavioralDataStruct.(task_behavioral_id).durations.dispChoiceOptions;
+    dispChosenDur = behavioralDataStruct.(task_behavioral_id).durations.dispChoice;
+    preEffortCrossDur = behavioralDataStruct.(task_behavioral_id).durations.preEffortCross;
+    EperfDur = behavioralDataStruct.(task_behavioral_id).durations.effortPeriod;
+    fbkDur = behavioralDataStruct.(task_behavioral_id).durations.fbk;
 end
-EperfDur = fbkOnsets - EperfOnset;
-fbkDur = whiteCrossOnsets(2:end) - fbkOnsets;
+choice_RT = choiceOnsets - dispChoiceOptionOnsets;
 
-% extract regressors of interest
+%% extract regressors of interest
 % loading R vs P trial
 RP_var_binary = strcmp( behavioralDataStruct.(task_behavioral_id).choiceOptions.R_or_P, 'R');
 RP_var = RP_var_binary;
@@ -115,6 +137,47 @@ absMoneyChosen_min_moneyUnchosen = abs(money_chosen - money_unchosen);
 % loading feedback
 money_obtained = behavioralDataStruct.(task_behavioral_id).gain; % could be different from reward chosen (in case of failure) but mostly similar
 win_vs_loss_fbk = money_obtained > 0;
+
+%% remove trials where no choice was performed
+choiceMiss_onsets = [];
+if sum(choiceMissedTrials) > 0
+    % onsets
+    dispChoiceOptionOnsets(choiceMissedTrials) = [];
+    choiceOnsets(choiceMissedTrials) = [];
+    dispChosenOnsets(choiceMissedTrials) = [];
+    EperfOnset(choiceMissedTrials) = [];
+    fbkOnsets(choiceMissedTrials) = [];
+    % durations
+    dispChoiceOptionsDur(choiceMissedTrials) = [];
+    dispChosenDur(choiceMissedTrials) = [];
+    EperfDur(choiceMissedTrials) = [];
+    fbkDur(choiceMissedTrials) = [];
+    % regressors
+    RP_var_binary(choiceMissedTrials) = [];
+    money_amount_left(choiceMissedTrials) = [];
+    money_amount_right(choiceMissedTrials) = [];
+    monetary_amount_sum(choiceMissedTrials) = [];
+    E_left(choiceMissedTrials) = [];
+    E_right(choiceMissedTrials) = [];
+    E_sum(choiceMissedTrials) = [];
+    choice_LRandConf(choiceMissedTrials) = [];
+    choice_LR(choiceMissedTrials) = [];
+    confidence(choiceMissedTrials) = [];
+    E_chosen(choiceMissedTrials) = [];
+    E_unchosen(choiceMissedTrials) = [];
+    E_chosen_min_E_unchosen(choiceMissedTrials) = [];
+    money_chosen(choiceMissedTrials) = [];
+    abs_money_chosen(choiceMissedTrials) = [];
+    money_unchosen(choiceMissedTrials) = [];
+    moneyChosen_min_moneyUnchosen(choiceMissedTrials) = [];
+    absMoneyChosen_min_moneyUnchosen(choiceMissedTrials) = [];
+    money_obtained(choiceMissedTrials) = [];
+    win_vs_loss_fbk(choiceMissedTrials) = [];
+    choice_RT(choiceMissedTrials) = [];
+end
+
+% remove trials where effort was not successfull
+warning('trials where effort had to be repeated because of subject failure, should also be removed in the future');
 
 %% load the batch according to GLMprm variables
 % load general GLM parameters
@@ -180,18 +243,18 @@ choiceModel = GLMprm.model_onset.(task_id).choice;
 if ismember(choiceModel,{'stick','boxcar'})
     
     for iRP_choice = 1:length(RPchoiceCond)
-        RP_choice_nm = RPchoiceCond{iRP_choice};
-        choiceModel_RP = GLMprm.choice.(task_id).(RP_choice_nm).R_vs_P;
-        choiceModel_moneySum = GLMprm.choice.(task_id).(RP_choice_nm).money_sum;
-        choiceModel_E_sum = GLMprm.choice.(task_id).(RP_choice_nm).E_sum;
-        choiceModel_moneyChosen = GLMprm.choice.(task_id).(RP_choice_nm).money_chosen;
-        choiceModel_moneyUnchosen = GLMprm.choice.(task_id).(RP_choice_nm).money_unchosen;
+        RP_choice_nm                                = RPchoiceCond{iRP_choice};
+        choiceModel_RP                              = GLMprm.choice.(task_id).(RP_choice_nm).R_vs_P;
+        choiceModel_moneySum                        = GLMprm.choice.(task_id).(RP_choice_nm).money_sum;
+        choiceModel_E_sum                           = GLMprm.choice.(task_id).(RP_choice_nm).E_sum;
+        choiceModel_moneyChosen                     = GLMprm.choice.(task_id).(RP_choice_nm).money_chosen;
+        choiceModel_moneyUnchosen                   = GLMprm.choice.(task_id).(RP_choice_nm).money_unchosen;
         choiceModel_money_chosen_min_money_unchosen = GLMprm.choice.(task_id).(RP_choice_nm).money_ch_min_unch;
-        choiceModel_E_chosen = GLMprm.choice.(task_id).(RP_choice_nm).E_chosen;
-        choiceModel_E_unchosen = GLMprm.choice.(task_id).(RP_choice_nm).E_unchosen;
-        choiceModel_E_chosen_min_E_unchosen = GLMprm.choice.(task_id).(RP_choice_nm).E_ch_min_unch;
-        choiceModel_RT = GLMprm.choice.(task_id).(RP_choice_nm).RT;
-        choiceModel_conf = GLMprm.choice.(task_id).(RP_choice_nm).confidence;
+        choiceModel_E_chosen                        = GLMprm.choice.(task_id).(RP_choice_nm).E_chosen;
+        choiceModel_E_unchosen                      = GLMprm.choice.(task_id).(RP_choice_nm).E_unchosen;
+        choiceModel_E_chosen_min_E_unchosen         = GLMprm.choice.(task_id).(RP_choice_nm).E_ch_min_unch;
+        choiceModel_RT                              = GLMprm.choice.(task_id).(RP_choice_nm).RT;
+        choiceModel_conf                            = GLMprm.choice.(task_id).(RP_choice_nm).confidence;
         
         if ~strcmp(RP_choice_nm,'RP')
             error('just split onsets and regressors depending on reward/punishment trial');
@@ -201,7 +264,7 @@ if ismember(choiceModel,{'stick','boxcar'})
             case 'stick'
                 modelChoiceDur = 0;
             case 'boxcar'
-                modelChoiceDur = dispChoiceDur;
+                modelChoiceDur = dispChoiceOptionsDur;
         end
         
         % modulators

@@ -35,8 +35,8 @@ nb_batch_per_subj = 2; % model + estimate
 
 %% working directories
 computer_root = LGCM_root_paths();
-scripts_folder = fullfile(computer_root,'GitHub','LGC_motiv','LGC_Motiv_analysis','fMRI');
-addpath(scripts_folder);
+% scripts_folder = fullfile(computer_root,'GitHub','LGC_motiv','LGC_Motiv_analysis','fMRI');
+% addpath(scripts_folder);
 switch study_nm
     case 'fMRI_pilots'
         root = fullfile(computer_root,'fMRI_pilots');
@@ -107,6 +107,14 @@ for iS = 1:NS
         % load scans in the GLM
         cd([subj_scans_folder filesep subj_runFoldername_tmp, filesep]); % go to run folder
         preprocessed_filenames = cellstr(spm_select('ExtFPList',pwd,'^swr.*\.nii$')); % extracts all the preprocessed swrf files (smoothed, normalized, realigned)
+        % in case data is not in .nii but in .img & .hdr
+        if isempty(preprocessed_filenames{1})
+            preprocessed_filenames = cellstr(spm_select('ExtFPList',pwd,'^swr.*\.img$')); % extracts all the preprocessed swrf files (smoothed, normalized, realigned)
+        end
+        % check if still empty => if yes, stop the script
+        if isempty(preprocessed_filenames{1})
+            error('problem with format of preprocessed files: impossible to find them. Did you preprocess the data?');
+        end
         matlabbatch{sub_idx}.spm.stats.fmri_spec.sess(iRun).scans = preprocessed_filenames;
         
         %% load regressors of interest
