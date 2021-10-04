@@ -1,9 +1,11 @@
-function[con_names, con_vector] = LGCM_contrasts(study_nm, sub_nm, GLM)
-% [con_names, con_vector] = LGCM_contrasts(study_nm, sub_nm, GLM)
+function[con_names, con_vector] = LGCM_contrasts(study_nm, sub_nm, GLM, computer_root)
+% [con_names, con_vector] = LGCM_contrasts(study_nm, sub_nm, GLM, computer_root)
 % LGCM_contrasts will define the contrast names and contrast vector for the
 % subject and study entered in input.
 %
 % INPUTS
+% computer_root: path where data is stored
+%
 % study_nm: definition of the study on which you want to analyze the data
 % 'fMRI_pilots': pilots
 % 'study1': first study (dmPFC + AI)
@@ -20,7 +22,6 @@ function[con_names, con_vector] = LGCM_contrasts(study_nm, sub_nm, GLM)
 
 
 %% working directories
-computer_root = LGCM_root_paths();
 switch study_nm
     case 'fMRI_pilots'
         root = fullfile(computer_root,'fMRI_pilots');
