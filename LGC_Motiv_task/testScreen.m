@@ -2,7 +2,7 @@
 
 IRM = 1;
 %% load screen
-[scr, xScreenCenter, yScreenCenter, window, baselineTextSize] = ScreenConfiguration(IRM, 1);
+[scr, xScreenCenter, yScreenCenter, window, baselineTextSize] = ScreenConfiguration(IRM, 0);
 ShowCursor;
 
 %% prepare the parameters
