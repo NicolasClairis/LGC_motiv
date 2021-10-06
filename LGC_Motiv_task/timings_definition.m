@@ -81,7 +81,7 @@ jitterRdmPerm_effortCross = randperm(nTrials);
 t_effortCross = jitters_effortCross(jitterRdmPerm_effortCross);
 
 t_finalCross = 10;
-t_choice = 10;
+t_choice = 15;
 t_dispChoice = 2;
 switch effort_type
     case 'physical' % in case you use different numbers for each effort type
