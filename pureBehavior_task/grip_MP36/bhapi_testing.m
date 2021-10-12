@@ -6,7 +6,7 @@ cd 'C:\Program Files (x86)\BIOPAC Systems, Inc\BIOPAC Hardware API 2.2.3 Researc
 % define paths
 % mpdevDLLPath = 'C:\Windows\System32\mpdev.dll';
 % mpdevHeaderPath = 'C:\Windows\System32\';
-mpdevDLLPath = 'C:\Program Files (x86)\BIOPAC Systems, Inc\BIOPAC Hardware API 2.2.3 Research\Win32\mpdev.dll';
+mpdevDLLPath = 'C:\Program Files (x86)\BIOPAC Systems, Inc\BIOPAC Hardware API 2.2.3 Research\x64\mpdev.dll';
 mpdevHeaderPath = 'C:\Program Files (x86)\BIOPAC Systems, Inc\BIOPAC Hardware API 2.2.3 Research\';
 
 % launch demo
