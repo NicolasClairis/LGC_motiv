@@ -207,22 +207,7 @@ end
 %% physical preparation
 %% physical MVC
 if strcmp(taskToPerform.physical.calib,'on')
-    switch langage
-        case 'fr'
-            DrawFormattedText(window,...
-                'Appuyez sur espace quand vous etes pret(e) a demarrer.',...
-                'center', yScreenCenter*(5/3), scr.colours.white, scr.wrapat);
-        case 'engl'
-            DrawFormattedText(window,...
-                'Press space key when you are ready to start.',...
-                'center', yScreenCenter*(5/3), scr.colours.white, scr.wrapat);
-    end
-    Screen(window,'Flip');
-    [~, ~, keyCode] = KbCheck();
-    while(keyCode(key_Em.space) ~= 1)
-        % wait until the key has been pressed
-        [~, ~, keyCode] = KbCheck();
-    end
+    waitSpace(langage, window, yScreenCenter, scr, key_Em);
     
     [initial_MVC, onsets_initial_MVC] = physical_effort_MVC(scr, stim, dq, n_MVC_repeat, calibTimes_Ep);
     MVC = max(initial_MVC.MVC); % expressed in Voltage
@@ -230,7 +215,9 @@ end
 
 % learning physical
 if strcmp(taskToPerform.physical.learning,'on')
-    showTitlesInstruction(scr,stim,'learning',false)
+    showTitlesInstruction(scr,stim,'learning',false);
+    waitSpace(langage, window, yScreenCenter, scr, key_Ep);
+    
     [learningPerfSummary_Ep, learningOnsets_Ep] = physical_learning(scr, stim, dq, n_E_levels, Ep_time_levels,...
         F_threshold, F_tolerance, MVC,...
         n_learningForceRepeats, learningTimes_Ep);
@@ -239,6 +226,7 @@ end
 % training physical
 if strcmp(taskToPerform.physical.training,'on')
     showTitlesInstruction(scr,stim,'training',false);
+    waitSpace(langage, window, yScreenCenter, scr, key_Ep);
     % initialize training parameters
     Ep_vars_training.MVC = MVC;
     Ep_vars_training.dq = dq;
@@ -472,25 +460,7 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
                 end
                 
                 % instruction that main task will start soon
-                switch langage
-                    case 'fr'
-                        DrawFormattedText(window,...
-                            'Appuyez sur espace quand vous etes pret(e) a demarrer.',...
-                            'center', yScreenCenter*(5/3), scr.colours.white, scr.wrapat);
-                    case 'engl'
-                        DrawFormattedText(window,...
-                            'Press space when you are ready to start.',...
-                            'center', yScreenCenter*(5/3), scr.colours.white, scr.wrapat);
-                end
-                
-                [~, onsets.taskWillStart] = Screen(window, 'Flip');
-                disp('Please press space.');
-                [~, ~, keyCode] = KbCheck();
-                while(keyCode(key_Em.space) ~= 1)
-                    % wait until the key has been pressed
-                    [~, ~, keyCode] = KbCheck();
-                end
-                
+                [onsets.taskWillStart] = waitSpace(langage, window, yScreenCenter, scr, key_Em);
                 
                 % iSubject makes sure each new subject has pattern physical mental in a different order.
                 % iSession switches which code at each session
@@ -498,22 +468,7 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
                     case 1
                         if strcmp(taskToPerform.physical.task,'on')
                             showTitlesInstruction(scr,stim,'task',false);
-                            switch langage
-                                case 'fr'
-                                    DrawFormattedText(window,...
-                                        'Appuyez sur espace quand vous etes pret(e) a demarrer.',...
-                                        'center', yScreenCenter*(5/3), scr.colours.white, scr.wrapat);
-                                case 'engl'
-                                    DrawFormattedText(window,...
-                                        'Press space when you are ready to start.',...
-                                        'center', yScreenCenter*(5/3), scr.colours.white, scr.wrapat);
-                            end
-                            Screen(window,'Flip');
-                            [~, ~, keyCode] = KbCheck();
-                            while(keyCode(key_Em.space) ~= 1)
-                                % wait until the key has been pressed
-                                [~, ~, keyCode] = KbCheck();
-                            end
+                            waitSpace(langage, window, yScreenCenter, scr, key_Em);
                             
                             % run physical task
                             [perfSummary.physical.(['repeat_nb',num2str(iRepeat)]).(['session_nb',num2str(iPhysical)]).(['Effort_lvl',(num2str(iEffortLevel))])] = choice_and_perf_staircase(scr, stim, key_Ep,...
