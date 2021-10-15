@@ -9,5 +9,16 @@ cd 'C:\Program Files (x86)\BIOPAC Systems, Inc\BIOPAC Hardware API 2.2.3 Researc
 mpdevDLLPath = 'C:\Program Files (x86)\BIOPAC Systems, Inc\BIOPAC Hardware API 2.2.3 Research\x64\mpdev.dll';
 mpdevHeaderPath = 'C:\Program Files (x86)\BIOPAC Systems, Inc\BIOPAC Hardware API 2.2.3 Research\';
 
+% which device
+mp150code = 101;
+mp36R = 102;
+mpDevice = mp36R;
+
+% which method of communication with the device
+mpmethod = 10;
+
+% serial number
+sn = 'auto';
+
 % launch demo
-mpdevdemo(mpdevDLLPath, mpdevHeaderPath, 103,10,'auto');
+mpdevdemo(mpdevDLLPath, mpdevHeaderPath, mpDevice, mpmethod, sn);
