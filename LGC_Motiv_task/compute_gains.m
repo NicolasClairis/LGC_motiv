@@ -7,14 +7,23 @@ function[totalGain] = compute_gains()
 
 %% enter subject ID
 % subject = 'CID0XX';
-subjectid = 'CID0XX';
+subjectid = [];
+while isempty(subjectid)
+    info = inputdlg({'Subject CID (XXX)'});
+    subjectid = ['CID',info{[1]}];
+end
+
+%% go to subject path
+cd ..
+rootPath = [pwd, filesep];
+subPath = [rootPath,'LGC_Motiv_results',filesep,subjectid,filesep,'behavior',filesep];
 
 %% load data
 totalGain = 0;
 nRuns = 4;
 for iRun = 1:nRuns
-    filenm = ls([subjectid,'_session',num2str(iRun),'_*_task_behavioral_tmp.mat']);
-    sessionGain = getfield(getfield(load(filenm,'summary'),'summary'),'totalGain');
+    filenm = ls([subPath,subjectid,'_session',num2str(iRun),'_*_task_behavioral_tmp.mat']);
+    sessionGain = getfield(getfield(load([subPath,filenm],'summary'),'summary'),'totalGain');
     totalGain = totalGain + sessionGain(end);
 end
 

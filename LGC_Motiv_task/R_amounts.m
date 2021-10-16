@@ -16,7 +16,7 @@ switch n_R_levels
     case 3
         R_money.R_1 = 1.60;
         R_money.R_2 = 1.75;
-        R_money.R_3 = 1.80;
+        R_money.R_3 = 1.90;
     case 4
         R_money.R_1 = 0.20;
         R_money.R_2 = 0.50;
