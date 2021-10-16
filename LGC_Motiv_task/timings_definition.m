@@ -43,7 +43,7 @@ switch effort_type % in case you use different numbers for each effort type
     case 'mental'
         calibTimes.effort_max = 12; % maximal time to perform the task (calibrated time should be shorter)
     case 'physical'
-        calibTimes.instructions_bis = 10;
+        calibTimes.instructions_bis = 6;
         calibTimes.effort_max = 5;% time to perform the task
         calibTimes.physicalReadWait = t_readWait; % Arthur manual definition
         calibTimes.MVC_rest = 7; % rest after each MVC calibration
