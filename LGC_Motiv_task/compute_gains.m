@@ -28,10 +28,11 @@ for iRun = 1:nRuns
 end
 
 % add the other resources
-MRStune = 50;
+MRStunes = 50;
+IRMftunes = 0;
 MVCtune = 48;
 timeTune = 40;
 questionnairesTune = 10; % like 1h exp
-totalGain = totalGain + MRStune + MVCtune + timeTune + questionnairesTune;
+totalGain = totalGain + MRStunes + IRMftunes + MVCtune + timeTune + questionnairesTune;
 
 end % function

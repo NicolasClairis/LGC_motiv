@@ -531,7 +531,7 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
                                 'center', yScreenCenter*(5/3), scr.colours.white, scr.wrapat);
                         end
                         Screen(window,'Flip');
-                        % give 3min break after 4 IP
+                        % give break after 4 IP
                         WaitSecs(t_endSession);
                     end
                 end
