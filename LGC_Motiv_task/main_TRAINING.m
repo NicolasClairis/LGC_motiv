@@ -33,7 +33,7 @@ cd(main_task_folder);
 % Insert the initials, the number of the participants
 iSubject = [];
 langue = 'f';
-IRM = 1;
+IRM = 0;
 while isempty(iSubject) || length(iSubject) ~= 3
     % repeat until all questions are answered
     info = inputdlg({'Subject CID (XXX)'});
@@ -55,27 +55,26 @@ file_nm = ['training_data_CID',num2str(iSubject)];
 % end
 %% general parameters
 % define subparts of the task to perform (on/off)
-taskToPerform.physical.calib = 'off';
-taskToPerform.physical.learning = 'off';
-taskToPerform.physical.training = 'off';
-% switch IRM
-%     case 0
-%         taskToPerform.physical.task = 'on';
-%     case 1 % task will be done in the scanner after the training
-%         taskToPerform.physical.task = 'off';
-% end
-taskToPerform.physical.task = 'off';
+taskToPerform.physical.calib = 'on';
+taskToPerform.physical.learning = 'on';
+taskToPerform.physical.training = 'on';
+switch IRM
+    case 0
+        taskToPerform.physical.task = 'on';
+    case 1 % task will be done in the scanner after the training
+        taskToPerform.physical.task = 'off';
+end
 
-taskToPerform.mental.learning = 'off';
+taskToPerform.mental.learning = 'on';
 taskToPerform.mental.calib = 'on';
-taskToPerform.mental.training = 'off';
-% switch IRM
-%     case 0
-%         taskToPerform.mental.task = 'on';
-%     case 1 % task will be done in the scanner after the training
-%         taskToPerform.mental.task = 'off';
-% end
-taskToPerform.mental.task = 'on';
+taskToPerform.mental.training = 'on';
+switch IRM
+    case 0
+        taskToPerform.mental.task = 'on';
+    case 1 % task will be done in the scanner after the training
+        taskToPerform.mental.task = 'off';
+end
+
 
 switch langue
     case 'f'
@@ -103,7 +102,7 @@ E_right = [2 3];
 E_left = [1 1];
 
 %Number of repeats of the whole code
-nbRepeat = 1;
+nbRepeat = 2;
 
 % Total amount of money to be given
 totalGain = 0;
@@ -160,7 +159,7 @@ if strcmp(taskToPerform.mental.calib,'on') || strcmp(taskToPerform.mental.task,'
 end
 % time for end of session
 % t_endSession = mainTimes.endSession;
-t_endSession = 15;
+t_endSession = 180;
 
 
 %% physical parameters
@@ -426,21 +425,20 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
         Ep_vars.timeRemainingEndTrial_ONOFF = 0;
     end
     
-%     % keep track of which block was first
-%     switch mod(iSubject,2)
-%         case 0
+    % keep track of which block was first
+    switch mod(iSubject,2)
+        case 0
             % started with mental
             all.mentalfirst = 1;
-%         case 1
-%             % started with physical
-%             all.mentalfirst = 0;
-%     end
+        case 1
+            % started with physical
+            all.mentalfirst = 0;
+    end
     
     % repeat twice all of it to have good measures
     for iRepeat=1:nbRepeat
         
-%         for iEffortLevel=1:length(E_right)
-        for iEffortLevel=1:1
+        for iEffortLevel=1:length(E_right)
             
             
             % for mental effort timing
@@ -461,7 +459,7 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
                 if ismember(iSession,[1,2])
                     R_or_P = 'R';
                 elseif ismember(iSession,[3,4])
-                    R_or_P = 'R';
+                    R_or_P = 'P';
                 end
                 
                 % instruction that main task will start soon
@@ -469,7 +467,7 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
                 
                 % iSubject makes sure each new subject has pattern physical mental in a different order.
                 % iSession switches which code at each session
-                switch mod(iSession,2)
+                switch mod(iSubject+iSession,2)
                     case 1
                         if strcmp(taskToPerform.physical.task,'on')
                             showTitlesInstruction(scr,stim,'task',false);
@@ -519,10 +517,10 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
                 end
                 % Display feedback only for mental effort but in the end for physical too
                 if strcmp(taskToPerform.physical.task,'off') && strcmp(taskToPerform.mental.task,'on')
-                    if mod(iSession,2) == 0
+                    if mod(iSubject+iSession,2) == 0
                         
                         % display feedback for the current session
-                        finalGain_str = sprintf('%0.2f',finalGain);
+                        finalGain_str = sprintf('0.2%',finalGain);
                         switch langage
                             case 'fr'
                                 DrawFormattedText(window,...
@@ -549,32 +547,32 @@ end
 
 %% re-measure calibration
 % physical MVC re-measure
-% if strcmp(taskToPerform.physical.task,'on')
-%     [last_MVC, onsets_last_MVC] = physical_effort_MVC(scr, stim, dq, n_MVC_repeat, calibTimes_Ep);
-% end
-% 
-% % mental re-calibration
-% if strcmp(taskToPerform.mental.task,'on')
-%     mentalE_prm_learning_and_calib = mental_effort_parameters();
-%     mentalE_prm_learning_and_calib.startAngle = 0; % for learning always start at zero
-%     % extract numbers to use for each calibration trial
-% %     [numberVector_calib] = mental_numbers(n_calibTrials_Em);
-% [numberVector_calib] = mental_calibNumberVector(n_calibTrials_Em, n_calibMax);
-%     % alternatively, use fixed number of correct answers to provide for each effort
-%     % level
-%     % repeat calibration until the subject performance is better
-%     % than the requested time threshold
-%     lastCalibSuccess = false;
-%     lastCalibSession = 0;
-%     while lastCalibSuccess == false
-%         lastCalibSession = lastCalibSession + 1;
-%         [t_min_lastCalib, lastCalibSessionSummary, lastCalibSuccess] = mental_calibTime(scr, stim, key_Em,...
-%             numberVector_calib, mentalE_prm_learning_and_calib, n_calibTrials_Em, n_calibMax, calibTimes_Em, calib_errorLimits_Em, langage);
-%         lastCalibSummary.(['calibSession_',num2str(calibSession)]).calibSummary = lastCalibSessionSummary;
-%         lastCalibSummary.(['calibSession_',num2str(calibSession)]).calibSuccess = lastCalibSuccess;
-%         lastCalibSummary.(['calibSession_',num2str(calibSession)]).t_mental_max_perTrial = t_min_lastCalib;
-%     end
-% end
+if strcmp(taskToPerform.physical.task,'on')
+    [last_MVC, onsets_last_MVC] = physical_effort_MVC(scr, stim, dq, n_MVC_repeat, calibTimes_Ep);
+end
+
+% mental re-calibration
+if strcmp(taskToPerform.mental.task,'on')
+    mentalE_prm_learning_and_calib = mental_effort_parameters();
+    mentalE_prm_learning_and_calib.startAngle = 0; % for learning always start at zero
+    % extract numbers to use for each calibration trial
+%     [numberVector_calib] = mental_numbers(n_calibTrials_Em);
+[numberVector_calib] = mental_calibNumberVector(n_calibTrials_Em, n_calibMax);
+    % alternatively, use fixed number of correct answers to provide for each effort
+    % level
+    % repeat calibration until the subject performance is better
+    % than the requested time threshold
+    lastCalibSuccess = false;
+    lastCalibSession = 0;
+    while lastCalibSuccess == false
+        lastCalibSession = lastCalibSession + 1;
+        [t_min_lastCalib, lastCalibSessionSummary, lastCalibSuccess] = mental_calibTime(scr, stim, key_Em,...
+            numberVector_calib, mentalE_prm_learning_and_calib, n_calibTrials_Em, n_calibMax, calibTimes_Em, calib_errorLimits_Em, langage);
+        lastCalibSummary.(['calibSession_',num2str(calibSession)]).calibSummary = lastCalibSessionSummary;
+        lastCalibSummary.(['calibSession_',num2str(calibSession)]).calibSuccess = lastCalibSuccess;
+        lastCalibSummary.(['calibSession_',num2str(calibSession)]).t_mental_max_perTrial = t_min_lastCalib;
+    end
+end
 
 %% save the data
 
@@ -611,9 +609,9 @@ if strcmp(taskToPerform.physical.task,'on')
 end
 % record mental main task data
 if strcmp(taskToPerform.mental.task,'on')
-    for iEffort= 1:1% for all effort levels
+    for iEffort= 1:length(E_right) % for all effort levels
         for iSession = 1:n_sessions/2 % for the mental sessions
-            for iRepeat = 1:nbRepeat
+            for iRepeat = 1:2
                 % save data in all and reformat it in a specific order
                 all.mental.(['EffortLvl_',num2str(iEffort)]).(['session_nb',num2str(iSession)]).(['repeat_nb',num2str(iRepeat)]).perfSummary = perfSummary.mental.(['repeat_nb',num2str(iRepeat)]).(['session_nb',num2str(iSession)]).(['Effort_lvl',(num2str(iEffort))]);
             end
