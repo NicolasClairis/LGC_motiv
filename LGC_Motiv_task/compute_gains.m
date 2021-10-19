@@ -29,7 +29,7 @@ end
 
 % add the other resources
 MRStunes = 50;
-IRMftunes = 0;
+IRMftunes = 40;
 MVCtune = 48;
 timeTune = 40;
 questionnairesTune = 10; % like 1h exp
