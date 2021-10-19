@@ -62,6 +62,7 @@ confidence.display = false;
 confidenceChoiceDisp = false;
 
 %% timings
+timings.cross.mainTask = 0.5;
 t_cross         = timings.cross.(training_R_P_RP_or_mainTask);
 % precise if the choice and the performance periods will have a time
 % constraint
@@ -132,11 +133,11 @@ end
 
 % initialize left-right values, depending on the condition
 if strcmp('R',R_or_P)
-    R_left = 1.5;
-    R_right_tmp = 2.5;
-elseif strcmp('P',R_or_P)
-    R_left = 1.5;
+    R_left = 0.05;
     R_right_tmp = 0.5;
+elseif strcmp('P',R_or_P)
+    R_left = 0.5;
+    R_right_tmp = 0.05;
 end
 % remember initial baseline value for the right value as it will change due to staircase
 R_right_baseline = R_right_tmp;
@@ -148,7 +149,7 @@ for iTrial = 1:nTrials
     Screen('FillRect',window, white, stim.cross.verticalLine); % vertical line
     Screen('FillRect',window, white, stim.cross.horizontalLine); % horizontal line
     [~,onsets.cross(iTrial)] = Screen('Flip',window); % display the cross on screen
-    WaitSecs(t_cross(iTrial));
+    WaitSecs(1);
     
     %% check that no key is being pressed before the choice trial starts
     [was_a_key_pressed_bf_trial(iTrial),...
@@ -160,7 +161,7 @@ for iTrial = 1:nTrials
         Screen('FillRect',window,white, stim.cross.verticalLine); % vertical line
         Screen('FillRect',window,white, stim.cross.horizontalLine); % horizontal line
         [~,onsets.cross_after_buttonRelease(iTrial)] = Screen('Flip',window); % display the cross on screen
-        WaitSecs(t_cross(iTrial));
+        WaitSecs(1);
     end
     
     % initialize variables in case of failure on this trial
