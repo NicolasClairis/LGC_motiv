@@ -33,7 +33,7 @@ cd(main_task_folder);
 % Insert the initials, the number of the participants
 iSubject = [];
 langue = 'f';
-IRM = 0;
+IRM = 1;
 while isempty(iSubject) || length(iSubject) ~= 3
     % repeat until all questions are answered
     info = inputdlg({'Subject CID (XXX)'});
@@ -64,7 +64,6 @@ switch IRM
     case 1 % task will be done in the scanner after the training
         taskToPerform.physical.task = 'off';
 end
-
 taskToPerform.mental.learning = 'on';
 taskToPerform.mental.calib = 'on';
 taskToPerform.mental.training = 'on';
@@ -74,8 +73,6 @@ switch IRM
     case 1 % task will be done in the scanner after the training
         taskToPerform.mental.task = 'off';
 end
-
-
 switch langue
     case 'f'
         langage = 'fr';
