@@ -64,12 +64,12 @@ switch IRM
     case 1 % task will be done in the scanner after the training
         taskToPerform.physical.task = 'off';
 end
-taskToPerform.mental.learning = 'on';
-taskToPerform.mental.calib = 'on';
-taskToPerform.mental.training = 'on';
+taskToPerform.mental.learning = 'off';
+taskToPerform.mental.calib = 'off';
+taskToPerform.mental.training = 'off';
 switch IRM
     case 0
-        taskToPerform.mental.task = 'on';
+        taskToPerform.mental.task = 'off';
     case 1 % task will be done in the scanner after the training
         taskToPerform.mental.task = 'off';
 end
@@ -168,7 +168,7 @@ if strcmp(taskToPerform.physical.calib,'on') ||...
     [key_Ep, dq] = relevant_key_definition('physical', IRM, n_buttonsChoice);
     % define conditions
     n_MVC_repeat = 3;
-    n_learningForceRepeats = 3; % number of learning repetitions for each level of difficulty (= each level of force)
+    n_learningForceRepeats = 7; % number of learning repetitions for each level of difficulty (= each level of force)
     F_threshold = 55; % force should be maintained above this threshold (expressed in % of MVC)
     F_tolerance = 2.5; % tolerance allowed around the threshold (expressed in % of MVC)
     % need to define timings for each level of force
