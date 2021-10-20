@@ -250,7 +250,8 @@ for iTrial = 1:nTrials
     if stoptask == 1
         % save all the data in case you still want to analyze it
         save([results_folder, file_nm,'_earlyEnd_tmp.mat']);
-        break;
+        sca; % close PTB
+        break; % stop for loop
     end
     
     %% chosen option display period
