@@ -247,6 +247,7 @@ for j = 1:nb_pilots
     predictedForce(j) = Emax_morpho(Fmaxtheorique1(j,1),Fmaxtheorique1(j,2),Fmaxtheorique1(j,4),Fmaxtheorique1(j,3));
 end
 %plot and compute correlation between initial/final MVC and theoritical strength
+init_MVC = ((init_MVC/(0.1564))/0.1019716 )* 3.128
 figure()
 scatter(init_MVC,predictedForce)
 corrcoef(init_MVC,predictedForce)
