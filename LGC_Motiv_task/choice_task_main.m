@@ -127,7 +127,10 @@ nTrials = 48;
 
 % extract money amount corresponding to each reward level for the
 % computation of the gains
-R_money = R_amounts(n_R_levels, punishment_yn);
+% R_money = R_amounts(n_R_levels, punishment_yn);
+warning('need to load values for lowest R used in staircase and delta inferred with staircase here');
+lowR = 0.05;
+[R_money] = R_amounts_IP(n_R_levels, punishment_yn, lowR, delta);
 
 % check trial number is ok based on the number of entered conditions
 % you should have a pair number of trials so that you can define an equal
