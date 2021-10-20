@@ -46,16 +46,16 @@ end
 % Create subjectCodeName which is used as a file saving name
 subjectCodeName = strcat('CID',iSubject);
 
-file_nm_training_Em = ['training_data_Em_CID',num2str(iSubject)];
-file_nm_training_Ep = ['training_data_Ep_CID',num2str(iSubject)];
-file_nm = ['training_data_CID',num2str(iSubject)];
+file_nm_training_Em = ['IP_data_Em_CID',num2str(iSubject)];
+file_nm_training_Ep = ['IP_data_Ep_CID',num2str(iSubject)];
+file_nm = ['IP_data_CID',num2str(iSubject)];
 % convert subject CID into number (only if used to perform actual task)
 % if ischar(iSubject)
 %     iSubject = str2double(iSubject);
 % end
 %% general parameters
 % define subparts of the task to perform (on/off)
-taskToPerform.physical.calib = 'off';
+taskToPerform.physical.calib = 'on';
 taskToPerform.physical.learning = 'off';
 taskToPerform.physical.training = 'off';
 % switch IRM
@@ -64,7 +64,7 @@ taskToPerform.physical.training = 'off';
 %     case 1 % task will be done in the scanner after the training
 %         taskToPerform.physical.task = 'off';
 % end
-taskToPerform.physical.task = 'off';
+taskToPerform.physical.task = 'on';
 
 taskToPerform.mental.learning = 'off';
 taskToPerform.mental.calib = 'on';
@@ -75,7 +75,7 @@ taskToPerform.mental.training = 'off';
 %     case 1 % task will be done in the scanner after the training
 %         taskToPerform.mental.task = 'off';
 % end
-taskToPerform.mental.task = 'on';
+taskToPerform.mental.task = 'off';
 
 switch langue
     case 'f'
@@ -136,7 +136,7 @@ n_trainingConditions = length(trainingConditions);
 [trainingTimes_Ep, calibTimes_Ep, learningTimes_Ep, taskTimes_Ep, mainTimes] = timings_definition(trainingConditions, n_R_levels, n_E_levels, n_trialsPerSession, 'physical');
 
 % number of times we apply a staircase procedure. (2 mental (R or P) 2 physical (R or P))
-n_sessions = 4;
+n_sessions = 2;
 
 % number of buttons to answer
 switch IRM
@@ -599,10 +599,10 @@ end
 % actual performance in the main task sessions
 % record physical main task data
 if strcmp(taskToPerform.physical.task,'on')
-    for iEffort= 1:length(E_right) % for all effort levels
+    for iEffort= 1:1 % for all effort levels
         for iSession = 1:n_sessions/2 % for the physical sessions
             
-            for iRepeat = 1:2
+            for iRepeat = 1:nbRepeat
                 % save data in all and reformat it in a specific order
                 all.physical.(['EffortLvl_',num2str(iEffort)]).(['session_nb',num2str(iSession)]).(['repeat_nb',num2str(iRepeat)]).perfSummary = perfSummary.physical.(['repeat_nb',num2str(iRepeat)]).(['session_nb',num2str(iSession)]).(['Effort_lvl',(num2str(iEffort))]);
             end
