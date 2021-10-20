@@ -164,7 +164,7 @@ for iTrial = 1:nTrials
     % initialize variables in case of failure on this trial
     i_trial_failed = 0;
     trial_success = 0;
-    redo_limit = 5;
+    redo_limit = 0;
     
     %% fixation cross pre-choice period
     Screen('FillRect',window, white, stim.cross.verticalLine); % vertical line
@@ -407,7 +407,16 @@ for iTrial = 1:nTrials
             [~,onsets.fbk_fail(iTrial)] = Screen(window,'Flip');
             
             % record loss for the current trial
-            gain(iTrial) = -R_money.trialFail;
+            if choice(iTrial) == 0 % no choice was made
+                gain(iTrial) = -R_money.trialFail;
+            else
+                switch R_or_P_tmp
+                    case 'R' % reward case: just no gain
+                        gain(iTrial) = 0;
+                    case 'P' % punishment case: double the loss
+                        gain(iTrial) = ((-1)*R_chosen(iTrial))*2;
+                end
+            end
             
         case 1 % trial is a success
             % display feedback
