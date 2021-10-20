@@ -15,8 +15,8 @@ function [Ep_time_levels] = physical_effortLevels(n_E_levels)
 
 switch n_E_levels
     case 3
-        Ep_time_levels.level_1 = 1.5;
-        Ep_time_levels.level_2 = 3;
+        Ep_time_levels.level_1 = 0.5;
+        Ep_time_levels.level_2 = 2.5;
         Ep_time_levels.level_3 = 4.5;
     case 4
         Ep_time_levels.level_1 = 0.5;
