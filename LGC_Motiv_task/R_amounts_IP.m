@@ -18,6 +18,7 @@ function[R_money] = R_amounts_IP(n_R_levels, punishment_yn, lowR, delta)
 % R_money: structure with 1 subfield for each reward level
 
 %% rewards
+R_money.R_default = 0.05;
 switch n_R_levels
     case 3
         R_money.R_1 = lowR;
@@ -40,6 +41,7 @@ for iR = 1:n_R_levels
 end
 
 %% punishments
+R_money.P_default = 0.05;
 if strcmp(punishment_yn,'yes')
     switch n_R_levels
         case 3

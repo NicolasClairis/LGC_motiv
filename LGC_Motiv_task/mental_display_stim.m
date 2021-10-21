@@ -1,11 +1,11 @@
 function[onset_stim] = mental_display_stim(scr, stim,...
     startAngle, endAngle,...
     sideQuestion, taskTypeDisplay, taskTypePerf, numberValue, mental_n_col,...
-    learning_instructions)
+    learning_instructions, maxPerfUntilNowAngle)
 % [onset_stim] = mental_display_stim(scr, stim,...
 %     startAngle, endAngle,...
 %     sideQuestion, taskTypeDisplay, taskTypePerf, numberValue, mental_n_col,...
-%     learning_instructions)
+%     learning_instructions, maxPerfUntilNowAngle)
 % mental_display_stim will display the arc, number to solve,
 % instructions and reward level (all relevant info) according to the inputs
 %
@@ -37,6 +37,9 @@ function[onset_stim] = mental_display_stim(scr, stim,...
 % 'partialInstructions': display only the two possible answers but not the
 % question anymore
 % 'noInstructions': no reminder of what the question is nor of where you should answer
+%
+% maxPerfUntilNowAngle: for calibration, add an orange bar where the
+% maximum perf has been reached until now
 %
 % OUTPUTS
 % onset_stim: time when everything appears on screen
@@ -79,6 +82,16 @@ DrawFormattedText(window, num2str(numberValue),...
     textColor);
 % text size back to baseline
 Screen('TextSize', window, scr.textSize.baseline);
+
+%% display orange bar where is the best performance until now
+if ~isempty(maxPerfUntilNowAngle)
+    Screen('FillArc', window,...
+        arcCurrLevelColor,...
+        arcPosition,...
+        maxPerfUntilNowAngle,...
+        maxPerfUntilNowAngle);
+    error('find how to draw a line correct place')
+end
 
 %% instructions
 switch learning_instructions

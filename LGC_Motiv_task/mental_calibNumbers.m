@@ -1,7 +1,7 @@
 function[n_mental_max_perTrial, calib_summary] = mental_calibNumbers(scr, stim, key,...
-    numberVector_calib, mentalE_prm, n_calibTrials, n_calibMax, calibTimes)
+    numberVector_calib, mentalE_prm, n_calibTrials, calibTimes)
 %[n_mental_max_perTrial, calib_summary] = mental_calibNumbers(scr, stim, key,...
-%     numberVector_calib, mentalE_prm, n_calibTrials, n_calibMax, calibTimes)
+%     numberVector_calib, mentalE_prm, n_calibTrials, calibTimes)
 %
 % mental_calibNumbers will extract maximum number of subsequent correct
 % answers participants can provide in the limited amount of time that is
@@ -31,9 +31,6 @@ function[n_mental_max_perTrial, calib_summary] = mental_calibNumbers(scr, stim, 
 %   subsequent correct answers you want)
 %
 % n_calibTrials: number of calibration trials
-%
-% n_calibMax: reference number of subsequent
-% correct answers to use
 %
 % calibTimes: structure with timings for this phase of the task
 %   .instructions: instructions duration
@@ -81,6 +78,13 @@ for iInstructionsLoop = 1:2
     end
 end
 
+% max (impossible) to reach
+n_calibMax = 50;
+% errors handling
+errorLimits.useOfErrorThresold = true;
+errorLimits.errorThreshold = 3;
+errorLimits.usOfErrorMapping = false;
+
 %% perform calibration
 for iCalibTrial = 1:n_calibTrials
     
@@ -91,27 +95,15 @@ for iCalibTrial = 1:n_calibTrials
     %% define number of correct sequences to reach to get to top
     switch iCalibTrial
         case 1
-            n_max = n_calibMax;
-        otherwise % next trials use initial participant max + 3
-            max_perf_reached_duringCalib = max(n_max_calibPerf);
-            if max_perf_reached_duringCalib < n_calibMax
-                n_max = n_calibMax;
-            else % increase difficulty to push towards
-                n_max = max_perf_reached_duringCalib + 2;
-                n_switch = mentalE_prm.switchPerc*n_max;
-                % number of switches has to be integer => increase
-                % difficulty accordingly
-                while n_switch ~= round(n_switch)
-                    n_max = n_max + 1;
-                    n_switch = mentalE_prm.switchPerc*n_max;
-                end
-            end
+            n_maxReachedUntilNow = [];
+        otherwise % next trials use best performance
+            n_maxReachedUntilNow = max(n_max_calibPerf);
     end
     
     %% calibration trial start: finish when max time reached OR when correct number of answers has been provided
-    [mentalE_perf, calibTrial_success] = mental_effort_perf(scr, stim, key,...
+    [mentalE_perf, calibTrial_success] = mental_effort_perf_Nback(scr, stim, key,...
         numberVector_calib(iCalibTrial,:),...
-        mentalE_prm, n_max, instructions_disp, calib_time_limit, calibTimes.effort_max);
+        mentalE_prm, n_calibMax, instructions_disp, calib_time_limit, calibTimes.effort_max, errorLimits, n_maxReachedUntilNow);
     
     calib_summary.mentalE_perf(iCalibTrial) = mentalE_perf;
     % store current maximum performance
