@@ -246,6 +246,7 @@ for iTrial = 1:nTrials
     % save the Indifference point, considered as the last choice to the right after computation
     if iTrial == 5
         IP = R_right_tmp;
+        delta_IP = abs(IP - R_left);
     end
     
     %% check if escape was pressed => stop everything if so
@@ -463,6 +464,7 @@ end % trial loop
 
 %% extract relevant training data
 summary.IP = IP;
+summary.delta_IP = delta_IP;
 summary.onsets = onsets;
 summary.R_chosen = R_chosen;
 summary.E_chosen = E_chosen;
