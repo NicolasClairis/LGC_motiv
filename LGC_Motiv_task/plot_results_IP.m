@@ -248,6 +248,9 @@ for j = 1:nb_pilots
 end
 %plot and compute correlation between initial/final MVC and theoritical strength
 init_MVC = ((init_MVC/(0.1564))/0.1019716 )* 3.128
+
+init_MVC(17:19) = [381.7337 , 294.1015 , 766.8410];
+predictedForce(17:19) = [1.9463,1.4995,3.9098 ];
 figure()
 scatter(init_MVC,predictedForce)
 corrcoef(init_MVC,predictedForce)

@@ -67,7 +67,7 @@ taskToPerform.physical.training = 'off';
 taskToPerform.physical.task = 'on';
 
 taskToPerform.mental.learning = 'off';
-taskToPerform.mental.calib = 'on';
+taskToPerform.mental.calib = 'off';
 taskToPerform.mental.training = 'off';
 % switch IRM
 %     case 0
