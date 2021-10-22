@@ -41,7 +41,8 @@ end
 calibTimes.instructions = 5;
 switch effort_type % in case you use different numbers for each effort type
     case 'mental'
-        calibTimes.effort_max = 12; % maximal time to perform the task (calibrated time should be shorter)
+        t_max_mentalEffort = 8;
+        calibTimes.effort_max = t_max_mentalEffort; % maximal time to perform the task
     case 'physical'
         calibTimes.instructions_bis = 6;
         calibTimes.effort_max = 5;% time to perform the task
@@ -97,7 +98,6 @@ switch effort_type
         % too much in the display
         taskTimes.physicalReadWait = t_readWait; % Arthur manual definition
     case 'mental'
-        t_max_mentalEffort = 8;
         taskTimes.max_effort = t_max_mentalEffort;
 end
 t_fbk = 1; % feedback display
