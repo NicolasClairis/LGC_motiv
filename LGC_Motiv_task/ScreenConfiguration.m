@@ -42,6 +42,7 @@ end
 %% set screen colour
 black = [0 0 0];
 white = [255 255 255];
+orange = [255 153 0];
 grey = [128 128 128];
 screenColour = grey;
 
@@ -125,5 +126,6 @@ scr.background_colour = screenColour;
 scr.colours.grey = grey;
 scr.colours.white = white;
 scr.colours.black = black;
+scr.colours.orange = orange;
 scr.wrapat = 50; % limit characters for drawformattedtext
 end % function

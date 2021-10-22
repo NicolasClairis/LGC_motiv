@@ -33,6 +33,7 @@ wrapat = scr.wrapat;
 % colours
 black = scr.colours.black;
 white = scr.colours.white;
+orange = scr.colours.orange;
 grey = scr.colours.grey;
 % difficultyArcColor = [178 24 43];
 difficultyArcColor = [255 210 0];
@@ -601,6 +602,14 @@ stim.mentalCalibEnd.colour = white;
 stim.difficulty.maxColor        = black;
 stim.difficulty.currLevelColor  = difficultyArcColor;
 stim.difficulty.ovalWidth       = 3;
+
+%% parameters for trait indicating best performance until now for mental calibration
+stim.calibBestUntilNow.color = orange;
+arcPosition     = stim.difficulty.middle_center;
+stim.calibBestUntilNow.circleRadius    = difficultyRectXYsize/2;
+stim.calibBestUntilNow.xCircleCenter = arcPosition(1) + (arcPosition(3) - arcPosition(1))/2;
+stim.calibBestUntilNow.yCircleCenter = arcPosition(2) + (arcPosition(4) - arcPosition(2))/2;
+stim.calibBestUntilNow.lineWidth = 3;
 
 %% choice period
 switch langage

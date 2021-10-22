@@ -102,19 +102,19 @@ end
 % extract main mental effort parameters
 sideQuestion = mentalE_prm.sideQuestion;
 mental_n_col = mentalE_prm.mental_n_col;
-switchPerc = mentalE_prm.switchPerc;
+% switchPerc = mentalE_prm.switchPerc;
 Nback       = mentalE_prm.Nback;
 
-% determine number of switches to implement in a given sequence
-% with instructions
-if strcmp(learning_col,'all')
-    n_switch = switchPerc*n_max_to_reach;
-    if n_switch ~= round(n_switch)
-        error('something is wrong with your script, number of switch has to be integer');
-    end
-else % no switch if learning session focusing on one single colour
-    n_switch = 0;
-end
+% % determine number of switches to implement in a given sequence
+% % with instructions
+% if strcmp(learning_col,'all')
+%     n_switch = switchPerc*n_max_to_reach;
+%     if n_switch ~= round(n_switch)
+%         error('something is wrong with your script, number of switch has to be integer');
+%     end
+% else % no switch if learning session focusing on one single colour
+n_switch = 0; % no more task switching
+% end
 
 % extract error management variables
 useOfErrorThreshold = errorLimits.useOfErrorThreshold;
@@ -139,37 +139,37 @@ n_questions = size(numberVector,2);
     numberVectorUsedPerf] = deal( NaN(1, n_questions));
 
 % define first trial task type
-switch learning_col
-    case 'all'
-        taskTypeDisplay(1) = random_binary; % define randomly the nature of the first trial
-    case 'col1' % start with colour 1
-        switch mentalE_prm.mental_n_col.col1
-            case 'oddEven'
-                taskTypeDisplay(1) = 0;
-            case 'lowHigh'
-                taskTypeDisplay(1) = 1;
-        end
-    case 'col2' % start with colour 2
-        switch mentalE_prm.mental_n_col.col2
-            case 'oddEven'
-                taskTypeDisplay(1) = 0;
-            case 'lowHigh'
-                taskTypeDisplay(1) = 1;
-        end
-end
+% switch learning_col
+%     case 'all'
+%         taskTypeDisplay(1) = random_binary; % define randomly the nature of the first trial
+%     case 'col1' % start with colour 1
+%         switch mentalE_prm.mental_n_col.col1
+%             case 'oddEven'
+%                 taskTypeDisplay(1) = 0;
+%             case 'lowHigh'
+%                 taskTypeDisplay(1) = 1;
+%         end
+%     case 'col2' % start with colour 2
+%         switch mentalE_prm.mental_n_col.col2
+%             case 'oddEven'
+%                 taskTypeDisplay(1) = 0;
+%             case 'lowHigh'
+%                 taskTypeDisplay(1) = 1;
+%         end
+% end
+% lower/higher than 5 task (no more task switching)
+taskTypeDisplay(1) = 1;
 
-% define a STAY/SWITCH sequence
-task_seq = mental_effort_task_switches(taskTypeDisplay(1), n_max_to_reach, n_switch);
+task_seq = ones(1, n_max_to_reach);
 % define first number which will appear on screen
 numberVectorUsedDisplay(1) = numberVector(1);
 % precise that for first questions of Nback, pressing any button is ok
-switch Nback
-    case 1
-        taskTypePerf(1) = 2;
-        numberVectorUsedPerf(1) = NaN;
-    case 2
-        taskTypePerf(1:2) = 2;
-        numberVectorUsedPerf(1:2) = NaN;
+if Nback > 0
+    taskTypePerf(1:Nback) = 2; % first answers = any button press is ok
+    taskTypePerf((Nback+1):end) = 1; % next = need to say if lower or higher than zero
+    numberVectorUsedPerf(1:Nback) = NaN;
+elseif Nback == 0
+    taskTypePerf(:) = 1;
 end
 
 %% initialize the counters
@@ -193,7 +193,7 @@ KbReleaseWait;
 %% initial display to get timing of the start
 [onsetTrial] = mental_display_stim(scr, stim,...
     startAngle_currentTrial, endAngle,...
-    sideQuestion, taskTypeDisplay(1), taskTypePerf(1), numberVector(1), mental_n_col,...
+    sideQuestion, taskTypeDisplay(1), numberVector(1), mental_n_col,...
     learning_instructions);
 onset_question_tmp = onsetTrial; % for the first question
 onsets.nb_1 = onsetTrial;
@@ -240,7 +240,7 @@ while (iCorrectAnswers < n_max_to_reach) &&...
     %% display stimulus
     onset_stim = mental_display_stim(scr, stim,...
         currentAngle(i_question), endAngle,...
-        sideQuestion, taskTypeDisplay(i_question), taskTypePerf(i_question), numberVectorUsedDisplay(i_question), mental_n_col,...
+        sideQuestion, taskTypeDisplay(i_question), numberVectorUsedDisplay(i_question), mental_n_col,...
         learning_instructions_bis, maxPerfUntilNowAngle);
     
     %% record onset
@@ -371,7 +371,6 @@ mentalE_perf.taskTypePerf   = taskTypePerf(questions_done);
 mentalE_perf.sideAnswer     = sideAnswer(questions_done);
 mentalE_perf.isGoodAnswer   = goodOrBadAnswer(questions_done);
 mentalE_perf.rt             = rt(questions_done);
-mentalE_perf.n_switch       = n_switch;
 mentalE_perf.n_max_to_reach = n_max_to_reach;
 mentalE_perf.n_errorsMade   = jErrorsMade;
 mentalE_perf.anglePerformance = currentAngle(questions_done);
