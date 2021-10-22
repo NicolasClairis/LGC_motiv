@@ -102,19 +102,7 @@ end
 % extract main mental effort parameters
 sideQuestion = mentalE_prm.sideQuestion;
 mental_n_col = mentalE_prm.mental_n_col;
-% switchPerc = mentalE_prm.switchPerc;
 Nback       = mentalE_prm.Nback;
-
-% % determine number of switches to implement in a given sequence
-% % with instructions
-% if strcmp(learning_col,'all')
-%     n_switch = switchPerc*n_max_to_reach;
-%     if n_switch ~= round(n_switch)
-%         error('something is wrong with your script, number of switch has to be integer');
-%     end
-% else % no switch if learning session focusing on one single colour
-n_switch = 0; % no more task switching
-% end
 
 % extract error management variables
 useOfErrorThreshold = errorLimits.useOfErrorThreshold;
@@ -363,6 +351,8 @@ end % keep performing until number of subsequent answers reaches threshold prede
 % keep only questions performed
 questions_done = ~isnan(sideAnswer);
 % record question parameters
+mentalE_perf.Nback = Nback;
+mentalE_perf.questions_done = questions_done;
 mentalE_perf.numberVector   = numberVector;
 mentalE_perf.numberVectorUsedDisplay = numberVectorUsedDisplay(questions_done);
 mentalE_perf.numberVectorUsedPerf = numberVectorUsedPerf(questions_done);
@@ -377,7 +367,7 @@ mentalE_perf.anglePerformance = currentAngle(questions_done);
 % record number of questions answered and how many were correct
 mentalE_perf.n_questions_performed = i_question - 1;
 mentalE_perf.n_correctAnswersForDisplay = iCorrectAnswers;
-mentalE_perf.n_correctAnswersProvided = jCorrectAnswers - 1; % remove 1 for the first answer (=just pressing any button)
+mentalE_perf.n_correctAnswersProvided = jCorrectAnswers - Nback; % remove 1 for the first answer (=just pressing any button)
 % record if trial was achieved or interrompted due to time limit (=failure)
 if iCorrectAnswers == n_max_to_reach % reached the top
     trial_success = true;
