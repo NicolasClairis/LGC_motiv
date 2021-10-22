@@ -52,6 +52,17 @@ for i_pilot = 1:nb_pilots
 
     loading_file_nm_tmp = ['*_',num2str(pilot_ID(i_pilot)),'.mat'];
     load(dir(loading_file_nm_tmp).name)
+    
+    if i_pilot > 3 && i_pilot ~= 10
+        for q = 1:90
+            totalTime(i_pilot,q) = all.mental.learning.extendedLearning.(strcat('trial_',num2str(q))).totalTime_success;
+            errorsMade(i_pilot,q) = all.mental.learning.extendedLearning.(strcat('trial_',num2str(q))).n_errorsMade;
+        end
+            for m = 1:18
+        meanTotalTime(m) = mean(totalTime(i_pilot,1 + (m-1)*5:m*5));
+    end
+    end
+    
 
     delta_IP(i_pilot,1) = -1.5 + all.physical.EffortLvl_1.session_nb1.repeat_nb1.perfSummary.IP;
     delta_IP(i_pilot,2) = -1.5 + all.physical.EffortLvl_1.session_nb1.repeat_nb2.perfSummary.IP;
@@ -249,8 +260,8 @@ end
 %plot and compute correlation between initial/final MVC and theoritical strength
 init_MVC = ((init_MVC/(0.1564))/0.1019716 )* 3.128
 
-init_MVC(17:19) = [381.7337 , 294.1015 , 766.8410];
-predictedForce(17:19) = [1.9463,1.4995,3.9098 ];
+% init_MVC(17:19) = [381.7337 , 294.1015 , 766.8410];
+% predictedForce(17:19) = [1.9463,1.4995,3.9098 ];
 figure()
 scatter(init_MVC,predictedForce)
 corrcoef(init_MVC,predictedForce)

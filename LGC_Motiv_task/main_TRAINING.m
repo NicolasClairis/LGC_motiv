@@ -49,6 +49,7 @@ subjectCodeName = strcat('CID',iSubject);
 file_nm_training_Em = ['training_data_Em_CID',num2str(iSubject)];
 file_nm_training_Ep = ['training_data_Ep_CID',num2str(iSubject)];
 file_nm = ['training_data_CID',num2str(iSubject)];
+file_nm_IP = ['delta_IP_CID',num2str(iSubject)];
 % convert subject CID into number (only if used to perform actual task)
 if ischar(iSubject)
     iSubject = str2double(iSubject);
@@ -92,7 +93,7 @@ punishment_yn = 'yes'; % include punishment trials?
 
 % number of reward and effort conditions
 n_R_levels = 3;
-n_E_levels = 3;
+n_E_levels = 4;
 
 % prepare multiple versions of efforts for indifference point
 E_right = [2 3];
@@ -101,6 +102,10 @@ E_left = [1 1];
 %Number of repeats of the whole code
 nbRepeat = 1;
 nbEffortLvl = 1;
+
+% Baseline Reward (CHF)
+BaselineR = 0.5;
+BaselineP = 0.5;
 
 % Total amount of money to be given
 totalGain = 0;
@@ -604,6 +609,7 @@ if strcmp(taskToPerform.physical.task,'on')
             for iRepeat = 1:nbRepeat
                 % save data in all and reformat it in a specific order
                 all.physical.(['EffortLvl_',num2str(iEffort)]).(['session_nb',num2str(iSession)]).(['repeat_nb',num2str(iRepeat)]).perfSummary = perfSummary.physical.(['repeat_nb',num2str(iRepeat)]).(['session_nb',num2str(iSession)]).(['Effort_lvl',(num2str(iEffort))]);
+                IP_variable.physicalDeltaIP = all.physical.(['EffortLvl_',num2str(iEffort)]).(['session_nb',num2str(iSession)]).(['repeat_nb',num2str(iRepeat)]).perfSummary.IP - baselineR;
             end
         end
     end
@@ -615,15 +621,20 @@ if strcmp(taskToPerform.mental.task,'on')
             for iRepeat = 1:nbRepeat
                 % save data in all and reformat it in a specific order
                 all.mental.(['EffortLvl_',num2str(iEffort)]).(['session_nb',num2str(iSession)]).(['repeat_nb',num2str(iRepeat)]).perfSummary = perfSummary.mental.(['repeat_nb',num2str(iRepeat)]).(['session_nb',num2str(iSession)]).(['Effort_lvl',(num2str(iEffort))]);
+                IP_variable.mentalDeltaIP = all.mental.(['EffortLvl_',num2str(iEffort)]).(['session_nb',num2str(iSession)]).(['repeat_nb',num2str(iRepeat)]).perfSummary.IP - baselineR;
             end
         end
     end
 end
 
+IP_variables.baselineR = baselineR;
+IP_variables.baselineP = baselineP;
+
 % actually save the data
 save([results_folder, file_nm,'.mat']);
 
-
+% save delta_IP and baselineR
+save([results_folder, file_nm_IP,'.mat'],'IP_variables');
 
 %% Show a final screen if and only if they performed the task or nonsense since no amount involved
 if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,'on')

@@ -21,8 +21,8 @@ switch n_E_levels
     case 4
         Ep_time_levels.level_1 = 0.5;
         Ep_time_levels.level_2 = 1.5;
-        Ep_time_levels.level_3 = 2.5;
-        Ep_time_levels.level_4 = 3.5;
+        Ep_time_levels.level_3 = 3;
+        Ep_time_levels.level_4 = 4.5;
 end
 
 end % function
