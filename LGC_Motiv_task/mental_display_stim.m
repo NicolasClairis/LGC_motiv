@@ -68,7 +68,7 @@ DrawFormattedText(window, num2str(numberValue),...
 Screen('TextSize', window, scr.textSize.baseline);
 
 %% display orange bar where is the best performance until now
-if ~isempty(maxPerfUntilNowAngle)
+if exist('maxPerfUntilNowAngle','var') && ~isempty(maxPerfUntilNowAngle)
     lineColour = stim.calibBestUntilNow.color;
     circleRadius = stim.calibBestUntilNow.circleRadius;
     xCircleCenter = stim.calibBestUntilNow.xCircleCenter;

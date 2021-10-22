@@ -197,24 +197,13 @@ if session_nb == 0
             %             [numberVector_calib] = mental_numbers(n_calibTrials);
             [numberVector_calib] = mental_calibNumberVector(n_calibTrials, n_calibMax);
             
-            %% alternatively, use fixed number of correct answers to provide for each effort
-            % level
-            % repeat calibration until the subject performance is better
-            % than the requested time threshold
-            calibSuccess = false;
-            calibSession = 0;
-            while calibSuccess == false
-                calibSession = calibSession + 1;
-                [t_min_calib, calibSessionSummary, calibSuccess] = mental_calibTime(scr, stim, key,...
-                    numberVector_calib, mentalE_prm_calib, n_calibTrials, n_calibMax, calibTimes, calib_errorLimits_Em, langage);
-                calibSummary.(['calibSession_',num2str(calibSession)]).calibSummary = calibSessionSummary;
-                calibSummary.(['calibSession_',num2str(calibSession)]).calibSuccess = calibSuccess;
-                calibSummary.(['calibSession_',num2str(calibSession)]).t_mental_max_perTrial = t_min_calib;
-            end
+            %% perform calibration
+            [n_mental_max_perTrial, calib_summary] = mental_calibNumbers(scr, stim, key,...
+                numberVector_calib, mentalE_prm, n_calibTrials, calibTimes);
             % save calib performance
-            save(calibPerf_file_nm,'t_min_calib',...
-                'calibSummary','calibSessionSummary','calibSuccess','calibSession',...
-                'n_calibTrials','n_calibMax','numberVector_calib');
+            save(calibPerf_file_nm,'calib_summary',...
+                'n_mental_max_perTrial');
+            error('need to update data saved and inputs/outputs here');
             
             
         case 'physical'% for physical effort, ask the MVC

@@ -1,13 +1,12 @@
 function[trainingTimes, calibTimes, learningTimes, taskTimes, mainTimes] = timings_definition(trainingConditions, n_R_levels, n_E_levels, nTrials, effort_type)
-%[trainingTimes, calibTimes, learningTimes, taskTimes, mainTimes] = timings_definition(scr, n_trainingTrials, taskTrainingConditions, n_R_levels, n_E_levels, nTrials, effort_type)
+%[trainingTimes, calibTimes, learningTimes, taskTimes, mainTimes] = timings_definition(trainingConditions, n_R_levels, n_E_levels, nTrials, effort_type)
 % timings_definition defines the time duration for each period of the
 % experiment.
 % All timings are expressed in seconds.
 %
 % INPUTS
-% scr: structure with screen parameters
 %
-% trainingConditions: 'R' or {'R','P','RP'} (reward, punishment, reward and punishment)
+% trainingConditions: {'R'} or {'R','P','RP'} (reward, punishment, reward and punishment)
 % prepare jitter timings accordingly
 %
 % n_R_levels: number of reward conditions
