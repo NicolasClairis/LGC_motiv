@@ -186,7 +186,7 @@ if strcmp(effort_type,'mental')
     % made
     calib_errorLimits_Em.useOfErrorMapping = false;
     calib_errorLimits_Em.useOfErrorThreshold = true;
-    calib_errorLimits_Em.errorThreshold = 20;
+    calib_errorLimits_Em.errorThreshold = 5;
 end
 if session_nb == 0
     %% initial calibration Fmax and mental time (inside the scanner)
