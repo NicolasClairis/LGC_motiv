@@ -44,7 +44,6 @@ Matlab_DIY_functions_folder = [main_folder, 'Matlab_DIY_functions', filesep];
 
 % add personal functions (needed for PTB opening at least)
 addpath(genpath(main_task_folder));
-% addpath(BioPac_folder);
 addpath(Matlab_DIY_functions_folder);
 
 % create results folder if no subject has been acquired yet
@@ -77,7 +76,7 @@ subjectCodeName = strcat('CID',iSubject);
 
 % file name
 file_nm = [subjectCodeName,'_session',session_nm,'_',effort_type,'_task'];
-% verify the files do not already gexist
+% verify the files do not already exist
 if exist([results_folder, file_nm,'.mat'],'file')
     error(['The file name ',file_nm,'.mat already exists.',...
         ' Please relaunch with a new file name or delete the previous data.']);
@@ -123,14 +122,12 @@ n_MaxPerfTrials = 2;
 % actual task
 n_R_levels = 3;
 n_E_levels = 3;
-nTrials = 48;
+nTrials = 54;
 
 % extract money amount corresponding to each reward level for the
 % computation of the gains
-% R_money = R_amounts(n_R_levels, punishment_yn);
-warning('need to load values for lowest R used in staircase and delta inferred with staircase here');
-lowR = 0.05;
-[R_money] = R_amounts_IP(n_R_levels, punishment_yn, lowR, delta);
+warning('need to load values for indifference point inferred with staircase here');
+[R_money] = R_amounts_IP(n_R_levels, punishment_yn, IP);
 
 % check trial number is ok based on the number of entered conditions
 % you should have a pair number of trials so that you can define an equal
