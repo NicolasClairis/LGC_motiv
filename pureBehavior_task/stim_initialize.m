@@ -33,7 +33,6 @@ wrapat = scr.wrapat;
 % colours
 black = scr.colours.black;
 white = scr.colours.white;
-orange = scr.colours.orange;
 grey = scr.colours.grey;
 % difficultyArcColor = [178 24 43];
 difficultyArcColor = [255 210 0];
@@ -533,12 +532,12 @@ stim.postTaskMVCmeasurement.colour = white;
 %% mental calibration
 switch langage
     case 'fr'
-        stim.mentalCalibInstructions.text = ['Repondez ',...
-            'aussi vite et ',...
-            'aussi correctement que possible.'];
+        stim.mentalCalibInstructions.text = ['Essayez de completer',...
+            ' le cercle en repondant aussi vite que possible et ',...
+            'correctement aux questions posees.'];
     case 'engl'
-        stim.mentalCalibInstructions.text = ['Answer ',...
-            'as quickly and correctly as possible.'];
+        stim.mentalCalibInstructions.text = ['Try to complete the circle ',...
+            'by answering the questions as quickly and correctly as possible.'];
 end
 [~,~,textSizeMentalCalibInstructions] = DrawFormattedText(window, stim.mentalCalibInstructions.text,...
     'center', 'center', white, wrapat);
@@ -584,17 +583,6 @@ stim.mentalCalibFailureFbk.x = x_centerCoordinates(xScreenCenter, textSizeMental
 stim.mentalCalibFailureFbk.y = y_coordinates(upperBorder, visibleYsize, 1/6, textSizeMentalCalibFail);
 stim.mentalCalibFailureFbk.colour = white;
 
-% number version
-switch langage
-    case 'fr'
-        [~,~,textSizeMentalCalibFbk] = DrawFormattedText(window, 'Bravo! Votre meilleur score jusque-la est de X bonnes reponses.','center', 'center', white, wrapat);
-    case 'engl'
-        [~,~,textSizeMentalCalibFbk] = DrawFormattedText(window, 'Well done! Your best score until now is X correct answers.','center', 'center', white, wrapat);
-end
-stim.mentalCalibFbk.x = x_centerCoordinates(xScreenCenter, textSizeMentalCalibFbk);
-stim.mentalCalibFbk.y = y_coordinates(upperBorder, visibleYsize, 1/6, textSizeMentalCalibFbk);
-stim.mentalCalibFbk.colour = white;
-
 % end of calibration
 switch langage
     case 'fr'
@@ -613,14 +601,6 @@ stim.mentalCalibEnd.colour = white;
 stim.difficulty.maxColor        = black;
 stim.difficulty.currLevelColor  = difficultyArcColor;
 stim.difficulty.ovalWidth       = 3;
-
-%% parameters for trait indicating best performance until now for mental calibration
-stim.calibBestUntilNow.color = orange;
-arcPosition     = stim.difficulty.middle_center;
-stim.calibBestUntilNow.circleRadius    = difficultyRectlinearSize/2;
-stim.calibBestUntilNow.xCircleCenter = arcPosition(1) + (arcPosition(3) - arcPosition(1))/2;
-stim.calibBestUntilNow.yCircleCenter = arcPosition(2) + (arcPosition(4) - arcPosition(2))/2;
-stim.calibBestUntilNow.lineWidth = 3;
 
 %% choice period
 switch langage

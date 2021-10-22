@@ -1,13 +1,12 @@
 function[trainingTimes, calibTimes, learningTimes, taskTimes, mainTimes] = timings_definition(trainingConditions, n_R_levels, n_E_levels, nTrials, effort_type)
-%[trainingTimes, calibTimes, learningTimes, taskTimes, mainTimes] = timings_definition(scr, n_trainingTrials, taskTrainingConditions, n_R_levels, n_E_levels, nTrials, effort_type)
+%[trainingTimes, calibTimes, learningTimes, taskTimes, mainTimes] = timings_definition(trainingConditions, n_R_levels, n_E_levels, nTrials, effort_type)
 % timings_definition defines the time duration for each period of the
 % experiment.
 % All timings are expressed in seconds.
 %
 % INPUTS
-% scr: structure with screen parameters
 %
-% trainingConditions: 'R' or {'R','P','RP'} (reward, punishment, reward and punishment)
+% trainingConditions: {'R'} or {'R','P','RP'} (reward, punishment, reward and punishment)
 % prepare jitter timings accordingly
 %
 % n_R_levels: number of reward conditions
@@ -41,7 +40,8 @@ end
 calibTimes.instructions = 5;
 switch effort_type % in case you use different numbers for each effort type
     case 'mental'
-        calibTimes.effort_max = 12; % maximal time to perform the task (calibrated time should be shorter)
+        t_max_mentalEffort = 8;
+        calibTimes.effort_max = t_max_mentalEffort; % maximal time to perform the task
     case 'physical'
         calibTimes.instructions_bis = 6;
         calibTimes.effort_max = 5;% time to perform the task
@@ -81,12 +81,12 @@ jitterRdmPerm_effortCross = randperm(nTrials);
 t_effortCross = jitters_effortCross(jitterRdmPerm_effortCross);
 
 t_finalCross = 10;
-t_choice = 15;
+t_choice = 5;
 t_dispChoice = 2;
 switch effort_type
     case 'physical' % in case you use different numbers for each effort type
-        t_max_effort = 6; % time to perform the task
-        taskTimes.max_effort = t_max_effort;
+        t_max_physicalEffort = 6; % time to perform the task
+        taskTimes.max_effort = t_max_physicalEffort;
         
         % store frame rate for physical effort task
         % query the frame duration (inter-frame interval)
@@ -97,7 +97,7 @@ switch effort_type
         % too much in the display
         taskTimes.physicalReadWait = t_readWait; % Arthur manual definition
     case 'mental'
-        taskTimes.t_min_scalingFactor = 150/100; % multiply calibrated minimal time by this value
+        taskTimes.max_effort = t_max_mentalEffort;
 end
 t_fbk = 1; % feedback display
 t_fail_and_repeat_fbk = 3; % feedback after a failure => repeat the effort after that
@@ -133,7 +133,7 @@ end
 switch effort_type
     case 'physical' % in case you use different numbers for each effort type
         % max effort time
-        trainingTimes.max_effort = t_max_effort;
+        trainingTimes.max_effort = t_max_physicalEffort;
         
         % store frame rate for physical effort task
         % query the frame duration (inter-frame interval)
@@ -144,7 +144,7 @@ switch effort_type
         % too much in the display
         trainingTimes.physicalReadWait = t_readWait; % Arthur manual definition
     case 'mental'
-        trainingTimes.t_min_scalingFactor = 150/100; % multiply calibrated minimal time by this value
+        trainingTimes.max_effort = t_max_mentalEffort;
 end
 trainingTimes.choice                = t_choice;
 trainingTimes.dispChoice            = t_dispChoice;
@@ -152,7 +152,7 @@ trainingTimes.feedback              = t_fbk;
 trainingTimes.fail_and_repeat_fbk   = t_fail_and_repeat_fbk;
 
 %% time feedback end of a block
-mainTimes.endfMRI = 20; % to get end of fMRI response and avoid artifacts
+mainTimes.endfMRI = 15; % to get end of fMRI response and avoid artifacts
 mainTimes.endSession = 3; % display of the total amount of money obtained
 
 end % function

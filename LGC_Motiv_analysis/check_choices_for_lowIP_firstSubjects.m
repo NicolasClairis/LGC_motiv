@@ -1,3 +1,5 @@
+%% script for CID066 and CID028 to check what they choose when faced with options 1.80 against 1.75
+
 % extract choices options
 choicesOptions = [summary.choiceOptions.monetary_amount.left; summary.choiceOptions.monetary_amount.right];
 choicesOptions=choicesOptions(:,strcmp(summary.choiceOptions.R_or_P,'R'));

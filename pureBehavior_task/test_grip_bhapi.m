@@ -36,7 +36,7 @@ end
 pause(0.125);
 
 %% general parameters
-MVC = 0.0001;
+MVC = 0.001;
 F_threshold = 50;
 t_effort_to_keep = 3;
 F_tolerance = 3;
@@ -85,7 +85,7 @@ jTest=0;
 z=0;
 [percSqueeze, percStoppedSqueeze] = deal(0);
 timeNow = GetSecs;
-while (trial_success == false) && (timeNow < (timeStart + 5))
+while (trial_success == false) && (timeNow < (timeStart + 10))
     z = z+ 1;
     % for j=1:1000
     % you either stop if the trial was successful (both learning and actual

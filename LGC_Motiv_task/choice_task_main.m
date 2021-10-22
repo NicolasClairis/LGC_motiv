@@ -44,7 +44,6 @@ Matlab_DIY_functions_folder = [main_folder, 'Matlab_DIY_functions', filesep];
 
 % add personal functions (needed for PTB opening at least)
 addpath(genpath(main_task_folder));
-% addpath(BioPac_folder);
 addpath(Matlab_DIY_functions_folder);
 
 % create results folder if no subject has been acquired yet
@@ -77,7 +76,7 @@ subjectCodeName = strcat('CID',iSubject);
 
 % file name
 file_nm = [subjectCodeName,'_session',session_nm,'_',effort_type,'_task'];
-% verify the files do not already gexist
+% verify the files do not already exist
 if exist([results_folder, file_nm,'.mat'],'file')
     error(['The file name ',file_nm,'.mat already exists.',...
         ' Please relaunch with a new file name or delete the previous data.']);
@@ -123,14 +122,12 @@ n_MaxPerfTrials = 2;
 % actual task
 n_R_levels = 3;
 n_E_levels = 3;
-nTrials = 48;
+nTrials = 54;
 
 % extract money amount corresponding to each reward level for the
 % computation of the gains
-% R_money = R_amounts(n_R_levels, punishment_yn);
-warning('need to load values for lowest R used in staircase and delta inferred with staircase here');
-lowR = 0.05;
-[R_money] = R_amounts_IP(n_R_levels, punishment_yn, lowR, delta);
+warning('need to load values for indifference point inferred with staircase here');
+[R_money] = R_amounts_IP(n_R_levels, punishment_yn, IP);
 
 % check trial number is ok based on the number of entered conditions
 % you should have a pair number of trials so that you can define an equal
@@ -189,7 +186,7 @@ if strcmp(effort_type,'mental')
     % made
     calib_errorLimits_Em.useOfErrorMapping = false;
     calib_errorLimits_Em.useOfErrorThreshold = true;
-    calib_errorLimits_Em.errorThreshold = 20;
+    calib_errorLimits_Em.errorThreshold = 5;
 end
 if session_nb == 0
     %% initial calibration Fmax and mental time (inside the scanner)
@@ -200,24 +197,13 @@ if session_nb == 0
             %             [numberVector_calib] = mental_numbers(n_calibTrials);
             [numberVector_calib] = mental_calibNumberVector(n_calibTrials, n_calibMax);
             
-            %% alternatively, use fixed number of correct answers to provide for each effort
-            % level
-            % repeat calibration until the subject performance is better
-            % than the requested time threshold
-            calibSuccess = false;
-            calibSession = 0;
-            while calibSuccess == false
-                calibSession = calibSession + 1;
-                [t_min_calib, calibSessionSummary, calibSuccess] = mental_calibTime(scr, stim, key,...
-                    numberVector_calib, mentalE_prm_calib, n_calibTrials, n_calibMax, calibTimes, calib_errorLimits_Em, langage);
-                calibSummary.(['calibSession_',num2str(calibSession)]).calibSummary = calibSessionSummary;
-                calibSummary.(['calibSession_',num2str(calibSession)]).calibSuccess = calibSuccess;
-                calibSummary.(['calibSession_',num2str(calibSession)]).t_mental_max_perTrial = t_min_calib;
-            end
+            %% perform calibration
+            [n_mental_max_perTrial, calib_summary] = mental_calibNumbers(scr, stim, key,...
+                numberVector_calib, mentalE_prm, n_calibTrials, calibTimes);
             % save calib performance
-            save(calibPerf_file_nm,'t_min_calib',...
-                'calibSummary','calibSessionSummary','calibSuccess','calibSession',...
-                'n_calibTrials','n_calibMax','numberVector_calib');
+            save(calibPerf_file_nm,'calib_summary',...
+                'n_mental_max_perTrial');
+            error('need to update data saved and inputs/outputs here');
             
             
         case 'physical'% for physical effort, ask the MVC

@@ -10,12 +10,12 @@ function mental_effort_task_question_display(scr, stim, task_trialType, sideQues
 % stim: structure with stimuli informations
 %
 % task_trialType
-% (0) odd/even task
 % (1) lower/higher than 5 task
+% (2) whatever button (for first trials of the N-back task)
 %
 % sideQuestion: structure with side for each answer (especially if you decide to vary it)
-% sideQuestion.oE.pair, sideQuestion.oE.impair, sideQuestion.hL.low,
-% sideQuestion.hL.high
+% sideQuestion.hL.low, sideQuestion.hL.high: should i press left or right
+% to indicate if the number is higher or lower than 5?
 % (-1) left
 % (+1) right
 %
@@ -41,25 +41,6 @@ window = scr.window;
 
 %% display on the screen
 switch task_trialType
-    case 0 % odd/even
-        if strcmp(learning_instructions,'fullInstructions')
-            DrawFormattedText(window, stim.Em.oddORevenQuestion.text,...
-                stim.Em.oddORevenQuestion.x, stim.Em.oddORevenQuestion.y, textCol);
-        end
-        
-        if sideQuestion.oE.pair == -1 && sideQuestion.oE.impair == +1
-            x_pair      = stim.Em.even_left.x;
-            x_impair    = stim.Em.odd_right.x;
-        elseif sideQuestion.oE.pair == +1 && sideQuestion.oE.impair == -1
-            x_pair      = stim.Em.even_right.x;
-            x_impair    = stim.Em.odd_left.x;
-        else
-            error('error in sideQuestion definition');
-        end
-        DrawFormattedText(window, stim.Em.even.text, x_pair, stim.Em.even.y, textCol );     % pair
-        DrawFormattedText(window, stim.Em.OR.text, stim.Em.OR.x, stim.Em.OR.y, textCol );   % OR
-        DrawFormattedText(window, stim.Em.odd.text, x_impair, stim.Em.odd.y, textCol );     % impair
-
     case 1 % higher/lower than 5?
         if strcmp(learning_instructions,'fullInstructions')
             DrawFormattedText(window, stim.Em.lowerORhigherQuestion.text,...
@@ -79,7 +60,7 @@ switch task_trialType
         DrawFormattedText(window, stim.Em.OR.text, stim.Em.OR.x, stim.Em.OR.y, textCol );   % OR
         DrawFormattedText(window, stim.Em.higher.text, x_high, stim.Em.higher.y, textCol ); % > 5
         
-    case 2 % first trial for 1-back version
+    case 2 % first trials for N-back version (where no correct answer needed)
         if strcmp(learning_instructions,'fullInstructions')
             DrawFormattedText(window, stim.Em.pressAnyButtonQuestion.text,...
                 stim.Em.pressAnyButtonQuestion.x, stim.Em.pressAnyButtonQuestion.y, textCol);
