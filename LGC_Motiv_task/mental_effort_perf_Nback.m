@@ -1,9 +1,9 @@
 function[mentalE_perf, trial_success, onsets] = mental_effort_perf_Nback(scr, stim, key,...
     numberVector, mentalE_prm, n_max_to_reach,...
-    learning_col, learning_instructions, time_limit, t_max, errorLimits, n_maxReachedUntilNow)
+    learning_instructions, time_limit, t_max, errorLimits, n_maxReachedUntilNow)
 %[mentalE_perf, trial_success, onsets] = mental_effort_perf_Nback(scr, stim, key,...
 %     numberVector, mentalE_prm, n_max_to_reach,...
-%     curr_learning_col, curr_learning_instructions, time_limit, t_max, errorLimits, n_maxReachedUntilNow)
+%     curr_learning_instructions, time_limit, t_max, errorLimits, n_maxReachedUntilNow)
 %
 % mental_effort_perf_Nback corresponds to the actual performance. Can be
 % used both for learning period (with or without instructions) and for the
@@ -35,11 +35,6 @@ function[mentalE_perf, trial_success, onsets] = mental_effort_perf_Nback(scr, st
 %
 %   .switchPerc: percentage of switches required (based on total number of
 %   subsequent correct answers you want)
-%
-% learning_col:
-% 'col1': learning with colour 1 only
-% 'col2': learning with colour 2 only
-% 'all': learning with both colours
 %
 % learning_instructions
 % 'fullInstructions': display instructions: ask if odd/even (or lower/higher than 5) and
