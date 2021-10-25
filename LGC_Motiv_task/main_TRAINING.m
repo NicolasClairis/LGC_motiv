@@ -337,7 +337,7 @@ if strcmp(taskToPerform.mental.learning,'on')
         learningPerfSummary_Em.extendedLearning.(['trial_',num2str(iExtendedLearningTrial)]) = mentalE_extendedLearningPerfSummary_tmp;
         
         % extract new best performance
-        nMaxReachedUntilNowLearning = max(nMaxReachedUntilNowLearning, mentalE_extendedLearningPerfSummary_tmp);
+        nMaxReachedUntilNowLearning = max(nMaxReachedUntilNowLearning, mentalE_extendedLearningPerfSummary_tmp.n_correctAnswersProvided);
         % small break between each answer
         DrawFormattedText(window, stim.training.Em.endTrialMsg.text,'center',yScreenCenter/2,white);
         DrawFormattedText(window,stim.training.Em.endTrialMsg_bis.text,'center','center',white);
