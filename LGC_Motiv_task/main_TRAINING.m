@@ -36,8 +36,8 @@ langue = 'f';
 IRM = 1;
 while isempty(iSubject) || length(iSubject) ~= 3
     % repeat until all questions are answered
-    info = inputdlg({'Subject CID (XXX)'});
-    [iSubject] = info{1};
+    info = inputdlg({'Subject CID (XXX)','P/M'});
+    [iSubject,P_or_M] = info{[1,2]};
 %     warning('when real experiment starts, remember to block in french and IRM = 1');
 end
 if ischar(IRM)
@@ -502,7 +502,7 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
                     case 1
                         if strcmp(taskToPerform.physical.task,'on')
                             showTitlesInstruction(scr,stim,'task',false);
-                            waitS  n bbpace(langage, window, yScreenCenter, scr, key_Ep);
+                            waitSpace(langage, window, yScreenCenter, scr, key_Ep);
                             
                             % run physical task
                             [perfSummary.physical.(['repeat_nb',num2str(iRepeat)]).(['session_nb',num2str(iPhysical)]).(['Effort_lvl',(num2str(iEffortLevel))])] = choice_and_perf_staircase(scr, stim, key_Ep,...
