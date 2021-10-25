@@ -1,7 +1,7 @@
 function[n_mental_max_perTrial, calib_summary] = mental_calibNumbers(scr, stim, key,...
-    numberVector_calib, mentalE_prm, n_calibTrials, calibTimes)
+    numberVector_calib, mentalE_prm, n_calibTrials, calibTimes, langage)
 %[n_mental_max_perTrial, calib_summary] = mental_calibNumbers(scr, stim, key,...
-%     numberVector_calib, mentalE_prm, n_calibTrials, calibTimes)
+%     numberVector_calib, mentalE_prm, n_calibTrials, calibTimes, langage)
 %
 % mental_calibNumbers will extract maximum number of subsequent correct
 % answers participants can provide in the limited amount of time that is
@@ -37,6 +37,8 @@ function[n_mental_max_perTrial, calib_summary] = mental_calibNumbers(scr, stim, 
 %   .effort_max: time limit for calibration
 %   .fbk: time to display feedback during calibration
 %
+% langage: 'fr' for french; 'engl' for english
+%
 % OUTPUTS
 % n_mental_max_perTrial: maximum number of subsequent correct answers per
 % trial
@@ -48,7 +50,6 @@ function[n_mental_max_perTrial, calib_summary] = mental_calibNumbers(scr, stim, 
 % screen parameters
 window = scr.window;
 wrapat = scr.wrapat;
-langage = 'fr';
 
 % define main parameters
 calib_time_limit = true; % time will be limited (as opposed to learning where time was infinite)
@@ -82,7 +83,7 @@ for iInstructionsLoop = 1:2
 end
 
 % max (impossible) to reach
-n_calibMax = 50;
+n_calibMax = mentalE_prm.n_maxToReachCalib;
 % errors handling
 errorLimits.useOfErrorThreshold = true;
 errorLimits.errorThreshold = 3;

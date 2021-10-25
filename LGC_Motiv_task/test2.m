@@ -20,6 +20,6 @@ n_calibMax = 3;
 
 [numberVector_calib] = mental_calibNumberVector(n_calibTrials, n_calibMax);
 [n_mental_max_perTrial, calib_summary] = mental_calibNumbers(scr, stim, key,...
-    numberVector_calib, mentalE_prm_calib, n_calibTrials, calibTimes);
+    numberVector_calib, mentalE_prm_calib, n_calibTrials, calibTimes, langage);
 WaitSecs(3);
 sca;
