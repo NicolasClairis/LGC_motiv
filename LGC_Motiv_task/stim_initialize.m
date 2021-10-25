@@ -91,14 +91,20 @@ stim.difficulty.arcEndAngle = 360;
 
 % define the circle size for each difficulty level depending on the
 % difficulty
-% note level 1 = easiest level (ascending order)
+% note level 0 = easiest level (ascending order)
+% first: load timings for physical effort so as to calibrate everything
+% based on this
+[Ep_time_levels] = physical_effortLevels(n_E_levels);
+% normalize all values by maximal effort
+E_maxDuration = Ep_time_levels(n_E_levels);
 for iDiff = 1:n_E_levels
     % extract name for subfield of the current difficulty level
     diff_level_nm = ['level_',num2str(iDiff)];
+    E_durPerc_tmp = Ep_time_levels(iDiff);
     
     % extract angle for the arc which will correspond to the difficulty
     % level: max circle = max difficulty level
-    startAngle_tmp = stim.difficulty.arcEndAngle*((n_E_levels - iDiff)./n_E_levels);
+    startAngle_tmp = stim.difficulty.arcEndAngle*( (E_maxDuration - E_durPerc_tmp)/E_maxDuration);
     if startAngle_tmp < 360
         stim.difficulty.startAngle.(diff_level_nm) = startAngle_tmp;
     elseif startAngle_tmp == 360
