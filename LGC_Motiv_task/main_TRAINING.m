@@ -200,8 +200,6 @@ if strcmp(taskToPerform.mental.calib,'on') ||...
     % perform 2 learning sessions, one with instructions and then one without
     % (left/right) and (lower/higher than 5) - mapping indicated the first time)
     % need to remind the mapping the second time
-    learning_cols = {'col1'};
-    n_learningColours = length(learning_cols);
     learning_instructions = {'fullInstructions','noInstructions'}; %,'partialInstructions'
     n_learningInstructions = length(learning_instructions);
     % initial learning: careful to enter a pair number here
@@ -284,7 +282,7 @@ if strcmp(taskToPerform.mental.learning,'on')
     learning_errorLimits.useOfErrorMapping = true;
     learning_errorLimits.errorMappingLimit = 2; % display mapping after this number of errors
     % extract numbers to use for each learning phase
-    nMentalLearning_totalTrials = n_learningColours*n_learningInstructions;
+    nMentalLearning_totalTrials = n_learningInstructions;
     [numberVector_learning] = mental_numbers(nMentalLearning_totalTrials);
     jLearningSession = 0;
     jMentalLearningTrial = 0;
