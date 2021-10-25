@@ -161,12 +161,10 @@ end
 if strcmp(taskToPerform.mental.calib,'on') || strcmp(taskToPerform.mental.task,'on')
     calib_errorLimits_Em.useOfErrorMapping = false;
     calib_errorLimits_Em.useOfErrorThreshold = true;
-    calib_errorLimits_Em.errorThreshold = 10;
+    calib_errorLimits_Em.errorThreshold = 2;
 end
 % time for end of session
-% t_endSession = mainTimes.endSession;
-t_endSession = 180;
-
+t_endSession = trainingTimes_Ep.endSession;
 
 %% physical parameters
 if strcmp(taskToPerform.physical.calib,'on') ||...
@@ -200,16 +198,15 @@ if strcmp(taskToPerform.mental.calib,'on') ||...
     
     % learning
     % perform 2 learning sessions, one with instructions and then one without
-    % (left/right) vs (odd/even) and (lower/higher than 5) - mapping indicated the first time)
+    % (left/right) and (lower/higher than 5) - mapping indicated the first time)
     % need to remind the mapping the second time
-%     learning_cols = {'col1','col2','all'};
     learning_cols = {'col1'};
     n_learningColours = length(learning_cols);
     learning_instructions = {'fullInstructions','noInstructions'}; %,'partialInstructions'
     n_learningInstructions = length(learning_instructions);
     % initial learning: careful to enter a pair number here
-    n_maxLearning.learning_withInstructions = 20;
-    n_maxLearning.learning_withoutInstructions = 20;
+    n_maxLearning.learning_withInstructions = 15;
+    n_maxLearning.learning_withoutInstructions = 15;
 
 end
 
@@ -279,10 +276,11 @@ if strcmp(taskToPerform.mental.learning,'on')
     mentalE_prm_learning_and_calib = mental_effort_parameters();
     mentalE_prm_learning_and_calib.startAngle = 0; % for learning always start at zero
     % no time limit for each trial: as long as needed until learning is ok
-    learning_time_limit = false;
+    learning_time_limit = true;
+    
     
     % for learning display the mapping after 2 errors, avoid displaying
-    learning_errorLimits.useOfErrorThreshold = false;
+    learning_errorLimits.useOfErrorThreshold = false; % no error limit for the learning period
     learning_errorLimits.useOfErrorMapping = true;
     learning_errorLimits.errorMappingLimit = 2; % display mapping after this number of errors
     % extract numbers to use for each learning phase
@@ -290,28 +288,25 @@ if strcmp(taskToPerform.mental.learning,'on')
     [numberVector_learning] = mental_numbers(nMentalLearning_totalTrials);
     jLearningSession = 0;
     jMentalLearningTrial = 0;
-    for iCol = 1:n_learningColours
-        curr_learning_col = learning_cols{iCol};
-        for iLearning_Instructions = 1:n_learningInstructions
-            curr_learning_instructions = learning_instructions{iLearning_Instructions};
-            
-            jLearningSession = jLearningSession + 1;
-            learning_sess_nm = ['learning_session',num2str(jLearningSession)];
-            % display instructions for the current learning type
-            [onsets.endLearningInstructions.(learning_sess_nm).(curr_learning_col).(curr_learning_instructions)] = mental_learningInstructions(scr, stim,...
-                curr_learning_col, curr_learning_instructions, mentalE_prm_learning_and_calib);
-            
-            % perform the learning
-            [learningPerfSummary_Em.(learning_sess_nm).(curr_learning_col).(curr_learning_instructions)] = mental_effort_perf(scr, stim, key_Em,...
-                numberVector_learning(jLearningSession,:),...
-                mentalE_prm_learning_and_calib, n_maxLearning.learning_withInstructions,...
-                curr_learning_col, curr_learning_instructions, learning_time_limit, [], learning_errorLimits);
-            jMentalLearningTrial = jMentalLearningTrial + 1;
-            
-            % for experimenter display how many trials have been performed
-            disp(['Mental learning trial ',num2str(jMentalLearningTrial),'/',num2str(nMentalLearning_totalTrials),' done']);
-        end % learning instructions loop
-    end % learning colour loop
+    for iLearning_Instructions = 1:n_learningInstructions
+        curr_learning_instructions = learning_instructions{iLearning_Instructions};
+        
+        jLearningSession = jLearningSession + 1;
+        learning_sess_nm = ['learning_session',num2str(jLearningSession)];
+        % display instructions for the current learning type
+        [onsets.endLearningInstructions.(learning_sess_nm).(curr_learning_instructions)] = mental_learningInstructions(scr, stim,...
+            curr_learning_instructions, mentalE_prm_learning_and_calib);
+        
+        % perform the learning
+        [learningPerfSummary_Em.(learning_sess_nm).(curr_learning_instructions)] = mental_effort_perf(scr, stim, key_Em,...
+            numberVector_learning(jLearningSession,:),...
+            mentalE_prm_learning_and_calib, n_maxLearning.learning_withInstructions,...
+            curr_learning_instructions, learning_time_limit, [], learning_errorLimits);
+        jMentalLearningTrial = jMentalLearningTrial + 1;
+        
+        % for experimenter display how many trials have been performed
+        disp(['Mental learning trial ',num2str(jMentalLearningTrial),'/',num2str(nMentalLearning_totalTrials),' done']);
+    end % learning instructions loop
     
     %% extended learning for each difficulty level (in N-back version now)
     mentalE_prm_extendedLearning = mentalE_prm_learning_and_calib;
@@ -339,7 +334,7 @@ if strcmp(taskToPerform.mental.learning,'on')
     
     % perform the training
     [onsets.endLearningInstructions.(['learning_session',num2str(1 + jLearningSession)]).all.extendedLearning] = mental_learningInstructions(scr, stim,...
-        'col1', learningVersion, mentalE_prm_learning_and_calib);
+        learningVersion, mentalE_prm_learning_and_calib);
     for iExtendedLearningTrial = 1:n_extendedLearningTrials
         % define start angle according to current difficulty level
         mentalE_prm_extendedLearning.startAngle = stim.difficulty.startAngle.(['level_',num2str(learning_effortLevel(iExtendedLearningTrial))]);
@@ -440,9 +435,6 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
         end
     end % loop over forced reading/manual pass loop
     
-    
-        
-        
     % for physical effort
     if strcmp(taskToPerform.physical.task,'on')
         Ep_vars.MVC = MVC;
@@ -521,7 +513,7 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
                             % Nback version
                             Nback_str = num2str(mentalE_prm_instruDisplay.Nback);
                             learningVersion = ['extendedLearning_Nback',Nback_str];
-                            [onset_Press] = mental_learningInstructions(scr, stim, 'col1', learningVersion, mentalE_prm_instruDisplay);
+                            [onset_Press] = mental_learningInstructions(scr, stim, learningVersion, mentalE_prm_instruDisplay);
                             Em_vars.i_sub = iSubject;
                             Em_vars.n_to_reach = n_to_reach;
                             
