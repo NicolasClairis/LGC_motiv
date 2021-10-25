@@ -209,7 +209,6 @@ if strcmp(taskToPerform.mental.calib,'on') ||...
     
 end
 
-<<<<<<< Updated upstream
 %% calibration mental
 if strcmp(taskToPerform.mental.calib,'on')
     mentalE_prm_learning_and_calib = mental_effort_parameters();
@@ -233,7 +232,9 @@ if strcmp(taskToPerform.mental.calib,'on')
             numberVector_calib, mentalE_prm_learning_and_calib, n_calibTrials_Em, calibTimes_Em, langage);
         calibSummary.(['calibSession_',num2str(iCalibSession)]).calibSummary = calib_summary;
         calibSummary.(['calibSession_',num2str(iCalibSession)]).n_mental_max_perTrial = n_mental_max_perTrial;
-=======
+    end
+end
+
 %% run the code twice, each time for p or m conditions
 for i_pm = 1:2
     switch p_or_m
@@ -446,7 +447,6 @@ for i_pm = 1:2
         p_or_m = 'm';
     elseif strcmp(p_or_m,'m')
         p_or_m = 'p';
->>>>>>> Stashed changes
     end
 end
 % reset m/p
