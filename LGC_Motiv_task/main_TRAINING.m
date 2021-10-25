@@ -568,35 +568,6 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
     end
 end
 
-%% re-measure calibration
-% % physical MVC re-measure
-% if strcmp(taskToPerform.physical.task,'on')
-%     [last_MVC, onsets_last_MVC] = physical_effort_MVC(scr, stim, dq, n_MVC_repeat, calibTimes_Ep);
-% end
-% 
-% % mental re-calibration
-% if strcmp(taskToPerform.mental.task,'on')
-%     mentalE_prm_learning_and_calib = mental_effort_parameters();
-%     mentalE_prm_learning_and_calib.startAngle = 0; % for learning always start at zero
-%     % extract numbers to use for each calibration trial
-% %     [numberVector_calib] = mental_numbers(n_calibTrials_Em);
-% [numberVector_calib] = mental_calibNumberVector(n_calibTrials_Em, n_calibMax);
-%     % alternatively, use fixed number of correct answers to provide for each effort
-%     % level
-%     % repeat calibration until the subject performance is better
-%     % than the requested time threshold
-%     lastCalibSuccess = false;
-%     lastCalibSession = 0;
-%     while lastCalibSuccess == false
-%         lastCalibSession = lastCalibSession + 1;
-%         [t_min_lastCalib, lastCalibSessionSummary, lastCalibSuccess] = mental_calibTime(scr, stim, key_Em,...
-%             numberVector_calib, mentalE_prm_learning_and_calib, n_calibTrials_Em, n_calibMax, calibTimes_Em, calib_errorLimits_Em, langage);
-%         lastCalibSummary.(['calibSession_',num2str(calibSession)]).calibSummary = lastCalibSessionSummary;
-%         lastCalibSummary.(['calibSession_',num2str(calibSession)]).calibSuccess = lastCalibSuccess;
-%         lastCalibSummary.(['calibSession_',num2str(calibSession)]).t_mental_max_perTrial = t_min_lastCalib;
-%     end
-% end
-
 %% save the data
 
 % learning performance
@@ -670,7 +641,7 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
                 'center', 'center', scr.colours.white, scr.wrapat);
     end
     Screen(window,'Flip');
-    WaitSecs(15);
+    WaitSecs(t_endSession);
 end
 %% close PTB
 ShowCursor;

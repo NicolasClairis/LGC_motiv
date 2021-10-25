@@ -150,6 +150,7 @@ trainingTimes.choice                = t_choice;
 trainingTimes.dispChoice            = t_dispChoice;
 trainingTimes.feedback              = t_fbk;
 trainingTimes.fail_and_repeat_fbk   = t_fail_and_repeat_fbk;
+trainingTimes.endSession            = 5;
 
 %% time feedback end of a block
 mainTimes.endfMRI = 15; % to get end of fMRI response and avoid artifacts
