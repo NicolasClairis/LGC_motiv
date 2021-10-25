@@ -367,7 +367,7 @@ if strcmp(taskToPerform.mental.calib,'on')
     while calibSuccess == false
         iCalibSession = iCalibSession + 1;
         [n_mental_max_perTrial, calib_summary] = mental_calibNumbers(scr, stim, key_Em,...
-            numberVector_calib, mentalE_prm_learning_and_calib, n_calibTrials_Em, calibTimes_Em);
+            numberVector_calib, mentalE_prm_learning_and_calib, n_calibTrials_Em, calibTimes_Em, langage);
         calibSummary.(['calibSession_',num2str(iCalibSession)]).calibSummary = calib_summary;
         calibSummary.(['calibSession_',num2str(iCalibSession)]).n_mental_max_perTrial = n_mental_max_perTrial;
     end
