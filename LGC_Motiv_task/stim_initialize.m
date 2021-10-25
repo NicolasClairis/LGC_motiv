@@ -611,9 +611,9 @@ stim.mentalCalibEnd.colour = white;
 
 switch langage
     case 'fr'
-        stim.staircase.text = 'Bravo! Vous allez maintenant jouer pour de l''argent reel';
+        stim.staircase.text = 'Bravo! Vous allez maintenant jouer pour de l''argent reel.';
     case 'engl'
-        stim.staircase.text = 'Congratulations! You will now play for real money';
+        stim.staircase.text = 'Congratulations! You will now play for real money.';
 end
 [~,~,textSizeStaircaseInfo] = DrawFormattedText(window,stim.staircase.text,...
     'center','center',white, wrapat);
