@@ -2,7 +2,8 @@
     window, baselineTextSize] = ScreenConfiguration(0, 1);
 
 [trainingTimes, calibTimes, learningTimes, taskTimes, mainTimes] = timings_definition({'RP'}, 3, 3, 54, 'mental');
-langage = 'fr';
+langage = 'fr';sca;
+
 [R_money] = R_amounts(3, 'yes');
 [stim] = stim_initialize(scr, 3, langage, R_money);
 key = relevant_key_definition('mental', 0, 4);
@@ -20,3 +21,5 @@ n_calibMax = 3;
 [numberVector_calib] = mental_calibNumberVector(n_calibTrials, n_calibMax);
 [n_mental_max_perTrial, calib_summary] = mental_calibNumbers(scr, stim, key,...
     numberVector_calib, mentalE_prm_calib, n_calibTrials, calibTimes);
+WaitSecs(3);
+sca;

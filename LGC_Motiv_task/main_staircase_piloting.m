@@ -285,28 +285,25 @@ if strcmp(taskToPerform.mental.learning,'on')
     [numberVector_learning] = mental_numbers(nMentalLearning_totalTrials);
     jLearningSession = 0;
     jMentalLearningTrial = 0;
-    for iCol = 1:n_learningColours
-        curr_learning_col = learning_cols{iCol};
-        for iLearning_Instructions = 1:n_learningInstructions
-            curr_learning_instructions = learning_instructions{iLearning_Instructions};
-            
-            jLearningSession = jLearningSession + 1;
-            learning_sess_nm = ['learning_session',num2str(jLearningSession)];
-            % display instructions for the current learning type
-            [onsets.endLearningInstructions.(learning_sess_nm).(curr_learning_col).(curr_learning_instructions)] = mental_learningInstructions(scr, stim,...
-                curr_learning_col, curr_learning_instructions, mentalE_prm_learning_and_calib);
-            
-            % perform the learning
-            [learningPerfSummary_Em.(learning_sess_nm).(curr_learning_col).(curr_learning_instructions)] = mental_effort_perf(scr, stim, key_Em,...
-                numberVector_learning(jLearningSession,:),...
-                mentalE_prm_learning_and_calib, n_maxLearning.learning_withInstructions,...
-                curr_learning_col, curr_learning_instructions, learning_time_limit, [], learning_errorLimits);
-            jMentalLearningTrial = jMentalLearningTrial + 1;
-            
-            % for experimenter display how many trials have been performed
-            disp(['Mental learning trial ',num2str(jMentalLearningTrial),'/',num2str(nMentalLearning_totalTrials),' done']);
-        end % learning instructions loop
-    end % learning colour loop
+    for iLearning_Instructions = 1:n_learningInstructions
+        curr_learning_instructions = learning_instructions{iLearning_Instructions};
+        
+        jLearningSession = jLearningSession + 1;
+        learning_sess_nm = ['learning_session',num2str(jLearningSession)];
+        % display instructions for the current learning type
+        [onsets.endLearningInstructions.(learning_sess_nm).(curr_learning_instructions)] = mental_learningInstructions(scr, stim,...
+            curr_learning_instructions, mentalE_prm_learning_and_calib);
+        
+        % perform the learning
+        [learningPerfSummary_Em.(learning_sess_nm)(curr_learning_instructions)] = mental_effort_perf(scr, stim, key_Em,...
+            numberVector_learning(jLearningSession,:),...
+            mentalE_prm_learning_and_calib, n_maxLearning.learning_withInstructions,...
+            curr_learning_instructions, learning_time_limit, [], learning_errorLimits);
+        jMentalLearningTrial = jMentalLearningTrial + 1;
+        
+        % for experimenter display how many trials have been performed
+        disp(['Mental learning trial ',num2str(jMentalLearningTrial),'/',num2str(nMentalLearning_totalTrials),' done']);
+    end % learning instructions loop
     
     %% extended learning for each difficulty level (in N-back version now)
     mentalE_prm_extendedLearning = mentalE_prm_learning_and_calib;
@@ -334,7 +331,7 @@ if strcmp(taskToPerform.mental.learning,'on')
     
     % perform the training
     [onsets.endLearningInstructions.(['learning_session',num2str(1 + jLearningSession)]).all.extendedLearning] = mental_learningInstructions(scr, stim,...
-        'col1', learningVersion, mentalE_prm_learning_and_calib);
+        learningVersion, mentalE_prm_learning_and_calib);
     for iExtendedLearningTrial = 1:n_extendedLearningTrials
         % define start angle according to current difficulty level
         mentalE_prm_extendedLearning.startAngle = stim.difficulty.startAngle.(['level_',num2str(learning_effortLevel(iExtendedLearningTrial))]);
@@ -495,7 +492,7 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
                             % Nback version
                             Nback_str = num2str(mentalE_prm_instruDisplay.Nback);
                             learningVersion = ['extendedLearning_Nback',Nback_str];
-                            [onset_Press] = mental_learningInstructions(scr, stim, 'col1', learningVersion, mentalE_prm_instruDisplay);
+                            [onset_Press] = mental_learningInstructions(scr, stim, learningVersion, mentalE_prm_instruDisplay);
                             Em_vars.i_sub = iSubject;
                             Em_vars.n_to_reach = n_to_reach;
                             

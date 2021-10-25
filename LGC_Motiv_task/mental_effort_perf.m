@@ -1,9 +1,9 @@
 function[mentalE_perf, trial_success, onsets] = mental_effort_perf(scr, stim, key,...
     numberVector, mentalE_prm, n_max_to_reach,...
-    learning_col, learning_instructions, time_limit, t_max, errorLimits)
+    learning_instructions, time_limit, t_max, errorLimits)
 %[mentalE_perf, trial_success, onsets] = mental_effort_perf(scr, stim, key,...
 %     numberVector, mentalE_prm, n_max_to_reach,...
-%     curr_learning_col, curr_learning_instructions, time_limit, t_max, errorLimits)
+%     curr_learning_instructions, time_limit, t_max, errorLimits)
 %
 % mental_effort_perf corresponds to the actual performance. Can be
 % used both for learning period (with or without instructions) and for the
@@ -34,11 +34,6 @@ function[mentalE_perf, trial_success, onsets] = mental_effort_perf(scr, stim, ke
 %
 %   .switchPerc: percentage of switches required (based on total number of
 %   subsequent correct answers you want)
-%
-% learning_col:
-% 'col1': learning with colour 1 only
-% 'col2': learning with colour 2 only
-% 'all': learning with both colours
 %
 % learning_instructions
 % 'fullInstructions': display instructions: ask if odd/even (or lower/higher than 5) and
@@ -93,18 +88,6 @@ totalAngleDistance = endAngle - startAngle_currentTrial;
 % extract main mental effort parameters
 sideQuestion = mentalE_prm.sideQuestion;
 mental_n_col = mentalE_prm.mental_n_col;
-switchPerc = mentalE_prm.switchPerc;
-
-% determine number of switches to implement in a given sequence
-% with instructions
-if strcmp(learning_col,'all')
-    n_switch = switchPerc*n_max_to_reach;
-    if n_switch ~= round(n_switch)
-        error('something is wrong with your script, number of switch has to be integer');
-    end
-else % no switch if learning session focusing on one single colour
-    n_switch = 0;
-end
 
 % extract error management variables
 useOfErrorThreshold = errorLimits.useOfErrorThreshold;
@@ -127,27 +110,10 @@ n_questions = size(numberVector,2);
     numberVectorUsed] = deal( NaN(1, n_questions));
 
 % define first trial task type
-switch learning_col
-    case 'all'
-        taskType(1) = random_binary; % define randomly the nature of the first trial
-    case 'col1' % start with colour 1
-        switch mentalE_prm.mental_n_col.col1
-            case 'oddEven'
-                taskType(1) = 0;
-            case 'lowHigh'
-                taskType(1) = 1;
-        end
-    case 'col2' % start with colour 2
-        switch mentalE_prm.mental_n_col.col2
-            case 'oddEven'
-                taskType(1) = 0;
-            case 'lowHigh'
-                taskType(1) = 1;
-        end
-end
+taskType(1) = 1;
 
 % define a STAY/SWITCH sequence
-task_seq = mental_effort_task_switches(taskType(1), n_max_to_reach, n_switch);
+task_seq = ones(1,n_max_to_reach);
 % define first number which will appear on screen
 numberVectorUsed(1) = numberVector(1);
 
@@ -311,7 +277,6 @@ mentalE_perf.taskType       = taskType(questions_done);
 mentalE_perf.sideAnswer     = sideAnswer(questions_done);
 mentalE_perf.isGoodAnswer   = goodOrBadAnswer(questions_done);
 mentalE_perf.rt             = rt(questions_done);
-mentalE_perf.n_switch       = n_switch;
 mentalE_perf.n_max_to_reach = n_max_to_reach;
 mentalE_perf.n_errorsMade   = jErrorsMade;
 mentalE_perf.anglePerformance = currentAngle(questions_done);

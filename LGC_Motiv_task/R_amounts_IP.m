@@ -1,5 +1,5 @@
-function[R_money] = R_amounts_IP(n_R_levels, punishment_yn, delta_IP)
-%[R_money] = R_amounts_IP(n_R_levels, punishment_yn, IP_R)
+function[R_money] = R_amounts_IP(n_R_levels, punishment_yn, IPdata)
+%[R_money] = R_amounts_IP(n_R_levels, punishment_yn, IPdata)
 % R_amounts will create a structure with the planned amount for each
 % reward level
 %
@@ -8,8 +8,10 @@ function[R_money] = R_amounts_IP(n_R_levels, punishment_yn, delta_IP)
 %
 % punishment_yn: 'yes'/'no': does the script include punishments as well?
 %
-% IP_R: indifference point = amount of reward for which the medium effort
+% IPdata: structure containing:
+% - the indifference point = amount of reward for which the medium effort
 % level is equivalent to the default low option for rewards
+% - information about amount of reward 
 %
 % OUTPUTS
 % R_money: structure with 1 subfield for each reward level
@@ -30,7 +32,7 @@ end
 switch n_R_levels
     case 2
         R_money.R_1 = IP_R - delta_IP/2;
-        R_money.R_3 = IP_R + delta_IP/2;
+        R_money.R_2 = IP_R + delta_IP/2;
     case 3
         R_money.R_1 = IP_R - delta_IP/2;
         R_money.R_2 = IP_R;

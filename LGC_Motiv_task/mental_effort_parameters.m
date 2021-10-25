@@ -29,6 +29,9 @@ white = [255 255 255];
 %% N-back: define how many answers before you need to answer
 mentalE_prm.Nback = 2;
 
+%% threshold (impossible) to reach for mental calibration
+mentalE_prm.n_maxToReachCalib = 40;
+
 %% task switching version: define colours to use for the font of the numbers according to
 %  subject number to alternate the type of colour used
 
