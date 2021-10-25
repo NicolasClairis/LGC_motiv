@@ -100,7 +100,7 @@ E_maxDuration = Ep_time_levels.(['level_',num2str(n_E_levels)]);
 for iDiff = 1:n_E_levels
     % extract name for subfield of the current difficulty level
     diff_level_nm = ['level_',num2str(iDiff)];
-    E_durPerc_tmp = Ep_time_levels(iDiff);
+    E_durPerc_tmp = Ep_time_levels.(['level_',num2str(iDiff)]);
     
     % extract angle for the arc which will correspond to the difficulty
     % level: max circle = max difficulty level
