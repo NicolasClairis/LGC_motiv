@@ -49,6 +49,7 @@ subjectCodeName = strcat('CID',iSubject);
 file_nm_training_Em = ['training_data_Em_CID',num2str(iSubject)];
 file_nm_training_Ep = ['training_data_Ep_CID',num2str(iSubject)];
 file_nm = ['training_data_CID',num2str(iSubject)];
+file_nm_IP = ['delta_IP_CID',num2str(iSubject)];
 % convert subject CID into number (only if used to perform actual task)
 if ischar(iSubject)
     iSubject = str2double(iSubject);
@@ -91,8 +92,8 @@ black = scr.colours.black;
 punishment_yn = 'yes'; % include punishment trials?
 
 % number of reward and effort conditions
-n_R_levels = 3;
-n_E_levels = 3;
+n_R_levels = 4;
+n_E_levels = 4;
 
 % prepare multiple versions of efforts for indifference point
 E_right = [2 3];
@@ -101,6 +102,10 @@ E_left = [1 1];
 %Number of repeats of the whole code
 nbRepeat = 1;
 nbEffortLvl = 1;
+
+% Baseline Reward (CHF)
+baselineR = 0.5;
+baselineP = 0.5;
 
 % Total amount of money to be given
 totalGain = 0;
@@ -121,7 +126,7 @@ switch punishment_yn
             case 0
                 trainingConditions = {'R','P'};
             case 1
-                trainingConditions = {'R','P','RP'};
+                trainingConditions = {'RP'};
         end
     case 'no'
         trainingConditions = {'R'};
@@ -211,7 +216,7 @@ end
 %% physical preparation
 %% physical MVC
 if strcmp(taskToPerform.physical.calib,'on')
-    waitSpace(langage, window, yScreenCenter, scr, key_Em);
+    waitSpace(langage, window, yScreenCenter, scr, key_Ep);
     
     [initial_MVC, onsets_initial_MVC] = physical_effort_MVC(scr, stim, dq, n_MVC_repeat, calibTimes_Ep);
     MVC = max(initial_MVC.MVC); % expressed in Voltage
@@ -415,7 +420,29 @@ end
 %% actual task
 
 if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,'on')
+
+    %     waitSpace(langage, window, yScreenCenter, scr, key_Em);
+    for iTimeLoop = 1:2
+        DrawFormattedText(window,...
+            stim.staircase.text,...
+            stim.staircase.x,...
+            stim.staircase.y,...
+            stim.staircase.colour, wrapat);
+        if iTimeLoop == 1 % force them to read at first
+            [~, onsets.trainingWillStart] = Screen(window, 'Flip');
+            WaitSecs(trainingTimes_Ep.instructions);
+        elseif iTimeLoop == 2 % after t_instructions seconds, they can manually start
+            % display text: Press when you are ready to start
+            DrawFormattedText(window, stim.pressWhenReady.text,...
+                stim.pressWhenReady.x, stim.pressWhenReady.y, stim.pressWhenReady.colour);
+            [~, onsets.trainingWillStart_bis] = Screen(window, 'Flip');
+            KbWait;
+        end
+    end % loop over forced reading/manual pass loop
     
+    
+        
+        
     % for physical effort
     if strcmp(taskToPerform.physical.task,'on')
         Ep_vars.MVC = MVC;
@@ -579,10 +606,10 @@ end
 
 % learning performance
 if strcmp(taskToPerform.mental.learning,'on')
-    all.physical.learning = learningPerfSummary_Ep;
+    all.physical.learning = learningPerfSummary_Em;
 end
 if strcmp(taskToPerform.physical.learning,'on')
-    all.mental.learning = learningPerfSummary_Em;
+    all.mental.learning = learningPerfSummary_Ep;
 end
 
 % training performance
@@ -604,6 +631,7 @@ if strcmp(taskToPerform.physical.task,'on')
             for iRepeat = 1:nbRepeat
                 % save data in all and reformat it in a specific order
                 all.physical.(['EffortLvl_',num2str(iEffort)]).(['session_nb',num2str(iSession)]).(['repeat_nb',num2str(iRepeat)]).perfSummary = perfSummary.physical.(['repeat_nb',num2str(iRepeat)]).(['session_nb',num2str(iSession)]).(['Effort_lvl',(num2str(iEffort))]);
+                IP_variable.physicalDeltaIP = all.physical.(['EffortLvl_',num2str(iEffort)]).(['session_nb',num2str(iSession)]).(['repeat_nb',num2str(iRepeat)]).perfSummary.IP - baselineR;
             end
         end
     end
@@ -615,15 +643,20 @@ if strcmp(taskToPerform.mental.task,'on')
             for iRepeat = 1:nbRepeat
                 % save data in all and reformat it in a specific order
                 all.mental.(['EffortLvl_',num2str(iEffort)]).(['session_nb',num2str(iSession)]).(['repeat_nb',num2str(iRepeat)]).perfSummary = perfSummary.mental.(['repeat_nb',num2str(iRepeat)]).(['session_nb',num2str(iSession)]).(['Effort_lvl',(num2str(iEffort))]);
+                IP_variable.mentalDeltaIP = all.mental.(['EffortLvl_',num2str(iEffort)]).(['session_nb',num2str(iSession)]).(['repeat_nb',num2str(iRepeat)]).perfSummary.IP - baselineR;
             end
         end
     end
 end
 
+IP_variables.baselineR = baselineR;
+IP_variables.baselineP = baselineP;
+
 % actually save the data
 save([results_folder, file_nm,'.mat']);
 
-
+% save delta_IP and baselineR
+save([results_folder, file_nm_IP,'.mat'],'IP_variables');
 
 %% Show a final screen if and only if they performed the task or nonsense since no amount involved
 if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,'on')
