@@ -36,8 +36,8 @@ langue = 'f';
 IRM = 1;
 while isempty(iSubject) || length(iSubject) ~= 3
     % repeat until all questions are answered
-    info = inputdlg({'Subject CID (XXX)'});
-    [iSubject] = info{1};
+    info = inputdlg({'Subject CID (XXX)','P/M'});
+    [iSubject,P_or_M] = info{[1,2]};
 %     warning('when real experiment starts, remember to block in french and IRM = 1');
 end
 if ischar(IRM)
@@ -63,7 +63,7 @@ switch IRM
     case 0
         taskToPerform.physical.task = 'on';
     case 1 % task will be done in the scanner after the training
-        taskToPerform.physical.task = 'off';
+        taskToPerform.physical.task = 'on';
 end
 taskToPerform.mental.learning = 'off';
 taskToPerform.mental.calib = 'off';
@@ -175,7 +175,7 @@ if strcmp(taskToPerform.physical.calib,'on') ||...
     [key_Ep, dq] = relevant_key_definition('physical', IRM, n_buttonsChoice);
     % define conditions
     n_MVC_repeat = 3;
-    n_learningForceRepeats = 7; % number of learning repetitions for each level of difficulty (= each level of force)
+    n_learningForceRepeats = 1; % number of learning repetitions for each level of difficulty (= each level of force)
     F_threshold = 55; % force should be maintained above this threshold (expressed in % of MVC)
     F_tolerance = 2.5; % tolerance allowed around the threshold (expressed in % of MVC)
     % need to define timings for each level of force
@@ -422,7 +422,7 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
             stim.staircase.text,...
             stim.staircase.x,...
             stim.staircase.y,...
-            stim.staircase.colour, wrapat);
+            stim.staircase.colour, scr.wrapat);
         if iTimeLoop == 1 % force them to read at first
             [~, onsets.trainingWillStart] = Screen(window, 'Flip');
             WaitSecs(trainingTimes_Ep.instructions);
@@ -483,7 +483,10 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
                 end
                 
                 % instruction that main task will start soon
-                [onsets.taskWillStart] = waitSpace(langage, window, yScreenCenter, scr, key_Em);
+                % for mental effort timing
+                if strcmp(taskToPerform.mental.task,'on')
+                    [onsets.taskWillStart] = waitSpace(langage, window, yScreenCenter, scr, key_Em);
+                end
                 
                 % iSubject makes sure each new subject has pattern physical mental in a different order.
                 % iSession switches which code at each session
@@ -491,7 +494,7 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
                     case 1
                         if strcmp(taskToPerform.physical.task,'on')
                             showTitlesInstruction(scr,stim,'task',false);
-                            waitSpace(langage, window, yScreenCenter, scr, key_Em);
+                            waitSpace(langage, window, yScreenCenter, scr, key_Ep);
                             
                             % run physical task
                             [perfSummary.physical.(['repeat_nb',num2str(iRepeat)]).(['session_nb',num2str(iPhysical)]).(['Effort_lvl',(num2str(iEffortLevel))])] = choice_and_perf_staircase(scr, stim, key_Ep,...
@@ -566,33 +569,33 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
 end
 
 %% re-measure calibration
-% physical MVC re-measure
-if strcmp(taskToPerform.physical.task,'on')
-    [last_MVC, onsets_last_MVC] = physical_effort_MVC(scr, stim, dq, n_MVC_repeat, calibTimes_Ep);
-end
-
-% mental re-calibration
-if strcmp(taskToPerform.mental.task,'on')
-    mentalE_prm_learning_and_calib = mental_effort_parameters();
-    mentalE_prm_learning_and_calib.startAngle = 0; % for learning always start at zero
-    % extract numbers to use for each calibration trial
-%     [numberVector_calib] = mental_numbers(n_calibTrials_Em);
-[numberVector_calib] = mental_calibNumberVector(n_calibTrials_Em, n_calibMax);
-    % alternatively, use fixed number of correct answers to provide for each effort
-    % level
-    % repeat calibration until the subject performance is better
-    % than the requested time threshold
-    lastCalibSuccess = false;
-    lastCalibSession = 0;
-    while lastCalibSuccess == false
-        lastCalibSession = lastCalibSession + 1;
-        [t_min_lastCalib, lastCalibSessionSummary, lastCalibSuccess] = mental_calibTime(scr, stim, key_Em,...
-            numberVector_calib, mentalE_prm_learning_and_calib, n_calibTrials_Em, n_calibMax, calibTimes_Em, calib_errorLimits_Em, langage);
-        lastCalibSummary.(['calibSession_',num2str(calibSession)]).calibSummary = lastCalibSessionSummary;
-        lastCalibSummary.(['calibSession_',num2str(calibSession)]).calibSuccess = lastCalibSuccess;
-        lastCalibSummary.(['calibSession_',num2str(calibSession)]).t_mental_max_perTrial = t_min_lastCalib;
-    end
-end
+% % physical MVC re-measure
+% if strcmp(taskToPerform.physical.task,'on')
+%     [last_MVC, onsets_last_MVC] = physical_effort_MVC(scr, stim, dq, n_MVC_repeat, calibTimes_Ep);
+% end
+% 
+% % mental re-calibration
+% if strcmp(taskToPerform.mental.task,'on')
+%     mentalE_prm_learning_and_calib = mental_effort_parameters();
+%     mentalE_prm_learning_and_calib.startAngle = 0; % for learning always start at zero
+%     % extract numbers to use for each calibration trial
+% %     [numberVector_calib] = mental_numbers(n_calibTrials_Em);
+% [numberVector_calib] = mental_calibNumberVector(n_calibTrials_Em, n_calibMax);
+%     % alternatively, use fixed number of correct answers to provide for each effort
+%     % level
+%     % repeat calibration until the subject performance is better
+%     % than the requested time threshold
+%     lastCalibSuccess = false;
+%     lastCalibSession = 0;
+%     while lastCalibSuccess == false
+%         lastCalibSession = lastCalibSession + 1;
+%         [t_min_lastCalib, lastCalibSessionSummary, lastCalibSuccess] = mental_calibTime(scr, stim, key_Em,...
+%             numberVector_calib, mentalE_prm_learning_and_calib, n_calibTrials_Em, n_calibMax, calibTimes_Em, calib_errorLimits_Em, langage);
+%         lastCalibSummary.(['calibSession_',num2str(calibSession)]).calibSummary = lastCalibSessionSummary;
+%         lastCalibSummary.(['calibSession_',num2str(calibSession)]).calibSuccess = lastCalibSuccess;
+%         lastCalibSummary.(['calibSession_',num2str(calibSession)]).t_mental_max_perTrial = t_min_lastCalib;
+%     end
+% end
 
 %% save the data
 
