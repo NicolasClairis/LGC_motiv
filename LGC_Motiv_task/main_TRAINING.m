@@ -92,7 +92,7 @@ black = scr.colours.black;
 punishment_yn = 'yes'; % include punishment trials?
 
 % number of reward and effort conditions
-n_R_levels = 3;
+n_R_levels = 4;
 n_E_levels = 4;
 
 % prepare multiple versions of efforts for indifference point
@@ -104,8 +104,8 @@ nbRepeat = 1;
 nbEffortLvl = 1;
 
 % Baseline Reward (CHF)
-BaselineR = 0.5;
-BaselineP = 0.5;
+baselineR = 0.5;
+baselineP = 0.5;
 
 % Total amount of money to be given
 totalGain = 0;
@@ -126,7 +126,7 @@ switch punishment_yn
             case 0
                 trainingConditions = {'R','P'};
             case 1
-                trainingConditions = {'R','P','RP'};
+                trainingConditions = {'RP'};
         end
     case 'no'
         trainingConditions = {'R'};
@@ -216,7 +216,7 @@ end
 %% physical preparation
 %% physical MVC
 if strcmp(taskToPerform.physical.calib,'on')
-    waitSpace(langage, window, yScreenCenter, scr, key_Em);
+    waitSpace(langage, window, yScreenCenter, scr, key_Ep);
     
     [initial_MVC, onsets_initial_MVC] = physical_effort_MVC(scr, stim, dq, n_MVC_repeat, calibTimes_Ep);
     MVC = max(initial_MVC.MVC); % expressed in Voltage
@@ -420,7 +420,29 @@ end
 %% actual task
 
 if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,'on')
+
+    %     waitSpace(langage, window, yScreenCenter, scr, key_Em);
+    for iTimeLoop = 1:2
+        DrawFormattedText(window,...
+            stim.staircase.text,...
+            stim.staircase.x,...
+            stim.staircase.y,...
+            stim.staircase.colour, wrapat);
+        if iTimeLoop == 1 % force them to read at first
+            [~, onsets.trainingWillStart] = Screen(window, 'Flip');
+            WaitSecs(trainingTimes_Ep.instructions);
+        elseif iTimeLoop == 2 % after t_instructions seconds, they can manually start
+            % display text: Press when you are ready to start
+            DrawFormattedText(window, stim.pressWhenReady.text,...
+                stim.pressWhenReady.x, stim.pressWhenReady.y, stim.pressWhenReady.colour);
+            [~, onsets.trainingWillStart_bis] = Screen(window, 'Flip');
+            KbWait;
+        end
+    end % loop over forced reading/manual pass loop
     
+    
+        
+        
     % for physical effort
     if strcmp(taskToPerform.physical.task,'on')
         Ep_vars.MVC = MVC;
@@ -584,10 +606,10 @@ end
 
 % learning performance
 if strcmp(taskToPerform.mental.learning,'on')
-    all.physical.learning = learningPerfSummary_Ep;
+    all.physical.learning = learningPerfSummary_Em;
 end
 if strcmp(taskToPerform.physical.learning,'on')
-    all.mental.learning = learningPerfSummary_Em;
+    all.mental.learning = learningPerfSummary_Ep;
 end
 
 % training performance

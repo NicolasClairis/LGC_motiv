@@ -607,7 +607,19 @@ end
 stim.mentalCalibEnd.x = x_centerCoordinates(xScreenCenter, textSizeMentalCalibEnd);
 stim.mentalCalibEnd.y = y_coordinates(upperBorder, visibleYsize, 1/6, textSizeMentalCalibEnd);
 stim.mentalCalibEnd.colour = white;
+%% Staircase information
 
+switch langage
+    case 'fr'
+        stim.staircase.text = 'Bravo! Vous allez maintenant jouer pour de l''argent reel';
+    case 'engl'
+        stim.staircase.text = 'Congratulations! You will now play for real money';
+end
+[~,~,textSizeStaircaseInfo] = DrawFormattedText(window,stim.staircase.text,...
+    'center','center',white, wrapat);
+stim.staircase.x = x_centerCoordinates(xScreenCenter, textSizeStaircaseInfo);
+stim.staircase.y = y_coordinates(upperBorder, visibleYsize, 1/2, textSizeStaircaseInfo);
+stim.staircase.colour = white;
 %% color used to represent the effort signal
 % no use of monetary images anymore
 stim.difficulty.maxColor        = black;
