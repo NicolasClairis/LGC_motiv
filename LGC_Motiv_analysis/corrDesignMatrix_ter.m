@@ -23,9 +23,9 @@ function [Rcorr_bestMatrix, m_R, sd_R, bestMatrix, Rcorr] = corrDesignMatrix_ter
 % Rcorr: structure with all correlation coefficients
 
 %% initialize parameters of interest
-n_RP_levels = 3;
+n_RP_levels_includingDefault = 4;
 punishment_yn = 'yes';
-n_E_levels = 3;
+n_E_levels_includingDefault = 4;
 nTrials = 54;
 
 % how many design matrices do you want to test?
@@ -41,13 +41,15 @@ trialN_vec = 1:nTrials;
 
 %% run the tests
 for iTest = 1:n_designMatrix
-    choice_opt_tmp = design_trialOptions(n_RP_levels, n_E_levels, punishment_yn, nTrials);
+    choice_opt_tmp = design_trialOptions(n_RP_levels_includingDefault, n_E_levels_includingDefault, punishment_yn, nTrials);
     R_trials = strcmp(choice_opt_tmp.R_or_P,'R');
     P_trials = strcmp(choice_opt_tmp.R_or_P,'P');
-    deltaR = choice_opt_tmp.R.left(R_trials)' - choice_opt_tmp.R.right(R_trials)';
-    deltaP = choice_opt_tmp.R.left(P_trials)' - choice_opt_tmp.R.right(P_trials)';
-    deltaE_R = choice_opt_tmp.E.left(R_trials)' - choice_opt_tmp.E.right(R_trials)';
-    deltaE_P = choice_opt_tmp.E.left(P_trials)' - choice_opt_tmp.E.right(P_trials)';
+    % use absolute value to compute in the default-option framing instead
+    % of using the left option
+    deltaR = abs(choice_opt_tmp.R.left(R_trials)' - choice_opt_tmp.R.right(R_trials)');
+    deltaP = abs(choice_opt_tmp.R.left(P_trials)' - choice_opt_tmp.R.right(P_trials)');
+    deltaE_R = abs(choice_opt_tmp.E.left(R_trials)' - choice_opt_tmp.E.right(R_trials)');
+    deltaE_P = abs(choice_opt_tmp.E.left(P_trials)' - choice_opt_tmp.E.right(P_trials)');
     trialN_R = trialN_vec(R_trials)';
     trialN_P = trialN_vec(P_trials)';
     % store matrix

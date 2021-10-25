@@ -74,7 +74,10 @@ end
 % Create subjectCodeName which is used as a file saving name
 subjectCodeName = strcat('CID',iSubject);
 
-% file name
+% calibration performance file name
+calibPerf_file_nm = [results_folder,effort_type,'_calibPerf_',subjectCodeName,'.mat'];
+
+% file name for main session
 file_nm = [subjectCodeName,'_session',session_nm,'_',effort_type,'_task'];
 % verify the files do not already exist
 if exist([results_folder, file_nm,'.mat'],'file')
@@ -126,8 +129,8 @@ nTrials = 54;
 
 % extract money amount corresponding to each reward level for the
 % computation of the gains
-warning('need to load values for indifference point inferred with staircase here');
-[R_money] = R_amounts_IP(n_R_levels, punishment_yn, IP);
+IPdata = getfield(load([results_folder, file_nm_IP,'.mat'],'IP_variables'),'IP_variables');
+[R_money] = R_amounts_IP(n_R_levels, punishment_yn, IPdata, effort_type);
 
 % check trial number is ok based on the number of entered conditions
 % you should have a pair number of trials so that you can define an equal
@@ -144,50 +147,37 @@ choiceOptions = RP_moneyLevels(bestMatrix, R_money);
 % display of different answers only during the training
 confDispDuringChoice = false;
 
+% define thresholds for each task
 switch effort_type
     case 'physical'
         F_threshold = 55; % force should be maintained above this threshold (expressed in % of MVC)
         F_tolerance = 2.5; % tolerance allowed around the threshold (expressed in % of MVC)
-        % need to define timings for each level of force
-        [Ep_time_levels] = physical_effortLevels(n_E_levels);
     case 'mental'
-        % define number of pairs to solve for each level of difficulty
-        n_to_reach = mental_N_answersPerLevel(n_E_levels);
-        % calibration: calibrate the maximal duration required for the
-        % top effort
-        n_calibMax = n_to_reach.(['E_level_',num2str(n_E_levels)]);
+        mentalE_prm_calib = mental_effort_parameters();
+        mentalE_prm_calib.startAngle = 0; % for learning always start at zero
+        % no error threshold nor mapping of answers when errors are
+        % made
+        calib_errorLimits_Em.useOfErrorMapping = false;
+        calib_errorLimits_Em.useOfErrorThreshold = false; % no need to put an error threshold as the reward is proportional (they will lose money for each error)
+        % calibration and max performances: define the maximal number to reach
+        n_calibMax = mentalE_prm_calib.n_maxToReachCalib;
 end
 
 % stimulus related variables for the display
 [stim] = stim_initialize(scr, n_E_levels, langage, R_money);
 barTimeWaitRect = stim.barTimeWaitRect;
 
-% define number of training conditions
-switch punishment_yn
-    case 'yes'
-        trainingConditions = {'R','P','RP'};
-    case 'no'
-        trainingConditions = {'R'};
-end
-n_trainingConditions = length(trainingConditions);
-
 %% load timings for each phase of the experiment
+trainingConditions = {'RP'};
 [~, calibTimes, ~, taskTimes, mainTimes] = timings_definition(trainingConditions, n_R_levels, n_E_levels, nTrials, effort_type);
 t_endfMRI = mainTimes.endfMRI;
 t_endSession = mainTimes.endSession;
 
-%% calibration (before the MRI) 
-% calibration performance file name
-calibPerf_file_nm = [results_folder,effort_type,'_calibPerf_',subjectCodeName,'.mat'];
+
 if strcmp(effort_type,'mental')
-    mentalE_prm_calib = mental_effort_parameters();
-    mentalE_prm_calib.startAngle = 0; % for learning always start at zero
-    % no error threshold nor mapping of answers when errors are
-    % made
-    calib_errorLimits_Em.useOfErrorMapping = false;
-    calib_errorLimits_Em.useOfErrorThreshold = true;
-    calib_errorLimits_Em.errorThreshold = 5;
+    
 end
+%% calibration (before the MRI) 
 if session_nb == 0
     %% initial calibration Fmax and mental time (inside the scanner)
     switch effort_type
@@ -198,13 +188,10 @@ if session_nb == 0
             [numberVector_calib] = mental_calibNumberVector(n_calibTrials, n_calibMax);
             
             %% perform calibration
-            [n_mental_max_perTrial, calib_summary] = mental_calibNumbers(scr, stim, key,...
-                numberVector_calib, mentalE_prm, n_calibTrials, calibTimes);
+            [NmaxCalib, calibSummary] = mental_calibNumbers(scr, stim, key,...
+                numberVector_calib, mentalE_prm_calib, n_calibTrials, calibTimes, langage);
             % save calib performance
-            save(calibPerf_file_nm,'calib_summary',...
-                'n_mental_max_perTrial');
-            error('need to update data saved and inputs/outputs here');
-            
+            save(calibPerf_file_nm,'calib_summary','NmaxCalib');
             
         case 'physical'% for physical effort, ask the MVC
             % record and store global MVC
@@ -218,16 +205,18 @@ if session_nb == 0
 elseif session_nb > 0
     %% actual task sessions in the scanner
     
-    % load max performance from calibration
+    % load max performance from calibration and define effort difficulty 
+    % levels accordingly
     switch effort_type
         case 'mental'
-            t_min_calib = getfield(load(calibPerf_file_nm,'t_min_calib'),'t_min_calib');
-            % increase time available based on calibration minimum time
-            % performed to allow for more time
-            t_max_effort = t_min_calib*taskTimes.t_min_scalingFactor; % allow more time then min performance
-            taskTimes.max_effort = t_max_effort;
+            % load calibration maximal performance
+            NmaxCalib = getfield(load(calibPerf_file_nm,'NmaxCalib'));
+            % define number of pairs to solve for each level of difficulty
+            n_to_reach = mental_N_answersPerLevel(n_E_levels, NmaxCalib);
         case 'physical'
             MVC = getfield(load(calibPerf_file_nm,'MVC'),'MVC'); % expressed in Voltage
+            % define effort levels for each level of difficulty
+            [Ep_time_levels] = physical_effortLevels(n_E_levels);
     end
     
     %% launch physiological recording
@@ -239,14 +228,13 @@ elseif session_nb > 0
     end
     disp('OK - space was pressed, physio recording started');
     
-    %% max perf measurement before start of each session
-    % (not for training out of MRI)
+    %% max perf measurement before start of each fMRI session
     switch effort_type
         case 'mental'
             % perform max perf
             [numberVector_initialMaxPerf] = mental_calibNumberVector(n_MaxPerfTrials, n_calibMax);
-            [t_min_initialMaxPerf, initialMaxPerfSessionSummary, initialMaxPerfSuccess] = mental_calibTime(scr, stim, key,...
-                numberVector_initialMaxPerf, mentalE_prm_calib, n_MaxPerfTrials, n_calibMax, calibTimes, calib_errorLimits_Em, langage);
+            [n_initialMaxPerf, initialMaxPerfSessionSummary] = mental_calibNumbers(scr, stim, key,...
+                numberVector_initialMaxPerf, mentalE_prm_calib, n_MaxPerfTrials, calibTimes, langage);
         case 'physical'
             % take an initial MVC measurement (even if it has been done in a
             % previous session, will allow us to keep track of the force level
@@ -357,18 +345,10 @@ elseif session_nb > 0
             [last_MVC, onsets_last_MVC] = physical_effort_MVC(scr, stim, dq, n_MaxPerfTrials, calibTimes);
         case 'mental'
             % extract numbers to use for each calibration trial
-            %             [numberVector_endCalib] = mental_numbers(nFinalTrial);
             [numberVector_endCalib] = mental_calibNumberVector(n_MaxPerfTrials, n_calibMax);
-            
-            % use fixed number of correct answers to provide for each effort
-            % level
-            % repeat calibration until the subject performance is better
-            % than the requested time threshold
-            [t_min_finalMaxPerf, finalMaxPerf_SessionSummary, finalMaxPerf_calibSuccess] = mental_calibTime(scr, stim, key,...
-                numberVector_endCalib, mentalE_prm_calib, n_MaxPerfTrials, n_calibMax, calibTimes, calib_errorLimits_Em, langage);
-            calibEndSessionSummary.calibEndSession.calibSummary = finalMaxPerf_SessionSummary;
-            calibEndSessionSummary.calibEndSession.calibSuccess = finalMaxPerf_calibSuccess;
-            calibEndSessionSummary.calibEndSession.t_mental_max_perTrial = t_min_finalMaxPerf;
+            % last max performance measurement
+            [n_finalMaxPerf, finalMaxPerf_SessionSummary] = mental_calibNumbers(scr, stim, key,...
+                numberVector_endCalib, mentalE_prm_calib, n_MaxPerfTrials, calibTimes, langage);
     end
     
     %% display feedback for the current session
@@ -398,15 +378,12 @@ elseif session_nb > 0
                 if session_nb == 0
                     all.calibSummary = calibSummary;
                 else
-                    all.start_maxPerf.t_min = t_min_initialMaxPerf;
+                    all.start_maxPerf.n_maxPerf = n_initialMaxPerf;
                     all.start_maxPerf.sessionSummary = initialMaxPerfSessionSummary;
-                    all.start_maxPerf.success = initialMaxPerfSuccess;
                 end
                 % last max perf
-                all.end_maxPerf.t_min = t_min_finalMaxPerf;
+                all.end_maxPerf.n_maxPerf = n_finalMaxPerf;
                 all.end_maxPerf.SessionSummary = finalMaxPerf_SessionSummary;
-                all.end_maxPerf.calibSuccess = finalMaxPerf_calibSuccess;
-                all.end_maxPerf.calibEndSessionSummary = calibEndSessionSummary;
         end
         switch effort_type
             case 'physical'

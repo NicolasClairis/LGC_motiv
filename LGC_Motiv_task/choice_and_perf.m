@@ -223,9 +223,8 @@ for iTrial = 1:nTrials
         case {1,2} % choice = right option (sure or unsure)
             R_chosen(iTrial) = R_right_tmp;
             E_chosen(iTrial) = E_right_tmp;
-        case 0 % no option was selected
+        case 0 % no option was selected: take the default option
             R_chosen(iTrial) = 0;
-            %             E_chosen(iTrial) = max(E_left_tmp, E_right_tmp); % by default opt for the higher effort with no reward if no option was selected
             E_chosen(iTrial) = 0;
     end
     
