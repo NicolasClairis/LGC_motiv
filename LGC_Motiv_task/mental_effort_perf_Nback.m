@@ -90,7 +90,7 @@ startAngle_currentTrial = mentalE_prm.startAngle;
 endAngle = 360;
 totalAngleDistance = endAngle - startAngle_currentTrial;
 % coordinates for the angle corresponding to the max until now
-if ~isempty(n_maxReachedUntilNow)
+if exist('n_maxReachedUntilNow','var') && ~isempty(n_maxReachedUntilNow)
     maxPerfUntilNowAngle = totalAngleDistance*(n_maxReachedUntilNow/n_max_to_reach);
 else
     maxPerfUntilNowAngle = [];

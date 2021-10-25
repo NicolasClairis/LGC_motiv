@@ -56,17 +56,17 @@ if ischar(iSubject)
 end
 %% general parameters
 % define subparts of the task to perform (on/off)
-taskToPerform.physical.calib = 'on';
-taskToPerform.physical.learning = 'on';
-taskToPerform.physical.training = 'on';
+taskToPerform.physical.calib = 'off';
+taskToPerform.physical.learning = 'off';
+taskToPerform.physical.training = 'off';
 switch IRM
     case 0
-        taskToPerform.physical.task = 'on';
+        taskToPerform.physical.task = 'off';
     case 1 % task will be done in the scanner after the training
-        taskToPerform.physical.task = 'on';
+        taskToPerform.physical.task = 'off';
 end
-taskToPerform.mental.learning = 'off';
-taskToPerform.mental.calib = 'off';
+taskToPerform.mental.learning = 'on';
+taskToPerform.mental.calib = 'on';
 taskToPerform.mental.training = 'off';
 switch IRM
     case 0
@@ -189,11 +189,8 @@ if strcmp(taskToPerform.mental.calib,'on') ||...
         strcmp(taskToPerform.mental.task,'on')
     % define relevant keys and dynamometer module
     key_Em = relevant_key_definition('mental', IRM, n_buttonsChoice);
-    % define number of pairs to solve for each level of difficulty
-    n_to_reach = mental_N_answersPerLevel(n_E_levels);
     
     % calibration: calibrate the maximal duration required for the top effort
-    n_calibMax = n_to_reach.(['E_level_',num2str(n_E_levels)]);
     n_calibTrials_Em = 3;
     
     % learning
@@ -270,12 +267,13 @@ end
 %% mental preparation
 %% learning mental
 if strcmp(taskToPerform.mental.learning,'on')
+    
+    %% first learn the mapping for answering left/right <5/>5 with and then without the display on the screen
     showTitlesInstruction(scr,stim,'learning',true)
     mentalE_prm_learning_and_calib = mental_effort_parameters();
     mentalE_prm_learning_and_calib.startAngle = 0; % for learning always start at zero
     % no time limit for each trial: as long as needed until learning is ok
-    learning_time_limit = true;
-    
+    learning_useOfTimeLimit = false;
     
     % for learning display the mapping after 2 errors, avoid displaying
     learning_errorLimits.useOfErrorThreshold = false; % no error limit for the learning period
@@ -287,6 +285,7 @@ if strcmp(taskToPerform.mental.learning,'on')
     jLearningSession = 0;
     jMentalLearningTrial = 0;
     for iLearning_Instructions = 1:n_learningInstructions
+        jMentalLearningTrial = jMentalLearningTrial + 1;
         curr_learning_instructions = learning_instructions{iLearning_Instructions};
         
         jLearningSession = jLearningSession + 1;
@@ -299,8 +298,8 @@ if strcmp(taskToPerform.mental.learning,'on')
         [learningPerfSummary_Em.(learning_sess_nm).(curr_learning_instructions)] = mental_effort_perf(scr, stim, key_Em,...
             numberVector_learning(jLearningSession,:),...
             mentalE_prm_learning_and_calib, n_maxLearning.learning_withInstructions,...
-            curr_learning_instructions, learning_time_limit, [], learning_errorLimits);
-        jMentalLearningTrial = jMentalLearningTrial + 1;
+            curr_learning_instructions, learning_useOfTimeLimit, [], learning_errorLimits);
+        
         
         % for experimenter display how many trials have been performed
         disp(['Mental learning trial ',num2str(jMentalLearningTrial),'/',num2str(nMentalLearning_totalTrials),' done']);
@@ -308,43 +307,41 @@ if strcmp(taskToPerform.mental.learning,'on')
     
     %% extended learning for each difficulty level (in N-back version now)
     mentalE_prm_extendedLearning = mentalE_prm_learning_and_calib;
-    n_repeatsPerEffortLevel = 30;
+    % always start at zero
+    mentalE_prm_extendedLearning.startAngle = 0;
+    n_extendedLearningTrials = 30; % number of repetitions
     % Nback version
     Nback_str = num2str(mentalE_prm_extendedLearning.Nback);
     learningVersion = ['extendedLearning_Nback',Nback_str];
+    % time limits
+    extendedLearning_useOfTimeLimit = true;
+    extendedLearning_timeLimit = trainingTimes_Em.max_effort;
     
     % define conditions for the extended learning
-    [learning_effortLevel, learning_effort_n_toReach] = deal(NaN(1,n_repeatsPerEffortLevel*n_E_levels));
-    for iE_level = 1:n_E_levels
-        learning_Em_idx_tmp = (1:n_repeatsPerEffortLevel) + n_repeatsPerEffortLevel*(iE_level - 1);
-        learning_effort_n_toReach(learning_Em_idx_tmp) = repmat(n_to_reach.(['E_level_',num2str(iE_level)]), 1, n_repeatsPerEffortLevel);
-        learning_effortLevel(learning_Em_idx_tmp) = repmat(iE_level, 1, n_repeatsPerEffortLevel);
-    end
-    n_extendedLearningTrials = length(learning_effort_n_toReach);
-    % randomize the order of the trials
-    rdmOrderExtendedLearning = randperm(n_extendedLearningTrials);
-    learning_effort_n_toReach = learning_effort_n_toReach(rdmOrderExtendedLearning);
-    learning_effortLevel = learning_effortLevel(rdmOrderExtendedLearning);
-    [numberVector_learning] = mental_numbers(n_extendedLearningTrials);
+    n_maxToReachForCalib = mentalE_prm_extendedLearning.n_maxToReachCalib;
+    [numberVector_extendedLearning] = mental_numbers(n_extendedLearningTrials);
     % error handling for extended learning
     extendedLearning_errorLimits.useOfErrorThreshold = false;
     extendedLearning_errorLimits.useOfErrorMapping = false;
+    % start at zero
+    nMaxReachedUntilNowLearning = 0;
     
-    % perform the training
-    [onsets.endLearningInstructions.(['learning_session',num2str(1 + jLearningSession)]).all.extendedLearning] = mental_learningInstructions(scr, stim,...
+    % perform the extended training
+    [onsets.endLearningInstructions.(['extendedLearning_session',num2str(1)]).extendedLearning] = mental_learningInstructions(scr, stim,...
         learningVersion, mentalE_prm_learning_and_calib);
     for iExtendedLearningTrial = 1:n_extendedLearningTrials
-        % define start angle according to current difficulty level
-        mentalE_prm_extendedLearning.startAngle = stim.difficulty.startAngle.(['level_',num2str(learning_effortLevel(iExtendedLearningTrial))]);
-        [learningPerfSummary_Em.extendedLearning.(['trial_',num2str(iExtendedLearningTrial)])] = mental_effort_perf_Nback(scr, stim, key_Em,...
-            numberVector_learning(iExtendedLearningTrial,:),...
-            mentalE_prm_extendedLearning, learning_effort_n_toReach(iExtendedLearningTrial),...
-            'noInstructions', learning_time_limit, [], extendedLearning_errorLimits);
+        mentalE_extendedLearningPerfSummary_tmp = mental_effort_perf_Nback(scr, stim, key_Em,...
+            numberVector_extendedLearning(iExtendedLearningTrial,:),...
+            mentalE_prm_extendedLearning, n_maxToReachForCalib,...
+            'noInstructions', extendedLearning_useOfTimeLimit, extendedLearning_timeLimit, extendedLearning_errorLimits, nMaxReachedUntilNowLearning);
+        learningPerfSummary_Em.extendedLearning.(['trial_',num2str(iExtendedLearningTrial)]) = mentalE_extendedLearningPerfSummary_tmp;
         
+        % extract new best performance
+        nMaxReachedUntilNowLearning = max(nMaxReachedUntilNowLearning, mentalE_extendedLearningPerfSummary_tmp);
         % small break between each answer
         DrawFormattedText(window, stim.training.Em.endTrialMsg.text,'center',yScreenCenter/2,white);
         DrawFormattedText(window,stim.training.Em.endTrialMsg_bis.text,'center','center',white);
-        [~,~,timeExtendedLearningFbk.(['trial_',num2str(iExtendedLearningTrial)])] = Screen(window,'Flip');
+        [~,~,onsets.timeExtendedLearningFbk.(['trial_',num2str(iExtendedLearningTrial)])] = Screen(window,'Flip');
         WaitSecs(learningTimes_Em.learning_rest);
         disp(['Mental extended learning trial ',num2str(iExtendedLearningTrial),'/',num2str(n_extendedLearningTrials),' done']);
     end % trial loop
@@ -354,6 +351,7 @@ end
 if strcmp(taskToPerform.mental.calib,'on')
     mentalE_prm_learning_and_calib = mental_effort_parameters();
     mentalE_prm_learning_and_calib.startAngle = 0; % for learning always start at zero
+    n_calibMax = mentalE_prm_learning_and_calib.n_maxToReachCalib;
     % extract numbers to use for each calibration trial
 %     [numberVector_calib] = mental_numbers(n_calibTrials_Em);
     [numberVector_calib] = mental_calibNumberVector(n_calibTrials_Em, n_calibMax);
@@ -365,15 +363,13 @@ if strcmp(taskToPerform.mental.calib,'on')
     % repeat calibration until the subject performance is better
     % than the requested time threshold
     calibSuccess = false;
-    calibSession = 0;
+    iCalibSession = 0;
     while calibSuccess == false
-        calibSession = calibSession + 1;
-        [t_min_calib, calibSessionSummary, calibSuccess] = mental_calibTime(scr, stim, key_Em,...
-            numberVector_calib, mentalE_prm_learning_and_calib, n_calibTrials_Em, n_calibMax,...
-            calibTimes_Em, calib_errorLimits_Em, langage);
-        calibSummary.(['calibSession_',num2str(calibSession)]).calibSummary = calibSessionSummary;
-        calibSummary.(['calibSession_',num2str(calibSession)]).calibSuccess = calibSuccess;
-        calibSummary.(['calibSession_',num2str(calibSession)]).t_mental_max_perTrial = t_min_calib;
+        iCalibSession = iCalibSession + 1;
+        [n_mental_max_perTrial, calib_summary] = mental_calibNumbers(scr, stim, key_Em,...
+            numberVector_calib, mentalE_prm_learning_and_calib, n_calibTrials_Em, calibTimes_Em);
+        calibSummary.(['calibSession_',num2str(iCalibSession)]).calibSummary = calib_summary;
+        calibSummary.(['calibSession_',num2str(iCalibSession)]).n_mental_max_perTrial = n_mental_max_perTrial;
     end
 end
 
@@ -398,6 +394,7 @@ if strcmp(taskToPerform.mental.training,'on')
         % start with reward training alone
         Em_vars_training.i_sub = iSubject;
         Em_vars_training.n_to_reach = n_to_reach;
+        error('n_to_reach needs updating');
         % for training: no failures, no display of mapping
         Em_vars_training.errorLimits.useOfErrorMapping = false;
         Em_vars_training.errorLimits.useOfErrorThreshold = false;
@@ -516,8 +513,8 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
                             learningVersion = ['extendedLearning_Nback',Nback_str];
                             [onset_Press] = mental_learningInstructions(scr, stim, learningVersion, mentalE_prm_instruDisplay);
                             Em_vars.i_sub = iSubject;
-                            Em_vars.n_to_reach = n_to_reach;
-                            
+                            Em_vars.n_to_reach = 0;
+                            error('n_to_reach needs updating');
                             % run mental task
                             % for actual task: no display of mapping but consider 3
                             % errors as a trial failure
