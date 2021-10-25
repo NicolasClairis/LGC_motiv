@@ -1,5 +1,5 @@
-function[R_money] = R_amounts_IP(n_R_levels, punishment_yn, IPdata)
-%[R_money] = R_amounts_IP(n_R_levels, punishment_yn, IPdata)
+function[R_money] = R_amounts_IP(n_R_levels, punishment_yn, IPdata, effort_type)
+%[R_money] = R_amounts_IP(n_R_levels, punishment_yn, IPdata, effort_type)
 % R_amounts will create a structure with the planned amount for each
 % reward level
 %
@@ -13,14 +13,18 @@ function[R_money] = R_amounts_IP(n_R_levels, punishment_yn, IPdata)
 % level is equivalent to the default low option for rewards
 % - information about amount of reward 
 %
+% effort_type: 'mental' or 'physical' effort task
+%
 % OUTPUTS
 % R_money: structure with 1 subfield for each reward level
 
-%% baselineR: baseline added by default to all gains and also starting point
-% for losses.
-% for gains, means you will win at least this
-% for punishments, means you will lose not more than this
-baselineR = 0.50;
+%% load baseline added by default to all monetary amounts.
+baselineR = IPdata.baselineR;
+baselineP = IPdata.baselineP;
+
+%% load delta between default option and medium effort level for which the
+% two options are perceived as equivalent (ie indifference point IP)
+delta_IP = IPdata.([effort_type,'DeltaIP']);
 
 %% rewards
 R_money.R_default = baselineR;
@@ -54,8 +58,8 @@ for iR = 1:n_R_levels
 end
 
 %% punishments
-R_money.P_default = baselineR;
-IP_P = baselineR - delta_IP;
+R_money.P_default = baselineP;
+IP_P = baselineP - delta_IP;
 if strcmp(punishment_yn,'yes')
     switch n_R_levels
         case 2
