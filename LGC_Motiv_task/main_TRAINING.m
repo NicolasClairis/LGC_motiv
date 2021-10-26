@@ -240,7 +240,7 @@ for i_pm = 1:2
                     [trainingSummary_Ep.(['session',num2str(iTrainingCondition),'_',trainingConfCond])] = choice_and_perf(scr, stim, key_Ep, 'physical', Ep_vars_training, R_money,...
                         trainingCondition, n_trialsPerTrainingCondition, trainingChoiceOptions_Ep_tmp(trainingTrials_idx), confidenceChoiceDisplay,...
                         trainingTimes_Ep,...
-                        results_folder, file_nm_training_Ep);
+                        subResultFolder, file_nm_training_Ep);
                 end % learning condition loop
 
                 DrawFormattedText(window, stim.training.Ep.endMsg.text,...
@@ -428,7 +428,7 @@ for i_pm = 1:2
                     [trainingSummary_Em.(trainingConfCond)] = choice_and_perf(scr, stim, key_Em, 'mental', Em_vars_training, R_money,...
                         trainingCondition, n_trainingTrials, trainingChoiceOptions_Em_tmp, confidenceChoiceDisplay,...
                         trainingTimes_Em,...
-                        results_folder, file_nm_training_Em);
+                        subResultFolder, file_nm_training_Em);
                 end % training condition loop
             end
     end
@@ -537,7 +537,7 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
                                 perf_Ep_IP_tmp = choice_and_perf_staircase(scr, stim, key_Ep,...
                                     'physical', Ep_vars,...
                                     'mainTask',R_or_P,E_right(iEffortLevel),E_left(iEffortLevel), n_trialsPerSession, taskTimes_Ep,...
-                                    results_folder, [file_nm,'_physical_repeat_nb',num2str(iRepeat),'_session_nb',session_nm,'_effort_lvl',num2str(iEffortLevel)]);
+                                    subResultFolder, [file_nm,'_physical_repeat_nb',num2str(iRepeat),'_session_nb',session_nm,'_effort_lvl',num2str(iEffortLevel)]);
                                 perfSummary.physical.(['repeat_nb',num2str(iRepeat)]).(['session_nb',num2str(iPhysical)]).(['Effort_lvl',(num2str(iEffortLevel))]) = perf_Ep_IP_tmp;
                                 sessionFinalGain = sessionFinalGain + perf_Ep_IP_tmp.totalGain(end);
                                 iPhysical = iPhysical + 1;
@@ -564,7 +564,7 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
                                 perf_Em_IP_tmp = choice_and_perf_staircase(scr, stim, key_Em,...
                                     'mental', Em_vars,...
                                     'mainTask',R_or_P,E_right((iEffortLevel)),E_left(iEffortLevel), n_trialsPerSession, taskTimes_Em,...
-                                    results_folder, [file_nm,'_mental_repeat_nb',num2str(iRepeat),'_session_nb',session_nm,'_effort_lvl',num2str(iEffortLevel)]);
+                                    subResultFolder, [file_nm,'_mental_repeat_nb',num2str(iRepeat),'_session_nb',session_nm,'_effort_lvl',num2str(iEffortLevel)]);
                                 perfSummary.mental.(['repeat_nb',num2str(iRepeat)]).(['session_nb',num2str(iMental)]).(['Effort_lvl',(num2str(iEffortLevel))]) = perf_Em_IP_tmp;
                                 sessionFinalGain = sessionFinalGain + perf_Em_IP_tmp.totalGain(end);
                                 iMental = iMental +1;
@@ -671,10 +671,10 @@ IP_variables.training.p_or_m = p_or_m;
 IP_variables.calibration.MVC = MVC;
 IP_variables.calibration.NMP = NMP;
 % actually save the data
-save([results_folder, file_nm,'.mat']);
+save([subResultFolder, file_nm,'.mat']);
 
 % save delta_IP and baselineR
-save([results_folder, file_nm_IP,'.mat'],'IP_variables');
+save([subResultFolder, file_nm_IP,'.mat'],'IP_variables');
 
 %% Show a final screen if and only if they performed the task or nonsense since no amount involved
 if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,'on')
