@@ -115,7 +115,7 @@ n_trialsPerSession = 5;
 R_money = R_amounts(n_R_levels, punishment_yn);
 
 % initialize visual stimuli to use in the experiment
-[stim] = stim_initialize(scr, n_E_levels, langage, R_money);
+[stim] = stim_initialize(scr, n_E_levels, langage);
 
 % define number of training conditions
 switch punishment_yn

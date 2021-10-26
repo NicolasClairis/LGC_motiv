@@ -8,11 +8,10 @@ ShowCursor;
 %% prepare the parameters
 n_R_levels=3;
 n_E_levels = 3;
-R_money = R_amounts(3, 'yes');
 langage = 'fr';
 n_buttonsChoice=4;
 confidenceDisp = 1;
-[stim] = stim_initialize(scr, n_E_levels, langage, R_money);
+[stim] = stim_initialize(scr, n_E_levels, langage);
 key = relevant_key_definition('mental', IRM, n_buttonsChoice);
 timeParameter.timeLimit = false;
 

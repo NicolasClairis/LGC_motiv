@@ -4,8 +4,7 @@
 [trainingTimes, calibTimes, learningTimes, taskTimes, mainTimes] = timings_definition({'RP'}, 3, 3, 54, 'mental');
 langage = 'fr';sca;
 
-[R_money] = R_amounts(3, 'yes');
-[stim] = stim_initialize(scr, 3, langage, R_money);
+[stim] = stim_initialize(scr, 3, langage);
 key = relevant_key_definition('mental', 0, 4);
 mentalE_prm_calib = mental_effort_parameters();
 mentalE_prm_calib.startAngle = 0; % for learning always start at zero
