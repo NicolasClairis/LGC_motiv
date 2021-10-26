@@ -36,14 +36,14 @@ if delta_IP < 0.01
     error('indifference point is too low');
 end
 switch n_R_levels
-    case 2
+    case 3
         R_money.R_1 = IP_R - delta_IP/2;
         R_money.R_2 = IP_R + delta_IP/2;
-    case 3
+    case 4
         R_money.R_1 = IP_R - delta_IP/2;
         R_money.R_2 = IP_R;
         R_money.R_3 = IP_R + delta_IP/2;
-    case 4
+    case 5
         R_money.R_1 = IP_R - delta_IP;
         R_money.R_2 = IP_R - delta_IP/2;
         R_money.R_3 = IP_R + delta_IP/2;
@@ -67,14 +67,14 @@ R_money.P_0 = baselineP;
 IP_P = baselineP - delta_IP;
 if strcmp(punishment_yn,'yes')
     switch n_R_levels
-        case 2
-            R_money.P_1 = IP_P - delta_IP/2;
-            R_money.P_3 = IP_P + delta_IP/2;
         case 3
+            R_money.P_1 = IP_P - delta_IP/2;
+            R_money.P_2 = IP_P + delta_IP/2;
+        case 4
             R_money.P_1 = IP_P - delta_IP/2;
             R_money.P_2 = IP_P;
             R_money.P_3 = IP_P + delta_IP/2;
-        case 4
+        case 5
             R_money.P_1 = IP_P - delta_IP/2;
             R_money.P_2 = IP_P - delta_IP/4;
             R_money.P_3 = IP_P + delta_IP/4;
