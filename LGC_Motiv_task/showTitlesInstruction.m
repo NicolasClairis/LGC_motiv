@@ -1,7 +1,8 @@
-function showTitlesInstruction(scr, stim, instructionType, isMental)
-%showTitlesInstruction(scr, stim, instructionType, isMental)
-% Function to display information of the next things to do
+function showTitlesInstruction(scr, stim, instructionType, effortTypeLetter)
+%showTitlesInstruction(scr, stim, instructionType, effortTypeLetter)
+% Function to display information of the next things to do.
 %
+% INPUTS
 % scr = screen informations
 % 
 % stim: structure with stimuli informations
@@ -11,9 +12,8 @@ function showTitlesInstruction(scr, stim, instructionType, isMental)
 % "training" is when you perform the full trial and the results do not matter
 % "task" is when you launch a block of trials, the core of the experiment
 %
-% isMental = define if we are working on physical or mental effort
-%
-%
+% effortTypeLetter = define if we are working on physical ('p') or mental ('m')
+% effort.
 %
 
 %% initialize relevant parameters
@@ -22,19 +22,14 @@ titleTextSize = scr.textSize.taskPeriodsTitles;
 baselineTextSize = scr.textSize.baseline;
 
 %% define title settings
-
-t_wait = 3;
+t_wait = 3; % this should be exported in timing_definitions.m but whatever
 
 % change text size
 Screen('TextSize', window, titleTextSize);
 % define effort type
-if isMental == true
-    effortType = 'Em';
-elseif isMental == false
-    effortType = 'Ep';
-end
+effortType = ['E',effortTypeLetter];
 
-% Announce what is next
+% announce what is next
 DrawFormattedText(window, stim.(effortType).(instructionType).title.text,...
             stim.(effortType).(instructionType).title.x,...
             stim.(effortType).(instructionType).title.y,...
