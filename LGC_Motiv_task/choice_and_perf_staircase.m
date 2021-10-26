@@ -1,9 +1,9 @@
 function[summary] = choice_and_perf_staircase(scr, stim, key,...
-    effort_type, Ep_or_Em_vars, R_money,...
+    effort_type, Ep_or_Em_vars,...
     training_R_P_RP_or_mainTask, R_or_P, E_right, E_left, nTrials, timings,...
     results_folder, file_nm)
 % [summary] = choice_and_perf_staircase(scr, stim, key,...
-%     effort_type, Ep_or_Em_vars, R_money,...
+%     effort_type, Ep_or_Em_vars,...
 %     training_R_P_RP_or_mainTask, R_or_P, E_right, E_left, nTrials, timings,...
 %     results_folder, file_nm)
 % choice_and_perf: script to perform choice and effort performance.
@@ -26,10 +26,6 @@ function[summary] = choice_and_perf_staircase(scr, stim, key,...
 %   i_sub: subject number (for mental effort)
 %   n_to_reach: structure telling the number of correct answers to reach to
 %   for each effort level
-%
-% R_money: structure with equivalence between reward levels and reward
-% money to compute gain within the session and includes money loss amount
-% for errors
 %
 % training_R_P_RP_or_mainTask:
 % 'R': reward only training
@@ -63,7 +59,6 @@ confidenceChoiceDisp = false;
 
 %% timings
 timings.cross.mainTask = 0.5;
-t_cross         = timings.cross.(training_R_P_RP_or_mainTask);
 % precise if the choice and the performance periods will have a time
 % constraint
 choiceTimeParameters.timeLimit = false;
@@ -82,7 +77,6 @@ t_fail_and_repeat_fbk = timings.fail_and_repeat_fbk;
 % specific variables
 switch effort_type
     case 'mental'
-        i_sub = Ep_or_Em_vars.i_sub;
         n_to_reach = Ep_or_Em_vars.n_to_reach;
         errorLimits = Ep_or_Em_vars.errorLimits;
     case 'physical'
@@ -257,7 +251,7 @@ for iTrial = 1:nTrials
     end
     
     %% chosen option display period
-    [time_dispChoice] = choice_task_dispChosen(scr, stim, R_chosen(iTrial), E_chosen(iTrial), R_or_P, confidence);
+    [time_dispChoice] = choice_task_dispChosen(scr, stim, choice(iTrial), R_chosen(iTrial), E_chosen(iTrial), R_or_P, confidence);
     onsets.dispChoice(iTrial) = time_dispChoice;
     WaitSecs(t_dispChoice);
     
@@ -380,9 +374,6 @@ for iTrial = 1:nTrials
                 stim.feedback.error_moneyLoss.colour);
             [~,onsets.fbk_fail(iTrial)] = Screen(window,'Flip');
             
-            % record loss for the current trial
-            gain(iTrial) = -R_money.trialFail;
-            
         case 1 % trial is a success
             % display feedback
             switch R_or_P
@@ -479,7 +470,6 @@ switch effort_type
     case 'mental'
         summary.mentalE_prm = mentalE_prm;
         summary.n_max_to_reach_perTrial = n_max_to_reach_perTrial;
-        summary.i_sub = i_sub;
         summary.n_to_reach = n_to_reach;
     case 'physical'
         summary.MVC = MVC;

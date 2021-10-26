@@ -1,4 +1,4 @@
-function[n_mental_max_perTrial, calib_summary] = mental_calibNumbers(scr, stim, key,...
+function[n_mental_max, calib_summary] = mental_calibNumbers(scr, stim, key,...
     numberVector_calib, mentalE_prm, n_calibTrials, calibTimes, langage)
 %[n_mental_max_perTrial, calib_summary] = mental_calibNumbers(scr, stim, key,...
 %     numberVector_calib, mentalE_prm, n_calibTrials, calibTimes, langage)
@@ -61,11 +61,11 @@ calib_time_limit = true; % time will be limited (as opposed to learning where ti
 instructions_disp = 0; % no instructions anymore, goal is to calibrate as if it was the actual task
 
 % thresholds for calibration
-n_errorsThreshold = 1; % number of errors allowed before repeating the trial
+n_errorsThreshold = 3; % number of errors allowed before repeating the trial
 n_minCorrectAnswersToReach = 6; % number of correct answers required to consider the trial ok (if too low, then trial is repeated)
 
 % introduce variables of interest
-[n_max_calibPerf,...
+[n_max_calibPerf_perTrial,...
     onset_fbk,...
     onset_fbk_press] = deal( NaN(1, n_calibTrials) ); % maximal perf at each calibration trial
 
@@ -111,12 +111,12 @@ while iCalibTrial <= n_calibTrials
     
     calib_summary.mentalE_perf(iCalibTrial) = mentalE_perf;
     % store current maximum performance
-    n_max_calibPerf(iCalibTrial) = mentalE_perf.n_correctAnswersProvided;
+    n_max_calibPerf_perTrial(iCalibTrial) = mentalE_perf.n_correctAnswersProvided;
     n_errorsMade_tmp = mentalE_perf.n_errorsMade;
     
     %% provide feedback according to if reached the top or not + prepare for the next phase of the trial
     % force to watch feedback for a short amount of time
-    if (n_max_calibPerf(iCalibTrial) <= n_minCorrectAnswersToReach) ||...
+    if (n_max_calibPerf_perTrial(iCalibTrial) <= n_minCorrectAnswersToReach) ||...
             (n_errorsMade_tmp >= n_errorsThreshold)
         % not enough correct answers OR too much errors
         % => consider the trial as a failure and redo it until a reasonable performance is attained
@@ -126,7 +126,7 @@ while iCalibTrial <= n_calibTrials
         % store the data of the missed trial because otherwise will be
         % erased
         missedTrialData{n_calibTrialsMissed} = mentalE_perf;
-        if (n_max_calibPerf(iCalibTrial) <= n_minCorrectAnswersToReach)
+        if (n_max_calibPerf_perTrial(iCalibTrial) <= n_minCorrectAnswersToReach)
             DrawFormattedText(window, stim.mentalCalibFailureFbk.text,...
                 stim.mentalCalibFailureFbk.x, stim.mentalCalibFailureFbk.y,...
                 stim.mentalCalibFailureFbk.colour, wrapat);
@@ -138,7 +138,7 @@ while iCalibTrial <= n_calibTrials
     else % calibration worked => display feedback of the best performance until now
         iCalibTrial = iCalibTrial + 1;
         % update best performance score
-        n_maxReachedUntilNow = max(n_max_calibPerf);
+        n_maxReachedUntilNow = max(n_max_calibPerf_perTrial);
         switch langage
             case 'fr'
                 DrawFormattedText(window, ['Bravo! Votre meilleur score jusque-la est de ',...
@@ -171,7 +171,7 @@ while iCalibTrial <= n_calibTrials
 end % number of tests to try to get max
 
 %% get maximum for the participant
-n_mental_max_perTrial = max(n_max_calibPerf);
+n_mental_max = max(n_max_calibPerf_perTrial);
 
 %% store all relevant variables in the output
 calib_summary.n_minCorrectAnswersToReach = n_minCorrectAnswersToReach;
@@ -179,8 +179,8 @@ calib_summary.calib_time_limit      = calib_time_limit;
 calib_summary.t_effort_max          = calibTimes.effort_max;
 calib_summary.errorLimits           = errorLimits;
 calib_summary.n_calibTrialsToDo     = n_calibTrials;
-calib_summary.n_mental_max_perTrial = n_mental_max_perTrial;
-calib_summary.n_max_calibPerf       = n_max_calibPerf;
+calib_summary.n_mental_max          = n_mental_max;
+calib_summary.n_max_calibPerf_perTrial = n_max_calibPerf_perTrial;
 calib_summary.onset_fbk             = onset_fbk;
 calib_summary.onset_fbk_press       = onset_fbk_press;
 % record data for missed trials

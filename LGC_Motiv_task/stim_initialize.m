@@ -155,7 +155,7 @@ stim.Ep.learning.title.colour = white;
 % learning mental
 switch langage
     case 'fr'
-        stim.Em.learning.title.text = 'Apprentissage tache d''effort mentale';
+        stim.Em.learning.title.text = 'Apprentissage tache d''effort mental';
     case 'engl'
         stim.Em.learning.title.text = 'Learning mental effort task';
 end

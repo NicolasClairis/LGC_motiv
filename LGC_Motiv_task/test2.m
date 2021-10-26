@@ -1,7 +1,7 @@
 [scr, xScreenCenter, yScreenCenter,...
     window, baselineTextSize] = ScreenConfiguration(0, 1);
 
-[trainingTimes, calibTimes, learningTimes, taskTimes, mainTimes] = timings_definition({'RP'}, 3, 3, 54, 'mental');
+[trainingTimes, calibTimes, learningTimes, taskTimes, mainTimes] = timings_definition({'RP'}, 54, 4, 'mental');
 langage = 'fr';sca;
 
 [stim] = stim_initialize(scr, 3, langage);

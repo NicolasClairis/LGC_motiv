@@ -4,7 +4,7 @@ function[R_money] = R_amounts(n_R_levels, punishment_yn)
 % reward level
 %
 % INPUTS
-% n_R_levels: number of reward levels
+% n_R_levels: number of reward levels (including default option)
 %
 % punishment_yn: 'yes'/'no': does the script include punishments as well?
 %
@@ -14,14 +14,14 @@ function[R_money] = R_amounts(n_R_levels, punishment_yn)
 %% rewards
 switch n_R_levels
     case 3
-        R_money.R_1 = 0.05;
-        R_money.R_2 = 0.15;
-        R_money.R_3 = 0.25;
+        R_money.R_0 = 0.50;
+        R_money.R_1 = 0.65;
+        R_money.R_2 = 0.95;
     case 4
-        R_money.R_1 = 0.20;
-        R_money.R_2 = 0.50;
-        R_money.R_3 = 1.00;
-        R_money.R_4 = 2.00;
+        R_money.R_0 = 0.50;
+        R_money.R_1 = 0.65;
+        R_money.R_2 = 0.80;
+        R_money.R_3 = 0.95;
     otherwise
         error(['Please prepare Reward level - Money mapping for ',...
             num2str(n_R_levels),' reward levels.']);
@@ -30,21 +30,21 @@ end
 % display level of reward assigned to each amount for tracking for the
 % experimenter in case of modification
 for iR = 1:n_R_levels
-    disp(['Reward level ',num2str(iR),' = ',num2str(R_money.(['R_',num2str(iR)])),' chf']);
+    disp(['Reward level ',num2str(iR-1),' = ',num2str(R_money.(['R_',num2str(iR-1)])),' chf']);
 end
 
 %% punishments
 if strcmp(punishment_yn,'yes')
     switch n_R_levels
         case 3
-            R_money.P_1 = 0.05;
-            R_money.P_2 = 0.15;
-            R_money.P_3 = 0.25;
+            R_money.P_0 = 0.50;
+            R_money.P_1 = 0.65;
+            R_money.P_2 = 0.95;
         case 4
-            R_money.P_1 = 0.2;
-            R_money.P_2 = 0.5;
-            R_money.P_3 = 1.0;
-            R_money.P_4 = 2.0;
+            R_money.P_0 = 0.50;
+            R_money.P_1 = 0.65;
+            R_money.P_2 = 0.80;
+            R_money.P_3 = 0.95;
         otherwise
             error(['Please prepare Reward level - Money mapping for ',...
                 num2str(n_R_levels),' reward levels.']);
@@ -53,12 +53,8 @@ if strcmp(punishment_yn,'yes')
     % display level of punishment assigned to each amount for tracking for the
     % experimenter in case of modification
     for iP = 1:n_R_levels
-        disp(['Punishment level ',num2str(iP),' = ',num2str(R_money.(['P_',num2str(iP)])),' chf']);
+        disp(['Punishment level ',num2str(iP-1),' = ',num2str(R_money.(['P_',num2str(iP-1)])),' chf']);
     end
 end
-
-%% also define the amount of money for the failed trials
-R_money.trialFail = 2;
-disp(['Loss amount = ',num2str(R_money.trialFail),' chf for failure trials']);
 
 end % function

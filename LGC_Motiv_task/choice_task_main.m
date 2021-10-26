@@ -169,7 +169,8 @@ barTimeWaitRect = stim.barTimeWaitRect;
 
 %% load timings for each phase of the experiment
 trainingConditions = {'RP'};
-[~, calibTimes, ~, taskTimes, mainTimes] = timings_definition(trainingConditions, n_R_levels, n_E_levels, nTrials, effort_type);
+trainingTrials = 3;
+[~, calibTimes, ~, taskTimes, mainTimes] = timings_definition(trainingConditions, nTrials, trainingTrials, effort_type);
 t_endfMRI = mainTimes.endfMRI;
 t_endSession = mainTimes.endSession;
 

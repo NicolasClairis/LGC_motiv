@@ -32,17 +32,21 @@ if n_R_levels == 4 && n_E_levels == 4
         case 'RP'
             switch nTrainingTrials
                 case 4
-                    trainingChoiceOptions.R.left    = [0 1 2 0];
-                    trainingChoiceOptions.R.right   = [1 0 0 3];
-                    trainingChoiceOptions.E.left    = [0 3 2 0];
-                    trainingChoiceOptions.E.right   = [1 0 0 2];
+                    R.left    = [0 1 2 0];
+                    R.right   = [1 0 0 3];
+                    E.left    = [0 3 2 0];
+                    E.right   = [1 0 0 2];
                     R_or_P = {'R','P','P','R'};
+                    % side of default option
+                    default_LR = [-1 1 1 -1];
                 case 8
-                    trainingChoiceOptions.R.left    = [0 2 0 0 0 1 2 1];
-                    trainingChoiceOptions.R.right   = [1 0 1 3 3 0 0 0];
-                    trainingChoiceOptions.E.left    = [0 2 0 0 0 3 2 3];
-                    trainingChoiceOptions.E.right   = [1 0 1 2 2 0 0 0];
-                    trainingChoiceOptions.R_or_P = {'R','R','P','R','P','P','P','R'};
+                    R.left    = [0 2 0 0 0 1 2 1];
+                    R.right   = [1 0 1 3 3 0 0 0];
+                    E.left    = [0 2 0 0 0 3 2 3];
+                    E.right   = [1 0 1 2 2 0 0 0];
+                    R_or_P = {'R','R','P','R','P','P','P','R'};
+                    % side of default option
+                    default_LR = [-1 1 -1 -1 -1 1 1 1];
                 otherwise
                     error(['case where ',num2str(nTrainingTrials),' training trials not ready yet. Please define design matrix.'])
             end
@@ -67,8 +71,14 @@ end
 
 %% convert data in monetary amounts
 if exist('R_money','var') && ~isempty(R_money) % you also need this function for the preparation of the timings, no need to compute this in this case
-    [trainingChoiceOptions.monetary_amount.left] = reward_level_to_moneyAmount_converter(trainingChoiceOptions.R.left, R_money, R_or_P);
-    [trainingChoiceOptions.monetary_amount.right] = reward_level_to_moneyAmount_converter(trainingChoiceOptions.R.right, R_money, R_or_P);
+    [trainingChoiceOptions.monetary_amount.left] = reward_level_to_moneyAmount_converter(R.left, R_money, R_or_P);
+    [trainingChoiceOptions.monetary_amount.right] = reward_level_to_moneyAmount_converter(R.right, R_money, R_or_P);
 end
+
+%% store everything
+trainingChoiceOptions.R = R;
+trainingChoiceOptions.E = E;
+trainingChoiceOptions.default_LR = default_LR;
+trainingChoiceOptions.R_or_P = R_or_P;
 
 end % function

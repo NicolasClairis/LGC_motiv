@@ -97,7 +97,6 @@ t_fail_and_repeat_fbk = timings.fail_and_repeat_fbk;
 %% specific variables
 switch effort_type
     case 'mental'
-        i_sub = Ep_or_Em_vars.i_sub;
         n_to_reach = Ep_or_Em_vars.n_to_reach;
         errorLimits = Ep_or_Em_vars.errorLimits;
     case 'physical'
@@ -381,37 +380,8 @@ for iTrial = 1:nTrials
     
     %% Feedback period
     switch trial_was_successfull(iTrial)
-        case 0 % trial failed
-            % trial failure = too slow (for physical effort always)
-            % for mental effort: either too slow or because too many errors
-            % => adapt the feedback accordingly
-            % display error message
-            if choice(iTrial) == 0 ||...
-                    strcmp(effort_type,'physical') ||...
-                    (strcmp(effort_type,'mental') &&...
-                    ( (Ep_or_Em_vars.errorLimits.useOfErrorThreshold == false) ||...
-                    (Ep_or_Em_vars.errorLimits.useOfErrorThreshold == true &&...
-                    perfSummary{iTrial}.n_errorsMade < Ep_or_Em_vars.errorLimits.errorThreshold) ) )
-                DrawFormattedText(window, stim.feedback.error_tooSlow.text,...
-                    stim.feedback.error_tooSlow.x, stim.feedback.error_tooSlow.y, ...
-                    stim.feedback.colour);
-            elseif strcmp(effort_type,'mental') &&...
-                    (Ep_or_Em_vars.errorLimits.useOfErrorThreshold == true &&...
-                    perfSummary{iTrial}.n_errorsMade >= Ep_or_Em_vars.errorLimits.errorThreshold) ||...
-                    (i_trial_failed > redo_limit)
-                % for the mental effort case where too many errors were made,
-                % adapt the error feedback accordingly
-                DrawFormattedText(window, stim.feedback.error_tooManyErrors.text,...
-                    stim.feedback.error_tooManyErrors.x, stim.feedback.error_tooManyErrors.y, ...
-                    stim.feedback.colour);
-            end
-            % display amount of money lost because participant was too
-            % slow/did too many mistakes
-            DrawFormattedText(window, stim.feedback.error_moneyLoss.text,...
-                stim.feedback.error_moneyLoss.x, stim.feedback.error_moneyLoss.y,...
-                stim.feedback.error_moneyLoss.colour);
-            % display money loss for failing
-            [~,onsets.fbk_fail(iTrial)] = Screen(window,'Flip');
+        case 0 % didn't reach the top during the trial
+            
             
             % record loss for the current trial
             if choice(iTrial) == 0 % no choice was made
@@ -540,7 +510,6 @@ switch effort_type
     case 'mental'
         summary.mentalE_prm = mentalE_prm;
         summary.n_max_to_reach_perTrial = n_max_to_reach_perTrial;
-        summary.i_sub = i_sub;
         summary.n_to_reach = n_to_reach;
     case 'physical'
         summary.MVC = MVC;
