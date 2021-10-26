@@ -1,6 +1,6 @@
-function[trialOptions] = design_trialOptions(n_R_levels_withDefault, n_E_levels_withDefault, punishment_yn, nTrials)
-% 
-% design_trialOptions will create a potential design matrix for the version
+function[trialOptions] = design_choiceOptions(n_R_levels_withDefault, n_E_levels_withDefault, punishment_yn, nTrials)
+% [trialOptions] = design_choiceOptions(n_R_levels_withDefault, n_E_levels_withDefault, punishment_yn, nTrials)
+% design_choiceOptions will create a potential design matrix for the version
 % with a default option.
 % 
 % INPUTS
