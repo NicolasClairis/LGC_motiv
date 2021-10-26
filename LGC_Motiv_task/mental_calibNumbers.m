@@ -1,7 +1,7 @@
 function[n_mental_max_perTrial, calib_summary] = mental_calibNumbers(scr, stim, key,...
-    numberVector_calib, mentalE_prm, n_calibTrials, calibTimes, langage, n_errorsThreshold)
+    numberVector_calib, mentalE_prm, n_calibTrials, calibTimes, langage)
 %[n_mental_max_perTrial, calib_summary] = mental_calibNumbers(scr, stim, key,...
-%     numberVector_calib, mentalE_prm, n_calibTrials, calibTimes, langage, n_errorsThreshold)
+%     numberVector_calib, mentalE_prm, n_calibTrials, calibTimes, langage)
 %
 % mental_calibNumbers will extract maximum number of subsequent correct
 % answers participants can provide in the limited amount of time that is
@@ -60,7 +60,9 @@ wrapat = scr.wrapat;
 calib_time_limit = true; % time will be limited (as opposed to learning where time was infinite)
 instructions_disp = 0; % no instructions anymore, goal is to calibrate as if it was the actual task
 
-n_minCorrectAnswersToReach = 2;
+% thresholds for calibration
+n_errorsThreshold = 1; % number of errors allowed before repeating the trial
+n_minCorrectAnswersToReach = 6; % number of correct answers required to consider the trial ok (if too low, then trial is repeated)
 
 % introduce variables of interest
 [n_max_calibPerf,...

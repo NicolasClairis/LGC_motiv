@@ -188,9 +188,8 @@ if session_nb == 0
             [numberVector_calib] = mental_calibNumberVector(n_calibTrials, n_calibMax);
             
             %% perform calibration
-            n_errorsThreshold = 0;
             [NmaxCalib, calibSummary] = mental_calibNumbers(scr, stim, key,...
-                numberVector_calib, mentalE_prm_calib, n_calibTrials, calibTimes, langage, n_errorsThreshold);
+                numberVector_calib, mentalE_prm_calib, n_calibTrials, calibTimes, langage);
             % save calib performance
             save(calibPerf_file_nm,'calib_summary','NmaxCalib');
             
@@ -233,10 +232,9 @@ elseif session_nb > 0
     switch effort_type
         case 'mental'
             % perform max perf
-            n_errorsThreshold = 0;
             [numberVector_initialMaxPerf] = mental_calibNumberVector(n_MaxPerfTrials, n_calibMax);
             [n_initialMaxPerf, initialMaxPerfSessionSummary] = mental_calibNumbers(scr, stim, key,...
-                numberVector_initialMaxPerf, mentalE_prm_calib, n_MaxPerfTrials, calibTimes, langage, n_errorsThreshold);
+                numberVector_initialMaxPerf, mentalE_prm_calib, n_MaxPerfTrials, calibTimes, langage);
         case 'physical'
             % take an initial MVC measurement (even if it has been done in a
             % previous session, will allow us to keep track of the force level
@@ -348,10 +346,9 @@ elseif session_nb > 0
         case 'mental'
             % extract numbers to use for each calibration trial
             [numberVector_endCalib] = mental_calibNumberVector(n_MaxPerfTrials, n_calibMax);
-            n_errorsThreshold = 0;
             % last max performance measurement
             [n_finalMaxPerf, finalMaxPerf_SessionSummary] = mental_calibNumbers(scr, stim, key,...
-                numberVector_endCalib, mentalE_prm_calib, n_MaxPerfTrials, calibTimes, langage, n_errorsThreshold);
+                numberVector_endCalib, mentalE_prm_calib, n_MaxPerfTrials, calibTimes, langage);
     end
     
     %% display feedback for the current session
