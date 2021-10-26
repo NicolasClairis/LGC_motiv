@@ -195,8 +195,10 @@ for i_pm = 1:2
                 waitSpace(langage, window, yScreenCenter, scr, key_Ep);
                 [MVC_tmp, onsets_MVC] = physical_effort_MVC(scr, stim, dq, n_MVC_repeat, calibTimes_Ep);
                 MVC = max(MVC_tmp.MVC); % expressed in Voltage
+                save(Ep_calib_filenm,'MVC');
+            else
+                MVC = getfield(load(Ep_calib_filenm,'MVC'),'MVC');
             end
-            save(Ep_calib_filenm,'MVC');
 
             %% learning physical (learn each level of force)
             if strcmp(taskToPerform.physical.learning,'on')
@@ -256,8 +258,7 @@ for i_pm = 1:2
             %% learning mental: 0-back and 2-back as a calibration
             if strcmp(taskToPerform.mental.learning_1,'on')
 
-                %% first learn the mapping for answering left/right <5/>5 with and then without the display on the screen
-                mental_effort_parameters();
+                %% learning the mapping for answering left/right <5/>5 with and then without the display on the screen (0-back)
                 % learning parameters
                 % perform 2 short learning sessions: one with mapping
                 % (left/right) - (<5/>5) and one without to associate
@@ -304,7 +305,7 @@ for i_pm = 1:2
                     disp(['Mental 0-back learning trial ',num2str(jMentalLearningTrial),'/',num2str(nMentalLearning_totalTrials),' done']);
                 end % learning instructions loop
 
-                %% learning by performing the calibration a certain amount of time
+                %% learning (1) by repeating the calibration many times before actual calibration
                 % define number of trials to perform
                 n_learning1calibLikeTrials = 30;
 
@@ -379,7 +380,7 @@ for i_pm = 1:2
                 n_mental_max_perTrial = getfield(load(Em_calib_filenm,'n_mental_max_perTrial'),'n_mental_max_perTrial');
             end % calibration
 
-            %% learning for each difficulty level
+            %% learning (2) for each difficulty level
             if strcmp(taskToPerform.mental.learning_2,'on')
                 % define all difficulty levels based on calibration
                 [n_to_reach] = mental_N_answersPerLevel(n_E_levels, n_mental_max_perTrial);
