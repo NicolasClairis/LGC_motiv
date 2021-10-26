@@ -94,7 +94,7 @@ stim.difficulty.arcEndAngle = 360;
 [Ep_time_levels] = physical_effortLevels(n_E_levels);
 % normalize all values by maximal effort
 E_maxDuration = Ep_time_levels.(['level_',num2str(n_E_levels-1)]);
-for iDiff = 0:(n_E_levels - 1)
+for iDiff = 1:(n_E_levels)
     % extract name for subfield of the current difficulty level
     diff_level_nm = ['level_',num2str(iDiff)];
     E_durPerc_tmp = Ep_time_levels.(['level_',num2str(iDiff)]);

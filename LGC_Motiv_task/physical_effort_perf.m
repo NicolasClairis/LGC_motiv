@@ -188,7 +188,7 @@ while (trial_success == 0) &&...
             currentAngle = endAngle;
         end
     end
-    
+
     %% display on screen accordingly
     
     % display real-time force level
@@ -224,6 +224,8 @@ flush(dq);
 
 %% record vars of interest
 physicalE_perf.trial_success = trial_success;
+% performance is the amount in percentage of completion of the trial
+physicalE_perf.performance = ((currentAngle-startAngle)/(360-startAngle))*100;
 physicalE_perf.onsets = onsets;
 % record all the force levels during the performance
 physicalE_perf.t_max_effort = t_max_effort;
