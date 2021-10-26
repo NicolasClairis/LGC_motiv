@@ -57,6 +57,7 @@ else
             trainingChoiceOptions.R.right   = [3 1 2 1];
             trainingChoiceOptions.E.left    = [1 3 1 3];
             trainingChoiceOptions.E.right   = [2 1 4 1];
+            trainingChoiceOptions.default_LR = [1 0 1 0];
     end
 
 end
