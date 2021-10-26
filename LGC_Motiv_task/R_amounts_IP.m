@@ -27,9 +27,11 @@ baselineP = IPdata.baselineP;
 delta_IP = IPdata.([effort_type,'DeltaIP']);
 
 %% rewards
-R_money.R_default = baselineR;
-% delta = IP_R - baselineR;
-IP_R = baselineR - delta_IP;
+% extract value for default option
+R_money.R_0 = baselineR;
+% extract value for indifference point (corresponding to middle reward
+% level)
+IP_R = baselineR + delta_IP;
 if delta_IP < 0.01
     error('indifference point is too low');
 end
@@ -58,7 +60,10 @@ for iR = 1:n_R_levels
 end
 
 %% punishments
-R_money.P_default = baselineP;
+% extract value for default option
+R_money.P_0 = baselineP;
+% extract value for indifference point (corresponding to middle punishment
+% level)
 IP_P = baselineP - delta_IP;
 if strcmp(punishment_yn,'yes')
     switch n_R_levels

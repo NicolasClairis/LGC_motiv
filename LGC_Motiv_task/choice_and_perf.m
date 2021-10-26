@@ -191,6 +191,8 @@ for iTrial = 1:nTrials
     %% extract monetary incentive, effort level and reward/punishment condition
     R_left_tmp = choiceOptions.monetary_amount.left(iTrial);
     R_right_tmp = choiceOptions.monetary_amount.right(iTrial);
+    R_leftLevel_tmp = choiceOptions.
+    R_rightLevel_tmp = choiceOptions.
     E_left_tmp = choiceOptions.E.left(iTrial);
     E_right_tmp = choiceOptions.E.right(iTrial);
     R_or_P_tmp = choiceOptions.R_or_P{iTrial};
