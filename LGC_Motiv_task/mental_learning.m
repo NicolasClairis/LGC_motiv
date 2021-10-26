@@ -36,8 +36,7 @@ t_learning_rest = timings.learning_rest;
 errorLimits.useOfErrorMapping = false;
 errorLimits.useOfErrorThreshold = false;
 
-%% initialize var of interest
-[perfSummary.trialSummary, trialSuccess, onsets.effortPeriod] = deal(cell(1,n_learningTrials));
+%% define main parameters
 mentalE_prm = mental_effort_parameters();
 
 % define number of trials to perform learning
@@ -46,13 +45,18 @@ n_learningTrials = n_learningRepeats*n_E_levels;
 numberVector = mental_numbers(n_learningTrials);
 learning_instructions = 'noInstructions';
 
+% initialize var of interest
+[perfSummary.trialSummary, trialSuccess, onsets.effortPeriod] = deal(cell(1,n_learningTrials));
+
 %% perform learning
 jTrial = 0;
 for iEffortRepeat = 1:n_learningRepeats
     for iEffortLevel = 1:n_E_levels
         jTrial = jTrial + 1;
-
+        %% extract effort level for the current trial
         n_max_to_reach_trial = n_to_reach.(['E_level_',num2str(iEffortLevel - 1)]);
+        %% extract start angle according to effort level of the current trial
+        mentalE_prm.startAngle = (1 - (n_max_to_reach_trial/n_to_reach.(['E_level_',num2str(n_E_levels-1)])))*360;
 
         %% perform the effort
         [perfSummary.trialSummary{jTrial}, trialSuccess, onsets.effortPeriod{jTrial}] = mental_effort_perf_Nback(scr, stim, key,...

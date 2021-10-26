@@ -47,6 +47,9 @@ end
 % Create subjectCodeName which is used as a file saving name
 subjectCodeName = strcat('CID',iSubject);
 subResultFolder = [results_folder, subjectCodeName, filesep,'behavior',filesep];
+if ~exist(subResultFolder,'dir')
+    mkdir(subResultFolder);
+end
 
 if strcmp(p_or_m,'m') == 0 && strcmp(p_or_m,'p') == 0
     error('this letter has no definition');
@@ -71,7 +74,7 @@ taskToPerform.physical.task = 'off';
 taskToPerform.mental.learning_1 = 'on';
 taskToPerform.mental.calib = 'on';
 taskToPerform.mental.learning_2 = 'on';
-taskToPerform.mental.training = 'on';
+taskToPerform.mental.training = 'off';
 taskToPerform.mental.task = 'on';
 switch langue
     case 'f'
@@ -289,7 +292,7 @@ for i_pm = 1:2
                     curr_learning_instructions = learning1_instructions{iLearning_Instructions};
 
                     jLearningSession = jLearningSession + 1;
-                    learning_sess_nm = ['0back_learning_session',num2str(jLearningSession)];
+                    learning_sess_nm = ['learning_0back_session',num2str(jLearningSession)];
                     % display instructions for the current learning type
                     [onsets.endLearningInstructions.(learning_sess_nm).(curr_learning_instructions)] = mental_learningInstructions(scr, stim,...
                         curr_learning_instructions, mentalE_prm_learning);
@@ -307,7 +310,7 @@ for i_pm = 1:2
 
                 %% learning (1) by repeating the calibration many times before actual calibration
                 % define number of trials to perform
-                n_learning1calibLikeTrials = 30;
+                n_learning1calibLikeTrials = 2;
 
                 mentalE_prm_learning1calibLike = mental_effort_parameters();
                 % always start at zero
@@ -319,10 +322,10 @@ for i_pm = 1:2
                 learning1calibLike_useOfTimeLimit = true;
                 learning1calibLike_timeLimit = trainingTimes_Em.max_effort;
 
-                % define conditions for the extended learning
+                % define conditions for the learning
                 n_maxToReachForCalib = mentalE_prm_learning1calibLike.n_maxToReachCalib;
                 [numberVector_learning1calibLike] = mental_numbers(n_learning1calibLikeTrials);
-                % error handling for extended learning
+                % error handling for learning
                 learning1calibLike_errorLimits.useOfErrorThreshold = false;
                 learning1calibLike_errorLimits.useOfErrorMapping = false;
                 % start at zero so that they see the orange bar improving
@@ -337,14 +340,14 @@ for i_pm = 1:2
                         numberVector_learning1calibLike(iLearning1Trial,:),...
                         mentalE_prm_learning1calibLike, n_maxToReachForCalib,...
                         'noInstructions', learning1calibLike_useOfTimeLimit, learning1calibLike_timeLimit, learning1calibLike_errorLimits, nMaxReachedUntilNowLearning);
-                    learningPerfSummary_Em.extendedLearning.(['trial_',num2str(iLearning1Trial)]) = mentalE_learning1calibLikePerfSummary_tmp;
+                    learningPerfSummary_Em.learning1calibLike.(['trial_',num2str(iLearning1Trial)]) = mentalE_learning1calibLikePerfSummary_tmp;
 
                     % extract new best performance
                     nMaxReachedUntilNowLearning = max(nMaxReachedUntilNowLearning, mentalE_learning1calibLikePerfSummary_tmp.n_correctAnswersProvided);
                     % small break between each answer
                     DrawFormattedText(window, stim.training.Em.endTrialMsg.text,'center',yScreenCenter/2,white);
                     DrawFormattedText(window,stim.training.Em.endTrialMsg_bis.text,'center','center',white);
-                    [~,~,onsets.timeExtendedLearningFbk.(['trial_',num2str(iLearning1Trial)])] = Screen(window,'Flip');
+                    [~,~,onsets.timeLearningFbk.(['trial_',num2str(iLearning1Trial)])] = Screen(window,'Flip');
                     WaitSecs(learningTimes_Em.learning_rest);
                     disp(['Mental learning calibration-like trial ',num2str(iLearning1Trial),'/',num2str(n_learning1calibLikeTrials),' done']);
                 end % trial loop
@@ -388,7 +391,7 @@ for i_pm = 1:2
                 n_Em_learningForceRepeats = 1; % number of learning repetitions for each level of difficulty (= each level of force)
                 % timings
                 Em_learningTimings.time_limit = true;
-                Em_learningTimings.t_max = learningTimes_Em.t_max_mentalEffort;
+                Em_learningTimings.t_max = learningTimes_Em.max_effort;
                 Em_learningTimings.learning_rest = learningTimes_Em.learning_rest;
                 % perform all the difficulty levels
                 [perfSummary, onsets] = mental_learning(scr, stim, key_Em, n_E_levels, n_to_reach, n_Em_learningForceRepeats, Em_learningTimings);
@@ -545,7 +548,7 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
                                 mentalE_prm_instruDisplay = mental_effort_parameters();
                                 % Nback version
                                 Nback_str = num2str(mentalE_prm_instruDisplay.Nback);
-                                learningVersion = ['extendedLearning_Nback',Nback_str];
+                                learningVersion = ['learning_Nback',Nback_str];
                                 [onset_Press] = mental_learningInstructions(scr, stim, learningVersion, mentalE_prm_instruDisplay);
                                 Em_vars.i_sub = iSubject;
                                 Em_vars.n_to_reach = 0;
