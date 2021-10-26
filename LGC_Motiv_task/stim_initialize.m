@@ -573,18 +573,31 @@ end
 stim.mentalCalibSuccessFbk_bis.x = x_centerCoordinates(xScreenCenter, textSizeMentalCalibSuccess_bis);
 stim.mentalCalibSuccessFbk_bis.y = y_coordinates(upperBorder, visibleYsize, 1/6, textSizeMentalCalibSuccess_bis);
 stim.mentalCalibSuccessFbk_bis.colour = white;
-% failure
+% failure (not enough good answers)
 switch langage
     case 'fr'
-        stim.mentalCalibFailureFbk.text = 'Nous allons refaire cette etape, essayez de faire mieux!';
+        stim.mentalCalibFailureFbk.text = 'Nous allons refaire cet essai. Essayez de faire mieux!';
     case 'engl'
-        stim.mentalCalibFailureFbk.text = 'We will do this step again, try to do better!';
+        stim.mentalCalibFailureFbk.text = 'We will do this trial again. Try to do better!';
 end
 [~,~,textSizeMentalCalibFail] = DrawFormattedText(window, stim.mentalCalibFailureFbk.text,...
     'center', 'center', white, wrapat);
 stim.mentalCalibFailureFbk.x = x_centerCoordinates(xScreenCenter, textSizeMentalCalibFail);
 stim.mentalCalibFailureFbk.y = y_coordinates(upperBorder, visibleYsize, 1/6, textSizeMentalCalibFail);
 stim.mentalCalibFailureFbk.colour = white;
+% failure (too many errors)
+switch langage
+    case 'fr'
+        stim.mentalCalibFailureTooManyErrorsFbk.text = 'Trop d''erreurs! Nous allons refaire cet essai. Essayez de faire mieux!';
+    case 'engl'
+        stim.mentalCalibFailureTooManyErrorsFbk.text = 'Too many errors! We will do this trial again. Try to do better!';
+end
+[~,~,textSizeMentalCalibFailTooManyErrors] = DrawFormattedText(window, stim.mentalCalibFailureTooManyErrorsFbk.text,...
+    'center', 'center', white, wrapat);
+stim.mentalCalibFailureTooManyErrorsFbk.x = x_centerCoordinates(xScreenCenter, textSizeMentalCalibFailTooManyErrors);
+stim.mentalCalibFailureTooManyErrorsFbk.y = y_coordinates(upperBorder, visibleYsize, 1/6, textSizeMentalCalibFailTooManyErrors);
+stim.mentalCalibFailureTooManyErrorsFbk.colour = white;
+
 
 % number version
 switch langage

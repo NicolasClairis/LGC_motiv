@@ -16,9 +16,10 @@ calib_errorLimits_Em.errorThreshold = 5;
 
 n_calibTrials = 2;
 n_calibMax = 3;
+n_errorsThreshold = 0;
 
 [numberVector_calib] = mental_calibNumberVector(n_calibTrials, n_calibMax);
 [n_mental_max_perTrial, calib_summary] = mental_calibNumbers(scr, stim, key,...
-    numberVector_calib, mentalE_prm_calib, n_calibTrials, calibTimes, langage);
+    numberVector_calib, mentalE_prm_calib, n_calibTrials, calibTimes, langage, n_errorsThreshold);
 WaitSecs(3);
 sca;

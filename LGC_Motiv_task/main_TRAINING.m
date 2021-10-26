@@ -217,7 +217,7 @@ for i_pm = 1:2
 
             %% training physical (choice + effort)
             if strcmp(taskToPerform.physical.training,'on')
-                
+
                 % introduce physical training
                 showTitlesInstruction(scr,stim,'training',p_or_m);
                 waitSpace(langage, window, yScreenCenter, scr, key_Ep);
@@ -370,13 +370,10 @@ for i_pm = 1:2
                 [numberVector_calib] = mental_calibNumberVector(n_calibTrials_Em, n_calibMax);
                 % error handling for calibration: no errors allowed for
                 % calibration
-                calib_errorLimits.useOfErrorThreshold = true;
-                calibrationErrorLimit = 1;
-                calib_errorLimits.errorThreshold = calibrationErrorLimit;
-                calib_errorLimits.useOfErrorMapping = false;
+                n_errorsThreshold = 1;
                 % perform the calibration
                 [n_mental_max_perTrial, calib_summary] = mental_calibNumbers(scr, stim, key_Em,...
-                    numberVector_calib, mentalE_prm_calib, n_calibTrials_Em, calibTimes_Em, langage);
+                    numberVector_calib, mentalE_prm_calib, n_calibTrials_Em, calibTimes_Em, langage, n_errorsThreshold);
                 calibSummary.calibSummary = calib_summary;
                 calibSummary.n_mental_max_perTrial = n_mental_max_perTrial;
                 save(Em_calib_filenm,'n_mental_max_perTrial');
