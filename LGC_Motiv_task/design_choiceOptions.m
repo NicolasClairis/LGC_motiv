@@ -1,5 +1,5 @@
-function[trialOptions] = design_choiceOptions(n_R_levels_withDefault, n_E_levels_withDefault, punishment_yn, nTrials)
-% [trialOptions] = design_choiceOptions(n_R_levels_withDefault, n_E_levels_withDefault, punishment_yn, nTrials)
+function[choiceOptions] = design_choiceOptions(n_R_levels_withDefault, n_E_levels_withDefault, punishment_yn, nTrials)
+% [choiceOptions] = design_choiceOptions(n_R_levels_withDefault, n_E_levels_withDefault, punishment_yn, nTrials)
 % design_choiceOptions will create a potential design matrix for the version
 % with a default option.
 % 
@@ -15,7 +15,7 @@ function[trialOptions] = design_choiceOptions(n_R_levels_withDefault, n_E_levels
 % nTrials: number of trials in total
 %
 % OUTPUTS
-% trialOptions: structure with information for each trial
+% choiceOptions: structure with information for each choice trial
 
 %% remove IP
 n_R_levels_withoutDefault = n_R_levels_withDefault - 1;
@@ -99,7 +99,7 @@ end
 if floor(nOptions/2) < (nOptions/2)
     error(['problem for splitting left/right half-half in every block because number of options/2 is equal to ',num2str(nOptions/2)]);
 end
-default_LR = repmat([zeros(1,nOptions/2), ones(1,nOptions/2)],1,nBlocks);
+default_LR = repmat([-ones(1,nOptions/2), ones(1,nOptions/2)],1,nBlocks);
 for iBlock = 1:nBlocks
     block_trials_idx = (1:nOptions) + nOptions*(iBlock - 1);
     block_rdm_bis = randperm(nOptions);
@@ -107,31 +107,31 @@ for iBlock = 1:nBlocks
 end % loop on blocks
 
 %% extract information of left/right options + reward or punishment trial
-trialOptions.default_LR = default_LR;
-trialOptions.R_or_P = cell(1,nTrials);
-[trialOptions.R.left,...
-    trialOptions.R.right,...
-    trialOptions.E.left,...
-    trialOptions.E.right] = deal(NaN());
+choiceOptions.default_LR = default_LR;
+choiceOptions.R_or_P = cell(1,nTrials);
+[choiceOptions.R.left,...
+    choiceOptions.R.right,...
+    choiceOptions.E.left,...
+    choiceOptions.E.right] = deal(NaN());
 for iTrial = 1:nTrials
     % extract reward or punishment trial
     if R_options(iTrial) < 0
-        trialOptions.R_or_P{iTrial} = 'P';
+        choiceOptions.R_or_P{iTrial} = 'P';
     elseif R_options(iTrial) > 0
-        trialOptions.R_or_P{iTrial} = 'R';
+        choiceOptions.R_or_P{iTrial} = 'R';
     end
     % extract reward/effort per trial (R/E=0 for default option)
     switch default_LR(iTrial)
-        case 0
-            trialOptions.R.left(iTrial)     = 0;
-            trialOptions.R.right(iTrial)    = abs(R_options(iTrial));
-            trialOptions.E.left(iTrial)     = 0;
-            trialOptions.E.right(iTrial)    = E_options(iTrial);
-        case 1
-            trialOptions.R.left(iTrial)     = abs(R_options(iTrial));
-            trialOptions.R.right(iTrial)    = 0;
-            trialOptions.E.left(iTrial)     = E_options(iTrial);
-            trialOptions.E.right(iTrial)    = 0;
+        case -1 % default on the left
+            choiceOptions.R.left(iTrial)     = 0;
+            choiceOptions.R.right(iTrial)    = abs(R_options(iTrial));
+            choiceOptions.E.left(iTrial)     = 0;
+            choiceOptions.E.right(iTrial)    = E_options(iTrial);
+        case 1 % default on the right
+            choiceOptions.R.left(iTrial)     = abs(R_options(iTrial));
+            choiceOptions.R.right(iTrial)    = 0;
+            choiceOptions.E.left(iTrial)     = E_options(iTrial);
+            choiceOptions.E.right(iTrial)    = 0;
     end
 end
 

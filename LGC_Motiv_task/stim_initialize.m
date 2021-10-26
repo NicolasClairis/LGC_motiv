@@ -1,5 +1,5 @@
-function[stim] = stim_initialize(scr, n_E_levels, langage, R_money)
-%[stim] = stim_initialize(scr, n_E_levels, langage, R_money)
+function[stim] = stim_initialize(scr, n_E_levels, langage)
+%[stim] = stim_initialize(scr, n_E_levels, langage)
 %stim_initialize will initialize most of the visual stimuli used in the
 %task.
 %
@@ -11,9 +11,6 @@ function[stim] = stim_initialize(scr, n_E_levels, langage, R_money)
 % langage:
 % 'fr': display instructions in french
 % 'engl': display instructions in english
-%
-% R_money: structure with reward amounts and amount of money lost when
-% trial is failed
 %
 % OUTPUTS
 % stim: structure with stimulus informations
@@ -764,8 +761,21 @@ end
 [~,~,textSizeChosenMsg] = DrawFormattedText(window, stim.chosenOptionMsg.text,'center','center',white);
 stim.chosenOptionMsg.x = x_centerCoordinates(xScreenCenter, textSizeChosenMsg);
 stim.chosenOptionMsg.y = y_coordinates(upperBorder, visibleYsize, 3/16, textSizeChosenMsg);
+
+% text when they were too slow and then they are forced to perform the default option
+switch langage
+    case 'fr'
+        stim.noChoiceMadeMsg.text = 'Trop lent!';
+    case 'engl'
+        stim.noChoiceMadeMsg.text = 'Too slow!';
+end
+[~,~,textSizeNoChoiceMsg] = DrawFormattedText(window, stim.noChoiceMadeMsg.text,'center','center',white);
+stim.noChoiceMadeMsg.x = x_centerCoordinates(xScreenCenter, textSizeNoChoiceMsg);
+stim.noChoiceMadeMsg.y = y_coordinates(upperBorder, visibleYsize, 3/16, textSizeNoChoiceMsg);
+
 % place reward amount and difficulty level accordingly
 ySizeChosenMsg = textSizeChosenMsg(4) - textSizeChosenMsg(2);
+
 % square surrounding chosen option
 stim.chosenOption.squareRect = [leftBorder + visibleXsize*(1/3),...
     upperBorder + visibleYsize*(3/16) + ySizeChosenMsg,...
@@ -794,6 +804,7 @@ for iHorizontalLines = (stim.chosenOption.squareRect(1)+lineLength/2):(2*lineLen
         [xStartHorizontal, xEndHorizontal, xStartHorizontal, xEndHorizontal;...
         yHorizontalTop, yHorizontalTop, yHorizontalBottom, yHorizontalBottom]];
 end % horizontal lines
+
 % Win/Lose text message
 stim.winRewardText.top_center       = [xScreenCenter - xSizeWin/2,  stim.chosenOption.squareRect(2) + ySizeWin*1.5];
 stim.loseRewardText.top_center      = [xScreenCenter - xSizeLose/2, stim.chosenOption.squareRect(2) + ySizeWin*1.5];

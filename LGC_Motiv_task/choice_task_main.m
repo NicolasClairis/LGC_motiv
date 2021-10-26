@@ -164,7 +164,7 @@ switch effort_type
 end
 
 % stimulus related variables for the display
-[stim] = stim_initialize(scr, n_E_levels, langage, R_money);
+[stim] = stim_initialize(scr, n_E_levels, langage);
 barTimeWaitRect = stim.barTimeWaitRect;
 
 %% load timings for each phase of the experiment

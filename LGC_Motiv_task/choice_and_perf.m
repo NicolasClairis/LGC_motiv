@@ -191,8 +191,7 @@ for iTrial = 1:nTrials
     %% extract monetary incentive, effort level and reward/punishment condition
     R_left_tmp = choiceOptions.monetary_amount.left(iTrial);
     R_right_tmp = choiceOptions.monetary_amount.right(iTrial);
-    R_leftLevel_tmp = choiceOptions.
-    R_rightLevel_tmp = choiceOptions.
+    defaultSide_tmp = choiceOptions.default_LR;
     E_left_tmp = choiceOptions.E.left(iTrial);
     E_right_tmp = choiceOptions.E.right(iTrial);
     R_or_P_tmp = choiceOptions.R_or_P{iTrial};
@@ -226,8 +225,14 @@ for iTrial = 1:nTrials
             R_chosen(iTrial) = R_right_tmp;
             E_chosen(iTrial) = E_right_tmp;
         case 0 % no option was selected: take the default option
-            R_chosen(iTrial) = 0;
-            E_chosen(iTrial) = 0;
+            switch defaultSide_tmp
+                case -1 % default on the left
+                    R_chosen(iTrial) = R_left_tmp;
+                    E_chosen(iTrial) = E_left_tmp;
+                case 1 % default on the right
+                    R_chosen(iTrial) = R_right_tmp;
+                    E_chosen(iTrial) = E_right_tmp;
+            end
     end
     
     % in the case where confidence is measured, also extract confidence
@@ -235,9 +240,9 @@ for iTrial = 1:nTrials
     if confidenceDispChosen.display == true
         switch choice(iTrial)
             case {-2,2} % high confidence
-                conf.lowOrHigh(iTrial) = 1;
+                conf.lowOrHigh(iTrial) = 2;
             case {-1,1} % low confidence
-                conf.lowOrHigh(iTrial) = 0;
+                conf.lowOrHigh(iTrial) = 1;
             otherwise % no choice made = as if low confidence
                 conf.lowOrHigh(iTrial) = 0;
         end
@@ -256,7 +261,7 @@ for iTrial = 1:nTrials
     end
     
     %% chosen option display period
-    [onsets.dispChoice(iTrial)] = choice_task_dispChosen(scr, stim, R_chosen(iTrial), E_chosen(iTrial), R_or_P_tmp, confidenceDispChosen);
+    [onsets.dispChoice(iTrial)] = choice_task_dispChosen(scr, stim, choice(iTrial), R_chosen(iTrial), E_chosen(iTrial), R_or_P_tmp, confidenceDispChosen);
     WaitSecs(t_dispChoice);
     dur.dispChoice(iTrial) = GetSecs - onsets.dispChoice(iTrial);
     

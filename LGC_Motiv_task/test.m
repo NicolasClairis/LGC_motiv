@@ -1,9 +1,8 @@
 [scr, xScreenCenter, yScreenCenter, window, baselineTextSize] = ScreenConfiguration(0, 1);
 ShowCursor;
-[R_money] = R_amounts(3, 'yes');
 langage = 'fr';
 n_E_levels = 3;
-[stim] = stim_initialize(scr, n_E_levels, langage, R_money);
+[stim] = stim_initialize(scr, n_E_levels, langage);
 [key] = relevant_key_definition('mental', 0, 2);
 [mentalE_prm] = mental_effort_parameters();
 mentalE_prm.startAngle = 0;
