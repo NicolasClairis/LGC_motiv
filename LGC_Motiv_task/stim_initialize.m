@@ -478,11 +478,10 @@ stim.endSessionMessage.y = y_coordinates(upperBorder, visibleYsize, 1/2, textSiz
 switch langage
     case 'fr'
         stim.Ep.MVC.instructions.text = ['Nous allons maintenant vous demander ',...
-            'de serrer la poignee de force au maximum de vos capacites plusieurs ',...
-            'fois d''affilee.'];
+            'de serrer la poignee de force au maximum de vos capacites. Cet essai sera remunere.'];
     case 'engl'
-        stim.Ep.MVC.instructions.text = ['We will now ask you to tighten the grip at your maximum ',...
-            'several times in a row.'];
+        stim.Ep.MVC.instructions.text = ['We will now ask you to tighten the grip at your maximum. ',...
+            'This trial will be rewarded.'];
 end
 [~,~,textSizeMVCInstructions] = DrawFormattedText(window, stim.Ep.MVC.instructions.text, 'center','center', white, wrapat);
 stim.Ep.MVC.instructions.x = x_centerCoordinates(xScreenCenter, textSizeMVCInstructions);
@@ -538,10 +537,10 @@ switch langage
     case 'fr'
         stim.mentalCalibInstructions.text = ['Repondez ',...
             'aussi vite et ',...
-            'aussi correctement que possible.'];
+            'aussi correctement que possible. Cet essai sera remunere.'];
     case 'engl'
         stim.mentalCalibInstructions.text = ['Answer ',...
-            'as quickly and correctly as possible.'];
+            'as quickly and correctly as possible. This trial will be rewarded.'];
 end
 [~,~,textSizeMentalCalibInstructions] = DrawFormattedText(window, stim.mentalCalibInstructions.text,...
     'center', 'center', white, wrapat);

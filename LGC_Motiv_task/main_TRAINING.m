@@ -217,6 +217,7 @@ for i_pm = 1:2
 
             %% training physical (choice + effort)
             if strcmp(taskToPerform.physical.training,'on')
+                
                 % introduce physical training
                 showTitlesInstruction(scr,stim,'training',p_or_m);
                 waitSpace(langage, window, yScreenCenter, scr, key_Ep);
