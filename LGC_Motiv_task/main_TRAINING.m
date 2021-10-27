@@ -67,14 +67,14 @@ if ischar(iSubject)
 end
 %% general parameters
 % define subparts of the task to perform (on/off)
-taskToPerform.physical.calib = 'off';
-taskToPerform.physical.learning = 'off';
-taskToPerform.physical.training = 'off';
-taskToPerform.physical.task = 'off';
-taskToPerform.mental.learning_1 = 'off';
-taskToPerform.mental.calib = 'off';
-taskToPerform.mental.learning_2 = 'off';
-taskToPerform.mental.training = 'off';
+taskToPerform.physical.calib = 'on';
+taskToPerform.physical.learning = 'on';
+taskToPerform.physical.training = 'on';
+taskToPerform.physical.task = 'on';
+taskToPerform.mental.learning_1 = 'on';
+taskToPerform.mental.calib = 'on';
+taskToPerform.mental.learning_2 = 'on';
+taskToPerform.mental.training = 'on';
 taskToPerform.mental.task = 'on';
 switch langue
     case 'f'
@@ -571,8 +571,7 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
                             end
                     end
                     % display feedback for the current session
-                    finalGain_str = sprintf('0.2%',sessionFinalGain);
-                    warning('error with monetary display keeps on 0.2 while should round');
+                    finalGain_str = sprintf('%0.2f',sessionFinalGain);
                     switch langage
                         case 'fr'
                             DrawFormattedText(window,...
