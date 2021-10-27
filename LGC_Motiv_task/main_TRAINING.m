@@ -74,7 +74,7 @@ taskToPerform.physical.task = 'on';
 taskToPerform.mental.learning_1 = 'off';
 taskToPerform.mental.calib = 'off';
 taskToPerform.mental.learning_2 = 'off';
-taskToPerform.mental.training = 'offf';
+taskToPerform.mental.training = 'off';
 taskToPerform.mental.task = 'off';
 switch langue
     case 'f'
@@ -240,7 +240,7 @@ for i_pm = 1:2
                     % training instruction
                     [onsets_Ep_training.(['session',num2str(iTrainingCondition),'_',trainingConfCond])] = choice_and_perf_trainingInstructions(scr, stim, trainingCondition, trainingTimes_Ep.instructions);
                     % perform the training
-                    [trainingSummary_Ep.(['session',num2str(iTrainingCondition),'_',trainingConfCond])] = choice_and_perf(scr, stim, key_Ep, 'physical', Ep_vars_training, R_money,...
+                    [trainingSummary_Ep.(['session',num2str(iTrainingCondition),'_',trainingConfCond])] = choice_and_perf(scr, stim, key_Ep, 'physical', Ep_vars_training,...
                         trainingCondition, n_trialsPerTrainingCondition, trainingChoiceOptions_Ep_tmp, confidenceChoiceDisplay,...
                         trainingTimes_Ep,...
                         subResultFolder, file_nm_training_Ep);
@@ -432,7 +432,7 @@ for i_pm = 1:2
                     % training instruction
                     [onsets_Em_training.(['session',num2str(iTrainingCondition),'_',trainingConfCond])] = choice_and_perf_trainingInstructions(scr, stim, trainingCondition, trainingTimes_Em.instructions);
                     % select effort level
-                    [trainingSummary_Em.(trainingConfCond)] = choice_and_perf(scr, stim, key_Em, 'mental', Em_vars_training, R_money,...
+                    [trainingSummary_Em.(trainingConfCond)] = choice_and_perf(scr, stim, key_Em, 'mental', Em_vars_training,...
                         trainingCondition, n_trainingTrials, trainingChoiceOptions_Em_tmp, confidenceChoiceDisplay,...
                         trainingTimes_Em,...
                         subResultFolder, file_nm_training_Em);
