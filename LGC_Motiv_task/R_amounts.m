@@ -42,9 +42,9 @@ if strcmp(punishment_yn,'yes')
             R_money.P_2 = 0.95;
         case 4
             R_money.P_0 = 0.50;
-            R_money.P_1 = 0.65;
-            R_money.P_2 = 0.80;
-            R_money.P_3 = 0.95;
+            R_money.P_1 = 0.35;
+            R_money.P_2 = 0.20;
+            R_money.P_3 = 0.05;
         otherwise
             error(['Please prepare Reward level - Money mapping for ',...
                 num2str(n_R_levels),' reward levels.']);
