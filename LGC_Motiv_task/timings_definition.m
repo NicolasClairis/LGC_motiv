@@ -1,5 +1,5 @@
-function[trainingTimes, calibTimes, learningTimes, taskTimes, mainTimes] = timings_definition(trainingConditions, n_R_levels, n_E_levels, nTrials, effort_type)
-%[trainingTimes, calibTimes, learningTimes, taskTimes, mainTimes] = timings_definition(trainingConditions, n_R_levels, n_E_levels, nTrials, effort_type)
+function[trainingTimes, calibTimes, learningTimes, taskTimes, mainTimes] = timings_definition(trainingConditions, nMainTaskTrials, n_trainingTrials, effort_type)
+%[trainingTimes, calibTimes, learningTimes, taskTimes, mainTimes] = timings_definition(trainingConditions, nMainTaskTrials, n_trainingTrials, effort_type)
 % timings_definition defines the time duration for each period of the
 % experiment.
 % All timings are expressed in seconds.
@@ -9,11 +9,9 @@ function[trainingTimes, calibTimes, learningTimes, taskTimes, mainTimes] = timin
 % trainingConditions: {'R'} or {'R','P','RP'} (reward, punishment, reward and punishment)
 % prepare jitter timings accordingly
 %
-% n_R_levels: number of reward conditions
+% nMainTaskTrials: number of trials in the main task
 %
-% n_E_levels: number of effort conditions
-%
-% nTrials: number of trials in the main task
+% nTrainingTrials: number of trials in the training
 %
 % effort_type: string indicating the nature of the current task
 % 'mental'
@@ -56,12 +54,13 @@ calibTimes.fail_and_repeat_fbk = 5;
 switch effort_type % in case you use different numbers for each effort type
     case 'mental'
         learningTimes.max_effort = t_max_mentalEffort;
+        learningTimes.learning_rest = 2;
     case 'physical'
         learningTimes.ifi = t_ifi;
         learningTimes.max_effort = [];
         learningTimes.physicalReadWait = t_readWait;
+        learningTimes.learning_rest = 3;
 end
-learningTimes.learning_rest = 3;
 learningTimes.fail_and_repeat_fbk = 5;
 
 %% main task timings
@@ -69,15 +68,15 @@ learningTimes.fail_and_repeat_fbk = 5;
 % initial cross
 jitterMin_choiceCross = 0.5;
 jitterMax_choiceCross = 3.5;
-jitters_choiceCross = linspace(jitterMin_choiceCross, jitterMax_choiceCross, nTrials);
-jitterRdmPerm_choiceCross = randperm(nTrials);
+jitters_choiceCross = linspace(jitterMin_choiceCross, jitterMax_choiceCross, nMainTaskTrials);
+jitterRdmPerm_choiceCross = randperm(nMainTaskTrials);
 t_choiceCross = jitters_choiceCross(jitterRdmPerm_choiceCross);
 
 % cross between choice and effort
 jitterMin_effortCross = 0.5;
 jitterMax_effortCross = 1.5;
-jitters_effortCross = linspace(jitterMin_effortCross, jitterMax_effortCross, nTrials);
-jitterRdmPerm_effortCross = randperm(nTrials);
+jitters_effortCross = linspace(jitterMin_effortCross, jitterMax_effortCross, nMainTaskTrials);
+jitterRdmPerm_effortCross = randperm(nMainTaskTrials);
 t_effortCross = jitters_effortCross(jitterRdmPerm_effortCross);
 
 t_finalCross = 10;
@@ -116,7 +115,6 @@ trainingTimes.trainingEnd   = 5;
 n_trainingCond = length(trainingConditions);
 for iTraining = 1:n_trainingCond
     trainingCond = trainingConditions{iTraining};
-    [~, n_trainingTrials] = training_options(trainingCond, n_R_levels, n_E_levels);
     % initial cross before choice
     jittersTrainingChoice = linspace(jitterMin_choiceCross, jitterMax_choiceCross, n_trainingTrials);
     jitterTrainingChoiceRdmPerm = randperm(n_trainingTrials);

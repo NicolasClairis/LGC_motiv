@@ -155,7 +155,7 @@ stim.Ep.learning.title.colour = white;
 % learning mental
 switch langage
     case 'fr'
-        stim.Em.learning.title.text = 'Apprentissage tache d''effort mentale';
+        stim.Em.learning.title.text = 'Apprentissage tache d''effort mental';
     case 'engl'
         stim.Em.learning.title.text = 'Learning mental effort task';
 end
@@ -478,11 +478,10 @@ stim.endSessionMessage.y = y_coordinates(upperBorder, visibleYsize, 1/2, textSiz
 switch langage
     case 'fr'
         stim.Ep.MVC.instructions.text = ['Nous allons maintenant vous demander ',...
-            'de serrer la poignee de force au maximum de vos capacites plusieurs ',...
-            'fois d''affilee.'];
+            'de serrer la poignee de force au maximum de vos capacites. Cet essai sera remunere.'];
     case 'engl'
-        stim.Ep.MVC.instructions.text = ['We will now ask you to tighten the grip at your maximum ',...
-            'several times in a row.'];
+        stim.Ep.MVC.instructions.text = ['We will now ask you to tighten the grip at your maximum. ',...
+            'This trial will be rewarded.'];
 end
 [~,~,textSizeMVCInstructions] = DrawFormattedText(window, stim.Ep.MVC.instructions.text, 'center','center', white, wrapat);
 stim.Ep.MVC.instructions.x = x_centerCoordinates(xScreenCenter, textSizeMVCInstructions);
@@ -538,10 +537,10 @@ switch langage
     case 'fr'
         stim.mentalCalibInstructions.text = ['Repondez ',...
             'aussi vite et ',...
-            'aussi correctement que possible.'];
+            'aussi correctement que possible. Cet essai sera remunere.'];
     case 'engl'
         stim.mentalCalibInstructions.text = ['Answer ',...
-            'as quickly and correctly as possible.'];
+            'as quickly and correctly as possible. This trial will be rewarded.'];
 end
 [~,~,textSizeMentalCalibInstructions] = DrawFormattedText(window, stim.mentalCalibInstructions.text,...
     'center', 'center', white, wrapat);
@@ -574,18 +573,31 @@ end
 stim.mentalCalibSuccessFbk_bis.x = x_centerCoordinates(xScreenCenter, textSizeMentalCalibSuccess_bis);
 stim.mentalCalibSuccessFbk_bis.y = y_coordinates(upperBorder, visibleYsize, 1/6, textSizeMentalCalibSuccess_bis);
 stim.mentalCalibSuccessFbk_bis.colour = white;
-% failure
+% failure (not enough good answers)
 switch langage
     case 'fr'
-        stim.mentalCalibFailureFbk.text = 'Nous allons refaire cette etape, essayez de faire mieux!';
+        stim.mentalCalibFailureFbk.text = 'Nous allons refaire cet essai. Essayez de faire mieux!';
     case 'engl'
-        stim.mentalCalibFailureFbk.text = 'We will do this step again, try to do better!';
+        stim.mentalCalibFailureFbk.text = 'We will do this trial again. Try to do better!';
 end
 [~,~,textSizeMentalCalibFail] = DrawFormattedText(window, stim.mentalCalibFailureFbk.text,...
     'center', 'center', white, wrapat);
 stim.mentalCalibFailureFbk.x = x_centerCoordinates(xScreenCenter, textSizeMentalCalibFail);
 stim.mentalCalibFailureFbk.y = y_coordinates(upperBorder, visibleYsize, 1/6, textSizeMentalCalibFail);
 stim.mentalCalibFailureFbk.colour = white;
+% failure (too many errors)
+switch langage
+    case 'fr'
+        stim.mentalCalibFailureTooManyErrorsFbk.text = 'Trop d''erreurs! Nous allons refaire cet essai. Essayez de faire mieux!';
+    case 'engl'
+        stim.mentalCalibFailureTooManyErrorsFbk.text = 'Too many errors! We will do this trial again. Try to do better!';
+end
+[~,~,textSizeMentalCalibFailTooManyErrors] = DrawFormattedText(window, stim.mentalCalibFailureTooManyErrorsFbk.text,...
+    'center', 'center', white, wrapat);
+stim.mentalCalibFailureTooManyErrorsFbk.x = x_centerCoordinates(xScreenCenter, textSizeMentalCalibFailTooManyErrors);
+stim.mentalCalibFailureTooManyErrorsFbk.y = y_coordinates(upperBorder, visibleYsize, 1/6, textSizeMentalCalibFailTooManyErrors);
+stim.mentalCalibFailureTooManyErrorsFbk.colour = white;
+
 
 % number version
 switch langage
