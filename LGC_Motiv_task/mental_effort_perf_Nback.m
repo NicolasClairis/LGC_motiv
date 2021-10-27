@@ -350,7 +350,11 @@ questions_done = ~isnan(sideAnswer);
 
 % compute gains
 currentAngleTrialsDone = currentAngle(questions_done);
-mentalE_perf.performance = 100*((currentAngleTrialsDone(end) - startAngle_currentTrial)/(360 - startAngle_currentTrial));
+if isempty(currentAngleTrialsDone) && sum(questions_done) == 0 % case where no answers has been provided
+    mentalE_perf.performance = 0;
+else % at least some questions were answered
+    mentalE_perf.performance = 100*((currentAngleTrialsDone(end) - startAngle_currentTrial)/(360 - startAngle_currentTrial));
+end
 
 % record question parameters
 mentalE_perf.Nback = Nback;
