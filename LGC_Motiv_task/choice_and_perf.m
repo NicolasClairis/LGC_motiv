@@ -92,7 +92,6 @@ else
 end
 t_dispChoice    = timings.dispChoice;
 t_fbk           = timings.feedback;
-t_fail_and_repeat_fbk = timings.fail_and_repeat_fbk;
 
 %% specific variables
 switch effort_type
@@ -156,11 +155,6 @@ end
 
 failedTrials = {};
 for iTrial = 1:nTrials
-    
-    % initialize variables in case of failure on this trial
-    i_trial_failed = 0;
-    trial_success = 0;
-    redo_limit = 0;
     
     %% fixation cross pre-choice period
     Screen('FillRect',window, white, stim.cross.verticalLine); % vertical line
@@ -317,9 +311,9 @@ for iTrial = 1:nTrials
     percentagePerf(iTrial) = perfSummary{iTrial}.performance;
     switch R_or_P_tmp
         case 'R' % gain between 0 and R_chosen depending on performance
-            gain(iTrial) = R_chosen(iTrial)*percentagePerf(iTrial);
+            gain(iTrial) = round(R_chosen(iTrial)*percentagePerf(iTrial));
         case 'P' % loss between -R_chosen and 2*(-R_chosen) depending on performance
-            gain(iTrial) = -R_chosen(iTrial) - percentagePerf*R_chosen(iTrial);
+            gain(iTrial) = round(-R_chosen(iTrial) - percentagePerf*R_chosen(iTrial),2);
     end
     % display feedback
     switch R_or_P_tmp

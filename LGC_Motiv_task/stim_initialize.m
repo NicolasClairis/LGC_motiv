@@ -831,29 +831,6 @@ stim.effort_introText.bottom_center = [xScreenCenter - xSizeForEffort/2, stim.di
 
 %% mental effort performance
 % display of the relevant instructions
-switch langage
-    case 'fr'
-        stim.Em.oddORevenQuestion.text = 'Chiffre pair ou impair?';
-    case 'engl'
-        stim.Em.oddORevenQuestion.text = 'Is the number even or odd?';
-end
-[~,~,textSizeOddORevenQuestion] = DrawFormattedText(window, stim.Em.oddORevenQuestion.text,...
-    'center', 'center', white);
-stim.Em.oddORevenQuestion.x = x_centerCoordinates(xScreenCenter, textSizeOddORevenQuestion);
-stim.Em.oddORevenQuestion.y = y_coordinates(upperBorder, visibleYsize, 1/6, textSizeOddORevenQuestion);
-stim.Em.oddORevenQuestionInstructions.y = y_coordinates(upperBorder, visibleYsize, 1/2, textSizeOddORevenQuestion);
-% EVEN
-switch langage
-    case 'fr'
-        stim.Em.even.text = 'pair';
-    case 'engl'
-        stim.Em.even.text = 'even';
-end
-[~,~,textSizeEven] = DrawFormattedText(window, stim.Em.even.text, 'center', 'center', white );
-stim.Em.even_left.x = leftBorder + visibleXsize*(1/4) - (textSizeEven(3) - textSizeEven(1))/2;
-stim.Em.even_right.x = leftBorder + visibleXsize*(3/4) - (textSizeEven(3) - textSizeEven(1))/2;
-stim.Em.even.y = y_coordinates(upperBorder, visibleYsize, 5/6, textSizeEven);
-stim.Em.evenInstructions.y = y_coordinates(upperBorder, visibleYsize, 5/8, textSizeEven);
 % OR
 switch langage
     case 'fr'
@@ -864,18 +841,6 @@ end
 [~,~,textSizeOR] = DrawFormattedText(window, stim.Em.OR.text, 'center', 'center', white );
 stim.Em.OR.x = x_centerCoordinates(xScreenCenter, textSizeOR);
 stim.Em.OR.y = y_coordinates(upperBorder, visibleYsize, 5/6, textSizeOR);
-% ODD
-switch langage
-    case 'fr'
-        stim.Em.odd.text = 'impair';
-    case 'engl'
-        stim.Em.odd.text = 'odd';
-end
-[~,~,textSizeOdd] = DrawFormattedText(window, stim.Em.odd.text, 'center', 'center', white );
-stim.Em.odd_left.x = leftBorder + visibleXsize*(1/4) - (textSizeOdd(3) - textSizeOdd(1))/2;
-stim.Em.odd_right.x = leftBorder + visibleXsize*(3/4) - (textSizeOdd(3) - textSizeOdd(1))/2;
-stim.Em.odd.y = y_coordinates(upperBorder, visibleYsize, 5/6, textSizeOdd);
-stim.Em.oddInstructions.y = y_coordinates(upperBorder, visibleYsize, 5/8, textSizeOdd);
 % question < 5 or > 5
 switch langage
     case 'fr'
