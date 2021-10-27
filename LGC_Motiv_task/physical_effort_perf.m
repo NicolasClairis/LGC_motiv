@@ -188,7 +188,7 @@ while (trial_success == 0) &&...
             currentAngle = endAngle;
         end
     end
-currentAngle
+
     %% display on screen accordingly
     
     % display real-time force level
