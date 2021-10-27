@@ -1,10 +1,10 @@
 function[summary] = choice_and_perf(scr, stim, key,...
-    effort_type, Ep_or_Em_vars, R_money,...
+    effort_type, Ep_or_Em_vars,...
     training_R_P_RP_or_mainTask, nTrials, choiceOptions, confidenceDispChoice,...
     timings,...
     results_folder, file_nm)
 % [summary] = choice_and_perf(scr, stim, key,...
-%     effort_type, Ep_or_Em_vars, R_money,...
+%     effort_type, Ep_or_Em_vars,...
 %     R_or_P_or_RP_condition, nTrials, choiceOptions, confidenceDispChoice,...
 %     timings,...
 %     results_folder, file_nm)
@@ -28,10 +28,6 @@ function[summary] = choice_and_perf(scr, stim, key,...
 %   i_sub: subject number (for mental effort)
 %   n_to_reach: structure telling the number of correct answers to reach to
 %   for each effort level
-%
-% R_money: structure with equivalence between reward levels and reward
-% money to compute gain within the session and includes money loss amount
-% for errors
 %
 % training_R_P_RP_or_mainTask:
 % 'R': reward only training
@@ -308,13 +304,34 @@ for iTrial = 1:nTrials
     
     %% Feedback period
     % compute gains/losses for the current trial
-    ratioPerf(iTrial) = perfSummary{iTrial}.performance/100;
-    switch R_or_P_tmp
-        case 'R' % gain between 0 and R_chosen depending on performance
-            gain(iTrial) = round(R_chosen(iTrial)*ratioPerf(iTrial),2);
-        case 'P' % loss between -R_chosen and 2*(-R_chosen) depending on performance
-            gain(iTrial) = round(-R_chosen(iTrial) - (1 - ratioPerf(iTrial))*R_chosen(iTrial),2);
-    end
+%     if choice(iTrial) == defaultSide_tmp || choice(iTrial) == 0 % if default chosen, result is binary (success or lose)
+%         switch trial_was_successfull(iTrial)
+%             case 0 % loss
+%                 switch R_or_P_tmp
+%                     case 'R'
+%                         gain(iTrial) = 0;
+%                     case 'P'
+%                         gain(iTrial) = -R_chosen(iTrial)*2;
+%                 end
+%             case 1 % gain
+%                 switch R_or_P_tmp
+%                     case 'R'
+%                         gain(iTrial) = R_chosen(iTrial);
+%                     case 'P'
+%                         gain(iTrial) = -R_chosen(iTrial);
+%                 end
+%         end % trial successfull or not?
+        
+%     else % if non-default chosen, result is proportional to performance
+        ratioPerf(iTrial) = perfSummary{iTrial}.performance/100;
+        switch R_or_P_tmp
+            case 'R' % gain between 0 and R_chosen depending on performance
+                gain(iTrial) = round(R_chosen(iTrial)*ratioPerf(iTrial),2);
+            case 'P' % loss between -R_chosen and 2*(-R_chosen) depending on performance
+                gain(iTrial) = round(-R_chosen(iTrial) - (1 - ratioPerf(iTrial))*R_chosen(iTrial),2);
+        end
+%     end % filter if performance was for the default or the non-default option
+    
     % display feedback
     switch R_or_P_tmp
         case 'R'
