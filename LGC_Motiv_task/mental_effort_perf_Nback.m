@@ -344,12 +344,14 @@ while (iCorrectAnswers < n_max_to_reach) &&...
     
 end % keep performing until number of subsequent answers reaches threshold predefined or if timer has been reached
 
-%% compute gains
-mentalE_perf.performance = 100*((currentAngle(end) - startAngle_currentTrial)/(360 - startAngle_currentTrial));
-
 %% record all in output
 % keep only questions performed
 questions_done = ~isnan(sideAnswer);
+
+% compute gains
+currentAngleTrialsDone = currentAngle(questions_done);
+mentalE_perf.performance = 100*((currentAngleTrialsDone(end) - startAngle_currentTrial)/(360 - startAngle_currentTrial));
+
 % record question parameters
 mentalE_perf.Nback = Nback;
 mentalE_perf.questions_done = questions_done;
@@ -363,7 +365,7 @@ mentalE_perf.isGoodAnswer   = goodOrBadAnswer(questions_done);
 mentalE_perf.rt             = rt(questions_done);
 mentalE_perf.n_max_to_reach = n_max_to_reach;
 mentalE_perf.n_errorsMade   = jErrorsMade;
-mentalE_perf.anglePerformance = currentAngle(questions_done);
+mentalE_perf.anglePerformance = currentAngleTrialsDone;
 % record number of questions answered and how many were correct
 mentalE_perf.n_questions_performed = i_question - 1;
 mentalE_perf.n_correctAnswersForDisplay = iCorrectAnswers;
