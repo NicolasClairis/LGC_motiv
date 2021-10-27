@@ -107,7 +107,7 @@ while iCalibTrial <= n_calibTrials
     %% calibration trial start: finish when max time reached OR when correct number of answers has been provided
     mentalE_perf = mental_effort_perf_Nback(scr, stim, key,...
         numberVector_calib(iCalibTrial,:),...
-        mentalE_prm, n_calibMax, instructions_disp, calib_time_limit, calibTimes.effort_max, errorLimits, n_maxReachedUntilNow);
+        mentalE_prm, n_calibMax, instructions_disp, calib_time_limit, calibTimes.effort_max, errorLimits, n_maxReachedUntilNow, n_minCorrectAnswersToReach);
     
     calib_summary.mentalE_perf(iCalibTrial) = mentalE_perf;
     % store current maximum performance

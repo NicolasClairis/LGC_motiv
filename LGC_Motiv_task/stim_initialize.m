@@ -31,6 +31,7 @@ wrapat = scr.wrapat;
 black = scr.colours.black;
 white = scr.colours.white;
 orange = scr.colours.orange;
+red = scr.colours.red;
 grey = scr.colours.grey;
 % difficultyArcColor = [178 24 43];
 difficultyArcColor = [255 210 0];
@@ -648,6 +649,14 @@ stim.calibBestUntilNow.circleRadius    = difficultyRectlinearSize/2;
 stim.calibBestUntilNow.xCircleCenter = arcPosition(1) + (arcPosition(3) - arcPosition(1))/2;
 stim.calibBestUntilNow.yCircleCenter = arcPosition(2) + (arcPosition(4) - arcPosition(2))/2;
 stim.calibBestUntilNow.lineWidth = 3;
+
+%% parameters for trait indicating minimal performance to reach for mental calibration
+stim.calibMinToReach.color = red;
+arcPosition     = stim.difficulty.middle_center;
+stim.calibMinToReach.circleRadius    = difficultyRectlinearSize/2;
+stim.calibMinToReach.xCircleCenter = arcPosition(1) + (arcPosition(3) - arcPosition(1))/2;
+stim.calibMinToReach.yCircleCenter = arcPosition(2) + (arcPosition(4) - arcPosition(2))/2;
+stim.calibMinToReach.lineWidth = 3;
 
 %% choice period
 switch langage

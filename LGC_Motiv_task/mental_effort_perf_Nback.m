@@ -1,9 +1,9 @@
 function[mentalE_perf, trial_success, onsets] = mental_effort_perf_Nback(scr, stim, key,...
     numberVector, mentalE_prm, n_max_to_reach,...
-    learning_instructions, time_limit, t_max, errorLimits, n_maxReachedUntilNow)
+    learning_instructions, time_limit, t_max, errorLimits, n_maxReachedUntilNow, n_minCorrectAnswersToReach)
 %[mentalE_perf, trial_success, onsets] = mental_effort_perf_Nback(scr, stim, key,...
 %     numberVector, mentalE_prm, n_max_to_reach,...
-%     curr_learning_instructions, time_limit, t_max, errorLimits, n_maxReachedUntilNow)
+%     curr_learning_instructions, time_limit, t_max, errorLimits, n_maxReachedUntilNow, n_minCorrectAnswersToReach)
 %
 % mental_effort_perf_Nback corresponds to the actual performance. Can be
 % used both for learning period (with or without instructions) and for the
@@ -66,6 +66,10 @@ function[mentalE_perf, trial_success, onsets] = mental_effort_perf_Nback(scr, st
 % (for calibration mostly): will display an orange bar at the location of
 % the maximal performance until now
 %
+% n_minCorrectAnswersToReach: minimal number of correct answers to reach so
+% that performance can be considered to be ok: will display a red bar at
+% the location of the minimal performance to reach
+%
 % OUTPUTS
 % mentalE_perf: structure with summary of mental effort performance
 %   .nTrials: number of trials it took to reach a correct
@@ -94,6 +98,13 @@ if exist('n_maxReachedUntilNow','var') && ~isempty(n_maxReachedUntilNow)
     maxPerfUntilNowAngle = totalAngleDistance*(n_maxReachedUntilNow/n_max_to_reach);
 else
     maxPerfUntilNowAngle = [];
+end
+% coordinates for the angle corresponding to the minimal performance to
+% accomplish
+if exist('n_minCorrectAnswersToReach','var') && ~isempty(n_minCorrectAnswersToReach)
+    minPerfAngle = totalAngleDistance*(n_minCorrectAnswersToReach/n_max_to_reach);
+else
+    minPerfAngle = [];
 end
 
 % extract main mental effort parameters
@@ -226,7 +237,7 @@ while (iCorrectAnswers < n_max_to_reach) &&...
     onset_stim = mental_display_stim(scr, stim,...
         currentAngle(i_question), endAngle,...
         sideQuestion, taskTypeDisplay(i_question), numberVectorUsedDisplay(i_question), mental_n_col,...
-        learning_instructions_bis, maxPerfUntilNowAngle);
+        learning_instructions_bis, maxPerfUntilNowAngle, minPerfAngle);
     
     %% record onset
     if i_question > 1
