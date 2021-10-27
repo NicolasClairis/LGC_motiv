@@ -3,7 +3,7 @@ function[n_to_reach] = mental_N_answersPerLevel(n_E_levels, NmaxPerf)
 % mental_N_answersPerLevel will determine the number of correct
 % answers to provide for each difficulty level depending on the total
 % number of difficulty levels that you want to implement
-% 
+%
 % INPUTS
 % n_E_levels: number of effort levels to use in the task
 %
@@ -40,10 +40,12 @@ switch n_E_levels
 end
 
 %% check that levels of effort are not identical
-for iEffort = 1:(n_E_levels - 1)
-    if n_to_reach.(['E_level_',num2str(iEffort)]) == n_to_reach.(['E_level_',num2str(iEffort + 1)])
-        error(['Mental effort levels ',num2str(iEffort),' and ',num2str(iEffort + 1),' are identical. You have to find a way to solve this']);
+for iEffort = 0:(n_E_levels - 1)
+    if iEffort ~=  n_E_levels - 1
+        if n_to_reach.(['E_level_',num2str(iEffort)]) == n_to_reach.(['E_level_',num2str(iEffort+1)])
+            error(['Mental effort levels ',num2str(iEffort),' and ',num2str(iEffort + 1),' are identical. You have to find a way to solve this']);
+        end
     end
 end % effort loop
-    
+
 end % function
