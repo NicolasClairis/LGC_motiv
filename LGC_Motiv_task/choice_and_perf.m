@@ -139,7 +139,7 @@ choice = zeros(1,nTrials);
 [R_chosen, E_chosen,...
     effortTime,...
     trial_was_successfull,...
-    gain, percentagePerf,...
+    gain, ratioPerf,...
     totalGain] = deal(NaN(1, nTrials));
 [was_a_key_pressed_bf_trial,...
     was_a_key_pressed_bf_effort] = deal(NaN(1,nTrials));
@@ -308,12 +308,12 @@ for iTrial = 1:nTrials
     
     %% Feedback period
     % compute gains/losses for the current trial
-    percentagePerf(iTrial) = perfSummary{iTrial}.performance;
+    ratioPerf(iTrial) = perfSummary{iTrial}.performance/100;
     switch R_or_P_tmp
         case 'R' % gain between 0 and R_chosen depending on performance
-            gain(iTrial) = round(R_chosen(iTrial)*percentagePerf(iTrial));
+            gain(iTrial) = round(R_chosen(iTrial)*ratioPerf(iTrial));
         case 'P' % loss between -R_chosen and 2*(-R_chosen) depending on performance
-            gain(iTrial) = round(-R_chosen(iTrial) - percentagePerf*R_chosen(iTrial),2);
+            gain(iTrial) = round(-R_chosen(iTrial) - ratioPerf(iTrial)*R_chosen(iTrial),2);
     end
     % display feedback
     switch R_or_P_tmp
@@ -443,7 +443,7 @@ summary.R_chosen = R_chosen;
 summary.E_chosen = E_chosen;
 summary.perfSummary = perfSummary;
 summary.gain = gain;
-summary.percentagePerf = percentagePerf;
+summary.percentagePerf = ratioPerf;
 summary.totalGain = totalGain;
 summary.trial_was_successfull = trial_was_successfull;
 summary.effortTime = effortTime;

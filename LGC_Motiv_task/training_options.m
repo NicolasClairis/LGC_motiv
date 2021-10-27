@@ -63,7 +63,11 @@ else
             error(['Please determine a training sequence for when there are ',num2str(n_R_levels),' reward levels ',...
                 ' and ', num2str(n_E_levels),' effort levels']);
         case 'RP'
-
+                    R.left    = [0 2 0 0 0 1 2 1];
+                    R.right   = [1 0 1 3 3 0 0 0];
+                    E.left    = [0 2 0 0 0 3 2 3];
+                    E.right   = [1 0 1 2 2 0 0 0];
+                    R_or_P = {'R','R','P','R','P','P','P','R'};
     end
 
 end

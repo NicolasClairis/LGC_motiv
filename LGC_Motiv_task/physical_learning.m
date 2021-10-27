@@ -52,7 +52,7 @@ onsets.learningRest = NaN(1,n_learningTrials);
 %% perform learning
 jTrial = 0;
 for iForceRepeat = 1:n_learningForceRepeats
-    for iEffortLevel = 1:n_E_levels
+    for iEffortLevel = 0:n_E_levels-1
         jTrial = jTrial + 1;
         [perfSummary{jTrial},...
             ~,...

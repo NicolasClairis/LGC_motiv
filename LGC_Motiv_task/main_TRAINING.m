@@ -71,11 +71,11 @@ taskToPerform.physical.calib = 'on';
 taskToPerform.physical.learning = 'on';
 taskToPerform.physical.training = 'on';
 taskToPerform.physical.task = 'on';
-taskToPerform.mental.learning_1 = 'on';
-taskToPerform.mental.calib = 'on';
-taskToPerform.mental.learning_2 = 'on';
-taskToPerform.mental.training = 'on';
-taskToPerform.mental.task = 'on';
+taskToPerform.mental.learning_1 = 'off';
+taskToPerform.mental.calib = 'off';
+taskToPerform.mental.learning_2 = 'off';
+taskToPerform.mental.training = 'offf';
+taskToPerform.mental.task = 'off';
 switch langue
     case 'f'
         langage = 'fr';
@@ -238,7 +238,7 @@ for i_pm = 1:2
                     [onsets_Ep_training.(['session',num2str(iTrainingCondition),'_',trainingConfCond])] = choice_and_perf_trainingInstructions(scr, stim, trainingCondition, trainingTimes_Ep.instructions);
                     % perform the training
                     [trainingSummary_Ep.(['session',num2str(iTrainingCondition),'_',trainingConfCond])] = choice_and_perf(scr, stim, key_Ep, 'physical', Ep_vars_training, R_money,...
-                        trainingCondition, n_trialsPerTrainingCondition, trainingChoiceOptions_Ep_tmp(trainingTrials_idx), confidenceChoiceDisplay,...
+                         trainingCondition, n_trialsPerTrainingCondition, trainingChoiceOptions_Ep_tmp, confidenceChoiceDisplay,...
                         trainingTimes_Ep,...
                         subResultFolder, file_nm_training_Ep);
                 end % learning condition loop
