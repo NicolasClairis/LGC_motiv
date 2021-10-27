@@ -210,7 +210,7 @@ for i_pm = 1:2
                 % mapping between reward levels and fake monetary amounts
                 R_money = R_amounts(n_R_levels, punishment_yn);
                 % reward/punishment and effort levels
-                [trainingChoiceOptions_Ep_tmp] = training_options(trainingConfCond, n_R_levels, n_E_levels, R_money, n_trainingTrials);
+                [trainingChoiceOptions_Ep_tmp] = training_options(trainingCondition, n_R_levels, n_E_levels, R_money, n_trainingTrials);
                 % perform physical training in 2 phases:
                 % 1) with confidence mapping;
                 % 2) without confidence mapping
