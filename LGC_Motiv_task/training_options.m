@@ -63,8 +63,7 @@ else
             error(['Please determine a training sequence for when there are ',num2str(n_R_levels),' reward levels ',...
                 ' and ', num2str(n_E_levels),' effort levels']);
         case 'RP'
-            error(['Please determine a training sequence for when there are ',num2str(n_R_levels),' reward levels ',...
-                ' and ', num2str(n_E_levels),' effort levels']);
+
     end
 
 end
