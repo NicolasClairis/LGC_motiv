@@ -27,8 +27,7 @@ function[MVC, onsets] = physical_effort_MVC(scr, stim, dq, n_MVC_repeat, calibTi
 %% screen relevant variables
 window = scr.window;
 wrapat = scr.wrapat;
-orange = [255 153 0];
-
+orange = scr.colours.orange;
 
 %% force relevant variables
 F_start = 0; % initial force level at zero

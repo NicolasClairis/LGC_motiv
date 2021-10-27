@@ -27,8 +27,8 @@ while next < dummy_scan
         if next == 0
             T0 = T0IRM;
         end
-        next = next+1;
-        disp(next);
+        next = next + 1;
+        disp([num2str(next),' TTL received']);
         TTL = [TTL; T0IRM];
         while keycode(trigger_id) == 1
             [keyisdown, T, keycode] = KbCheck;

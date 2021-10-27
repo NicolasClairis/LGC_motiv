@@ -79,16 +79,16 @@ for iEpm = 1:2
             disp('** Mental effort design **');
     end
     
-    %% Ep: fixation cross (across the whole task)
-    if ~strcmp(GLMprm.model_onset.(task_id_nm).cross,'none')
+    %% pre-choice fixation cross
+    if ~strcmp(GLMprm.model_onset.(task_id_nm).preChoiceCross,'none')
         n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
-        reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'ONSET fixation cross';
-        disp([num2str(n_regs.(task_id_nm)),') ONSET cross: ',GLMprm.model_onset.(task_id_nm).cross,' ']);
+        reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'ONSET preChoice white fixation cross';
+        disp([num2str(n_regs.(task_id_nm)),') ONSET preChoice white cross: ',GLMprm.model_onset.(task_id_nm).preChoiceCross,' ']);
         % if derivative added => add derivatives
         n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
-    end % cross
+    end % pre-choice cross
     
-    %% Ep: choice period
+    %% choice period
     if ~strcmp(GLMprm.model_onset.(task_id_nm).choice,'none')
         % check if trials are split or not
         if GLMprm.choice.(task_id_nm).RPpool == 1 % pool reward and punishment trials
@@ -318,7 +318,7 @@ for iEpm = 1:2
         end % loop reward/punishment
     end % choice onset
     
-    %% Ep: chosen period
+    %% chosen period
     if ~strcmp(GLMprm.model_onset.(task_id_nm).chosen,'none')
         % check if trials are split or not
         if GLMprm.chosen.(task_id_nm).RPpool == 1 % pool reward and punishment trials
@@ -400,7 +400,16 @@ for iEpm = 1:2
         end % loop reward/punishment
     end % chosen onset
     
-    %% Ep: effort performance period
+    %% pre-effort fixation cross
+    if ~strcmp(GLMprm.model_onset.(task_id_nm).preEffortCross,'none')
+        n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+        reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'ONSET preEffort black fixation cross';
+        disp([num2str(n_regs.(task_id_nm)),') ONSET preEffort black cross: ',GLMprm.model_onset.(task_id_nm).preEffortCross,' ']);
+        % if derivative added => add derivatives
+        n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+    end % pre-choice cross
+    
+    %% effort performance period
     if ~strcmp(GLMprm.model_onset.(task_id_nm).Eperf,'none')
         % check if trials are split or not
         if GLMprm.Eperf.(task_id_nm).RPpool == 1 % pool reward and punishment trials
@@ -506,7 +515,7 @@ for iEpm = 1:2
         end % loop reward/punishment
     end % choice onset
     
-    %% Ep: feedback period
+    %% feedback period
     if ~strcmp(GLMprm.model_onset.(task_id_nm).fbk,'none')
         % check if trials are split or not
         if GLMprm.fbk.(task_id_nm).RPpool == 1 % pool reward and punishment trials
@@ -571,7 +580,7 @@ for iEpm = 1:2
         end % loop reward/punishment
     end % choice onset
     
-    %% Ep: movement regressors
+    %% movement regressors
     n_mvmt = 6;
     for iMvmt = 1:n_mvmt
         n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;

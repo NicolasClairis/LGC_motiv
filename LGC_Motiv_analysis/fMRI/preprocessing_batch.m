@@ -1,3 +1,5 @@
+function[] = preprocessing_batch(study_nm)
+%[] = preprocessing_batch(study_nm)
 % preprocessing for fMRI data
 % enter subject identification in 'subject_id' (sXX_ddMMyy dd: day,
 % MM: month, yy: year) and preprocessing number in 'preproc'
@@ -11,35 +13,41 @@
 % Preprocessing entails 1) realignement, 2) co-registration, 3)
 % segmentation, 4-5) normalisation in MNI space, 6) spatial smoothing
 %
+% INPUTS
+% study_nm: definition of the study on which you want to analyze the data
+% 'fMRI_pilots': pilots
+% 'study1': first study (dmPFC + AI)
+% 'study2': second study (clinical trial)
+%
 % See also First_level_batch, contrasts_batch and
 % Second_level_batch
 
-clear;
+% clear;
 
-%% preprocessing number
-preproc = 0; % see intro
+% %% preprocessing number in case you want to have several versions of it
+% preproc = 0; % see intro
 
 %% iniate spm
 spm('defaults','fmri');
 spm_jobman('initcfg');
 
 %% define subjects and working directories
-% dACC_or_Str_study = input('dACC (1) or Striatum (2) study?');
-dACC_or_Str_study = 1;
-subject_id = {'pilot_s2'}; % 'pilot_s1','pilot_s2'
-switch dACC_or_Str_study
-    case 1
-        % for pilot analysis
-        root = ['\\svfas5.epfl.ch\Sandi-Lab\Arthur\dACC AI EXP 1\Data\pilots\fMRI_pilots',filesep];
-    case 2
-        error('study 2 path not ready yet');
+[computerRoot, spmFolderPath] = LGCM_root_paths();
+switch study_nm
+    case 'fMRI_pilots' % pilots
+        root = [fullfile(computerRoot,'fMRI_pilots'),filesep];
+    case 'study1'
+        root = [fullfile(computerRoot,'study1'),filesep];
+    case 'study2'
+        root = [fullfile(computerRoot,'study2'),filesep];
 end
-NS = length(subject_id); % nber of subjects
+% subject_id = {'pilot_s2'}; % 'pilot_s1','pilot_s2'
+% NS = length(subject_id); % nber of subjects
+[subject_id, NS] = LGCM_subject_selection(study_nm);
 
 % give path for anatomical template
-% spmFolderPath = fullfile('C:','Program Files','MATLAB','spm');
-spmFolderPath = 'D:\Matlab extensions';
-spmTemplatePath = fullfile(spmFolderPath,'spm12','tpm','TPM.nii');
+spmTemplatePath = fullfile(spmFolderPath,'spm12','spm12','tpm','TPM.nii');
+
 
 %% define number of preprocessing steps
 nb_preprocessingSteps = 6;
@@ -55,7 +63,7 @@ nb_preprocessingSteps = 6;
  matlabbatch = cell(nb_preprocessingSteps*NS,1);
 
 for iS = 1:NS % loop through subjects
-    disp(iS);
+    disp(['loading batch for preprocessing subject ',num2str(iS),'/',num2str(NS)]);
     sub_nm = subject_id{iS};
     
     % create working directories and copy anat. file inside
@@ -80,13 +88,16 @@ for iS = 1:NS % loop through subjects
     
     %% extract folders where functional runs are stored
     cd(subj_scans_folder);
-    subj_scan_folders_names = ls('*_run*'); % takes all functional runs folders
-    % remove AP/PA corrective runs
-    [subj_scan_folders_names] = clear_topup_fromFileList(subj_scan_folders_names);
+    subj_scan_folders_names = ls('*run*'); % takes all functional runs folders
+    % remove AP/PA top-up corrective runs when they were performed (only 2
+    % first pilots)
+    if strcmp(study_nm,'fMRI_pilots') && ismember(sub_nm,{'pilot_s1','pilot_s2'})
+        [subj_scan_folders_names] = clear_topup_fromFileList(subj_scan_folders_names);
+    end
     %%
     cd(subj_analysis_folder)
     %% define number of sessions to analyze
-    if ismember(sub_nm, {'pilot_s1','pilot_s2'}) % only 2 sessions for these pilots
+    if ismember(sub_nm, {'pilot_s1','pilot_s2','pilot_s3'}) % only 2 sessions for these pilots
         nb_runs = 2;
     else
         nb_runs = 4;
@@ -96,8 +107,12 @@ for iS = 1:NS % loop through subjects
         cd(subj_scan_folders_names(iRun,:)); % go to run folder
         if ismember(sub_nm,{'pilot_s1'})
             filenames = cellstr(spm_select('ExtFPList',pwd,'^LGCM_.*\.nii$'));
-        else
+        elseif ismember(sub_nm,{'pilot_s2'})
             filenames = cellstr(spm_select('ExtFPList',pwd,'^run.*\.nii$'));
+        elseif ismember(sub_nm,{'pilot_s3'})
+            filenames = cellstr(spm_select('ExtFPList',pwd,'^ABNC.*\.img$'));
+        else
+            error('please check the format (nii/img) and the start of the name of each run because it has to be stabilized now...');
         end
         runFileNames.(['run_',num2str(iRun)]) = filenames;
         cd(subj_scans_folder);
@@ -130,6 +145,8 @@ for iS = 1:NS % loop through subjects
     cd(newAnatFolder);
     if ismember(sub_nm,{'pilot_s1'})
         anat_file = ls('LGCM_*.nii');
+    elseif ismember(sub_nm,{'pilot_s3'})
+        anat_file = ls('ABNC_*.img');
     else
         anat_file = ls('mp2rage_*.nii');
     end
@@ -212,7 +229,6 @@ for iS = 1:NS % loop through subjects
     matlabbatch{smooth_step}.spm.spatial.smooth.prefix = 's';
 
     cd(root);
-    
 end
 
 % display spm batch before running it

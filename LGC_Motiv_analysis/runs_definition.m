@@ -23,6 +23,10 @@ switch study_nm
                 runs.nb_runs.Ep = 1;
                 runs.nb_runs.Em = 0;
                 runs.tasks = {'Ep'};
+            case 'pilot_s3'
+                runs.nb_runs.Ep = 1;
+                runs.nb_runs.Em = 1;
+                runs.tasks = {'Em','Ep'};
         end
     case 'study1'
         error('need to attribute runs');

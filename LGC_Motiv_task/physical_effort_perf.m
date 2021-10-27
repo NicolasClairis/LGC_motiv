@@ -164,9 +164,9 @@ while (trial_success == 0) &&...
         
     else % force below threshold
         % update the stop index only when angle is higher than zero
-        if currentAngle > startAngle
-            percStoppedSqueezing = percStoppedSqueezing + (timeNow - force_levels(end-1,2))/t_effort_to_keep;
-        end
+%         if currentAngle > startAngle
+%             percStoppedSqueezing = percStoppedSqueezing + (timeNow - force_levels(end-1,2))/t_effort_to_keep;
+%         end
         
         % switch from squeeze above threshold to squeeze below threshold
         if stateSqueezeON == true % the participant was squeezing above threshold but now he squeezes below threshold
@@ -188,7 +188,7 @@ while (trial_success == 0) &&...
             currentAngle = endAngle;
         end
     end
-    
+currentAngle
     %% display on screen accordingly
     
     % display real-time force level
@@ -224,6 +224,8 @@ flush(dq);
 
 %% record vars of interest
 physicalE_perf.trial_success = trial_success;
+% performance is the amount in percentage of completion of the trial
+physicalE_perf.performance = ((currentAngle-startAngle)/(360-startAngle))*100;
 physicalE_perf.onsets = onsets;
 % record all the force levels during the performance
 physicalE_perf.t_max_effort = t_max_effort;

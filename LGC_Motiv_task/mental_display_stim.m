@@ -1,11 +1,11 @@
 function[onset_stim] = mental_display_stim(scr, stim,...
     startAngle, endAngle,...
-    sideQuestion, taskTypeDisplay, taskTypePerf, numberValue, mental_n_col,...
-    learning_instructions)
+    sideQuestion, taskTypeDisplay, numberValue, mental_n_col,...
+    learning_instructions, maxPerfUntilNowAngle)
 % [onset_stim] = mental_display_stim(scr, stim,...
 %     startAngle, endAngle,...
-%     sideQuestion, taskTypeDisplay, taskTypePerf, numberValue, mental_n_col,...
-%     learning_instructions)
+%     sideQuestion, taskTypeDisplay, numberValue, mental_n_col,...
+%     learning_instructions, maxPerfUntilNowAngle)
 % mental_display_stim will display the arc, number to solve,
 % instructions and reward level (all relevant info) according to the inputs
 %
@@ -23,9 +23,6 @@ function[onset_stim] = mental_display_stim(scr, stim,...
 % taskTypeDisplay: (0) odd/even; (1): lower/higher than 5; (2) last question (for N-back version can be ignored = 0 in white)
 % (type of the question displayed on screen which determines the number colour)
 %
-% taskTypePerf: (0) odd/even; (1): lower/higher than 5; (2) first question: any button press
-% (type of the question to answer currently independent of the current display)
-%
 % numberValue: number for the current question
 %
 % mental_n_col: structure with information about colour corresponding to
@@ -37,6 +34,9 @@ function[onset_stim] = mental_display_stim(scr, stim,...
 % 'partialInstructions': display only the two possible answers but not the
 % question anymore
 % 'noInstructions': no reminder of what the question is nor of where you should answer
+%
+% maxPerfUntilNowAngle: for calibration, add an orange bar where the
+% maximum perf has been reached until now
 %
 % OUTPUTS
 % onset_stim: time when everything appears on screen
@@ -55,21 +55,8 @@ Screen('FillArc', window,...
     startAngle,...
     endAngle - startAngle);
 
-% %%
-% if taskTypePerf == 2 % for first question, add a short text to precise that any button press is ok
-%     DrawFormattedText(window, 'Appuyez pour commencer.',...
-%             'center', yScreenCenter*15/8, selectedCol);
-% end
-
 %% number to solve
-switch taskTypeDisplay
-    case 0 % odd/even
-        textColor = mental_n_col.oddEven;
-    case 1 % lower/higher than 5
-        textColor = mental_n_col.lowHigh;
-    case 2 % last question
-        textColor = mental_n_col.lastQuestion;
-end
+textColor = mental_n_col.lowHigh;
 % increase text size for number
 Screen('TextSize', window, scr.textSize.mentalNumber);
 % display number on screen
@@ -79,6 +66,19 @@ DrawFormattedText(window, num2str(numberValue),...
     textColor);
 % text size back to baseline
 Screen('TextSize', window, scr.textSize.baseline);
+
+%% display orange bar where is the best performance until now
+if exist('maxPerfUntilNowAngle','var') && ~isempty(maxPerfUntilNowAngle)
+    lineColour = stim.calibBestUntilNow.color;
+    circleRadius = stim.calibBestUntilNow.circleRadius;
+    xCircleCenter = stim.calibBestUntilNow.xCircleCenter;
+    yCircleCenter = stim.calibBestUntilNow.yCircleCenter;
+    xCircle = xCircleCenter + circleRadius*cos(maxPerfUntilNowAngle*(pi/180) - pi/2);
+    yCircle = yCircleCenter + circleRadius*sin(maxPerfUntilNowAngle*(pi/180) - pi/2);
+    Screen('DrawLine', window, lineColour,...
+        xCircleCenter, yCircleCenter, xCircle, yCircle,...
+        stim.calibBestUntilNow.lineWidth);
+end
 
 %% instructions
 switch learning_instructions

@@ -119,7 +119,19 @@ timeRemainingEndTrial_ONOFF = Ep_or_Em_vars.timeRemainingEndTrial_ONOFF;
     onsets.preEffortCross_keyReleaseMessage,...
     onsets.preEffortCross_after_buttonRelease,...
     onsets.fbk, onsets.fbk_win, onsets.fbk_loss,...
-    onsets.timeBarWait] = deal(NaN(1,nTrials));
+    onsets.fbk_fail,...
+    onsets.timeBarWait,...
+    dur.preChoiceCross,...
+    dur.dispChoiceOptions,...
+    dur.preChoiceCross_keyReleaseMessage,...
+    dur.preChoiceCross_after_buttonRelease,...
+    dur.preEffortCross,...
+    dur.preEffortCross_keyReleaseMessage,...
+    dur.preEffortCross_after_buttonRelease,...
+    dur.effortPeriod,...
+    dur.fbk, dur.fbk_win, dur.fbk_loss,...
+    dur.fbk_fail,...
+    dur.timeBarWait] = deal(NaN(1,nTrials));
 % variables during effort period should record the data for each trial
 [onsets.effortPeriod,...
     perfSummary] = deal(cell(1, nTrials));
@@ -135,7 +147,7 @@ was_a_key_pressed_bf_trial = NaN(1,nTrials);
 switch effort_type
     case 'mental'
         % initialize main parameters of the task
-        mentalE_prm = mental_effort_parameters(i_sub);
+        mentalE_prm = mental_effort_parameters();
         % randomize the order of the numbers appearing on screen
         mental_nbers_per_trial = mental_numbers(nTrials);
         
@@ -152,17 +164,19 @@ for iTrial = 1:nTrials
     % initialize variables in case of failure on this trial
     i_trial_failed = 0;
     trial_success = 0;
-    redo_limit = 5;
+    redo_limit = 0;
     
     %% fixation cross pre-choice period
     Screen('FillRect',window, white, stim.cross.verticalLine); % vertical line
     Screen('FillRect',window, white, stim.cross.horizontalLine); % horizontal line
     [~,onsets.preChoiceCross(iTrial)] = Screen('Flip',window); % display the cross on screen
     WaitSecs(t_preChoiceCross(iTrial));
+    dur.preChoiceCross(iTrial) = GetSecs - onsets.preChoiceCross(iTrial);
     
     %% check that no key is being pressed before the choice trial starts
     [was_a_key_pressed_bf_trial(iTrial),...
-        onsets.preChoiceCross_keyReleaseMessage(iTrial)] = check_keys_are_up(scr, stim, key);
+        onsets.preChoiceCross_keyReleaseMessage(iTrial),...
+        dur.preChoiceCross_keyReleaseMessage(iTrial)] = check_keys_are_up(scr, stim, key);
     
     % if a key was pressed before starting the trial => show the fixation
     % cross again with a similar amount of time
@@ -171,11 +185,13 @@ for iTrial = 1:nTrials
         Screen('FillRect',window, white, stim.cross.horizontalLine); % horizontal line
         [~,onsets.preChoiceCross_after_buttonRelease(iTrial)] = Screen('Flip',window); % display the cross on screen
         WaitSecs(t_preChoiceCross(iTrial));
+        dur.preChoiceCross_after_buttonRelease(iTrial) = GetSecs - onsets.preChoiceCross_after_buttonRelease(iTrial);
     end
     
     %% extract monetary incentive, effort level and reward/punishment condition
     R_left_tmp = choiceOptions.monetary_amount.left(iTrial);
     R_right_tmp = choiceOptions.monetary_amount.right(iTrial);
+    defaultSide_tmp = choiceOptions.default_LR;
     E_left_tmp = choiceOptions.E.left(iTrial);
     E_right_tmp = choiceOptions.E.right(iTrial);
     R_or_P_tmp = choiceOptions.R_or_P{iTrial};
@@ -208,10 +224,15 @@ for iTrial = 1:nTrials
         case {1,2} % choice = right option (sure or unsure)
             R_chosen(iTrial) = R_right_tmp;
             E_chosen(iTrial) = E_right_tmp;
-        case 0 % no option was selected
-            R_chosen(iTrial) = 0;
-            %             E_chosen(iTrial) = max(E_left_tmp, E_right_tmp); % by default opt for the higher effort with no reward if no option was selected
-            E_chosen(iTrial) = 0;
+        case 0 % no option was selected: take the default option
+            switch defaultSide_tmp
+                case -1 % default on the left
+                    R_chosen(iTrial) = R_left_tmp;
+                    E_chosen(iTrial) = E_left_tmp;
+                case 1 % default on the right
+                    R_chosen(iTrial) = R_right_tmp;
+                    E_chosen(iTrial) = E_right_tmp;
+            end
     end
     
     % in the case where confidence is measured, also extract confidence
@@ -219,36 +240,42 @@ for iTrial = 1:nTrials
     if confidenceDispChosen.display == true
         switch choice(iTrial)
             case {-2,2} % high confidence
-                conf.lowOrHigh(iTrial) = 1;
+                conf.lowOrHigh(iTrial) = 2;
             case {-1,1} % low confidence
-                conf.lowOrHigh(iTrial) = 0;
+                conf.lowOrHigh(iTrial) = 1;
             otherwise % no choice made = as if low confidence
                 conf.lowOrHigh(iTrial) = 0;
         end
         confidenceDispChosen.lowOrHigh = conf.lowOrHigh(iTrial);
     end
     
+    % record timing
+    dur.dispChoiceOptions(iTrial) = GetSecs - onsets.dispChoiceOptions(iTrial);
+    
     %% check if escape was pressed => stop everything if so
     if stoptask == 1
         % save all the data in case you still want to analyze it
         save([results_folder, file_nm,'_earlyEnd_tmp.mat']);
-        break;
+        sca; % close PTB
+        break; % stop for loop
     end
     
     %% chosen option display period
-    [time_dispChoice] = choice_task_dispChosen(scr, stim, R_chosen(iTrial), E_chosen(iTrial), R_or_P_tmp, confidenceDispChosen);
-    onsets.dispChoice(iTrial) = time_dispChoice;
+    [onsets.dispChoice(iTrial)] = choice_task_dispChosen(scr, stim, choice(iTrial), R_chosen(iTrial), E_chosen(iTrial), R_or_P_tmp, confidenceDispChosen);
     WaitSecs(t_dispChoice);
+    dur.dispChoice(iTrial) = GetSecs - onsets.dispChoice(iTrial);
     
     %% fixation cross pre-effort period
     Screen('FillRect',window, black, stim.cross.verticalLine); % vertical line
     Screen('FillRect',window, black, stim.cross.horizontalLine); % horizontal line
     [~,onsets.preEffortCross(iTrial)] = Screen('Flip',window); % display the cross on screen
     WaitSecs(t_preEffortCross(iTrial));
+    dur.preEffortCross(iTrial) = GetSecs - onsets.preEffortCross(iTrial);
     
     %% check that no key is being pressed before the choice trial starts
     [was_a_key_pressed_bf_trial(iTrial),...
-        onsets.preEffortCross_keyReleaseMessage(iTrial)] = check_keys_are_up(scr, stim, key);
+        onsets.preEffortCross_keyReleaseMessage(iTrial),...
+        dur.preEffortCross_keyReleaseMessage(iTrial)] = check_keys_are_up(scr, stim, key);
     
     % if a key was pressed before starting the trial => show the fixation
     % cross again with a similar amount of time
@@ -257,7 +284,9 @@ for iTrial = 1:nTrials
         Screen('FillRect',window, black, stim.cross.horizontalLine); % horizontal line
         [~,onsets.preEffortCross_after_buttonRelease(iTrial)] = Screen('Flip',window); % display the cross on screen
         WaitSecs(t_preEffortCross(iTrial));
+        dur.preEffortCross_after_buttonRelease(iTrial) = GetSecs - onsets.preEffortCross_after_buttonRelease(iTrial);
     end
+    
     %% Effort period
     % perform the effort if a choice was made, otherwise punish the
     % subject for not answering to the choice
@@ -265,13 +294,6 @@ for iTrial = 1:nTrials
         trial_was_successfull(iTrial) = 0;
         
     elseif ismember(choice(iTrial), [-2, -1, 1, 2]) % choice done => perform the corresponding effort
-        
-        %% mental effort: check no key is being pressed before the start of the effort period
-        % for physical effort: useless since only the grip is required
-        if strcmp(effort_type,'mental')
-            [was_a_key_pressed_bf_trial(iTrial),...
-                onsets.keyReleaseMessage(iTrial)] = check_keys_are_up(scr, stim, key);
-        end
         
         %% perform the effort
         tic;
@@ -286,6 +308,8 @@ for iTrial = 1:nTrials
                         Ep_time_levels,...
                         F_threshold, F_tolerance,...
                         timeLimitPerf, timings);
+                    % record duration for effort performance
+                    dur.effortPeriod(iTrial) = GetSecs - onsets.effortPeriod{iTrial}.effort_phase;
                     trial_success = trial_was_successfull(iTrial);
                     if trial_success == 0
                         i_trial_failed = i_trial_failed +1;
@@ -304,6 +328,7 @@ for iTrial = 1:nTrials
                             stim.feedback.colour);
                         [~,onsets.(['fbk_fail_trial_',num2str(iTrial)]).(['fail_',num2str(i_trial_failed)])] = Screen(window,'Flip');
                         WaitSecs(t_fail_and_repeat_fbk);
+                        dur.(['fbk_fail_trial_',num2str(iTrial)]).(['fail_',num2str(i_trial_failed)]) = GetSecs - onsets.(['fbk_fail_trial_',num2str(iTrial)]).(['fail_',num2str(i_trial_failed)]);
                     end
                 end
                 
@@ -317,7 +342,9 @@ for iTrial = 1:nTrials
                         onsets.effortPeriod{iTrial}] = mental_effort_perf_Nback(scr, stim, key,...
                         mental_nbers_per_trial(iTrial,:),...
                         mentalE_prm, n_max_to_reach_perTrial(iTrial),...
-                        'col1', 'noInstructions', timeLimitPerf, t_max_effort, errorLimits);
+                        'noInstructions', timeLimitPerf, t_max_effort, errorLimits);
+                    % record duration for effort performance
+                    dur.effortPeriod(iTrial) = GetSecs - onsets.effortPeriod{iTrial}.nb_1;
                     trial_success = trial_was_successfull(iTrial);
                     % Save the data if it was an uncessfull trial, to prevent rewriting of the data
                     if trial_success == 0
@@ -345,6 +372,7 @@ for iTrial = 1:nTrials
                             stim.feedback.colour);
                         [~,onsets.(['fbk_fail_trial_',num2str(iTrial)]).(['fail_',num2str(i_trial_failed)])] = Screen(window,'Flip');
                         WaitSecs(t_fail_and_repeat_fbk);
+                        dur.(['fbk_fail_trial_',num2str(iTrial)]).(['fail_',num2str(i_trial_failed)]) = GetSecs - onsets.(['fbk_fail_trial_',num2str(iTrial)]).(['fail_',num2str(i_trial_failed)]);
                     end
                 end
         end % effort type loop
@@ -386,7 +414,16 @@ for iTrial = 1:nTrials
             [~,onsets.fbk_fail(iTrial)] = Screen(window,'Flip');
             
             % record loss for the current trial
-            gain(iTrial) = -R_money.trialFail;
+            if choice(iTrial) == 0 % no choice was made
+                gain(iTrial) = -R_money.trialFail;
+            else
+                switch R_or_P_tmp
+                    case 'R' % reward case: just no gain
+                        gain(iTrial) = 0;
+                    case 'P' % punishment case: double the loss
+                        gain(iTrial) = ((-1)*R_chosen(iTrial))*2;
+                end
+            end
             
         case 1 % trial is a success
             % display feedback
@@ -426,6 +463,19 @@ for iTrial = 1:nTrials
     totalGain(iTrial) = sum(gain(1:iTrial));
     WaitSecs(t_fbk);
     
+    switch trial_was_successfull(iTrial)
+        case 0
+            dur.fbk_fail(iTrial) = GetSecs - onsets.fbk_fail(iTrial);
+        case 1
+            dur.fbk(iTrial) = GetSecs - onsets.fbk(iTrial);
+            switch R_or_P_tmp
+                case 'R'
+                    dur.fbk_win(iTrial) = GetSecs - onsets.fbk_win(iTrial);
+                case 'P'
+                    dur.fbk_loss(iTrial) = GetSecs - onsets.fbk_loss(iTrial);
+            end
+    end
+    
     %% Time waiting period
     % this period allows to de-confound effort and delay, ie even if lower
     % effort has been selected and performed quicker, a short waiting time
@@ -460,6 +510,8 @@ for iTrial = 1:nTrials
                 
                 Screen(window,'Flip');
             end % display until time catches up with maximum effort time
+            % record timing
+            dur.timeBarWait(iTrial) = GetSecs - onsets.timeBarWait(iTrial);
         end % if all time taken, no need for time penalty
     end % if a time limit is added
     
@@ -469,6 +521,7 @@ end % trial loop
 
 %% extract relevant training data
 summary.onsets = onsets;
+summary.durations = dur;
 summary.choice = choice;
 if confidenceDispChosen.display == true
     summary.confidence = conf;

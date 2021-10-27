@@ -45,8 +45,21 @@ if n_R_levels == 3 && n_E_levels == 3
             trainingChoiceOptions.E.right   = [3 2 2 1 2 3];
     end
 else
+    switch taskTrainingCond
+        case 'R'
     error(['Please determine a training sequence for when there are ',num2str(n_R_levels),' reward levels ',...
         ' and ', num2str(n_E_levels),' effort levels']);
+        case 'P'
+    error(['Please determine a training sequence for when there are ',num2str(n_R_levels),' reward levels ',...
+        ' and ', num2str(n_E_levels),' effort levels']);
+        case 'RP'
+            trainingChoiceOptions.R.left    = [1 4 1 4];
+            trainingChoiceOptions.R.right   = [3 1 2 1];
+            trainingChoiceOptions.E.left    = [1 3 1 3];
+            trainingChoiceOptions.E.right   = [2 1 4 1];
+            trainingChoiceOptions.default_LR = [1 0 1 0];
+    end
+
 end
 
 %% number of trials
@@ -65,6 +78,8 @@ switch taskTrainingCond
             rand_RP = [4 9 2 6 5 11 10 12 1 7 8 3];
         elseif n_R_levels == 3 && n_E_levels == 3 && nTrainingTrials == 6
             rand_RP = [2 3 4 5 1 6];
+        elseif n_R_levels == 4 && n_E_levels == 4 && nTrainingTrials == 4
+            rand_RP = [1 4 3 2];
         else
             error(['Please define a pre-determined training sequence for reward and punishment for when ',num2str(n_R_levels),' reward levels ',...
         ' and ', num2str(n_E_levels),' effort levels and ',num2str(nTrainingTrials),' trials']);

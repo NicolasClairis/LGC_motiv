@@ -4,7 +4,10 @@ function[] = LGCM_contrasts_spm(study_nm, GLM, checking)
 % contrasts in each individual of the study
 %
 % INPUTS
-% study_nm: study name
+% study_nm: definition of the study on which you want to analyze the data
+% 'fMRI_pilots': pilots
+% 'study1': first study (dmPFC + AI)
+% 'study2': second study (clinical trial)
 %
 % GLM: GLM number
 %
@@ -14,14 +17,13 @@ function[] = LGCM_contrasts_spm(study_nm, GLM, checking)
 close all; clc;
 
 %% working directories
-computer_root = fullfile('C:','Users','clairis','Desktop');
-% computer_root = fullfile('C:','Users','Loco','Downloads');
+computer_root = LGCM_root_paths();
 switch study_nm
     case 'fMRI_pilots'
         root = fullfile(computer_root,'fMRI_pilots');
     case 'study1'
         root = fullfile(computer_root,'study1');
-    case 'study2_clinical'
+    case 'study2'
         root = fullfile(computer_root,'study2');
 end
 
@@ -45,7 +47,7 @@ for iSubject = 1:NS
     sub_nm = subject_id{iSubject};
     
     %% extract contrasts list (vectors + corresponding names
-    [con_names, con_vector] = LGCM_contrasts(study_nm, sub_nm, GLM);
+    [con_names, con_vector] = LGCM_contrasts(study_nm, sub_nm, GLM, computer_root);
     
     %% define results directory
     matlabbatch{iSubject}.spm.stats.con.spmmat = {fullfile(root,sub_nm,'fMRI_analysis','functional',['GLM',num2str(GLM)],'SPM.mat')};

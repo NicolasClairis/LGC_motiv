@@ -1,7 +1,9 @@
 function[was_a_key_pressed_bf_trial,...
-    onsets_keyReleaseMessage] = check_keys_are_up(scr, stim, key)
+    onsets_keyReleaseMessage,...
+    dur_keyReleaseMessage] = check_keys_are_up(scr, stim, key)
 % [was_a_key_pressed_bf_trial,...
-%     onsets_keyReleaseMessage] = check_keys_are_up(scr, stim, key)
+%     onsets_keyReleaseMessage,...
+%     dur_keyReleaseMessage] = check_keys_are_up(scr, stim, key)
 % check_keys_are_up checks whether all relevant keys are up before
 % starting the trial. If one of the relevant keys was being pressed before
 % starting, displays an error message and waits for the participant to
@@ -22,10 +24,13 @@ function[was_a_key_pressed_bf_trial,...
 % 
 % onsets_keyReleaseMessage: onset of the error message (if displayed),
 % otherwise NaN value
+%
+% dur_keyReleaseMessage: duration of the display of the error message (if
+% displayed)
 
 %% by default no key was pressed before the trial
 was_a_key_pressed_bf_trial = 0;
-onsets_keyReleaseMessage = NaN;
+[onsets_keyReleaseMessage, dur_keyReleaseMessage] = deal(NaN);
 
 window = scr.window;
 %% check key presses
@@ -42,6 +47,7 @@ while (keyIsDown == 1) &&...
     % keep checking the buttons to know if the keyboard has been released
     % or not
     [keyIsDown, ~, keyCode] = KbCheck();
+    dur_keyReleaseMessage = GetSecs - onsets_keyReleaseMessage;
 end % some relevant key is being pressed
 
 end % function

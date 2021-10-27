@@ -1,5 +1,5 @@
-function[stim] = stim_initialize(scr, n_E_levels, langage, R_money)
-%[stim] = stim_initialize(scr, n_E_levels, langage, R_money)
+function[stim] = stim_initialize(scr, n_E_levels, langage)
+%[stim] = stim_initialize(scr, n_E_levels, langage)
 %stim_initialize will initialize most of the visual stimuli used in the
 %task.
 %
@@ -11,9 +11,6 @@ function[stim] = stim_initialize(scr, n_E_levels, langage, R_money)
 % langage:
 % 'fr': display instructions in french
 % 'engl': display instructions in english
-%
-% R_money: structure with reward amounts and amount of money lost when
-% trial is failed
 %
 % OUTPUTS
 % stim: structure with stimulus informations
@@ -33,6 +30,7 @@ wrapat = scr.wrapat;
 % colours
 black = scr.colours.black;
 white = scr.colours.white;
+orange = scr.colours.orange;
 grey = scr.colours.grey;
 % difficultyArcColor = [178 24 43];
 difficultyArcColor = [255 210 0];
@@ -90,14 +88,20 @@ stim.difficulty.arcEndAngle = 360;
 
 % define the circle size for each difficulty level depending on the
 % difficulty
-% note level 1 = easiest level (ascending order)
-for iDiff = 1:n_E_levels
+% note level 0 = easiest level (ascending order)
+% first: load timings for physical effort so as to calibrate everything
+% based on this
+[Ep_time_levels] = physical_effortLevels(n_E_levels);
+% normalize all values by maximal effort
+E_maxDuration = Ep_time_levels.(['level_',num2str(n_E_levels)]);
+for iDiff = 1:(n_E_levels)
     % extract name for subfield of the current difficulty level
     diff_level_nm = ['level_',num2str(iDiff)];
+    E_durPerc_tmp = Ep_time_levels.(['level_',num2str(iDiff)]);
     
     % extract angle for the arc which will correspond to the difficulty
     % level: max circle = max difficulty level
-    startAngle_tmp = stim.difficulty.arcEndAngle*((n_E_levels - iDiff)./n_E_levels);
+    startAngle_tmp = stim.difficulty.arcEndAngle*( (E_maxDuration - E_durPerc_tmp)/E_maxDuration);
     if startAngle_tmp < 360
         stim.difficulty.startAngle.(diff_level_nm) = startAngle_tmp;
     elseif startAngle_tmp == 360
@@ -218,10 +222,10 @@ Screen('TextSize', window, baselineTextSize);
 switch langage
     case 'fr'
         stim.training.R.text = ['Vous allez a present choisir entre deux options associees a differents niveaux d''argent et d''effort '...
-            'l''option qui vous parait la plus interessante.'];
+            'l''option qui vous parait la plus interessante. '];
     case 'engl'
         stim.training.R.text = ['You will now choose between two options associated with different levels of money and effort ',...
-            'the option which seems the most interesting for you.'];
+            'the option which seems the most interesting for you. '];
 end
 [~,~,textSizeRewardTraining] = DrawFormattedText(window,...
     stim.training.R.text,...
@@ -234,10 +238,10 @@ stim.training.R.colour = white;
 switch langage
     case 'fr'
         stim.training.P.text = ['Vous allez a present choisir entre deux options associees a differents niveaux d''argent et d''effort '...
-            'l''option qui vous parait la moins penible.'];
+            'l''option qui vous parait la moins penible. '];
     case 'engl'
         stim.training.P.text = ['You will now choose between two options associated with different levels of money and effort ',...
-            'the option which seems the least aversive for you.'];
+            'the option which seems the least aversive for you. '];
 end
 [~,~,textSizePunishmentTraining] = DrawFormattedText(window,...
     stim.training.P.text,...
@@ -249,11 +253,11 @@ stim.training.P.colour = white;
 % reward + punishment training
 switch langage
     case 'fr'
-        stim.training.RP.text = ['Vous allez a present choisir entre deux options associees a differents niveaux d''argent et d''effort '...
-            'l''option qui vous parait preferable.'];
+        stim.training.RP.text = ['Vous allez a present choisir entre deux options associees a differents niveaux d''argent et d''effort ',...
+            'l''option qui vous parait preferable. '];
     case 'engl'
         stim.training.RP.text = ['You will now choose between two options associated with different levels of money and effort ',...
-            'the option which seems the best for you.'];
+            'the option which seems the best for you. '];
 end
 [~,~,textSizeRewardAndPunishmentTraining] = DrawFormattedText(window,...
     stim.training.RP.text,...
@@ -280,14 +284,12 @@ stim.training.Ep.endMsg.colour = white;
 switch langage
     case 'fr'
         stim.Em.learning.fullInstructions.text = ['Vous allez pouvoir vous entrainer a effectuer la tache. ',...
-            'Vous pouvez repondre avec les boutons. ',...
             'La correspondance entre la position des boutons et la ',...
             'reponse que vous souhaitez donner est la suivante:'];
         %'La couleur du chiffre represente la question posee. ',... only
         %for task switching version
     case 'engl'
         stim.Em.learning.fullInstructions.text = ['You can now train to perform the task. ',...
-            'You can respond with the buttons. ',...
             'The correspondence between the position of the buttons and ',...
             'the answer you want to provide is as follows:'];
 %         'The colour of the number represents the nature of the question.
@@ -349,57 +351,53 @@ stim.Em.learning.noInstructions.colour = white;
 % extended learning instructions
 switch langage
     case 'fr'
-        stim.Em.learning.extendedLearning_Nback0.text = ['Vous allez a present vous entrainer ',...
+        stim.Em.learning.learning_Nback0.text = ['Vous allez a present vous entrainer ',...
             ' a nouveau sur les differents niveaux de difficulte que vous rencontrerez dans la tache. ',...
             'Pour rappel:'];
-        stim.Em.learning.extendedLearning_Nback1.text = ['Attention, desormais, vous allez devoir repondre au chiffre ',...
+        stim.Em.learning.learning_Nback1.text = ['Attention, desormais, vous allez devoir repondre au chiffre ',...
             'qui vient d''etre affiche, pas au chiffre qui est a l''ecran. ',...
             ' Appuyez sur n''importe quel bouton pour le premier chiffre. ',...
-            'Vous ne pourrez jamais repondre au dernier chiffre affiche. ',...
             'Pour rappel:'];
-        stim.Em.learning.extendedLearning_Nback2.text = ['Attention, desormais, ',...
+        stim.Em.learning.learning_Nback2.text = ['Attention, desormais, ',...
             'vous allez devoir repondre au chiffre affiche 2 chiffres plus tot, ',...
             'pas au chiffre qui est a l''ecran. ',...
             ' Appuyez sur n''importe quel bouton pour les deux premiers chiffres. ',...
-            'Vous ne pourrez jamais repondre aux deux derniers chiffres affiches. ',...
             'Pour rappel:'];
     case 'engl'
-        stim.Em.learning.extendedLearning_Nback0.text = ['You will nos train ',...
+        stim.Em.learning.learning_Nback0.text = ['You will nos train ',...
             'again on the different levels of difficulty that you will encounter in the task. ',...
             'Here is a quick reminder of the mapping:'];
-        stim.Em.learning.extendedLearning_Nback1.text = ['Attention, from now on, ',...
+        stim.Em.learning.learning_Nback1.text = ['Attention, from now on, ',...
             'you will have to respond to the number which has just been displayed, ',...
             'not to the number which is currently on the screen. ',...
             'Press any button for the first digit. ',...
-            ' Note that you will never be able to answer the last digit displayed. ',...
             'Here is a quick reminder of the mapping:'];
-        stim.Em.learning.extendedLearning_Nback2.text = ['Attention, from now on, ',...
+        stim.Em.learning.learning_Nback2.text = ['Attention, from now on, ',...
             'you will have to respond to the number which has been displayed 2 numbers before, ',...
             'not to the number which is currently on the screen. ',...
             'Press any button for the two first digits. ',...
-            ' Note that you will never be able to answer to the two last digits displayed. ',...
             'Here is a quick reminder of the mapping:'];
 end
-[~,~,textSizeEmLearningextendedLearning_Nback0] = DrawFormattedText(window,...
-    stim.Em.learning.extendedLearning_Nback0.text,...
+[~,~,textSizeEmLearning_Nback0] = DrawFormattedText(window,...
+    stim.Em.learning.learning_Nback0.text,...
     'center', 'center', white, wrapat);
-[~,~,textSizeEmLearningextendedLearning_Nback1] = DrawFormattedText(window,...
-    stim.Em.learning.extendedLearning_Nback1.text,...
+[~,~,textSizeEmLearning_Nback1] = DrawFormattedText(window,...
+    stim.Em.learning.learning_Nback1.text,...
     'center', 'center', white, wrapat);
-[~,~,textSizeEmLearningextendedLearning_Nback2] = DrawFormattedText(window,...
-    stim.Em.learning.extendedLearning_Nback2.text,...
+[~,~,textSizeEmLearning_Nback2] = DrawFormattedText(window,...
+    stim.Em.learning.learning_Nback2.text,...
     'center', 'center', white, wrapat);
-stim.Em.learning.extendedLearning_Nback0.x = x_centerCoordinates(xScreenCenter, textSizeEmLearningextendedLearning_Nback0);
-stim.Em.learning.extendedLearning_Nback0.y = y_coordinates(upperBorder, visibleYsize, 1/3, textSizeEmLearningextendedLearning_Nback0);
-stim.Em.learning.extendedLearning_Nback0.colour = white;
+stim.Em.learning.learning_Nback0.x = x_centerCoordinates(xScreenCenter, textSizeEmLearning_Nback0);
+stim.Em.learning.learning_Nback0.y = y_coordinates(upperBorder, visibleYsize, 1/3, textSizeEmLearning_Nback0);
+stim.Em.learning.learning_Nback0.colour = white;
 % Nback = 1
-stim.Em.learning.extendedLearning_Nback1.x = x_centerCoordinates(xScreenCenter, textSizeEmLearningextendedLearning_Nback1);
-stim.Em.learning.extendedLearning_Nback1.y = y_coordinates(upperBorder, visibleYsize, 1/3, textSizeEmLearningextendedLearning_Nback1);
-stim.Em.learning.extendedLearning_Nback1.colour = white;
+stim.Em.learning.learning_Nback1.x = x_centerCoordinates(xScreenCenter, textSizeEmLearning_Nback1);
+stim.Em.learning.learning_Nback1.y = y_coordinates(upperBorder, visibleYsize, 1/3, textSizeEmLearning_Nback1);
+stim.Em.learning.learning_Nback1.colour = white;
 % Nback = 2
-stim.Em.learning.extendedLearning_Nback2.x = x_centerCoordinates(xScreenCenter, textSizeEmLearningextendedLearning_Nback2);
-stim.Em.learning.extendedLearning_Nback2.y = y_coordinates(upperBorder, visibleYsize, 1/3, textSizeEmLearningextendedLearning_Nback2);
-stim.Em.learning.extendedLearning_Nback2.colour = white;
+stim.Em.learning.learning_Nback2.x = x_centerCoordinates(xScreenCenter, textSizeEmLearning_Nback2);
+stim.Em.learning.learning_Nback2.y = y_coordinates(upperBorder, visibleYsize, 1/3, textSizeEmLearning_Nback2);
+stim.Em.learning.learning_Nback2.colour = white;
 
 % end of mental learning
 switch langage
@@ -454,9 +452,9 @@ stim.pressWhenReady.colour = white;
 switch langage
     case 'fr'
         stim.endfMRIMessage.text = ['Nous allons maintenant vous demander ',...
-            ' de refaire votre maximum après quelques secondes de pause.'];
+            'de refaire votre maximum apres quelques secondes de pause.'];
     case 'engl'
-        stim.endfMRIMessage.text = ['We will nos ask you ',...
+        stim.endfMRIMessage.text = ['We will now ask you ',...
             'to perform your maximum after a few seconds of break.'];
 end
 [~,~,textSizeEndfMRIMsg] = DrawFormattedText(window,stim.endfMRIMessage.text,'center','center',white, wrapat);
@@ -538,12 +536,12 @@ stim.postTaskMVCmeasurement.colour = white;
 %% mental calibration
 switch langage
     case 'fr'
-        stim.mentalCalibInstructions.text = ['Essayez de completer',...
-            ' le cercle en repondant aussi vite que possible et ',...
-            'correctement aux questions posees.'];
+        stim.mentalCalibInstructions.text = ['Repondez ',...
+            'aussi vite et ',...
+            'aussi correctement que possible.'];
     case 'engl'
-        stim.mentalCalibInstructions.text = ['Try to complete the circle ',...
-            'by answering the questions as quickly and correctly as possible.'];
+        stim.mentalCalibInstructions.text = ['Answer ',...
+            'as quickly and correctly as possible.'];
 end
 [~,~,textSizeMentalCalibInstructions] = DrawFormattedText(window, stim.mentalCalibInstructions.text,...
     'center', 'center', white, wrapat);
@@ -589,6 +587,17 @@ stim.mentalCalibFailureFbk.x = x_centerCoordinates(xScreenCenter, textSizeMental
 stim.mentalCalibFailureFbk.y = y_coordinates(upperBorder, visibleYsize, 1/6, textSizeMentalCalibFail);
 stim.mentalCalibFailureFbk.colour = white;
 
+% number version
+switch langage
+    case 'fr'
+        [~,~,textSizeMentalCalibFbk] = DrawFormattedText(window, 'Bravo! Votre meilleur score jusque-la est de X bonnes reponses.','center', 'center', white, wrapat);
+    case 'engl'
+        [~,~,textSizeMentalCalibFbk] = DrawFormattedText(window, 'Well done! Your best score until now is X correct answers.','center', 'center', white, wrapat);
+end
+stim.mentalCalibFbk.x = x_centerCoordinates(xScreenCenter, textSizeMentalCalibFbk);
+stim.mentalCalibFbk.y = y_coordinates(upperBorder, visibleYsize, 1/6, textSizeMentalCalibFbk);
+stim.mentalCalibFbk.colour = white;
+
 % end of calibration
 switch langage
     case 'fr'
@@ -601,12 +610,32 @@ end
 stim.mentalCalibEnd.x = x_centerCoordinates(xScreenCenter, textSizeMentalCalibEnd);
 stim.mentalCalibEnd.y = y_coordinates(upperBorder, visibleYsize, 1/6, textSizeMentalCalibEnd);
 stim.mentalCalibEnd.colour = white;
+%% Staircase information
 
+switch langage
+    case 'fr'
+        stim.staircase.text = 'Attention! Vous allez maintenant jouer pour de l''argent reel.';
+    case 'engl'
+        stim.staircase.text = 'Warning! You will now play for real money.';
+end
+[~,~,textSizeStaircaseInfo] = DrawFormattedText(window,stim.staircase.text,...
+    'center','center',white, wrapat);
+stim.staircase.x = x_centerCoordinates(xScreenCenter, textSizeStaircaseInfo);
+stim.staircase.y = y_coordinates(upperBorder, visibleYsize, 1/2, textSizeStaircaseInfo);
+stim.staircase.colour = white;
 %% color used to represent the effort signal
 % no use of monetary images anymore
 stim.difficulty.maxColor        = black;
 stim.difficulty.currLevelColor  = difficultyArcColor;
 stim.difficulty.ovalWidth       = 3;
+
+%% parameters for trait indicating best performance until now for mental calibration
+stim.calibBestUntilNow.color = orange;
+arcPosition     = stim.difficulty.middle_center;
+stim.calibBestUntilNow.circleRadius    = difficultyRectlinearSize/2;
+stim.calibBestUntilNow.xCircleCenter = arcPosition(1) + (arcPosition(3) - arcPosition(1))/2;
+stim.calibBestUntilNow.yCircleCenter = arcPosition(2) + (arcPosition(4) - arcPosition(2))/2;
+stim.calibBestUntilNow.lineWidth = 3;
 
 %% choice period
 switch langage
@@ -732,8 +761,21 @@ end
 [~,~,textSizeChosenMsg] = DrawFormattedText(window, stim.chosenOptionMsg.text,'center','center',white);
 stim.chosenOptionMsg.x = x_centerCoordinates(xScreenCenter, textSizeChosenMsg);
 stim.chosenOptionMsg.y = y_coordinates(upperBorder, visibleYsize, 3/16, textSizeChosenMsg);
+
+% text when they were too slow and then they are forced to perform the default option
+switch langage
+    case 'fr'
+        stim.noChoiceMadeMsg.text = 'Trop lent!';
+    case 'engl'
+        stim.noChoiceMadeMsg.text = 'Too slow!';
+end
+[~,~,textSizeNoChoiceMsg] = DrawFormattedText(window, stim.noChoiceMadeMsg.text,'center','center',white);
+stim.noChoiceMadeMsg.x = x_centerCoordinates(xScreenCenter, textSizeNoChoiceMsg);
+stim.noChoiceMadeMsg.y = y_coordinates(upperBorder, visibleYsize, 3/16, textSizeNoChoiceMsg);
+
 % place reward amount and difficulty level accordingly
 ySizeChosenMsg = textSizeChosenMsg(4) - textSizeChosenMsg(2);
+
 % square surrounding chosen option
 stim.chosenOption.squareRect = [leftBorder + visibleXsize*(1/3),...
     upperBorder + visibleYsize*(3/16) + ySizeChosenMsg,...
@@ -762,6 +804,7 @@ for iHorizontalLines = (stim.chosenOption.squareRect(1)+lineLength/2):(2*lineLen
         [xStartHorizontal, xEndHorizontal, xStartHorizontal, xEndHorizontal;...
         yHorizontalTop, yHorizontalTop, yHorizontalBottom, yHorizontalBottom]];
 end % horizontal lines
+
 % Win/Lose text message
 stim.winRewardText.top_center       = [xScreenCenter - xSizeWin/2,  stim.chosenOption.squareRect(2) + ySizeWin*1.5];
 stim.loseRewardText.top_center      = [xScreenCenter - xSizeLose/2, stim.chosenOption.squareRect(2) + ySizeWin*1.5];
@@ -951,14 +994,6 @@ end
     white);
 stim.feedback.error_tryAgain.x = x_centerCoordinates(xScreenCenter, textSizeErrorTryAgainFbkMsg);
 stim.feedback.error_tryAgain.y = y_coordinates(upperBorder, visibleYsize, 4/8, textSizeErrorTryAgainFbkMsg);
-
-% error: display amount lost because of too slow or too many errors
-moneyFail = sprintf('%0.2f',R_money.trialFail);
-stim.feedback.error_moneyLoss.text = ['-',moneyFail,' CHF'];
-[~,~,textSizeErrorMoneyLoss] = DrawFormattedText(window, stim.feedback.error_moneyLoss.text, 'center', 'center', white);
-stim.feedback.error_moneyLoss.x = x_centerCoordinates(xScreenCenter, textSizeErrorMoneyLoss);
-stim.feedback.error_moneyLoss.y = y_coordinates(upperBorder, visibleYsize, 1/2, textSizeErrorMoneyLoss);
-stim.feedback.error_moneyLoss.colour = stim.punishment.text.colour;
 
 % for the end of the performance period circle to signify end of the trial (win or loss)
 stim.endTrialcircle  = [0, 0, (difficultyRectlinearSize + (difficultyRectlinearSize/5)), (difficultyRectlinearSize + (difficultyRectlinearSize/5) )];

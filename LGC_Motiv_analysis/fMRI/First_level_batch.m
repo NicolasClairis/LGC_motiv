@@ -1,4 +1,12 @@
-
+function[] = First_level_batch(study_nm)
+% First_level_batch will perform 1st level for LGC motivation fMRI studies.
+%
+% INPUTS
+% study_nm: definition of the study on which you want to analyze the data
+% 'fMRI_pilots': pilots
+% 'study1': first study (dmPFC + AI)
+% 'study2': second study (clinical trial)
+%
 clc; close all;
 
 %% iniate spm
@@ -26,18 +34,27 @@ TR = 2.00;
 nb_batch_per_subj = 2; % model + estimate
 
 %% working directories
-computer_root = fullfile('C:','Users','clairis','Desktop');
-scripts_folder = fullfile(computer_root,'GitHub','LGC_motiv','LGC_Motiv_analysis','fMRI');
-addpath(scripts_folder);
-root = fullfile(computer_root,'fMRI_pilots');
+computer_root = LGCM_root_paths();
+% scripts_folder = fullfile(computer_root,'GitHub','LGC_motiv','LGC_Motiv_analysis','fMRI');
+% addpath(scripts_folder);
+switch study_nm
+    case 'fMRI_pilots'
+        root = fullfile(computer_root,'fMRI_pilots');
+    case 'study1'
+        root = fullfile(computer_root,'study1');
+    case 'study2'
+        root = fullfile(computer_root,'study2');
+end
 
 %% list subjects to analyze
-subject_id = {'pilot_s1'};%'pilot_s1','pilot_s2'
-NS = length(subject_id);
+[subject_id, NS] = LGCM_subject_selection(study_nm);
 %% loop through subjects
 matlabbatch = cell(nb_batch_per_subj*NS,1);
 for iS = 1:NS
     sub_nm = subject_id{iS};
+    % check incompatibility between some GLM and some subjects
+    checkGLM_and_subjectIncompatibility(study_nm, sub_nm, GLMprm);
+    
     % define working folders
     subj_folder             = [root, filesep, sub_nm];
     subj_analysis_folder    = [subj_folder, filesep, 'fMRI_analysis' filesep];
@@ -52,7 +69,7 @@ for iS = 1:NS
     
     %% define number of runs
     switch sub_nm
-        case 'pilot_s1'
+        case {'pilot_s1','pilot_s3'}
             nb_runs = 2;
         case 'pilot_s2'
             nb_runs = 1;
@@ -61,9 +78,12 @@ for iS = 1:NS
     end
     
     %% load fMRI data
-    subj_scan_folders_names = ls([subj_scans_folder, filesep, '*_run*']); % takes all functional runs folders
-    % remove AP/PA corrective runs
-    [subj_scan_folders_names] = clear_topup_fromFileList(subj_scan_folders_names);
+    subj_scan_folders_names = ls([subj_scans_folder, filesep, '*run*']); % takes all functional runs folders
+    % remove AP/PA corrective runs when they were performed (only 2
+    % first pilots)
+    if strcmp(study_nm,'fMRI_pilots') && ismember(sub_nm,{'pilot_s1','pilot_s2'})
+        [subj_scan_folders_names] = clear_topup_fromFileList(subj_scan_folders_names);
+    end
     
     %% starting 1st level GLM batch
     sub_idx = nb_batch_per_subj*(iS-1) + 1 ;
@@ -87,6 +107,14 @@ for iS = 1:NS
         % load scans in the GLM
         cd([subj_scans_folder filesep subj_runFoldername_tmp, filesep]); % go to run folder
         preprocessed_filenames = cellstr(spm_select('ExtFPList',pwd,'^swr.*\.nii$')); % extracts all the preprocessed swrf files (smoothed, normalized, realigned)
+        % in case data is not in .nii but in .img & .hdr
+        if isempty(preprocessed_filenames{1})
+            preprocessed_filenames = cellstr(spm_select('ExtFPList',pwd,'^swr.*\.img$')); % extracts all the preprocessed swrf files (smoothed, normalized, realigned)
+        end
+        % check if still empty => if yes, stop the script
+        if isempty(preprocessed_filenames{1})
+            error('problem with format of preprocessed files: impossible to find them. Did you preprocess the data?');
+        end
         matlabbatch{sub_idx}.spm.stats.fmri_spec.sess(iRun).scans = preprocessed_filenames;
         
         %% load regressors of interest

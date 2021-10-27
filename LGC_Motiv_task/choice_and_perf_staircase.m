@@ -62,6 +62,7 @@ confidence.display = false;
 confidenceChoiceDisp = false;
 
 %% timings
+timings.cross.mainTask = 0.5;
 t_cross         = timings.cross.(training_R_P_RP_or_mainTask);
 % precise if the choice and the performance periods will have a time
 % constraint
@@ -117,7 +118,7 @@ was_a_key_pressed_bf_trial = NaN(1,nTrials);
 switch effort_type
     case 'mental'
         % initialize main parameters of the task
-        mentalE_prm = mental_effort_parameters(i_sub);
+        mentalE_prm = mental_effort_parameters();
         % randomize the order of the numbers appearing on screen
         mental_nbers_per_trial = mental_numbers(nTrials);
         
@@ -132,11 +133,11 @@ end
 
 % initialize left-right values, depending on the condition
 if strcmp('R',R_or_P)
-    R_left = 1.5;
-    R_right_tmp = 2.5;
-elseif strcmp('P',R_or_P)
-    R_left = 1.5;
+    R_left = 0.05;
     R_right_tmp = 0.5;
+elseif strcmp('P',R_or_P)
+    R_left = 0.5;
+    R_right_tmp = 0.05;
 end
 % remember initial baseline value for the right value as it will change due to staircase
 R_right_baseline = R_right_tmp;
@@ -148,7 +149,7 @@ for iTrial = 1:nTrials
     Screen('FillRect',window, white, stim.cross.verticalLine); % vertical line
     Screen('FillRect',window, white, stim.cross.horizontalLine); % horizontal line
     [~,onsets.cross(iTrial)] = Screen('Flip',window); % display the cross on screen
-    WaitSecs(t_cross(iTrial));
+    WaitSecs(1);
     
     %% check that no key is being pressed before the choice trial starts
     [was_a_key_pressed_bf_trial(iTrial),...
@@ -160,7 +161,7 @@ for iTrial = 1:nTrials
         Screen('FillRect',window,white, stim.cross.verticalLine); % vertical line
         Screen('FillRect',window,white, stim.cross.horizontalLine); % horizontal line
         [~,onsets.cross_after_buttonRelease(iTrial)] = Screen('Flip',window); % display the cross on screen
-        WaitSecs(t_cross(iTrial));
+        WaitSecs(1);
     end
     
     % initialize variables in case of failure on this trial
@@ -245,6 +246,7 @@ for iTrial = 1:nTrials
     % save the Indifference point, considered as the last choice to the right after computation
     if iTrial == 5
         IP = R_right_tmp;
+        delta_IP = abs(IP - R_left);
     end
     
     %% check if escape was pressed => stop everything if so
@@ -319,7 +321,7 @@ for iTrial = 1:nTrials
                         onsets.effortPeriod{iTrial}] = mental_effort_perf_Nback(scr, stim, key,...
                         mental_nbers_per_trial(iTrial,:),...
                         mentalE_prm, n_max_to_reach_perTrial(iTrial),...
-                        'col1', 'noInstructions', timeLimitPerf, t_max_effort,errorLimits);
+                        'noInstructions', timeLimitPerf, t_max_effort,errorLimits);
                     trial_success = trial_was_successfull(iTrial);
                     % Save the data if it was an uncessfull trial, to prevent rewriting of the data
                     if trial_success == 0
@@ -462,6 +464,7 @@ end % trial loop
 
 %% extract relevant training data
 summary.IP = IP;
+summary.delta_IP = delta_IP;
 summary.onsets = onsets;
 summary.R_chosen = R_chosen;
 summary.E_chosen = E_chosen;

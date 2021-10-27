@@ -1,8 +1,7 @@
 [scr, xScreenCenter, yScreenCenter, window, baselineTextSize] = ScreenConfiguration(0, 1);
 
 [key, dq] = relevant_key_definition('physical', 0, 2);
-R_money = R_amounts(3,'yes');
-[stim] = stim_initialize(scr, 3, 'fr', R_money);
+[stim] = stim_initialize(scr, 3, 'fr');
 
 
 start(dq,"continuous");
@@ -15,7 +14,7 @@ t_effort_to_keep=3;
 F_tolerance=3;
 nFrames=6;
 % ifi = Screen('GetFlipInterval', window);
-ifi = 1/15
+ifi = 1/15;
 startAngle = stim.difficulty.startAngle.(['level_',num2str(2)]);
 currentAngle = startAngle;
 endAngle = stim.difficulty.arcEndAngle;
