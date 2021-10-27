@@ -222,6 +222,9 @@ stop(dq);
 % empty the grip buffer
 flush(dq);
 
+%% compute gains
+physicalE_perf.performance = 100*((currentAngle - startAngle)/(360 - startAngle));
+
 %% record vars of interest
 physicalE_perf.trial_success = trial_success;
 % performance is the amount in percentage of completion of the trial
