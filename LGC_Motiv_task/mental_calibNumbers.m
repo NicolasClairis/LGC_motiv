@@ -61,7 +61,7 @@ calib_time_limit = true; % time will be limited (as opposed to learning where ti
 instructions_disp = 0; % no instructions anymore, goal is to calibrate as if it was the actual task
 
 % thresholds for calibration
-n_errorsThreshold = 3; % number of errors allowed before repeating the trial
+n_errorsThreshold = 5; % number of errors allowed before repeating the trial
 n_minCorrectAnswersToReach = 6; % number of correct answers required to consider the trial ok (if too low, then trial is repeated)
 
 % introduce variables of interest

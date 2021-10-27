@@ -904,6 +904,32 @@ for iNber = [1:4, 6:9]
 end
 Screen('TextSize', window, scr.textSize.baseline);
 
+%% display of the amount of money associated to the current trial
+% left win (maximal performance amount)
+[~,~,textSizeMaxPerfMoneyWin] = DrawFormattedText(window, '+0.00',...
+    'center', 'center', white);
+stim.leftMoneyWinEperf.x = x_centerCoordinates(xScreenCenter - difficultyRectlinearSize/2, textSizeMaxPerfMoneyWin);
+yCoordMoneyPerf = upperBorder + visibleYsize*(1/2) - (textSizeMaxPerfMoneyWin(4) - textSizeMaxPerfMoneyWin(2))/2 - difficultyRectlinearSize;
+if (yCoordMoneyPerf < upperBorder) || (yCoordMoneyPerf > (upperBorder + visibleYsize))
+    error('wtf with these coordinates?');
+end
+stim.leftMoneyWinEperf.y = yCoordMoneyPerf;
+% left loss (maximal performance amount)
+[~,~,textSizeMaxPerfMoneyLoss] = DrawFormattedText(window, '-0.00',...
+    'center', 'center', white);
+stim.leftMoneyLoseEperf.x = x_centerCoordinates(xScreenCenter - difficultyRectlinearSize/2, textSizeMaxPerfMoneyLoss);
+stim.leftMoneyLoseEperf.y = yCoordMoneyPerf;
+% right win (minimal performance amount)
+[~,~,textSizeMinPerfMoneyWin] = DrawFormattedText(window, '+0.00',...
+    'center', 'center', white);
+stim.rightMoneyWinEperf.x = x_centerCoordinates(xScreenCenter + difficultyRectlinearSize/2, textSizeMinPerfMoneyWin);
+stim.rightMoneyWinEperf.y = yCoordMoneyPerf;
+% right lose (minimal performance amount)
+[~,~,textSizeMinPerfMoneyLose] = DrawFormattedText(window, '-0.00',...
+    'center', 'center', white);
+stim.rightMoneyLoseEperf.x = x_centerCoordinates(xScreenCenter + difficultyRectlinearSize/2, textSizeMinPerfMoneyLose);
+stim.rightMoneyLoseEperf.y = yCoordMoneyPerf;
+
 %% prepare feedback messages
 % reward feedback
 switch langage
@@ -1004,9 +1030,9 @@ Screen(window,'Flip');
 
 end % function
 
-function[x] = x_centerCoordinates(xScreenCenter, textSize)
+function[x] = x_centerCoordinates(xCenter, textSize)
 % to center the coordinates on the screen
-x = xScreenCenter - (textSize(3) - textSize(1))/2;
+x = xCenter - (textSize(3) - textSize(1))/2;
 
 end
 
