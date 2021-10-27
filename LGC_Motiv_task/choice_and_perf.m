@@ -313,7 +313,7 @@ for iTrial = 1:nTrials
         case 'R' % gain between 0 and R_chosen depending on performance
             gain(iTrial) = round(R_chosen(iTrial)*ratioPerf(iTrial));
         case 'P' % loss between -R_chosen and 2*(-R_chosen) depending on performance
-            gain(iTrial) = round(-R_chosen(iTrial) - ratioPerf(iTrial)*R_chosen(iTrial),2);
+            gain(iTrial) = round(-R_chosen(iTrial) - (1 - ratioPerf(iTrial))*R_chosen(iTrial),2);
     end
     % display feedback
     switch R_or_P_tmp
