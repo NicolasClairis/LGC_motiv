@@ -345,7 +345,7 @@ while (iCorrectAnswers < n_max_to_reach) &&...
 end % keep performing until number of subsequent answers reaches threshold predefined or if timer has been reached
 
 %% compute gains
-mentalE_perf.performance = 100*((currentAngle - startAngle_currentTrial)/(360 - startAngle_currentTrial));
+mentalE_perf.performance = 100*((currentAngle(end) - startAngle_currentTrial)/(360 - startAngle_currentTrial));
 
 %% record all in output
 % keep only questions performed
