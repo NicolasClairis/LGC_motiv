@@ -311,7 +311,7 @@ for iTrial = 1:nTrials
     ratioPerf(iTrial) = perfSummary{iTrial}.performance/100;
     switch R_or_P_tmp
         case 'R' % gain between 0 and R_chosen depending on performance
-            gain(iTrial) = round(R_chosen(iTrial)*ratioPerf(iTrial));
+            gain(iTrial) = round(R_chosen(iTrial)*ratioPerf(iTrial),2);
         case 'P' % loss between -R_chosen and 2*(-R_chosen) depending on performance
             gain(iTrial) = round(-R_chosen(iTrial) - (1 - ratioPerf(iTrial))*R_chosen(iTrial),2);
     end
