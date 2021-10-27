@@ -369,7 +369,7 @@ mentalE_perf.anglePerformance = currentAngleTrialsDone;
 % record number of questions answered and how many were correct
 mentalE_perf.n_questions_performed = i_question - 1;
 mentalE_perf.n_correctAnswersForDisplay = iCorrectAnswers;
-mentalE_perf.n_correctAnswersProvided = jCorrectAnswers - Nback; % remove 1 for the first answer (=just pressing any button)
+mentalE_perf.n_correctAnswersProvided = jCorrectAnswers - Nback; % remove Nback for the first answers (=just pressing any button)
 % record if trial was achieved or interrompted due to time limit (=failure)
 if iCorrectAnswers == n_max_to_reach % reached the top
     trial_success = true;
