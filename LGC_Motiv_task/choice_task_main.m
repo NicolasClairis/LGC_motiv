@@ -48,7 +48,7 @@ addpath(Matlab_DIY_functions_folder);
 
 % create results folder if no subject has been acquired yet
 if ~exist(results_folder,'dir')
-    mkdir(results_folder);
+    error(['it seems that the folder ',results_folder,' was not created during the training. Please fix it.']);
 end
 % go back to folder with scripts
 cd(main_task_folder);
@@ -59,7 +59,7 @@ cd(main_task_folder);
 [iSubject, effort_type, session_nm] = deal([]);
 while isempty(iSubject) || length(iSubject) ~= 3 ||...
         isempty(effort_type) || ~ismember(effort_type,{'p','m'}) ||...
-        isempty(session_nm) || str2double(session_nm) < 0 % repeat until both are answered
+        isempty(session_nm) || str2double(session_nm) <= 0 % repeat until both are answered
     info = inputdlg({'Subject CID (XXX)','Type d''effort (p/m)','Session number(0-4) (0 for initial calibration)'});
     [iSubject, effort_type, session_nm] = info{[1,2,3]};
 end
@@ -73,14 +73,20 @@ end
 
 % Create subjectCodeName which is used as a file saving name
 subjectCodeName = strcat('CID',iSubject);
+% subject specific folder where to store the results
+subResultsFolder = [results_folder, subjectCodeName, filesep, 'behavior', filesep];
+% create subject results folder
+if ~exist(subResultsFolder,'dir')
+    error(['it seems that the folder ',subResultsFolder,' was not created during the training. Please fix it.']);
+end
 
 % calibration performance file name
-calibPerf_file_nm = [results_folder,effort_type,'_calibPerf_',subjectCodeName,'.mat'];
+calibPerf_file_nm = [subResultsFolder, subjectCodeName,'_',effort_type,'Calib.mat'];
 
 % file name for main session
 file_nm = [subjectCodeName,'_session',session_nm,'_',effort_type,'_task'];
 % verify the files do not already exist
-if exist([results_folder, file_nm,'.mat'],'file')
+if exist([subResultsFolder, file_nm,'.mat'],'file')
     error(['The file name ',file_nm,'.mat already exists.',...
         ' Please relaunch with a new file name or delete the previous data.']);
 end
@@ -129,7 +135,7 @@ nTrials = 54;
 
 % extract money amount corresponding to each reward level for the
 % computation of the gains
-IPdata = getfield(load([results_folder, file_nm_IP,'.mat'],'IP_variables'),'IP_variables');
+IPdata = getfield(load([subResultsFolder, file_nm_IP,'.mat'],'IP_variables'),'IP_variables');
 [R_money] = R_amounts_IP(n_R_levels, punishment_yn, IPdata, effort_type);
 
 % check trial number is ok based on the number of entered conditions
@@ -174,250 +180,215 @@ trainingTrials = 3;
 t_endfMRI = mainTimes.endfMRI;
 t_endSession = mainTimes.endSession;
 
-
-if strcmp(effort_type,'mental')
-    
+%% load max performance from calibration and define effort difficulty
+% levels accordingly
+switch effort_type
+    case 'mental'
+        % load calibration maximal performance
+        NmaxCalib = getfield(load(calibPerf_file_nm,'NMP'));
+        % define number of pairs to solve for each level of difficulty
+        n_to_reach = mental_N_answersPerLevel(n_E_levels, NmaxCalib);
+    case 'physical'
+        MVC = getfield(load(calibPerf_file_nm,'MVC'),'MVC'); % expressed in Voltage
+        % define effort levels for each level of difficulty
+        [Ep_time_levels] = physical_effortLevels(n_E_levels);
 end
-%% calibration (before the MRI) 
-if session_nb == 0
-    %% initial calibration Fmax and mental time (inside the scanner)
-    switch effort_type
-        case 'mental'
-            %% max performance measurement
-            % extract numbers to use for each calibration trial
-            %             [numberVector_calib] = mental_numbers(n_calibTrials);
-            [numberVector_calib] = mental_calibNumberVector(n_calibTrials, n_calibMax);
-            
-            %% perform calibration
-            [NmaxCalib, calibSummary] = mental_calibNumbers(scr, stim, key,...
-                numberVector_calib, mentalE_prm_calib, n_calibTrials, calibTimes, langage);
-            % save calib performance
-            save(calibPerf_file_nm,'calib_summary','NmaxCalib');
-            
-        case 'physical'% for physical effort, ask the MVC
-            % record and store global MVC
-            [calib_MVC, onsets_calib_MVC] = physical_effort_MVC(scr, stim, dq, n_calibTrials, calibTimes);
-            MVC = calib_MVC.MVC; % expressed in Voltage
-            % save calib performance
-            save(calibPerf_file_nm,'MVC',...
-                'onsets_calib_MVC','calib_MVC');
-    end
-    
-elseif session_nb > 0
-    %% actual task sessions in the scanner
-    
-    % load max performance from calibration and define effort difficulty 
-    % levels accordingly
-    switch effort_type
-        case 'mental'
-            % load calibration maximal performance
-            NmaxCalib = getfield(load(calibPerf_file_nm,'NmaxCalib'));
-            % define number of pairs to solve for each level of difficulty
-            n_to_reach = mental_N_answersPerLevel(n_E_levels, NmaxCalib);
-        case 'physical'
-            MVC = getfield(load(calibPerf_file_nm,'MVC'),'MVC'); % expressed in Voltage
-            % define effort levels for each level of difficulty
-            [Ep_time_levels] = physical_effortLevels(n_E_levels);
-    end
-    
-    %% launch physiological recording
-    disp('Please start physiological recording and then press space.');
+
+%% launch physiological recording
+disp('Please start physiological recording and then press space.');
+[~, ~, keyCode] = KbCheck();
+while(keyCode(key.space) ~= 1)
+    % wait until the key has been pressed
     [~, ~, keyCode] = KbCheck();
-    while(keyCode(key.space) ~= 1)
-        % wait until the key has been pressed
-        [~, ~, keyCode] = KbCheck();
-    end
-    disp('OK - space was pressed, physio recording started');
-    
-    %% max perf measurement before start of each fMRI session
-    switch effort_type
-        case 'mental'
-            % perform max perf
-            [numberVector_initialMaxPerf] = mental_calibNumberVector(n_MaxPerfTrials, n_calibMax);
-            [n_initialMaxPerf, initialMaxPerfSessionSummary] = mental_calibNumbers(scr, stim, key,...
-                numberVector_initialMaxPerf, mentalE_prm_calib, n_MaxPerfTrials, calibTimes, langage);
-        case 'physical'
-            % take an initial MVC measurement (even if it has been done in a
-            % previous session, will allow us to keep track of the force level
-            % of our participants)
-            [initial_MVC, onsets_initial_MVC] = physical_effort_MVC(scr, stim, dq, n_MaxPerfTrials, calibTimes);
-    end
-    
-    %% launch main task
-    % define task parameters
-    switch effort_type
-        case 'mental'
-            Ep_or_Em_vars.i_sub = iSubject;
-            Ep_or_Em_vars.n_to_reach = n_to_reach;
-            % for actual task: no display of mapping but consider 3
-            % errors as a trial failure
-            Ep_or_Em_vars.errorLimits.useOfErrorMapping = false;
-            Ep_or_Em_vars.errorLimits.useOfErrorThreshold = false;
-        case 'physical'
-            Ep_or_Em_vars.MVC = MVC;
-            Ep_or_Em_vars.dq = dq;
-            Ep_or_Em_vars.Ep_time_levels = Ep_time_levels;
-            Ep_or_Em_vars.F_threshold = F_threshold;
-            Ep_or_Em_vars.F_tolerance = F_tolerance;
-    end
-    Ep_or_Em_vars.timeRemainingEndTrial_ONOFF = 0;
-    
-    %% instruction that main task will start soon
-    DrawFormattedText(window, stim.expWillStart.text,...
-        stim.expWillStart.x, stim.expWillStart.y, scr.colours.white, scr.wrapat);
-    [~, onsets.taskWillStart] = Screen(window, 'Flip');
-    disp('Please press space and then launch fMRI (Be careful to respect this order for the T0...');
+end
+disp('OK - space was pressed, physio recording started');
+
+%% max perf measurement before start of each fMRI session
+switch effort_type
+    case 'mental'
+        % perform max perf
+        [numberVector_initialMaxPerf] = mental_calibNumberVector(n_MaxPerfTrials, n_calibMax);
+        [n_initialMaxPerf, initialMaxPerfSessionSummary] = mental_calibNumbers(scr, stim, key,...
+            numberVector_initialMaxPerf, mentalE_prm_calib, n_MaxPerfTrials, calibTimes, langage);
+    case 'physical'
+        % take an initial MVC measurement (even if it has been done in a
+        % previous session, will allow us to keep track of the force level
+        % of our participants)
+        [initial_MVC, onsets_initial_MVC] = physical_effort_MVC(scr, stim, dq, n_MaxPerfTrials, calibTimes);
+end
+
+%% launch main task
+% define task parameters
+switch effort_type
+    case 'mental'
+        Ep_or_Em_vars.n_to_reach = n_to_reach;
+        % for actual task: no display of mapping but consider 3
+        % errors as a trial failure
+        Ep_or_Em_vars.errorLimits.useOfErrorMapping = false;
+        Ep_or_Em_vars.errorLimits.useOfErrorThreshold = false;
+    case 'physical'
+        Ep_or_Em_vars.MVC = MVC;
+        Ep_or_Em_vars.dq = dq;
+        Ep_or_Em_vars.Ep_time_levels = Ep_time_levels;
+        Ep_or_Em_vars.F_threshold = F_threshold;
+        Ep_or_Em_vars.F_tolerance = F_tolerance;
+end
+Ep_or_Em_vars.timeRemainingEndTrial_ONOFF = 0;
+
+%% instruction that main task will start soon
+DrawFormattedText(window, stim.expWillStart.text,...
+    stim.expWillStart.x, stim.expWillStart.y, scr.colours.white, scr.wrapat);
+[~, onsets.taskWillStart] = Screen(window, 'Flip');
+disp('Please press space and then launch fMRI (Be careful to respect this order for the T0...');
+[~, ~, keyCode] = KbCheck();
+while(keyCode(key.space) ~= 1)
+    % wait until the key has been pressed
     [~, ~, keyCode] = KbCheck();
-    while(keyCode(key.space) ~= 1)
-        % wait until the key has been pressed
-        [~, ~, keyCode] = KbCheck();
-    end
-    disp('OK - space was pressed');
-    disp('Now waiting for first TTL to start');
-    
-    %% start recording fMRI TTL and wait for a given amount of TTL before
-    % starting the task in order to calibrate all timings on T0
-    if IRM == 1
-        dummy_scans = 1; % number of TTL to wait before starting the task (dummy scans are already integrated in CIBM scanner)
-        [T0, TTL] = keyboard_check_start(dummy_scans, key.trigger_id, key);
-    end % fMRI check
-    
-    %% perform choice and performance task
-    [perfSummary] = choice_and_perf(scr, stim, key,...
-        effort_type, Ep_or_Em_vars, R_money,...
-        'mainTask', nTrials, choiceOptions, confDispDuringChoice,...
-        taskTimes,...
-        results_folder, file_nm);
-    
-    %% add fixation cross to terminate the acquisition (to avoid weird fMRI behavior for last trial)
-    Screen('FillRect',window, stim.cross.colour, stim.cross.verticalLine); % vertical line
-    Screen('FillRect',window, stim.cross.colour, stim.cross.horizontalLine); % horizontal line
-    [~,onsets.finalCross] = Screen('Flip',window); % display the cross on screen
-    WaitSecs(taskTimes.finalCross);
-    
-    %% display feedback to prepare for last calibration and to inform for wait of end of fMRI acquisition
-    DrawFormattedText(window, stim.endfMRIMessage.text,...
-        stim.endfMRIMessage.x, stim.endfMRIMessage.y,...
-        white, scr.wrapat);
-    [~,onsets.endSessionFbk] = Screen(window,'Flip');
-    WaitSecs(t_endfMRI);
-    
-    % indicate to the experimenter when to stop the fMRI acquisition
-    disp('You can stop the fMRI acquisition now. When and only when fMRI acquisition has been stopped, please press space.');
+end
+disp('OK - space was pressed');
+disp('Now waiting for first TTL to start');
+
+%% start recording fMRI TTL and wait for a given amount of TTL before
+% starting the task in order to calibrate all timings on T0
+if IRM == 1
+    dummy_scans = 1; % number of TTL to wait before starting the task (dummy scans are already integrated in CIBM scanner)
+    [T0, TTL] = keyboard_check_start(dummy_scans, key.trigger_id, key);
+end % fMRI check
+
+%% perform choice and performance task
+[perfSummary] = choice_and_perf(scr, stim, key,...
+    effort_type, Ep_or_Em_vars, R_money,...
+    'mainTask', nTrials, choiceOptions, confDispDuringChoice,...
+    taskTimes,...
+    subResultsFolder, file_nm);
+
+%% add fixation cross to terminate the acquisition (to avoid weird fMRI behavior for last trial)
+Screen('FillRect',window, stim.cross.colour, stim.cross.verticalLine); % vertical line
+Screen('FillRect',window, stim.cross.colour, stim.cross.horizontalLine); % horizontal line
+[~,onsets.finalCross] = Screen('Flip',window); % display the cross on screen
+WaitSecs(taskTimes.finalCross);
+
+%% display feedback to prepare for last calibration and to inform for wait of end of fMRI acquisition
+DrawFormattedText(window, stim.endfMRIMessage.text,...
+    stim.endfMRIMessage.x, stim.endfMRIMessage.y,...
+    white, scr.wrapat);
+[~,onsets.endSessionFbk] = Screen(window,'Flip');
+WaitSecs(t_endfMRI);
+
+% indicate to the experimenter when to stop the fMRI acquisition
+disp('You can stop the fMRI acquisition now. When and only when fMRI acquisition has been stopped, please press space.');
+[~, ~, keyCode] = KbCheck();
+while(keyCode(key.space) ~= 1)
+    % wait until the key has been pressed
     [~, ~, keyCode] = KbCheck();
-    while(keyCode(key.space) ~= 1)
-        % wait until the key has been pressed
-        [~, ~, keyCode] = KbCheck();
-    end
-    disp('OK - space was pressed');
-    
-    %% get all TTL from the task
-    if IRM == 1
-        [TTL, keyLeft, keyRight,...
-            keyLeftUnsure, keyLeftSure, keyRightUnsure, keyRightSure] = keyboard_check_end(TTL, key);
-        % key storage of when left/right key have been pressed
-        all.keys.keyLeft    = keyLeft;
-        all.keys.keyRight   = keyRight;
-        if key.n_buttonsChoice == 4
-            all.keys.keyLeftUnsure  = keyLeftUnsure;
-            all.keys.keyLeftSure    = keyLeftSure;
-            all.keys.keyRightUnsure = keyRightUnsure;
-            all.keys.keyRightSure   = keyRightSure;
-        end
-        
-        % store T0 and TTL timings in onsets structure
-        onsets.T0 = T0;
-        onsets.TTL = TTL;
+end
+disp('OK - space was pressed');
+
+%% get all TTL from the task
+if IRM == 1
+    [TTL, keyLeft, keyRight,...
+        keyLeftUnsure, keyLeftSure, keyRightUnsure, keyRightSure] = keyboard_check_end(TTL, key);
+    % key storage of when left/right key have been pressed
+    all.keys.keyLeft    = keyLeft;
+    all.keys.keyRight   = keyRight;
+    if key.n_buttonsChoice == 4
+        all.keys.keyLeftUnsure  = keyLeftUnsure;
+        all.keys.keyLeftSure    = keyLeftSure;
+        all.keys.keyRightUnsure = keyRightUnsure;
+        all.keys.keyRightSure   = keyRightSure;
     end
     
-    %% first save before last MVC
-    save([results_folder, file_nm,'_messyAllStuff.mat']);
-    
-    %% Measure maximum power again at the end of each scan
-    % add instructions
-    DrawFormattedText(window, stim.postTaskMVCmeasurement.text,...
-        stim.postTaskMVCmeasurement.x, stim.postTaskMVCmeasurement.y,...
-        stim.postTaskMVCmeasurement.colour, scr.wrapat);
-    Screen(window,'Flip');
-    
-    % MVC maximum
+    % store T0 and TTL timings in onsets structure
+    onsets.T0 = T0;
+    onsets.TTL = TTL;
+end
+
+%% first save before last MVC
+save([subResultsFolder, file_nm,'_messyAllStuff.mat']);
+
+%% Measure maximum power again at the end of each scan
+% add instructions
+DrawFormattedText(window, stim.postTaskMVCmeasurement.text,...
+    stim.postTaskMVCmeasurement.x, stim.postTaskMVCmeasurement.y,...
+    stim.postTaskMVCmeasurement.colour, scr.wrapat);
+Screen(window,'Flip');
+
+% MVC maximum
+switch effort_type
+    case 'physical'
+        [last_MVC, onsets_last_MVC] = physical_effort_MVC(scr, stim, dq, n_MaxPerfTrials, calibTimes);
+    case 'mental'
+        % extract numbers to use for each calibration trial
+        [numberVector_endCalib] = mental_calibNumberVector(n_MaxPerfTrials, n_calibMax);
+        % last max performance measurement
+        [n_finalMaxPerf, finalMaxPerf_SessionSummary] = mental_calibNumbers(scr, stim, key,...
+            numberVector_endCalib, mentalE_prm_calib, n_MaxPerfTrials, calibTimes, langage);
+end
+
+%% display feedback for the current session
+DrawFormattedText(window,...
+    ['Felicitations! Cette session est maintenant terminee.',...
+    'Vous avez obtenu: ',num2str(perfSummary.totalGain(nTrials)),...
+    ' chf au cours de cette session.'],...
+    stim.endSessionMessage.x, stim.endSessionMessage.y,...
+    white, scr.wrapat);
+[~,onsets.endSessionFbk] = Screen(window,'Flip');
+WaitSecs(t_endSession);
+
+%% Save Data
+if IRM == 1
+    % store all relevant data in final output variable
+    all.choice_opt = choiceOptions; % choice options
+    % store max before and after the session
     switch effort_type
         case 'physical'
-            [last_MVC, onsets_last_MVC] = physical_effort_MVC(scr, stim, dq, n_MaxPerfTrials, calibTimes);
+            % initial calibration
+            all.start_maxPerf.MVC = initial_MVC;
+            all.start_maxPerf.onsets = onsets_initial_MVC;
+            % last calibration
+            all.end_maxPerf.MVC = last_MVC;
+            all.end_maxPerf.onsets = onsets_last_MVC;
         case 'mental'
-            % extract numbers to use for each calibration trial
-            [numberVector_endCalib] = mental_calibNumberVector(n_MaxPerfTrials, n_calibMax);
-            % last max performance measurement
-            [n_finalMaxPerf, finalMaxPerf_SessionSummary] = mental_calibNumbers(scr, stim, key,...
-                numberVector_endCalib, mentalE_prm_calib, n_MaxPerfTrials, calibTimes, langage);
+            if session_nb == 0
+                all.calibSummary = calibSummary;
+            else
+                all.start_maxPerf.n_maxPerf = n_initialMaxPerf;
+                all.start_maxPerf.sessionSummary = initialMaxPerfSessionSummary;
+            end
+            % last max perf
+            all.end_maxPerf.n_maxPerf = n_finalMaxPerf;
+            all.end_maxPerf.SessionSummary = finalMaxPerf_SessionSummary;
     end
-    
-    %% display feedback for the current session
-    DrawFormattedText(window,...
-        ['Felicitations! Cette session est maintenant terminee.',...
-        'Vous avez obtenu: ',num2str(perfSummary.totalGain(nTrials)),...
-        ' chf au cours de cette session.'],...
-        stim.endSessionMessage.x, stim.endSessionMessage.y,...
-        white, scr.wrapat);
-    [~,onsets.endSessionFbk] = Screen(window,'Flip');
-    WaitSecs(t_endSession);
-    
-    %% Save Data
-    if IRM == 1
-        % store all relevant data in final output variable
-        all.choice_opt = choiceOptions; % choice options
-        % store max before and after the session
-        switch effort_type
-            case 'physical'
-                % initial calibration
-                all.start_maxPerf.MVC = initial_MVC;
-                all.start_maxPerf.onsets = onsets_initial_MVC;
-                % last calibration
-                all.end_maxPerf.MVC = last_MVC;
-                all.end_maxPerf.onsets = onsets_last_MVC;
-            case 'mental'
-                if session_nb == 0
-                    all.calibSummary = calibSummary;
-                else
-                    all.start_maxPerf.n_maxPerf = n_initialMaxPerf;
-                    all.start_maxPerf.sessionSummary = initialMaxPerfSessionSummary;
-                end
-                % last max perf
-                all.end_maxPerf.n_maxPerf = n_finalMaxPerf;
-                all.end_maxPerf.SessionSummary = finalMaxPerf_SessionSummary;
-        end
-        switch effort_type
-            case 'physical'
-                all.physicalPerf = perfSummary;
-            case 'mental'
-                if IRM == 0
-                    all.mentalE_prm_learning = mentalE_prm_calib;
-                end
-                all.mentalE_perf = perfSummary;
-        end
-        % store timings in all structure
-        all.calibTimes = calibTimes;
-        all.taskTimes = taskTimes;
-        all.onsets = onsets;
-        
-        
-        % Double save to finish: .mat and .csv format
-        save([results_folder, file_nm,'.mat'],'-struct','all');
+    switch effort_type
+        case 'physical'
+            all.physicalPerf = perfSummary;
+        case 'mental'
+            if IRM == 0
+                all.mentalE_prm_learning = mentalE_prm_calib;
+            end
+            all.mentalE_perf = perfSummary;
     end
+    % store timings in all structure
+    all.calibTimes = calibTimes;
+    all.taskTimes = taskTimes;
+    all.onsets = onsets;
     
-    %% STOP physiological recording
-    disp('Please stop physiological recording and then press space.');
+    
+    % Double save to finish: .mat and .csv format
+    save([subResultsFolder, file_nm,'.mat'],'-struct','all');
+end
+
+%% STOP physiological recording
+disp('Please stop physiological recording and then press space.');
+[~, ~, keyCode] = KbCheck();
+while(keyCode(key.space) ~= 1)
+    % wait until the key has been pressed
     [~, ~, keyCode] = KbCheck();
-    while(keyCode(key.space) ~= 1)
-        % wait until the key has been pressed
-        [~, ~, keyCode] = KbCheck();
-    end
-    disp('OK - space was pressed, physio recording stopped');
-    
-end % session number (calibration vs actual task)
+end
+disp('OK - space was pressed, physio recording stopped');
 
 %% Clear the PTB screen
 sca;
 
 %% save all variables
-save([results_folder, file_nm,'_messyAllStuff.mat']);
+save([subResultsFolder, file_nm,'_messyAllStuff.mat']);
