@@ -178,7 +178,10 @@ for i_pm = 1:2
                 [MVC_tmp, onsets_MVC] = physical_effort_MVC(scr, stim, dq, n_MVC_repeat, calibTimes_Ep);
                 MVC = max(MVC_tmp.MVC); % expressed in Voltage
                 save(Ep_calib_filenm,'MVC');
-            else
+            elseif strcmp(taskToPerform.physical.calib,'off') &&...
+                    ( strcmp(taskToPerform.physical.learning,'on') ||...
+                    strcmp(taskToPerform.physical.training,'on') ||...
+                    strcmp(taskToPerform.physical.task,'on') )
                 MVC = getfield(load(Ep_calib_filenm,'MVC'),'MVC');
             end
 
@@ -366,7 +369,11 @@ for i_pm = 1:2
                 calibSummary.n_mental_max_perTrial = NMP;
                 % record number of maximal performance (NMP)
                 save(Em_calib_filenm,'NMP');
-            else
+            elseif strcmp(taskToPerform.mental.calib,'off') &&...
+                    ( strcmp(taskToPerform.mental.learning_1,'on') ||...
+                    strcmp(taskToPerform.mental.learning_2,'on') ||...
+                    strcmp(taskToPerform.mental.training,'on') ||...
+                    strcmp(taskToPerform.mental.task,'on') )
                 NMP = getfield(load(Em_calib_filenm,'NMP'),'NMP');
             end % calibration
 
