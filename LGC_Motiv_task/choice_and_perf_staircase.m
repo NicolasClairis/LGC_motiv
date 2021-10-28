@@ -127,8 +127,8 @@ end
 
 % initialize left-right values, depending on the condition
 if strcmp('R',R_or_P)
-    R_left = 0.05;
-    R_right_tmp = 0.5;
+    R_left = 0.50;
+    R_right_tmp = 1;
 elseif strcmp('P',R_or_P)
     R_left = 0.5;
     R_right_tmp = 0.05;

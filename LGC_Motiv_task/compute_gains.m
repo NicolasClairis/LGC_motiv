@@ -7,25 +7,28 @@ function[totalGain] = compute_gains()
 
 %% enter subject ID
 % subject = 'CID0XX';
-subjectid = [];
-while isempty(subjectid)
+subjectId = [];
+while isempty(subjectId)
     info = inputdlg({'Subject CID (XXX)'});
-    subjectid = ['CID',info{[1]}];
+    subjectId = ['CID',info{[1]}];
 end
 
 %% go to subject path
 cd ..
 rootPath = [pwd, filesep];
-subPath = [rootPath,'LGC_Motiv_results',filesep,subjectid,filesep,'behavior',filesep];
+subPath = [rootPath,'LGC_Motiv_results',filesep,subjectId,filesep,'behavior',filesep];
 
 %% load data
 totalGain = 0;
 nRuns = 4;
 for iRun = 1:nRuns
-    filenm = ls([subPath,subjectid,'_session',num2str(iRun),'_*_task_behavioral_tmp.mat']);
+    filenm = ls([subPath,subjectId,'_session',num2str(iRun),'_*_task_behavioral_tmp.mat']);
     sessionGain = getfield(getfield(load([subPath,filenm],'summary'),'summary'),'totalGain');
     totalGain = totalGain + sessionGain(end);
 end
+filenm = ls([subPath,'delta_IP_',subjectId,'.mat']);
+totalGain = totalGain + getfield(getfield(load([subPath,filenm]),'IP_variables'),'totalGain');
+
 
 % add the other resources
 % MRStunes = 50;
