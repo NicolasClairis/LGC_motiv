@@ -115,7 +115,9 @@ Screen('FillArc', window,...
     endAngle - startAngle);
 
 % add levels of money
-drawMoneyProportional(scr, stim, R_chosen, R_or_P);
+if ~isempty(R_chosen) && ~isempty(R_or_P)
+    drawMoneyProportional(scr, stim, R_chosen, R_or_P);
+end
 
 [lastFrameTime, onsetEffortPhase] = Screen('Flip',window);
 onsets.effort_phase = onsetEffortPhase;
@@ -218,7 +220,9 @@ while (trial_success == 0) &&...
         endAngle - currentAngle);
 
     % add levels of money
-    drawMoneyProportional(scr, stim, R_chosen, R_or_P);
+    if ~isempty(R_chosen) && ~isempty(R_or_P)
+        drawMoneyProportional(scr, stim, R_chosen, R_or_P);
+    end
     
 %     [~,timeDispNow] = Screen('Flip',window);
     [lastFrameTime, timeDispNow]  = Screen('Flip', window, lastFrameTime + (0.5*ifi));

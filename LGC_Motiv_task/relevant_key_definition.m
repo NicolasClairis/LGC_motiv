@@ -54,14 +54,16 @@ if IRM == 0
             key.left = KbName('LeftArrow');
             key.right = KbName('RightArrow');
         case 4
-            key.leftSure    = KbName('1');
-            key.leftUnsure  = KbName('2');
-            key.rightUnsure = KbName('3');
-            key.rightSure   = KbName('4');
+            key.leftSure    = KbName('c');
+            key.leftUnsure  = KbName('v');
+            key.rightUnsure = KbName('b');
+            key.rightSure   = KbName('n');
             % also need the left/right buttons for the mental effort task
             %             if strcmp(effort_type,'mental')
-            key.left = KbName('LeftArrow');
-            key.right = KbName('RightArrow');
+            %             key.left = KbName('LeftArrow');
+            %             key.right = KbName('RightArrow');
+            key.left = KbName('c');
+            key.right = KbName('v');
             %             end
     end
     key.space = KbName('Space');

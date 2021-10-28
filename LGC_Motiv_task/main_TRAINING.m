@@ -128,7 +128,7 @@ end
 % number of buttons to answer
 switch IRM
     case 0
-        n_buttonsChoice = 2;
+        n_buttonsChoice = 4;
     case 1 % test buttons
         n_buttonsChoice = 4;
 end
@@ -187,7 +187,7 @@ for i_pm = 1:2
             
             %% learning physical (learn each level of force)
             if strcmp(taskToPerform.physical.learning,'on')
-                n_Ep_learningForceRepeats = 1; % number of learning repetitions for each level of difficulty (= each level of force)
+                n_Ep_learningForceRepeats = 5; % number of learning repetitions for each level of difficulty (= each level of force)
                 % introduce physical learning
                 showTitlesInstruction(scr,stim,'learning',p_or_m);
                 waitSpace(langage, window, yScreenCenter, scr, key_Ep);
@@ -305,7 +305,7 @@ for i_pm = 1:2
                 
                 %% learning (1) by repeating the calibration many times before actual calibration
                 % define number of trials to perform
-                n_learning1calibLikeTrials = 6;
+                n_learning1calibLikeTrials = 30;
                 
                 mentalE_prm_learning1calibLike = mental_effort_parameters();
                 % always start at zero
@@ -356,15 +356,15 @@ for i_pm = 1:2
                 learning1done = 0;
                 n_learning1bonusTrialsToLearn = 5; % how many trials to use as a learning penalty
                 n_lastTrialsToCheck = 5; % how many trials to check
-                n_trialsCorrectThreshold = 2; % threshold of last correct trials, if more than this number of trials was a failure, redo more trials
+                n_trialsCorrectThreshold = 3; % if less than this number of trials was correct in the n_lastTrialsToCheck trials, redo more trials
                 jLearningTrial = n_learning1calibLikeTrials;
                 while learning1done == 0
                     learningPerf_lastTrials = zeros(1,n_lastTrialsToCheck);
                     for iLastTrial = 1:n_lastTrialsToCheck
-                        learningPerf_lastTrials(iLastTrial) = n_maxReachedDuringLearning(end+1-iLastTrial) < n_Em_learning1calibLike_MinToReach;
+                        learningPerf_lastTrials(iLastTrial) = n_maxReachedDuringLearning(end+1-iLastTrial) >= n_Em_learning1calibLike_MinToReach;
                     end
                     if n_learning1calibLikeTrials > n_lastTrialsToCheck &&...
-                            ( sum(learningPerf_lastTrials) > n_trialsCorrectThreshold)
+                            ( sum(learningPerf_lastTrials) < n_trialsCorrectThreshold)
                         disp(['performance was too low in one of the last trials. We will redo ',...
                             num2str(n_learning1bonusTrialsToLearn),' more trials to compensate.']);
                         [numberVector_learning1_bonus] = mental_numbers(n_learning1bonusTrialsToLearn);
@@ -429,7 +429,7 @@ for i_pm = 1:2
                 % define all difficulty levels based on calibration
                 [n_to_reach] = mental_N_answersPerLevel(n_E_levels, NMP);
                 % define number of learning trials
-                n_Em_learningForceRepeats = 1; % number of learning repetitions for each level of difficulty (= each level of force)
+                n_Em_learningForceRepeats = 5; % number of learning repetitions for each level of difficulty (= each level of force)
                 % timings
                 Em_learningTimings.time_limit = true;
                 Em_learningTimings.t_max = learningTimes_Em.max_effort;
