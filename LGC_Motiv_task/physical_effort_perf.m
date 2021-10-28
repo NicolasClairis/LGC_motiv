@@ -1,15 +1,15 @@
 function[physicalE_perf, trial_success, onsets] = physical_effort_perf(scr, stim, dq,...
     MVC,...
-    R_or_P, R_chosen, E_chosen,...
+    E_chosen,...
     E_time_levels,...
     F_threshold, F_tolerance,...
-    time_limit, timings)
+    time_limit, timings, R_or_P, R_chosen)
 % [physicalE_perf, trial_success, onsets] = physical_effort_perf(scr, stim, dq,...
 %     MVC,...
 %     E_chosen,...
 %     E_time_levels,...
 %     F_threshold, F_tolerance,...
-%     time_limit, timings)
+%     time_limit, timings, R_or_P, R_chosen)
 % physical_effort_perf will check if physical effort was performed as
 % requested in the available time.
 %
@@ -38,6 +38,12 @@ function[physicalE_perf, trial_success, onsets] = physical_effort_perf(scr, stim
 %
 % timings: structure with relevant timings for the task (pause timing, time
 % to wait for the effort performance, etc.)
+%
+% R_or_P: 'R' reward or 'P' punishment trial (if not empty will display the
+% monetary amount on the screen)
+%
+% R_chosen: amount of money for which you play in the current trial (if not
+% empty will display the monetary amount on the screen)
 %
 % OUTPUTS
 % physicalE_perf: structure with summary of physical effort performance
@@ -75,6 +81,13 @@ startAngle = stim.difficulty.startAngle.(['level_',num2str(E_chosen)]);
 currentAngle = startAngle;
 endAngle = stim.difficulty.arcEndAngle;
 totalAngleDistance = endAngle - startAngle;
+% monetary amount on the screen: if one of the variables is empty or not
+% entered, set everything to empty so that the script can work
+if ~exist('R_or_P','var') || ~isempty(R_or_P) ||...
+        ~exist('R_chosen','var') || ~isempty(R_chosen)
+    R_or_P = [];
+    R_chosen = [];
+end
 
 % effort time to keep
 [onsets.effort.start, onsets.effort.stop] = deal([]);

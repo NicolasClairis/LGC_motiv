@@ -67,10 +67,10 @@ if ischar(iSubject)
 end
 %% general parameters
 % define subparts of the task to perform (on/off)
-taskToPerform.physical.calib = 'on';
-taskToPerform.physical.learning = 'on';
-taskToPerform.physical.training = 'on';
-taskToPerform.physical.task = 'on';
+taskToPerform.physical.calib = 'off';
+taskToPerform.physical.learning = 'off';
+taskToPerform.physical.training = 'off';
+taskToPerform.physical.task = 'off';
 taskToPerform.mental.learning_1 = 'on';
 taskToPerform.mental.calib = 'on';
 taskToPerform.mental.learning_2 = 'on';
@@ -341,10 +341,10 @@ for i_pm = 1:2
                         'noInstructions', learning1calibLike_useOfTimeLimit, learning1calibLike_timeLimit,...
                         learning1calibLike_errorLimits, nMaxReachedUntilNowLearning, n_Em_learning1calibLike_MinToReach);
                     learningPerfSummary_Em.learning1calibLike.(['trial_',num2str(iLearning1Trial)]) = mentalE_learning1calibLikePerfSummary_tmp;
-                    n_maxReachedDuringLearning(iLearningTrial) = mentalE_learning1calibLikePerfSummary_tmp.n_correctAnswersProvided;
+                    n_maxReachedDuringLearning(iLearning1Trial) = mentalE_learning1calibLikePerfSummary_tmp.n_correctAnswersForDisplay;
                     
                     % extract new best performance
-                    nMaxReachedUntilNowLearning = max(nMaxReachedUntilNowLearning, n_maxReachedDuringLearning(iLearningTrial));
+                    nMaxReachedUntilNowLearning = max(nMaxReachedUntilNowLearning, n_maxReachedDuringLearning(iLearning1Trial));
                     % small break between each answer
                     DrawFormattedText(window, stim.training.Em.endTrialMsg.text,'center',yScreenCenter/2,white);
                     DrawFormattedText(window,stim.training.Em.endTrialMsg_bis.text,'center','center',white);
@@ -374,7 +374,7 @@ for i_pm = 1:2
                                 'noInstructions', learning1calibLike_useOfTimeLimit, learning1calibLike_timeLimit,...
                                 learning1calibLike_errorLimits, nMaxReachedUntilNowLearning, n_Em_learning1calibLike_MinToReach);
                             learningPerfSummary_Em.learning1calibLike.(['trial_',num2str(jLearningTrial)]) = mentalE_learning1calibLikePerfSummary_tmp;
-                            n_maxReachedDuringLearning(jLearningTrial) = mentalE_learning1calibLikePerfSummary_tmp.n_correctAnswersProvided;
+                            n_maxReachedDuringLearning(jLearningTrial) = mentalE_learning1calibLikePerfSummary_tmp.n_correctAnswersForDisplay;
                             
                             % extract new best performance
                             nMaxReachedUntilNowLearning = max(nMaxReachedUntilNowLearning, n_maxReachedDuringLearning(jLearningTrial));
