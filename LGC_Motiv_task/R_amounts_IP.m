@@ -56,7 +56,7 @@ end
 % display level of reward assigned to each amount for tracking for the
 % experimenter in case of modification
 for iR = 1:n_R_levels
-    disp(['Reward level ',num2str(iR),' = ',num2str(R_money.(['R_',num2str(iR)])),' chf']);
+    disp(['Reward level ',num2str(iR),' = ',num2str(R_money.(['R_',num2str(iR-1)])),' chf']);
 end
 
 %% punishments
@@ -87,7 +87,7 @@ if strcmp(punishment_yn,'yes')
     % display level of punishment assigned to each amount for tracking for the
     % experimenter in case of modification
     for iP = 1:n_R_levels
-        disp(['Punishment level ',num2str(iP),' = ',num2str(R_money.(['P_',num2str(iP)])),' chf']);
+        disp(['Punishment level ',num2str(iP),' = ',num2str(R_money.(['P_',num2str(iP-1)])),' chf']);
     end
 end
 
