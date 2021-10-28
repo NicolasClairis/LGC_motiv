@@ -116,7 +116,7 @@ while iCalibTrial <= n_calibTrials
     
     %% provide feedback according to if reached the top or not + prepare for the next phase of the trial
     % force to watch feedback for a short amount of time
-    if (n_max_calibPerf_perTrial(iCalibTrial) <= n_minCorrectAnswersToReach) ||...
+    if (n_max_calibPerf_perTrial(iCalibTrial) < n_minCorrectAnswersToReach) ||...
             (n_errorsMade_tmp >= n_errorsThreshold)
         % not enough correct answers OR too much errors
         % => consider the trial as a failure and redo it until a reasonable performance is attained
@@ -126,7 +126,7 @@ while iCalibTrial <= n_calibTrials
         % store the data of the missed trial because otherwise will be
         % erased
         missedTrialData{n_calibTrialsMissed} = mentalE_perf;
-        if (n_max_calibPerf_perTrial(iCalibTrial) <= n_minCorrectAnswersToReach)
+        if (n_max_calibPerf_perTrial(iCalibTrial) < n_minCorrectAnswersToReach)
             DrawFormattedText(window, stim.mentalCalibFailureFbk.text,...
                 stim.mentalCalibFailureFbk.x, stim.mentalCalibFailureFbk.y,...
                 stim.mentalCalibFailureFbk.colour, wrapat);
