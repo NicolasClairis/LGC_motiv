@@ -51,7 +51,7 @@ addpath(Matlab_DIY_functions_folder);
 if ~exist(results_folder,'dir')
     error(['it seems that the folder ',results_folder,' was not created during the training. Please fix it.']);
 end
-% go back to folder with scripts
+% go back to folder with scripts 
 cd(main_task_folder);
 
 %% Define subject ID
@@ -93,7 +93,7 @@ if exist([subResultsFolder, file_nm,'.mat'],'file')
 end
 
 %% fMRI/behavioral version of the task?
-IRM = 1;
+IRM = 0;
 % (0) does not include fMRI = training
 % (1) include fMRI
 
@@ -130,8 +130,8 @@ end
 n_MaxPerfTrials = 2;
 
 % actual task
-n_R_levels = 3;
-n_E_levels = 3;
+n_R_levels = 4;
+n_E_levels = 4;
 nTrials = 54;
 
 % extract money amount corresponding to each reward level for the
@@ -187,7 +187,7 @@ t_endSession = mainTimes.endSession;
 switch effort_type
     case 'mental'
         % load calibration maximal performance
-        NmaxCalib = getfield(load(calibPerf_file_nm,'NMP'));
+        NmaxCalib = getfield(load(calibPerf_file_nm,'NMP'),'NMP');
         % define number of pairs to solve for each level of difficulty
         n_to_reach = mental_N_answersPerLevel(n_E_levels, NmaxCalib);
     case 'physical'
