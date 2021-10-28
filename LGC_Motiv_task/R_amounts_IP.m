@@ -37,17 +37,17 @@ if delta_IP < 0.01
 end
 switch n_R_levels
     case 3
-        R_money.R_1 = IP_R - delta_IP/2;
-        R_money.R_2 = IP_R + delta_IP/2;
+        R_money.R_1 = round(IP_R - delta_IP/2, 2);
+        R_money.R_2 = round(IP_R + delta_IP/2, 2);
     case 4
-        R_money.R_1 = IP_R - delta_IP/2;
-        R_money.R_2 = IP_R;
-        R_money.R_3 = IP_R + delta_IP/2;
+        R_money.R_1 = round(IP_R - delta_IP/2, 2);
+        R_money.R_2 = round(IP_R, 2);
+        R_money.R_3 = round(IP_R + delta_IP/2, 2);
     case 5
-        R_money.R_1 = IP_R - delta_IP;
-        R_money.R_2 = IP_R - delta_IP/2;
-        R_money.R_3 = IP_R + delta_IP/2;
-        R_money.R_4 = IP_R + delta_IP;
+        R_money.R_1 = round(IP_R - delta_IP, 2);
+        R_money.R_2 = round(IP_R - delta_IP/2, 2);
+        R_money.R_3 = round(IP_R + delta_IP/2, 2);
+        R_money.R_4 = round(IP_R + delta_IP, 2);
     otherwise
         error(['Please prepare Reward level - Money mapping for ',...
             num2str(n_R_levels),' reward levels.']);
@@ -68,17 +68,17 @@ IP_P = baselineP - delta_IP;
 if strcmp(punishment_yn,'yes')
     switch n_R_levels
         case 3
-            R_money.P_1 = IP_P - delta_IP/2;
-            R_money.P_2 = IP_P + delta_IP/2;
+            R_money.P_1 = round(IP_P - delta_IP/2, 2);
+            R_money.P_2 = round(IP_P + delta_IP/2, 2);
         case 4
-            R_money.P_1 = IP_P - delta_IP/2;
-            R_money.P_2 = IP_P;
-            R_money.P_3 = IP_P + delta_IP/2;
+            R_money.P_1 = round(IP_P - delta_IP/2, 2);
+            R_money.P_2 = round(IP_P, 2);
+            R_money.P_3 = round(IP_P + delta_IP/2, 2);
         case 5
-            R_money.P_1 = IP_P - delta_IP/2;
-            R_money.P_2 = IP_P - delta_IP/4;
-            R_money.P_3 = IP_P + delta_IP/4;
-            R_money.P_4 = IP_P + delta_IP/2;
+            R_money.P_1 = round(IP_P - delta_IP/2, 2);
+            R_money.P_2 = round(IP_P - delta_IP/4, 2);
+            R_money.P_3 = round(IP_P + delta_IP/4, 2);
+            R_money.P_4 = round(IP_P + delta_IP/2, 2);
         otherwise
             error(['Please prepare Reward level - Money mapping for ',...
                 num2str(n_R_levels),' reward levels.']);
