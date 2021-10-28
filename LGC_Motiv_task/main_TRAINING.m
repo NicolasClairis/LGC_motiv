@@ -300,12 +300,12 @@ for i_pm = 1:2
                     
                     
                     % for experimenter display how many trials have been performed
-                    disp(['Mental 0-back learning trial ',num2str(jMentalLearningTrial),'/',num2str(nMentalLearning_totalTrials),' done']);
+                    disp(['Mental 0-back learning (1) trial ',num2str(jMentalLearningTrial),'/',num2str(nMentalLearning_totalTrials),' done']);
                 end % learning instructions loop
                 
                 %% learning (1) by repeating the calibration many times before actual calibration
                 % define number of trials to perform
-                n_learning1calibLikeTrials = 2;
+                n_learning1calibLikeTrials = 6;
                 
                 mentalE_prm_learning1calibLike = mental_effort_parameters();
                 % always start at zero
@@ -341,30 +341,32 @@ for i_pm = 1:2
                         'noInstructions', learning1calibLike_useOfTimeLimit, learning1calibLike_timeLimit,...
                         learning1calibLike_errorLimits, nMaxReachedUntilNowLearning, n_Em_learning1calibLike_MinToReach);
                     learningPerfSummary_Em.learning1calibLike.(['trial_',num2str(iLearning1Trial)]) = mentalE_learning1calibLikePerfSummary_tmp;
-                    n_maxReachedDuringLearning(iLearningTrial) = mentalE_learning1calibLikePerfSummary_tmp.n_correctAnswersProvided;
+                    n_maxReachedDuringLearning(iLearning1Trial) = mentalE_learning1calibLikePerfSummary_tmp.n_correctAnswersForDisplay;
                     
                     % extract new best performance
-                    nMaxReachedUntilNowLearning = max(nMaxReachedUntilNowLearning, n_maxReachedDuringLearning(iLearningTrial));
+                    nMaxReachedUntilNowLearning = max(nMaxReachedUntilNowLearning, n_maxReachedDuringLearning(iLearning1Trial));
                     % small break between each answer
                     DrawFormattedText(window, stim.training.Em.endTrialMsg.text,'center',yScreenCenter/2,white);
                     DrawFormattedText(window,stim.training.Em.endTrialMsg_bis.text,'center','center',white);
                     [~,~,onsets.timeLearningFbk.(['trial_',num2str(iLearning1Trial)])] = Screen(window,'Flip');
                     WaitSecs(learningTimes_Em.learning_rest);
-                    disp(['Mental learning calibration-like trial ',num2str(iLearning1Trial),'/',num2str(n_learning1calibLikeTrials),' done']);
+                    disp(['Mental learning (1) calibration-like trial ',num2str(iLearning1Trial),'/',num2str(n_learning1calibLikeTrials),' done']);
                 end % trial loop
                 
                 learning1done = 0;
-                n_learning1bonusTrialsToLearn = 10;
+                n_learning1bonusTrialsToLearn = 5; % how many trials to use as a learning penalty
+                n_lastTrialsToCheck = 5; % how many trials to check
+                n_trialsCorrectThreshold = 2; % threshold of last correct trials, if more than this number of trials was a failure, redo more trials
                 jLearningTrial = n_learning1calibLikeTrials;
                 while learning1done == 0
-                    if n_learning1calibLikeTrials > 10 &&...
-                            ((n_maxReachedDuringLearning(end) < n_Em_learning1calibLike_MinToReach) ||...
-                            (n_maxReachedDuringLearning(end-1) < n_Em_learning1calibLike_MinToReach) ||...
-                            (n_maxReachedDuringLearning(end-2) < n_Em_learning1calibLike_MinToReach) ||...
-                            (n_maxReachedDuringLearning(end-3) < n_Em_learning1calibLike_MinToReach) ||...
-                            (n_maxReachedDuringLearning(end-4) < n_Em_learning1calibLike_MinToReach) )
-                        disp('performance was too low in one of the last trials. We will redo ',...
-                            num2str(n_learning1bonusTrialsToLearn),' more trials to compensate.');
+                    learningPerf_lastTrials = zeros(1,n_lastTrialsToCheck);
+                    for iLastTrial = 1:n_lastTrialsToCheck
+                        learningPerf_lastTrials(iLastTrial) = n_maxReachedDuringLearning(end+1-iLastTrial) < n_Em_learning1calibLike_MinToReach;
+                    end
+                    if n_learning1calibLikeTrials > n_lastTrialsToCheck &&...
+                            ( sum(learningPerf_lastTrials) > n_trialsCorrectThreshold)
+                        disp(['performance was too low in one of the last trials. We will redo ',...
+                            num2str(n_learning1bonusTrialsToLearn),' more trials to compensate.']);
                         [numberVector_learning1_bonus] = mental_numbers(n_learning1bonusTrialsToLearn);
                         for iLearning1Trial_bonus = 1:n_learning1bonusTrialsToLearn
                             jLearningTrial = jLearningTrial + 1;
@@ -374,8 +376,8 @@ for i_pm = 1:2
                                 'noInstructions', learning1calibLike_useOfTimeLimit, learning1calibLike_timeLimit,...
                                 learning1calibLike_errorLimits, nMaxReachedUntilNowLearning, n_Em_learning1calibLike_MinToReach);
                             learningPerfSummary_Em.learning1calibLike.(['trial_',num2str(jLearningTrial)]) = mentalE_learning1calibLikePerfSummary_tmp;
-                            n_maxReachedDuringLearning(jLearningTrial) = mentalE_learning1calibLikePerfSummary_tmp.n_correctAnswersProvided;
-                            
+                            n_maxReachedDuringLearning(jLearningTrial) = mentalE_learning1calibLikePerfSummary_tmp.n_correctAnswersForDisplay;
+
                             % extract new best performance
                             nMaxReachedUntilNowLearning = max(nMaxReachedUntilNowLearning, n_maxReachedDuringLearning(jLearningTrial));
                             % small break between each answer
@@ -383,7 +385,7 @@ for i_pm = 1:2
                             DrawFormattedText(window,stim.training.Em.endTrialMsg_bis.text,'center','center',white);
                             [~,~,onsets.timeLearningFbk.(['trial_',num2str(jLearningTrial)])] = Screen(window,'Flip');
                             WaitSecs(learningTimes_Em.learning_rest);
-                            disp(['Mental learning calibration-like BONUS trial ',num2str(iLearning1Trial_bonus),'/',num2str(n_learning1bonusTrialsToLearn),' done']);
+                            disp(['Mental learning (1) calibration-like BONUS trial ',num2str(iLearning1Trial_bonus),'/',num2str(n_learning1bonusTrialsToLearn),' done']);
                         end % trial loop
                     else
                         learning1done = 1;

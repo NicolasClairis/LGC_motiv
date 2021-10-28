@@ -111,7 +111,7 @@ while iCalibTrial <= n_calibTrials
     
     calib_summary.mentalE_perf(iCalibTrial) = mentalE_perf;
     % store current maximum performance
-    n_max_calibPerf_perTrial(iCalibTrial) = mentalE_perf.n_correctAnswersProvided;
+    n_max_calibPerf_perTrial(iCalibTrial) = mentalE_perf.n_correctAnswersForDisplay;
     n_errorsMade_tmp = mentalE_perf.n_errorsMade;
     
     %% provide feedback according to if reached the top or not + prepare for the next phase of the trial
@@ -156,8 +156,11 @@ while iCalibTrial <= n_calibTrials
     [~, time_fbk] = Screen(window, 'Flip');
     onset_fbk(iCalibTrial) = time_fbk;
     WaitSecs(calibTimes.fbk);
+
+    %% disp trial is done
+    disp(['Mental calibration trial ',num2str(iCalibTrial-1),'/',num2str(n_calibTrials),' - done']);
     
-    % allow the participant to restart whenever he/she feels ready by
+    %% allow the participant to restart whenever he/she feels ready by
     % pressing a button (no sense for the last trial though)
     if iCalibTrial < n_calibTrials
         DrawFormattedText(window, stim.pressWhenReady.text,...

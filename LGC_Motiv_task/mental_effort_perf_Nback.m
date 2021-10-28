@@ -1,9 +1,9 @@
 function[mentalE_perf, trial_success, onsets] = mental_effort_perf_Nback(scr, stim, key,...
-    numberVector, mentalE_prm, R_or_P, R_chosen, n_max_to_reach,...
-    learning_instructions, time_limit, t_max, errorLimits, n_maxReachedUntilNow, n_minCorrectAnswersToReach)
+    numberVector, mentalE_prm, n_max_to_reach,...
+    learning_instructions, time_limit, t_max, errorLimits, n_maxReachedUntilNow, n_minCorrectAnswersToReach, R_or_P, R_chosen)
 %[mentalE_perf, trial_success, onsets] = mental_effort_perf_Nback(scr, stim, key,...
 %     numberVector, mentalE_prm, n_max_to_reach,...
-%     curr_learning_instructions, time_limit, t_max, errorLimits, n_maxReachedUntilNow, n_minCorrectAnswersToReach)
+%     curr_learning_instructions, time_limit, t_max, errorLimits, n_maxReachedUntilNow, n_minCorrectAnswersToReach, R_or_P, R_chosen)
 %
 % mental_effort_perf_Nback corresponds to the actual performance. Can be
 % used both for learning period (with or without instructions) and for the
@@ -70,6 +70,12 @@ function[mentalE_perf, trial_success, onsets] = mental_effort_perf_Nback(scr, st
 % that performance can be considered to be ok: will display a red bar at
 % the location of the minimal performance to reach
 %
+% R_or_P: 'R' reward or 'P' punishment trial (if not empty will display the
+% monetary amount on the screen)
+%
+% R_chosen: amount of money for which you play in the current trial (if not
+% empty will display the monetary amount on the screen)
+%
 % OUTPUTS
 % mentalE_perf: structure with summary of mental effort performance
 %   .nTrials: number of trials it took to reach a correct
@@ -105,6 +111,13 @@ if exist('n_minCorrectAnswersToReach','var') && ~isempty(n_minCorrectAnswersToRe
     minPerfAngle = totalAngleDistance*(n_minCorrectAnswersToReach/n_max_to_reach);
 else
     minPerfAngle = [];
+end
+% monetary amount on the screen: if one of the variables is empty or not
+% entered, set everything to empty so that the script can work
+if ~exist('R_or_P','var') || ~isempty(R_or_P) ||...
+        ~exist('R_chosen','var') || ~isempty(R_chosen)
+    R_or_P = [];
+    R_chosen = [];
 end
 
 % extract main mental effort parameters
