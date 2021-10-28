@@ -158,7 +158,7 @@ while iCalibTrial <= n_calibTrials
     WaitSecs(calibTimes.fbk);
 
     %% disp trial is done
-    disp(['Mental calibration trial ',num2str(iCalibTrial),'/',num2str(n_calibTrials),' - done']);
+    disp(['Mental calibration trial ',num2str(iCalibTrial-1),'/',num2str(n_calibTrials),' - done']);
     
     %% allow the participant to restart whenever he/she feels ready by
     % pressing a button (no sense for the last trial though)
