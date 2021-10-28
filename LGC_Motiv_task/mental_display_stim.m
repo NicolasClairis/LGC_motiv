@@ -1,11 +1,11 @@
 function[onset_stim] = mental_display_stim(scr, stim,...
     startAngle, endAngle,...
     sideQuestion, taskTypeDisplay, numberValue, mental_n_col,...
-    learning_instructions, maxPerfUntilNowAngle, minPerfToReachAngle)
+    learning_instructions, maxPerfUntilNowAngle, minPerfToReachAngle, R_chosen, R_or_P)
 % [onset_stim] = mental_display_stim(scr, stim,...
 %     startAngle, endAngle,...
 %     sideQuestion, taskTypeDisplay, numberValue, mental_n_col,...
-%     learning_instructions, maxPerfUntilNowAngle, minPerfToReachAngle)
+%     learning_instructions, maxPerfUntilNowAngle, minPerfToReachAngle, R_chosen, R_or_P)
 % mental_display_stim will display the arc, number to solve,
 % instructions and reward level (all relevant info) according to the inputs
 %
@@ -40,6 +40,12 @@ function[onset_stim] = mental_display_stim(scr, stim,...
 %
 % minPerfToReachAngle: for learning and calibration, add a red bar where the
 % minimal tolerated performance is located
+%
+% R_chosen: monetary amount (numerical) for which they play (if not empty,
+% will display the amount on the screen)
+%
+% R_or_P: 'R' or 'P' for reward or punishment trial (if not empty,
+% will display the amount on the screen)
 %
 % OUTPUTS
 % onset_stim: time when everything appears on screen
@@ -100,6 +106,12 @@ end
 switch learning_instructions
     case {'fullInstructions','partialInstructions'}
         mental_effort_task_question_display(scr, stim, taskTypeDisplay, sideQuestion, textColor, learning_instructions);
+end
+
+%% add monetary amounts on top of performance
+if exist('R_chosen','var') && exist('R_or_P','var') &&...
+        ~isempty(R_chosen) && ~isempty(R_or_P)
+    drawMoneyProportional(scr, stim, R_chosen, R_or_P);
 end
 
 %% display on screen
