@@ -18,7 +18,7 @@ window = scr.window;
 white = scr.colours.white;
 
 %% display the money
- switch R_or_P
+switch R_or_P
     case 'R'
         DrawFormattedText(window, ['+',sprintf('%0.2f',R_chosen)], stim.leftMoneyWinEperf.x, stim.leftMoneyWinEperf.y, white);
         DrawFormattedText(window, '+0.00', stim.rightMoneyWinEperf.x, stim.rightMoneyWinEperf.y, white);
