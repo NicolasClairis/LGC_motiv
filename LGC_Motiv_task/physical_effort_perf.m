@@ -83,8 +83,8 @@ endAngle = stim.difficulty.arcEndAngle;
 totalAngleDistance = endAngle - startAngle;
 % monetary amount on the screen: if one of the variables is empty or not
 % entered, set everything to empty so that the script can work
-if ~exist('R_or_P','var') || ~isempty(R_or_P) ||...
-        ~exist('R_chosen','var') || ~isempty(R_chosen)
+if ~exist('R_or_P','var') || isempty(R_or_P) ||...
+        ~exist('R_chosen','var') || isempty(R_chosen)
     R_or_P = [];
     R_chosen = [];
 end
