@@ -565,8 +565,6 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
             R_or_P = 'R'; % compute IP only for rewards
             
             for i_pm = 1:2
-                p_or_m
-                
                 
                 % perform physical or mental IP according to inputs
                 switch p_or_m
