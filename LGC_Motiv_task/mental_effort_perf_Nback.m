@@ -375,6 +375,7 @@ end % keep performing until number of subsequent answers reaches threshold prede
 
 if iCorrectAnswers == 0 % case where no answers has been provided or all answers are bad
     mentalE_perf.performance = 0;
+    currentAngleTrialsDone = 0;
 else % at least some questions were answered
     currentAngleTrialsDone = currentAngle(1:i_question); % take angle until last trial
     mentalE_perf.performance = 100*((currentAngleTrialsDone(end) - startAngle_currentTrial)/(360 - startAngle_currentTrial));

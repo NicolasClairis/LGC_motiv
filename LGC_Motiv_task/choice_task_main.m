@@ -26,7 +26,8 @@ clc;
 % (no need to have correct timings and everything in PTB)
 % or if this is the actual experiment => use optimal timings of the
 % computer (0)
-testing_script = 0;
+testing_script = 1;
+warning('please reset testing_script = 0 when you go to fMRI');
 
 %% langage to display instructions
 langage = 'fr';
@@ -60,7 +61,7 @@ cd(main_task_folder);
 while isempty(iSubject) || length(iSubject) ~= 3 ||...
         isempty(effort_type) || ~ismember(effort_type,{'p','m'}) ||...
         isempty(session_nm) || str2double(session_nm) <= 0 % repeat until both are answered
-    info = inputdlg({'Subject CID (XXX)','Type d''effort (p/m)','Session number(0-4) (0 for initial calibration)'});
+    info = inputdlg({'Subject CID (XXX)','Type d''effort (p/m)','Session number(1-4)'});
     [iSubject, effort_type, session_nm] = info{[1,2,3]};
 end
 session_nb = str2double(session_nm);
@@ -135,6 +136,7 @@ nTrials = 54;
 
 % extract money amount corresponding to each reward level for the
 % computation of the gains
+file_nm_IP = ['delta_IP_CID',num2str(iSubject)];
 IPdata = getfield(load([subResultsFolder, file_nm_IP,'.mat'],'IP_variables'),'IP_variables');
 [R_money] = R_amounts_IP(n_R_levels, punishment_yn, IPdata, effort_type);
 
