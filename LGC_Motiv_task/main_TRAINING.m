@@ -700,6 +700,7 @@ end
 
 IP_variables.baselineR = baselineR;
 IP_variables.baselineP = baselineP;
+IP_variables.totalGain = totalGain;
 IP_variables.training.p_or_m = p_or_m;
 if strcmp(taskToPerform.physical.task,'on')
     IP_variables.calibration.MVC = MVC;
