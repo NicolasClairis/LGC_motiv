@@ -87,7 +87,7 @@ end
 % initialize screen
 [scr, xScreenCenter, yScreenCenter,...
     window, baselineTextSize] = ScreenConfiguration(IRM, 1);
-ShowCursor;
+% ShowCursor;
 white = scr.colours.white;
 black = scr.colours.black;
 
@@ -676,22 +676,24 @@ end
 % record physical main task data
 if strcmp(taskToPerform.physical.task,'on')
     for iEffort= 1:nbEffortLvl % for all effort levels
-        for iSession = 1:n_sessions/2 % for the physical sessions
+        for iSession = 1:n_sessions % for the physical sessions
             % save data in all and reformat it in a specific order
             all.physical.(['EffortLvl_',num2str(iEffort)]).(['session_nb',num2str(iSession)]).perfSummary = perfSummary.physical.(['session_nb',num2str(iSession)]).(['Effort_lvl',(num2str(iEffort))]);
-            IP_variables.physicalDeltaIP = all.physical.(['EffortLvl_',num2str(iEffort)]).(['session_nb',num2str(iSession)]).perfSummary.IP - baselineR;
+            IP_variables.physicalDeltaIP_perSession(iSession) = all.physical.(['EffortLvl_',num2str(iEffort)]).(['session_nb',num2str(iSession)]).perfSummary.IP - baselineR;
         end
     end
+    IP_variables.physicalDeltaIP = mean(IP_variables.physicalDeltaIP_perSession);
 end
 % record mental main task data
 if strcmp(taskToPerform.mental.task,'on')
     for iEffort= 1:nbEffortLvl % for all effort levels
-        for iSession = 1:n_sessions/2 % for the mental sessions
+        for iSession = 1:n_sessions % for the mental sessions
             % save data in all and reformat it in a specific order
             all.mental.(['EffortLvl_',num2str(iEffort)]).(['session_nb',num2str(iSession)]).perfSummary = perfSummary.mental.(['session_nb',num2str(iSession)]).(['Effort_lvl',(num2str(iEffort))]);
-            IP_variables.mentalDeltaIP = all.mental.(['EffortLvl_',num2str(iEffort)]).(['session_nb',num2str(iSession)]).perfSummary.IP - baselineR;
+            IP_variables.mentalDeltaIP_perSession(iSession) = all.mental.(['EffortLvl_',num2str(iEffort)]).(['session_nb',num2str(iSession)]).perfSummary.IP - baselineR;
         end
     end
+    IP_variables.mentalDeltaIP = mean(IP_variables.mentalDeltaIP_perSession);
 end
 
 IP_variables.baselineR = baselineR;

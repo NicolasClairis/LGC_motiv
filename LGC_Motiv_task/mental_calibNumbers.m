@@ -104,6 +104,9 @@ idx_calibTrialsMissed = [];
 missedTrialData = {};
 while iCalibTrial <= n_calibTrials
     
+    % indicator whether calibration trial worked or not
+    calibTrialSuccess = 0;
+    
     %% calibration trial start: finish when max time reached OR when correct number of answers has been provided
     mentalE_perf = mental_effort_perf_Nback(scr, stim, key,...
         numberVector_calib(iCalibTrial,:),...
@@ -136,6 +139,7 @@ while iCalibTrial <= n_calibTrials
                 stim.mentalCalibFailureTooManyErrorsFbk.colour, wrapat);
         end
     else % calibration worked => display feedback of the best performance until now
+        calibTrialSuccess = 1;
         iCalibTrial = iCalibTrial + 1;
         % update best performance score
         n_maxReachedUntilNow = max(n_max_calibPerf_perTrial);
@@ -158,7 +162,11 @@ while iCalibTrial <= n_calibTrials
     WaitSecs(calibTimes.fbk);
 
     %% disp trial is done
-    disp(['Mental calibration trial ',num2str(iCalibTrial-1),'/',num2str(n_calibTrials),' - done']);
+    if calibTrialSuccess == 1
+        disp(['Mental calibration trial ',num2str(iCalibTrial-1),'/',num2str(n_calibTrials),' - done']);
+    else
+        disp(['Mental calibration trial ',num2str(iCalibTrial+1),' is gonna be repeated because calibration failed.']);
+    end
     
     %% allow the participant to restart whenever he/she feels ready by
     % pressing a button (no sense for the last trial though)

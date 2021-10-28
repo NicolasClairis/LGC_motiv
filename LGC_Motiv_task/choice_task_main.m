@@ -137,6 +137,9 @@ nTrials = 54;
 % extract money amount corresponding to each reward level for the
 % computation of the gains
 file_nm_IP = ['delta_IP_CID',num2str(iSubject)];
+if ~exist([subResultsFolder, file_nm_IP,'.mat'],'file')
+    error(['couldn''t find ',file_nm_IP,' file. Please verify the IP was done.']);
+end
 IPdata = getfield(load([subResultsFolder, file_nm_IP,'.mat'],'IP_variables'),'IP_variables');
 [R_money] = R_amounts_IP(n_R_levels, punishment_yn, IPdata, effort_type);
 
@@ -197,13 +200,15 @@ switch effort_type
 end
 
 %% launch physiological recording
-disp('Please start physiological recording and then press space.');
-[~, ~, keyCode] = KbCheck();
-while(keyCode(key.space) ~= 1)
-    % wait until the key has been pressed
+if IRM == 1
+    disp('Please start physiological recording and then press space.');
     [~, ~, keyCode] = KbCheck();
+    while(keyCode(key.space) ~= 1)
+        % wait until the key has been pressed
+        [~, ~, keyCode] = KbCheck();
+    end
+    disp('OK - space was pressed, physio recording started');
 end
-disp('OK - space was pressed, physio recording started');
 
 %% max perf measurement before start of each fMRI session
 switch effort_type
@@ -238,21 +243,34 @@ end
 Ep_or_Em_vars.timeRemainingEndTrial_ONOFF = 0;
 
 %% instruction that main task will start soon
-DrawFormattedText(window, stim.expWillStart.text,...
-    stim.expWillStart.x, stim.expWillStart.y, scr.colours.white, scr.wrapat);
-[~, onsets.taskWillStart] = Screen(window, 'Flip');
-disp('Please press space and then launch fMRI (Be careful to respect this order for the T0...');
-[~, ~, keyCode] = KbCheck();
-while(keyCode(key.space) ~= 1)
-    % wait until the key has been pressed
+if IRM == 0
+    switch langage 
+        case 'fr'
+            DrawFormattedText(window,'L''experience va bientot demarrer',...
+                'center','center',scr.colours.white, scr.wrapat);
+        case 'engl'
+            DrawFormattedText(window,'The experiment will start soon',...
+                'center','center',scr.colours.white, scr.wrapat);
+    end
+    [~, onsets.taskWillStart] = Screen(window, 'Flip');
+    WaitSecs(3);
+elseif IRM == 1
+    DrawFormattedText(window, stim.expWillStart.text,...
+        stim.expWillStart.x, stim.expWillStart.y, scr.colours.white, scr.wrapat);
+    [~, onsets.taskWillStart] = Screen(window, 'Flip');
+    disp('Please press space and then launch fMRI (Be careful to respect this order for the T0...');
     [~, ~, keyCode] = KbCheck();
+    while(keyCode(key.space) ~= 1)
+        % wait until the key has been pressed
+        [~, ~, keyCode] = KbCheck();
+    end
+    disp('OK - space was pressed');
 end
-disp('OK - space was pressed');
-disp('Now waiting for first TTL to start');
 
 %% start recording fMRI TTL and wait for a given amount of TTL before
 % starting the task in order to calibrate all timings on T0
 if IRM == 1
+    disp('Now waiting for first TTL to start');
     dummy_scans = 1; % number of TTL to wait before starting the task (dummy scans are already integrated in CIBM scanner)
     [T0, TTL] = keyboard_check_start(dummy_scans, key.trigger_id, key);
 end % fMRI check
@@ -277,14 +295,16 @@ DrawFormattedText(window, stim.endfMRIMessage.text,...
 [~,onsets.endSessionFbk] = Screen(window,'Flip');
 WaitSecs(t_endfMRI);
 
-% indicate to the experimenter when to stop the fMRI acquisition
-disp('You can stop the fMRI acquisition now. When and only when fMRI acquisition has been stopped, please press space.');
-[~, ~, keyCode] = KbCheck();
-while(keyCode(key.space) ~= 1)
-    % wait until the key has been pressed
+%% indicate to the experimenter when to stop the fMRI acquisition
+if IRM == 1
+    disp('You can stop the fMRI acquisition now. When and only when fMRI acquisition has been stopped, please press space.');
     [~, ~, keyCode] = KbCheck();
+    while(keyCode(key.space) ~= 1)
+        % wait until the key has been pressed
+        [~, ~, keyCode] = KbCheck();
+    end
+    disp('OK - space was pressed');
 end
-disp('OK - space was pressed');
 
 %% get all TTL from the task
 if IRM == 1
@@ -381,13 +401,15 @@ if IRM == 1
 end
 
 %% STOP physiological recording
-disp('Please stop physiological recording and then press space.');
-[~, ~, keyCode] = KbCheck();
-while(keyCode(key.space) ~= 1)
-    % wait until the key has been pressed
+if IRM == 1
+    disp('Please stop physiological recording and then press space.');
     [~, ~, keyCode] = KbCheck();
+    while(keyCode(key.space) ~= 1)
+        % wait until the key has been pressed
+        [~, ~, keyCode] = KbCheck();
+    end
+    disp('OK - space was pressed, physio recording stopped');
 end
-disp('OK - space was pressed, physio recording stopped');
 
 %% Clear the PTB screen
 sca;
