@@ -118,13 +118,9 @@ n_trialsPerSession = 5;
 [trainingTimes_Em, calibTimes_Em, learningTimes_Em, taskTimes_Em] = timings_definition(trainingConditions, n_trialsPerSession, n_trainingTrials, 'mental');
 [trainingTimes_Ep, calibTimes_Ep, learningTimes_Ep, taskTimes_Ep] = timings_definition(trainingConditions, n_trialsPerSession, n_trainingTrials, 'physical');
 
-% number of times we apply a staircase procedure. (2 mental (R or P) 2 physical (R or P))
-if strcmp(taskToPerform.physical.task,'on') &&...
-        strcmp(taskToPerform.mental.task,'on')
-    n_sessions = 4;
-else
-    n_sessions = 2;
-end
+
+n_sessions = 2;
+
 % number of buttons to answer
 switch IRM
     case 0
