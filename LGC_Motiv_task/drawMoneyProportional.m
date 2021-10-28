@@ -23,8 +23,8 @@ switch R_or_P
         DrawFormattedText(window, ['+',sprintf('%0.2f',R_chosen)], stim.leftMoneyWinEperf.x, stim.leftMoneyWinEperf.y, white);
         DrawFormattedText(window, '+0.00', stim.rightMoneyWinEperf.x, stim.rightMoneyWinEperf.y, white);
     case 'P'
-        DrawFormattedText(window, ['-',sprintf('%0.2f',R_chosen)],     stim_initialize.leftMoneyLoseEperf.x, stim.leftMoneyLoseEperf.y, white);
-        DrawFormattedText(window, ['-',sprintf('%0.2f',R_chosen*2)],   stim_initialize.rightMoneyLoseEperf.x, stim.rightMoneyLoseEperf.y, white);
+        DrawFormattedText(window, ['-',sprintf('%0.2f',R_chosen)],     stim.leftMoneyLoseEperf.x, stim.leftMoneyLoseEperf.y, white);
+        DrawFormattedText(window, ['-',sprintf('%0.2f',R_chosen*2)],   stim.rightMoneyLoseEperf.x, stim.rightMoneyLoseEperf.y, white);
 end
 
 
