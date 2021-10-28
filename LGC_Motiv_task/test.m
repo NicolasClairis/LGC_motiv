@@ -29,11 +29,8 @@ Pmin = -0.80;
 % extract coordinates
 [stim] = stim_initialize(scr, n_E_levels, langage);
 
-% display numbers 
-DrawFormattedText(window, '+0.56',stim.leftMoneyWinEperf.x, stim.leftMoneyWinEperf.y, white);
-DrawFormattedText(window, '+0.00',stim.rightMoneyWinEperf.x, stim.rightMoneyWinEperf.y, white);
 % display the rest
 [onset_stim] = mental_display_stim(scr, stim,...
     startAngle, endAngle,...
     sideQuestion, taskTypeDisplay, numberVector_calib, mental_n_col,...
-    'noInstructions', maxPerfUntilNowAngle);
+    'noInstructions', maxPerfUntilNowAngle, 90, 0.56, 'R');

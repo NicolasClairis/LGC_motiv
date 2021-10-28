@@ -31,6 +31,7 @@ wrapat = scr.wrapat;
 black = scr.colours.black;
 white = scr.colours.white;
 orange = scr.colours.orange;
+red = scr.colours.red;
 grey = scr.colours.grey;
 % difficultyArcColor = [178 24 43];
 difficultyArcColor = [255 210 0];
@@ -649,6 +650,14 @@ stim.calibBestUntilNow.xCircleCenter = arcPosition(1) + (arcPosition(3) - arcPos
 stim.calibBestUntilNow.yCircleCenter = arcPosition(2) + (arcPosition(4) - arcPosition(2))/2;
 stim.calibBestUntilNow.lineWidth = 3;
 
+%% parameters for trait indicating minimal performance to reach for mental calibration
+stim.calibMinToReach.color = red;
+arcPosition     = stim.difficulty.middle_center;
+stim.calibMinToReach.circleRadius    = difficultyRectlinearSize/2;
+stim.calibMinToReach.xCircleCenter = arcPosition(1) + (arcPosition(3) - arcPosition(1))/2;
+stim.calibMinToReach.yCircleCenter = arcPosition(2) + (arcPosition(4) - arcPosition(2))/2;
+stim.calibMinToReach.lineWidth = 3;
+
 %% choice period
 switch langage
     case 'fr'
@@ -732,7 +741,7 @@ stim.leftSure.y = upperBorder + visibleYsize*(19/20) - ySizeLeftSure/2;
 stim.leftSure.colour = [0 255 0]; % colour corresponding to extreme left button
 % left unsure
 [~,~,textSizeLeftUnsure] = DrawFormattedText(window,stim.leftUnsure.text,'center','center',white);
-xSizeLeftUnsure = textSizeLeftUnsure(3) - textSizeLeftUnsure(1);
+% xSizeLeftUnsure = textSizeLeftUnsure(3) - textSizeLeftUnsure(1);
 ySizeLeftUnsure = textSizeLeftUnsure(4) - textSizeLeftUnsure(2);
 stim.leftUnsure.x = leftBorder + visibleXsize*(1/4) + xSizeLeftSure/2;
 stim.leftUnsure.y = upperBorder + visibleYsize*(19/20) - ySizeLeftUnsure/2;
@@ -746,7 +755,7 @@ stim.rightUnsure.y = upperBorder + visibleYsize*(19/20) - ySizeRightUnsure/2;
 stim.rightUnsure.colour = [0 0 255]; % colour corresponding to middle right button
 % right sure
 [~,~,textSizeRightSure] = DrawFormattedText(window,stim.rightSure.text,'center','center',white);
-xSizeRightSure = textSizeRightSure(3) - textSizeRightSure(1);
+% xSizeRightSure = textSizeRightSure(3) - textSizeRightSure(1);
 ySizeRightSure = textSizeRightSure(4) - textSizeRightSure(2);
 stim.rightSure.x = leftBorder + visibleXsize*(3/4) + xSizeRightUnsure/2;
 stim.rightSure.y = upperBorder + visibleYsize*(19/20) - ySizeRightSure/2;

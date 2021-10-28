@@ -326,19 +326,25 @@ for i_pm = 1:2
                 % start at zero so that they see the orange bar improving
                 % from trial to trial
                 nMaxReachedUntilNowLearning = 0;
+                % use a minimal amount of correct answers to give or the
+                % trial will be repeated
+                n_Em_learning1calibLike_MinToReach = 6;
                 
                 % perform the learning session
                 [onsets.endLearningInstructions.learning1calibLike_session] = mental_learningInstructions(scr, stim,...
                     learningVersion, mentalE_prm_learning1calibLike);
+                n_maxReachedDuringLearning = NaN(1,n_learning1calibLikeTrials);
                 for iLearning1Trial = 1:n_learning1calibLikeTrials
                     mentalE_learning1calibLikePerfSummary_tmp = mental_effort_perf_Nback(scr, stim, key_Em,...
                         numberVector_learning1calibLike(iLearning1Trial,:),...
                         mentalE_prm_learning1calibLike, n_maxToReachForCalib,...
-                        'noInstructions', learning1calibLike_useOfTimeLimit, learning1calibLike_timeLimit, learning1calibLike_errorLimits, nMaxReachedUntilNowLearning);
+                        'noInstructions', learning1calibLike_useOfTimeLimit, learning1calibLike_timeLimit,...
+                        learning1calibLike_errorLimits, nMaxReachedUntilNowLearning, n_Em_learning1calibLike_MinToReach);
                     learningPerfSummary_Em.learning1calibLike.(['trial_',num2str(iLearning1Trial)]) = mentalE_learning1calibLikePerfSummary_tmp;
+                    n_maxReachedDuringLearning(iLearningTrial) = mentalE_learning1calibLikePerfSummary_tmp.n_correctAnswersProvided;
                     
                     % extract new best performance
-                    nMaxReachedUntilNowLearning = max(nMaxReachedUntilNowLearning, mentalE_learning1calibLikePerfSummary_tmp.n_correctAnswersProvided);
+                    nMaxReachedUntilNowLearning = max(nMaxReachedUntilNowLearning, n_maxReachedDuringLearning(iLearningTrial));
                     % small break between each answer
                     DrawFormattedText(window, stim.training.Em.endTrialMsg.text,'center',yScreenCenter/2,white);
                     DrawFormattedText(window,stim.training.Em.endTrialMsg_bis.text,'center','center',white);
@@ -347,7 +353,42 @@ for i_pm = 1:2
                     disp(['Mental learning calibration-like trial ',num2str(iLearning1Trial),'/',num2str(n_learning1calibLikeTrials),' done']);
                 end % trial loop
                 
-                
+                learning1done = 0;
+                n_learning1bonusTrialsToLearn = 10;
+                jLearningTrial = n_learning1calibLikeTrials;
+                while learning1done == 0
+                    if n_learning1calibLikeTrials > 10 &&...
+                            ((n_maxReachedDuringLearning(end) < n_Em_learning1calibLike_MinToReach) ||...
+                            (n_maxReachedDuringLearning(end-1) < n_Em_learning1calibLike_MinToReach) ||...
+                            (n_maxReachedDuringLearning(end-2) < n_Em_learning1calibLike_MinToReach) ||...
+                            (n_maxReachedDuringLearning(end-3) < n_Em_learning1calibLike_MinToReach) ||...
+                            (n_maxReachedDuringLearning(end-4) < n_Em_learning1calibLike_MinToReach) )
+                        disp('performance was too low in one of the last trials. We will redo ',...
+                            num2str(n_learning1bonusTrialsToLearn),' more trials to compensate.');
+                        [numberVector_learning1_bonus] = mental_numbers(n_learning1bonusTrialsToLearn);
+                        for iLearning1Trial_bonus = 1:n_learning1bonusTrialsToLearn
+                            jLearningTrial = jLearningTrial + 1;
+                            mentalE_learning1calibLikePerfSummary_tmp = mental_effort_perf_Nback(scr, stim, key_Em,...
+                                numberVector_learning1_bonus(iLearning1Trial_bonus,:),...
+                                mentalE_prm_learning1calibLike, n_maxToReachForCalib,...
+                                'noInstructions', learning1calibLike_useOfTimeLimit, learning1calibLike_timeLimit,...
+                                learning1calibLike_errorLimits, nMaxReachedUntilNowLearning, n_Em_learning1calibLike_MinToReach);
+                            learningPerfSummary_Em.learning1calibLike.(['trial_',num2str(jLearningTrial)]) = mentalE_learning1calibLikePerfSummary_tmp;
+                            n_maxReachedDuringLearning(jLearningTrial) = mentalE_learning1calibLikePerfSummary_tmp.n_correctAnswersProvided;
+                            
+                            % extract new best performance
+                            nMaxReachedUntilNowLearning = max(nMaxReachedUntilNowLearning, n_maxReachedDuringLearning(jLearningTrial));
+                            % small break between each answer
+                            DrawFormattedText(window, stim.training.Em.endTrialMsg.text,'center',yScreenCenter/2,white);
+                            DrawFormattedText(window,stim.training.Em.endTrialMsg_bis.text,'center','center',white);
+                            [~,~,onsets.timeLearningFbk.(['trial_',num2str(jLearningTrial)])] = Screen(window,'Flip');
+                            WaitSecs(learningTimes_Em.learning_rest);
+                            disp(['Mental learning calibration-like BONUS trial ',num2str(iLearning1Trial_bonus),'/',num2str(n_learning1bonusTrialsToLearn),' done']);
+                        end % trial loop
+                    else
+                        learning1done = 1;
+                    end
+                end
             end % learning (1)
             
             %% calibration mental
@@ -616,6 +657,7 @@ end
 % learning performance
 if strcmp(taskToPerform.mental.learning_1,'on')
     all.mental.learning_1 = learningPerfSummary_Em;
+    all.mental.learning_1.n_minToReach = n_Em_learning1calibLike_MinToReach;
 end
 if strcmp(taskToPerform.mental.learning_2,'on')
     all.mental.learning_2 = learning2PerfSummary_Em;

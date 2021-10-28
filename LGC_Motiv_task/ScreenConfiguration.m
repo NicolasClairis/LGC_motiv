@@ -43,6 +43,8 @@ end
 black = [0 0 0];
 white = [255 255 255];
 orange = [255 153 0];
+red = [255 0 0];
+weakRed = [100 0 0];
 grey = [128 128 128];
 screenColour = grey;
 
@@ -127,5 +129,7 @@ scr.colours.grey = grey;
 scr.colours.white = white;
 scr.colours.black = black;
 scr.colours.orange = orange;
+scr.colours.red     = red;
+scr.colours.weakRed = weakRed;
 scr.wrapat = 50; % limit characters for drawformattedtext
 end % function

@@ -44,10 +44,10 @@ visibleYsize = scr.visibleYsize;
 visibleXsize = scr.visibleXsize;
 
 %% color parameters
-red = [255 0 0];
-weakRed = [100 0 0];
-white = [255 255 255];
-orange = [255 153 0];
+red = scr.colours.red;
+weakRed = scr.colours.weakRed;
+white = scr.colours.white;
+orange = scr.colours.orange;
 
 %% screen coordinates for effort scale
 bottomScaleLimit    = upperBorder + visibleYsize*(3/4); % bottom limit of the scale
