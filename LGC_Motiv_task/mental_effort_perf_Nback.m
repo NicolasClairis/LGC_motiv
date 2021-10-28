@@ -371,18 +371,18 @@ while (iCorrectAnswers < n_max_to_reach) &&...
     
 end % keep performing until number of subsequent answers reaches threshold predefined or if timer has been reached
 
-%% record all in output
-% keep only questions performed
-questions_done = ~isnan(sideAnswer);
+%% compute gains
 
-% compute gains
-currentAngleTrialsDone = currentAngle(questions_done);
-if isempty(currentAngleTrialsDone) && sum(questions_done) == 0 % case where no answers has been provided
+if iCorrectAnswers == 0 % case where no answers has been provided or all answers are bad
     mentalE_perf.performance = 0;
 else % at least some questions were answered
+    currentAngleTrialsDone = currentAngle(1:i_question); % take angle until last trial
     mentalE_perf.performance = 100*((currentAngleTrialsDone(end) - startAngle_currentTrial)/(360 - startAngle_currentTrial));
 end
 
+%% record all in output
+% keep only questions performed
+questions_done = ~isnan(sideAnswer);
 % record question parameters
 mentalE_perf.Nback = Nback;
 mentalE_perf.questions_done = questions_done;
