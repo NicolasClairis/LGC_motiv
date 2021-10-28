@@ -67,13 +67,13 @@ if ischar(iSubject)
 end
 %% general parameters
 % define subparts of the task to perform (on/off)
-taskToPerform.physical.calib = 'off';
-taskToPerform.physical.learning = 'off';
-taskToPerform.physical.training = 'off';
-taskToPerform.physical.task = 'off';
-taskToPerform.mental.learning_1 = 'off';
-taskToPerform.mental.calib = 'off';
-taskToPerform.mental.learning_2 = 'off';
+taskToPerform.physical.calib = 'on';
+taskToPerform.physical.learning = 'on';
+taskToPerform.physical.training = 'on';
+taskToPerform.physical.task = 'on';
+taskToPerform.mental.learning_1 = 'on';
+taskToPerform.mental.calib = 'on';
+taskToPerform.mental.learning_2 = 'on';
 taskToPerform.mental.training = 'on';
 taskToPerform.mental.task = 'on';
 switch langue
