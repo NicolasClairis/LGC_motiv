@@ -262,6 +262,7 @@ for i_pm = 1:2
                 % initial learning: careful to enter a pair number here
                 n_maxLearning.learning_withInstructions = 15;
                 n_maxLearning.learning_withoutInstructions = 15;
+                n_maxLearning.learning_2back = 6;
                 mentalE_prm_learning = mental_effort_parameters();
                 mentalE_prm_learning.startAngle = 0; % for learning always start at zero
                 % no time limit for each trial: as long as needed until learning is ok
@@ -289,15 +290,56 @@ for i_pm = 1:2
                         curr_learning_instructions, mentalE_prm_learning);
                     
                     % perform the learning
+                    if iLearning_Instructions == 1
+                        n_maxToReachLearning_tmp = n_maxLearning.learning_withInstructions;
+                    elseif iLearning_Instructions == 2
+                        n_maxToReachLearning_tmp = n_maxLearning.learning_withoutInstructions;
+                    end
                     [learningPerfSummary_Em.(learning_sess_nm).(curr_learning_instructions)] = mental_effort_perf(scr, stim, key_Em,...
                         numberVector_learning(jLearningSession,:),...
-                        mentalE_prm_learning, n_maxLearning.learning_withInstructions,...
+                        mentalE_prm_learning, n_maxToReachLearning_tmp,...
                         curr_learning_instructions, learning_useOfTimeLimit, [], learning_errorLimits);
                     
                     
                     % for experimenter display how many trials have been performed
                     disp(['Mental 0-back learning (1) trial ',num2str(jMentalLearningTrial),'/',num2str(nMentalLearning_totalTrials),' done']);
                 end % learning instructions loop
+                
+                %% learning (1) of the 2-back without temporal pressure
+                n_learning1_2back = 2;
+                mentalE_prm_learning1_2back = mental_effort_parameters();
+                % always start at zero
+                mentalE_prm_learning1_2back.startAngle = 0;
+                % Nback version
+                Nback_str = num2str(mentalE_prm_learning1_2back.Nback);
+                learningVersion = ['learning_Nback',Nback_str];
+                % time limits
+                learning1_2back_useOfTimeLimit = false;
+                
+                % define conditions for the learning
+                [numberVector_learning1_2back] = mental_numbers(n_learning1_2back);
+                % error handling for learning
+                learning1_2back_errorLimits.useOfErrorThreshold = false;
+                learning1_2back_errorLimits.useOfErrorMapping = false;
+                
+                % perform the learning session
+                [onsets.endLearningInstructions.learning1_2back_session] = mental_learningInstructions(scr, stim,...
+                    learningVersion, mentalE_prm_learning1_2back);
+                 for iLearning_2backTrial = 1:n_learning1_2back
+                    mentalE_learning1_2backPerfSummary_tmp = mental_effort_perf_Nback(scr, stim, key_Em,...
+                        numberVector_learning1_2back(iLearning_2backTrial,:),...
+                        mentalE_prm_learning1_2back, n_maxLearning.learning_2back,...
+                        'noInstructions', learning1_2back_useOfTimeLimit, [],...
+                        learning1_2back_errorLimits, [], []);
+                    learningPerfSummary_Em.learning1_2back.(['trial_',num2str(iLearning_2backTrial)]) = mentalE_learning1_2backPerfSummary_tmp;
+                    
+                    % small break between each answer
+                    DrawFormattedText(window, stim.training.Em.endTrialMsg.text,'center',yScreenCenter/2,white);
+                    DrawFormattedText(window,stim.training.Em.endTrialMsg_bis.text,'center','center',white);
+                    [~,~,onsets.timeLearning2backFbk.(['trial_',num2str(iLearning_2backTrial)])] = Screen(window,'Flip');
+                    WaitSecs(learningTimes_Em.learning_rest);
+                    disp(['Mental learning (1) 2-back trial ',num2str(iLearning_2backTrial),'/',num2str(n_learning1_2back),' done']);
+                end % trial loop
                 
                 %% learning (1) by repeating the calibration many times before actual calibration
                 % define number of trials to perform
