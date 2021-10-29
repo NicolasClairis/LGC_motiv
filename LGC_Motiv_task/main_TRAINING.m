@@ -394,7 +394,7 @@ for i_pm = 1:2
                 learning1done = 0;
                 n_learning1bonusTrialsToLearn = 5; % how many trials to use as a learning penalty
                 n_lastTrialsToCheck = 5; % how many trials to check
-                n_trialsCorrectThreshold = 3; % if less than this number of trials was correct in the n_lastTrialsToCheck trials, redo more trials
+                n_trialsCorrectThreshold = 4; % if less (<) than this number of trials was correct in the n_lastTrialsToCheck trials, redo more trials
                 jLearningTrial = n_learning1calibLikeTrials;
                 while learning1done == 0
                     learningPerf_lastTrials = zeros(1,n_lastTrialsToCheck);
