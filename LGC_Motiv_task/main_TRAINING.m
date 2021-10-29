@@ -172,7 +172,7 @@ for i_pm = 1:2
                 n_MVC_repeat = 3;
                 waitSpace(langage, window, yScreenCenter, scr, key_Ep);
                 [MVC_tmp, onsets_MVC] = physical_effort_MVC(scr, stim, dq, n_MVC_repeat, calibTimes_Ep);
-                MVC = max(MVC_tmp.MVC); % expressed in Voltage
+                MVC = mean(MVC_tmp.MVC); % expressed in Voltage
                 save(Ep_calib_filenm,'MVC');
             elseif strcmp(taskToPerform.physical.calib,'off') &&...
                     ( strcmp(taskToPerform.physical.learning,'on') ||...

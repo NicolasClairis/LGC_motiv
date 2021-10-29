@@ -9,7 +9,7 @@ function[totalGain] = compute_gains()
 % subject = 'CID0XX';
 subjectId = [];
 while isempty(subjectId)
-    info = inputdlg( {'Subject CID (XXX)'});
+    info = inputdlg({'Subject CID (XXX)'});
     subjectId = ['CID',info{[1]}];
 end
 
