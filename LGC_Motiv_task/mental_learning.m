@@ -56,7 +56,7 @@ for iEffortRepeat = 1:n_learningRepeats
         %% extract effort level for the current trial
         n_max_to_reach_trial = n_to_reach.(['E_level_',num2str(iEffortLevel - 1)]);
         %% extract start angle according to effort level of the current trial
-        mentalE_prm.startAngle = stim.difficulty.startAngle.(['level_',num2str(iEffortLevel)]);
+        mentalE_prm.startAngle = stim.difficulty.startAngle.(['level_',num2str(iEffortLevel-1)]);
 
         %% perform the effort
         [perfSummary.trialSummary{jTrial}, trialSuccess, onsets.effortPeriod{jTrial}] = mental_effort_perf_Nback(scr, stim, key,...
