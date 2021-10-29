@@ -172,7 +172,7 @@ for i_pm = 1:2
                 n_MVC_repeat = 3;
                 waitSpace(langage, window, yScreenCenter, scr, key_Ep);
                 [MVC_tmp, onsets_MVC] = physical_effort_MVC(scr, stim, dq, n_MVC_repeat, calibTimes_Ep);
-                MVC = max(MVC_tmp.MVC); % expressed in Voltage
+                MVC = mean(MVC_tmp.MVC); % expressed in Voltage
                 save(Ep_calib_filenm,'MVC');
             elseif strcmp(taskToPerform.physical.calib,'off') &&...
                     ( strcmp(taskToPerform.physical.learning,'on') ||...
@@ -394,7 +394,7 @@ for i_pm = 1:2
                 learning1done = 0;
                 n_learning1bonusTrialsToLearn = 5; % how many trials to use as a learning penalty
                 n_lastTrialsToCheck = 5; % how many trials to check
-                n_trialsCorrectThreshold = 3; % if less than this number of trials was correct in the n_lastTrialsToCheck trials, redo more trials
+                n_trialsCorrectThreshold = 4; % if less (<) than this number of trials was correct in the n_lastTrialsToCheck trials, redo more trials
                 jLearningTrial = n_learning1calibLikeTrials;
                 while learning1done == 0
                     learningPerf_lastTrials = zeros(1,n_lastTrialsToCheck);

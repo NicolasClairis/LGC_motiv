@@ -181,8 +181,8 @@ while iCalibTrial <= n_calibTrials
     
 end % number of tests to try to get max
 
-%% get maximum for the participant
-n_mental_max = max(n_max_calibPerf_perTrial);
+%% get average for the participant
+n_mental_max = floor(mean(n_max_calibPerf_perTrial))+1;
 
 %% store all relevant variables in the output
 calib_summary.n_minCorrectAnswersToReach = n_minCorrectAnswersToReach;
