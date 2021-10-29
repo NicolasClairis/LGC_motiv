@@ -1,7 +1,7 @@
 %% check choices of the default option in function of the other parameters of the task
 % (fatigue, difficulty, physical/mental, reward/punishment, etc.)
 
-subid = '201';
+subid = '203';
 figDisp = 1;
 nRuns = 4;
 n_R_levels = 4;
@@ -221,19 +221,6 @@ if figDisp == 1
         'LineWidth',2,'Color','k','LineStyle',':');
     hold on;
     
-    ylim([0 100]);
-    ylabel('Choice = default option (%)');
-    legend_size(pSize);
-    
-    % check choices = f(E level) separately for physical and for mental
-    % effort task
-    fig;
-    % mark the 50% trait
-    plot(1:n_bins, 50*ones(1,n_bins),...
-        'LineWidth',2,'Color','k','LineStyle',':');
-    hold on;
-%     bar(1:(n_E_levels-1),);
-%     errorbar(1:(n_E_levels-1),)
     ylim([0 100]);
     ylabel('Choice = default option (%)');
     legend_size(pSize);
