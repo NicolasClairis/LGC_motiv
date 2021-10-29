@@ -38,7 +38,7 @@ end
 calibTimes.instructions = 5;
 switch effort_type % in case you use different numbers for each effort type
     case 'mental'
-        t_max_mentalEffort = 8;
+        t_max_mentalEffort = 10;
         calibTimes.effort_max = t_max_mentalEffort; % maximal time to perform the task
     case 'physical'
         calibTimes.instructions_bis = 6;
