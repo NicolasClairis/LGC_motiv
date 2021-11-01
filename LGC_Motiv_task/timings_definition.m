@@ -57,7 +57,7 @@ switch effort_type % in case you use different numbers for each effort type
         learningTimes.learning_rest = 2;
     case 'physical'
         learningTimes.ifi = t_ifi;
-        learningTimes.max_effort = [];
+        learningTimes.max_effort = 6;
         learningTimes.physicalReadWait = t_readWait;
         learningTimes.learning_rest = 3;
 end
