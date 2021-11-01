@@ -213,7 +213,7 @@ for iRun = 1:nRuns
         conf_perSignedMoneylevel.(['avg_R_',num2str(iAbsMoney)])(iRun) = mean(100*conf_perSignedMoneylevel.(['R_level_',num2str(iAbsMoney)])(iRun, :),2,'omitnan');
         conf_perSignedMoneylevel.(['avg_P_',num2str(iAbsMoney)])(iRun) = mean(100*conf_perSignedMoneylevel.(['P_level_',num2str(iAbsMoney)])(iRun, :),2,'omitnan');
     end
-end
+end % run loop
 
 %% extract task type order
 if exist(['CID',subid,'_session1_mental_task_behavioral_tmp.mat'],'file') &&...
