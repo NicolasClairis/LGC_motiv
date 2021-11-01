@@ -750,10 +750,9 @@ if strcmp(taskToPerform.mental.task,'on')
 end
 % actually save the data
 save([subResultFolder, file_nm,'.mat']);
-
+%  
 % save delta_IP and baselineR
-save([subResultFolder, file_nm_IP,'.mat'],'IP_variables');
-
+n
 %% Show a final screen if and only if they performed the task or nonsense since no amount involved
 if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,'on')
     totalGain_str = sprintf('%0.2f',totalGain);
