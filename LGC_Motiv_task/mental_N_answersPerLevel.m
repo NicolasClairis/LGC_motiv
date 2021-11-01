@@ -16,7 +16,7 @@ function[n_to_reach] = mental_N_answersPerLevel(n_E_levels, NmaxPerf)
 % See also choice_task_main.m
 
 %% define max level as a given percentage of their actual maximum
-E_max = floor(NmaxPerf*(80/100)) + 1;
+E_max = floor(NmaxPerf*(80/100));
 
 %% define different difficulty levels based on the calibration
 switch n_E_levels

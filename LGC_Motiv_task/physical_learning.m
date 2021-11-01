@@ -41,7 +41,7 @@ function[perfSummary, onsets] = physical_learning(scr, stim, dq, n_E_levels, Ep_
 %% screen parameters
 window = scr.window;
 %% time parameters
-time_limit = false; % learning = no time limit
+time_limit = true;
 t_learning_rest = timings.learning_rest;
 
 n_learningTrials = n_learningForceRepeats*n_E_levels;
