@@ -5,7 +5,7 @@
 % 4) perform the effort corresponding to the chosen option
 %
 % The effort can be a physical effort of a fixed intensity but a
-% varying duration (in the physical version of the taskccccnvcvcvvnvvvvccncvcvccvcvvcbvcvcnccccvcvcvcvcccvcvcbcvcvcccccbccccbvcvccvvvcccvvvvcvcbcvcv  cvcvvcvccvcvvvcvvcvcvcvvccvvvvvcvccvcccvc) or a mental effort
+% varying duration (in the physical version of the task or a mental effort
 % with a fixed maximal duration but a varying number of questions to solve
 % according to difficulty (mental version of the task).
 %
