@@ -1,5 +1,5 @@
 
-subs = {'201','202','203','204','205'};
+subs = {'201','202','203','204','205','206','207'};
 NS = length(subs);
 
 [mean_IP_perSub_Ep, mean_IP_perSub_Em] = deal(NaN(1,NS));
