@@ -1,5 +1,5 @@
 function[perfSummary, onsets] = mental_learning(scr, stim, key, n_E_levels, n_to_reach, n_learningRepeats, timings)
-%
+%[perfSummary, onsets] = mental_learning(scr, stim, key, n_E_levels, n_to_reach, n_learningRepeats, timings)
 % mental_learning will make the participant perform nXX repetitions of each
 % effort level to see what each effort level means.
 %

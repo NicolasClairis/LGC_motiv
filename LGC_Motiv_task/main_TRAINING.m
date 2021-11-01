@@ -469,7 +469,7 @@ for i_pm = 1:2
                 % define number of learning trials
                 n_Em_learningForceRepeats = 5; % number of learning repetitions for each level of difficulty (= each level of force)
                 % timings
-                Em_learningTimings.time_limit = true;
+                Em_learningTimings.time_limit = false;
                 Em_learningTimings.t_max = learningTimes_Em.max_effort;
                 Em_learningTimings.learning_rest = learningTimes_Em.learning_rest;
                 % perform all the difficulty levels
