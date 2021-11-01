@@ -53,11 +53,11 @@ calibTimes.fail_and_repeat_fbk = 5;
 %% learning timings
 switch effort_type % in case you use different numbers for each effort type
     case 'mental'
-        learningTimes.max_effort = t_max_mentalEffort;
+        learningTimes.max_effort = [];
         learningTimes.learning_rest = 2;
     case 'physical'
         learningTimes.ifi = t_ifi;
-        learningTimes.max_effort = 6;
+        learningTimes.max_effort = [];
         learningTimes.physicalReadWait = t_readWait;
         learningTimes.learning_rest = 3;
 end
