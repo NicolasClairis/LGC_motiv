@@ -29,8 +29,28 @@ Pmin = -0.80;
 % extract coordinates
 [stim] = stim_initialize(scr, n_E_levels, langage);
 
-% display the rest
+%% choice display
+% timeParameter.timeLimit = false;
+% [choice_trial, onsetDispChoiceOptions, onsetChoice, stoptask] = choice_period(scr, stim,...
+%     0.5, 0.8, 0, 2, 'R',...
+%     timeParameter, key, 0)
+
+%% mental effort display
 [onset_stim] = mental_display_stim(scr, stim,...
     startAngle, endAngle,...
     sideQuestion, taskTypeDisplay, numberVector_calib, mental_n_col,...
     'noInstructions', maxPerfUntilNowAngle, 90, 0.56, 'R');
+
+%% physical effort display
+endAngle = 360;
+currentAngle = 145;
+disp_realtime_force(scr, 55, 2.5, 30, 'task');
+Screen('FillArc', window,...
+        stim.difficulty.currLevelColor,...
+        stim.difficulty.middle_center,...
+        currentAngle,...
+        endAngle - currentAngle);
+    Screen(window,'Flip');
+
+% sca;
+
