@@ -24,9 +24,9 @@
      inkscape:pagecheckerboard="0"
      inkscape:document-units="mm"
      showgrid="false"
-     inkscape:zoom="0.37059484"
-     inkscape:cx="-339.99394"
-     inkscape:cy="827.04876"
+     inkscape:zoom="0.72070006"
+     inkscape:cx="285.8332"
+     inkscape:cy="448.86912"
      inkscape:window-width="1920"
      inkscape:window-height="1017"
      inkscape:window-x="1912"
@@ -1088,17 +1088,5 @@ Oc899//aZ4rwQuyByAAAAABJRU5ErkJggg==
        id="image982"
        x="59.023804"
        y="161.37119" />
-    <path
-       style="fill:none;fill-opacity:1;stroke:#99ff00;stroke-width:0.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#Arrow1Lend)"
-       d="M 107.5238,64.997305 V 83.802351"
-       id="path1099" />
-    <path
-       style="fill:none;fill-opacity:1;stroke:#99ff00;stroke-width:0.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#Arrow1Lend-0)"
-       d="m 107.5238,141.53679 v 18.80505"
-       id="path1099-0" />
-    <path
-       style="fill:none;fill-opacity:1;stroke:#99ff00;stroke-width:0.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#Arrow1Lend-6)"
-       d="m 107.5238,218.07628 v 18.80505"
-       id="path1099-8" />
   </g>
 </svg>
