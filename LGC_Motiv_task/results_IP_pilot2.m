@@ -22,52 +22,78 @@ cd(results_folder)
 
 nb_sessions=4;
 
+% Encode physical or manual
 
-
-
-%% extract relevant features
-% IP matrice has as columns :
-%  Effort lvl 1/2, Physical/Mental, Reward/Punishment, iteration 1/2
-%  1      2      3      4      5     6      7       8
-% E1PR1,E1PR2, E1MR1, E1MR2, E1PP1, E1PP2, E1MP1, E1MP2
-%  9      10     11     12     13     14     15     16
-% E2PR1,E2PR2, E2MR1, E2MR2, E2PP1, E2PP2, E2MP1, E2MP2
-
+mentalFirst = [0 0 1 0 1 0 1 0 1];
+cd ..
 % manually put the number of pilots
-for i_pilot = 1:1
+for i_pilot = 1:length(mentalFirst)
     
 subjectID = ['CID',num2str(i_pilot+200)];
 % go to subject path
-cd ..
+
 rootPath = [pwd, filesep];
 subPath = [rootPath,filesep,subjectID,filesep,'behavior',filesep];
 
-    mentalCalib_nm = [subjectID,'mentalCalib.mat'];
-    physicalCalib_nm = [subjectID,'physicalCalib.mat'];
+    mentalCalib_nm = [subjectID,'_mentalCalib.mat'];
+    physicalCalib_nm = [subjectID,'_physicalCalib.mat'];
     
     training_nm = ['training_data_',subjectID,'.mat'];
-    start_mental = getfield(getfield(load([subPath,training_nm],'all'),'all'),'mentalfirst');
+%     start_mental = getfield(getfield(load([subPath,training_nm],'all'),'all'),'mentalfirst');
     
     for i_session=1:nb_sessions
-        if mod(start_mental+i_session,2) == 0
-       test_nm.(['session_',num2str(i_session)]) = [subjectID,'session',num2str(i_session),'physical_task_messyAllStuff.mat'];
+        if mod(mentalFirst(i_pilot)+i_session -1,2) == 0
+       test_nm.(['session_',num2str(i_session)]) = [subjectID,'_session',num2str(i_session),'_physical_task_messyAllStuff.mat'];
         else
-       test_nm.(['session_',num2str(i_session)]) = [subjectID,'session',num2str(i_session),'mental_task_messyAllStuff.mat'];
+       test_nm.(['session_',num2str(i_session)]) = [subjectID,'_session',num2str(i_session),'_mental_task_messyAllStuff.mat'];
         end
     end
     
     %% loading part
-    mentalCalib(i_pilot) = load(mentalCalib_nm,'NMP');
-    physicalCalib(i_pilot) = load(physicalCalib_nm,'MVC');
+    mentalCalib(i_pilot) = load([subPath,mentalCalib_nm],'NMP');
+    physicalCalib(i_pilot) = load([subPath,physicalCalib_nm],'MVC');
     
+    pilot_nm = ['pilot',num2str(i_pilot)];
+    all.(pilot_nm).ses1 = load([subPath,test_nm.session_1]);
+    all.(pilot_nm).ses2 = load([subPath,test_nm.session_2]);
+    all.(pilot_nm).ses3 = load([subPath,test_nm.session_3]);
+    all.(pilot_nm).ses4 = load([subPath,test_nm.session_4]);
     
-    
-    
+    if mentalFirst == 1
+    percentagePerf_phys1(i_pilot,:) = all.(pilot_nm).ses2.perfSummary.percentagePerf;
+    percentagePerf_phys2(i_pilot,:) = all.(pilot_nm).ses4.perfSummary.percentagePerf;
+    percentagePerf_ment1(i_pilot,:) = all.(pilot_nm).ses1.perfSummary.percentagePerf;
+    percentagePerf_ment2(i_pilot,:) = all.(pilot_nm).ses3.perfSummary.percentagePerf;
+    else
+    percentagePerf_phys1(i_pilot,:) = all.(pilot_nm).ses1.perfSummary.percentagePerf;
+    percentagePerf_phys2(i_pilot,:) = all.(pilot_nm).ses3.perfSummary.percentagePerf;
+    percentagePerf_ment1(i_pilot,:) = all.(pilot_nm).ses2.perfSummary.percentagePerf;
+    percentagePerf_ment2(i_pilot,:) = all.(pilot_nm).ses4.perfSummary.percentagePerf;
+    end     
 end
+%% AVG HERE
+for i = 1:6
+avgPhysical1(i) = mean(percentagePerf_phys1((i-1)*9+1:i*9));
+avgPhysical2(i) = mean(percentagePerf_phys2((i-1)*9+1:i*9));
+avgMental1(i) = mean(percentagePerf_ment1((i-1)*9+1:i*9));
+avgMental2(i) = mean(percentagePerf_ment2((i-1)*9+1:i*9));
+end
+
 %% CORRELATION HERE
 
 %% PLOT HERE
-% 
+
+figure()
+
+plot(avgPhysical1);
+hold on
+plot(avgPhysical2);
+plot(avgMental1);
+plot(avgMental2);
+legend('phys1','phys2','ment1','ment2')
+xlabel('bins of avg of 9 trials')
+ylabel('performance')
+
 %     if i_pilot > 3 && i_pilot ~= 10
 %         for q = 1:90
 %             totalTime(i_pilot,q) = all.mental.learning.extendedLearning.(strcat('trial_',num2str(q))).totalTime_success;
