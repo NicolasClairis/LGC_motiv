@@ -33,11 +33,11 @@ totalGain = totalGain + getfield(getfield(load([subPath,filenm]),'IP_variables')
 
 
 % add the other resources
-MRStunes = 50;
-IRMftunes = 40;
+MRStunes = 35;
+IRMftunes = 35;
 MVCtune = 48;
 timeTune = 40;
-questionnairesTune = 40; % like 1h exp
+questionnairesTune = 10; % like 1h exp
 % pilots
 % MRStunes = 0;
 % IRMftunes = 0;
