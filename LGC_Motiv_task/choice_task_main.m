@@ -26,8 +26,8 @@ clc;
 % (no need to have correct timings and everything in PTB)
 % or if this is the actual experiment => use optimal timings of the
 % computer (0)
-testing_script = 1;
-warning('please reset testing_script = 0 when you go to fMRI');
+testing_script = 0;
+% warning('please reset testing_script = 0 when you go to fMRI');
 
 %% langage to display instructions
 langage = 'fr';
@@ -93,7 +93,7 @@ if exist([subResultsFolder, file_nm,'.mat'],'file')
 end
 
 %% fMRI/behavioral version of the task?
-IRM = 0;
+IRM = 1;
 % (0) does not include fMRI = training
 % (1) include fMRI
 

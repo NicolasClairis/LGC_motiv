@@ -34,7 +34,8 @@ cd(main_task_folder);
 % Insert the initials, the number of the participants
 iSubject = [];
 langue = 'f';
-IRM = 0;
+IRM = 1;
+testing_script = 0;
 while isempty(iSubject) || length(iSubject) ~= 3
     % repeat until all questions are answered
     info = inputdlg({'Subject CID (XXX)','p/m'});
@@ -86,7 +87,7 @@ switch langue
 end
 % initialize screen
 [scr, xScreenCenter, yScreenCenter,...
-    window, baselineTextSize] = ScreenConfiguration(IRM, 1);
+    window, baselineTextSize] = ScreenConfiguration(IRM, testing_script);
 % ShowCursor;
 white = scr.colours.white;
 black = scr.colours.black;
