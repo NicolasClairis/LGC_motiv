@@ -1,5 +1,5 @@
-% function[avg_defaultChoice, sd_defaultChoice] = checkChoiceDefaultProportion(subid, figDisp, n_bins)
-%[avg_defaultChoice, sd_defaultChoice] = checkChoiceDefaultProportion(subid, figDisp, n_bins)
+function[avg_defaultChoice, sd_defaultChoice, avg_conf] = checkChoiceDefaultProportion(subid, figDisp, n_bins)
+%[avg_defaultChoice, sd_defaultChoice, avg_conf] = checkChoiceDefaultProportion(subid, figDisp, n_bins)
 % check choices of the default option in function of the other parameters of the task
 % (fatigue, difficulty, physical/mental, reward/punishment, etc.) for each
 % individual.
@@ -18,6 +18,9 @@
 % function of the other task parameters
 %
 % sd_defaultChoice: same as avg_defaultChoice but for standard deviation
+%
+% avg_conf: structure with average confidence on the choice in function of
+% other task parameters
 
 
 %% initialize all variables of interest
@@ -274,6 +277,11 @@ for iAbsMoney = 1:(n_R_levels - 1)
     sd_conf.perSignedMoneylevel.(['Ep_P_',num2str(iAbsMoney)]) = std(conf_perSignedMoneylevel.(['avg_P_',num2str(iAbsMoney)])(Ep_runs));
 end
 
+avg_defaultChoice.Em_f_time = mean(choiceDefault_f_time(Em_runs,:),1,'omitnan');
+avg_defaultChoice.Ep_f_time = mean(choiceDefault_f_time(Ep_runs,:),1,'omitnan');
+avg_conf.Em_f_time = mean(conf_f_time(Em_runs,:),1,'omitnan');
+avg_conf.Ep_f_time = mean(conf_f_time(Ep_runs,:),1,'omitnan');
+
 %% figures
 if figDisp == 1
     % figure parameters
@@ -471,4 +479,4 @@ if figDisp == 1
     
 end % figure display
 
-% end % function display
+end % function display
