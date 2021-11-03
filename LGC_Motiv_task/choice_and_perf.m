@@ -193,7 +193,7 @@ for iTrial = 1:nTrials
                 R_left_tmp, R_right_tmp, E_left_tmp, E_right_tmp, R_or_P_tmp,...
                 choiceTimeParameters, key, confidenceDispChoice);
         end % keep performing the trial until a choice is made
-    else % for actual task, if they don't answer in time, consider the trial as a failure
+    else % for actual task, if they don't answer in time, select the default option by default
         [choice(iTrial),...
             onsets.dispChoiceOptions(iTrial),...
             onsets.choice(iTrial),...
@@ -258,7 +258,7 @@ for iTrial = 1:nTrials
     WaitSecs(t_preEffortCross(iTrial));
     dur.preEffortCross(iTrial) = GetSecs - onsets.preEffortCross(iTrial);
     
-    %% check that no key is being pressed before the choice trial starts
+    %% check that no key is being pressed before the effort starts
     [was_a_key_pressed_bf_effort(iTrial),...
         onsets.preEffortCross_keyReleaseMessage(iTrial),...
         dur.preEffortCross_keyReleaseMessage(iTrial)] = check_keys_are_up(scr, stim, key);
@@ -301,7 +301,7 @@ for iTrial = 1:nTrials
                 R_or_P_tmp, R_chosen(iTrial));
             % record duration for effort performance
             dur.effortPeriod(iTrial) = GetSecs - onsets.effortPeriod{iTrial}.nb_1;
-    end % effort type loop
+    end % effort type
     effortTime(iTrial) = toc;
     
     %% Feedback period
@@ -443,7 +443,7 @@ for iTrial = 1:nTrials
             failedTrials{iTrial}.onsets.timeBarWait = onsets.timeBarWait(iTrial);
             failedTrials{iTrial}.dur.timeBarWait = dur.timeBarWait(iTrial);
         end
-    end
+    end % choice failed
     
     %% display number of trials done for the experimenter
     disp(['Trial ',num2str(iTrial),'/',num2str(nTrials),' done']);
