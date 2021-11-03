@@ -165,7 +165,7 @@ while iCalibTrial <= n_calibTrials
     if calibTrialSuccess == 1
         disp(['Mental calibration trial ',num2str(iCalibTrial-1),'/',num2str(n_calibTrials),' - done']);
     else
-        disp(['Mental calibration trial ',num2str(iCalibTrial+1),' is gonna be repeated because calibration failed.']);
+        disp(['Mental calibration trial ',num2str(iCalibTrial),' is gonna be repeated because calibration failed.']);
     end
     
     %% allow the participant to restart whenever he/she feels ready by
