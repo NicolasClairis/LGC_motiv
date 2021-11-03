@@ -1,10 +1,10 @@
 function[summary] = choice_and_perf_staircase(scr, stim, key,...
     effort_type, Ep_or_Em_vars,...
-    training_R_P_RP_or_mainTask, R_or_P, E_right, E_left, nTrials, timings,...
+    R_or_P, E_right, E_left, nTrials, timings,...
     results_folder, file_nm)
 % [summary] = choice_and_perf_staircase(scr, stim, key,...
 %     effort_type, Ep_or_Em_vars,...
-%     training_R_P_RP_or_mainTask, R_or_P, E_right, E_left, nTrials, timings,...
+%     R_or_P, E_right, E_left, nTrials, timings,...
 %     results_folder, file_nm)
 % choice_and_perf: script to perform choice and effort performance.
 %
@@ -26,11 +26,6 @@ function[summary] = choice_and_perf_staircase(scr, stim, key,...
 %   i_sub: subject number (for mental effort)
 %   n_to_reach: structure telling the number of correct answers to reach to
 %   for each effort level
-%
-% training_R_P_RP_or_mainTask:
-% 'R': reward only training
-% 'P': punishment only training
-% 'RP': reward and punishment training
 %
 % R_or_P: reward ('R') or punishment ('P') trial
 %
@@ -441,7 +436,7 @@ for iTrial = 1:nTrials
     end % if a time limit is added
     
     %% display number of trials done for the experimenter
-    disp(['Trial ',num2str(iTrial),'/',num2str(nTrials),' done']);
+    disp(['IP trial ',num2str(iTrial),'/',num2str(nTrials),' done']);
 end % trial loop
 
 %% extract relevant training data
