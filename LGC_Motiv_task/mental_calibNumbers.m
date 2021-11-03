@@ -61,8 +61,14 @@ calib_time_limit = true; % time will be limited (as opposed to learning where ti
 instructions_disp = 0; % no instructions anymore, goal is to calibrate as if it was the actual task
 
 % thresholds for calibration
+calib_or_maxPerf = mentalE_prm.calib_or_maxPerf;
 n_errorsThreshold = 5; % number of errors allowed before repeating the trial
-n_minCorrectAnswersToReach = 6; % number of correct answers required to consider the trial ok (if too low, then trial is repeated)
+switch calib_or_maxPerf
+    case 'calib' % perf has to be of at least 6 for calibration
+        n_minCorrectAnswersToReach = 6; % number of correct answers required to consider the trial ok (if too low, then trial is repeated)
+    case 'maxPerf' % perf can be lower for max performance (signalling fatigue effects)
+        n_minCorrectAnswersToReach = 0; % number of correct answers required to consider the trial ok (if too low, then trial is repeated)
+end
 
 % introduce variables of interest
 [n_max_calibPerf_perTrial,...
@@ -129,7 +135,7 @@ while iCalibTrial <= n_calibTrials
         % store the data of the missed trial because otherwise will be
         % erased
         missedTrialData{n_calibTrialsMissed} = mentalE_perf;
-        if (n_max_calibPerf_perTrial(iCalibTrial) < n_minCorrectAnswersToReach)
+        if n_max_calibPerf_perTrial(iCalibTrial) < n_minCorrectAnswersToReach
             DrawFormattedText(window, stim.mentalCalibFailureFbk.text,...
                 stim.mentalCalibFailureFbk.x, stim.mentalCalibFailureFbk.y,...
                 stim.mentalCalibFailureFbk.colour, wrapat);

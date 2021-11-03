@@ -137,6 +137,19 @@ end
 stim.expWillStart.x = x_centerCoordinates(xScreenCenter, textSizeExpWillStart);
 stim.expWillStart.y = y_coordinates(upperBorder, visibleYsize, 5/6, textSizeExpWillStart);
 
+% press space
+switch langage
+    case 'fr'
+        stim.pressSpace.text = 'Appuyez sur espace quand vous etes pret(e) a demarrer.';
+    case 'engl'
+        stim.pressSpace.text = 'Press space key when you are ready to start.';
+end
+[~,~,textSizePressSpace] = DrawFormattedText(window,...
+    stim.pressSpace.text,...
+    'center', 'center', white, wrapat);
+stim.pressSpace.x = x_centerCoordinates(xScreenCenter, textSizePressSpace);
+stim.pressSpace.y = y_coordinates(upperBorder, visibleYsize, 5/6, textSizePressSpace);
+        
 % titles for each period
 titleTextSize = scr.textSize.taskPeriodsTitles;
 baselineTextSize = scr.textSize.baseline;

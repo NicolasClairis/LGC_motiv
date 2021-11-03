@@ -7,6 +7,7 @@ langage = 'fr';sca;
 [stim] = stim_initialize(scr, 3, langage);
 key = relevant_key_definition('mental', 0, 4);
 mentalE_prm_calib = mental_effort_parameters();
+mentalE_prm_calib.calib_or_maxPerf = 'calib';
 mentalE_prm_calib.startAngle = 0; % for learning always start at zero
 % no error threshold nor mapping of answers when errors are
 % made

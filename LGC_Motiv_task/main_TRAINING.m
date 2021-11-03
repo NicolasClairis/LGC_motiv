@@ -171,8 +171,7 @@ for i_pm = 1:2
             %% physical MVC (calibrate the Fmax for the whole experiment)
             if strcmp(taskToPerform.physical.calib,'on')
                 n_MVC_repeat = 3;
-                waitSpace(langage, window, yScreenCenter, scr, key_Ep);
-                [MVC_tmp, onsets_MVC] = physical_effort_MVC(scr, stim, dq, n_MVC_repeat, calibTimes_Ep);
+                [MVC_tmp, onsets_MVC] = physical_effort_MVC(scr, stim, dq, n_MVC_repeat, calibTimes_Ep, 'MVC', key_Ep);
                 MVC = mean(MVC_tmp.MVC); % expressed in Voltage
                 save(Ep_calib_filenm,'MVC');
             elseif strcmp(taskToPerform.physical.calib,'off') &&...
@@ -186,8 +185,7 @@ for i_pm = 1:2
             if strcmp(taskToPerform.physical.learning,'on')
                 n_Ep_learningForceRepeats = 5; % number of learning repetitions for each level of difficulty (= each level of force)
                 % introduce physical learning
-                showTitlesInstruction(scr,stim,'learning',p_or_m);
-                waitSpace(langage, window, yScreenCenter, scr, key_Ep);
+                showTitlesInstruction(scr,stim,'learning',p_or_m, key_Ep);
                 % perform physical learning
                 [learningPerfSummary_Ep, learningOnsets_Ep] = physical_learning(scr, stim, dq, n_E_levels, Ep_time_levels,...
                     F_threshold, F_tolerance, MVC,...
@@ -198,8 +196,7 @@ for i_pm = 1:2
             if strcmp(taskToPerform.physical.training,'on')
                 
                 % introduce physical training
-                showTitlesInstruction(scr,stim,'training',p_or_m);
-                waitSpace(langage, window, yScreenCenter, scr, key_Ep);
+                showTitlesInstruction(scr,stim,'training',p_or_m, key_Ep);
                 % define parameters for the training
                 Ep_vars_training.MVC = MVC;
                 Ep_vars_training.dq = dq;
@@ -269,7 +266,7 @@ for i_pm = 1:2
                 % no time limit for each trial: as long as needed until learning is ok
                 learning_useOfTimeLimit = false;
                 % display instructions for learning
-                showTitlesInstruction(scr,stim,'learning',p_or_m)
+                showTitlesInstruction(scr,stim,'learning',p_or_m, key_Em)
                 
                 % for learning display the mapping after 'errorMappingLimit' number of errors
                 learning_errorLimits.useOfErrorThreshold = false; % no error limit for the learning period
@@ -439,6 +436,7 @@ for i_pm = 1:2
                 
                 % mental calibration parameters
                 mentalE_prm_calib = mental_effort_parameters();
+                mentalE_prm_calib.calib_or_maxPerf = 'calib';
                 mentalE_prm_calib.startAngle = 0; % for learning always start at zero
                 n_calibMax = mentalE_prm_calib.n_maxToReachCalib;
                 % extract numbers to use for each calibration trial
@@ -462,8 +460,7 @@ for i_pm = 1:2
             %% learning (2) for each difficulty level
             if strcmp(taskToPerform.mental.learning_2,'on')
                 % introduce physical learning
-                showTitlesInstruction(scr,stim,'learning','m');
-                waitSpace(langage, window, yScreenCenter, scr, key_Em);
+                showTitlesInstruction(scr,stim,'learning','m', key_Em);
                 
                 % define all difficulty levels based on calibration
                 [n_to_reach] = mental_N_answersPerLevel(n_E_levels, NMP);
@@ -610,8 +607,7 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
                     case 'p'
                         if strcmp(taskToPerform.physical.task,'on')
                             % instructions
-                            showTitlesInstruction(scr,stim,'task',p_or_m);
-                            waitSpace(langage, window, yScreenCenter, scr, key_Ep);
+                            showTitlesInstruction(scr,stim,'task',p_or_m, key_Ep);
                             
                             % run physical task
                             perf_Ep_IP_tmp = choice_and_perf_staircase(scr, stim, key_Ep,...
@@ -626,8 +622,7 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
                     case 'm'
                         if strcmp(taskToPerform.mental.task,'on')
                             % instructions
-                            showTitlesInstruction(scr,stim,'task',p_or_m);
-                            waitSpace(langage, window, yScreenCenter, scr, key_Em);
+                            showTitlesInstruction(scr,stim,'task',p_or_m, key_Em);
                             
                             mentalE_prm_instruDisplay = mental_effort_parameters();
                             % Nback version

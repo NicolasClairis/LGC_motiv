@@ -1,5 +1,5 @@
-function showTitlesInstruction(scr, stim, instructionType, effortTypeLetter)
-%showTitlesInstruction(scr, stim, instructionType, effortTypeLetter)
+function showTitlesInstruction(scr, stim, instructionType, effortTypeLetter, keys)
+%showTitlesInstruction(scr, stim, instructionType, effortTypeLetter, keys)
 % Function to display information of the next things to do.
 %
 % INPUTS
@@ -15,6 +15,9 @@ function showTitlesInstruction(scr, stim, instructionType, effortTypeLetter)
 % effortTypeLetter = define if we are working on physical ('p') or mental ('m')
 % effort.
 %
+% langage: 'fr' for french; 'engl' for english
+%
+% keys: structure with information of code of keys to check
 
 %% initialize relevant parameters
 window = scr.window;
@@ -22,7 +25,6 @@ titleTextSize = scr.textSize.taskPeriodsTitles;
 baselineTextSize = scr.textSize.baseline;
 
 %% define title settings
-t_wait = 3; % this should be exported in timing_definitions.m but whatever
 
 % change text size
 Screen('TextSize', window, titleTextSize);
@@ -36,8 +38,7 @@ DrawFormattedText(window, stim.(effortType).(instructionType).title.text,...
             stim.(effortType).(instructionType).title.colour);
 
 % flip information on the screen
-Screen(window,'Flip');
-WaitSecs(t_wait);
+waitSpace(scr, stim, window, keys);
 
 %% put back baseline textsize value
 Screen('TextSize', window, baselineTextSize);

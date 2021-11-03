@@ -1,41 +1,35 @@
-function [timeDispWait] = waitSpace(langage, window, yScreenCenter, scr, keys)
-% [timeDispWait] = waitSpace(langage, window, yScreenCenter, scr, keys)
+function [timeDispWait, timePress] = waitSpace(scr, stim, window, keys)
+% [timeDispWait, timePress] = waitSpace(scr, stim, window, keys)
 % function to wait for space press before moving on
 %
 % INPUTS
-% langage: 'fr' french/'engl' english
+% scr: screen colours, etc
 %
 % window: PTB window index
 %
-% yScreenCenter: coordinates of y to put text
-%
-% scr: screen colours, etc
+% stim: structure with relevant key information
 %
 % keys: code for key space stored in this structure
 %
 % OUTPUTS
 % timeDispWait: time when message to wait for space press is displayed on
 % screen
+%
+% timePress: time of space press
 
 %% display wait for space on screen
-switch langage
-    case 'fr'
-        DrawFormattedText(window,...
-            'Appuyez sur espace quand vous etes pret(e) a demarrer.',...
-            'center', yScreenCenter*(5/3), scr.colours.white, scr.wrapat);
-    case 'engl'
-        DrawFormattedText(window,...
-            'Press space key when you are ready to start.',...
-            'center', yScreenCenter*(5/3), scr.colours.white, scr.wrapat);
-end
+DrawFormattedText(window,...
+            stim.pressSpace.text,...
+            stim.pressSpace.x, stim.pressSpace.y,...
+            scr.colours.white, scr.wrapat);
 [~, timeDispWait] = Screen(window,'Flip');
 disp('Please press space');
 
 %% wait for space press
-[~, ~, keyCode] = KbCheck();
+[~, timePress, keyCode] = KbCheck();
 while(keyCode(keys.space) ~= 1)
     % wait until the key has been pressed
-    [~, ~, keyCode] = KbCheck();
+    [~, timePress, keyCode] = KbCheck();
 end
 
 end % function
