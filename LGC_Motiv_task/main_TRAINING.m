@@ -34,8 +34,8 @@ cd(main_task_folder);
 % Insert the initials, the number of the participants
 iSubject = [];
 langue = 'f';
-IRM = 1;
-testing_script = 0;
+IRM = 1; % defines the buttons to use
+testing_script = 2; % use all computer resources (particularly for mental calibration) but display on the correct screen
 while isempty(iSubject) || length(iSubject) ~= 3
     % repeat until all questions are answered
     info = inputdlg({'Subject CID (XXX)','p/m'});
