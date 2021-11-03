@@ -33,14 +33,14 @@ effortType = ['E',effortTypeLetter];
 
 % announce what is next
 DrawFormattedText(window, stim.(effortType).(instructionType).title.text,...
-            stim.(effortType).(instructionType).title.x,...
-            stim.(effortType).(instructionType).title.y,...
-            stim.(effortType).(instructionType).title.colour);
+    stim.(effortType).(instructionType).title.x,...
+    stim.(effortType).(instructionType).title.y,...
+    stim.(effortType).(instructionType).title.colour);
+
+% put back baseline textsize value
+Screen('TextSize', window, baselineTextSize);
 
 % flip information on the screen
 waitSpace(scr, stim, window, keys);
-
-%% put back baseline textsize value
-Screen('TextSize', window, baselineTextSize);
 
 end % function
