@@ -285,7 +285,7 @@ for i_pm = 1:2
                     learning_sess_nm = ['learning_0back_session',num2str(jLearningSession)];
                     % display instructions for the current learning type
                     [onsets.endLearningInstructions.(learning_sess_nm).(curr_learning_instructions)] = mental_learningInstructions(scr, stim,...
-                        curr_learning_instructions, mentalE_prm_learning);
+                        curr_learning_instructions, mentalE_prm_learning); % inform about answer to give
                     
                     % perform the learning
                     if iLearning_Instructions == 1
@@ -322,7 +322,7 @@ for i_pm = 1:2
                 
                 % perform the learning session
                 [onsets.endLearningInstructions.learning1_2back_session] = mental_learningInstructions(scr, stim,...
-                    learningVersion, mentalE_prm_learning1_2back);
+                    learningVersion, mentalE_prm_learning1_2back); % inform about 2-back
                  for iLearning_2backTrial = 1:n_learning1_2back
                     mentalE_learning1_2backPerfSummary_tmp = mental_effort_perf_Nback(scr, stim, key_Em,...
                         numberVector_learning1_2back(iLearning_2backTrial,:),...
@@ -348,7 +348,7 @@ for i_pm = 1:2
                 mentalE_prm_learning1calibLike.startAngle = 0;
                 % Nback version
                 Nback_str = num2str(mentalE_prm_learning1calibLike.Nback);
-                learningVersion = ['learning_Nback',Nback_str];
+                learningVersion = ['learning_Nback',Nback_str,'_bis'];
                 % time limits
                 learning1calibLike_useOfTimeLimit = true;
                 learning1calibLike_timeLimit = trainingTimes_Em.max_effort;
@@ -394,6 +394,7 @@ for i_pm = 1:2
                 n_lastTrialsToCheck = 5; % how many trials to check
                 n_trialsCorrectThreshold = 4; % if less (<) than this number of trials was correct in the n_lastTrialsToCheck trials, redo more trials
                 jLearningTrial = n_learning1calibLikeTrials;
+                iBlockRepeats = 0;
                 while learning1done == 0
                     learningPerf_lastTrials = zeros(1,n_lastTrialsToCheck);
                     for iLastTrial = 1:n_lastTrialsToCheck
@@ -403,6 +404,8 @@ for i_pm = 1:2
                             ( sum(learningPerf_lastTrials) < n_trialsCorrectThreshold)
                         disp(['performance was too low in one of the last trials. We will redo ',...
                             num2str(n_learning1bonusTrialsToLearn),' more trials to compensate.']);
+                        iBlockRepeats = iBlockRepeats + 1;
+                        disp(['starting now the ',num2str(iBlockRepeats),' bonus block of the mental learning.']);
                         [numberVector_learning1_bonus] = mental_numbers(n_learning1bonusTrialsToLearn);
                         for iLearning1Trial_bonus = 1:n_learning1bonusTrialsToLearn
                             jLearningTrial = jLearningTrial + 1;
@@ -459,7 +462,7 @@ for i_pm = 1:2
             
             %% learning (2) for each difficulty level
             if strcmp(taskToPerform.mental.learning_2,'on')
-                % introduce physical learning
+                % introduce mental learning
                 showTitlesInstruction(scr,stim,'learning','m', key_Em);
                 
                 % define all difficulty levels based on calibration
@@ -626,9 +629,6 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
                             
                             mentalE_prm_instruDisplay = mental_effort_parameters();
                             % Nback version
-                            Nback_str = num2str(mentalE_prm_instruDisplay.Nback);
-                            learningVersion = ['learning_Nback',Nback_str];
-                            mental_learningInstructions(scr, stim, learningVersion, mentalE_prm_instruDisplay);
                             [Em_vars.n_to_reach] = mental_N_answersPerLevel(n_E_levels, NMP);
                             % run mental task
                             % for actual task: no display of mapping but consider 3
@@ -734,9 +734,11 @@ if strcmp(taskToPerform.mental.task,'on')
     IP_variables.mentalDeltaIP = mean(IP_variables.mentalDeltaIP_perSession);
 end
 
-IP_variables.baselineR = baselineR;
-IP_variables.baselineP = baselineP;
-IP_variables.totalGain = totalGain;
+if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,'on')
+    IP_variables.baselineR = baselineR;
+    IP_variables.baselineP = baselineP;
+    IP_variables.totalGain = totalGain;
+end
 IP_variables.training.p_or_m = p_or_m;
 if strcmp(taskToPerform.physical.task,'on')
     IP_variables.calibration.MVC = MVC;
