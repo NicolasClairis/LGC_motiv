@@ -264,7 +264,7 @@ stim.training.P.x = x_centerCoordinates(xScreenCenter, textSizePunishmentTrainin
 stim.training.P.y = y_coordinates(upperBorder, visibleYsize, 1/6, textSizePunishmentTraining);
 stim.training.P.colour = white;
 
-% reward + punishment training
+% reward + punishment training (with 2 buttons, no confidence)
 switch langage
     case 'fr'
         stim.training.RP.text = ['Vous allez a present choisir entre deux options associees a differents niveaux d''argent et d''effort ',...
@@ -279,6 +279,40 @@ end
 stim.training.RP.x = x_centerCoordinates(xScreenCenter, textSizeRewardAndPunishmentTraining);
 stim.training.RP.y = y_coordinates(upperBorder, visibleYsize, 1/6, textSizeRewardAndPunishmentTraining);
 stim.training.RP.colour = white;
+
+% reward + punishment training with confidence mapping
+switch langage
+    case 'fr'
+        stim.training.RP_withConfMapping.text = ['Vous allez a present choisir entre deux options associees a differents niveaux d''argent et d''effort. ',...
+            'Utilisez les quatre boutons pour exprimer votre certitude d''avoir choisi l''option la plus interessante pour vous.'];
+    case 'engl'
+        stim.training.RP_withConfMapping.text = ['You will now choose between two options associated with different levels of money and effort. ',...
+            'Use the four buttons to express your degree of confidence on having selected the best option for you.'];
+end
+[~,~,textSizeRewardAndPunishmentConfMapTraining] = DrawFormattedText(window,...
+    stim.training.RP_withConfMapping.text,...
+    'center', 'center', white, wrapat);
+stim.training.RP_withConfMapping.x = x_centerCoordinates(xScreenCenter, textSizeRewardAndPunishmentConfMapTraining);
+stim.training.RP_withConfMapping.y = y_coordinates(upperBorder, visibleYsize, 1/6, textSizeRewardAndPunishmentConfMapTraining);
+stim.training.RP_withConfMapping.colour = white;
+
+% reward + punishment training without confidence mapping but 4 buttons
+switch langage
+    case 'fr'
+        stim.training.RP_withoutConfMapping.text = ['Vous allez a present choisir entre deux options associees a differents niveaux d''argent et d''effort ',...
+            'l''option qui vous parait preferable. La correspondance avec les boutons ne sera plus affichee, ',...
+            'mais pensez bien a utiliser les quatre boutons pour repondre.'];
+    case 'engl'
+        stim.training.RP_withoutConfMapping.text = ['You will now choose between two options associated with different levels of money and effort ',...
+            'the option which seems the best for you. The mapping with the buttons will not be displayed anymore. However, please don''t forget ',...
+            'to use the four buttons when you answer.'];
+end
+[~,~,textSizeRewardAndPunishmentWihoutConfMapTraining] = DrawFormattedText(window,...
+    stim.training.RP.text,...
+    'center', 'center', white, wrapat);
+stim.training.RP_withoutConfMapping.x = x_centerCoordinates(xScreenCenter, textSizeRewardAndPunishmentWihoutConfMapTraining);
+stim.training.RP_withoutConfMapping.y = y_coordinates(upperBorder, visibleYsize, 1/6, textSizeRewardAndPunishmentWihoutConfMapTraining);
+stim.training.RP_withoutConfMapping.colour = white;
 
 % end of physical training
 switch langage

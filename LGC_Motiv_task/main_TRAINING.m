@@ -105,19 +105,18 @@ n_E_levels = 4;
 % define number of training conditions
 switch punishment_yn
     case 'yes'
-        trainingConditions = {'RP'};
+        trainingRP_P_or_R = 'RP';
     case 'no'
-        trainingConditions = {'R'};
+        trainingRP_P_or_R = 'R';
 end
-trainingCondition = trainingConditions{1};
 
 % define number of training trials (ie when choice + perf)
 n_trainingTrials = 4;
 % define number of trials per staircase procedure
 n_trialsPerSession = 5;
 % load timings for each phase of the experiment
-[trainingTimes_Em, calibTimes_Em, learningTimes_Em, taskTimes_Em] = timings_definition(trainingConditions, n_trialsPerSession, n_trainingTrials, 'mental');
-[trainingTimes_Ep, calibTimes_Ep, learningTimes_Ep, taskTimes_Ep] = timings_definition(trainingConditions, n_trialsPerSession, n_trainingTrials, 'physical');
+[trainingTimes_Em, calibTimes_Em, learningTimes_Em, taskTimes_Em] = timings_definition(trainingRP_P_or_R, n_trialsPerSession, n_trainingTrials, 'mental');
+[trainingTimes_Ep, calibTimes_Ep, learningTimes_Ep, taskTimes_Ep] = timings_definition(trainingRP_P_or_R, n_trialsPerSession, n_trainingTrials, 'physical');
 
 
 n_sessions = 2;
@@ -183,9 +182,10 @@ for i_pm = 1:2
             
             %% learning physical (learn each level of force)
             if strcmp(taskToPerform.physical.learning,'on')
-                n_Ep_learningForceRepeats = 5; % number of learning repetitions for each level of difficulty (= each level of force)
                 % introduce physical learning
                 showTitlesInstruction(scr,stim,'learning',p_or_m, key_Ep);
+
+                n_Ep_learningForceRepeats = 5; % number of learning repetitions for each level of difficulty (= each level of force)
                 % perform physical learning
                 [learningPerfSummary_Ep, learningOnsets_Ep] = physical_learning(scr, stim, dq, n_E_levels, Ep_time_levels,...
                     F_threshold, F_tolerance, MVC,...
@@ -194,9 +194,9 @@ for i_pm = 1:2
             
             %% training physical (choice + effort)
             if strcmp(taskToPerform.physical.training,'on')
-                
                 % introduce physical training
                 showTitlesInstruction(scr,stim,'training',p_or_m, key_Ep);
+                
                 % define parameters for the training
                 Ep_vars_training.MVC = MVC;
                 Ep_vars_training.dq = dq;
@@ -207,11 +207,11 @@ for i_pm = 1:2
                 % mapping between reward levels and fake monetary amounts
                 R_money = R_amounts(n_R_levels, punishment_yn);
                 % reward/punishment and effort levels
-                [trainingChoiceOptions_Ep_tmp] = training_options(trainingCondition, n_R_levels, n_E_levels, R_money, n_trainingTrials);
+                [trainingChoiceOptions_Ep_tmp] = training_options(trainingRP_P_or_R, n_R_levels, n_E_levels, R_money, n_trainingTrials);
                 % perform physical training in 2 phases:
                 % 1) with confidence mapping;
                 % 2) without confidence mapping
-                trainingConfConditions = {'withConfMapping','withoutConfMapping'};
+                trainingConfConditions = {'RP_withConfMapping','RP_withoutConfMapping'};
                 n_trainingConfConditions = length(trainingConfConditions); % with/without confidence mapping
                 if n_trainingConfConditions == 2
                     n_trialsPerTrainingCondition = n_trainingTrials/2;
@@ -224,18 +224,18 @@ for i_pm = 1:2
                     trainingConfCond = trainingConfConditions{iTrainingCondition};
                     % display confidence mapping only for first training sessions and
                     % only for fMRI experiment
-                    if strcmp(trainingConfCond,'withoutConfMapping') || n_buttonsChoice == 2
+                    if strcmp(trainingConfCond,'RP_withoutConfMapping') || n_buttonsChoice == 2
                         confidenceChoiceDisplay = false;
-                    elseif strcmp(trainingConfCond,'withConfMapping') && n_buttonsChoice == 4
+                    elseif strcmp(trainingConfCond,'RP_withConfMapping') && n_buttonsChoice == 4
                         confidenceChoiceDisplay = true;
                     end
                     % extract trials to use
                     trainingTrials_idx = (1:n_trialsPerTrainingCondition) + n_trialsPerTrainingCondition*(iTrainingCondition - 1);
                     % training instruction
-                    [onsets_Ep_training.(['session',num2str(iTrainingCondition),'_',trainingConfCond])] = choice_and_perf_trainingInstructions(scr, stim, trainingCondition, trainingTimes_Ep.instructions);
+                    [onsets_Ep_training.(['session',num2str(iTrainingCondition),'_',trainingConfCond])] = choice_and_perf_trainingInstructions(scr, stim, trainingConfCond, trainingTimes_Ep.instructions);
                     % perform the training
                     [trainingSummary_Ep.(['session',num2str(iTrainingCondition),'_',trainingConfCond])] = choice_and_perf(scr, stim, key_Ep, 'physical', Ep_vars_training,...
-                        trainingCondition, n_trialsPerTrainingCondition, trainingChoiceOptions_Ep_tmp, confidenceChoiceDisplay,...
+                        trainingRP_P_or_R, n_trialsPerTrainingCondition, trainingChoiceOptions_Ep_tmp, confidenceChoiceDisplay,...
                         trainingTimes_Ep,...
                         subResultFolder, file_nm_training_Ep);
                 end % learning condition loop
@@ -249,6 +249,8 @@ for i_pm = 1:2
         case 'm'
             %% learning mental: 0-back and 2-back as a calibration
             if strcmp(taskToPerform.mental.learning_1,'on')
+                % display instructions for learning
+                showTitlesInstruction(scr,stim,'learning',p_or_m, key_Em);
                 
                 %% learning the mapping for answering left/right <5/>5 with and then without the display on the screen (0-back)
                 % learning parameters
@@ -265,8 +267,6 @@ for i_pm = 1:2
                 mentalE_prm_learning.startAngle = 0; % for learning always start at zero
                 % no time limit for each trial: as long as needed until learning is ok
                 learning_useOfTimeLimit = false;
-                % display instructions for learning
-                showTitlesInstruction(scr,stim,'learning',p_or_m, key_Em)
                 
                 % for learning display the mapping after 'errorMappingLimit' number of errors
                 learning_errorLimits.useOfErrorThreshold = false; % no error limit for the learning period
@@ -479,6 +479,9 @@ for i_pm = 1:2
             
             %% training mental
             if strcmp(taskToPerform.mental.training,'on')
+                % show title before instructions
+                showTitlesInstruction(scr, stim, 'training', 'm', key_Em);
+
                 % define parameters for the training
                 [Em_vars_training.n_to_reach] = mental_N_answersPerLevel(n_E_levels, NMP);
                 Em_vars_training.errorLimits.useOfErrorMapping = false;
@@ -487,11 +490,11 @@ for i_pm = 1:2
                 % mapping between reward levels and fake monetary amounts
                 R_money = R_amounts(n_R_levels, punishment_yn);
                 % reward/punishment and effort levels
-                [trainingChoiceOptions_Em_tmp] = training_options(trainingCondition, n_R_levels, n_E_levels, R_money, n_trainingTrials);
+                [trainingChoiceOptions_Em_tmp] = training_options(trainingRP_P_or_R, n_R_levels, n_E_levels, R_money, n_trainingTrials);
                 % perform physical training in 2 phases:
                 % 1) with confidence mapping;
                 % 2) without confidence mapping
-                trainingConfConditions = {'withConfMapping','withoutConfMapping'};
+                trainingConfConditions = {'RP_withConfMapping','RP_withoutConfMapping'};
                 n_trainingConfConditions = length(trainingConfConditions); % with/without confidence mapping
                 if n_trainingConfConditions == 2
                     n_trialsPerTrainingCondition = n_trainingTrials/2;
@@ -504,18 +507,18 @@ for i_pm = 1:2
                     trainingConfCond = trainingConfConditions{iTrainingCondition};
                     % display confidence mapping only for first training sessions and
                     % only for fMRI experiment
-                    if strcmp(trainingConfCond,'withoutConfMapping') || n_buttonsChoice == 2
+                    if strcmp(trainingConfCond,'RP_withoutConfMapping') || n_buttonsChoice == 2
                         confidenceChoiceDisplay = false;
-                    elseif strcmp(trainingConfCond,'withConfMapping') && n_buttonsChoice == 4
+                    elseif strcmp(trainingConfCond,'RP_withConfMapping') && n_buttonsChoice == 4
                         confidenceChoiceDisplay = true;
                     end
                     % extract trials to use
                     trainingTrials_idx = (1:n_trialsPerTrainingCondition) + n_trialsPerTrainingCondition*(iTrainingCondition - 1);
                     % training instruction
-                    [onsets_Em_training.(['session',num2str(iTrainingCondition),'_',trainingConfCond])] = choice_and_perf_trainingInstructions(scr, stim, trainingCondition, trainingTimes_Em.instructions);
+                    [onsets_Em_training.(['session',num2str(iTrainingCondition),'_',trainingConfCond])] = choice_and_perf_trainingInstructions(scr, stim, trainingConfCond, trainingTimes_Em.instructions);
                     % select effort level
                     [trainingSummary_Em.(trainingConfCond)] = choice_and_perf(scr, stim, key_Em, 'mental', Em_vars_training,...
-                        trainingCondition, n_trialsPerTrainingCondition, trainingChoiceOptions_Em_tmp, confidenceChoiceDisplay,...
+                        trainingRP_P_or_R, n_trialsPerTrainingCondition, trainingChoiceOptions_Em_tmp, confidenceChoiceDisplay,...
                         trainingTimes_Em,...
                         subResultFolder, file_nm_training_Em);
                 end % training condition loop
