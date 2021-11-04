@@ -115,8 +115,8 @@ n_trainingTrials = 4;
 % define number of trials per staircase procedure
 n_trialsPerSession = 5;
 % load timings for each phase of the experiment
-[trainingTimes_Em, calibTimes_Em, learningTimes_Em, taskTimes_Em] = timings_definition(trainingRP_P_or_R, n_trialsPerSession, n_trainingTrials, 'mental');
-[trainingTimes_Ep, calibTimes_Ep, learningTimes_Ep, taskTimes_Ep] = timings_definition(trainingRP_P_or_R, n_trialsPerSession, n_trainingTrials, 'physical');
+[trainingTimes_Em, calibTimes_Em, learningTimes_Em, taskTimes_Em] = timings_definition({trainingRP_P_or_R}, n_trialsPerSession, n_trainingTrials, 'mental');
+[trainingTimes_Ep, calibTimes_Ep, learningTimes_Ep, taskTimes_Ep] = timings_definition({trainingRP_P_or_R}, n_trialsPerSession, n_trainingTrials, 'physical');
 
 
 n_sessions = 2;
