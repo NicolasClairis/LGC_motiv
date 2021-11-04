@@ -43,9 +43,13 @@ window = scr.window;
 %% time parameters
 time_limit = false;
 t_learning_rest = timings.learning_rest;
+t_instructions = timings.instructions;
 
-n_learningTrials = n_learningForceRepeats*n_E_levels;
+%% instructions
+[onsets] = EpEm_learningInstructions(scr, stim, t_instructions);
+
 %% initialize vars of interst
+n_learningTrials = n_learningForceRepeats*n_E_levels;
 [perfSummary, onsets.effortPeriod] = deal(cell(1,n_learningTrials));
 onsets.learningRest = NaN(1,n_learningTrials);
 

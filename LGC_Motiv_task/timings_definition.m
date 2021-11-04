@@ -61,6 +61,7 @@ switch effort_type % in case you use different numbers for each effort type
         learningTimes.physicalReadWait = t_readWait;
         learningTimes.learning_rest = 3;
 end
+learningTimes.instructions = 5;
 learningTimes.fail_and_repeat_fbk = 5;
 
 %% main task timings

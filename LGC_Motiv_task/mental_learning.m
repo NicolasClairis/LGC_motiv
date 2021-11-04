@@ -29,8 +29,12 @@ window = scr.window;
 
 %% time parameters
 time_limit = timings.time_limit;
-t_max = timings.t_max;
+t_max = timings.max_effort;
 t_learning_rest = timings.learning_rest;
+t_instructions = timings.instructions;
+
+%% instructions
+[onsets] = EpEm_learningInstructions(scr, stim, t_instructions);
 
 %% error handling
 errorLimits.useOfErrorMapping = false;
