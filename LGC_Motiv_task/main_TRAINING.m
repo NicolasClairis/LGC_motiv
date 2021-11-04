@@ -34,16 +34,14 @@ cd(main_task_folder);
 % Insert the initials, the number of the participants
 iSubject = [];
 langue = 'f';
-IRM = 1; % defines the buttons to use
-testing_script = 2; % use all computer resources (particularly for mental calibration) but display on the correct screen
+IRMdisp = 0; % defines the screen parameters (0 for training screen, 1 for fMRI screen)
+IRMbuttons = 1; % defines the buttons to use (1 = same as in fMRI)
+testing_script = 0; % use all computer resources (particularly for mental calibration)
 while isempty(iSubject) || length(iSubject) ~= 3
     % repeat until all questions are answered
     info = inputdlg({'Subject CID (XXX)','p/m'});
     [iSubject,p_or_m] = info{[1,2]};
     %     warning('when real experiment starts, remember to block in french and IRM = 1');
-end
-if ischar(IRM)
-    IRM = str2double(IRM);
 end
 % Create subjectCodeName which is used as a file saving name
 subjectCodeName = strcat('CID',iSubject);
@@ -87,7 +85,7 @@ switch langue
 end
 % initialize screen
 [scr, xScreenCenter, yScreenCenter,...
-    window, baselineTextSize] = ScreenConfiguration(IRM, testing_script);
+    window, baselineTextSize] = ScreenConfiguration(IRMdisp, testing_script);
 % ShowCursor;
 white = scr.colours.white;
 black = scr.colours.black;
@@ -122,7 +120,7 @@ n_trialsPerSession = 5;
 n_sessions = 2;
 
 % number of buttons to answer
-switch IRM
+switch IRMbuttons
     case 0
         n_buttonsChoice = 4;
     case 1 % test buttons
@@ -145,7 +143,7 @@ if strcmp(taskToPerform.physical.calib,'on') ||...
         strcmp(taskToPerform.physical.training,'on') ||...
         strcmp(taskToPerform.physical.task,'on')
     % define relevant keys and dynamometer module
-    [key_Ep, dq] = relevant_key_definition('physical', IRM, n_buttonsChoice);
+    [key_Ep, dq] = relevant_key_definition('physical', IRMbuttons, n_buttonsChoice);
     % define conditions
     F_threshold = 55; % force should be maintained above this threshold (expressed in % of MVC)
     F_tolerance = 2.5; % tolerance allowed around the threshold (expressed in % of MVC)
@@ -160,7 +158,7 @@ if strcmp(taskToPerform.mental.calib,'on') ||...
         strcmp(taskToPerform.mental.training,'on') ||...
         strcmp(taskToPerform.mental.task,'on')
     % define relevant keys and dynamometer module
-    key_Em = relevant_key_definition('mental', IRM, n_buttonsChoice);
+    key_Em = relevant_key_definition('mental', IRMbuttons, n_buttonsChoice);
 end
 
 %% run the code twice, each time for p or m conditions
@@ -400,7 +398,7 @@ for i_pm = 1:2
                     for iLastTrial = 1:n_lastTrialsToCheck
                         learningPerf_lastTrials(iLastTrial) = n_maxReachedDuringLearning(end+1-iLastTrial) >= n_Em_learning1calibLike_MinToReach;
                     end
-                    if n_learning1calibLikeTrials > n_lastTrialsToCheck &&...
+                    if n_learning1calibLikeTrials >= n_lastTrialsToCheck &&...
                             ( sum(learningPerf_lastTrials) < n_trialsCorrectThreshold)
                         disp(['performance was too low in one of the last trials. We will redo ',...
                             num2str(n_learning1bonusTrialsToLearn),' more trials to compensate.']);
@@ -470,9 +468,8 @@ for i_pm = 1:2
                 % define number of learning trials
                 n_Em_learningForceRepeats = 5; % number of learning repetitions for each level of difficulty (= each level of force)
                 % timings
+                Em_learningTimings = learningTimes_Em;
                 Em_learningTimings.time_limit = false;
-                Em_learningTimings.t_max = learningTimes_Em.max_effort;
-                Em_learningTimings.learning_rest = learningTimes_Em.learning_rest;
                 % perform all the difficulty levels
                 [learning2PerfSummary_Em, onsets] = mental_learning(scr, stim, key_Em, n_E_levels, n_to_reach, n_Em_learningForceRepeats, Em_learningTimings);
             end % learning (2)
@@ -589,7 +586,6 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
         Ep_vars.F_tolerance = F_tolerance;
         Ep_vars.timeRemainingEndTrial_ONOFF = 0;
     end
-    
     
     for iEffortLevel = 1:nbEffortLvl
         % keep track of the current session for mental and physical (only important for saving)

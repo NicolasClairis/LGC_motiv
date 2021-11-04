@@ -30,12 +30,14 @@ function[scr, xScreenCenter, yScreenCenter, window, baselineTextSize] = ScreenCo
 % displayed on the scanner screen)
 screens = Screen('Screens');
 if IRM == 0
-    whichScreen = max(screens);
+    if testing_script == 0 % for fMRI training display on screen 1
+        whichScreen = 1;
+    elseif testing_script == 1 % for debugging or pure behavioral testing
+        whichScreen = max(screens);
+    end
 elseif IRM == 1 % CIBM computer
     if testing_script == 0 % for fMRI experiment, display on the projector
         whichScreen = max(screens); % 1 if 2 screens, 0 if one screen
-    elseif testing_script == 2 % for fMRI training display on screen 1
-        whichScreen = 1;
     elseif testing_script == 1 % for debugging
         whichScreen = 1;
     end
@@ -58,7 +60,7 @@ Screen('Preference','VisualDebugLevel', 0);
 % require the computer to have best timing performance only when not
 % testing
 switch testing_script
-    case {0,2} % CIBM
+    case 0 % CIBM
         Screen('Preference', 'SkipSyncTests', 0); % needs all other processes shut off
     case 1 % my own computer
         Screen('Preference', 'SkipSyncTests', 1); % can work even if other softwares are on but displays an ugly red triangle at start
