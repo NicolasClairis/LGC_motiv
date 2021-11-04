@@ -1,5 +1,5 @@
-function[MVC, onsets] = physical_effort_MVC(scr, stim, dq, n_MVC_repeat, calibTimes)
-%[MVC, onsets] = physical_effort_MVC(scr, stim, dq, n_MVC_repeat, calibTimes)
+function[MVC, onsets] = physical_effort_MVC(scr, stim, dq, n_MVC_repeat, calibTimes, MVC_or_maxPerf, keys)
+%[MVC, onsets] = physical_effort_MVC(scr, stim, dq, n_MVC_repeat, calibTimes, MVC_or_maxPerf, keys)
 % MVC_measurement will display the instructions and measure the MVC
 % for the physical effort task.
 %
@@ -17,6 +17,12 @@ function[MVC, onsets] = physical_effort_MVC(scr, stim, dq, n_MVC_repeat, calibTi
 %   .effort_max: duration available for the effort performance
 %   .fbk: duration for the feedback
 %
+% MVC_or_maxPerf: indicate whether calibration ('MVC') or maximal
+% performance ('maxPerf')
+%
+% keys: structure with code of keys of interest to know how to check for
+% space press
+% 
 % OUTPUTS
 % MVC: MVC value
 %
@@ -45,18 +51,35 @@ maxVoltage = 10; % maximum voltage that can be reached by the grip (force will b
 MVC_perCalibSession = NaN(1,n_MVC_repeat);
 
 %% Quick text to introduce MVC calibration
-% Screen('TextSize', window, text_size_1);
-DrawFormattedText(window, stim.Ep.MVC.instructions.text,...
-    stim.Ep.MVC.instructions.x, stim.Ep.MVC.instructions.y,...
-    stim.Ep.MVC.instructions.colour, wrapat);
-% Screen('TextSize', window, text_size_2)
-DrawFormattedText(window, stim.Ep.MVC.instructions_bis.text,...
-    stim.Ep.MVC.instructions_bis.x, stim.Ep.MVC.instructions_bis.y,...
-    stim.Ep.MVC.instructions_bis.colour);
 
-[~,time_disp1,~,~,~] = Screen(window,'Flip');
-onsets.initial_MVC_instructions = time_disp1;
-WaitSecs(t_MVC_calib_instructions1);
+switch MVC_or_maxPerf
+    case 'MVC'
+        for iTime = 1:2
+            DrawFormattedText(window, stim.Ep.MVC.instructions.text,...
+                stim.Ep.MVC.instructions.x, stim.Ep.MVC.instructions.y,...
+                stim.Ep.MVC.instructions.colour, wrapat);
+            DrawFormattedText(window, stim.Ep.MVC.instructions_bis.text,...
+                stim.Ep.MVC.instructions_bis.x, stim.Ep.MVC.instructions_bis.y,...
+                stim.Ep.MVC.instructions_bis.colour);
+            if iTime == 1
+                [~,time_disp1,~,~,~] = Screen(window,'Flip');
+                onsets.initial_MVC_instructions = time_disp1;
+                WaitSecs(t_MVC_calib_instructions1);
+            elseif iTime == 2
+                waitSpace(scr, stim, window, keys);
+            end
+        end
+    case 'maxPerf'
+        DrawFormattedText(window, stim.Ep.MVC.instructions.text,...
+            stim.Ep.MVC.instructions.x, stim.Ep.MVC.instructions.y,...
+            stim.Ep.MVC.instructions.colour, wrapat);
+        DrawFormattedText(window, stim.Ep.MVC.instructions_bis.text,...
+            stim.Ep.MVC.instructions_bis.x, stim.Ep.MVC.instructions_bis.y,...
+            stim.Ep.MVC.instructions_bis.colour);
+        [~,time_disp1,~,~,~] = Screen(window,'Flip');
+        onsets.initial_MVC_instructions = time_disp1;
+        WaitSecs(t_MVC_calib_instructions1);
+end
 [bottomScaleLimit, topScaleLimit, leftScaleLimit, rightScaleLimit, graphYSize] = disp_realtime_force(scr, F_threshold, F_tolerance, F_start, 'calib');
 
 %% Measure MVC
@@ -76,19 +99,6 @@ for iCalib_MVC = 1:n_MVC_repeat
     % function, everytime you call the read function, it will take a
     % long time to process)
     start(dq,"continuous");
-    % will need data = read(dq) function only to read the signal
-    
-    %     %% allow subject to decide when to start calibration
-    %     DrawFormattedText(window, 'Appuyez sur un des boutons quand vous etes pret(e)',...
-    %         'center', yScreenSize*0.8, [0 0.8 0 ]);
-    %     [~,timeNow]  = Screen(window,'Flip');
-    %     onset.initial_MVC_rest = timeNow;
-    % you need to add key in the inputs if you use these lines of code
-    %     [keyisdown, ~, keyCode] = KbCheck();
-    %     while (keyisdown == 0) ||...
-    %             (keyCode(key.left) == 0 && keyCode(key.right) == 0)
-    %         [keyisdown, ~, keyCode] = KbCheck();
-    %     end
     
     %% start displaying effort scale and Go signal
     DrawFormattedText(window, stim.Ep.MVC.GO.text,...

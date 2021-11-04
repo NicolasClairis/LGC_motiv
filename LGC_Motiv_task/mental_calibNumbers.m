@@ -61,8 +61,16 @@ calib_time_limit = true; % time will be limited (as opposed to learning where ti
 instructions_disp = 0; % no instructions anymore, goal is to calibrate as if it was the actual task
 
 % thresholds for calibration
+calib_or_maxPerf = mentalE_prm.calib_or_maxPerf;
 n_errorsThreshold = 5; % number of errors allowed before repeating the trial
-n_minCorrectAnswersToReach = 6; % number of correct answers required to consider the trial ok (if too low, then trial is repeated)
+switch calib_or_maxPerf
+    case 'calib' % perf has to be of at least 6 for calibration
+        n_minCorrectAnswersToReach = 6; % number of correct answers required to consider the trial ok (if too low, then trial is repeated)
+        n_minCorrectAnswertsToReach_display = n_minCorrectAnswersToReach;
+    case 'maxPerf' % perf can be lower for max performance (signalling fatigue effects)
+        n_minCorrectAnswersToReach = 0; % number of correct answers required to consider the trial ok (if too low, then trial is repeated)
+        n_minCorrectAnswertsToReach_display = []; % avoid displaying any additional stimulus on screen to avoid distracting the subjects
+end
 
 % introduce variables of interest
 [n_max_calibPerf_perTrial,...
@@ -110,7 +118,7 @@ while iCalibTrial <= n_calibTrials
     %% calibration trial start: finish when max time reached OR when correct number of answers has been provided
     mentalE_perf = mental_effort_perf_Nback(scr, stim, key,...
         numberVector_calib(iCalibTrial,:),...
-        mentalE_prm, n_calibMax, instructions_disp, calib_time_limit, calibTimes.effort_max, errorLimits, n_maxReachedUntilNow, n_minCorrectAnswersToReach);
+        mentalE_prm, n_calibMax, instructions_disp, calib_time_limit, calibTimes.effort_max, errorLimits, n_maxReachedUntilNow, n_minCorrectAnswertsToReach_display);
     
     calib_summary.mentalE_perf(iCalibTrial) = mentalE_perf;
     % store current maximum performance
@@ -129,7 +137,7 @@ while iCalibTrial <= n_calibTrials
         % store the data of the missed trial because otherwise will be
         % erased
         missedTrialData{n_calibTrialsMissed} = mentalE_perf;
-        if (n_max_calibPerf_perTrial(iCalibTrial) < n_minCorrectAnswersToReach)
+        if n_max_calibPerf_perTrial(iCalibTrial) < n_minCorrectAnswersToReach
             DrawFormattedText(window, stim.mentalCalibFailureFbk.text,...
                 stim.mentalCalibFailureFbk.x, stim.mentalCalibFailureFbk.y,...
                 stim.mentalCalibFailureFbk.colour, wrapat);
@@ -165,7 +173,7 @@ while iCalibTrial <= n_calibTrials
     if calibTrialSuccess == 1
         disp(['Mental calibration trial ',num2str(iCalibTrial-1),'/',num2str(n_calibTrials),' - done']);
     else
-        disp(['Mental calibration trial ',num2str(iCalibTrial+1),' is gonna be repeated because calibration failed.']);
+        disp(['Mental calibration trial ',num2str(iCalibTrial),' is gonna be repeated because calibration failed.']);
     end
     
     %% allow the participant to restart whenever he/she feels ready by

@@ -165,6 +165,7 @@ switch effort_type
         F_tolerance = 2.5; % tolerance allowed around the threshold (expressed in % of MVC)
     case 'mental'
         mentalE_prm_calib = mental_effort_parameters();
+        mentalE_prm_calib.calib_or_maxPerf = 'maxPerf';
         mentalE_prm_calib.startAngle = 0; % for learning always start at zero
         % no error threshold nor mapping of answers when errors are
         % made
@@ -221,7 +222,7 @@ switch effort_type
         % take an initial MVC measurement (even if it has been done in a
         % previous session, will allow us to keep track of the force level
         % of our participants)
-        [initial_MVC, onsets_initial_MVC] = physical_effort_MVC(scr, stim, dq, n_MaxPerfTrials, calibTimes);
+        [initial_MVC, onsets_initial_MVC] = physical_effort_MVC(scr, stim, dq, n_MaxPerfTrials, calibTimes, 'maxPerf');
 end
 
 %% launch main task
@@ -338,7 +339,7 @@ Screen(window,'Flip');
 % MVC maximum
 switch effort_type
     case 'physical'
-        [last_MVC, onsets_last_MVC] = physical_effort_MVC(scr, stim, dq, n_MaxPerfTrials, calibTimes);
+        [last_MVC, onsets_last_MVC] = physical_effort_MVC(scr, stim, dq, n_MaxPerfTrials, calibTimes, 'maxPerf');
     case 'mental'
         % extract numbers to use for each calibration trial
         [numberVector_endCalib] = mental_calibNumberVector(n_MaxPerfTrials, n_calibMax);

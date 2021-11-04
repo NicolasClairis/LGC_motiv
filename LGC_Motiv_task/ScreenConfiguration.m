@@ -30,11 +30,15 @@ function[scr, xScreenCenter, yScreenCenter, window, baselineTextSize] = ScreenCo
 % displayed on the scanner screen)
 screens = Screen('Screens');
 if IRM == 0
-    whichScreen = max(screens);
-elseif IRM == 1
+    if testing_script == 0 % for fMRI training display on screen 1
+        whichScreen = 1;
+    elseif testing_script == 1 % for debugging or pure behavioral testing
+        whichScreen = max(screens);
+    end
+elseif IRM == 1 % CIBM computer
     if testing_script == 0 % for fMRI experiment, display on the projector
         whichScreen = max(screens); % 1 if 2 screens, 0 if one screen
-    elseif testing_script == 1 % for fMRI training display on screen 1
+    elseif testing_script == 1 % for debugging
         whichScreen = 1;
     end
 end

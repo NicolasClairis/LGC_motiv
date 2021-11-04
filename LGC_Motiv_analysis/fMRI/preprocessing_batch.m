@@ -33,6 +33,11 @@ spm_jobman('initcfg');
 
 %% define subjects and working directories
 [computerRoot, spmFolderPath] = LGCM_root_paths();
+if ~exist('study_nm','var') || isempty(study_nm)
+    study_nm_List = {'study1','study2','fMRI_pilots'};
+    study_nm_idx = listdlg('ListString',study_nm_List);
+    study_nm = study_nm_List{study_nm_idx};
+end
 switch study_nm
     case 'fMRI_pilots' % pilots
         root = [fullfile(computerRoot,'fMRI_pilots'),filesep];
@@ -112,7 +117,8 @@ for iS = 1:NS % loop through subjects
         elseif ismember(sub_nm,{'pilot_s3'})
             filenames = cellstr(spm_select('ExtFPList',pwd,'^ABNC.*\.img$'));
         else
-            error('please check the format (nii/img) and the start of the name of each run because it has to be stabilized now...');
+            filenames = cellstr(spm_select('ExtFPList',pwd,'^CID.*\.nii$'));
+%             error('please check the format (nii/img) and the start of the name of each run because it has to be stabilized now...');
         end
         runFileNames.(['run_',num2str(iRun)]) = filenames;
         cd(subj_scans_folder);
@@ -148,7 +154,8 @@ for iS = 1:NS % loop through subjects
     elseif ismember(sub_nm,{'pilot_s3'})
         anat_file = ls('ABNC_*.img');
     else
-        anat_file = ls('mp2rage_*.nii');
+        %         anat_file = ls('mp2rage_*.nii');
+        anat_file = ls('CID*.nii');
     end
     matlabbatch{coreg_step}.spm.spatial.coreg.estimate.source = {[newAnatFolder, anat_file]};
     cd(subj_scans_folder);

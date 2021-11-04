@@ -6,8 +6,8 @@ IRM = 1;
 ShowCursor;
 
 %% prepare the parameters
-n_R_levels=3;
-n_E_levels = 3;
+n_R_levels=4;
+n_E_levels = 4;
 langage = 'fr';
 n_buttonsChoice=4;
 confidenceDisp = 1;
@@ -18,7 +18,7 @@ timeParameter.timeLimit = false;
 %% display a choice trial on the screen (script will wait one of the 4 buttons to be pressed)
 disp('please press one of the four buttons to move on');
 choice_period(scr, stim,...
-        1.6, 1.8, 1, 3, 'R',...
+        1.6, 1.8, 1, 2, 'R',...
         timeParameter, key, confidenceDisp);
 
 %% display mental effort on the screen to check if big enough
