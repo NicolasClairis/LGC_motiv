@@ -351,12 +351,12 @@ stim.training.Ep.endMsg.colour = white;
 % full help instructions
 switch langage
     case 'fr'
-        stim.Em.learning.fullInstructions.text = ['Dites si le chiffre a l''ecran est inferieur a 5 (a gauche) ',...
+        stim.Em.learning.fullInstructions.text = ['Indiquez si le chiffre a l''ecran est inferieur a 5 (a gauche) ',...
             'ou superieur (a droite)'];
         %'La couleur du chiffre represente la question posee. ',... only
         %for task switching version
     case 'engl'
-        stim.Em.learning.fullInstructions.text = ['Say whether the number on screen is below 5 (to the left) ',...
+        stim.Em.learning.fullInstructions.text = ['Indicate whether the number on screen is below 5 (to the left) ',...
             'or above 5 (to the right).'];
 %         'The colour of the number represents the nature of the question.
 %         ',... only for task switching version
