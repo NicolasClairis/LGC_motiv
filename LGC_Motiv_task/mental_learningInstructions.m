@@ -48,20 +48,23 @@ for iTimeLoop = 1:2
         stim.Em.learning.(learning_instructions).colour, wrapat);
     
     % lower/higher than 5 info
-    DrawFormattedText(window, stim.Em.lowerORhigherQuestion.text,...
-        stim.Em.lowerORhigherQuestion.x, stim.Em.lowerORhigherQuestionInstructions.y, lowHigh_col);
-    if sideQuestion.hL.low == -1 && sideQuestion.hL.high == +1
-        x_low = stim.Em.lower_left.x;
-        x_high = stim.Em.higher_right.x;
-    elseif sideQuestion.hL.low == +1 && sideQuestion.hL.high == -1
-        x_low = stim.Em.lower_right.x;
-        x_high = stim.Em.higher_left.x;
-    else
-        error('error in sideQuestion definition');
+    % display only for 0-back
+    if ismember(learning_instructions,{'fullInstructions','noInstructions'})
+        DrawFormattedText(window, stim.Em.lowerORhigherQuestion.text,...
+            stim.Em.lowerORhigherQuestion.x, stim.Em.lowerORhigherQuestionInstructions.y, lowHigh_col);
+        if sideQuestion.hL.low == -1 && sideQuestion.hL.high == +1
+            x_low = stim.Em.lower_left.x;
+            x_high = stim.Em.higher_right.x;
+        elseif sideQuestion.hL.low == +1 && sideQuestion.hL.high == -1
+            x_low = stim.Em.lower_right.x;
+            x_high = stim.Em.higher_left.x;
+        else
+            error('error in sideQuestion definition');
+        end
+        DrawFormattedText(window, stim.Em.lower.text, x_low, stim.Em.lowerInstructions.y, lowHigh_col );    % < 5
+        DrawFormattedText(window, stim.Em.higher.text, x_high, stim.Em.higherInstructions.y, lowHigh_col ); % > 5
     end
-    DrawFormattedText(window, stim.Em.lower.text, x_low, stim.Em.lowerInstructions.y, lowHigh_col );    % < 5
-    DrawFormattedText(window, stim.Em.higher.text, x_high, stim.Em.higherInstructions.y, lowHigh_col ); % > 5
-    
+
     if iTimeLoop == 1 % force them to read at first
         Screen(window,'Flip');
         WaitSecs(t_instructions);
