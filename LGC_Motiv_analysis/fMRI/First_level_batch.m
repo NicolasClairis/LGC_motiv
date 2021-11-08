@@ -23,6 +23,11 @@ while isempty(GLM_nm)
     info = inputdlg({'GLM number?'});
     [GLM_nm] = info{1};
 end
+if ~exist('study_nm','var') || isempty(study_nm)
+    study_names = {'fMRI_pilots','study1','study2'};
+    study_nm_idx = listdlg('ListString',study_names);
+    study_nm = study_names{study_nm_idx};
+end
 GLM = str2double(GLM_nm);
 GLMprm = which_GLM(GLM);
 add_drv = GLMprm.gal.add_drv;
@@ -68,13 +73,25 @@ for iS = 1:NS
     mkdir(resultsFolderName);
     
     %% define number of runs
-    switch sub_nm
-        case {'pilot_s1','pilot_s3'}
-            nb_runs = 2;
-        case 'pilot_s2'
-            nb_runs = 1;
-        otherwise
-            nb_runs = 4;
+    switch study_nm
+        case 'fMRI_pilots'
+            switch sub_nm
+                case {'pilot_s1','pilot_s3'}
+                    nb_runs = 2;
+                case 'pilot_s2'
+                    nb_runs = 1;
+                case 'CID074' % ignore first run which crashed at the beginning due to high voltage
+                    nb_runs = 3;
+                otherwise
+                    nb_runs = 4;
+            end
+        case 'study1'
+            switch sub_nm
+                case 'CID074' % ignore first run which crashed at the beginning due to high voltage
+                    nb_runs = 3;
+                otherwise
+                    nb_runs = 4;
+            end
     end
     
     %% load fMRI data
@@ -133,7 +150,7 @@ for iS = 1:NS
             error('problem in identifying task type because file name doesn''t match');
         end
         % perform 1st level
-        matlabbatch = First_level_loadRegressors(matlabbatch, GLMprm, sub_idx, iRun,...
+        matlabbatch = First_level_loadRegressors(matlabbatch, GLMprm, study_nm, sub_idx, iRun,...
             subj_behavior_folder, currRunBehaviorFileNames, task_nm);
         
         %% global run parameters (rp movement file, etc.)
