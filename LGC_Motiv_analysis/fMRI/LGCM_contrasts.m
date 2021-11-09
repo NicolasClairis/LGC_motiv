@@ -118,6 +118,16 @@ if runs.nb_runs.Ep > 0
                 else
                     error('case not ready yet');
                 end
+            elseif runs.nb_runs.Ep == 2 && runs.nb_runs.Em == 1
+                if Ep_runs(1) == 1 && Ep_runs(3) == 1 && Em_runs(2) == 1
+                    % Ep/Em/Ep
+                    con_vec_Ep_tmp = [strcmp(reg_names.Ep, reg_nm),...
+                        zeros(1,n_regsPerTask.Em),...
+                        strcmp(reg_names.Ep, reg_nm),...
+                        zeros(1, runs.nb_runs.Ep), zeros(1, runs.nb_runs.Em)] ;
+                else
+                    error('case not ready yet');
+                end
             else
                 error('case not ready yet');
             end
@@ -181,12 +191,22 @@ if runs.nb_runs.Em > 0
                 else
                     error('case not ready yet');
                 end
-                
+
             elseif runs.nb_runs.Em == 1 && runs.nb_runs.Ep == 0
                 if Em_runs(1) == 1
                     % Em
                     con_vec_Em_tmp = [strcmp(reg_names.Em, reg_nm),...
                         zeros(1, runs.nb_runs.Em)] ;
+                else
+                    error('case not ready yet');
+                end
+            elseif runs.nb_runs.Ep == 2 && runs.nb_runs.Em == 1
+                if Ep_runs(1) == 1 && Ep_runs(3) == 1 && Em_runs(2) == 1
+                    % Ep/Em/Ep
+                    con_vec_Em_tmp = [zeros(1,n_regsPerTask.Ep),...
+                        strcmp(reg_names.Em, reg_nm),...
+                        zeros(1,n_regsPerTask.Ep),...
+                        zeros(1, runs.nb_runs.Ep), zeros(1, runs.nb_runs.Em)] ;
                 else
                     error('case not ready yet');
                 end
@@ -213,7 +233,7 @@ if runs.nb_runs.Em > 0 && runs.nb_runs.Ep > 0
     
     for iReg_Ep_bis = 1:n_regsPerTask.Ep
         reg_nm = reg_names.Ep{iReg_Ep_bis};
-        if sum(strcmp(reg_names.Em, reg_nm)) > 0 &&...
+        if (sum(strcmp(reg_names.Em, reg_nm)) > 0) &&...
                 ~strcmp(reg_nm,'movement') && ~isempty(reg_nm) % ignore movement regressors (labelled as 'movement') and temporal derivative regressors (empty name)
             % extract previously defined contrast for each task
             jReg_Ep = strcmp(con_names,['Ep ',reg_nm]);

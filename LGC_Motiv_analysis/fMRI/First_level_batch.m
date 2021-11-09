@@ -96,7 +96,7 @@ for iS = 1:NS
     subj_scan_folders_names = ls([subj_scans_folder, filesep, '*run*']); % takes all functional runs folders
     % clear files that should not be taken into account in the first level
     % analysis
-    [subj_scan_folders_names] = fMRI_subRunFilter(study_nm, sub_nm, subj_scan_folders_names);
+    [subj_scan_folders_names] = First_level_subRunFilter(study_nm, sub_nm, subj_scan_folders_names);
     
     %% starting 1st level GLM batch
     sub_idx = nb_batch_per_subj*(iS-1) + 1 ;

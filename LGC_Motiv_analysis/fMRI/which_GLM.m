@@ -66,12 +66,14 @@ for iEpm = 1:length(Ep_Em)
             GLMprm.choice.(EpEm_nm).(RP_nm).money_unchosen,...
             GLMprm.choice.(EpEm_nm).(RP_nm).money_ch_min_unch,...
             GLMprm.choice.(EpEm_nm).(RP_nm).money_sum,...
+            GLMprm.choice.(EpEm_nm).(RP_nm).money_varOption,...
             GLMprm.choice.(EpEm_nm).(RP_nm).E_left,...
             GLMprm.choice.(EpEm_nm).(RP_nm).E_right,...
             GLMprm.choice.(EpEm_nm).(RP_nm).E_chosen,...
             GLMprm.choice.(EpEm_nm).(RP_nm).E_unchosen,...
             GLMprm.choice.(EpEm_nm).(RP_nm).E_ch_min_unch,...
             GLMprm.choice.(EpEm_nm).(RP_nm).E_sum,...
+            GLMprm.choice.(EpEm_nm).(RP_nm).E_varOption,...
             GLMprm.choice.(EpEm_nm).(RP_nm).confidence,...
             GLMprm.choice.(EpEm_nm).(RP_nm).RT,...
             GLMprm.choice.(EpEm_nm).(RP_nm).R_vs_P] = deal(0);
@@ -83,6 +85,8 @@ for iEpm = 1:length(Ep_Em)
             GLMprm.chosen.(EpEm_nm).(RP_nm).E_chosen,...
             GLMprm.chosen.(EpEm_nm).(RP_nm).money_unchosen,...
             GLMprm.chosen.(EpEm_nm).(RP_nm).E_unchosen,...
+            GLMprm.chosen.(EpEm_nm).(RP_nm).money_varOption,...
+            GLMprm.chosen.(EpEm_nm).(RP_nm).E_varOption,...
             GLMprm.chosen.(EpEm_nm).(RP_nm).confidence] = deal(0);
         
         % effort performance
@@ -243,6 +247,98 @@ switch GLM
         % feedback
         GLMprm.model_onset.Ep.fbk = 'stick';
         GLMprm.model_onset.Em.fbk = 'stick';
+    case 7 % R/P split, Vch/Vunch R/P and E levels during choice
+        GLMprm.gal.orth_vars = 1;
+        % fixation cross
+        GLMprm.model_onset.Ep.preChoiceCross = 'stick';
+        GLMprm.model_onset.Em.preChoiceCross = 'stick';
+        GLMprm.model_onset.Ep.preEffortCross = 'stick';
+        GLMprm.model_onset.Em.preEffortCross = 'stick';
+        % choice - split R/P and use R/P and E levels
+        GLMprm.model_onset.Ep.choice = 'stick';
+        GLMprm.model_onset.Em.choice = 'stick';
+        GLMprm.choice.Ep.RPpool = 0;
+        GLMprm.choice.Em.RPpool = 0;
+        GLMprm.choice.Ep.R.money_chosen = 3;
+        GLMprm.choice.Ep.P.money_chosen = 3;
+        GLMprm.choice.Ep.R.money_unchosen = 3;
+        GLMprm.choice.Ep.P.money_unchosen = 3;
+        GLMprm.choice.Ep.R.E_chosen = 1;
+        GLMprm.choice.Ep.P.E_chosen = 1;
+        GLMprm.choice.Ep.R.E_unchosen = 1;
+        GLMprm.choice.Ep.P.E_unchosen = 1;
+        GLMprm.choice.Ep.RP.RT = 1;
+        % chosen
+        GLMprm.model_onset.Ep.chosen = 'stick';
+        GLMprm.model_onset.Em.chosen = 'stick';
+        % effort performance
+        GLMprm.model_onset.Ep.Eperf = 'stick';
+        GLMprm.model_onset.Em.Eperf = 'stick';
+        % feedback - split R/P
+        GLMprm.model_onset.Ep.fbk = 'stick';
+        GLMprm.model_onset.Em.fbk = 'stick';
+        GLMprm.fbk.Ep.RPpool = 0;
+        GLMprm.fbk.Em.RPpool = 0;
+    case 8 % R/P split, Vch/Vunch R/P and E levels during disp chosen
+        GLMprm.gal.orth_vars = 1;
+        % fixation cross
+        GLMprm.model_onset.Ep.preChoiceCross = 'stick';
+        GLMprm.model_onset.Em.preChoiceCross = 'stick';
+        GLMprm.model_onset.Ep.preEffortCross = 'stick';
+        GLMprm.model_onset.Em.preEffortCross = 'stick';
+        % choice - split R/P and use R/P and E levels
+        GLMprm.model_onset.Ep.choice = 'stick';
+        GLMprm.model_onset.Em.choice = 'stick';
+        GLMprm.choice.Ep.RP.RT = 1;
+        % chosen
+        GLMprm.model_onset.Ep.chosen = 'stick';
+        GLMprm.model_onset.Em.chosen = 'stick';
+        GLMprm.chosen.Ep.RPpool = 0;
+        GLMprm.chosen.Em.RPpool = 0;
+        GLMprm.chosen.Ep.R.money_chosen = 3;
+        GLMprm.chosen.Ep.P.money_chosen = 3;
+        GLMprm.chosen.Ep.R.money_unchosen = 3;
+        GLMprm.chosen.Ep.P.money_unchosen = 3;
+        GLMprm.chosen.Ep.R.E_chosen = 1;
+        GLMprm.chosen.Ep.P.E_chosen = 1;
+        GLMprm.chosen.Ep.R.E_unchosen = 1;
+        GLMprm.chosen.Ep.P.E_unchosen = 1;
+        % effort performance
+        GLMprm.model_onset.Ep.Eperf = 'stick';
+        GLMprm.model_onset.Em.Eperf = 'stick';
+        % feedback - split R/P
+        GLMprm.model_onset.Ep.fbk = 'stick';
+        GLMprm.model_onset.Em.fbk = 'stick';
+        GLMprm.fbk.Ep.RPpool = 0;
+        GLMprm.fbk.Em.RPpool = 0;
+    case 9 % R/P split, levels of variable option in R/P and E during choice
+        GLMprm.gal.orth_vars = 1;
+        % fixation cross
+        GLMprm.model_onset.Ep.preChoiceCross = 'stick';
+        GLMprm.model_onset.Em.preChoiceCross = 'stick';
+        GLMprm.model_onset.Ep.preEffortCross = 'stick';
+        GLMprm.model_onset.Em.preEffortCross = 'stick';
+        % choice - split R/P and use R/P and E levels
+        GLMprm.model_onset.Ep.choice = 'stick';
+        GLMprm.model_onset.Em.choice = 'stick';
+        GLMprm.choice.Ep.RPpool = 0;
+        GLMprm.choice.Em.RPpool = 0;
+        GLMprm.choice.Ep.R.money_varOption = 3;
+        GLMprm.choice.Ep.P.money_varOption = 3;
+        GLMprm.choice.Ep.R.E_varOption = 1;
+        GLMprm.choice.Ep.P.E_varOption = 1;
+        GLMprm.choice.Ep.RP.RT = 1;
+        % chosen
+        GLMprm.model_onset.Ep.chosen = 'stick';
+        GLMprm.model_onset.Em.chosen = 'stick';
+        % effort performance
+        GLMprm.model_onset.Ep.Eperf = 'stick';
+        GLMprm.model_onset.Em.Eperf = 'stick';
+        % feedback - split R/P
+        GLMprm.model_onset.Ep.fbk = 'stick';
+        GLMprm.model_onset.Em.fbk = 'stick';
+        GLMprm.fbk.Ep.RPpool = 0;
+        GLMprm.fbk.Em.RPpool = 0;
 end
 
 

@@ -146,13 +146,25 @@ for iEpm = 1:2
                 case 1
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                     reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG choice: money chosen';
-                    disp([num2str(n_regs.(task_id_nm)),') choice: money chosen ']);
+                    disp([num2str(n_regs.(task_id_nm)),') choice: money chosen (amounts)']);
                     % if derivative added => add derivatives
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
                 case 2
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                     reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG choice: money chosen';
-                    disp([num2str(n_regs.(task_id_nm)),') choice: |money chosen| ']);
+                    disp([num2str(n_regs.(task_id_nm)),') choice: |money chosen| (amounts)']);
+                    % if derivative added => add derivatives
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                case 3
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG choice: money chosen';
+                    disp([num2str(n_regs.(task_id_nm)),') choice: money chosen (levels)']);
+                    % if derivative added => add derivatives
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                case 4
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG choice: money chosen';
+                    disp([num2str(n_regs.(task_id_nm)),') choice: |money chosen| (levels)']);
                     % if derivative added => add derivatives
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
             end
@@ -162,7 +174,25 @@ for iEpm = 1:2
                 case 1
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                     reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG choice: money unchosen';
-                    disp([num2str(n_regs.(task_id_nm)),') choice: money unchosen ']);
+                    disp([num2str(n_regs.(task_id_nm)),') choice: money unchosen (amounts)']);
+                    % if derivative added => add derivatives
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                case 2
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG choice: money unchosen';
+                    disp([num2str(n_regs.(task_id_nm)),') choice: |money unchosen| (amounts)']);
+                    % if derivative added => add derivatives
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                case 3
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG choice: money unchosen';
+                    disp([num2str(n_regs.(task_id_nm)),') choice: money unchosen (levels)']);
+                    % if derivative added => add derivatives
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                case 4
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG choice: money unchosen';
+                    disp([num2str(n_regs.(task_id_nm)),') choice: |money unchosen| (levels)']);
                     % if derivative added => add derivatives
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
             end
@@ -183,6 +213,35 @@ for iEpm = 1:2
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                     reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG choice: money sum';
                     disp([num2str(n_regs.(task_id_nm)),') choice: money sum ']);
+                    % if derivative added => add derivatives
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+            end
+
+            % money associated to the option which varies (the non-default
+            % option)
+            switch GLMprm.choice.(task_id_nm).(RP_nm).money_varOption
+                case 1
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG choice: money non-default option';
+                    disp([num2str(n_regs.(task_id_nm)),') choice: money non-default option (amount) ']);
+                    % if derivative added => add derivatives
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                case 2
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG choice: money non-default option';
+                    disp([num2str(n_regs.(task_id_nm)),') choice: |money| non-default option (amount) ']);
+                    % if derivative added => add derivatives
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                case 3
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG choice: money sum';
+                    disp([num2str(n_regs.(task_id_nm)),') choice: money non-default option (level) ']);
+                    % if derivative added => add derivatives
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                case 4
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG choice: money sum';
+                    disp([num2str(n_regs.(task_id_nm)),') choice: |money| non-default option (level) ']);
                     % if derivative added => add derivatives
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
             end
@@ -236,7 +295,7 @@ for iEpm = 1:2
             end
             
             % effort unchosen option
-            switch GLMprm.choice.(task_id_nm).(RP_nm).money_unchosen
+            switch GLMprm.choice.(task_id_nm).(RP_nm).E_unchosen
                 case 1
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                     reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG choice: effort unchosen';
@@ -247,6 +306,22 @@ for iEpm = 1:2
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                     reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG choice: effort unchosen';
                     disp([num2str(n_regs.(task_id_nm)),') choice: effort unchosen (durations) ']);
+                    % if derivative added => add derivatives
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+            end
+
+            % effort non-default option
+            switch GLMprm.choice.(task_id_nm).(RP_nm).E_varOption
+                case 1
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG choice: effort non-default option';
+                    disp([num2str(n_regs.(task_id_nm)),') choice: effort non-default option (levels) ']);
+                    % if derivative added => add derivatives
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                case 2
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG choice: effort non-default option';
+                    disp([num2str(n_regs.(task_id_nm)),') choice: effort non-default option (durations) ']);
                     % if derivative added => add derivatives
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
             end
@@ -346,13 +421,54 @@ for iEpm = 1:2
                 case 1
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                     reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG chosen: money chosen';
-                    disp([num2str(n_regs.(task_id_nm)),') chosen: money chosen (levels) ']);
+                    disp([num2str(n_regs.(task_id_nm)),') chosen: money chosen (amounts) ']);
                     % if derivative added => add derivatives
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
                 case 2
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                     reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG chosen: money chosen';
+                    disp([num2str(n_regs.(task_id_nm)),') chosen: |money chosen| (amounts) ']);
+                    % if derivative added => add derivatives
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                case 3
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG chosen: money chosen';
+                    disp([num2str(n_regs.(task_id_nm)),') chosen: money chosen (levels) ']);
+                    % if derivative added => add derivatives
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                case 4
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG chosen: money chosen';
                     disp([num2str(n_regs.(task_id_nm)),') chosen: |money chosen| (levels) ']);
+                    % if derivative added => add derivatives
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+            end
+
+            % money associated to the option which varies (the non-default
+            % option)
+            switch GLMprm.chosen.(task_id_nm).(RP_nm).money_varOption
+                case 1
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG chosen: money non-default option';
+                    disp([num2str(n_regs.(task_id_nm)),') chosen: money non-default option (amount) ']);
+                    % if derivative added => add derivatives
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                case 2
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG chosen: money non-default option';
+                    disp([num2str(n_regs.(task_id_nm)),') chosen: |money| non-default option (amount) ']);
+                    % if derivative added => add derivatives
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                case 3
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG chosen: money sum';
+                    disp([num2str(n_regs.(task_id_nm)),') chosen: money non-default option (level) ']);
+                    % if derivative added => add derivatives
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                case 4
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG chosen: money sum';
+                    disp([num2str(n_regs.(task_id_nm)),') chosen: |money| non-default option (level) ']);
                     % if derivative added => add derivatives
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
             end
@@ -372,7 +488,25 @@ for iEpm = 1:2
                 case 1
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                     reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG chosen: money unchosen';
+                    disp([num2str(n_regs.(task_id_nm)),') chosen: money unchosen (amounts) ']);
+                    % if derivative added => add derivatives
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                case 2
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG chosen: money unchosen';
+                    disp([num2str(n_regs.(task_id_nm)),') chosen: |money unchosen| (amounts) ']);
+                    % if derivative added => add derivatives
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                case 3
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG chosen: money unchosen';
                     disp([num2str(n_regs.(task_id_nm)),') chosen: money unchosen (levels) ']);
+                    % if derivative added => add derivatives
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                case 4
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG chosen: money unchosen';
+                    disp([num2str(n_regs.(task_id_nm)),') chosen: |money unchosen| (amounts) ']);
                     % if derivative added => add derivatives
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
             end
@@ -383,6 +517,16 @@ for iEpm = 1:2
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                     reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG chosen: effort unchosen';
                     disp([num2str(n_regs.(task_id_nm)),') chosen: effort unchosen (levels) ']);
+                    % if derivative added => add derivatives
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+            end
+
+            % effort non-default option
+            switch GLMprm.chosen.(task_id_nm).(RP_nm).E_varOption
+                case 1
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG chosen: effort non-default option';
+                    disp([num2str(n_regs.(task_id_nm)),') chosen: effort non-default option (levels) ']);
                     % if derivative added => add derivatives
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
             end
@@ -437,10 +581,22 @@ for iEpm = 1:2
                 case 1
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                     reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG effort: money chosen';
-                    disp([num2str(n_regs.(task_id_nm)),') effort period: money chosen (levels) ']);
+                    disp([num2str(n_regs.(task_id_nm)),') effort period: money chosen (amounts) ']);
                     % if derivative added => add derivatives
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
                 case 2
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG effort: money chosen';
+                    disp([num2str(n_regs.(task_id_nm)),') effort period: |money chosen| (amounts) ']);
+                    % if derivative added => add derivatives
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                case 3
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG effort: money chosen';
+                    disp([num2str(n_regs.(task_id_nm)),') effort period: money chosen (levels) ']);
+                    % if derivative added => add derivatives
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                case 4
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                     reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG effort: money chosen';
                     disp([num2str(n_regs.(task_id_nm)),') effort period: |money chosen| (levels) ']);
