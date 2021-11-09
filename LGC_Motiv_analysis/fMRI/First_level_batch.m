@@ -80,8 +80,6 @@ for iS = 1:NS
                     nb_runs = 2;
                 case 'pilot_s2'
                     nb_runs = 1;
-                case 'CID074' % ignore first run which crashed at the beginning due to high voltage
-                    nb_runs = 3;
                 otherwise
                     nb_runs = 4;
             end
@@ -96,11 +94,9 @@ for iS = 1:NS
     
     %% load fMRI data
     subj_scan_folders_names = ls([subj_scans_folder, filesep, '*run*']); % takes all functional runs folders
-    % remove AP/PA corrective runs when they were performed (only 2
-    % first pilots)
-    if strcmp(study_nm,'fMRI_pilots') && ismember(sub_nm,{'pilot_s1','pilot_s2'})
-        [subj_scan_folders_names] = clear_topup_fromFileList(subj_scan_folders_names);
-    end
+    % clear files that should not be taken into account in the first level
+    % analysis
+    [subj_scan_folders_names] = fMRI_subRunFilter(study_nm, sub_nm, subj_scan_folders_names);
     
     %% starting 1st level GLM batch
     sub_idx = nb_batch_per_subj*(iS-1) + 1 ;
@@ -112,7 +108,9 @@ for iS = 1:NS
     
     % loop through runs and tasks
     for iRun = 1:nb_runs
-        run_nm = num2str(iRun);
+        % fix run index if some runs were removed
+        [~, jRun] = First_level_subRunFilter(study_nm, sub_nm, [], iRun);
+        run_nm = num2str(jRun);
         % erase useless spaces from folder with run name
         n_char = size(subj_scan_folders_names(iRun,:),2);
         for iLetter = 1:n_char
@@ -136,7 +134,7 @@ for iS = 1:NS
         
         %% load regressors of interest
         % 1) identify which task corresponds to the current run
-        currRunBehaviorFileNames = ls([subj_behavior_folder,'*_session',num2str(iRun),'_*_task.mat']);
+        currRunBehaviorFileNames = ls([subj_behavior_folder,'*_session',run_nm,'_*_task.mat']);
         if size(currRunBehaviorFileNames,1) > 1
             error(['problem file identification: too many files popping out with run number',run_nm]);
         end
