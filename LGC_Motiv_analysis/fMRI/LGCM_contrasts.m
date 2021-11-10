@@ -19,6 +19,8 @@ function[con_names, con_vector] = LGCM_contrasts(study_nm, sub_nm, GLM, computer
 % con_names: list of contrast names
 %
 % con_vector: matrix with all contrasts organized in nb_contrasts (rows)*nb_regressors (columns)
+%
+% See also LGCM_contrasts_spm.m
 
 
 %% working directories
@@ -119,7 +121,8 @@ if runs.nb_runs.Ep > 0
                     error('case not ready yet');
                 end
             elseif runs.nb_runs.Ep == 2 && runs.nb_runs.Em == 1
-                if Ep_runs(1) == 1 && Ep_runs(3) == 1 && Em_runs(2) == 1
+                if Ep_runs(1) == 1 && Ep_runs(2) == 0 && Ep_runs(3) == 1 &&...
+                        Em_runs(1) == 0 && Em_runs(2) == 1 && Em_runs(3) == 0
                     % Ep/Em/Ep
                     con_vec_Ep_tmp = [strcmp(reg_names.Ep, reg_nm),...
                         zeros(1,n_regsPerTask.Em),...
@@ -197,11 +200,16 @@ if runs.nb_runs.Em > 0
                     % Em
                     con_vec_Em_tmp = [strcmp(reg_names.Em, reg_nm),...
                         zeros(1, runs.nb_runs.Em)] ;
+                elseif Ep_runs(1) == 1
+                    % Ep
+                    con_vec_Em_tmp = [strcmp(reg_names.Ep, reg_nm),...
+                        zeros(1, runs.nb_runs.Ep)] ;
                 else
                     error('case not ready yet');
                 end
             elseif runs.nb_runs.Ep == 2 && runs.nb_runs.Em == 1
-                if Ep_runs(1) == 1 && Ep_runs(3) == 1 && Em_runs(2) == 1
+                if Ep_runs(1) == 1 && Ep_runs(2) == 0 && Ep_runs(3) == 1 &&...
+                        Em_runs(1) == 0 && Em_runs(2) == 1 && Em_runs(3) == 0
                     % Ep/Em/Ep
                     con_vec_Em_tmp = [zeros(1,n_regsPerTask.Ep),...
                         strcmp(reg_names.Em, reg_nm),...

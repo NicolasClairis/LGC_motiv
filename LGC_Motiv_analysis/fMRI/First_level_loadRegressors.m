@@ -63,15 +63,13 @@ n_trials = length(dispChosenOnsets);
 choiceMissedTrials = isnan(choiceOnsets);
 
 % extract onsets when the effort was performed
-EperfOnset = NaN(1,n_trials);
+EperfOnsets = NaN(1,n_trials);
 for iTrial = 1:n_trials
-    if choiceMissedTrials(iTrial) == 0 % if no choice was made during this trial, no effort was made either
-        switch task_nm
-            case 'physical'
-                EperfOnset(iTrial) = behavioralDataStruct.(task_behavioral_id).onsets.effortPeriod{1,iTrial}.effort_phase - T0;
-            case 'mental'
-                EperfOnset(iTrial) = behavioralDataStruct.(task_behavioral_id).onsets.effortPeriod{1,iTrial}.nb_1 - T0;
-        end
+    switch task_nm
+        case 'physical'
+            EperfOnsets(iTrial) = behavioralDataStruct.(task_behavioral_id).onsets.effortPeriod{1,iTrial}.effort_phase - T0;
+        case 'mental'
+            EperfOnsets(iTrial) = behavioralDataStruct.(task_behavioral_id).onsets.effortPeriod{1,iTrial}.nb_1 - T0;
     end
 end
 % feedback onsets
@@ -91,12 +89,12 @@ if strcmp(study_nm,'fMRI_pilots') &&...
             {[filesep,'fMRI_pilots',filesep,'pilot_s1',filesep,'behavior',filesep],...
             [filesep,'fMRI_pilots',filesep,'pilot_s2',filesep,'behavior',filesep]})
         % pilot s1 & s2 no fixation cross before effort
-        dispChosenDur = EperfOnset - dispChosenOnsets;
+        dispChosenDur = EperfOnsets - dispChosenOnsets;
     else
         dispChosenDur = preEffortCrossOnsets - dispChosenOnsets;
-        preEffortCrossDur = EperfOnset - preEffortCrossOnsets;
+        preEffortCrossDur = EperfOnsets - preEffortCrossOnsets;
     end
-    EperfDur = fbkOnsets - EperfOnset;
+    EperfDur = fbkOnsets - EperfOnsets;
     fbkDur = whiteCrossOnsets(2:end) - fbkOnsets;
 else
     preChoiceCrossDur = behavioralDataStruct.(task_behavioral_id).durations.preChoiceCross;
@@ -159,13 +157,24 @@ money_amount_obtained = behavioralDataStruct.(task_behavioral_id).gain; % could 
 win_vs_loss_fbk = money_amount_obtained > 0;
 
 %% remove trials where no choice was performed
-choiceMiss_onsets = [];
 if sum(choiceMissedTrials) > 0
+    % extract onsets and durations of missed trials
+    dispChoiceOption_missedOnsets = dispChoiceOptionOnsets(choiceMissedTrials);
+    choice_missedOnsets = choiceOnsets(choiceMissedTrials);
+    dispChosen_missedOnsets = dispChosenOnsets(choiceMissedTrials);
+    Eperf_missedOnsets = EperfOnsets(choiceMissedTrials);
+    fbk_missedOnsets = fbkOnsets(choiceMissedTrials);
+    % durations
+    dispChoiceOptions_missedDur = dispChoiceOptionsDur(choiceMissedTrials);
+    dispChosen_missedDur = dispChosenDur(choiceMissedTrials);
+    Eperf_missedDur = EperfDur(choiceMissedTrials);
+    fbk_missedDur = fbkDur(choiceMissedTrials);
+    
     % onsets
     dispChoiceOptionOnsets(choiceMissedTrials) = [];
     choiceOnsets(choiceMissedTrials) = [];
     dispChosenOnsets(choiceMissedTrials) = [];
-    EperfOnset(choiceMissedTrials) = [];
+    EperfOnsets(choiceMissedTrials) = [];
     fbkOnsets(choiceMissedTrials) = [];
     % durations
     dispChoiceOptionsDur(choiceMissedTrials) = [];
@@ -228,14 +237,14 @@ switch choice_RPpool
     case 1
         RPchoiceCond = {'RP'};
 end
-chosen_RPpool = GLMprm.choice.(task_id).RPpool;
+chosen_RPpool = GLMprm.chosen.(task_id).RPpool;
 switch chosen_RPpool
     case 0
         RPchosenCond = {'R','P'};
     case 1
         RPchosenCond = {'RP'};
 end
-Eperf_RPpool = GLMprm.choice.(task_id).RPpool;
+Eperf_RPpool = GLMprm.Eperf.(task_id).RPpool;
 switch Eperf_RPpool
     case 0
         RPperfCond = {'R','P'};
@@ -292,15 +301,25 @@ if ismember(choiceModel,{'stick','boxcar'})
         choiceModel_RT                              = GLMprm.choice.(task_id).(RP_choice_nm).RT;
         choiceModel_conf                            = GLMprm.choice.(task_id).(RP_choice_nm).confidence;
 
-        if ~strcmp(RP_choice_nm,'RP')
-            error('just split onsets and regressors depending on reward/punishment trial');
+        % extract trial index for the current loop
+        switch RP_choice_nm
+            case 'RP'
+                choice_trial_idx = 1:length(RP_var_binary);
+            case 'R'
+                choice_trial_idx = RP_var_binary == 1;
+            case 'P'
+                choice_trial_idx = RP_var_binary == 0;
         end
+        
+        % onset
         iCond = iCond + 1;
+        modelChoiceOnset = dispChoiceOptionOnsets(choice_trial_idx);
+        % duration
         switch choiceModel
             case 'stick'
                 modelChoiceDur = 0;
             case 'boxcar'
-                modelChoiceDur = dispChoiceOptionsDur;
+                modelChoiceDur = dispChoiceOptionsDur(choice_trial_idx);
         end
 
         % modulators
@@ -310,9 +329,13 @@ if ismember(choiceModel,{'stick','boxcar'})
 
         % reward vs punishments
         if choiceModel_RP == 1
-            n_choiceMods = n_choiceMods + 1;
-            choice_modNames{n_choiceMods} = 'R vs P';
-            choice_modVals(n_choiceMods,:) = RP_var_binary; % binary variable => no zscore
+            if strcmp(RP_choice_nm,'RP')
+                n_choiceMods = n_choiceMods + 1;
+                choice_modNames{n_choiceMods} = 'R vs P';
+                choice_modVals(n_choiceMods,:) = RP_var_binary; % binary variable => no zscore
+            else
+                error('cannot split R and P trials and add a variable representing R/P trials') ;
+            end
         end
 
         % money left
@@ -331,13 +354,13 @@ if ismember(choiceModel,{'stick','boxcar'})
             choice_modNames{n_choiceMods} = 'money chosen';
             switch choiceModel_moneyChosen
                 case 1
-                    choice_modVals(n_choiceMods,:) = raw_or_z(money_amount_chosen);
+                    choice_modVals(n_choiceMods,:) = raw_or_z(money_amount_chosen(choice_trial_idx));
                 case 2
-                    choice_modVals(n_choiceMods,:) = raw_or_z(abs_money_amount_chosen);
+                    choice_modVals(n_choiceMods,:) = raw_or_z(abs_money_amount_chosen(choice_trial_idx));
                 case 3
-                    choice_modVals(n_choiceMods,:) = raw_or_z(money_level_chosen);
+                    choice_modVals(n_choiceMods,:) = raw_or_z(money_level_chosen(choice_trial_idx));
                 case 4
-                    choice_modVals(n_choiceMods,:) = raw_or_z(abs_money_level_chosen);
+                    choice_modVals(n_choiceMods,:) = raw_or_z(abs_money_level_chosen(choice_trial_idx));
                 otherwise
                     error('not ready yet');
             end
@@ -349,13 +372,13 @@ if ismember(choiceModel,{'stick','boxcar'})
             choice_modNames{n_choiceMods} = 'money unchosen';
             switch choiceModel_moneyUnchosen
                 case 1
-                    choice_modVals(n_choiceMods,:) = raw_or_z(money_amount_unchosen);
+                    choice_modVals(n_choiceMods,:) = raw_or_z(money_amount_unchosen(choice_trial_idx));
                 case 2
-                    choice_modVals(n_choiceMods,:) = raw_or_z(abs_money_amount_unchosen);
+                    choice_modVals(n_choiceMods,:) = raw_or_z(abs_money_amount_unchosen(choice_trial_idx));
                 case 3
-                    choice_modVals(n_choiceMods,:) = raw_or_z(money_level_unchosen);
+                    choice_modVals(n_choiceMods,:) = raw_or_z(money_level_unchosen(choice_trial_idx));
                 case 4
-                    choice_modVals(n_choiceMods,:) = raw_or_z(abs_money_level_unchosen);
+                    choice_modVals(n_choiceMods,:) = raw_or_z(abs_money_level_unchosen(choice_trial_idx));
                 otherwise
                     error('not ready yet');
             end
@@ -367,7 +390,7 @@ if ismember(choiceModel,{'stick','boxcar'})
             choice_modNames{n_choiceMods} = 'money chosen - unchosen';
             switch choiceModel_money_chosen_min_money_unchosen
                 case 1
-                    choice_modVals(n_choiceMods,:) = raw_or_z(moneyChosen_min_moneyUnchosen_amount);
+                    choice_modVals(n_choiceMods,:) = raw_or_z(moneyChosen_min_moneyUnchosen_amount(choice_trial_idx));
                 otherwise
                     error('not ready yet');
             end
@@ -379,7 +402,7 @@ if ismember(choiceModel,{'stick','boxcar'})
             choice_modNames{n_choiceMods} = 'money sum';
             switch choiceModel_moneySum
                 case 1
-                    choice_modVals(n_choiceMods,:) = raw_or_z(money_amount_sum);
+                    choice_modVals(n_choiceMods,:) = raw_or_z(money_amount_sum(choice_trial_idx));
                 otherwise
                     error('not ready yet');
             end
@@ -391,13 +414,13 @@ if ismember(choiceModel,{'stick','boxcar'})
             choice_modNames{n_choiceMods} = 'money non-default';
             switch choiceModel_moneyNonDefault
                 case 1
-                    choice_modVals(n_choiceMods,:) = raw_or_z(money_amount_varOption);
+                    choice_modVals(n_choiceMods,:) = raw_or_z(money_amount_varOption(choice_trial_idx));
                 case 2
-                    choice_modVals(n_choiceMods,:) = raw_or_z(abs_money_amount_varOption);
+                    choice_modVals(n_choiceMods,:) = raw_or_z(abs_money_amount_varOption(choice_trial_idx));
                 case 3
-                    choice_modVals(n_choiceMods,:) = raw_or_z(money_level_varOption);
+                    choice_modVals(n_choiceMods,:) = raw_or_z(money_level_varOption(choice_trial_idx));
                 case 4
-                    choice_modVals(n_choiceMods,:) = raw_or_z(abs_money_level_varOption);
+                    choice_modVals(n_choiceMods,:) = raw_or_z(abs_money_level_varOption(choice_trial_idx));
                 otherwise
                     error('not ready yet');
             end
@@ -419,7 +442,7 @@ if ismember(choiceModel,{'stick','boxcar'})
             choice_modNames{n_choiceMods} = 'effort chosen';
             switch choiceModel_E_chosen
                 case 1
-                    choice_modVals(n_choiceMods,:) = raw_or_z(E_chosen);
+                    choice_modVals(n_choiceMods,:) = raw_or_z(E_chosen(choice_trial_idx));
                 otherwise
                     error('not ready yet');
             end
@@ -431,7 +454,7 @@ if ismember(choiceModel,{'stick','boxcar'})
             choice_modNames{n_choiceMods} = 'effort unchosen';
             switch choiceModel_E_unchosen
                 case 1
-                    choice_modVals(n_choiceMods,:) = raw_or_z(E_unchosen);
+                    choice_modVals(n_choiceMods,:) = raw_or_z(E_unchosen(choice_trial_idx));
                 otherwise
                     error('not ready yet');
             end
@@ -443,7 +466,7 @@ if ismember(choiceModel,{'stick','boxcar'})
             choice_modNames{n_choiceMods} = 'effort non-default option';
             switch choiceModel_E_nonDefault
                 case 1
-                    choice_modVals(n_choiceMods,:) = raw_or_z(E_varOption);
+                    choice_modVals(n_choiceMods,:) = raw_or_z(E_varOption(choice_trial_idx));
                 otherwise
                     error('not ready yet');
             end
@@ -455,7 +478,7 @@ if ismember(choiceModel,{'stick','boxcar'})
             choice_modNames{n_choiceMods} = 'effort chosen - unchosen';
             switch choiceModel_E_chosen_min_E_unchosen
                 case 1
-                    choice_modVals(n_choiceMods,:) = raw_or_z(E_chosen_min_E_unchosen);
+                    choice_modVals(n_choiceMods,:) = raw_or_z(E_chosen_min_E_unchosen(choice_trial_idx));
                 otherwise
                     error('not ready yet');
             end
@@ -467,7 +490,7 @@ if ismember(choiceModel,{'stick','boxcar'})
             choice_modNames{n_choiceMods} = 'effort sum';
             switch choiceModel_E_sum
                 case 1
-                    choice_modVals(n_choiceMods,:) = raw_or_z(E_sum);
+                    choice_modVals(n_choiceMods,:) = raw_or_z(E_sum(choice_trial_idx));
                 otherwise
                     error('not ready yet');
             end
@@ -477,9 +500,9 @@ if ismember(choiceModel,{'stick','boxcar'})
         if choiceModel_conf > 0
             n_choiceMods = n_choiceMods + 1;
             choice_modNames{n_choiceMods} = 'confidence';
-            switch choiceModel_conf
+            switch choiceModel_conf % binary variable => no zscore
                 case 1
-                    choice_modVals(n_choiceMods,:) = confidence; % binary variable => no zscore
+                    choice_modVals(n_choiceMods,:) = confidence(choice_trial_idx);
                 otherwise
                     error('not ready yet');
             end
@@ -491,14 +514,14 @@ if ismember(choiceModel,{'stick','boxcar'})
             choice_modNames{n_choiceMods} = 'choice RT';
             switch choiceModel_RT
                 case 1
-                    choice_modVals(n_choiceMods,:) = raw_or_z(choice_RT);
+                    choice_modVals(n_choiceMods,:) = raw_or_z(choice_RT(choice_trial_idx));
                 otherwise
                     error('not ready yet');
             end
         end
 
         [matlabbatch] = First_level_loadEachCondition(matlabbatch, sub_idx, iRun, iCond,...
-            ['choice_',RP_choice_nm], dispChoiceOptionOnsets, modelChoiceDur,...
+            ['choice_',RP_choice_nm], modelChoiceOnset, modelChoiceDur,...
             n_choiceMods, choice_modNames, choice_modVals,...
             orth_vars);
     end % RP
@@ -519,15 +542,25 @@ if ismember(chosenModel,{'stick','boxcar'})
         chosenModel_Eunchosen = GLMprm.chosen.(task_id).(RP_chosen_nm).E_unchosen;
         chosenModel_confidence = GLMprm.chosen.(task_id).(RP_chosen_nm).confidence;
 
-        if ~strcmp(RP_chosen_nm,'RP')
-            error('just split onsets and regressors depending on reward/punishment trial');
+        % extract trial index for the current loop
+        switch RP_chosen_nm
+            case 'RP'
+                chosen_trial_idx = 1:length(RP_var_binary);
+            case 'R'
+                chosen_trial_idx = RP_var_binary == 1;
+            case 'P'
+                chosen_trial_idx = RP_var_binary == 0;
         end
+        
+        % onset
         iCond = iCond + 1;
+        modelChosenOnset = dispChosenOnsets(chosen_trial_idx);
+        % duration
         switch chosenModel
             case 'stick'
                 modelChosenDur = 0;
             case 'boxcar'
-                modelChosenDur = dispChosenDur;
+                modelChosenDur = dispChosenDur(chosen_trial_idx);
         end
 
         % modulators
@@ -541,13 +574,13 @@ if ismember(chosenModel,{'stick','boxcar'})
             chosen_modNames{n_chosenMods} = 'money chosen';
             switch chosenModel_moneyChosen
                 case 1
-                    chosen_modVals(n_chosenMods,:) = raw_or_z(money_amount_chosen);
+                    chosen_modVals(n_chosenMods,:) = raw_or_z(money_amount_chosen(chosen_trial_idx));
                 case 2
-                    chosen_modVals(n_chosenMods,:) = raw_or_z(abs_money_amount_chosen);
+                    chosen_modVals(n_chosenMods,:) = raw_or_z(abs_money_amount_chosen(chosen_trial_idx));
                 case 3
-                    chosen_modVals(n_chosenMods,:) = raw_or_z(money_level_chosen);
+                    chosen_modVals(n_chosenMods,:) = raw_or_z(money_level_chosen(chosen_trial_idx));
                 case 4
-                    chosen_modVals(n_chosenMods,:) = raw_or_z(abs_money_level_chosen);
+                    chosen_modVals(n_chosenMods,:) = raw_or_z(abs_money_level_chosen(chosen_trial_idx));
                 otherwise
                     error('not ready yet');
             end
@@ -559,13 +592,13 @@ if ismember(chosenModel,{'stick','boxcar'})
             chosen_modNames{n_chosenMods} = 'money non-default option';
             switch chosenModel_moneyNonDefault
                 case 1
-                    chosen_modVals(n_chosenMods,:) = raw_or_z(money_amount_varOption);
+                    chosen_modVals(n_chosenMods,:) = raw_or_z(money_amount_varOption(chosen_trial_idx));
                 case 2
-                    chosen_modVals(n_chosenMods,:) = raw_or_z(abs_money_amount_varOption);
+                    chosen_modVals(n_chosenMods,:) = raw_or_z(abs_money_amount_varOption(chosen_trial_idx));
                 case 3
-                    chosen_modVals(n_chosenMods,:) = raw_or_z(money_level_varOption);
+                    chosen_modVals(n_chosenMods,:) = raw_or_z(money_level_varOption(chosen_trial_idx));
                 case 4
-                    chosen_modVals(n_chosenMods,:) = raw_or_z(abs_money_level_varOption);
+                    chosen_modVals(n_chosenMods,:) = raw_or_z(abs_money_level_varOption(chosen_trial_idx));
                 otherwise
                     error('not ready yet');
             end
@@ -577,7 +610,7 @@ if ismember(chosenModel,{'stick','boxcar'})
             chosen_modNames{n_chosenMods} = 'effort chosen';
             switch chosenModel_Echosen
                 case 1
-                    chosen_modVals(n_chosenMods,:) = raw_or_z(E_chosen);
+                    chosen_modVals(n_chosenMods,:) = raw_or_z(E_chosen(chosen_trial_idx));
                 otherwise
                     error('ready yet');
             end
@@ -589,13 +622,13 @@ if ismember(chosenModel,{'stick','boxcar'})
             chosen_modNames{n_chosenMods} = 'money unchosen';
             switch chosenModel_moneyUnchosen
                 case 1
-                    chosen_modVals(n_chosenMods,:) = raw_or_z(money_amount_unchosen);
+                    chosen_modVals(n_chosenMods,:) = raw_or_z(money_amount_unchosen(chosen_trial_idx));
                 case 2
-                    chosen_modVals(n_chosenMods,:) = raw_or_z(abs_money_amount_unchosen);
+                    chosen_modVals(n_chosenMods,:) = raw_or_z(abs_money_amount_unchosen(chosen_trial_idx));
                 case 3
-                    chosen_modVals(n_chosenMods,:) = raw_or_z(money_level_unchosen);
+                    chosen_modVals(n_chosenMods,:) = raw_or_z(money_level_unchosen(chosen_trial_idx));
                 case 4
-                    chosen_modVals(n_chosenMods,:) = raw_or_z(abs_money_level_unchosen);
+                    chosen_modVals(n_chosenMods,:) = raw_or_z(abs_money_level_unchosen(chosen_trial_idx));
                 otherwise
                     error('ready yet');
             end
@@ -607,7 +640,7 @@ if ismember(chosenModel,{'stick','boxcar'})
             chosen_modNames{n_chosenMods} = 'effort unchosen';
             switch chosenModel_Eunchosen
                 case 1
-                    chosen_modVals(n_chosenMods,:) = raw_or_z(E_unchosen);
+                    chosen_modVals(n_chosenMods,:) = raw_or_z(E_unchosen(chosen_trial_idx));
                 otherwise
                     error('ready yet');
             end
@@ -619,7 +652,7 @@ if ismember(chosenModel,{'stick','boxcar'})
             chosen_modNames{n_chosenMods} = 'effort non-default option';
             switch chosenModel_EnonDefault
                 case 1
-                    chosen_modVals(n_chosenMods,:) = E_varOption; % binary variable => no zscore
+                    chosen_modVals(n_chosenMods,:) = E_varOption(chosen_trial_idx); % binary variable => no zscore
                 otherwise
                     error('ready yet');
             end
@@ -631,14 +664,14 @@ if ismember(chosenModel,{'stick','boxcar'})
             chosen_modNames{n_chosenMods} = 'confidence';
             switch chosenModel_confidence
                 case 1
-                    chosen_modVals(n_chosenMods,:) = confidence; % binary variable => no zscore
+                    chosen_modVals(n_chosenMods,:) = confidence(chosen_trial_idx); % binary variable => no zscore
                 otherwise
                     error('ready yet');
             end
         end
 
         [matlabbatch] = First_level_loadEachCondition(matlabbatch, sub_idx, iRun, iCond,...
-            ['dispChosen_',RP_chosen_nm], dispChosenOnsets, modelChosenDur,...
+            ['dispChosen_',RP_chosen_nm], modelChosenOnset, modelChosenDur,...
             n_chosenMods, chosen_modNames, chosen_modVals,...
             orth_vars);
     end % RP
@@ -669,15 +702,25 @@ if ismember(EperfModel,{'stick','boxcar'})
         EperfModel_effort_chosen = GLMprm.Eperf.(task_id).(RP_Eperf_nm).E_chosen;
         EperfModel_RT1stAnswer = GLMprm.Eperf.(task_id).(RP_Eperf_nm).RT_1stAnswer;
 
-        if ~strcmp(RP_Eperf_nm,'RP')
-            error('just split onsets and regressors depending on reward/punishment trial');
+        % extract trial index for the current loop
+        switch RP_Eperf_nm
+            case 'RP'
+                Eperf_trial_idx = 1:length(RP_var_binary);
+            case 'R'
+                Eperf_trial_idx = RP_var_binary == 1;
+            case 'P'
+                Eperf_trial_idx = RP_var_binary == 0;
         end
+        
+        % onset
         iCond = iCond + 1;
+        modelEperfOnset = EperfOnsets(Eperf_trial_idx);
+        % duration
         switch EperfModel
             case 'stick'
                 modelEperfDur = 0;
             case 'boxcar'
-                modelEperfDur = EperfDur;
+                modelEperfDur = EperfDur(Eperf_trial_idx);
         end
 
         % modulators
@@ -691,9 +734,9 @@ if ismember(EperfModel,{'stick','boxcar'})
             Eperf_modNames{n_EperfMods} = 'money chosen';
             switch EperfModel_money_chosen
                 case 1
-                    Eperf_modVals(n_EperfMods,:) = raw_or_z(money_amount_chosen);
+                    Eperf_modVals(n_EperfMods,:) = raw_or_z(money_amount_chosen(Eperf_trial_idx));
                 case 2
-                    Eperf_modVals(n_EperfMods,:) = raw_or_z(abs_money_amount_chosen);
+                    Eperf_modVals(n_EperfMods,:) = raw_or_z(abs_money_amount_chosen(Eperf_trial_idx));
                 otherwise
                     error('not ready yet');
             end
@@ -705,7 +748,7 @@ if ismember(EperfModel,{'stick','boxcar'})
             Eperf_modNames{n_EperfMods} = 'effort chosen';
             switch EperfModel_effort_chosen
                 case 1
-                    Eperf_modVals(n_EperfMods,:) = raw_or_z(E_chosen);
+                    Eperf_modVals(n_EperfMods,:) = raw_or_z(E_chosen(Eperf_trial_idx));
                 otherwise
                     error('not ready yet');
             end
@@ -725,7 +768,7 @@ if ismember(EperfModel,{'stick','boxcar'})
         end
 
         [matlabbatch] = First_level_loadEachCondition(matlabbatch, sub_idx, iRun, iCond,...
-            ['Eperf_',RP_Eperf_nm], EperfOnset, modelEperfDur,...
+            ['Eperf_',RP_Eperf_nm], modelEperfOnset, modelEperfDur,...
             n_EperfMods, Eperf_modNames, Eperf_modVals,...
             orth_vars);
     end % RP
@@ -743,15 +786,25 @@ if ismember(fbkModel,{'stick','boxcar'})
         fbkModel_Emade = GLMprm.fbk.(task_id).(RP_fbk_nm).E_made;
         fbkModel_confidence = GLMprm.fbk.(task_id).(RP_fbk_nm).confidence;
 
-        if ~strcmp(RP_fbk_nm,'RP')
-            error('just split onsets and regressors depending on reward/punishment trial');
+        % extract trial index for the current loop
+        switch RP_fbk_nm
+            case 'RP'
+                fbk_trial_idx = 1:length(RP_var_binary);
+            case 'R'
+                fbk_trial_idx = RP_var_binary == 1;
+            case 'P'
+                fbk_trial_idx = RP_var_binary == 0;
         end
+        
+        % onset
         iCond = iCond + 1;
+        modelFbkOnset = fbkOnsets(fbk_trial_idx);
+        % duration
         switch fbkModel
             case 'stick'
                 modelFbkDur = 0;
             case 'boxcar'
-                modelFbkDur = fbkDur;
+                modelFbkDur = fbkDur(fbk_trial_idx);
         end
 
         % modulators
@@ -761,13 +814,17 @@ if ismember(fbkModel,{'stick','boxcar'})
 
         % win vs loss
         if fbkModel_winVSloss > 0
-            n_fbkMods = n_fbkMods + 1;
-            fbk_modNames{n_fbkMods} = 'win vs loss';
-            switch fbkModel_winVSloss
-                case 1
-                    fbk_modVals(n_fbkMods,:) = win_vs_loss_fbk; % binary variable => no zscore
-                otherwise
-                    error('not ready yet');
+            if strcmp(RP_fbk_nm,'RP')
+                n_fbkMods = n_fbkMods + 1;
+                fbk_modNames{n_fbkMods} = 'win vs loss';
+                switch fbkModel_winVSloss % binary variable => no zscore
+                    case 1
+                        fbk_modVals(n_fbkMods,:) = win_vs_loss_fbk;
+                    otherwise
+                        error('not ready yet');
+                end
+            else
+                error('cannot split R and P trials and add a variable representing R/P trials') ;
             end
         end
 
@@ -777,7 +834,7 @@ if ismember(fbkModel,{'stick','boxcar'})
             fbk_modNames{n_fbkMods} = 'money obtained';
             switch fbkModel_moneyObtained
                 case 1
-                    fbk_modVals(n_fbkMods,:) = raw_or_z(money_amount_obtained);
+                    fbk_modVals(n_fbkMods,:) = raw_or_z(money_amount_obtained(fbk_trial_idx));
                 otherwise
                     error('not ready yet');
             end
@@ -810,7 +867,7 @@ if ismember(fbkModel,{'stick','boxcar'})
         end
 
         [matlabbatch] = First_level_loadEachCondition(matlabbatch, sub_idx, iRun, iCond,...
-            ['fbk_',RP_fbk_nm], fbkOnsets, modelFbkDur,...
+            ['fbk_',RP_fbk_nm], modelFbkOnset, modelFbkDur,...
             n_fbkMods, fbk_modNames, fbk_modVals,...
             orth_vars);
     end % RP

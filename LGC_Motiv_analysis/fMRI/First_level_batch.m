@@ -229,3 +229,6 @@ if exist('checking','var') && checking == 1
 elseif ~exist('checking','var') || isempty(checking) || checking == 0
     spm_jobman('run',matlabbatch);
 end
+
+
+end % function
