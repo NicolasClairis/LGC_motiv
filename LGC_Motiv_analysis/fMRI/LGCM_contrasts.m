@@ -263,4 +263,110 @@ if runs.nb_runs.Em > 0 && runs.nb_runs.Ep > 0
     
 end % at least one run of each task has been performed?
 
+%% compare Vchosen - Vunchosen if Vch and Vunch have been modelled
+Epm = {'Ep','Em','Ep+Em'};
+RP_cond = {'R','P','RP'};
+task_phases = {'choice','chosen','effort'};
+for iTaskPhase = 1:length(task_phase)
+    taskPhase_nm = task_phases{iTaskPhase};
+    for iRP = 1:length(RP_cond)
+        RP_nm = RP_cond{iRP};
+        
+        % money chosen - money unchosen
+        money_chosen_ConNm = ['REG ',taskPhase_nm,' ',RP_nm,': money chosen'];
+        money_unchosen_ConNm = ['REG ',taskPhase_nm,' ',RP_nm,': money unchosen'];
+        % effort chosen - effort unchosen
+        effort_chosen_ConNm = ['REG ',taskPhase_nm,' ',RP_nm,': effort chosen'];
+        effort_unchosen_ConNm = ['REG ',taskPhase_nm,' ',RP_nm,': effort unchosen'];
+        
+        for iTask = 1:length(Epm)
+            task_nm = Epm{iTask};
+            
+            % money chosen - money unchosen
+            if (sum(strcmp(reg_names.(task_nm), money_chosen_ConNm)) > 0 &&...
+                    sum(strcmp(reg_names.(task_nm), money_unchosen_ConNm)) > 0)
+                
+                % extract contrast
+                moneyCh_idx = strcmp(con_names,[task_nm,' ',money_chosen_ConNm]);
+                moneyUnch_idx = strcmp(con_names,[task_nm,' ',money_unchosen_ConNm]);
+                con_moneyCh_min_moneyUnch = con_vector(moneyCh_idx, :) + con_vector(moneyUnch_idx, :);
+                % positive contrast
+                jReg = jReg + 1;
+                con_names{jReg} = [task_nm,' REG ',taskPhase_nm,' ',RP_cond,': money chosen - unchosen'];
+                con_vector(jReg, 1:n_totalRegs) = con_moneyCh_min_moneyUnch;
+                
+                % negative contrast
+                jReg = jReg + 1;
+                con_names{jReg} = [task_nm,' REG ',taskPhase_nm,' ',RP_cond,': money unchosen - chosen'];
+                con_vector(jReg, 1:n_totalRegs) = -con_moneyCh_min_moneyUnch;
+            end % money chosen - money unchosen
+            
+            % effort chosen - effort unchosen
+            if (sum(strcmp(reg_names.(task_nm), effort_chosen_ConNm)) > 0 &&...
+                    sum(strcmp(reg_names.(task_nm), effort_unchosen_ConNm)) > 0)
+                % extract contrast
+                effortCh_idx = strcmp(con_names,[task_nm,' ',effort_chosen_ConNm]);
+                effortUnch_idx = strcmp(con_names,[task_nm,' ',effort_unchosen_ConNm]);
+                con_effortCh_min_effortUnch = con_vector(effortCh_idx, :) + con_vector(effortUnch_idx, :);
+                % positive contrast
+                jReg = jReg + 1;
+                con_names{jReg} = [task_nm,' REG ',taskPhase_nm,' ',RP_cond,': effort chosen - unchosen'];
+                con_vector(jReg, 1:n_totalRegs) = con_effortCh_min_effortUnch;
+                
+                % negative contrast
+                jReg = jReg + 1;
+                con_names{jReg} = [task_nm,' REG ',taskPhase_nm,' ',RP_cond,': effort unchosen - chosen'];
+                con_vector(jReg, 1:n_totalRegs) = -con_effortCh_min_effortUnch;
+            end % effort chosen - effort unchosen
+            
+            % Note: possible to compute net value (R-E) and do the same for it
+            
+        end % task
+        
+        % pool both tasks together
+        % money chosen - money unchosen
+            if (sum(strcmp(reg_names.Ep, money_chosen_ConNm)) > 0 &&...
+                    sum(strcmp(reg_names.Ep, money_unchosen_ConNm)) > 0) &&...
+                    (sum(strcmp(reg_names.Em, money_chosen_ConNm)) > 0 &&...
+                    sum(strcmp(reg_names.Em, money_unchosen_ConNm)) > 0)
+                
+                % extract contrast
+                moneyCh_idx = strcmp(con_names,['Ep+Em ',money_chosen_ConNm]);
+                moneyUnch_idx = strcmp(con_names,['Ep+Em ',money_unchosen_ConNm]);
+                con_moneyCh_min_moneyUnch = con_vector(moneyCh_idx, :) + con_vector(moneyUnch_idx, :);
+                % positive contrast
+                jReg = jReg + 1;
+                con_names{jReg} = ['Ep+Em REG ',taskPhase_nm,' ',RP_cond,': money chosen - unchosen'];
+                con_vector(jReg, 1:n_totalRegs) = con_moneyCh_min_moneyUnch;
+                
+                % negative contrast
+                jReg = jReg + 1;
+                con_names{jReg} = ['Ep+Em REG ',taskPhase_nm,' ',RP_cond,': money unchosen - chosen'];
+                con_vector(jReg, 1:n_totalRegs) = -con_moneyCh_min_moneyUnch;
+            end % money chosen - money unchosen
+            
+            % effort chosen - effort unchosen
+            if (sum(strcmp(reg_names.Ep, effort_chosen_ConNm)) > 0 &&...
+                    sum(strcmp(reg_names.Ep, effort_unchosen_ConNm)) > 0) &&...
+                    (sum(strcmp(reg_names.Em, effort_chosen_ConNm)) > 0 &&...
+                    sum(strcmp(reg_names.Em, effort_unchosen_ConNm)) > 0)
+                % extract contrast
+                effortCh_idx = strcmp(con_names,['Ep+Em ',effort_chosen_ConNm]);
+                effortUnch_idx = strcmp(con_names,['Ep+Em ',effort_unchosen_ConNm]);
+                con_effortCh_min_effortUnch = con_vector(effortCh_idx, :) + con_vector(effortUnch_idx, :);
+                % positive contrast
+                jReg = jReg + 1;
+                con_names{jReg} = ['Ep+Em REG ',taskPhase_nm,' ',RP_cond,': effort chosen - unchosen'];
+                con_vector(jReg, 1:n_totalRegs) = con_effortCh_min_effortUnch;
+                
+                % negative contrast
+                jReg = jReg + 1;
+                con_names{jReg} = ['Ep+Em REG ',taskPhase_nm,' ',RP_cond,': effort unchosen - chosen'];
+                con_vector(jReg, 1:n_totalRegs) = -con_effortCh_min_effortUnch;
+            end % effort chosen - effort unchosen
+        
+        % Note: possible to compute net value (R-E) and do the same for it
+    end % RP
+end % task phase
+
 end % function

@@ -103,15 +103,14 @@ for iEpm = 1:length(Epm)
         for iRP_dispChoice = 1:n_RP_dispChoice
             RP_dispChoice_nm = RP_dispChoice{iRP_dispChoice};
             
-            % choice onset
+            %% choice onset
             n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
             reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['ONSET choice display options: ',RP_dispChoice_nm];
             disp([num2str(n_regs.(task_id_nm)),') ONSET choice display options ',RP_dispChoice_nm,': ',GLMprm.model_onset.(task_id_nm).choice,' ']);
             % if derivative added => add derivatives
             n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
             
-            %choice regressors
-            
+            %% choice regressors
             % Reward > Punishment
             if GLMprm.choice.(task_id_nm).(RP_dispChoice_nm).R_vs_P == 1
                 n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
@@ -570,7 +569,7 @@ for iEpm = 1:length(Epm)
             
             % effort period onset
             n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
-            reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['ONSET effort period: ',RP_Eperf_nm];
+            reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['ONSET effort: ',RP_Eperf_nm];
             disp([num2str(n_regs.(task_id_nm)),') ONSET effort period ',RP_Eperf_nm,': ',GLMprm.model_onset.(task_id_nm).Eperf,' ']);
             % if derivative added => add derivatives
             n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
