@@ -30,10 +30,14 @@ switch study_nm
         end
     case 'study1'
         switch sub_nm
-            case 'CID074'
+            case {'CID074'}
                 runs.nb_runs.Ep = 2;
                 runs.nb_runs.Em = 1;
                 runs.tasks = {'Ep','Em','Ep'};
+            case {'CID036'}
+                runs.nb_runs.Ep = 2;
+                runs.nb_runs.Em = 2;
+                runs.tasks = {'Ep','Em','Ep','Em'};
         end
     case 'study2_clinical'
         error('need to attribute runs');
