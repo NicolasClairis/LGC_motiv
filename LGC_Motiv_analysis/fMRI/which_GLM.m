@@ -338,11 +338,11 @@ switch GLM
             GLMprm.model_onset.(Epm_nm).chosen = 'stick';
             % effort performance
             GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
-            GLMprm.Eperf.(EpEm_nm).RPpool = 0;
+            GLMprm.Eperf.(Epm_nm).RPpool = 0;
             for iRP = 1:length(RP_conds)
                 RP_nm = RP_conds{iRP};
-                GLMprm.Eperf.(EpEm_nm).(RP_nm).money_chosen = 3;
-                GLMprm.Eperf.(EpEm_nm).(RP_nm).E_chosen = 1;
+                GLMprm.Eperf.(Epm_nm).(RP_nm).money_chosen = 3;
+                GLMprm.Eperf.(Epm_nm).(RP_nm).E_chosen = 1;
             end
             % feedback - split R/P
             GLMprm.model_onset.(Epm_nm).fbk = 'stick';
