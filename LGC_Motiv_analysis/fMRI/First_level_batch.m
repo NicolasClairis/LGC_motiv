@@ -85,7 +85,7 @@ for iS = 1:NS
             end
         case 'study1'
             switch sub_nm
-                case 'CID074' % ignore first run which crashed at the beginning due to high voltage
+                case 'CID074' % CID074: ignore first run which crashed at the beginning due to high voltage
                     nb_runs = 3;
                 otherwise
                     nb_runs = 4;

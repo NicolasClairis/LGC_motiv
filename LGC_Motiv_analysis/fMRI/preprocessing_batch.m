@@ -102,7 +102,8 @@ for iS = 1:NS % loop through subjects
     %%
     cd(subj_analysis_folder)
     %% define number of sessions to analyze
-    if ismember(sub_nm, {'pilot_s1','pilot_s2','pilot_s3'}) % only 2 sessions for these pilots
+    if strcmp(study_nm,'fMRI_pilots') &&...
+            ismember(sub_nm, {'pilot_s1','pilot_s2','pilot_s3'}) % only 2 sessions for these pilots
         nb_runs = 2;
     else
         nb_runs = 4;
@@ -110,15 +111,19 @@ for iS = 1:NS % loop through subjects
     cd(subj_scans_folder);
     for iRun = 1:nb_runs % loop through runs for 3 ratings, 3 choices 1D, 3 choices 2D runs
         cd(subj_scan_folders_names(iRun,:)); % go to run folder
-        if ismember(sub_nm,{'pilot_s1'})
-            filenames = cellstr(spm_select('ExtFPList',pwd,'^LGCM_.*\.nii$'));
-        elseif ismember(sub_nm,{'pilot_s2'})
-            filenames = cellstr(spm_select('ExtFPList',pwd,'^run.*\.nii$'));
-        elseif ismember(sub_nm,{'pilot_s3'})
-            filenames = cellstr(spm_select('ExtFPList',pwd,'^ABNC.*\.img$'));
+        if strcmp(study_nm,'fMRI_pilots')
+            if ismember(sub_nm,{'pilot_s1'})
+                filenames = cellstr(spm_select('ExtFPList',pwd,'^LGCM_.*\.nii$'));
+            elseif ismember(sub_nm,{'pilot_s2'})
+                filenames = cellstr(spm_select('ExtFPList',pwd,'^run.*\.nii$'));
+            elseif ismember(sub_nm,{'pilot_s3'})
+                filenames = cellstr(spm_select('ExtFPList',pwd,'^ABNC.*\.img$'));
+            else
+                filenames = cellstr(spm_select('ExtFPList',pwd,'^CID.*\.nii$'));
+            end
         else
             filenames = cellstr(spm_select('ExtFPList',pwd,'^CID.*\.nii$'));
-%             error('please check the format (nii/img) and the start of the name of each run because it has to be stabilized now...');
+            %             error('please check the format (nii/img) and the start of the name of each run because it has to be stabilized now...');
         end
         runFileNames.(['run_',num2str(iRun)]) = filenames;
         cd(subj_scans_folder);
