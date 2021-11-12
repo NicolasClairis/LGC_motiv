@@ -737,6 +737,10 @@ if ismember(EperfModel,{'stick','boxcar'})
                     Eperf_modVals(n_EperfMods,:) = raw_or_z(money_amount_chosen(Eperf_trial_idx));
                 case 2
                     Eperf_modVals(n_EperfMods,:) = raw_or_z(abs_money_amount_chosen(Eperf_trial_idx));
+                case 3
+                    Eperf_modVals(n_EperfMods,:) = raw_or_z(money_level_unchosen(Eperf_trial_idx));
+                case 4
+                    Eperf_modVals(n_EperfMods,:) = raw_or_z(abs_money_level_unchosen(Eperf_trial_idx));
                 otherwise
                     error('not ready yet');
             end

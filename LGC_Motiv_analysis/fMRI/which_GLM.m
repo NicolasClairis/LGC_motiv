@@ -325,6 +325,29 @@ switch GLM
             GLMprm.model_onset.(Epm_nm).fbk = 'stick';
             GLMprm.fbk.(Epm_nm).RP.win_vs_loss = 1;
         end
+    case 10 % model money amounts during performance instead of choice periode (VS should be trigger by higher rewards)
+        GLMprm.gal.orth_vars = 1;
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % fixation cross
+            GLMprm.model_onset.(Epm_nm).preChoiceCross = 'stick';
+            GLMprm.model_onset.(Epm_nm).preEffortCross = 'stick';
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'stick';
+            % chosen
+            GLMprm.model_onset.(Epm_nm).chosen = 'stick';
+            % effort performance
+            GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
+            GLMprm.Eperf.(EpEm_nm).RPpool = 0;
+            for iRP = 1:length(RP_conds)
+                RP_nm = RP_conds{iRP};
+                GLMprm.Eperf.(EpEm_nm).(RP_nm).money_chosen = 3;
+                GLMprm.Eperf.(EpEm_nm).(RP_nm).E_chosen = 1;
+            end
+            % feedback - split R/P
+            GLMprm.model_onset.(Epm_nm).fbk = 'stick';
+            GLMprm.fbk.(Epm_nm).RP.win_vs_loss = 1;
+        end
 end
 
 
