@@ -1,14 +1,58 @@
-%% average choice results out
-
-%% working directories
-root = fullfile('C:','Users','clairis','Desktop','GitHub','LGC_motiv','LGC_Motiv_results');
+function[avg_defaultChoice, sem_defaultChoice,...
+    avg_conf, sem_conf] = checkChoiceDefaultProportion_group(study_nm, n_bins)
+% [avg_defaultChoice, sem_defaultChoice,...
+%     avg_conf, sem_conf] = checkChoiceDefaultProportion_group(study_nm, n_bins)
+%% checkChoiceDefaultProportion_group checks average proportion of choosing 
+% the default option and the average level of confidence across participants.
+% 
+% INPUTS
+% study_nm: which group of subjects do you want to check?
+%
+% n_bins: number of bins for your graphs?
+%
+% OUTPUTS
+% avg_defaultChoice: sem_defaultChoice: structure with information about
+% average and standard error of the mean (across participants) proportion 
+% of choosing the default option in function of the other variables of
+% interest of the experiment.
+%
+% avg_conf: sem_conf: structure with information about
+% average and standard error of the mean (across participants) confidence
+% over the choice to be made in function of the other variables of
+% interest of the experiment.
+%
+% See also checkChoiceDefaultProportion.m (same but for individual subject)
 
 %% list of subjects
-[subs, NS] = LGCMot_subs('behavioral_pilots');
+if ~exist('study_nm','var') || isempty(study_nm)
+    study_names = {'fMRI_pilots','study1','study2'};
+    study_nm_idx = listdlg('ListString',study_names);
+    study_nm = study_names{study_nm_idx};
+end
+[subs, NS] = LGCMot_subs(study_nm);
+
+%% working directories
+switch study_nm
+    case 'behavioral_pilots'
+        root = fullfile('C:','Users','clairis','Desktop','GitHub','LGC_motiv','LGC_Motiv_results');
+    otherwise
+        computer_root = LGCM_root_paths();
+        switch study_nm
+            case 'fMRI_pilots'
+                root = fullfile(computer_root,'fMRI_pilots');
+            case 'study1'
+                root = fullfile(computer_root,'study1');
+            case 'study2'
+                root = fullfile(computer_root,'study2');
+        end
+end
 
 %% main parameters
 figDisp = 0;
-n_bins = 6;
+if ~exist('n_bins','var') || isempty(n_bins)
+    n_bins = 6; % default number of bins if not entered in the inputs
+end
+
 [avg_defaultChoice_data_perSub, avg_conf_data_perSub] = deal(cell(1,NS));
 n_R_levels = 4;
 n_E_levels = 4;
@@ -125,7 +169,7 @@ end % loop through physical and mental effort
 
 %% figures
 % figure parameters
-lWidth = 3;
+lWidth_50percentTrait = 2;
 pSize = 30;
 bWidth = 0.4;
 bDist = 0.2;
@@ -137,7 +181,7 @@ Ep_col = [0 153/255 1];
 fig;
 % mark the 50% trait
 plot(1:n_bins, 50*ones(1,n_bins),...
-    'LineWidth',2,'Color','k','LineStyle',':');
+    'LineWidth',lWidth_50percentTrait,'Color','k','LineStyle',':');
 hold on;
 % mental effort
 jbfill(1:n_bins,...
@@ -161,7 +205,7 @@ legend_size(pSize);
 fig;
 % mark the 50% trait
 plot(0:5, 50*ones(1,6),...
-    'LineWidth',2,'Color','k','LineStyle',':');
+    'LineWidth',lWidth_50percentTrait,'Color','k','LineStyle',':');
 hold on;
 % R mental effort
 bar(1, avg_defaultChoice.Em_R,'FaceColor',Em_col);
@@ -186,7 +230,7 @@ legend_size(pSize);
 fig;
 % mark the 50% trait
 plot(0:n_bins, 50*ones(1,n_bins+1),...
-    'LineWidth',2,'Color','k','LineStyle',':');
+    'LineWidth',lWidth_50percentTrait,'Color','k','LineStyle',':');
 hold on;
 for iAbsMoney = 1:(n_R_levels - 1)
     bar(iAbsMoney-bDist, avg_defaultChoice.perAbsMoneylevel.(['Em_',num2str(iAbsMoney)]), 'FaceColor',Em_col,'BarWidth',bWidth);
@@ -209,7 +253,7 @@ legend_size(pSize);
 fig;
 % mark the 50% trait
 plot(0:n_bins, 50*ones(1,n_bins+1),...
-    'LineWidth',2,'Color','k','LineStyle',':');
+    'LineWidth',lWidth_50percentTrait,'Color','k','LineStyle',':');
 hold on;
 for iAbsMoney = 1:(n_R_levels - 1)
     bar(iAbsMoney-bDist, avg_defaultChoice.perAbsMoneylevel.(['Em_',num2str(iAbsMoney)]), 'FaceColor',Em_col,'BarWidth',bWidth);
@@ -232,7 +276,7 @@ legend_size(pSize);
 fig;
 % mark the 50% trait
 plot(-n_bins:n_bins, 50*ones(1,(n_bins*2)+1),...
-    'LineWidth',2,'Color','k','LineStyle',':');
+    'LineWidth',lWidth_50percentTrait,'Color','k','LineStyle',':');
 hold on;
 for iMoney = [-(n_R_levels-1):(-1), 1:(n_R_levels - 1)]
     jMoney = abs(iMoney);
@@ -261,7 +305,7 @@ legend_size(pSize);
 fig;
 % mark the 50% trait
 plot(0:n_bins, 50*ones(1,n_bins+1),...
-    'LineWidth',2,'Color','k','LineStyle',':');
+    'LineWidth',lWidth_50percentTrait,'Color','k','LineStyle',':');
 hold on;
 for iE = 1:(n_E_levels - 1)
     bar(iE-bDist, avg_defaultChoice.perElevel.(['Em_',num2str(iE)]), 'FaceColor',Em_col,'BarWidth',bWidth);
@@ -281,7 +325,7 @@ legend_size(pSize);
 fig;
 % mark the 50% trait
 plot(-n_bins:n_bins, 50*ones(1,(n_bins*2)+1),...
-    'LineWidth',2,'Color','k','LineStyle',':');
+    'LineWidth',lWidth_50percentTrait,'Color','k','LineStyle',':');
 hold on;
 for iMoney = [-(n_R_levels-1):(-1), 1:(n_R_levels - 1)]
     jMoney = abs(iMoney);
@@ -307,7 +351,7 @@ legend_size(pSize);
 fig;
 % mark the 50% trait
 plot(0:n_bins, 50*ones(1,n_bins+1),...
-    'LineWidth',2,'Color','k','LineStyle',':');
+    'LineWidth',lWidth_50percentTrait,'Color','k','LineStyle',':');
 hold on;
 for iE = 1:(n_E_levels - 1)
     bar(iE-bDist, avg_conf.perElevel.(['Em_',num2str(iE)]), 'FaceColor',Em_col,'BarWidth',bWidth);
@@ -332,7 +376,7 @@ legend_size(pSize);
 fig;
 % mark the 50% trait
 plot(1:n_bins, 50*ones(1,n_bins),...
-    'LineWidth',2,'Color','k','LineStyle',':');
+    'LineWidth',lWidth_50percentTrait,'Color','k','LineStyle',':');
 hold on;
 % mental effort
 jbfill(1:n_bins,...
@@ -351,3 +395,5 @@ xlim([0 n_bins+1]);
 xlabel('trial bins');
 ylabel('Confidence (%)');
 legend_size(pSize);
+
+end % function
