@@ -222,7 +222,7 @@ for iS = 1:NS
     matlabbatch{estimate_mdl_rtg_idx}.spm.stats.fmri_est.method.Classical = 1;
 end
 
-%% display spm batch before running it
+%% display spm batch before running it or run it directly
 if exist('checking','var') && checking == 1
     spm_jobman('interactive',matlabbatch);
     %     spm_jobman('run',matlabbatch);
