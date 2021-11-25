@@ -19,7 +19,7 @@ switch study_nm
         subject_id = {'pilot_s1','pilot_s2','pilot_s3'};
 %         subject_id = {'pilot_s1','pilot_s2','pilot_s3'};
     case 'study1'
-%         subject_id = {'CID036'};
+%         subject_id = {'CID095','CID064'};
         subject_id = {'CID074','CID036','CID095','CID064'};
     case 'study2'
         subject_id = {}; % 'CIDXXX'

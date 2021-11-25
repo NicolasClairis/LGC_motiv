@@ -15,7 +15,7 @@ spm('defaults','fmri');
 spm_jobman('initcfg');
 
 %% check the batch before launching the script?
-checking = 0;
+checking = 1;
 
 %% define study and list of subjects to include
 % define study
@@ -27,9 +27,10 @@ end
 
 % define subjects
 [subject_id, NS] = LGCM_subject_selection(study_nm);
+NS_str = num2str(NS);
 
 %% working directories
-root = LGCM_root_paths();
+computer_root = LGCM_root_paths();
 % scripts_folder = fullfile(computer_root,'GitHub','LGC_motiv','LGC_Motiv_analysis','fMRI');
 % addpath(scripts_folder);
 switch study_nm
@@ -46,6 +47,7 @@ if ~exist('GLM','var') || isempty(GLM) || GLM <= 0
     GLM = spm_input('GLM number?',1,'e',[]);
 end
 GLM_str = num2str(GLM);
+GLMprm = which_GLM(GLM);
 
 %% create results folder
 results_folder = [root,filesep,'Second_level',filesep,...
@@ -63,7 +65,7 @@ wms_anat = cell(NS,1);
 % add all the anat files for all the subjects
 % extract anat EPI
 for iS = 1:NS
-    sub_anat_folder = [root,subject_id{iS},filesep,...
+    sub_anat_folder = [root,filesep,subject_id{iS},filesep,...
         'fMRI_analysis',filesep,'anatomical',filesep];
     wms_anat_name = ls([sub_anat_folder,'wm*']);
     wms_anat(iS) = {[sub_anat_folder, wms_anat_name]};
@@ -84,7 +86,7 @@ matlabbatch{batch_idx}.spm.util.imcalc.options.dtype = 4;
 %% perform the second level
 
 % load all contrasts of interest
-con_names = LGCM_contrasts(study_nm, subject_id{1}, GLM, root);
+con_names = LGCM_contrasts(study_nm, subject_id{1}, GLM, computer_root);
 n_con = length(con_names);
 
 % loop over contrasts
@@ -92,12 +94,14 @@ for iCon = 1:n_con
     con_str = num2str(iCon);
 
     % directory for concatenated contrast
-    con_folder = [results_folder, con_names{iCon}];
-    mkdir(con_folder);
+    conFolder_nm = strrep(con_names{iCon},' ','_');
+    conFolder_nm = strrep(conFolder_nm,':','');
+    conFolder_nm = [results_folder, conFolder_nm];
+    mkdir(conFolder_nm);
 
     % start second level:
     batch_idx = batch_idx + 1;
-    matlabbatch{batch_idx}.spm.stats.factorial_design.dir = {con_folder};
+    matlabbatch{batch_idx}.spm.stats.factorial_design.dir = {conFolder_nm};
     % list of inputs
     conlist = cell(NS,1); % 1 con per EPI-subject
     % extract contrasts per subject
@@ -112,13 +116,13 @@ for iCon = 1:n_con
         subject_folder = [root,sub_nm, filesep, 'fMRI_analysis' filesep,...
             'functional' filesep, 'GLM',GLM_str,'_megaconcatenation', filesep];
         if iCon < 10
-            conlist(iS) = {[subject_folder,s,'con_000',con_str,'.nii,1']};
+            conlist(iS) = {[subject_folder,'con_000',con_str,'.nii,1']};
         elseif iCon >= 10 && iCon < 100
-            conlist(iS) = {[subject_folder,s,'con_00',con_str,'.nii,1']};
+            conlist(iS) = {[subject_folder,'con_00',con_str,'.nii,1']};
         elseif iCon >= 100 && iCon < 1000
-            conlist(iS) = {[subject_folder,s,'con_0',con_str,'.nii,1']};
+            conlist(iS) = {[subject_folder,'con_0',con_str,'.nii,1']};
         elseif iCon >= 1000 && iCon < 10000
-            conlist(iS) = {[subject_folder,s,'con_',con_str,'.nii,1']};
+            conlist(iS) = {[subject_folder,'con_',con_str,'.nii,1']};
         end
     end
 
