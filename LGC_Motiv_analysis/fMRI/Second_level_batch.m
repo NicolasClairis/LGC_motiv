@@ -114,7 +114,7 @@ for iCon = 1:n_con
         checkGLM_and_subjectIncompatibility(study_nm, sub_nm, GLMprm);
 
         subject_folder = [root,filesep,sub_nm, filesep, 'fMRI_analysis' filesep,...
-            'functional' filesep, 'GLM',GLM_str,'_megaconcatenation', filesep];
+            'functional' filesep, 'GLM',GLM_str, filesep];
         if iCon < 10
             conlist(iS) = {[subject_folder,'con_000',con_str,'.nii,1']};
         elseif iCon >= 10 && iCon < 100
