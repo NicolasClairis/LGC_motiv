@@ -17,7 +17,7 @@ switch subjectsToConsider
     case 'behavioral_pilots'
         subList = {'201','202','203','204','205','206','207','208','209'};
     case 'study1'
-        subList = {'074','036','095','064'};
+        subList = {'074','036','095','064','061'};
 end
 NS = length(subList);
 
