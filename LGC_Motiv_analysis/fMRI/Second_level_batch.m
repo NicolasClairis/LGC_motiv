@@ -65,7 +65,7 @@ wms_anat = cell(NS,1);
 % add all the anat files for all the subjects
 % extract anat EPI
 for iS = 1:NS
-    sub_anat_folder = [root,filesep,subject_id{iS},filesep,...
+    sub_anat_folder = [root,filesep,'CID',subject_id{iS},filesep,...
         'fMRI_analysis',filesep,'anatomical',filesep];
     wms_anat_name = ls([sub_anat_folder,'wm*']);
     wms_anat(iS) = {[sub_anat_folder, wms_anat_name]};
@@ -113,7 +113,7 @@ for iCon = 1:n_con
         % analysis
         checkGLM_and_subjectIncompatibility(study_nm, sub_nm, GLMprm);
 
-        subject_folder = [root,filesep,sub_nm, filesep, 'fMRI_analysis' filesep,...
+        subject_folder = [root,filesep,'CID',sub_nm, filesep, 'fMRI_analysis' filesep,...
             'functional' filesep, 'GLM',GLM_str, filesep];
         if iCon < 10
             conlist(iS) = {[subject_folder,'con_000',con_str,'.nii,1']};

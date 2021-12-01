@@ -30,15 +30,15 @@ switch study_nm
         end
     case 'study1'
         switch sub_nm
-            case {'CID074'}
+            case {'074'}
                 runs.nb_runs.Ep = 2;
                 runs.nb_runs.Em = 1;
                 runs.tasks = {'Ep','Em','Ep'};
-            case {'CID036','CID064'}
+            case {'036','064','090'}
                 runs.nb_runs.Ep = 2;
                 runs.nb_runs.Em = 2;
                 runs.tasks = {'Ep','Em','Ep','Em'};
-            case {'CID095'}
+            case {'095','061'}
                 runs.nb_runs.Ep = 2;
                 runs.nb_runs.Em = 2;
                 runs.tasks = {'Em','Ep','Em','Ep'};

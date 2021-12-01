@@ -35,12 +35,12 @@ if exist('subj_scan_folders_names','var') && ~isempty(subj_scan_folders_names)
             end
         case 'study1'
             switch sub_nm
-                case 'CID074' % remove run 1 (not enough trials)
+                case '074' % remove run 1 (not enough trials)
                     if strcmp(subj_scan_folders_names(1,:),'3_007_run1_20211102')
                         subj_scan_folders_names(1,:) = [];
-                        disp(['run1 named 3_007_run1_20211102 got removed for ',sub_nm]);
+                        disp(['run1 named 3_007_run1_20211102 got removed for CID',sub_nm]);
                     else
-                        error(['file corresponding to run 1 could not be identified for ',sub_nm,...
+                        error(['file corresponding to run 1 could not be identified for CID',sub_nm,...
                             '. please fix it and remove it before going further in the analysis.']);
                     end
             end
@@ -56,7 +56,7 @@ if exist('iRun','var') && ~isempty(iRun)
     switch study_nm
         case 'study1'
             switch sub_nm
-                case 'CID074' % adapt index since run 1 has to be ignored
+                case '074' % adapt index since run 1 has to be ignored
                     jRun = iRun + 1;
                 otherwise % when everything worked, the index is the same
                     jRun = iRun;

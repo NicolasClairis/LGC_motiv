@@ -61,7 +61,7 @@ for iS = 1:NS
     checkGLM_and_subjectIncompatibility(study_nm, sub_nm, GLMprm);
     
     % define working folders
-    subj_folder             = [root, filesep, sub_nm];
+    subj_folder             = [root, filesep, 'CID',sub_nm];
     subj_analysis_folder    = [subj_folder, filesep, 'fMRI_analysis' filesep];
     subj_anat_folder        = [subj_analysis_folder, filesep, 'anatomical' filesep];
     subj_scans_folder       = [subj_folder, filesep, 'fMRI_scans' filesep];
@@ -85,7 +85,7 @@ for iS = 1:NS
             end
         case 'study1'
             switch sub_nm
-                case 'CID074' % CID074: ignore first run which crashed at the beginning due to high voltage
+                case '074' % CID074: ignore first run which crashed at the beginning due to high voltage
                     nb_runs = 3;
                 otherwise
                     nb_runs = 4;

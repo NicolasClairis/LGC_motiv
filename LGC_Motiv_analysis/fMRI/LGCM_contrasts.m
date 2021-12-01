@@ -32,7 +32,7 @@ switch study_nm
     case 'study2'
         root = fullfile(computer_root,'study2');
 end
-subj_folder             = [root, filesep, sub_nm];
+subj_folder             = [root, filesep, 'CID',sub_nm];
 subj_analysis_folder    = [subj_folder, filesep, 'fMRI_analysis' filesep];
 resultsFolderName = [subj_analysis_folder 'functional', filesep,...
         'GLM',num2str(GLM),filesep];
@@ -57,7 +57,7 @@ if n_1stLevelBetas ~= n_totalRegs
     error(['Problem: number of regressors predicted by contrasts = ',num2str(n_totalRegs),...
         ' while number of betas produced by 1st level = ',num2str(n_1stLevelBetas)]);
 else
-    disp([sub_nm,' number of regressors and number of betas produced in 1st level - ok'])
+    disp(['CID',sub_nm,' number of regressors and number of betas produced in 1st level - ok'])
 end
 
 %% extract run informations (to know which run corresponds to which task)

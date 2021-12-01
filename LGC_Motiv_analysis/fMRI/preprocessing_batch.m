@@ -70,14 +70,15 @@ nb_preprocessingSteps = 6;
 for iS = 1:NS % loop through subjects
     disp(['loading batch for preprocessing subject ',num2str(iS),'/',num2str(NS)]);
     sub_nm = subject_id{iS};
+    suf_fullNm = ['CID',sub_nm];
     
     % create working directories and copy anat. file inside
     % \fMRI_analysis\anatomical folder
-    cd([root, sub_nm]);
+    cd([root, suf_fullNm]);
     if exist('fMRI_analysis','dir') ~= 7
         mkdir fMRI_analysis;
     end
-    subj_analysis_folder = [root, sub_nm,filesep,'fMRI_analysis'];
+    subj_analysis_folder = [root, suf_fullNm,filesep,'fMRI_analysis'];
     cd(subj_analysis_folder);
     if exist('anatomical','dir') ~= 7
         mkdir anatomical;
@@ -85,7 +86,7 @@ for iS = 1:NS % loop through subjects
     if exist('functional','dir') ~= 7
         mkdir functional;
     end
-    subj_scans_folder = [root, sub_nm, filesep,'fMRI_scans'];
+    subj_scans_folder = [root, suf_fullNm, filesep,'fMRI_scans'];
     cd(subj_scans_folder);
     anat_folder = ls('*UNI-DEN*');
     newAnatFolder = [subj_analysis_folder, filesep,'anatomical',filesep];
