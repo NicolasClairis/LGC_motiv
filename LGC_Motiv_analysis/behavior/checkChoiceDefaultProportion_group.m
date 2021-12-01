@@ -256,17 +256,17 @@ plot(0:n_bins, 50*ones(1,n_bins+1),...
     'LineWidth',lWidth_50percentTrait,'Color','k','LineStyle',':');
 hold on;
 for iAbsMoney = 1:(n_R_levels - 1)
-    bar(iAbsMoney-bDist, avg_defaultChoice.perAbsMoneylevel.(['Em_',num2str(iAbsMoney)]), 'FaceColor',Em_col,'BarWidth',bWidth);
-    bar(iAbsMoney+bDist, avg_defaultChoice.perAbsMoneylevel.(['Ep_',num2str(iAbsMoney)]), 'FaceColor',Ep_col,'BarWidth',bWidth);
-    errorbar(iAbsMoney-bDist, avg_defaultChoice.perAbsMoneylevel.(['Em_',num2str(iAbsMoney)]), sem_defaultChoice.perAbsMoneylevel.(['Em_',num2str(iAbsMoney)]),'k')
-    errorbar(iAbsMoney+bDist, avg_defaultChoice.perAbsMoneylevel.(['Ep_',num2str(iAbsMoney)]), sem_defaultChoice.perAbsMoneylevel.(['Ep_',num2str(iAbsMoney)]),'k')
+    bar(iAbsMoney-bDist, avg_defaultChoice.perDeltaMoneylevel.(['Em_',num2str(iAbsMoney)]), 'FaceColor',Em_col,'BarWidth',bWidth);
+    bar(iAbsMoney+bDist, avg_defaultChoice.perDeltaMoneylevel.(['Ep_',num2str(iAbsMoney)]), 'FaceColor',Ep_col,'BarWidth',bWidth);
+    errorbar(iAbsMoney-bDist, avg_defaultChoice.perDeltaMoneylevel.(['Em_',num2str(iAbsMoney)]), sem_defaultChoice.perDeltaMoneylevel.(['Em_',num2str(iAbsMoney)]),'k')
+    errorbar(iAbsMoney+bDist, avg_defaultChoice.perDeltaMoneylevel.(['Ep_',num2str(iAbsMoney)]), sem_defaultChoice.perDeltaMoneylevel.(['Ep_',num2str(iAbsMoney)]),'k')
 end
 ylim([0 100]);
 ylabel('Choice = default option (%)');
 xticks(1:3);
 xticklabels({'1','2','3'});
 xlim([0 n_R_levels]);
-xlabel('Money level');
+xlabel('|Δ money| level');
 legend_size(pSize);
 ylim([0 100]);
 ylabel('Choice = default option (%)');
