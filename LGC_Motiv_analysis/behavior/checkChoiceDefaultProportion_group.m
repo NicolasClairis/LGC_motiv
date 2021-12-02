@@ -184,13 +184,13 @@ plot(1:n_bins, 50*ones(1,n_bins),...
     'LineWidth',lWidth_50percentTrait,'Color','k','LineStyle',':');
 hold on;
 % mental effort
-jbfill(1:n_bins,...
+bar_hdl.Em = jbfill(1:n_bins,...
     (avg_defaultChoice.Em_f_time + sem_defaultChoice.Em_f_time)'.*100,...
     (avg_defaultChoice.Em_f_time - sem_defaultChoice.Em_f_time)'.*100,...
     avg_defaultChoice.Em_f_time'.*100,...
     Em_col);
 % physical effort
-jbfill(1:n_bins,...
+bar_hdl.Ep = jbfill(1:n_bins,...
     (avg_defaultChoice.Ep_f_time + sem_defaultChoice.Ep_f_time)'.*100,...
     (avg_defaultChoice.Ep_f_time - sem_defaultChoice.Ep_f_time)'.*100,...
     avg_defaultChoice.Ep_f_time'.*100,...
@@ -199,6 +199,8 @@ ylim([0 100]);
 xlim([0 n_bins+1]);
 xlabel('trial bins');
 ylabel('Choice = default option (%)');
+legend([bar_hdl.Em, bar_hdl.Ep],'mental','physical');
+legend('boxoff');
 legend_size(pSize);
 
 %% check choices = f(R/P) per task
@@ -208,13 +210,13 @@ plot(0:5, 50*ones(1,6),...
     'LineWidth',lWidth_50percentTrait,'Color','k','LineStyle',':');
 hold on;
 % R mental effort
-bar(1, avg_defaultChoice.Em_R,'FaceColor',Em_col);
+bar_hdl.Em = bar(1, avg_defaultChoice.Em_R,'FaceColor',Em_col);
 errorbar(1, avg_defaultChoice.Em_R, sem_defaultChoice.Em_R,'k');
 % P mental effort
 bar(2, avg_defaultChoice.Em_P,'FaceColor',Em_col);
 errorbar(2, avg_defaultChoice.Em_P, sem_defaultChoice.Em_P,'k');
 % R physical effort
-bar(3, avg_defaultChoice.Ep_R,'FaceColor',Ep_col);
+bar_hdl.Ep = bar(3, avg_defaultChoice.Ep_R,'FaceColor',Ep_col);
 errorbar(3, avg_defaultChoice.Ep_R, sem_defaultChoice.Ep_R,'k');
 % P physical effort
 bar(4, avg_defaultChoice.Ep_P,'FaceColor',Ep_col);
@@ -224,6 +226,8 @@ xticklabels({'R','P','R','P'});
 ylim([0 100]);
 xlim([0 5]);
 ylabel('Choice = default option (%)');
+legend([bar_hdl.Em, bar_hdl.Ep],'mental','physical');
+legend('boxoff');
 legend_size(pSize);
 
 %% check choices = f(|money level|)
@@ -233,8 +237,8 @@ plot(0:n_bins, 50*ones(1,n_bins+1),...
     'LineWidth',lWidth_50percentTrait,'Color','k','LineStyle',':');
 hold on;
 for iAbsMoney = 1:(n_R_levels - 1)
-    bar(iAbsMoney-bDist, avg_defaultChoice.perAbsMoneylevel.(['Em_',num2str(iAbsMoney)]), 'FaceColor',Em_col,'BarWidth',bWidth);
-    bar(iAbsMoney+bDist, avg_defaultChoice.perAbsMoneylevel.(['Ep_',num2str(iAbsMoney)]), 'FaceColor',Ep_col,'BarWidth',bWidth);
+    bar_hdl.Em = bar(iAbsMoney-bDist, avg_defaultChoice.perAbsMoneylevel.(['Em_',num2str(iAbsMoney)]), 'FaceColor',Em_col,'BarWidth',bWidth);
+    bar_hdl.Ep = bar(iAbsMoney+bDist, avg_defaultChoice.perAbsMoneylevel.(['Ep_',num2str(iAbsMoney)]), 'FaceColor',Ep_col,'BarWidth',bWidth);
     errorbar(iAbsMoney-bDist, avg_defaultChoice.perAbsMoneylevel.(['Em_',num2str(iAbsMoney)]), sem_defaultChoice.perAbsMoneylevel.(['Em_',num2str(iAbsMoney)]),'k')
     errorbar(iAbsMoney+bDist, avg_defaultChoice.perAbsMoneylevel.(['Ep_',num2str(iAbsMoney)]), sem_defaultChoice.perAbsMoneylevel.(['Ep_',num2str(iAbsMoney)]),'k')
 end
@@ -247,6 +251,8 @@ xlabel('Money level');
 legend_size(pSize);
 ylim([0 100]);
 ylabel('Choice = default option (%)');
+legend([bar_hdl.Em, bar_hdl.Ep],'mental','physical');
+legend('boxoff');
 legend_size(pSize);
 
 %% check choices = f(|delta money| level)
@@ -256,8 +262,8 @@ plot(0:n_bins, 50*ones(1,n_bins+1),...
     'LineWidth',lWidth_50percentTrait,'Color','k','LineStyle',':');
 hold on;
 for iAbsMoney = 1:(n_R_levels - 1)
-    bar(iAbsMoney-bDist, avg_defaultChoice.perDeltaMoneylevel.(['Em_',num2str(iAbsMoney)]), 'FaceColor',Em_col,'BarWidth',bWidth);
-    bar(iAbsMoney+bDist, avg_defaultChoice.perDeltaMoneylevel.(['Ep_',num2str(iAbsMoney)]), 'FaceColor',Ep_col,'BarWidth',bWidth);
+    bar_hdl.Em = bar(iAbsMoney-bDist, avg_defaultChoice.perDeltaMoneylevel.(['Em_',num2str(iAbsMoney)]), 'FaceColor',Em_col,'BarWidth',bWidth);
+    bar_hdl.Ep = bar(iAbsMoney+bDist, avg_defaultChoice.perDeltaMoneylevel.(['Ep_',num2str(iAbsMoney)]), 'FaceColor',Ep_col,'BarWidth',bWidth);
     errorbar(iAbsMoney-bDist, avg_defaultChoice.perDeltaMoneylevel.(['Em_',num2str(iAbsMoney)]), sem_defaultChoice.perDeltaMoneylevel.(['Em_',num2str(iAbsMoney)]),'k')
     errorbar(iAbsMoney+bDist, avg_defaultChoice.perDeltaMoneylevel.(['Ep_',num2str(iAbsMoney)]), sem_defaultChoice.perDeltaMoneylevel.(['Ep_',num2str(iAbsMoney)]),'k')
 end
@@ -270,6 +276,8 @@ xlabel('|Δ money| level');
 legend_size(pSize);
 ylim([0 100]);
 ylabel('Choice = default option (%)');
+legend([bar_hdl.Em, bar_hdl.Ep],'mental','physical');
+legend('boxoff');
 legend_size(pSize);
 
 %% check choices = f(money levels (splitting R and P trials))
@@ -285,8 +293,8 @@ for iMoney = [-(n_R_levels-1):(-1), 1:(n_R_levels - 1)]
     elseif iMoney > 0
         taskCond = 'R';
     end
-    bar(iMoney-bDist, avg_defaultChoice.perSignedMoneylevel.(['Em_',taskCond','_',num2str(jMoney)]), 'FaceColor',Em_col,'BarWidth',bWidth);
-    bar(iMoney+bDist, avg_defaultChoice.perSignedMoneylevel.(['Ep_',taskCond','_',num2str(jMoney)]), 'FaceColor',Ep_col,'BarWidth',bWidth);
+    bar_hdl.Em = bar(iMoney-bDist, avg_defaultChoice.perSignedMoneylevel.(['Em_',taskCond','_',num2str(jMoney)]), 'FaceColor',Em_col,'BarWidth',bWidth);
+    bar_hdl.Ep = bar(iMoney+bDist, avg_defaultChoice.perSignedMoneylevel.(['Ep_',taskCond','_',num2str(jMoney)]), 'FaceColor',Ep_col,'BarWidth',bWidth);
     errorbar(iMoney-bDist, avg_defaultChoice.perSignedMoneylevel.(['Em_',taskCond','_',num2str(jMoney)]), sem_defaultChoice.perSignedMoneylevel.(['Em_',taskCond','_',num2str(jMoney)]),'k')
     errorbar(iMoney+bDist, avg_defaultChoice.perSignedMoneylevel.(['Ep_',taskCond','_',num2str(jMoney)]), sem_defaultChoice.perSignedMoneylevel.(['Ep_',taskCond','_',num2str(jMoney)]),'k')
 end
@@ -299,6 +307,8 @@ xlabel('Money level');
 legend_size(pSize);
 ylim([0 100]);
 ylabel('Choice = default option (%)');
+legend([bar_hdl.Em, bar_hdl.Ep],'mental','physical');
+legend('boxoff');
 legend_size(pSize);
 
 %% check choices = f(E level)
@@ -308,8 +318,8 @@ plot(0:n_bins, 50*ones(1,n_bins+1),...
     'LineWidth',lWidth_50percentTrait,'Color','k','LineStyle',':');
 hold on;
 for iE = 1:(n_E_levels - 1)
-    bar(iE-bDist, avg_defaultChoice.perElevel.(['Em_',num2str(iE)]), 'FaceColor',Em_col,'BarWidth',bWidth);
-    bar(iE+bDist, avg_defaultChoice.perElevel.(['Ep_',num2str(iE)]), 'FaceColor',Ep_col,'BarWidth',bWidth);
+    bar_hdl.Em = bar(iE-bDist, avg_defaultChoice.perElevel.(['Em_',num2str(iE)]), 'FaceColor',Em_col,'BarWidth',bWidth);
+    bar_hdl.Ep = bar(iE+bDist, avg_defaultChoice.perElevel.(['Ep_',num2str(iE)]), 'FaceColor',Ep_col,'BarWidth',bWidth);
     errorbar(iE-bDist, avg_defaultChoice.perElevel.(['Em_',num2str(iE)]), sem_defaultChoice.perElevel.(['Em_',num2str(iE)]),'k')
     errorbar(iE+bDist, avg_defaultChoice.perElevel.(['Ep_',num2str(iE)]), sem_defaultChoice.perElevel.(['Ep_',num2str(iE)]),'k')
 end
@@ -319,6 +329,8 @@ xticks(1:3);
 xticklabels({'1','2','3'});
 xlim([0 n_E_levels]);
 xlabel('Effort level');
+legend([bar_hdl.Em, bar_hdl.Ep],'mental','physical');
+legend('boxoff');
 legend_size(pSize);
 
 %% check confidence = f(money levels (splitting R and P trials))
@@ -334,8 +346,8 @@ for iMoney = [-(n_R_levels-1):(-1), 1:(n_R_levels - 1)]
     elseif iMoney > 0
         taskCond = 'R';
     end
-    bar(iMoney-bDist, avg_conf.perSignedMoneylevel.(['Em_',taskCond','_',num2str(jMoney)]), 'FaceColor',Em_col,'BarWidth',bWidth);
-    bar(iMoney+bDist, avg_conf.perSignedMoneylevel.(['Ep_',taskCond','_',num2str(jMoney)]), 'FaceColor',Ep_col,'BarWidth',bWidth);
+    bar_hdl.Em = bar(iMoney-bDist, avg_conf.perSignedMoneylevel.(['Em_',taskCond','_',num2str(jMoney)]), 'FaceColor',Em_col,'BarWidth',bWidth);
+    bar_hdl.Ep = bar(iMoney+bDist, avg_conf.perSignedMoneylevel.(['Ep_',taskCond','_',num2str(jMoney)]), 'FaceColor',Ep_col,'BarWidth',bWidth);
     errorbar(iMoney-bDist, avg_conf.perSignedMoneylevel.(['Em_',taskCond','_',num2str(jMoney)]), sem_conf.perSignedMoneylevel.(['Em_',taskCond','_',num2str(jMoney)]),'k')
     errorbar(iMoney+bDist, avg_conf.perSignedMoneylevel.(['Ep_',taskCond','_',num2str(jMoney)]), sem_conf.perSignedMoneylevel.(['Ep_',taskCond','_',num2str(jMoney)]),'k')
 end
@@ -345,6 +357,8 @@ xlim([-n_R_levels n_R_levels]);
 ylim([0 100]);
 ylabel('Level of confidence');
 xlabel('Money level');
+legend([bar_hdl.Em, bar_hdl.Ep],'mental','physical');
+legend('boxoff');
 legend_size(pSize);
 
 %% check confidence = f(E levels)
@@ -354,8 +368,8 @@ plot(0:n_bins, 50*ones(1,n_bins+1),...
     'LineWidth',lWidth_50percentTrait,'Color','k','LineStyle',':');
 hold on;
 for iE = 1:(n_E_levels - 1)
-    bar(iE-bDist, avg_conf.perElevel.(['Em_',num2str(iE)]), 'FaceColor',Em_col,'BarWidth',bWidth);
-    bar(iE+bDist, avg_conf.perElevel.(['Ep_',num2str(iE)]), 'FaceColor',Ep_col,'BarWidth',bWidth);
+    bar_hdl.Em = bar(iE-bDist, avg_conf.perElevel.(['Em_',num2str(iE)]), 'FaceColor',Em_col,'BarWidth',bWidth);
+    bar_hdl.Ep = bar(iE+bDist, avg_conf.perElevel.(['Ep_',num2str(iE)]), 'FaceColor',Ep_col,'BarWidth',bWidth);
     errorbar(iE-bDist, avg_conf.perElevel.(['Em_',num2str(iE)]), sem_conf.perElevel.(['Em_',num2str(iE)]),'k')
     errorbar(iE+bDist, avg_conf.perElevel.(['Ep_',num2str(iE)]), sem_conf.perElevel.(['Ep_',num2str(iE)]),'k')
 end
@@ -366,10 +380,10 @@ xticklabels({'1','2','3'});
 xlim([0 n_E_levels]);
 xlabel('Effort level');
 legend_size(pSize);
-
-
 ylabel('Level of confidence');
 xlabel('Effort level');
+legend([bar_hdl.Em, bar_hdl.Ep],'mental','physical');
+legend('boxoff');
 legend_size(pSize);
 
 %% check confidence = f(time)
@@ -379,13 +393,13 @@ plot(1:n_bins, 50*ones(1,n_bins),...
     'LineWidth',lWidth_50percentTrait,'Color','k','LineStyle',':');
 hold on;
 % mental effort
-jbfill(1:n_bins,...
+bar_hdl.Em = jbfill(1:n_bins,...
     (avg_conf.Em_f_time + sem_conf.Em_f_time)'.*100,...
     (avg_conf.Em_f_time - sem_conf.Em_f_time)'.*100,...
     avg_conf.Em_f_time'.*100,...
     Em_col);
 % physical effort
-jbfill(1:n_bins,...
+bar_hdl.Ep = jbfill(1:n_bins,...
     (avg_conf.Ep_f_time + sem_conf.Ep_f_time)'.*100,...
     (avg_conf.Ep_f_time - sem_conf.Ep_f_time)'.*100,...
     avg_conf.Ep_f_time'.*100,...
@@ -394,6 +408,8 @@ ylim([0 100]);
 xlim([0 n_bins+1]);
 xlabel('trial bins');
 ylabel('Confidence (%)');
+legend([bar_hdl.Em, bar_hdl.Ep],'mental','physical');
+legend('boxoff');
 legend_size(pSize);
 
 end % function
