@@ -17,6 +17,9 @@ spm_jobman('initcfg');
 %% check the batch before launching the script?
 checking = 0;
 
+%% value of the smoothing during preprocessing?
+preproc_sm_kernel = 6;
+
 %% define study and list of subjects to include
 % define study
 if ~exist('study_nm','var') || isempty(study_nm)
@@ -51,7 +54,7 @@ GLMprm = which_GLM(GLM);
 
 %% create results folder
 results_folder = [root,filesep,'Second_level',filesep,...
-    'GLM',GLM_str,'_',NS_str,'subs',filesep];
+    'GLM',GLM_str,'_',NS_str,'subs_preprocSm',num2str(preproc_sm_kernel),'mm',filesep];
 if exist(results_folder,'dir') ~= 7
     mkdir(results_folder);
 end
@@ -114,7 +117,8 @@ for iCon = 1:n_con
         checkGLM_and_subjectIncompatibility(study_nm, sub_nm, GLMprm);
 
         subject_folder = [root,filesep,'CID',sub_nm, filesep, 'fMRI_analysis' filesep,...
-            'functional' filesep, 'GLM',GLM_str, filesep];
+            'functional' filesep, 'preproc_sm_',num2str(preproc_sm_kernel),'mm',filesep...
+            'GLM',GLM_str, filesep];
         if iCon < 10
             conlist(iS) = {[subject_folder,'con_000',con_str,'.nii,1']};
         elseif iCon >= 10 && iCon < 100

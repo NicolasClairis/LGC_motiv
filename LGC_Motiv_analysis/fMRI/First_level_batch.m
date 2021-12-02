@@ -33,6 +33,9 @@ GLMprm = which_GLM(GLM);
 add_drv = GLMprm.gal.add_drv;
 grey_mask = GLMprm.gal.grey_mask;
 
+% value of the smoothing during preprocessing?
+preproc_sm_kernel = 6;
+
 % repetition time for fMRI
 TR = 2.00;
 
@@ -68,9 +71,16 @@ for iS = 1:NS
     subj_behavior_folder    = [subj_folder, filesep, 'behavior' filesep];
     
     % create folder to store the results for the current subject
-    resultsFolderName = [subj_analysis_folder 'functional', filesep,...
-        'GLM',num2str(GLM)];
-    mkdir(resultsFolderName);
+    sm_folderName = [subj_analysis_folder 'functional', filesep,'preproc_sm_',num2str(preproc_sm_kernel),'mm',filesep];
+    if ~exist(sm_folderName,'dir')
+        mkdir(resultsFolderName);
+    end
+    resultsFolderName = [sm_folderName, 'GLM',num2str(GLM)];
+    if ~exist(resultsFolderName,'dir')
+        mkdir(resultsFolderName);
+    else
+        error(['First level folder ',resultsFolderName,' already exists. Please delete and try again.']);
+    end
     
     %% define number of runs
     switch study_nm
