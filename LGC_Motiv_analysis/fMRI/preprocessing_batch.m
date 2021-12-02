@@ -252,7 +252,7 @@ end
 spm_jobman('run',matlabbatch);
 
 %% move files output from the last step
-for iS = 2:NS
+for iS = 1:NS
     sub_nm = subject_id{iS};
     sub_fullNm = ['CID',sub_nm];
     subj_scans_folder = [root, sub_fullNm, filesep,'fMRI_scans'];
