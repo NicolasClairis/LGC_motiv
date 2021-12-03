@@ -34,7 +34,7 @@ add_drv = GLMprm.gal.add_drv;
 grey_mask = GLMprm.gal.grey_mask;
 
 % value of the smoothing during preprocessing?
-preproc_sm_kernel = 6;
+preproc_sm_kernel = 8;
 
 % repetition time for fMRI
 TR = 2.00;

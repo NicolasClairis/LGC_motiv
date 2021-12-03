@@ -18,7 +18,7 @@ spm_jobman('initcfg');
 checking = 0;
 
 %% value of the smoothing during preprocessing?
-preproc_sm_kernel = 6;
+preproc_sm_kernel = 8;
 
 %% define study and list of subjects to include
 % define study

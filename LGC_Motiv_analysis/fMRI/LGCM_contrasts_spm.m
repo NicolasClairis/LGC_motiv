@@ -28,7 +28,7 @@ switch study_nm
 end
 
 %% preprocessing smoothing kernel to consider
-preproc_sm_kernel = 6;
+preproc_sm_kernel = 8;
 
 %% checking by default the batch before launching it
 if ~exist('checking','var') || isempty(checking) || ~ismember(checking,[0,1])
