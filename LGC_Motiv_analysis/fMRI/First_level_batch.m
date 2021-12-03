@@ -73,13 +73,16 @@ for iS = 1:NS
     % create folder to store the results for the current subject
     sm_folderName = [subj_analysis_folder 'functional', filesep,'preproc_sm_',num2str(preproc_sm_kernel),'mm',filesep];
     if ~exist(sm_folderName,'dir')
-        mkdir(resultsFolderName);
+        mkdir(sm_folderName);
     end
     resultsFolderName = [sm_folderName, 'GLM',num2str(GLM)];
     if ~exist(resultsFolderName,'dir')
         mkdir(resultsFolderName);
     else
-        error(['First level folder ',resultsFolderName,' already exists. Please delete and try again.']);
+        rmdir(resultsFolderName);
+        mkdir(resultsFolderName);
+        warning(['First level folder ',resultsFolderName,' already existed. ',...
+            'It was deleted and recreated for CID',sub_nm,'.']);
     end
     
     %% define number of runs
@@ -130,7 +133,7 @@ for iS = 1:NS
         end
         
         % load scans in the GLM
-        cd([subj_scans_folder filesep subj_runFoldername_tmp, filesep]); % go to run folder
+        cd([subj_scans_folder filesep subj_runFoldername_tmp, filesep,'preproc_sm_',num2str(preproc_sm_kernel),'mm',filesep]); % go to run folder
         preprocessed_filenames = cellstr(spm_select('ExtFPList',pwd,'^swr.*\.nii$')); % extracts all the preprocessed swrf files (smoothed, normalized, realigned)
         % in case data is not in .nii but in .img & .hdr
         if isempty(preprocessed_filenames{1})
@@ -177,7 +180,7 @@ for iS = 1:NS
     %% global parameters for subject batch
     matlabbatch{sub_idx}.spm.stats.fmri_spec.fact = struct('name', {}, 'levels', {});
     
-    % add temporal derivative or not
+    %% add temporal derivative or not
     if add_drv == 0
         matlabbatch{sub_idx}.spm.stats.fmri_spec.bases.hrf.derivs = [0 0];
     elseif add_drv == 1
@@ -185,7 +188,7 @@ for iS = 1:NS
     elseif add_drv == 2
         matlabbatch{sub_idx}.spm.stats.fmri_spec.bases.hrf.derivs = [1 1];
     end
-    
+    %% other parameters
     matlabbatch{sub_idx}.spm.stats.fmri_spec.volt = 1;
     matlabbatch{sub_idx}.spm.stats.fmri_spec.global = 'None';
     switch grey_mask
@@ -196,7 +199,7 @@ for iS = 1:NS
     end
     
     
-    % add grey mask or not
+    %% add grey mask or not
     switch grey_mask
         case 0
             matlabbatch{sub_idx}.spm.stats.fmri_spec.mask = {''};
