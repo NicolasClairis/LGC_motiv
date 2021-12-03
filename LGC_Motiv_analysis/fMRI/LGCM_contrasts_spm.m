@@ -50,10 +50,10 @@ for iSubject = 1:NS
     sub_nm = subject_id{iSubject};
     
     %% extract contrasts list (vectors + corresponding names
-    [con_names, con_vector] = LGCM_contrasts(study_nm, sub_nm, GLM, computer_root);
+    [con_names, con_vector] = LGCM_contrasts(study_nm, sub_nm, GLM, computer_root, preproc_sm_kernel);
     
     %% define results directory
-    matlabbatch{iSubject}.spm.stats.con.spmmat = {fullfile(root,['CID',sub_nm],'fMRI_analysis','functional',['preproc_sm',num2str(preproc_sm_kernel),'mm'],['GLM',num2str(GLM)],'SPM.mat')};
+    matlabbatch{iSubject}.spm.stats.con.spmmat = {fullfile(root,['CID',sub_nm],'fMRI_analysis','functional',['preproc_sm_',num2str(preproc_sm_kernel),'mm'],['GLM',num2str(GLM)],'SPM.mat')};
     %% add each contrast to the list
     for iCon = 1:length(con_names)
         matlabbatch{iSubject}.spm.stats.con.consess{iCon}.tcon.name     = con_names{iCon};

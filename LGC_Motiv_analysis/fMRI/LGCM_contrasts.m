@@ -1,5 +1,5 @@
-function[con_names, con_vector] = LGCM_contrasts(study_nm, sub_nm, GLM, computer_root)
-% [con_names, con_vector] = LGCM_contrasts(study_nm, sub_nm, GLM, computer_root)
+function[con_names, con_vector] = LGCM_contrasts(study_nm, sub_nm, GLM, computer_root, preproc_sm_kernel)
+% [con_names, con_vector] = LGCM_contrasts(study_nm, sub_nm, GLM, computer_root, preproc_sm_kernel)
 % LGCM_contrasts will define the contrast names and contrast vector for the
 % subject and study entered in input.
 %
@@ -14,6 +14,8 @@ function[con_names, con_vector] = LGCM_contrasts(study_nm, sub_nm, GLM, computer
 % sub_nm: subject name
 %
 % GLM: GLM number
+%
+% preproc_sm_kernel: kernel used in preprocessing for smoothing the data
 %
 % OUTPUTS
 % con_names: list of contrast names
@@ -35,7 +37,8 @@ end
 subj_folder             = [root, filesep, 'CID',sub_nm];
 subj_analysis_folder    = [subj_folder, filesep, 'fMRI_analysis' filesep];
 resultsFolderName = [subj_analysis_folder 'functional', filesep,...
-        'GLM',num2str(GLM),filesep];
+    'preproc_sm_',num2str(preproc_sm_kernel),'mm', filesep,...
+    'GLM',num2str(GLM),filesep];
 
 %% extract GLM informations
 [reg_names, n_regsPerTask] = GLM_details(GLM);
