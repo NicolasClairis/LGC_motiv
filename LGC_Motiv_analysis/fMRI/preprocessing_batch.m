@@ -65,7 +65,7 @@ nb_preprocessingSteps = 6;
  % 6) smoothing functional
  
  %% smoothing kernel
- smKernel = 6;
+ smKernel = 8;
  
  %% initialize batch
  matlabbatch = cell(nb_preprocessingSteps*NS,1);
