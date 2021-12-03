@@ -19,10 +19,11 @@ switch study_nm
         subject_id = {'pilot_s1','pilot_s2','pilot_s3'};
 %         subject_id = {'pilot_s1','pilot_s2','pilot_s3'};
     case 'study1'
-        subject_id = {'074','036','095','064','061',...
-            '090'};
+        %         subject_id = {'079'};
 %         subject_id = {'074','036','095','064','061',...
-%             '090','079'};
+%             '090'};
+        subject_id = {'074','036','095','064','061',...
+            '090','079'};
     case 'study2'
         subject_id = {}; % 'CIDXXX'
     otherwise
