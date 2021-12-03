@@ -348,6 +348,30 @@ switch GLM
             GLMprm.model_onset.(Epm_nm).fbk = 'stick';
             GLMprm.fbk.(Epm_nm).RP.win_vs_loss = 1;
         end
+    case 11 % R/P split, Vch R/P and E levels during disp chosen, like GLM8 but without the Vunchosen
+        GLMprm.gal.orth_vars = 1;
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % fixation cross
+            GLMprm.model_onset.(Epm_nm).preChoiceCross = 'stick';
+            GLMprm.model_onset.(Epm_nm).preEffortCross = 'stick';
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'stick';
+            GLMprm.choice.(Epm_nm).RP.RT = 1;
+            % chosen - split R/P and use R/P and E levels
+            GLMprm.model_onset.(Epm_nm).chosen = 'stick';
+            GLMprm.chosen.(Epm_nm).RPpool = 0;
+            for iRP = 1:length(RP_conds)
+                RP_nm = RP_conds{iRP};
+                GLMprm.chosen.(Epm_nm).(RP_nm).money_chosen = 3;
+                GLMprm.chosen.(Epm_nm).(RP_nm).E_chosen = 1;
+            end
+            % effort performance
+            GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
+            % feedback - split R/P
+            GLMprm.model_onset.(Epm_nm).fbk = 'stick';
+            GLMprm.fbk.(Epm_nm).RP.win_vs_loss = 1;
+        end
 end
 
 
