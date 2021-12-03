@@ -1,9 +1,6 @@
 function varargout = art(varargin)
 % art - module for automatic and manual detection and removal of outliers.
 %
-% edits by Nicolas Clairis - december 2021 for automatic selection of files
-% lines ~237 - 333
-%
 % art
 % Lauches the art GUI. This will prompt the user to enter the functional
 % volumes and motion pararameters (SPM, FSL, or Siemens supported) for one
@@ -12,12 +9,12 @@ function varargout = art(varargin)
 % The top graph is the global brain activation mean as a function of
 % time, with all of the identified outlier scans marked. Optionally it also
 % overlais the task-related regressors (SPM designs only) and break down of
-% number of identified outliers per condition.
+% number of identified outliers per condition. 
 %
 % The second graph shows the timeseries derived from the global BOLD signal
 % and used to identify potential outlier scans (either absolute or
 % scan-to-scan differences in the global BOLD signal normalized to
-% z-scores)
+% z-scores) 
 %
 % The third graph shows the timeseries derived from the subject motion
 % parameters and used to identify potential outlier scans (either the
@@ -60,7 +57,7 @@ function varargout = art(varargin)
 %
 % By default art generates the following output files:
 %  Regressor files (one per session, stored in the same folders as the
-%   functional volumes, and named art_regression_outliers_*.mat and
+%   functional volumes, and named art_regression_outliers_*.mat and 
 %   art_regression_outliers_and_movement_*.mat). This files can be entered
 %   as covariates in the first-level analyses in order to effectively
 %   remove the identified outlier scans from further analyses
@@ -70,11 +67,11 @@ function varargout = art(varargin)
 %   avoid any influences of the outlier scans on the implicit analysis mask
 %   computation (on SPM you will also need to modify the defaults in order
 %   to skip the implicit masking operation, e.g. set defaults.mask.thresh =
-%   -inf)
+%   -inf) 
 %
 % Pressing the save button lets the user choose wheter to save the
 % list of identified outliers, motion statistics, graphs, outlier
-% regressors, or Analysis mask.
+% regressors, or Analysis mask. 
 %
 %
 % art filename.cfg
@@ -86,7 +83,7 @@ function varargout = art(varargin)
 
 % ----------------------------------------------------------------------
 % - Added voxel-wise SNR and variability displays; save composite motion
-%   measure; clean-up code -Alfonso 06/11
+%   measure; clean-up code -Alfonso 06/11  
 % - Added analysis mask option, modified pow spec display and other GUI display
 %   options, last update 9/25/09 - Sue, Alfonso and Darren
 % - if multiple sessions are specified, standard deviations are calculated
@@ -208,7 +205,7 @@ sess_file='';
 stats_file='';
 
 
-% look for args in varargin,
+% look for args in varargin, 
 for i=1:2:numel(varargin)
     if strcmp(varargin{i}, 'sess_file')
         sess_file = varargin{i+1};
@@ -230,78 +227,38 @@ setappdata(handles.savefile,'stats_file',stats_file);
 % Collect files
 % ------------------------
 if ~isempty(sess_file) % read config
-    [nb_runs,global_type_flag,drop_flag,motionFileType,motion_threshold,global_threshold,use_diff_motion,use_diff_global,use_norms,SPMfile,mask_file,output_dir,P,M] = ...
-        read_art_sess_file(sess_file);
+    [num_sess,global_type_flag,drop_flag,motionFileType,motion_threshold,global_threshold,use_diff_motion,use_diff_global,use_norms,SPMfile,mask_file,output_dir,P,M] = ...
+        read_art_sess_file(sess_file); 
 else
     motion_threshold=[];global_threshold=[];SPMfile=[];mask_file=[];output_dir='';
     use_diff_motion=1;use_diff_global=1;use_norms=1;
-         
-    %% select participant
-    computer_root = LGCM_root_paths();
-    if ~exist('study_nm','var') || isempty(study_nm)
-        study_names = {'fMRI_pilots','study1','study2'};
-        study_nm_idx = listdlg('ListString',study_names);
-        study_nm = study_names{study_nm_idx};
-    end
-    switch study_nm
-        case 'fMRI_pilots'
-            root = fullfile(computer_root,'fMRI_pilots');
-        case 'study1'
-            root = fullfile(computer_root,'study1');
-        case 'study2'
-            root = fullfile(computer_root,'study2');
-    end
+    num_sess = spm_input('How many sessions?',1,'n',1,1);
     
-    % select subject
-    [subject_id, NS] = LGCM_subject_selection(study_nm);
-    subjectList = subject_id{1};
-    for iS = 2:NS
-        subjectList = [subjectList,' | ',subject_id{iS}];
-    end
-    [sub_idx] = spm_input('Select subject to check',1,'m',subjectList,1:NS,1);
-    sub_nm = subject_id{sub_idx};
+    global_type_flag = spm_input('Which global mean to use?', 1, 'm', ...
+        'Regular | User Mask',...
+        [1 2], 1);
+    motionFileType = spm_input('Select type of motion params file.',1,'m',...
+        ' txt(SPM) | par(FSL) | txt(Siemens)', ...
+        [0 1 2], 0);
     
-    subj_scans_folder = [root,filesep,'CID',sub_nm,filesep,'fMRI_scans',filesep];
-    cd(subj_scans_folder);
-    subj_scan_folders_names = ls('*run*'); % name for functional runs ('*TR2180_PA' for instance for runs with TR=2.18s)
-    
-    %     global_type_flag = spm_input('Which global mean to use?', 1, 'm', ...
-    %         'Regular | User Mask',...
-    %         [1 2], 1);
-    global_type_flag = 1;
-    %     motionFileType = spm_input('Select type of motion params file.',1,'m',...
-    %         ' txt(SPM) | par(FSL) | txt(Siemens)', ...
-    %         [0 1 2], 0);
-    motionFileType = 0;
-    nb_runs = nb_runsPerSub(study_nm, sub_nm);
-    
-    P = cell(1,nb_runs);
-    M = cell(1,nb_runs);
-    for i = 1:nb_runs
+    P=cell(1,num_sess);
+    M=cell(1,num_sess);
+    for i = 1:num_sess
         switch spm_ver
             case {1,2}
                 P{i} = spm_get(Inf,'.img',['Select functional volumes for session'  num2str(i) ':']);
             case {5,8,12}
-                %                 P{i} = spm_select(Inf,'image',['Select functional volumes for session'  num2str(i) ':']);
+                P{i} = spm_select(Inf,'image',['Select functional volumes for session'  num2str(i) ':']);
                 %P{i} = spm_select(Inf,'.*\.nii|.*\.img',['Select functional volumes for session'  num2str(i) ':']);
-                cd(subj_scans_folder);
-                cd(subj_scan_folders_names(i,:)); % go to run folder
-                P{i} = spm_select('ExtFPList',pwd,'^rCID.*\.nii$'); %% manual change
         end
         if motionFileType == 0 %SPM format
             switch spm_ver
                 case {1,2}
                     mvmt_file = spm_get(1,'.txt',['Select movement params file for session' num2str(i) ':']);
                 case {5,8,12}
-                    %                     mvmt_file = spm_select(1,'^.*\.txt$',['Select movement params file for session' num2str(i) ':']);
-                    cd(subj_scans_folder);
-                    cd(subj_scan_folders_names(i,:));
-                    movement_file = ls('rp*');
-                    mvmt_file = [pwd,filesep,movement_file];
+                    mvmt_file = spm_select(1,'^.*\.txt$',['Select movement params file for session' num2str(i) ':']);
             end
-            cd(root);
-            %% manual changes STOP
-            M{i} = load(mvmt_file);
+            M{i} =load(mvmt_file);
         elseif motionFileType == 1 %FSL format
             switch spm_ver
                 case {1,2}
@@ -330,7 +287,7 @@ if global_type_flag==2,
     end
     mask=spm_vol(mask_file);
 end
-setappdata(handles.showDesign,'sessions',-(1:nb_runs));
+setappdata(handles.showDesign,'sessions',-(1:num_sess));
 setappdata(handles.showDesign,'SPMfile',SPMfile);
 if ~isempty(SPMfile), temp=load(SPMfile); setappdata(handles.showDesign,'SPM',temp.SPM); clear temp; end
 datafiles=cell(1,length(P));
@@ -341,12 +298,12 @@ for i=1:length(P),
         datafiles{i}=[];
     end;
 end % <alfnie>: keep filenames of functional data (first scan per session only)
-if ~isempty(motion_threshold),
-    mvmt_thresh=motion_threshold(1); mvmt_diff_thresh=motion_threshold(1);
+if ~isempty(motion_threshold), 
+    mvmt_thresh=motion_threshold(1); mvmt_diff_thresh=motion_threshold(1); 
     if numel(motion_threshold)>1, rotat_thresh=motion_threshold(2); rotat_diff_thresh=motion_threshold(2); end
 end
 if ~isempty(global_threshold), z_thresh=global_threshold; end
-%if drop_flag, disp('warning: explicitly dropping 1st scan no longer supported. Edit the ''all outliers'' box to specify any number of additional outlier scans'); end
+%if drop_flag, disp('warning: explicitly dropping 1st scan no longer supported. Edit the ''all outliers'' box to specify any number of additional outlier scans'); end 
 % dropflag extended to add first N scans as outliers in savefile_Callback_SaveRegressor (alfnie 09/15)
 
 mv_data = [];
@@ -367,14 +324,14 @@ end
 % ---------------------------------------
 % Compute Global signal and analysis mask
 % ---------------------------------------
-g = cell(1,nb_runs); % g is a cell array of the global mean for each scan in each session
+g = cell(1,num_sess); % g is a cell array of the global mean for each scan in each session
 gsigma=g;gmean=g;dgsigma=g;dgmean=g;
 maskscan={};
 Data_Sum=0;
 Data_SumSquared=0;
-VY=cell(1,nb_runs);
+VY=cell(1,num_sess);
 cumdisp;
-for sess=1:nb_runs
+for sess=1:num_sess
     fprintf('%-4s: ',['Mapping files for session ' num2str(sess) '...']);
     VY{sess}     = spm_vol(P{sess});
     fprintf('%3s\n','...done')
@@ -407,7 +364,7 @@ for sess=1:nb_runs
     if global_type_flag==1  % regular mean : Global-conjunction (uses conjunction of individual scan masks; individual scan mask are defined as voxels above mean/8 for each scan; see art_maskglobal_scan)
         Mask=ones(VY{sess}(1).dim(1:3));
         for i = 1:nscans,
-            temp=reshape(spm_get_data(VY{sess}(i),xyz_voxel),VY{sess}(i).dim);
+            temp=reshape(spm_get_data(VY{sess}(i),xyz_voxel),VY{sess}(i).dim); 
             [maskscan{end+1},masktemp]=art_maskglobal_scan(temp,VY{sess}(i),VY{sess}(1),VY1inv); %#ok<AGROW>
             Mask(masktemp)=0;
             cumdisp([num2str(i),'/',num2str(nscans)]);
@@ -416,7 +373,7 @@ for sess=1:nb_runs
         Mask=spm_get_data(mask,pinv(mask.mat)*xyz);
     end
     idxMask=find(Mask);
-    
+
     % --------------------------------------------------
     % computes global signal
     % --------------------------------------------------
@@ -457,11 +414,11 @@ end
 art_mask_temporalfile=['art_mask_temporalfile',char('0'+floor(10*rand(1,8))),'.mat'];
 VY=cat(1,VY{:}); VY1=VY(1); %#ok<NASGU>
 try
-    save(fullfile(output_dir,art_mask_temporalfile),'maskscan','VY1','VY','notcoregistered','xyz','xyz_voxel','Data_Sum','Data_SumSquared');
+    save(fullfile(output_dir,art_mask_temporalfile),'maskscan','VY1','VY','notcoregistered','xyz','xyz_voxel','Data_Sum','Data_SumSquared'); 
 catch
     disp('warning: unable to write to ',output_dir,' folder. Writing output files to ',pwd,' instead.');
     output_dir=pwd;
-    save(fullfile(output_dir,art_mask_temporalfile),'maskscan','VY1','VY','notcoregistered','xyz','xyz_voxel','Data_Sum','Data_SumSquared');
+    save(fullfile(output_dir,art_mask_temporalfile),'maskscan','VY1','VY','notcoregistered','xyz','xyz_voxel','Data_Sum','Data_SumSquared'); 
 end
 set(handles.figure1,'closerequestfcn',['try,if ispc,[nill,ok]=system(''del "',fullfile(output_dir,art_mask_temporalfile),'"'');else [nill,ok]=system(''rm ''''',fullfile(output_dir,art_mask_temporalfile),'''''''); end; end; delete(gcbf);']);
 
@@ -496,7 +453,7 @@ for i=1:size(mv_data,1)
     mv_data(i,14:31)=temp*res';
 end
 cur_sess_start=0;
-for sess=1:nb_runs
+for sess=1:num_sess
     n=length(g{sess}(:,1));
     mv_data(cur_sess_start+(1:n),7) = sqrt(sum(abs(mv_data(cur_sess_start+(1:n),1:3)).^2,2));
     mv_data(cur_sess_start+(2:n),8:13)  = diff(mv_data(cur_sess_start+(1:n),1:6),1,1);
@@ -534,7 +491,7 @@ else
 end
 
 idx=str2num(get(handles.all_outliers, 'String')); %#ok<*ST2NM>
-for sess=1:nb_runs
+for sess=1:num_sess
     fprintf('\nSession %d global statistics -  mean: %7.4f stdv: %7.4f',sess,gmean{sess},gsigma{sess});
 end
 fprintf('\n');
@@ -576,7 +533,7 @@ set(handles.figure1,'resizefcn','art(''showOptions_Callback'',gcbo,[],guidata(gc
 %---------------------------------------------------------
 savefile_Callback_SaveRegressor(handles);
 try
-    savefile_Callback_SaveMask(handles);
+savefile_Callback_SaveMask(handles);
 catch
     disp('Warning. Error encountered during ART implicit-mask file creation. Skipping this step');
 end
@@ -598,7 +555,7 @@ end
 
 
 %% ---------------   GUI callback functions --------------------------
-% Processing steps for each of the art GUI options
+% Processing steps for each of the art GUI options 
 % --------------------------------------------------------------------
 
 % -----------------------------------------------------------------------
@@ -611,7 +568,7 @@ function UpdateGlobal(hObject, eventdata, handles, incr) %#ok<INUSL>
 %get data
 z_thresh = str2num(get(handles.zthresh,'String'));
 g = getappdata(handles.zthresh,'g');
-nb_runs = length(g);
+num_sess = length(g);
 
 %calc new outliers
 % BEGIN ohinds 2008-04-23: plot zscores
@@ -619,14 +576,14 @@ axes(handles.zvalue);
 cla;
 hold on;
 cur_sess_start=1;
-z_thresh = z_thresh*incr;
+z_thresh = z_thresh*incr; 
 idxind=2;
-out_idx = cell(1,nb_runs);
-for sess=1:nb_runs
+out_idx = cell(1,num_sess);
+for sess=1:num_sess
     if get(handles.diff1,'value'),
-        out_idx{sess} = cur_sess_start+(find(abs(g{sess}(:,idxind)) > z_thresh|abs([g{sess}(2:end,idxind);0]) > z_thresh))'-1;
+        out_idx{sess} = cur_sess_start+(find(abs(g{sess}(:,idxind)) > z_thresh|abs([g{sess}(2:end,idxind);0]) > z_thresh))'-1; 
     else
-        out_idx{sess} = cur_sess_start+(find(abs(g{sess}(:,idxind)) > z_thresh))'-1;
+        out_idx{sess} = cur_sess_start+(find(abs(g{sess}(:,idxind)) > z_thresh))'-1; 
     end
     %update plot
     plot(cur_sess_start:cur_sess_start+size(g{sess},1)-1, g{sess}(:,idxind));
@@ -662,7 +619,7 @@ end
 % UPDATEMOVEMENT
 % This function identifies outliers based on the subject movement
 % parameters (either translation parameters or composite motion) and
-% generates the corresponding plot (gui 3rd plot from the top)
+% generates the corresponding plot (gui 3rd plot from the top) 
 % -----------------------------------------------------------------------
 function UpdateMovement(hObject, eventdata, handles, incr) %#ok<INUSL>
 
@@ -748,7 +705,7 @@ end
 % -----------------------------------------------------------------------
 % UPDATEROTATION
 % This function identifies outliers based on the subject rotation
-% parameters and generates the corresponding plot (gui 4th plot from the top)
+% parameters and generates the corresponding plot (gui 4th plot from the top)  
 % (note: only available when not using composite movement measures)
 % -----------------------------------------------------------------------
 function UpdateRotation(hObject, eventdata, handles, incr) %#ok<INUSL>
@@ -821,7 +778,7 @@ end
 % -----------------------------------------------------------------------
 function UpdateSummaryplot(hObject, eventdata, handles)
 g = getappdata(handles.zthresh,'g');
-nb_runs = length(g);
+num_sess = length(g);
 tmps = get(handles.all_outliers,'String');
 if ~isempty(tmps)
     nstrings = size(tmps,1);
@@ -843,7 +800,7 @@ hold on;
 
 cur_sess_start=1;
 rng_mean=0;rng_minmax=[-inf,-inf];
-for sess=1:nb_runs
+for sess=1:num_sess
     %rng{sess} = range(g{sess}(:,1));
     rng_mean=rng_mean+mean(g{sess}(:,1));
     rng_minmax=max(rng_minmax,[-min(g{sess}(:,1)),max(g{sess}(:,1))]);
@@ -852,7 +809,7 @@ for sess=1:nb_runs
     cur_sess_start = cur_sess_start + length(g{sess}(:,1));
 end
 set(gca,'xlim',[0,cur_sess_start]);%,'ylim',rng_minmax.*[-1,1]);
-rng_mean=rng_mean/nb_runs;
+rng_mean=rng_mean/num_sess;
 
 ylabel('mean image\newlineintensity');
 xlabel('scans');
@@ -860,9 +817,9 @@ xlabel('scans');
 
 y_lim = get(gca, 'YLim');
 cur_sess_start=1;
-for sess=1:nb_runs
+for sess=1:num_sess
     patch(cur_sess_start+[0,0,(length(g{sess}(:,1))-1)*[1,1]],[ylim,fliplr(ylim)],-ones(1,4),.9+.05*rem(sess,2)*[1,1,1],'edgecolor','none');
-    if nb_runs>1
+    if num_sess>1
         text(cur_sess_start+(length(g{sess}(:,1))-1)/2,ylim*[-.1;1.1],['Session ',num2str(sess)],'horizontalalignment','center');
     end
     cur_sess_start = cur_sess_start + length(g{sess}(:,1));
@@ -1209,7 +1166,7 @@ end
 % -----------------------------------------------------------------------
 % SHOWOPTIONS_CALLBACK
 % Computes and displays the analysis mask, voxel-wise variance and SNR,
-% based on current list of outliers
+% based on current list of outliers 
 % -----------------------------------------------------------------------
 function showOptions_Callback(hObject, eventdata, handles, rescale_clim) %#ok<INUSL>
 persistent plotdata
@@ -1266,8 +1223,8 @@ end
 
 switch(option)
     case 2, b=Mask.*(1+plotdata.Ma);cscale=nan;
-    case 3, b=Mask.*Data_Std; cscale=max(b(:));
-    case 4, b=Mask.*Data_SNR; cscale=max(b(:));
+    case 3, b=Mask.*Data_Std; cscale=max(b(:)); 
+    case 4, b=Mask.*Data_SNR; cscale=max(b(:)); 
 end
 
 % generates display
@@ -1281,9 +1238,9 @@ set(handles.axes_mask,'units','points');
 size1=get(handles.axes_mask,'position');
 set(handles.axes_mask,'units','normalized');
 size1=(size1(3)/size(b,2))/(size1(4)/size(b,1));
-nhoriz=1:length(slices);
-nverti=ceil(length(slices)./nhoriz);
-area=(min(size1./nhoriz,1./nverti).^2);
+  nhoriz=1:length(slices);
+  nverti=ceil(length(slices)./nhoriz);
+  area=(min(size1./nhoriz,1./nverti).^2);  
 [nill,nhoriz]=max(area);
 temp=reshape(b(:,:,slices),[size(b,1),size(b,2)*length(slices)]);
 temp2=[];
@@ -1299,7 +1256,7 @@ if first||~isfield(plotdata,'h')||~ishandle(plotdata.h),
     axes(handles.axes_mask);
     plotdata.h=imagesc(-temp2,'parent',handles.axes_mask);
     colormap(handles.axes_mask,gray);
-    if isnan(cscale), set(handles.axes_mask,'clim',[-2,0],'ytick',[],'visible','off');
+    if isnan(cscale), set(handles.axes_mask,'clim',[-2,0],'ytick',[],'visible','off'); 
     else set(handles.axes_mask,'ytick',1,'yticklabel',{num2str(cscale,'%0.1f')},'visible','on'); end
     set(handles.axes_mask,'xtick',[],'xcolor','w','yaxislocation','right','box','off');
     axis(handles.axes_mask,'equal','tight');
@@ -1405,25 +1362,25 @@ end
 
 % -----------------------------------------------------------------------
 % SAVEFILE_CALLBACK_SAVEREGRESSORS
-% saves SPM regressor files
+% saves SPM regressor files 
 % One regressor file per session, named art_regression_outliers_*.mat, and
 % stored in the original location of each functional series (or if not
 % possible to current directory)
 % Regressor matrices contains 1's at the location of each outlier. This
 % implements outlier removal in SPM when these regressor files are used as
-% covariates
+% covariates 
 % -----------------------------------------------------------------------
 function savefile_Callback_SaveRegressor(handles)
 g = getappdata(handles.zthresh,'g');
 drop_flag=getappdata(handles.mvthresh,'drop_flag');
 M = getappdata(handles.savefile,'mv_data_raw');
 mv_data = getappdata(handles.mvthresh,'mv_data');
-nb_runs = length(g);
+num_sess = length(g);
 out_idx = round(str2num(get(handles.all_outliers, 'String')));
 datafiles=getappdata(handles.savefile,'datafiles');
 
 cur_idx=0;
-for j=1:nb_runs,
+for j=1:num_sess,
     idx=find(out_idx>cur_idx&out_idx<=cur_idx+size(g{j},1));
     lidx=out_idx(idx)-cur_idx;
     if drop_flag, lidx=union(lidx, 1:min(size(g{j},1),drop_flag)); end
@@ -1511,18 +1468,18 @@ end
 % reads a .cfg file (art session file) defining the art processing options
 % ohinds 2008-04-23
 % -----------------------------------------------------------------------
-function [nb_runs,global_type_flag,drop_flag,motionFileType,motion_threshold,global_threshold,use_diff_motion,use_diff_global,use_norms,SPMfile,mask_file,output_dir,P,M] = read_art_sess_file(sess_file)
+function [num_sess,global_type_flag,drop_flag,motionFileType,motion_threshold,global_threshold,use_diff_motion,use_diff_global,use_norms,SPMfile,mask_file,output_dir,P,M] = read_art_sess_file(sess_file)
 
 loadfromfile=~isstruct(sess_file);
 if loadfromfile&&~exist(sess_file,'file')
     error(['session file ' sess_file ' cant be opened']);
 end
 
-nb_runs = 1;
+num_sess = 1;
 global_type_flag = 1;
 drop_flag = 0;
 motionFileType = 0;
-image_dir = '';
+image_dir = ''; 
 motion_dir = '';
 auto_motion_fname = 0;
 motion_threshold=[];
@@ -1543,8 +1500,8 @@ if loadfromfile
             % skips until end of line
             fgetl(fp);
         elseif strcmp(s,'sessions:')
-            % nb_runsions
-            nb_runs = fscanf(fp,'%d',1);
+            % num_sessions
+            num_sess = fscanf(fp,'%d',1);
         elseif strcmp(s,'global_mean:')
             % global_type_flag
             global_type_flag = fscanf(fp,'%d',1);
@@ -1645,12 +1602,12 @@ if loadfromfile
     
     fclose(fp);
 else
-    % nb_runs,global_type_flag,drop_flag,motionFileType,motion_threshold,
+    % num_sess,global_type_flag,drop_flag,motionFileType,motion_threshold,
     % global_threshold,use_diff_motion,use_diff_global,use_norms,SPMfile,
     % mask_file,output_dir,P,M
     % P{nses}{nfile} (files); M{nses} (motion files)
     
-    if isfield(sess_file,'nb_runs'), nb_runs=sess_file.nb_runs; end
+    if isfield(sess_file,'num_sess'), num_sess=sess_file.num_sess; end
     if isfield(sess_file,'global_type_flag'), global_type_flag=sess_file.global_type_flag; end
     if isfield(sess_file,'drop_flag'), drop_flag=sess_file.drop_flag; end
     if isfield(sess_file,'motionFileType'), motionFileType=sess_file.motionFileType; end
@@ -1664,28 +1621,28 @@ else
     if isfield(sess_file,'output_dir'), output_dir=sess_file.output_dir; end
     if isfield(sess_file,'P'), P=sess_file.P; end
     if isfield(sess_file,'M'), M=sess_file.M; end
-    
-    if isfield(sess_file,'sessions'), nb_runs=sess_file.sessions; end
+
+    if isfield(sess_file,'sessions'), num_sess=sess_file.sessions; end
     if isfield(sess_file,'global_mean'), global_type_flag=sess_file.global_mean; end
     if isfield(sess_file,'motion_file_type'), motionFileType=sess_file.motion_file_type; end
     if isfield(sess_file,'motion_fname_from_image_fname'), motion_threshold=sess_file.motion_fname_from_image_fname; end
     if isfield(sess_file,'spm_file'), SPMfile=sess_file.spm_file; end
-    
+
     % note: fix to avoid eval (8/2014)
-    %     convertnames={'sessions','nb_runs'; 'global_mean','global_type_flag'; 'motion_file_type','motionFileType'; 'motion_fname_from_image_fname','motion_threshold'; 'spm_file','SPMfile'};
-    %     fields=fieldnames(sess_file);
-    %     for n=1:numel(fields)
-    %         [ok,idx]=ismember(fields{n},convertnames(:,1));
-    %         idx=find(idx,1);
-    %         if ~isempty(idx), eval([convertnames(idx,2),'=sess_file.',fields{n}]);
-    %         else eval([fields{n},'=sess_file.',fields{n}]);
-    %         end
-    %     end
+%     convertnames={'sessions','num_sess'; 'global_mean','global_type_flag'; 'motion_file_type','motionFileType'; 'motion_fname_from_image_fname','motion_threshold'; 'spm_file','SPMfile'}; 
+%     fields=fieldnames(sess_file);
+%     for n=1:numel(fields)
+%         [ok,idx]=ismember(fields{n},convertnames(:,1));
+%         idx=find(idx,1);
+%         if ~isempty(idx), eval([convertnames(idx,2),'=sess_file.',fields{n}]);
+%         else eval([fields{n},'=sess_file.',fields{n}]);
+%         end
+%     end
     switch(motionFileType)
         case 2, for n=1:numel(M),M{n}=read_siemens_motion_parm_file(M{n}); end
         otherwise, for n=1:numel(M),M{n}=load(M{n}); end
     end
-    nb_runs=numel(M);
+    num_sess=numel(M);
 end
 end
 
@@ -1909,18 +1866,18 @@ end
 i = 1;
 while(~feof(fp))
     % read the motion header
-    fscanf(fp,'%s',6);
+    fscanf(fp,'%s',6);    
     if feof(fp)
         break;
-    end
+    end    
     if i == 1
         fscanf(fp,'%s',5);
-    end
+    end    
     fscanf(fp,'%s',7);
     for j=1:6
         fscanf(fp,'%s',4);
         mp(i,j) = fscanf(fp,'%f',1); %#ok<AGROW>
-    end
+    end    
     fscanf(fp,'%s',1);
     i=i+1;
 end
@@ -2009,7 +1966,7 @@ end
 
 % -----------------------------------------------------------------------
 % PRCTILE
-% computes smaple percentile
+% computes smaple percentile 
 % -----------------------------------------------------------------------
 function z=prctile(x,p)
 nx=length(x);
@@ -2041,8 +1998,8 @@ end
 % -----------------------------------------------------------------------
 function filename=art_fullfile(varargin)
 
-if ~nargin, filename=pwd; return;
-elseif nargin==1, filename=varargin{1};
+if ~nargin, filename=pwd; return; 
+elseif nargin==1, filename=varargin{1}; 
 else filename=fullfile(varargin{:});
 end
 if isempty(filename), filename=pwd; return; end
