@@ -161,7 +161,7 @@ for iCon = 1:n_con
 
 end % loop over contrasts
 
-    cd(results_folder);
+cd(results_folder);
 
 %% display spm batch before running it or run it directly
 if exist('checking','var') && checking == 1
