@@ -182,7 +182,9 @@ if sum(choiceMissedTrials) > 0
     EperfDur(choiceMissedTrials) = [];
     fbkDur(choiceMissedTrials) = [];
     % regressors
+    defaultSide(choiceMissedTrials) = [];
     RP_var_binary(choiceMissedTrials) = [];
+    money_level_chosen(choiceMissedTrials) = [];
     money_amount_left(choiceMissedTrials) = [];
     money_amount_right(choiceMissedTrials) = [];
     money_amount_sum(choiceMissedTrials) = [];
