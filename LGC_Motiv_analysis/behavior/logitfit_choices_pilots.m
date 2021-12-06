@@ -7,10 +7,10 @@ subid = 'pilot_s1';
 
 switch subid
     case 'pilot_s1'
-        EpData_r1 = load([resultsFolder,filesep,'AG_s1_session1_physical_task_behavioral_tmp.mat']);
-        EmData_r1 = load([resultsFolder,filesep,'AG_s1_session2_mental_task_behavioral_tmp.mat']);
+        EpData_r1 = load([resultsFolder,filesep,subid,filesep,'AG_s1_session1_physical_task_behavioral_tmp.mat']);
+        EmData_r1 = load([resultsFolder,filesep,subid,filesep,'AG_s1_session2_mental_task_behavioral_tmp.mat']);
     case 'pilot_s2'
-        EmData_r1 = load([resultsFolder,filesep,'LC_s2_session1_mental_task_behavioral_tmp.mat']);
+        EmData_r1 = load([resultsFolder,filesep,subid,filesep,'LC_s2_session1_mental_task_behavioral_tmp.mat']);
 end
 
 n_bins = 6;
@@ -19,7 +19,7 @@ pSize = 40;
 % extract kR and kEp
 switch subid
     case 'pilot_s1'
-        R_or_P_Ep = strcmp(summary.choiceOptions.R_or_P,'R');
+        R_or_P_Ep = strcmp(EpData_r1.summary.choiceOptions.R_or_P,'R');
         deltaR_Ep = EpData_r1.summary.choiceOptions.R.left(R_or_P_Ep == 1) - EpData_r1.summary.choiceOptions.R.right(R_or_P_Ep == 1);
         deltaEp = EpData_r1.summary.choiceOptions.E.left(R_or_P_Ep == 1) - EpData_r1.summary.choiceOptions.E.right(R_or_P_Ep == 1);
         choice_LR_Ep = (EpData_r1.summary.choice(R_or_P_Ep == 1) < 0);
@@ -60,7 +60,7 @@ end
 % extract kR and kEm
 switch subid
     case {'pilot_s1','pilot_s2'}
-        R_or_P_Em = strcmp(summary.choiceOptions.R_or_P,'R');
+        R_or_P_Em = strcmp(EmData_r1.summary.choiceOptions.R_or_P,'R');
         deltaR_Em = EmData_r1.summary.choiceOptions.R.left(R_or_P_Em == 1) - EmData_r1.summary.choiceOptions.R.right(R_or_P_Em == 1);
         deltaEm = EmData_r1.summary.choiceOptions.E.left(R_or_P_Em == 1) - EmData_r1.summary.choiceOptions.E.right(R_or_P_Em == 1);
         choice_LR_Em = (EmData_r1.summary.choice(R_or_P_Em == 1) < 0);
