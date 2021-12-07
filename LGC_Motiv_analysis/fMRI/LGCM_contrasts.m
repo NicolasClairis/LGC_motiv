@@ -44,7 +44,7 @@ resultsFolderName = [subj_analysis_folder 'functional', filesep,...
 [reg_names, n_regsPerTask] = GLM_details(GLM);
 
 %% define runs based on current subject
-runs = runs_definition(study_nm, sub_nm);
+runs = runs_definition(study_nm, sub_nm, 'fMRI');
 
 %% initialize variables of interest
 con_names = {};
