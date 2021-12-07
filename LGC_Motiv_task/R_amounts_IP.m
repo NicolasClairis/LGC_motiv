@@ -114,13 +114,13 @@ if strcmp(punishment_yn,'yes')
     
     % any level is equal to the next one: increase the distance between
     % punishment levels
-    for iP = 2:(n_R_levels - 1)
+    for iP = (n_R_levels - 1):(-1):2
         if R_money.(['P_',num2str(iP-1)]) == R_money.(['P_',num2str(iP)])
-            R_money.(['P_',num2str(iP-1)]) = R_money.(['P_',num2str(iP-1)]) - 0.01
+            R_money.(['P_',num2str(iP-1)]) = R_money.(['P_',num2str(iP-1)]) - 0.01;
             % decrease punishment values by the same amount
             if iP < n_R_levels - 1
-                for iP_bis = iP:(n_R_levels - 1)
-                    R_money.(['P_',num2str(iP_bis)]) = R_money.(['P_',num2str(iP_bis)]) - 0.01
+                for iP_bis = (iP-1):(-1):2
+                    R_money.(['P_',num2str(iP_bis)]) = R_money.(['P_',num2str(iP_bis)]) - 0.01;
                 end
             end
         end
