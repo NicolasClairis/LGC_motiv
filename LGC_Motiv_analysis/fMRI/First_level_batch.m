@@ -79,7 +79,7 @@ for iS = 1:NS
     if ~exist(resultsFolderName,'dir')
         mkdir(resultsFolderName);
     else
-        rmdir(resultsFolderName);
+        rmdir(resultsFolderName,'s');
         mkdir(resultsFolderName);
         warning(['First level folder ',resultsFolderName,' already existed. ',...
             'It was deleted and recreated for CID',sub_nm,'.']);
