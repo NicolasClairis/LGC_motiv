@@ -5,7 +5,7 @@ function[] = delete_first_level_folders(study_nm)
 
 baseline_folder = pwd;
 
-sm_kernel = 4;
+sm_kernel = input(sprintf('What smoothing kernel do you want to delete (4/6/8)? \n'));
 
 GLM = input(sprintf('What First level GLM do you want to delete? \n'));
 
@@ -42,9 +42,9 @@ end
 % loop through subjects
 for iS = 1:NS
     subFullNm = ['CID',subject_id{iS}];
-    subj_folder = [root, subFullNm];
+    subj_folder = [root, filesep, subFullNm];
     subj_analysis_folder = [subj_folder,filesep,'fMRI_analysis',filesep,...
-        'functional',filesep,'preproc_sm_',num2str(sm_kernel),'mm'];
+        'functional',filesep,'preproc_sm_',num2str(sm_kernel),'mm', filesep];
     cd(subj_analysis_folder);
     
     run_folders = {['GLM',num2str(GLM)]};
