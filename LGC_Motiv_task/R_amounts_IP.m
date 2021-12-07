@@ -53,7 +53,23 @@ switch n_R_levels
             num2str(n_R_levels),' reward levels.']);
 end
 
-% display level of reward assigned to each amount for tracking for the
+%% fix weird situations
+
+% any level is equal to the next one: increase the distance between reward
+% levels
+for iR = 1:(n_R_levels - 1)
+    if R_money.(['R_',num2str(iR-1)]) == R_money.(['R_',num2str(iR)])
+        R_money.(['R_',num2str(iR)]) = R_money.(['R_',num2str(iR)]) + 0.01;
+        % increase reward values by the same amount
+        if iR < n_R_levels - 1
+            for iR_bis = (iR + 1):(n_R_levels - 1)
+                R_money.(['R_',num2str(iR_bis)]) = R_money.(['R_',num2str(iR_bis)]) + 0.01;
+            end
+        end
+    end
+end
+
+%% display level of reward assigned to each amount for tracking for the
 % experimenter in case of modification
 for iR = 1:n_R_levels
     disp(['Reward level ',num2str(iR),' = ',num2str(R_money.(['R_',num2str(iR-1)])),' chf']);
@@ -84,7 +100,33 @@ if strcmp(punishment_yn,'yes')
                 num2str(n_R_levels),' reward levels.']);
     end
     
-    % display level of punishment assigned to each amount for tracking for the
+    %% fix weird situations
+    % in case default option is a smaller or equal punishment to the
+    % biggest punishment, reduce all by 0.01
+    if R_money.(['P_',num2str(n_R_levels - 1)]) >= R_money.P_0
+        while R_money.(['P_',num2str(n_R_levels - 1)]) >= R_money.P_0
+            for iP = (n_R_levels - 1):(-1):1
+                R_money.(['P_',num2str(iP)]) = R_money.(['P_',num2str(iP)]) - 0.01;
+            end
+        end
+    end
+    
+    
+    % any level is equal to the next one: increase the distance between
+    % punishment levels
+    for iP = (n_R_levels - 1):(-1):2
+        if R_money.(['P_',num2str(iP-1)]) == R_money.(['P_',num2str(iP)])
+            R_money.(['P_',num2str(iP-1)]) = R_money.(['P_',num2str(iP-1)]) - 0.01;
+            % decrease punishment values by the same amount
+            if iP < n_R_levels - 1
+                for iP_bis = (iP-1):(-1):2
+                    R_money.(['P_',num2str(iP_bis)]) = R_money.(['P_',num2str(iP_bis)]) - 0.01;
+                end
+            end
+        end
+    end
+    
+    %% display level of punishment assigned to each amount for tracking for the
     % experimenter in case of modification
     for iP = 1:n_R_levels
         disp(['Punishment level ',num2str(iP),' = ',num2str(R_money.(['P_',num2str(iP-1)])),' chf']);

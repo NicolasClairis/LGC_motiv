@@ -1,5 +1,5 @@
-function[runs] = runs_definition(study_nm, sub_nm)
-% [runs] = runs_definition(study_nm, sub_nm)
+function[runs] = runs_definition(study_nm, sub_nm, condition)
+% [runs] = runs_definition(study_nm, sub_nm, condition)
 %runs_definition will define the number and order of the physical and
 %mental effort task for the study and subject entered in input.
 %
@@ -7,6 +7,11 @@ function[runs] = runs_definition(study_nm, sub_nm)
 % study_nm: study name
 %
 % sub_nm: subject name
+%
+% condition: in some rare cases we have behavior, but not fMRI data. This
+% variable allows to take into account this so that the corresponding runs
+% are still included in the behavioral analysis but not in the fMRI
+% analysis.
 %
 % OUTPUTS
 % runs: structure with number of runs for each task and also the order of
@@ -29,7 +34,27 @@ switch study_nm
                 runs.tasks = {'Em','Ep'};
         end
     case 'study1'
-        error('need to attribute runs');
+        switch sub_nm
+            case {'074'}
+                switch condition
+                    case 'behavior'
+                        runs.nb_runs.Ep = 2;
+                        runs.nb_runs.Em = 2;
+                        runs.tasks = {'Em','Ep','Em','Ep'};
+                    case 'fMRI'
+                        runs.nb_runs.Ep = 2;
+                        runs.nb_runs.Em = 1;
+                        runs.tasks = {'Ep','Em','Ep'};
+                end
+            case {'036','064','090'}
+                runs.nb_runs.Ep = 2;
+                runs.nb_runs.Em = 2;
+                runs.tasks = {'Ep','Em','Ep','Em'};
+            case {'095','061','079'}
+                runs.nb_runs.Ep = 2;
+                runs.nb_runs.Em = 2;
+                runs.tasks = {'Em','Ep','Em','Ep'};
+        end
     case 'study2_clinical'
         error('need to attribute runs');
     otherwise

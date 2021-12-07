@@ -64,20 +64,24 @@ nb_preprocessingSteps = 6;
  % 5) normalization anatomical
  % 6) smoothing functional
  
+ %% smoothing kernel
+ smKernel = 8;
+ 
  %% initialize batch
  matlabbatch = cell(nb_preprocessingSteps*NS,1);
 
 for iS = 1:NS % loop through subjects
     disp(['loading batch for preprocessing subject ',num2str(iS),'/',num2str(NS)]);
     sub_nm = subject_id{iS};
+    sub_fullNm = ['CID',sub_nm];
     
     % create working directories and copy anat. file inside
     % \fMRI_analysis\anatomical folder
-    cd([root, sub_nm]);
+    cd([root, sub_fullNm]);
     if exist('fMRI_analysis','dir') ~= 7
         mkdir fMRI_analysis;
     end
-    subj_analysis_folder = [root, sub_nm,filesep,'fMRI_analysis'];
+    subj_analysis_folder = [root, sub_fullNm,filesep,'fMRI_analysis'];
     cd(subj_analysis_folder);
     if exist('anatomical','dir') ~= 7
         mkdir anatomical;
@@ -85,7 +89,7 @@ for iS = 1:NS % loop through subjects
     if exist('functional','dir') ~= 7
         mkdir functional;
     end
-    subj_scans_folder = [root, sub_nm, filesep,'fMRI_scans'];
+    subj_scans_folder = [root, sub_fullNm, filesep,'fMRI_scans'];
     cd(subj_scans_folder);
     anat_folder = ls('*UNI-DEN*');
     newAnatFolder = [subj_analysis_folder, filesep,'anatomical',filesep];
@@ -102,7 +106,8 @@ for iS = 1:NS % loop through subjects
     %%
     cd(subj_analysis_folder)
     %% define number of sessions to analyze
-    if ismember(sub_nm, {'pilot_s1','pilot_s2','pilot_s3'}) % only 2 sessions for these pilots
+    if strcmp(study_nm,'fMRI_pilots') &&...
+            ismember(sub_nm, {'pilot_s1','pilot_s2','pilot_s3'}) % only 2 sessions for these pilots
         nb_runs = 2;
     else
         nb_runs = 4;
@@ -110,15 +115,19 @@ for iS = 1:NS % loop through subjects
     cd(subj_scans_folder);
     for iRun = 1:nb_runs % loop through runs for 3 ratings, 3 choices 1D, 3 choices 2D runs
         cd(subj_scan_folders_names(iRun,:)); % go to run folder
-        if ismember(sub_nm,{'pilot_s1'})
-            filenames = cellstr(spm_select('ExtFPList',pwd,'^LGCM_.*\.nii$'));
-        elseif ismember(sub_nm,{'pilot_s2'})
-            filenames = cellstr(spm_select('ExtFPList',pwd,'^run.*\.nii$'));
-        elseif ismember(sub_nm,{'pilot_s3'})
-            filenames = cellstr(spm_select('ExtFPList',pwd,'^ABNC.*\.img$'));
+        if strcmp(study_nm,'fMRI_pilots')
+            if ismember(sub_nm,{'pilot_s1'})
+                filenames = cellstr(spm_select('ExtFPList',pwd,'^LGCM_.*\.nii$'));
+            elseif ismember(sub_nm,{'pilot_s2'})
+                filenames = cellstr(spm_select('ExtFPList',pwd,'^run.*\.nii$'));
+            elseif ismember(sub_nm,{'pilot_s3'})
+                filenames = cellstr(spm_select('ExtFPList',pwd,'^ABNC.*\.img$'));
+            else
+                filenames = cellstr(spm_select('ExtFPList',pwd,'^CID.*\.nii$'));
+            end
         else
             filenames = cellstr(spm_select('ExtFPList',pwd,'^CID.*\.nii$'));
-%             error('please check the format (nii/img) and the start of the name of each run because it has to be stabilized now...');
+            %             error('please check the format (nii/img) and the start of the name of each run because it has to be stabilized now...');
         end
         runFileNames.(['run_',num2str(iRun)]) = filenames;
         cd(subj_scans_folder);
@@ -230,7 +239,7 @@ for iS = 1:NS % loop through subjects
     preproc_step = 6;
     smooth_step = nb_preprocessingSteps*(iS-1) + preproc_step;
     matlabbatch{smooth_step}.spm.spatial.smooth.data(1) = cfg_dep('Normalise: Write: Normalised Images (Subj 1)', substruct('.','val', '{}',{normf_step}, '.','val', '{}',{1}, '.','val', '{}',{1}, '.','val', '{}',{1}), substruct('()',{1}, '.','files'));
-    matlabbatch{smooth_step}.spm.spatial.smooth.fwhm = [4 4 4];
+    matlabbatch{smooth_step}.spm.spatial.smooth.fwhm = [smKernel smKernel smKernel];
     matlabbatch{smooth_step}.spm.spatial.smooth.dtype = 0;
     matlabbatch{smooth_step}.spm.spatial.smooth.im = 0;
     matlabbatch{smooth_step}.spm.spatial.smooth.prefix = 's';
@@ -239,5 +248,59 @@ for iS = 1:NS % loop through subjects
 end
 
 % display spm batch before running it
-spm_jobman('interactive',matlabbatch);
-% spm_jobman('run',mtatlabbatch);
+% spm_jobman('interactive',matlabbatch);
+spm_jobman('run',matlabbatch);
+
+%% move files output from the last step
+for iS = 1:NS
+    sub_nm = subject_id{iS};
+    sub_fullNm = ['CID',sub_nm];
+    subj_scans_folder = [root, sub_fullNm, filesep,'fMRI_scans'];
+    cd(subj_scans_folder);
+    subj_scan_folders_names = ls('*run*'); % takes all functional runs folders
+    % remove AP/PA top-up corrective runs when they were performed (only 2
+    % first pilots)
+    if strcmp(study_nm,'fMRI_pilots') && ismember(sub_nm,{'pilot_s1','pilot_s2'})
+        [subj_scan_folders_names] = clear_topup_fromFileList(subj_scan_folders_names);
+    end
+    %% define number of sessions to analyze
+    if strcmp(study_nm,'fMRI_pilots') &&...
+            ismember(sub_nm, {'pilot_s1','pilot_s2','pilot_s3'}) % only 2 sessions for these pilots
+        nb_runs = 2;
+    else
+        nb_runs = 4;
+    end
+    
+    for iRun = 1:nb_runs % loop through runs for 3 ratings, 3 choices 1D, 3 choices 2D runs
+        cd(subj_scan_folders_names(iRun,:)); % go to run folder
+        preproc_newFolder_nm = ['preproc_sm_',num2str(smKernel),'mm'];
+        if ~exist(preproc_newFolder_nm,'dir')
+            mkdir(preproc_newFolder_nm);
+        else
+            error(['preprocessing folder ',preproc_newFolder_nm,' already exists for subject ',sub_fullNm,' run ',num2str(iRun)]);
+        end
+        
+        if strcmp(study_nm,'fMRI_pilots')
+            if ismember(sub_nm,{'pilot_s1'})
+                filenames = ls('*swrLGCM*.nii');
+            elseif ismember(sub_nm,{'pilot_s2'})
+                filenames = ls('*swrrun*.nii');
+            elseif ismember(sub_nm,{'pilot_s3'})
+                filenames = ls('*swrABNC*.img');
+                filenames = [filenames; ls('*swrABNC*.hdr')];
+            else
+                filenames = ls('*swrCID*.nii');
+            end
+        else
+            filenames = ls('*swrCID*.nii');
+            %             error('please check the format (nii/img) and the start of the name of each run because it has to be stabilized now...');
+        end
+        
+        % move files
+        for iFile = 1:length(filenames)
+            movefile(filenames(iFile,:), preproc_newFolder_nm);
+        end
+        % go back to subject folder
+        cd(subj_scans_folder);
+    end % run loop
+end % subject loop

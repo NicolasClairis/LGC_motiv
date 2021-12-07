@@ -23,10 +23,18 @@ while isempty(GLM_nm)
     info = inputdlg({'GLM number?'});
     [GLM_nm] = info{1};
 end
+if ~exist('study_nm','var') || isempty(study_nm)
+    study_names = {'fMRI_pilots','study1','study2'};
+    study_nm_idx = listdlg('ListString',study_names);
+    study_nm = study_names{study_nm_idx};
+end
 GLM = str2double(GLM_nm);
 GLMprm = which_GLM(GLM);
 add_drv = GLMprm.gal.add_drv;
 grey_mask = GLMprm.gal.grey_mask;
+
+% value of the smoothing during preprocessing?
+preproc_sm_kernel = 8;
 
 % repetition time for fMRI
 TR = 2.00;
@@ -56,34 +64,35 @@ for iS = 1:NS
     checkGLM_and_subjectIncompatibility(study_nm, sub_nm, GLMprm);
     
     % define working folders
-    subj_folder             = [root, filesep, sub_nm];
+    subj_folder             = [root, filesep, 'CID',sub_nm];
     subj_analysis_folder    = [subj_folder, filesep, 'fMRI_analysis' filesep];
     subj_anat_folder        = [subj_analysis_folder, filesep, 'anatomical' filesep];
     subj_scans_folder       = [subj_folder, filesep, 'fMRI_scans' filesep];
     subj_behavior_folder    = [subj_folder, filesep, 'behavior' filesep];
     
     % create folder to store the results for the current subject
-    resultsFolderName = [subj_analysis_folder 'functional', filesep,...
-        'GLM',num2str(GLM)];
-    mkdir(resultsFolderName);
+    sm_folderName = [subj_analysis_folder 'functional', filesep,'preproc_sm_',num2str(preproc_sm_kernel),'mm',filesep];
+    if ~exist(sm_folderName,'dir')
+        mkdir(sm_folderName);
+    end
+    resultsFolderName = [sm_folderName, 'GLM',num2str(GLM)];
+    if ~exist(resultsFolderName,'dir')
+        mkdir(resultsFolderName);
+    else
+        rmdir(resultsFolderName,'s');
+        mkdir(resultsFolderName);
+        warning(['First level folder ',resultsFolderName,' already existed. ',...
+            'It was deleted and recreated for CID',sub_nm,'.']);
+    end
     
     %% define number of runs
-    switch sub_nm
-        case {'pilot_s1','pilot_s3'}
-            nb_runs = 2;
-        case 'pilot_s2'
-            nb_runs = 1;
-        otherwise
-            nb_runs = 4;
-    end
+    nb_runs = nb_runsPerSub(study_nm, sub_nm);
     
     %% load fMRI data
     subj_scan_folders_names = ls([subj_scans_folder, filesep, '*run*']); % takes all functional runs folders
-    % remove AP/PA corrective runs when they were performed (only 2
-    % first pilots)
-    if strcmp(study_nm,'fMRI_pilots') && ismember(sub_nm,{'pilot_s1','pilot_s2'})
-        [subj_scan_folders_names] = clear_topup_fromFileList(subj_scan_folders_names);
-    end
+    % clear files that should not be taken into account in the first level
+    % analysis
+    [subj_scan_folders_names] = First_level_subRunFilter(study_nm, sub_nm, subj_scan_folders_names);
     
     %% starting 1st level GLM batch
     sub_idx = nb_batch_per_subj*(iS-1) + 1 ;
@@ -95,7 +104,9 @@ for iS = 1:NS
     
     % loop through runs and tasks
     for iRun = 1:nb_runs
-        run_nm = num2str(iRun);
+        % fix run index if some runs were removed
+        [~, jRun] = First_level_subRunFilter(study_nm, sub_nm, [], iRun);
+        run_nm = num2str(jRun);
         % erase useless spaces from folder with run name
         n_char = size(subj_scan_folders_names(iRun,:),2);
         for iLetter = 1:n_char
@@ -105,7 +116,7 @@ for iS = 1:NS
         end
         
         % load scans in the GLM
-        cd([subj_scans_folder filesep subj_runFoldername_tmp, filesep]); % go to run folder
+        cd([subj_scans_folder filesep subj_runFoldername_tmp, filesep,'preproc_sm_',num2str(preproc_sm_kernel),'mm',filesep]); % go to run folder
         preprocessed_filenames = cellstr(spm_select('ExtFPList',pwd,'^swr.*\.nii$')); % extracts all the preprocessed swrf files (smoothed, normalized, realigned)
         % in case data is not in .nii but in .img & .hdr
         if isempty(preprocessed_filenames{1})
@@ -119,7 +130,7 @@ for iS = 1:NS
         
         %% load regressors of interest
         % 1) identify which task corresponds to the current run
-        currRunBehaviorFileNames = ls([subj_behavior_folder,'*_session',num2str(iRun),'_*_task.mat']);
+        currRunBehaviorFileNames = ls([subj_behavior_folder,'*_session',run_nm,'_*_task.mat']);
         if size(currRunBehaviorFileNames,1) > 1
             error(['problem file identification: too many files popping out with run number',run_nm]);
         end
@@ -133,7 +144,7 @@ for iS = 1:NS
             error('problem in identifying task type because file name doesn''t match');
         end
         % perform 1st level
-        matlabbatch = First_level_loadRegressors(matlabbatch, GLMprm, sub_idx, iRun,...
+        matlabbatch = First_level_loadRegressors(matlabbatch, GLMprm, study_nm, sub_idx, iRun,...
             subj_behavior_folder, currRunBehaviorFileNames, task_nm);
         
         %% global run parameters (rp movement file, etc.)
@@ -152,7 +163,7 @@ for iS = 1:NS
     %% global parameters for subject batch
     matlabbatch{sub_idx}.spm.stats.fmri_spec.fact = struct('name', {}, 'levels', {});
     
-    % add temporal derivative or not
+    %% add temporal derivative or not
     if add_drv == 0
         matlabbatch{sub_idx}.spm.stats.fmri_spec.bases.hrf.derivs = [0 0];
     elseif add_drv == 1
@@ -160,7 +171,7 @@ for iS = 1:NS
     elseif add_drv == 2
         matlabbatch{sub_idx}.spm.stats.fmri_spec.bases.hrf.derivs = [1 1];
     end
-    
+    %% other parameters
     matlabbatch{sub_idx}.spm.stats.fmri_spec.volt = 1;
     matlabbatch{sub_idx}.spm.stats.fmri_spec.global = 'None';
     switch grey_mask
@@ -171,7 +182,7 @@ for iS = 1:NS
     end
     
     
-    % add grey mask or not
+    %% add grey mask or not
     switch grey_mask
         case 0
             matlabbatch{sub_idx}.spm.stats.fmri_spec.mask = {''};
@@ -207,10 +218,13 @@ for iS = 1:NS
     matlabbatch{estimate_mdl_rtg_idx}.spm.stats.fmri_est.method.Classical = 1;
 end
 
-%% display spm batch before running it
+%% display spm batch before running it or run it directly
 if exist('checking','var') && checking == 1
     spm_jobman('interactive',matlabbatch);
     %     spm_jobman('run',matlabbatch);
 elseif ~exist('checking','var') || isempty(checking) || checking == 0
     spm_jobman('run',matlabbatch);
 end
+
+
+end % function

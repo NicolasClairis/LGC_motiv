@@ -1,100 +1,101 @@
-%% check kR, kF and kE for pilots
+function[betas, choices] = logitfit_choices(computerRoot, study_nm, sub_nm, figDisp)
+% 
+% logitfit_choices will perform a logistic regression on the choices
+% performed by the participants
+%
+% INPUTS
+% computerRoot: pathway where data is
+% 
+% study_nm: study name
+%
+% sub_nm: subject number id 'XXX'
+%
+% figDisp: display individual figure (1) or not (0)
+%
+% OUTPUTS
+% betas: structure with betas
+%
+% choices: structure with bins for choices
 
-resultsFolder = 'C:\Users\Loco\Documents\GitHub\LGC_motiv\LGC_Motiv_results\fMRI_pilots';
-
-subid = 'pilot_s1';
-% subid = 'pilot_s2';
-
-switch subid
-    case 'pilot_s1'
-        EpData_r1 = load([resultsFolder,filesep,'AG_s1_session1_physical_task_behavioral_tmp.mat']);
-        EmData_r1 = load([resultsFolder,filesep,'AG_s1_session2_mental_task_behavioral_tmp.mat']);
-    case 'pilot_s2'
-        EmData_r1 = load([resultsFolder,filesep,'LC_s2_session1_mental_task_behavioral_tmp.mat']);
+%% if root not defined => ask for it
+if ~exist('computerRoot','var') || isempty(computerRoot)
+    computerRoot = LGCM_root_paths;
 end
 
-n_bins = 6;
-pSize = 40;
+%% working directories
+subBehaviorFolder = [computerRoot, filesep, study_nm, filesep,...
+    'CID',sub_nm, filesep, 'behavior', filesep];
 
-% extract kR and kEp
-switch subid
-    case 'pilot_s1'
-        R_or_P_Ep = strcmp(summary.choiceOptions.R_or_P,'R');
-        deltaR_Ep = EpData_r1.summary.choiceOptions.R.left(R_or_P_Ep == 1) - EpData_r1.summary.choiceOptions.R.right(R_or_P_Ep == 1);
-        deltaEp = EpData_r1.summary.choiceOptions.E.left(R_or_P_Ep == 1) - EpData_r1.summary.choiceOptions.E.right(R_or_P_Ep == 1);
-        choice_LR_Ep = (EpData_r1.summary.choice(R_or_P_Ep == 1) < 0);
-        allTrials = 1:48;
-        trialN = allTrials(R_or_P_Ep == 1);
+%% by default, display individual figure
+if ~exist('figDisp','var') || isempty(figDisp)
+    figDisp = 1;
+    disp(['figDisp was not defined in the inputs so that by default ',...
+        'figures are displayed for each individual.']);
+end
+
+%% extract runs
+[runsStruct] = runs_definition(study_nm, sub_nm, 'behavior');
+
+%% define R/P/E values
+P_levels = [-3, -2, -1];
+R_levels = [1, 2, 3];
+E_levels = [1, 2, 3];
+
+%% loop through physical and mental
+for iPM = 1:2
+    switch iPM
+        case 1
+            task_id = 'Ep';
+            task_fullName = 'physical';
+        case 2
+            task_id = 'Em';
+            task_fullName = 'mental';
+    end
+    
+    for iRun = 1:runs.nb_runs.(task_id)
         
-        fatigue_Ep = deltaEp.*trialN;
-        x = [deltaR_Ep', deltaEp', fatigue_Ep'];
-        [betas_Ep] = glmfit(x, choice_LR_Ep', 'binomial','link','logit','constant','off');
-        choice_LR_Ep_fit = glmval(betas_Ep, x,'logit','constant','off');
+        %% load data
+        behaviorStruct = load([subBehaviorFolder,...
+            'CID',sub_nm,'_session',num2str(iRun),'_',task_fullName,...
+            '_task.mat']);
+        choiceOptions = behaviorStruct.choice_opt;
+        switch task_id
+            case 'Ep'
+                choice_LR = behaviorStruct.physicalPerf.choice;
+            case 'Em'
+                choice_LR = behaviorStruct.mentalE_perf.choice;
+        end
+        % remove confidence information
+        choice_LR(choice_LR == -2) = -1;
+        choice_LR(choice_LR == 2) = 1;
         
-        % perform bins
-        [choice_LR_Ep_deltaR_binned, deltaR_Ep_binned] = do_bin2(choice_LR_Ep, deltaR_Ep, n_bins, 0);
-        [choice_LR_Ep_deltaE_binned, deltaE_Ep_binned] = do_bin2(choice_LR_Ep, deltaEp, n_bins, 0);
-        [choice_LR_Ep_fit_deltaR_binned, deltaR_Ep_binned] = do_bin2(choice_LR_Ep_fit, deltaR_Ep, n_bins, 0);
-        [choice_LR_Ep_fit_deltaE_binned, deltaE_Ep_binned] = do_bin2(choice_LR_Ep_fit, deltaEp, n_bins, 0);
+        % load actual values for the specific subject
+        P_vals = [R_money.P_1, R_money.P_2, R_money.P_3];
+        R_vals = [R_money.R_1, R_money.R_2, R_money.R_3];
         
+        % deltas
+        deltaR_Ep = ;
+        deltaEp = ;
+        deltaP_Ep = ;
+        
+        deltaR_Em = ;
+        deltaEm = ;
+        deltaP_Em = ;
+        
+        choice_nonDef = choice_LR == ;
+        
+    end % run loop
+    
+    %% perform the fit
+    
+    
+    %% figures
+    if figDisp == 1
+        %% display choice = f(net value)
         fig;
-        subplot(1,2,1);
-        scatter(deltaR_Ep_binned, choice_LR_Ep_deltaR_binned);
-        hold on;
-        plot(deltaR_Ep_binned, choice_LR_Ep_fit_deltaR_binned, 'k');
-        ylim([-0.2 1.2])
-        xlabel('R_l_e_f_t - R_r_i_g_h_t');
-        ylabel('choice = left');
-        legend_size(pSize);
         
-        subplot(1,2,2);
-        scatter(deltaE_Ep_binned, choice_LR_Ep_deltaE_binned);
-        hold on;
-        plot(deltaE_Ep_binned, choice_LR_Ep_fit_deltaE_binned);
-        ylim([-0.2 1.2])
-        xlabel('E_l_e_f_t - E_r_i_g_h_t');
-        ylabel('choice = left');
-        legend_size(pSize);
-end
+    end
+    
+end % physical/mental
 
-% extract kR and kEm
-switch subid
-    case {'pilot_s1','pilot_s2'}
-        R_or_P_Em = strcmp(summary.choiceOptions.R_or_P,'R');
-        deltaR_Em = EmData_r1.summary.choiceOptions.R.left(R_or_P_Em == 1) - EmData_r1.summary.choiceOptions.R.right(R_or_P_Em == 1);
-        deltaEm = EmData_r1.summary.choiceOptions.E.left(R_or_P_Em == 1) - EmData_r1.summary.choiceOptions.E.right(R_or_P_Em == 1);
-        choice_LR_Em = (EmData_r1.summary.choice(R_or_P_Em == 1) < 0);
-        allTrials = 1:48;
-        trialN = allTrials(R_or_P_Em == 1);
-        
-        fatigue_Em = deltaEm.*trialN;
-        x = [deltaR_Em', deltaEm', fatigue_Em'];
-        [betas_Em] = glmfit(x, choice_LR_Em', 'binomial','link','logit','constant','off');
-        choice_LR_Em_fit = glmval(betas_Em, x,'logit','constant','off');
-        
-        % perform bins
-        [choice_LR_Em_deltaR_binned, deltaR_Em_binned] = do_bin2(choice_LR_Em, deltaR_Em, n_bins, 0);
-        [choice_LR_Em_deltaE_binned, deltaE_Em_binned] = do_bin2(choice_LR_Em, deltaEm, n_bins, 0);
-        [choice_LR_Em_fit_deltaR_binned, deltaR_Em_binned] = do_bin2(choice_LR_Em_fit, deltaR_Em, n_bins, 0);
-        [choice_LR_Em_fit_deltaE_binned, deltaE_Em_binned] = do_bin2(choice_LR_Em_fit, deltaEm, n_bins, 0);
-        
-        fig;
-        subplot(1,2,1);
-        scatter(deltaR_Em_binned, choice_LR_Em_deltaR_binned);
-        hold on;
-        plot(deltaR_Em_binned, choice_LR_Em_fit_deltaR_binned, 'k');
-        ylim([-0.2 1.2])
-        xlabel('R_l_e_f_t - R_r_i_g_h_t');
-        ylabel('choice = left');
-        legend_size(pSize);
-        
-        subplot(1,2,2);
-        scatter(deltaE_Em_binned, choice_LR_Em_deltaE_binned);
-        hold on;
-        plot(deltaE_Em_binned, choice_LR_Em_fit_deltaE_binned);
-        ylim([-0.2 1.2])
-        xlabel('E_l_e_f_t - E_r_i_g_h_t');
-        ylabel('choice = left');
-        legend_size(pSize);
-end
-        
+end % function

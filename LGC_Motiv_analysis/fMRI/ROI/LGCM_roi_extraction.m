@@ -25,7 +25,7 @@ for iROI = 1:nb_ROIs
     sxyz_ROI = ROI_xyz.(['ROI_',num2str(iROI)]);
     for iS = 1:NS
         sub_nm = subject_id{iS};
-        sub_fMRI_path = [fullfile(dataRoot, sub_nm, 'fMRI_analysis','functional',['GLM',GLM_str]),filesep];
+        sub_fMRI_path = [fullfile(dataRoot, ['CID',sub_nm], 'fMRI_analysis','functional',['GLM',GLM_str]),filesep];
         
         switch study_nm
             case 'fMRI_pilots'
