@@ -91,6 +91,12 @@ R_money.P_0 = baselineP;
 % extract value for indifference point (corresponding to middle punishment
 % level)
 IP_P = round(baselineP - delta_IP,2);
+%% if smaller punishment is too low, increase everything a bit
+if round(IP_P - half_delta_IP,2) <= 0
+    IP_P = 0.01 + half_delta_IP;
+end
+
+%% define values
 if strcmp(punishment_yn,'yes')
     switch n_R_levels
         case 3
