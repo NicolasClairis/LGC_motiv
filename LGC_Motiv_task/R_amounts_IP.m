@@ -25,28 +25,33 @@ baselineP = IPdata.baselineP;
 %% load delta between default option and medium effort level for which the
 % two options are perceived as equivalent (ie indifference point IP)
 delta_IP = IPdata.([effort_type,'DeltaIP']);
+% round the delta IP
+delta_IP = round(delta_IP,2);
+
+% half delta IP
+half_delta_IP = round(delta_IP/2, 2);
 
 %% rewards
 % extract value for default option
 R_money.R_0 = baselineR;
 % extract value for indifference point (corresponding to middle reward
 % level)
-IP_R = baselineR + delta_IP;
+IP_R = round(baselineR + delta_IP,2);
 if delta_IP < 0.01
     error('indifference point is too low');
 end
 switch n_R_levels
     case 3
-        R_money.R_1 = round(IP_R - delta_IP/2, 2);
-        R_money.R_2 = round(IP_R + delta_IP/2, 2);
+        R_money.R_1 = round(IP_R - half_delta_IP, 2);
+        R_money.R_2 = round(IP_R + half_delta_IP, 2);
     case 4
-        R_money.R_1 = round(IP_R - delta_IP/2, 2);
+        R_money.R_1 = round(IP_R - half_delta_IP, 2);
         R_money.R_2 = round(IP_R, 2);
-        R_money.R_3 = round(IP_R + delta_IP/2, 2);
+        R_money.R_3 = round(IP_R + half_delta_IP, 2);
     case 5
         R_money.R_1 = round(IP_R - delta_IP, 2);
-        R_money.R_2 = round(IP_R - delta_IP/2, 2);
-        R_money.R_3 = round(IP_R + delta_IP/2, 2);
+        R_money.R_2 = round(IP_R - half_delta_IP, 2);
+        R_money.R_3 = round(IP_R + half_delta_IP, 2);
         R_money.R_4 = round(IP_R + delta_IP, 2);
     otherwise
         error(['Please prepare Reward level - Money mapping for ',...
@@ -80,24 +85,24 @@ end
 R_money.P_0 = baselineP;
 % extract value for indifference point (corresponding to middle punishment
 % level)
-IP_P = baselineP - delta_IP;
+IP_P = round(baselineP - delta_IP,2);
 if strcmp(punishment_yn,'yes')
     switch n_R_levels
         case 3
-            R_money.P_1 = round(IP_P - delta_IP/2, 2);
-            R_money.P_2 = round(IP_P + delta_IP/2, 2);
+            R_money.P_1 = round(IP_P - half_delta_IP, 2);
+            R_money.P_2 = round(IP_P + half_delta_IP, 2);
         case 4
-            R_money.P_1 = round(IP_P - delta_IP/2, 2);
+            R_money.P_1 = round(IP_P - half_delta_IP, 2);
             R_money.P_2 = round(IP_P, 2);
-            R_money.P_3 = round(IP_P + delta_IP/2, 2);
+            R_money.P_3 = round(IP_P + half_delta_IP, 2);
         case 5
-            R_money.P_1 = round(IP_P - delta_IP/2, 2);
+            R_money.P_1 = round(IP_P - half_delta_IP, 2);
             R_money.P_2 = round(IP_P - delta_IP/4, 2);
             R_money.P_3 = round(IP_P + delta_IP/4, 2);
-            R_money.P_4 = round(IP_P + delta_IP/2, 2);
+            R_money.P_4 = round(IP_P + half_delta_IP, 2);
         otherwise
-            error(['Please prepare Reward level - Money mapping for ',...
-                num2str(n_R_levels),' reward levels.']);
+            error(['Please prepare Punishment level - Money mapping for ',...
+                num2str(n_R_levels),' punishment levels.']);
     end
     
     %% fix weird situations
