@@ -28,6 +28,11 @@ delta_IP = IPdata.([effort_type,'DeltaIP']);
 % round the delta IP
 delta_IP = round(delta_IP,2);
 
+%% fix case where delta_IP is too high
+if delta_IP == baselineR || delta_IP == baselineP
+    delta_IP = round(delta_IP/2,2);
+end
+
 % half delta IP
 half_delta_IP = round(delta_IP/2, 2);
 
