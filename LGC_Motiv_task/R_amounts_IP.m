@@ -97,8 +97,8 @@ if strcmp(punishment_yn,'yes')
             R_money.P_3 = round(IP_P + half_delta_IP, 2);
         case 5
             R_money.P_1 = round(IP_P - half_delta_IP, 2);
-            R_money.P_2 = round(IP_P - delta_IP/4, 2);
-            R_money.P_3 = round(IP_P + delta_IP/4, 2);
+            R_money.P_2 = round(IP_P - round(delta_IP/4,2), 2);
+            R_money.P_3 = round(IP_P + round(delta_IP/4,2), 2);
             R_money.P_4 = round(IP_P + half_delta_IP, 2);
         otherwise
             error(['Please prepare Punishment level - Money mapping for ',...
@@ -129,6 +129,14 @@ if strcmp(punishment_yn,'yes')
                 end
             end
         end
+    end
+    
+    % check weird values
+    for iP = 1:(n_R_levels - 1)
+       if R_money.(['P_',num2str(iP)]) <= 0
+           error(['Punishment level ',num2str(iP),' is equal to ',...
+               num2str(R_money.(['P_',num2str(iP)])),'<0. Please fix this.']);
+       end
     end
     
     %% display level of punishment assigned to each amount for tracking for the
