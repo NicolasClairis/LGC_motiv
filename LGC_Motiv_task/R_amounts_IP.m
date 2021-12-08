@@ -91,10 +91,6 @@ R_money.P_0 = baselineP;
 % extract value for indifference point (corresponding to middle punishment
 % level)
 IP_P = round(baselineP - delta_IP,2);
-%% if smaller punishment is too low, increase everything a bit
-if round(IP_P - half_delta_IP,2) <= 0
-    IP_P = 0.01 + half_delta_IP;
-end
 
 %% define values
 if strcmp(punishment_yn,'yes')
@@ -143,11 +139,18 @@ if strcmp(punishment_yn,'yes')
     end
     
     % check weird values
-    for iP = 1:(n_R_levels - 1)
-       if R_money.(['P_',num2str(iP)]) <= 0
-           error(['Punishment level ',num2str(iP),' is equal to ',...
-               num2str(R_money.(['P_',num2str(iP)])),'<0. Please fix this.']);
-       end
+    % if smaller punishment is too low, increase everything
+    if round(IP_P - half_delta_IP,2) <= 0
+        punishment_ok = false;
+        % increase all values by 0.01 until you are in the correct range
+        while punishment_ok == false
+            for iP_fix = 0:(n_R_levels - 1)
+                R_money.(['P_',num2str(iP_fix)]) = R_money.(['P_',num2str(iP_fix)]) + 0.01;
+            end
+            if R_money.P_1 > 0
+                punishment_ok = true;
+            end
+        end
     end
     
     %% display level of punishment assigned to each amount for tracking for the
