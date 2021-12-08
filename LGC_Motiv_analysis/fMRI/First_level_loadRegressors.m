@@ -1,6 +1,6 @@
-function[matlabbatch] = First_level_loadRegressors(matlabbatch, GLMprm, study_nm, sub_idx, iRun,...
+function[matlabbatch] = First_level_loadRegressors(matlabbatch, GLMprm, study_nm, sub_nm, sub_idx, iRun,...
     subj_behavior_folder, currRunBehaviorFileName, task_nm)
-% [matlabbatch] = First_level_loadRegressors(matlabbatch, GLMprm, study_nm, sub_idx, iRun,...
+% [matlabbatch] = First_level_loadRegressors(matlabbatch, GLMprm, study_nm, sub_nm, sub_idx, iRun,...
 %     subj_behavior_folder, currRunBehaviorFileName, task_nm)
 %
 % First_level_loadRegressors will load the regressors of interest for each
@@ -12,6 +12,8 @@ function[matlabbatch] = First_level_loadRegressors(matlabbatch, GLMprm, study_nm
 % GLMprm: structure with GLM parameters
 %
 % study_nm: study name
+%
+% sub_nm: subject identification number (as a string)
 %
 % sub_idx: index for matlabbatch
 %
@@ -109,7 +111,8 @@ choice_RT = choiceOnsets - dispChoiceOptionOnsets;
 %% extract regressors of interest
 % loading R vs P trial
 RP_var_binary = strcmp( behavioralDataStruct.(task_behavioral_id).choiceOptions.R_or_P, 'R');
-RP_var = RP_var_binary;
+RP_var = NaN(1, length(RP_var_binary));
+RP_var(RP_var_binary == 1) = 1;
 RP_var(RP_var_binary == 0) = -1;
 % loading default option side
 defaultSide = behavioralDataStruct.(task_behavioral_id).choiceOptions.default_LR;
@@ -121,6 +124,26 @@ money_amount_varOption = money_amount_left.*(defaultSide == 1) + money_amount_ri
 abs_money_amount_varOption = abs(money_amount_varOption);
 money_level_left = behavioralDataStruct.(task_behavioral_id).choiceOptions.R.left.*RP_var;
 money_level_right = behavioralDataStruct.(task_behavioral_id).choiceOptions.R.right.*RP_var;
+% fix data for subjects where IP had a bug
+if strcmp(study_nm,'study1')
+    if strcmp(sub_nm,'064') && strcmp(task_nm,'mental')
+        money_level_left(money_level_left == 3) = 2;
+        money_level_left(money_level_left == -2) = -1;
+        money_level_right(money_level_right == 3) = 2;
+        money_level_right(money_level_right == -2) = -1;
+        % given that only 2 levels, also reduce punishment 3 to 2
+        money_level_left(money_level_left == -3) = -2;
+        money_level_right(money_level_right == -3) = -2;
+    elseif strcmp(sub_nm,'090') && strcmp(task_nm,'physical')
+        money_level_left(money_level_left == 3) = 2;
+        money_level_left(money_level_left == -2) = -1;
+        money_level_right(money_level_right == 3) = 2;
+        money_level_right(money_level_right == -2) = -1;
+        % given that only 2 levels, also reduce punishment 3 to 2
+        money_level_left(money_level_left == -3) = -2;
+        money_level_right(money_level_right == -3) = -2;
+    end
+end
 money_level_varOption = money_level_left.*(defaultSide == 1) + money_level_right.*(defaultSide == -1);
 abs_money_level_varOption = abs(money_level_varOption);
 % loading effort choice

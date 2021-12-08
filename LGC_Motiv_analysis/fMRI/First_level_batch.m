@@ -144,7 +144,7 @@ for iS = 1:NS
             error('problem in identifying task type because file name doesn''t match');
         end
         % perform 1st level
-        matlabbatch = First_level_loadRegressors(matlabbatch, GLMprm, study_nm, sub_idx, iRun,...
+        matlabbatch = First_level_loadRegressors(matlabbatch, GLMprm, study_nm, sub_nm, sub_idx, iRun,...
             subj_behavior_folder, currRunBehaviorFileNames, task_nm);
         
         %% global run parameters (rp movement file, etc.)
