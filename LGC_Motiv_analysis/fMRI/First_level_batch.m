@@ -24,9 +24,10 @@ while isempty(GLM_nm)
     [GLM_nm] = info{1};
 end
 if ~exist('study_nm','var') || isempty(study_nm)
-    study_names = {'fMRI_pilots','study1','study2'};
-    study_nm_idx = listdlg('ListString',study_names);
-    study_nm = study_names{study_nm_idx};
+    %     study_names = {'study1','study2','fMRI_pilots'};
+    %     study_nm_idx = listdlg('ListString',study_names);
+    %     study_nm = study_names{study_nm_idx};
+    study_nm = 'study1'; % define by default
 end
 GLM = str2double(GLM_nm);
 GLMprm = which_GLM(GLM);
