@@ -124,6 +124,10 @@ money_amount_varOption = money_amount_left.*(defaultSide == 1) + money_amount_ri
 abs_money_amount_varOption = abs(money_amount_varOption);
 money_level_left = behavioralDataStruct.(task_behavioral_id).choiceOptions.R.left.*RP_var;
 money_level_right = behavioralDataStruct.(task_behavioral_id).choiceOptions.R.right.*RP_var;
+% replace default option level for punishments by higher level (because
+% implies higher amount of money lost)
+money_level_left(money_level_left == 0 & RP_var == -1) = -4;
+money_level_right(money_level_right == 0 & RP_var == -1) = -4;
 % fix data for subjects where IP had a bug
 if strcmp(study_nm,'study1')
     if strcmp(sub_nm,'064') && strcmp(task_nm,'mental')
@@ -132,16 +136,22 @@ if strcmp(study_nm,'study1')
         money_level_right(money_level_right == 3) = 2;
         money_level_right(money_level_right == -2) = -1;
         % given that only 2 levels, also reduce punishment 3 to 2
+        % and punishment 4 to 3
         money_level_left(money_level_left == -3) = -2;
         money_level_right(money_level_right == -3) = -2;
+        money_level_left(money_level_left == -4) = -3;
+        money_level_right(money_level_right == -4) = -3;
     elseif strcmp(sub_nm,'090') && strcmp(task_nm,'physical')
         money_level_left(money_level_left == 3) = 2;
         money_level_left(money_level_left == -2) = -1;
         money_level_right(money_level_right == 3) = 2;
         money_level_right(money_level_right == -2) = -1;
         % given that only 2 levels, also reduce punishment 3 to 2
+        % and punishment 4 to 3
         money_level_left(money_level_left == -3) = -2;
         money_level_right(money_level_right == -3) = -2;
+        money_level_left(money_level_left == -4) = -3;
+        money_level_right(money_level_right == -4) = -3;
     end
 end
 money_level_varOption = money_level_left.*(defaultSide == 1) + money_level_right.*(defaultSide == -1);
