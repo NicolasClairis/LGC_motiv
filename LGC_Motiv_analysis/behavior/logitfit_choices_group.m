@@ -45,6 +45,10 @@ end
 if ~exist('n_NV_bins','var') || isempty(n_NV_bins)
     n_NV_bins = 6;
 end
+%% if not defined in the inputs, define by default some number of bins for the graphs
+if ~exist('n_trialN_bins','var') || isempty(n_trialN_bins)
+    n_trialN_bins = 6;
+end
 %% define R/P/E levels
 P_levels = [-3, -2, -1];
 nPlevels = length(P_levels);
@@ -54,6 +58,7 @@ money_levels = [-3, -2, -1, 1, 2, 3];
 nMoneyLevels = length(money_levels);
 E_levels = [1, 2, 3];
 nELevels = length(E_levels);
+nMdl = 4;
 
 %% working directories
 studyBehaviorFolder = [computerRoot, filesep, study_nm, filesep];
@@ -79,7 +84,20 @@ for iPM = 1:2
     end
     [betas.(task_id).Mdl1.kb0,...
         betas.(task_id).Mdl1.kMoney,...
-        betas.(task_id).Mdl1.kEffort] = deal(NaN(1,NS));
+        betas.(task_id).Mdl1.kEffort,...
+        betas.(task_id).Mdl2.kb0,...
+        betas.(task_id).Mdl2.kR,...
+        betas.(task_id).Mdl2.kP,...
+        betas.(task_id).Mdl2.kEffort,...
+        betas.(task_id).Mdl3.kb0,...
+        betas.(task_id).Mdl3.kMoney,...
+        betas.(task_id).Mdl3.kEffort,...
+        betas.(task_id).Mdl3.kFatigue,...
+        betas.(task_id).Mdl4.kb0,...
+        betas.(task_id).Mdl4.kR,...
+        betas.(task_id).Mdl4.kP,...
+        betas.(task_id).Mdl4.kEffort,...
+        betas.(task_id).Mdl4.kFatigue] = deal(NaN(1,NS));
     
     [choiceNonDef.perMoneyLevel.(task_id),...
         choiceFitNonDef.perMoneyLevel.Mdl1.(task_id),...
@@ -91,10 +109,24 @@ for iPM = 1:2
         choiceFitNonDef.perEffortLevel.Mdl2.(task_id),...
         choiceFitNonDef.perEffortLevel.Mdl3.(task_id),...
         choiceFitNonDef.perEffortLevel.Mdl4.(task_id)] = deal(NaN(nELevels,NS));
+    [choiceNonDef.perTrialN.(task_id),...
+        choiceFitNonDef.perTrialN.Mdl1.(task_id),...
+        choiceFitNonDef.perTrialN.Mdl2.(task_id),...
+        choiceFitNonDef.perTrialN.Mdl3.(task_id),...
+        choiceFitNonDef.perTrialN.Mdl4.(task_id)] = deal(NaN(n_trialN_bins,NS));
     
     [choiceNonDef.perNVLevel.Mdl1.(task_id),...
         choiceFitNonDef.perNVLevel.Mdl1.(task_id),...
-        NV_bins.Mdl1.(task_id)] = deal(NaN(n_NV_bins, NS));
+        NV_bins.Mdl1.(task_id),...
+        choiceNonDef.perNVLevel.Mdl2.(task_id),...
+        choiceFitNonDef.perNVLevel.Mdl2.(task_id),...
+        NV_bins.Mdl2.(task_id),...
+        choiceNonDef.perNVLevel.Mdl3.(task_id),...
+        choiceFitNonDef.perNVLevel.Mdl3.(task_id),...
+        NV_bins.Mdl3.(task_id),...
+        choiceNonDef.perNVLevel.Mdl4.(task_id),...
+        choiceFitNonDef.perNVLevel.Mdl4.(task_id),...
+        NV_bins.Mdl4.(task_id)] = deal(NaN(n_NV_bins, NS));
 end % physical/mental loop
 
 %% loop through subjects
@@ -102,6 +134,7 @@ for iS = 1:NS
     sub_nm = subject_id{iS};
     % load individual data
     [betas_tmp, choices_tmp] = logitfit_choices(computerRoot, study_nm, sub_nm, figDispIndiv, n_NV_bins);
+    trialN_levels = choices_tmp.trialN_bins.Ep;
     
     % pool data across subjects
     for iPM = 1:2
@@ -112,18 +145,41 @@ for iS = 1:NS
                 task_id = 'Em';
         end
         % extract betas
+        % model 1
         betas.(task_id).Mdl1.kb0(iS) = betas_tmp.(task_id).Mdl1.kb0;
         betas.(task_id).Mdl1.kMoney(iS) = betas_tmp.(task_id).Mdl1.kMoney;
         betas.(task_id).Mdl1.kEffort(iS) = betas_tmp.(task_id).Mdl1.kEffort;
+        % model 2
+        betas.(task_id).Mdl2.kb0(iS) = betas_tmp.(task_id).Mdl2.kb0;
+        betas.(task_id).Mdl2.kR(iS) = betas_tmp.(task_id).Mdl2.kR;
+        betas.(task_id).Mdl2.kP(iS) = betas_tmp.(task_id).Mdl2.kP;
+        betas.(task_id).Mdl2.kEffort(iS) = betas_tmp.(task_id).Mdl2.kEffort;
+        % model 3
+        betas.(task_id).Mdl3.kb0(iS) = betas_tmp.(task_id).Mdl3.kb0;
+        betas.(task_id).Mdl3.kMoney(iS) = betas_tmp.(task_id).Mdl3.kMoney;
+        betas.(task_id).Mdl3.kEffort(iS) = betas_tmp.(task_id).Mdl3.kEffort;
+        betas.(task_id).Mdl3.kFatigue(iS) = betas_tmp.(task_id).Mdl3.kFatigue;
+        % model 4
+        betas.(task_id).Mdl4.kb0(iS) = betas_tmp.(task_id).Mdl4.kb0;
+        betas.(task_id).Mdl4.kR(iS) = betas_tmp.(task_id).Mdl4.kR;
+        betas.(task_id).Mdl4.kP(iS) = betas_tmp.(task_id).Mdl4.kP;
+        betas.(task_id).Mdl4.kEffort(iS) = betas_tmp.(task_id).Mdl4.kEffort;
+        betas.(task_id).Mdl4.kFatigue(iS) = betas_tmp.(task_id).Mdl4.kFatigue;
+        
         % extract choices
         choiceNonDef.perMoneyLevel.(task_id)(:,iS) = choices_tmp.choiceNonDef.perMoneyLevel.(task_id);
         choiceNonDef.perEffortLevel.(task_id)(:,iS) = choices_tmp.choiceNonDef.perEffortLevel.(task_id);
+        choiceNonDef.perTrialN.(task_id)(:,iS) = choices_tmp.choiceNonDef.perTrialN.(task_id);
         % extract fit
-        choiceNonDef.perNVLevel.Mdl1.(task_id)(:,iS) = choices_tmp.choiceNonDef.perNVLevel.Mdl1.(task_id);
-        choiceFitNonDef.perNVLevel.Mdl1.(task_id)(:,iS) = choices_tmp.choiceFitNonDef.perNVLevel.Mdl1.(task_id);
-        NV_bins.Mdl1.(task_id)(:,iS) = choices_tmp.NV_bins.Mdl1.(task_id);
-        choiceFitNonDef.perMoneyLevel.Mdl1.(task_id)(:,iS) = choices_tmp.choiceFitNonDef.perMoneyLevel.Mdl1.(task_id);
-        choiceFitNonDef.perEffortLevel.Mdl1.(task_id)(:,iS) = choices_tmp.choiceFitNonDef.perEffortLevel.Mdl1.(task_id);
+        for iMdl = 1:nMdl
+            mdl_nm = ['Mdl',num2str(iMdl)];
+            choiceNonDef.perNVLevel.(mdl_nm).(task_id)(:,iS) = choices_tmp.choiceNonDef.perNVLevel.(mdl_nm).(task_id);
+            choiceFitNonDef.perNVLevel.(mdl_nm).(task_id)(:,iS) = choices_tmp.choiceFitNonDef.perNVLevel.(mdl_nm).(task_id);
+            NV_bins.(mdl_nm).(task_id)(:,iS) = choices_tmp.NV_bins.Mdl1.(task_id);
+            choiceFitNonDef.perMoneyLevel.(mdl_nm).(task_id)(:,iS) = choices_tmp.choiceFitNonDef.perMoneyLevel.(mdl_nm).(task_id);
+            choiceFitNonDef.perEffortLevel.(mdl_nm).(task_id)(:,iS) = choices_tmp.choiceFitNonDef.perEffortLevel.(mdl_nm).(task_id);
+            choiceFitNonDef.perTrialN.(mdl_nm).(task_id)(:,iS) = choices_tmp.choiceFitNonDef.perTrialN.(mdl_nm).(task_id);
+        end
     end % physical/mental loop
 end % subject loop
 
@@ -140,113 +196,168 @@ for iPM = 1:2
     
     [m_choiceNonDef.perMoneyLevel.(task_id),...
         sem_choiceNonDef.perMoneyLevel.(task_id)] = mean_sem_sd(choiceNonDef.perMoneyLevel.(task_id), 2);
-    [m_choiceFitNonDef.perMoneyLevel.Mdl1.(task_id),...
-        sem_choiceFitNonDef.perMoneyLevel.Mdl1.(task_id)] = mean_sem_sd(choiceFitNonDef.perMoneyLevel.Mdl1.(task_id), 2);
     [m_choiceNonDef.perEffortLevel.(task_id),...
         sem_choiceNonDef.perEffortLevel.(task_id)] = mean_sem_sd(choiceNonDef.perEffortLevel.(task_id), 2);
-    [m_choiceFitNonDef.perEffortLevel.Mdl1.(task_id),...
-        sem_choiceFitNonDef.perEffortLevel.Mdl1.(task_id)] = mean_sem_sd(choiceFitNonDef.perEffortLevel.Mdl1.(task_id), 2);
-    [m_NV_bins.Mdl1.(task_id),...
-        sem_NV_bins.Mdl1.(task_id)] = mean_sem_sd(NV_bins.Mdl1.(task_id), 2);
-    [m_choiceNonDef.perNVLevel.Mdl1.(task_id),...
-        sem_choiceNonDef.perNVLevel.Mdl1.(task_id)] = mean_sem_sd(choiceNonDef.perNVLevel.Mdl1.(task_id), 2);
-    [m_choiceFitNonDef.perNVLevel.Mdl1.(task_id),...
-        sem_choiceFitNonDef.perNVLevel.Mdl1.(task_id)] = mean_sem_sd(choiceFitNonDef.perNVLevel.Mdl1.(task_id), 2);
-    % average betas
-    [betas.mean.(task_id).Mdl1.kb0,...
-        betas.sem.(task_id).Mdl1.kb0,...
-        betas.sd.(task_id).Mdl1.kb0] = mean_sem_sd(betas.(task_id).Mdl1.kb0,2);
-    [betas.mean.(task_id).Mdl1.kMoney,...
-        betas.sem.(task_id).Mdl1.kMoney,...
-        betas.sd.(task_id).Mdl1.kMoney] = mean_sem_sd(betas.(task_id).Mdl1.kMoney,2);
-    [betas.mean.(task_id).Mdl1.kEffort,...
-        betas.sem.(task_id).Mdl1.kEffort,...
-        betas.sd.(task_id).Mdl1.kEffort] = mean_sem_sd(betas.(task_id).Mdl1.kEffort,2);
-    
-    %% test how significant betas are
-    [~,pvalues.(task_id).Mdl1.kb0] = ttest(betas.(task_id).Mdl1.kb0);
-    [~,pvalues.(task_id).Mdl1.kMoney] = ttest(betas.(task_id).Mdl1.kMoney);
-    [~,pvalues.(task_id).Mdl1.kEffort] = ttest(betas.(task_id).Mdl1.kEffort);
+    [m_choiceNonDef.perTrialN.(task_id),...
+        sem_choiceNonDef.perTrialN.(task_id)] = mean_sem_sd(choiceNonDef.perNVLevel.Mdl1.(task_id), 2);
+    for iMdl = 1:nMdl
+        mdl_nm = ['Mdl',num2str(iMdl)];
+        [m_choiceFitNonDef.perMoneyLevel.(mdl_nm).(task_id),...
+            sem_choiceFitNonDef.perMoneyLevel.(mdl_nm).(task_id)] = mean_sem_sd(choiceFitNonDef.perMoneyLevel.(mdl_nm).(task_id), 2);
+        [m_choiceFitNonDef.perEffortLevel.(mdl_nm).(task_id),...
+            sem_choiceFitNonDef.perEffortLevel.(mdl_nm).(task_id)] = mean_sem_sd(choiceFitNonDef.perEffortLevel.(mdl_nm).(task_id), 2);
+        [m_NV_bins.(mdl_nm).(task_id),...
+            sem_NV_bins.(mdl_nm).(task_id)] = mean_sem_sd(NV_bins.(mdl_nm).(task_id), 2);
+        [m_choiceNonDef.perNVLevel.(mdl_nm).(task_id),...
+            sem_choiceNonDef.perNVLevel.(mdl_nm).(task_id)] = mean_sem_sd(choiceNonDef.perNVLevel.(mdl_nm).(task_id), 2);
+        [m_choiceFitNonDef.perNVLevel.(mdl_nm).(task_id),...
+            sem_choiceFitNonDef.perNVLevel.(mdl_nm).(task_id)] = mean_sem_sd(choiceFitNonDef.perNVLevel.(mdl_nm).(task_id), 2);
+        [m_choiceFitNonDef.perTrialN.(mdl_nm).(task_id),...
+            sem_choiceFitNonDef.perTrialN.(mdl_nm).(task_id)] = mean_sem_sd(choiceFitNonDef.perNVLevel.(mdl_nm).(task_id), 2);
+        % average betas
+        [betas.mean.(task_id).(mdl_nm).kb0,...
+            betas.sem.(task_id).(mdl_nm).kb0,...
+            betas.sd.(task_id).(mdl_nm).kb0] = mean_sem_sd(betas.(task_id).(mdl_nm).kb0,2);
+        if ismember(iMdl,[1,3])
+            [betas.mean.(task_id).(mdl_nm).kMoney,...
+            betas.sem.(task_id).(mdl_nm).kMoney,...
+            betas.sd.(task_id).(mdl_nm).kMoney] = mean_sem_sd(betas.(task_id).(mdl_nm).kMoney,2);
+        elseif ismember(iMdl,[2,4])
+            [betas.mean.(task_id).(mdl_nm).kR,...
+                betas.sem.(task_id).(mdl_nm).kR,...
+                betas.sd.(task_id).(mdl_nm).kR] = mean_sem_sd(betas.(task_id).(mdl_nm).kR,2);
+            [betas.mean.(task_id).(mdl_nm).kP,...
+                betas.sem.(task_id).(mdl_nm).kP,...
+                betas.sd.(task_id).(mdl_nm).kP] = mean_sem_sd(betas.(task_id).(mdl_nm).kP,2);
+        end
+        [betas.mean.(task_id).(mdl_nm).kEffort,...
+            betas.sem.(task_id).(mdl_nm).kEffort,...
+            betas.sd.(task_id).(mdl_nm).kEffort] = mean_sem_sd(betas.(task_id).(mdl_nm).kEffort,2);
+        if ismember(iMdl,[3,4])
+            [betas.mean.(task_id).(mdl_nm).kFatigue,...
+            betas.sem.(task_id).(mdl_nm).kFatigue,...
+            betas.sd.(task_id).(mdl_nm).kFatigue] = mean_sem_sd(betas.(task_id).(mdl_nm).kFatigue,2);
+        end
+        
+        %% test how significant betas are
+        [~,pvalues.(task_id).(mdl_nm).kb0] = ttest(betas.(task_id).(mdl_nm).kb0);
+        if ismember(iMdl,[1,3])
+            [~,pvalues.(task_id).(mdl_nm).kMoney] = ttest(betas.(task_id).(mdl_nm).kMoney);
+        elseif ismember(iMdl,[2,4])
+            [~,pvalues.(task_id).(mdl_nm).kR] = ttest(betas.(task_id).(mdl_nm).kR);
+            [~,pvalues.(task_id).(mdl_nm).kP] = ttest(betas.(task_id).(mdl_nm).kP);
+        end
+        [~,pvalues.(task_id).(mdl_nm).kEffort] = ttest(betas.(task_id).(mdl_nm).kEffort);
+        if ismember(iMdl,[3,4])
+            [~,pvalues.(task_id).(mdl_nm).kFatigue] = ttest(betas.(task_id).(mdl_nm).kFatigue);
+        end
+    end % model loop
     
     %% display average data
     if figDispGroup == 1
         pSize = 30;
         lWidth = 3;
         lWidth_borders = 1;
-        %% model 1
-        %% display choice = f(net value)
-        fig;
-        %         pointMdl1 = errorbar(m_NV_bins.Mdl1.(task_id),...
-        %             m_choiceNonDef.perNVLevel.Mdl1.(task_id),...
-        %             sem_choiceNonDef.perNVLevel.Mdl1.(task_id),...
-        %             sem_choiceNonDef.perNVLevel.Mdl1.(task_id),...
-        %             sem_NV_bins.Mdl1.(task_id),...
-        %             sem_NV_bins.Mdl1.(task_id));
-        pointMdl1 = errorbar(m_NV_bins.Mdl1.(task_id),...
-            m_choiceNonDef.perNVLevel.Mdl1.(task_id),...
-            sem_choiceNonDef.perNVLevel.Mdl1.(task_id));
-        pointMdl1.Color = [0 0 0];
-        pointMdl1.Marker = 'o';
-        pointMdl1.LineStyle = 'none';
-        pointMdl1.LineWidth = lWidth;
-        hold on;
-        line(xlim(),[0 0],'LineWidth',lWidth_borders,'Color',[0 0 0]);
-        line(xlim(),[1 1],'LineWidth',lWidth_borders,'Color',[0 0 0]);
-        lHdlMdl1 = plot(m_NV_bins.Mdl1.(task_id), m_choiceFitNonDef.perNVLevel.Mdl1.(task_id));
-        lHdlMdl1.LineStyle = '--';
-        lHdlMdl1.LineWidth = lWidth;
-        lHdlMdl1.Color = [143 0 0]./255;
-        ylim([-0.2 1.2]);
-        xlabel(['Net value ',task_fullName]);
-        ylabel('Choice non-default option (%)');
-        legend_size(pSize);
-        %         saveas(resultFolder)
-        
-        %% choice non-default = f(money levels)
-        fig;
-        pointMdl1 = errorbar(money_levels,...
-            m_choiceNonDef.perMoneyLevel.(task_id),...
-            sem_choiceNonDef.perMoneyLevel.(task_id));
-        pointMdl1.Color = [0 0 0];
-        pointMdl1.Marker = 'o';
-        pointMdl1.LineStyle = 'none';
-        pointMdl1.LineWidth = lWidth;
-        hold on;
-        line(xlim(),[0 0],'LineWidth',lWidth_borders,'Color',[0 0 0]);
-        line(xlim(),[1 1],'LineWidth',lWidth_borders,'Color',[0 0 0]);
-        lHdlMdl1 = plot(money_levels, m_choiceFitNonDef.perMoneyLevel.Mdl1.(task_id));
-        lHdlMdl1.LineStyle = '--';
-        lHdlMdl1.LineWidth = lWidth;
-        lHdlMdl1.Color = [143 0 0]./255;
-        ylim([-0.2 1.2]);
-        xlabel([task_fullName,' Money level']);
-        ylabel('Choice non-default option (%)');
-        legend_size(pSize);
-%         saveas(resultFolder)
-        
-        %% choice non-default = f(effort levels)
-        fig;
-        pointMdl1 = errorbar(E_levels,...
-            m_choiceNonDef.perEffortLevel.(task_id),...
-            sem_choiceNonDef.perEffortLevel.(task_id));
-        pointMdl1.Color = [0 0 0];
-        pointMdl1.Marker = 'o';
-        pointMdl1.LineStyle = 'none';
-        pointMdl1.LineWidth = lWidth;
-        hold on;
-        line(xlim(),[0 0],'LineWidth',lWidth_borders,'Color',[0 0 0]);
-        line(xlim(),[1 1],'LineWidth',lWidth_borders,'Color',[0 0 0]);
-        lHdlMdl1 = plot(E_levels,...
-            m_choiceFitNonDef.perEffortLevel.Mdl1.(task_id));
-        lHdlMdl1.LineStyle = '--';
-        lHdlMdl1.LineWidth = lWidth;
-        lHdlMdl1.Color = [143 0 0]./255;
-        ylim([-0.2 1.2]);
-        xlabel([task_fullName,' effort level']);
-        ylabel('Choice non-default option (%)');
-        legend_size(pSize);
-%         saveas(resultFolder)
-        
+        %% loop through models
+        for iMdl = 1:nMdl
+            mdl_nm = ['Mdl',num2str(iMdl)];
+            
+            %% display choice = f(net value)
+            fig;
+            %         pointMdl1 = errorbar(m_NV_bins.Mdl1.(task_id),...
+            %             m_choiceNonDef.perNVLevel.Mdl1.(task_id),...
+            %             sem_choiceNonDef.perNVLevel.Mdl1.(task_id),...
+            %             sem_choiceNonDef.perNVLevel.Mdl1.(task_id),...
+            %             sem_NV_bins.Mdl1.(task_id),...
+            %             sem_NV_bins.Mdl1.(task_id));
+            pointMdl = errorbar(m_NV_bins.(mdl_nm).(task_id),...
+                m_choiceNonDef.perNVLevel.(mdl_nm).(task_id),...
+                sem_choiceNonDef.perNVLevel.(mdl_nm).(task_id));
+            pointMdl.Color = [0 0 0];
+            pointMdl.Marker = 'o';
+            pointMdl.LineStyle = 'none';
+            pointMdl.LineWidth = lWidth;
+            hold on;
+            line(xlim(),[0 0],'LineWidth',lWidth_borders,'Color',[0 0 0]);
+            line(xlim(),[1 1],'LineWidth',lWidth_borders,'Color',[0 0 0]);
+            lHdlMdl = plot(m_NV_bins.(mdl_nm).(task_id), m_choiceFitNonDef.perNVLevel.(mdl_nm).(task_id));
+            lHdlMdl.LineStyle = '--';
+            lHdlMdl.LineWidth = lWidth;
+            lHdlMdl.Color = [143 0 0]./255;
+            ylim([-0.2 1.2]);
+            xlabel(['Net value ',task_fullName,' - model ',num2str(iMdl)]);
+            ylabel('Choice non-default option (%)');
+            legend_size(pSize);
+            %         saveas(resultFolder)
+            
+            %% choice non-default = f(money levels)
+            fig;
+            pointMdl = errorbar(money_levels,...
+                m_choiceNonDef.perMoneyLevel.(task_id),...
+                sem_choiceNonDef.perMoneyLevel.(task_id));
+            pointMdl.Color = [0 0 0];
+            pointMdl.Marker = 'o';
+            pointMdl.LineStyle = 'none';
+            pointMdl.LineWidth = lWidth;
+            hold on;
+            line(xlim(),[0 0],'LineWidth',lWidth_borders,'Color',[0 0 0]);
+            line(xlim(),[1 1],'LineWidth',lWidth_borders,'Color',[0 0 0]);
+            lHdlMdl = plot(money_levels, m_choiceFitNonDef.perMoneyLevel.(mdl_nm).(task_id));
+            lHdlMdl.LineStyle = '--';
+            lHdlMdl.LineWidth = lWidth;
+            lHdlMdl.Color = [143 0 0]./255;
+            ylim([-0.2 1.2]);
+            xlabel([task_fullName,' Money level - model ',num2str(iMdl)]);
+            ylabel('Choice non-default option (%)');
+            legend_size(pSize);
+            %         saveas(resultFolder)
+            
+            %% choice non-default = f(effort levels)
+            fig;
+            pointMdl = errorbar(E_levels,...
+                m_choiceNonDef.perEffortLevel.(task_id),...
+                sem_choiceNonDef.perEffortLevel.(task_id));
+            pointMdl.Color = [0 0 0];
+            pointMdl.Marker = 'o';
+            pointMdl.LineStyle = 'none';
+            pointMdl.LineWidth = lWidth;
+            hold on;
+            line(xlim(),[0 0],'LineWidth',lWidth_borders,'Color',[0 0 0]);
+            line(xlim(),[1 1],'LineWidth',lWidth_borders,'Color',[0 0 0]);
+            lHdlMdl = plot(E_levels,...
+                m_choiceFitNonDef.perEffortLevel.(mdl_nm).(task_id));
+            lHdlMdl.LineStyle = '--';
+            lHdlMdl.LineWidth = lWidth;
+            lHdlMdl.Color = [143 0 0]./255;
+            ylim([-0.2 1.2]);
+            xlabel([task_fullName,' effort level - model ',num2str(iMdl)]);
+            ylabel('Choice non-default option (%)');
+            legend_size(pSize);
+            %         saveas(resultFolder)
+            
+            %% choice non-default = f(trial number)
+            fig;
+            pointMdl = errorbar(trialN_levels,...
+                m_choiceNonDef.perTrialN.(task_id),...
+                sem_choiceNonDef.perTrialN.(task_id));
+            pointMdl.Color = [0 0 0];
+            pointMdl.Marker = 'o';
+            pointMdl.LineStyle = 'none';
+            pointMdl.LineWidth = lWidth;
+            hold on;
+            line(xlim(),[0 0],'LineWidth',lWidth_borders,'Color',[0 0 0]);
+            line(xlim(),[1 1],'LineWidth',lWidth_borders,'Color',[0 0 0]);
+            lHdlMdl = plot(trialN_levels,...
+                m_choiceFitNonDef.perTrialN.(mdl_nm).(task_id));
+            lHdlMdl.LineStyle = '--';
+            lHdlMdl.LineWidth = lWidth;
+            lHdlMdl.Color = [143 0 0]./255;
+            ylim([-0.2 1.2]);
+            xlabel([task_fullName,' trial number - model ',num2str(iMdl)]);
+            ylabel('Choice non-default option (%)');
+            legend_size(pSize);
+            %         saveas(resultFolder)
+        end % model loop
     end % display figure
     
 end % physical/mental loop
