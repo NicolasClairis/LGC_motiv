@@ -1,5 +1,5 @@
-function[betas, choices] = logitfit_choices(computerRoot, study_nm, sub_nm, figDisp)
-% [betas, choices] = logitfit_choices(computerRoot, study_nm, sub_nm, figDisp)
+function[betas, choices] = logitfit_choices(computerRoot, study_nm, sub_nm, figDisp, n_NV_bins)
+% [betas, choices] = logitfit_choices(computerRoot, study_nm, sub_nm, figDisp, n_NV_bins)
 % logitfit_choices will perform a logistic regression on the choices
 % performed by the participants
 %
@@ -11,6 +11,8 @@ function[betas, choices] = logitfit_choices(computerRoot, study_nm, sub_nm, figD
 % sub_nm: subject number id 'XXX'
 %
 % figDisp: display individual figure (1) or not (0)
+%
+% n_NV_bins: number of bins for net value
 %
 % OUTPUTS
 % betas: structure with betas
@@ -49,6 +51,10 @@ nMoneyLevels = length(money_levels);
 E_levels = [1, 2, 3];
 nELevels = length(E_levels);
 
+if ~exist('n_NV_bins','var') || isempty(n_NV_bins)
+    n_NV_bins = 6;
+end
+
 %% initialize variables of interest
 nTrialsPerRun = 54;
 nTrialsPerRPConditionPerRun = nTrialsPerRun/2;
@@ -82,10 +88,31 @@ for iPM = 1:2
         R_default_valuePerTrial_R.(task_id), P_default_valuePerTrial_P.(task_id),...
         E_nonDef_levelPerTrial_R.(task_id), E_nonDef_levelPerTrial_P.(task_id),...
         E_default_levelPerTrial_R.(task_id), E_default_levelPerTrial_P.(task_id)] = deal(NaN(nTrialsPerRPCond,1));
-    [choiceNonDef.perMoneylevel.(task_id),...
-        choiceFitNonDef.perMoneylevel.(task_id)] = deal(NaN(1,nMoneyLevels));
-    [choiceNonDef.perEffortlevel.(task_id),...
-        choiceFitNonDef.perEffortlevel.(task_id)] = deal(NaN(1,nELevels));
+    [choiceNonDef.perMoneyLevel.(task_id),...
+        choiceFitNonDef.perMoneyLevel.Mdl1.(task_id),...
+        choiceFitNonDef.perMoneyLevel.Mdl2.(task_id),...
+        choiceFitNonDef.perMoneyLevel.Mdl3.(task_id),...
+        choiceFitNonDef.perMoneyLevel.Mdl4.(task_id)] = deal(NaN(1,nMoneyLevels));
+    [choiceNonDef.perEffortLevel.(task_id),...
+        choiceNonDef.perEffortLevel.(task_id),...
+        choiceNonDef.perEffortLevel.(task_id),...
+        choiceNonDef.perEffortLevel.(task_id),...
+        choiceFitNonDef.perEffortLevel.Mdl1.(task_id),...
+        choiceFitNonDef.perEffortLevel.Mdl2.(task_id),...
+        choiceFitNonDef.perEffortLevel.Mdl3.(task_id),...
+        choiceFitNonDef.perEffortLevel.Mdl4.(task_id)] = deal(NaN(1,nELevels));
+    [choiceNonDef.perNVLevel.Mdl1.(task_id),...
+        choiceFitNonDef.perNVLevel.Mdl1.(task_id),...
+        deltaNV_bins.Mdl1.(task_id),...
+        choiceNonDef.perNVLevel.Mdl2.(task_id),...
+        choiceFitNonDef.perNVLevel.Mdl2.(task_id),...
+        deltaNV_bins.Mdl2.(task_id),...
+        choiceNonDef.perNVLevel.Mdl3.(task_id),...
+        choiceFitNonDef.perNVLevel.Mdl3.(task_id),...
+        deltaNV_bins.Mdl3.(task_id),...
+        choiceNonDef.perNVLevel.Mdl4.(task_id),...
+        choiceFitNonDef.perNVLevel.Mdl4.(task_id),...
+        deltaNV_bins.Mdl4.(task_id)] = deal(NaN(1,n_NV_bins));
     jRun = 0;
     for iRun = 1:nRuns
         runToInclude = 0;
@@ -124,10 +151,10 @@ for iPM = 1:2
             choice_LR_tmp(choice_LR_tmp == 2) = 1;
             defaultSide_tmp = choiceOptions_tmp.default_LR;
             RP_var = strcmp(choiceOptions_tmp.R_or_P,'R');
-            money_nonDef_tmp = choiceOptions_tmp.monetary_amount.left.*(defaultSide_tmp == 1) +...
-                choiceOptions_tmp.monetary_amount.right.*(defaultSide_tmp == -1);
-            money_default_tmp = choiceOptions_tmp.monetary_amount.left.*(defaultSide_tmp == -1) +...
-                choiceOptions_tmp.monetary_amount.right.*(defaultSide_tmp == 1);
+            money_nonDef_tmp = (choiceOptions_tmp.monetary_amount.left.*(defaultSide_tmp == 1) +...
+                choiceOptions_tmp.monetary_amount.right.*(defaultSide_tmp == -1)).*((RP_var == 1) - (RP_var == 0));
+            money_default_tmp = (choiceOptions_tmp.monetary_amount.left.*(defaultSide_tmp == -1) +...
+                choiceOptions_tmp.monetary_amount.right.*(defaultSide_tmp == 1)).*((RP_var == 1) - (RP_var == 0));
             R_nonDef_tmp = choiceOptions_tmp.monetary_amount.left.*(RP_var == 1).*(defaultSide_tmp == 1) +...
                 choiceOptions_tmp.monetary_amount.right.*(RP_var == 1).*(defaultSide_tmp == -1);
             R_default_tmp = choiceOptions_tmp.monetary_amount.left.*(RP_var == 1).*(defaultSide_tmp == -1) +...
@@ -141,10 +168,8 @@ for iPM = 1:2
             E_default_tmp = choiceOptions_tmp.E.left.*(defaultSide_tmp == -1) +...
                 choiceOptions_tmp.E.right.*(defaultSide_tmp == 1);
             % extract money levels
-            money_level_nonDef_tmp = choiceOptions_tmp.R.left.*(defaultSide_tmp == 1).*(RP_var == 1) +...
-                choiceOptions_tmp.R.right.*(defaultSide_tmp == -1).*(RP_var == 1) +...
-                -choiceOptions_tmp.R.left.*(defaultSide_tmp == 1).*(RP_var == 0) +...
-                -choiceOptions_tmp.R.right.*(defaultSide_tmp == -1).*(RP_var == 0);
+            money_level_nonDef_tmp = (choiceOptions_tmp.R.left.*(defaultSide_tmp == 1) +...
+                choiceOptions_tmp.R.right.*(defaultSide_tmp == -1)).*((RP_var == 1) - (RP_var == 0));
             
             % extract relevant data
             choice_nonDef.(task_id)(runTrials_idx) = choice_LR_tmp == defaultSide_tmp;
@@ -167,55 +192,109 @@ for iPM = 1:2
         E_nonDef_levelPerTrial.(task_id)-E_default_levelPerTrial.(task_id)];
     betaMdl1 = glmfit(xModel1, choice_nonDef.(task_id),...
         'binomial','link','logit');
-    betas.(task_id).model1.kb0 = betaMdl1(1);
-    betas.(task_id).model1.kMoney = betaMdl1(2);
-    betas.(task_id).model1.kEffort = betaMdl1(3);
+    betas.(task_id).Mdl1.kb0 = betaMdl1(1);
+    betas.(task_id).Mdl1.kMoney = betaMdl1(2);
+    betas.(task_id).Mdl1.kEffort = betaMdl1(3);
     fitMdl1.(task_id) = glmval(betaMdl1, xModel1, 'logit');
+    deltaNV_mdl1_tmp = betaMdl1(1) + betaMdl1(2).*xModel1(:,1) + betaMdl1(3).*xModel1(:,2);
     
     % model 2: SV=kR*R-kE*E-kP*P (split R/P factor)
-    % model 3: SV = kMoney*Money*(1+kE*E²)
-    % model 4: SV=(kR*R+kP*P)*(1+kE*E²)
-    % model 5: SV = kR*R-kE*E-kP*P+kF*E*(trial number-1) model with fatigue
+    
+    % model 3: SV = kMoney*Money-kE*E+kF*E*(trial number-1) model with fatigue
+    
+    % model 4: SV = kR*R-kE*E-kP*P+kF*E*(trial number-1) model with fatigue
+    
     
     %% extract choice for each money and effort level
     % money level
     jM = 0;
     for iMoney = money_levels
         jM = jM + 1;
-        choiceNonDef.perMoneylevel.(task_id)(jM) = nanmean(choice_nonDef.(task_id)( money_nonDef_levelPerTrial.(task_id) == iMoney));
-        choiceFitNonDef.perMoneylevel.(task_id)(jM) = nanmean(fitMdl1.(task_id)( money_nonDef_levelPerTrial.(task_id) == iMoney));
+        choiceNonDef.perMoneyLevel.(task_id)(jM) = nanmean(choice_nonDef.(task_id)( money_nonDef_levelPerTrial.(task_id) == iMoney));
+        choiceFitNonDef.perMoneyLevel.Mdl1.(task_id)(jM) = nanmean(fitMdl1.(task_id)( money_nonDef_levelPerTrial.(task_id) == iMoney));
     end
     % effort level
     jE = 0;
     for iEffort = E_levels
         jE = jE + 1;
-        choiceNonDef.perEffortlevel.(task_id)(jE) = nanmean(choice_nonDef.(task_id)( E_nonDef_levelPerTrial.(task_id) == iEffort));
-        choiceFitNonDef.perEffortlevel.(task_id)(jE) = nanmean(fitMdl1.(task_id)( E_nonDef_levelPerTrial.(task_id) == iEffort));
+        choiceNonDef.perEffortLevel.(task_id)(jE) = nanmean(choice_nonDef.(task_id)( E_nonDef_levelPerTrial.(task_id) == iEffort));
+        choiceFitNonDef.perEffortLevel.Mdl1.(task_id)(jE) = nanmean(fitMdl1.(task_id)( E_nonDef_levelPerTrial.(task_id) == iEffort));
     end
+    % net value
+    [choiceNonDef.perNVLevel.Mdl1.(task_id),...
+        deltaNV_bins.Mdl1.(task_id)] = do_bin2(choice_nonDef.(task_id), deltaNV_mdl1_tmp, n_NV_bins, 0);
+    [choiceFitNonDef.perNVLevel.Mdl1.(task_id),...
+        deltaNV_bins.Mdl1.(task_id)] = do_bin2(fitMdl1.(task_id), deltaNV_mdl1_tmp, n_NV_bins, 0);
     
     %% figures
     if figDisp == 1
         pSize = 30;
         lWidth = 3;
+        lWidth_borders = 1;
         %% model 1
         %% display choice = f(net value)
         fig;
-        pointMdl1 = scatter(money_levels, choiceNonDef.perMoneylevel.(task_id));
+        pointMdl1 = scatter(deltaNV_bins.Mdl1.(task_id), choiceNonDef.perNVLevel.Mdl1.(task_id));
         pointMdl1.MarkerEdgeColor = [0 0 0];
         pointMdl1.MarkerFaceColor = [143 143 143]./255;
         pointMdl1.SizeData = 100;
         pointMdl1.LineWidth = lWidth;
         hold on;
-        lHdlMdl1 = plot(money_levels, choiceFitNonDef.perMoneylevel.(task_id));
+        line(xlim(),[0 0],'LineWidth',lWidth_borders,'Color',[0 0 0]);
+        line(xlim(),[1 1],'LineWidth',lWidth_borders,'Color',[0 0 0]);
+        lHdlMdl1 = plot(deltaNV_bins.Mdl1.(task_id), choiceFitNonDef.perNVLevel.Mdl1.(task_id));
         lHdlMdl1.LineStyle = '--';
         lHdlMdl1.LineWidth = lWidth;
         lHdlMdl1.Color = [0 0 0];
         ylim([-0.2 1.2]);
-        xlabel('Money');
-        ylabel('Choice non-default option');
+        xlabel([task_fullName,' net value (non-default - default)']);
+        ylabel('Choice non-default option (%)');
+        legend_size(pSize);
+        
+        %% choice non-default = f(money levels)
+        fig;
+        pointMdl1 = scatter(money_levels, choiceNonDef.perMoneyLevel.(task_id));
+        pointMdl1.MarkerEdgeColor = [0 0 0];
+        pointMdl1.MarkerFaceColor = [143 143 143]./255;
+        pointMdl1.SizeData = 100;
+        pointMdl1.LineWidth = lWidth;
+        hold on;
+        line(xlim(),[0 0],'LineWidth',lWidth_borders,'Color',[0 0 0]);
+        line(xlim(),[1 1],'LineWidth',lWidth_borders,'Color',[0 0 0]);
+        lHdlMdl1 = plot(money_levels, choiceFitNonDef.perMoneyLevel.MDl1.(task_id));
+        lHdlMdl1.LineStyle = '--';
+        lHdlMdl1.LineWidth = lWidth;
+        lHdlMdl1.Color = [0 0 0];
+        ylim([-0.2 1.2]);
+        xlabel([task_fullName,' Money level']);
+        ylabel('Choice non-default option (%)');
+        legend_size(pSize);
+        
+        %% choice non-default = f(effort levels)
+        fig;
+        pointMdl1 = scatter(E_levels, choiceNonDef.perEffortLevel.(task_id));
+        pointMdl1.MarkerEdgeColor = [0 0 0];
+        pointMdl1.MarkerFaceColor = [143 143 143]./255;
+        pointMdl1.SizeData = 100;
+        pointMdl1.LineWidth = lWidth;
+        hold on;
+        line(xlim(),[0 0],'LineWidth',lWidth_borders,'Color',[0 0 0]);
+        line(xlim(),[1 1],'LineWidth',lWidth_borders,'Color',[0 0 0]);
+        lHdlMdl1 = plot(E_levels, choiceFitNonDef.perEffortLevel.MDl1.(task_id));
+        lHdlMdl1.LineStyle = '--';
+        lHdlMdl1.LineWidth = lWidth;
+        lHdlMdl1.Color = [0 0 0];
+        ylim([-0.2 1.2]);
+        xlabel([task_fullName,' effort level']);
+        ylabel('Choice non-default option (%)');
         legend_size(pSize);
     end
     
 end % physical/mental
+
+%% extract output
+choices.choiceNonDef = choiceNonDef;
+choices.choiceFitNonDef = choiceFitNonDef;
+choices.NV_bins = deltaNV_bins;
 
 end % function
