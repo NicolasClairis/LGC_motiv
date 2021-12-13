@@ -28,11 +28,6 @@ delta_IP = IPdata.([effort_type,'DeltaIP']);
 % round the delta IP
 delta_IP = round(delta_IP,2);
 
-%% fix case where delta_IP is too high
-if delta_IP == baselineR || delta_IP == baselineP
-    delta_IP = round(delta_IP/2,2);
-end
-
 % half delta IP
 half_delta_IP = round(delta_IP/2, 2);
 
@@ -123,7 +118,6 @@ if strcmp(punishment_yn,'yes')
         end
     end
     
-    
     % any level is equal to the next one: increase the distance between
     % punishment levels
     for iP = (n_R_levels - 1):(-1):2
@@ -140,14 +134,15 @@ if strcmp(punishment_yn,'yes')
     
     % check weird values
     % if smaller punishment is too low, increase everything
-    if round(IP_P - half_delta_IP,2) <= 0
+    P_lowThreshold = 0.01;
+    if round(IP_P - half_delta_IP,2) < P_lowThreshold
         punishment_ok = false;
         % increase all values by 0.01 until you are in the correct range
         while punishment_ok == false
             for iP_fix = 0:(n_R_levels - 1)
                 R_money.(['P_',num2str(iP_fix)]) = R_money.(['P_',num2str(iP_fix)]) + 0.01;
             end
-            if R_money.P_1 > 0
+            if R_money.P_1 >= P_lowThreshold
                 punishment_ok = true;
             end
         end
