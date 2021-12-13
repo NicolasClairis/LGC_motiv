@@ -1,14 +1,19 @@
-function[betas, pvalues] = logitfit_choices_group(computerRoot, study_nm, figDispGroup, figDispIndiv, n_NV_bins)
-% [betas, pvalues] = logitfit_choices_group(computerRoot, study_nm, figDisp, figDispIndiv, n_NV_bins)
+function[betas, pvalues] = logitfit_choices_group(computerRoot, study_nm,...
+    figDispGroup, figDispIndiv, dispMoneyOrLevels, n_NV_bins)
+% [betas, pvalues] = logitfit_choices_group(computerRoot, study_nm,...
+%       figDisp, figDispIndiv, dispMoneyOrLevels, n_NV_bins)
 %
 % INPUTS
 % computerRoot: pathway where data is
 %
 % study_nm: study name
 %
-% figDisp: display group figures (1) or not (0)
+% figDispGroup: display group figures (1) or not (0)
 %
 % figDispIndiv: display individual figures (1) or not (0)
+%
+% dispMoneyOrLevels: display actual money ('money') or reward levels
+% ('levels')
 %
 % n_NV_bins: number of bins for net value
 %
@@ -40,7 +45,11 @@ if ~exist('figDispIndiv','var') || isempty(figDispIndiv)
     disp(['figDispGroup was not defined in the inputs so that by default ',...
         'individual figures are not displayed.']);
 end
-
+%% by default, display monetary levels instead of actual monetary amounts
+if ~exist('dispMoneyOrLevels','var') || isempty(dispMoneyOrLevels)
+    dispMoneyOrLevels = 'levels';
+%     dispMoneyOrLevels = 'money';
+end
 %% if not defined in the inputs, define by default some number of bins for the graphs
 if ~exist('n_NV_bins','var') || isempty(n_NV_bins)
     n_NV_bins = 6;
@@ -50,10 +59,6 @@ if ~exist('n_trialN_bins','var') || isempty(n_trialN_bins)
     n_trialN_bins = 6;
 end
 %% define R/P/E levels
-P_levels = [-3, -2, -1];
-nPlevels = length(P_levels);
-R_levels = [1, 2, 3];
-nRlevels = length(R_levels);
 money_levels = [-3, -2, -1, 1, 2, 3];
 nMoneyLevels = length(money_levels);
 E_levels = [1, 2, 3];
@@ -127,13 +132,15 @@ for iPM = 1:2
         choiceNonDef.perNVLevel.Mdl4.(task_id),...
         choiceFitNonDef.perNVLevel.Mdl4.(task_id),...
         NV_bins.Mdl4.(task_id)] = deal(NaN(n_NV_bins, NS));
+    actualMoney_values.(task_id) = NaN(nMoneyLevels, NS);
 end % physical/mental loop
 
 %% loop through subjects
 for iS = 1:NS
     sub_nm = subject_id{iS};
     % load individual data
-    [betas_tmp, choices_tmp] = logitfit_choices(computerRoot, study_nm, sub_nm, figDispIndiv, n_NV_bins);
+    [betas_tmp, choices_tmp] = logitfit_choices(computerRoot, study_nm, sub_nm,...
+        figDispIndiv, dispMoneyOrLevels, n_NV_bins);
     trialN_levels = choices_tmp.trialN_bins.Ep;
     
     % pool data across subjects
@@ -180,6 +187,9 @@ for iS = 1:NS
             choiceFitNonDef.perEffortLevel.(mdl_nm).(task_id)(:,iS) = choices_tmp.choiceFitNonDef.perEffortLevel.(mdl_nm).(task_id);
             choiceFitNonDef.perTrialN.(mdl_nm).(task_id)(:,iS) = choices_tmp.choiceFitNonDef.perTrialN.(mdl_nm).(task_id);
         end
+        
+        % extract actual money levels (linked to IP measurement)
+        actualMoney_values.(task_id)(:, iS) = choices_tmp.actualMoney_values.(task_id);
     end % physical/mental loop
 end % subject loop
 
@@ -251,6 +261,10 @@ for iPM = 1:2
         if ismember(iMdl,[3,4])
             [~,pvalues.(task_id).(mdl_nm).kFatigue] = ttest(betas.(task_id).(mdl_nm).kFatigue);
         end
+        
+        %% average money levels
+        [m_actualMoney_values.(task_id),...
+            sem_actualMoney_values.(task_id)] = mean_sem_sd(actualMoney_values.(task_id), 2);
     end % model loop
     
     %% display average data
@@ -292,9 +306,21 @@ for iPM = 1:2
             
             %% choice non-default = f(money levels)
             fig;
-            pointMdl = errorbar(money_levels,...
-                m_choiceNonDef.perMoneyLevel.(task_id),...
-                sem_choiceNonDef.perMoneyLevel.(task_id));
+            switch dispMoneyOrLevels
+                case 'money' % show also error bar in the X dimension
+                    money_or_levels = m_actualMoney_values.(task_id);
+                    pointMdl = errorbar(m_actualMoney_values.(task_id),...
+                        m_choiceNonDef.perMoneyLevel.(task_id),...
+                        m_choiceNonDef.perMoneyLevel.(task_id)-sem_choiceNonDef.perMoneyLevel.(task_id),...
+                        m_choiceNonDef.perMoneyLevel.(task_id)+sem_choiceNonDef.perMoneyLevel.(task_id),...
+                        m_actualMoney_values.(task_id)-sem_actualMoney_values.(task_id),...
+                        m_actualMoney_values.(task_id)+sem_actualMoney_values.(task_id));
+                case 'levels'
+                    money_or_levels = money_levels;
+                    pointMdl = errorbar(money_levels,...
+                        m_choiceNonDef.perMoneyLevel.(task_id),...
+                        sem_choiceNonDef.perMoneyLevel.(task_id));
+            end
             pointMdl.Color = [0 0 0];
             pointMdl.Marker = 'o';
             pointMdl.LineStyle = 'none';
@@ -302,12 +328,18 @@ for iPM = 1:2
             hold on;
             line(xlim(),[0 0],'LineWidth',lWidth_borders,'Color',[0 0 0]);
             line(xlim(),[1 1],'LineWidth',lWidth_borders,'Color',[0 0 0]);
-            lHdlMdl = plot(money_levels, m_choiceFitNonDef.perMoneyLevel.(mdl_nm).(task_id));
+            lHdlMdl = plot(money_or_levels,...
+                m_choiceFitNonDef.perMoneyLevel.(mdl_nm).(task_id));
             lHdlMdl.LineStyle = '--';
             lHdlMdl.LineWidth = lWidth;
             lHdlMdl.Color = [143 0 0]./255;
             ylim([-0.2 1.2]);
-            xlabel([task_fullName,' Money level - model ',num2str(iMdl)]);
+            switch dispMoneyOrLevels
+                case 'money'
+                    xlabel([task_fullName,' Money (€) - model ',num2str(iMdl)]);
+                case 'levels'
+                    xlabel([task_fullName,' Money level - model ',num2str(iMdl)]);
+            end
             ylabel('Choice non-default option (%)');
             legend_size(pSize);
             %         saveas(resultFolder)

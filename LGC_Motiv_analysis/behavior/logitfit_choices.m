@@ -1,5 +1,7 @@
-function[betas, choices] = logitfit_choices(computerRoot, study_nm, sub_nm, figDisp, n_NV_bins, n_trialN_bins)
-% [betas, choices] = logitfit_choices(computerRoot, study_nm, sub_nm, figDisp, n_NV_bins, n_trialN_bins)
+function[betas, choices] = logitfit_choices(computerRoot, study_nm, sub_nm,...
+    figDisp, dispMoneyOrLevels, n_NV_bins, n_trialN_bins)
+% [betas, choices] = logitfit_choices(computerRoot, study_nm, sub_nm,...
+%       figDisp, dispMoneyOrLevels, n_NV_bins, n_trialN_bins)
 % logitfit_choices will perform a logistic regression on the choices
 % performed by the participants
 %
@@ -11,6 +13,9 @@ function[betas, choices] = logitfit_choices(computerRoot, study_nm, sub_nm, figD
 % sub_nm: subject number id 'XXX'
 %
 % figDisp: display individual figure (1) or not (0)
+%
+% dispMoneyOrLevels: display actual money ('money') or reward levels
+% ('levels')
 %
 % n_NV_bins: number of bins for net value
 %
@@ -37,6 +42,11 @@ if ~exist('figDisp','var') || isempty(figDisp)
         'figures are displayed for each individual.']);
 end
 
+%% by default, display monetary levels instead of actual monetary amounts
+if ~exist('dispMoneyOrLevels','var') || isempty(dispMoneyOrLevels)
+    dispMoneyOrLevels = 'levels';
+end
+
 %% extract runs
 [runsStruct] = runs_definition(study_nm, sub_nm, 'behavior');
 nRuns = length(runsStruct.tasks);
@@ -44,12 +54,10 @@ runs_Ep = strcmp(runsStruct.tasks,'Ep');
 runs_Em = strcmp(runsStruct.tasks,'Em');
 
 %% define R/P/E values
-P_levels = [-3, -2, -1];
-nPlevels = length(P_levels);
-R_levels = [1, 2, 3];
-nRlevels = length(R_levels);
 money_levels = [-3, -2, -1, 1, 2, 3];
 nMoneyLevels = length(money_levels);
+[actualMoney_values.Ep,...
+    actualMoney_values.Em]   = deal(NaN(1,nMoneyLevels));
 E_levels = [1, 2, 3];
 nELevels = length(E_levels);
 
@@ -152,15 +160,6 @@ for iPM = 1:2
             choiceOptions_tmp = behaviorStruct_tmp.choice_opt;
             
             %% load relevant data
-            switch task_id
-                case 'Ep'
-                    choice_LR_tmp = behaviorStruct_tmp.physicalPerf.choice;
-                case 'Em'
-                    choice_LR_tmp = behaviorStruct_tmp.mentalE_perf.choice;
-            end
-            % remove confidence information
-            choice_LR_tmp(choice_LR_tmp == -2) = -1;
-            choice_LR_tmp(choice_LR_tmp == 2) = 1;
             defaultSide_tmp = choiceOptions_tmp.default_LR;
             RP_var = strcmp(choiceOptions_tmp.R_or_P,'R');
             money_nonDef_tmp = (choiceOptions_tmp.monetary_amount.left.*(defaultSide_tmp == 1) +...
@@ -182,6 +181,28 @@ for iPM = 1:2
             % extract money levels
             money_level_nonDef_tmp = (choiceOptions_tmp.R.left.*(defaultSide_tmp == 1) +...
                 choiceOptions_tmp.R.right.*(defaultSide_tmp == -1)).*((RP_var == 1) - (RP_var == 0));
+            switch task_id
+                case 'Ep'
+                    choice_LR_tmp = behaviorStruct_tmp.physicalPerf.choice;
+                case 'Em'
+                    choice_LR_tmp = behaviorStruct_tmp.mentalE_perf.choice;
+            end
+            % remove confidence information
+            choice_LR_tmp(choice_LR_tmp == -2) = -1;
+            choice_LR_tmp(choice_LR_tmp == 2) = 1;
+            
+            R_money_tmp = getfield(load([subBehaviorFolder,...
+                'CID',sub_nm,'_session',num2str(iRun),'_',task_fullName,...
+                '_task_messyAllStuff.mat'],'R_money'),'R_money');
+            jMoney = 0;
+            for iMoney = money_levels
+                jMoney = jMoney + 1;
+                if iMoney < 0
+                    actualMoney_values.(task_id)(jMoney) = -R_money_tmp.(['P_',num2str(-iMoney)]);
+                elseif iMoney > 0
+                    actualMoney_values.(task_id)(jMoney) = R_money_tmp.(['R_',num2str(iMoney)]);
+                end
+            end
             
             % extract relevant data
             choice_nonDef.(task_id)(runTrials_idx) = choice_LR_tmp == defaultSide_tmp;
@@ -347,13 +368,19 @@ for iPM = 1:2
             lHdlMdl.LineWidth = lWidth;
             lHdlMdl.Color = [0 0 0];
             ylim([-0.2 1.2]);
-            xlabel([task_fullName,' net value (non-default - default)']);
+            xlabel([task_fullName,' net value (non-default - default) - model ',num2str(iMdl)']);
             ylabel('Choice non-default option (%)');
             legend_size(pSize);
             
             %% choice non-default = f(money levels)
+            switch dispMoneyOrLevels
+                case 'money'
+                    money_or_levels = actualMoney_values.(task_id);
+                case 'levels'
+                    money_or_levels = money_levels;
+            end
             fig;
-            pointMdl = scatter(money_levels,...
+            pointMdl = scatter(money_or_levels,...
                 choiceNonDef.perMoneyLevel.(task_id));
             pointMdl.MarkerEdgeColor = [0 0 0];
             pointMdl.MarkerFaceColor = [143 143 143]./255;
@@ -362,13 +389,18 @@ for iPM = 1:2
             hold on;
             line(xlim(),[0 0],'LineWidth',lWidth_borders,'Color',[0 0 0]);
             line(xlim(),[1 1],'LineWidth',lWidth_borders,'Color',[0 0 0]);
-            lHdlMdl = plot(money_levels,...
+            lHdlMdl = plot(money_or_levels,...
                 choiceFitNonDef.perMoneyLevel.(['Mdl',num2str(iMdl)]).(task_id));
             lHdlMdl.LineStyle = '--';
             lHdlMdl.LineWidth = lWidth;
             lHdlMdl.Color = [0 0 0];
             ylim([-0.2 1.2]);
-            xlabel([task_fullName,' Money level']);
+            switch dispMoneyOrLevels
+                case 'money'
+                    xlabel([task_fullName,' Money (€) - model ',num2str(iMdl)]);
+                case 'levels'
+                    xlabel([task_fullName,' Money level - model ',num2str(iMdl)]);
+            end
             ylabel('Choice non-default option (%)');
             legend_size(pSize);
             
@@ -389,7 +421,7 @@ for iPM = 1:2
             lHdlMdl.LineWidth = lWidth;
             lHdlMdl.Color = [0 0 0];
             ylim([-0.2 1.2]);
-            xlabel([task_fullName,' effort level']);
+            xlabel([task_fullName,' effort level - model ',num2str(iMdl)']);
             ylabel('Choice non-default option (%)');
             legend_size(pSize);
             
@@ -410,7 +442,7 @@ for iPM = 1:2
             lHdlMdl.LineWidth = lWidth;
             lHdlMdl.Color = [0 0 0];
             ylim([-0.2 1.2]);
-            xlabel([task_fullName,' trial number']);
+            xlabel([task_fullName,' trial number - model ',num2str(iMdl)']);
             ylabel('Choice non-default option (%)');
             legend_size(pSize);
         end % model loop
@@ -421,6 +453,7 @@ end % physical/mental
 %% extract output
 choices.choiceNonDef = choiceNonDef;
 choices.choiceFitNonDef = choiceFitNonDef;
+choices.actualMoney_values = actualMoney_values;
 choices.NV_bins = deltaNV_bins;
 choices.trialN_bins = trialN_bins;
 
