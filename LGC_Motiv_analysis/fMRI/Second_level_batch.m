@@ -23,9 +23,10 @@ preproc_sm_kernel = 8;
 %% define study and list of subjects to include
 % define study
 if ~exist('study_nm','var') || isempty(study_nm)
-    study_names = {'fMRI_pilots','study1','study2'};
-    study_nm_idx = listdlg('ListString',study_names);
-    study_nm = study_names{study_nm_idx};
+    %     study_names = {'fMRI_pilots','study1','study2'};
+    %     study_nm_idx = listdlg('ListString',study_names);
+    %     study_nm = study_names{study_nm_idx};
+    study_nm = 'study1'; % by default
 end
 
 % define subjects

@@ -18,6 +18,12 @@ close all; clc;
 
 %% working directories
 computer_root = LGCM_root_paths();
+if ~exist('study_nm','var') || isempty(study_nm)
+    %     study_names = {'study1','study2','fMRI_pilots'};
+    %     study_nm_idx = listdlg('ListString',study_names);
+    %     study_nm = study_names{study_nm_idx};
+    study_nm = 'study1'; % by default
+end
 switch study_nm
     case 'fMRI_pilots'
         root = fullfile(computer_root,'fMRI_pilots');
@@ -27,11 +33,19 @@ switch study_nm
         root = fullfile(computer_root,'study2');
 end
 
+%% GLM
+if ~exist('GLM','var') || isempty(GLM)
+   GLM_info = inputdlg({'GLM number?'});
+   GLM = str2double(GLM_info{1});
+end
+
 %% preprocessing smoothing kernel to consider
 preproc_sm_kernel = 8;
 
 %% checking by default the batch before launching it
-if ~exist('checking','var') || isempty(checking) || ~ismember(checking,[0,1])
+if ~exist('checking','var') ||...
+        isempty(checking) ||...
+        ~ismember(checking,[0,1])
     checking = 1;
 end
 
