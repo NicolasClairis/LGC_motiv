@@ -21,7 +21,7 @@ switch study_nm
     case 'study1'
 %         subject_id = {'095','061'};
         subject_id = {'074','036','095','064','061',...
-            '090','079'};
+            '090','079','087'};
     case 'study2'
         subject_id = {}; % 'CIDXXX'
     otherwise
