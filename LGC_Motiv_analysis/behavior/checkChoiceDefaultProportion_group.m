@@ -53,7 +53,9 @@ if ~exist('n_bins','var') || isempty(n_bins)
     n_bins = 6; % default number of bins if not entered in the inputs
 end
 
-[avg_defaultChoice_data_perSub, avg_conf_data_perSub] = deal(cell(1,NS));
+[avg_defaultChoice_data_perSub,...
+    avg_conf_data_perSub,...
+    avg_RT_data_perSub] = deal(cell(1,NS));
 n_R_levels = 4;
 n_E_levels = 4;
 
@@ -67,11 +69,13 @@ for iTask = 1:nTaskTypes
     [defaultChoice_perSub.([task_nm,'_R']),...
         defaultChoice_perSub.([task_nm,'_P'])] = deal(NaN(1,NS));
     [defaultChoice_perSub.([task_nm,'_f_time']),...
-        conf_perSub.([task_nm,'_f_time'])] = deal(NaN(n_bins, NS));
+        conf_perSub.([task_nm,'_f_time']),...
+        RT_perSub.([task_nm,'_f_time'])] = deal(NaN(n_bins, NS));
     % per task per effort level
     for iE = 1:(n_E_levels - 1)
         [defaultChoice_perSub.perElevel.([task_nm,'_',num2str(iE)]),...
-            conf_perSub.perElevel.([task_nm,'_',num2str(iE)])] = deal(NaN(1,NS));
+            conf_perSub.perElevel.([task_nm,'_',num2str(iE)]),...
+            RT_perSub.perElevel.([task_nm,'_',num2str(iE)])] = deal(NaN(1,NS));
     end
     % per task per money level
     for iAbsMoney = 1:(n_R_levels - 1)
@@ -82,7 +86,11 @@ for iTask = 1:nTaskTypes
             conf_perSub.perAbsMoneylevel.([task_nm,'_',num2str(iAbsMoney)]),...
             conf_perSub.perDeltaMoneylevel.([task_nm,'_',num2str(iAbsMoney)]),...
             conf_perSub.perSignedMoneylevel.([task_nm,'_R_',num2str(iAbsMoney)]),...
-            conf_perSub.perSignedMoneylevel.([task_nm,'_P_',num2str(iAbsMoney)])] = deal(NaN(1,NS));
+            conf_perSub.perSignedMoneylevel.([task_nm,'_P_',num2str(iAbsMoney)]),...
+            RT_perSub.perAbsMoneylevel.([task_nm,'_',num2str(iAbsMoney)]),...
+            RT_perSub.perDeltaMoneylevel.([task_nm,'_',num2str(iAbsMoney)]),...
+            RT_perSub.perSignedMoneylevel.([task_nm,'_R_',num2str(iAbsMoney)]),...
+            RT_perSub.perSignedMoneylevel.([task_nm,'_P_',num2str(iAbsMoney)])] = deal(NaN(1,NS));
     end
     
     %% extract individual data
@@ -90,17 +98,22 @@ for iTask = 1:nTaskTypes
         sub_nm = subs{iS};
         subFolder = [root,filesep,'CID',sub_nm,filesep,'behavior'];
         cd(subFolder);
-        [avg_defaultChoice_data_perSub{iS}, ~, avg_conf_data_perSub{iS}] = checkChoiceDefaultProportion(sub_nm, figDisp, n_bins);
+        [avg_defaultChoice_data_perSub{iS},...
+            ~,...
+            avg_conf_data_perSub{iS},...
+            avg_RT_data_perSub{iS}] = checkChoiceDefaultProportion(sub_nm, figDisp, n_bins);
         % extract the data
         defaultChoice_perSub.(task_nm)(iS) = avg_defaultChoice_data_perSub{iS}.(task_nm);
         defaultChoice_perSub.([task_nm,'_R'])(iS) = avg_defaultChoice_data_perSub{iS}.([task_nm,'_R']);
         defaultChoice_perSub.([task_nm,'_P'])(iS) = avg_defaultChoice_data_perSub{iS}.([task_nm,'_P']);
         defaultChoice_perSub.([task_nm,'_f_time'])(:,iS) = avg_defaultChoice_data_perSub{iS}.([task_nm,'_f_time']);
         conf_perSub.([task_nm,'_f_time'])(:,iS) = avg_conf_data_perSub{iS}.([task_nm,'_f_time']);
+        RT_perSub.([task_nm,'_f_time'])(:,iS) = avg_RT_data_perSub{iS}.([task_nm,'_f_time']);
         % per task per effort level
         for iE = 1:(n_E_levels - 1)
             defaultChoice_perSub.perElevel.([task_nm,'_',num2str(iE)])(iS) = avg_defaultChoice_data_perSub{iS}.perElevel.([task_nm,'_',num2str(iE)]);
             conf_perSub.perElevel.([task_nm,'_',num2str(iE)])(iS) = avg_conf_data_perSub{iS}.perElevel.([task_nm,'_',num2str(iE)]);
+            RT_perSub.perElevel.([task_nm,'_',num2str(iE)])(iS) = avg_RT_data_perSub{iS}.perElevel.([task_nm,'_',num2str(iE)]);
         end
         % per task per money level
         for iAbsMoney = 1:(n_R_levels - 1)
@@ -114,6 +127,11 @@ for iTask = 1:nTaskTypes
             conf_perSub.perDeltaMoneylevel.([task_nm,'_R_',num2str(iAbsMoney)])(iS) = avg_conf_data_perSub{iS}.perDeltaMoneylevel.([task_nm,'_',num2str(iAbsMoney)]);
             conf_perSub.perSignedMoneylevel.([task_nm,'_R_',num2str(iAbsMoney)])(iS) = avg_conf_data_perSub{iS}.perSignedMoneylevel.([task_nm,'_R_',num2str(iAbsMoney)]);
             conf_perSub.perSignedMoneylevel.([task_nm,'_P_',num2str(iAbsMoney)])(iS) = avg_conf_data_perSub{iS}.perSignedMoneylevel.([task_nm,'_P_',num2str(iAbsMoney)]);
+            % same for RT
+            RT_perSub.perAbsMoneylevel.([task_nm,'_R_',num2str(iAbsMoney)])(iS) = avg_RT_data_perSub{iS}.perAbsMoneylevel.([task_nm,'_',num2str(iAbsMoney)]);
+            RT_perSub.perDeltaMoneylevel.([task_nm,'_R_',num2str(iAbsMoney)])(iS) = avg_RT_data_perSub{iS}.perDeltaMoneylevel.([task_nm,'_',num2str(iAbsMoney)]);
+            RT_perSub.perSignedMoneylevel.([task_nm,'_R_',num2str(iAbsMoney)])(iS) = avg_RT_data_perSub{iS}.perSignedMoneylevel.([task_nm,'_R_',num2str(iAbsMoney)]);
+            RT_perSub.perSignedMoneylevel.([task_nm,'_P_',num2str(iAbsMoney)])(iS) = avg_RT_data_perSub{iS}.perSignedMoneylevel.([task_nm,'_P_',num2str(iAbsMoney)]);
         end
     end % subject loop
     
@@ -129,16 +147,20 @@ for iTask = 1:nTaskTypes
     % fatigue
     avg_defaultChoice.([task_nm,'_f_time']) = mean(defaultChoice_perSub.([task_nm,'_f_time']),2);
     avg_conf.([task_nm,'_f_time']) = mean(conf_perSub.([task_nm,'_f_time']),2);
+    avg_RT.([task_nm,'_f_time']) = mean(RT_perSub.([task_nm,'_f_time']),2);
     sem_defaultChoice.([task_nm,'_f_time']) = sem(defaultChoice_perSub.([task_nm,'_f_time']),2);
     sem_conf.([task_nm,'_f_time']) = sem(conf_perSub.([task_nm,'_f_time']),2);
+    sem_RT.([task_nm,'_f_time']) = sem(RT_perSub.([task_nm,'_f_time']),2);
     
     % per task per effort level
     for iE = 1:(n_E_levels - 1)
         avg_defaultChoice.perElevel.([task_nm,'_',num2str(iE)]) = mean(defaultChoice_perSub.perElevel.([task_nm,'_',num2str(iE)]),2);
         avg_conf.perElevel.([task_nm,'_',num2str(iE)]) = mean(conf_perSub.perElevel.([task_nm,'_',num2str(iE)]),2,'omitnan');
+        avg_RT.perElevel.([task_nm,'_',num2str(iE)]) = mean(RT_perSub.perElevel.([task_nm,'_',num2str(iE)]),2,'omitnan');
         % SEM
         sem_defaultChoice.perElevel.([task_nm,'_',num2str(iE)]) = sem(defaultChoice_perSub.perElevel.([task_nm,'_',num2str(iE)]),2);
         sem_conf.perElevel.([task_nm,'_',num2str(iE)]) = sem(conf_perSub.perElevel.([task_nm,'_',num2str(iE)]),2);
+        sem_RT.perElevel.([task_nm,'_',num2str(iE)]) = sem(RT_perSub.perElevel.([task_nm,'_',num2str(iE)]),2);
     end
     
     % per task per money level
@@ -153,6 +175,11 @@ for iTask = 1:nTaskTypes
         avg_conf.perDeltaMoneylevel.([task_nm,'_',num2str(iAbsMoney)]) = mean(conf_perSub.perDeltaMoneylevel.([task_nm,'_',num2str(iAbsMoney)]),2);
         avg_conf.perSignedMoneylevel.([task_nm,'_R_',num2str(iAbsMoney)]) = mean(conf_perSub.perSignedMoneylevel.([task_nm,'_R_',num2str(iAbsMoney)]),2);
         avg_conf.perSignedMoneylevel.([task_nm,'_P_',num2str(iAbsMoney)]) = mean(conf_perSub.perSignedMoneylevel.([task_nm,'_P_',num2str(iAbsMoney)]),2);
+        % mean RT
+        avg_RT.perAbsMoneylevel.([task_nm,'_',num2str(iAbsMoney)]) = mean(RT_perSub.perAbsMoneylevel.([task_nm,'_',num2str(iAbsMoney)]),2);
+        avg_RT.perDeltaMoneylevel.([task_nm,'_',num2str(iAbsMoney)]) = mean(RT_perSub.perDeltaMoneylevel.([task_nm,'_',num2str(iAbsMoney)]),2);
+        avg_RT.perSignedMoneylevel.([task_nm,'_R_',num2str(iAbsMoney)]) = mean(RT_perSub.perSignedMoneylevel.([task_nm,'_R_',num2str(iAbsMoney)]),2);
+        avg_RT.perSignedMoneylevel.([task_nm,'_P_',num2str(iAbsMoney)]) = mean(RT_perSub.perSignedMoneylevel.([task_nm,'_P_',num2str(iAbsMoney)]),2);
         % sem choice proportion
         sem_defaultChoice.perAbsMoneylevel.([task_nm,'_',num2str(iAbsMoney)]) = sem(defaultChoice_perSub.perAbsMoneylevel.([task_nm,'_',num2str(iAbsMoney)]),2);
         sem_defaultChoice.perDeltaMoneylevel.([task_nm,'_',num2str(iAbsMoney)]) = sem(defaultChoice_perSub.perDeltaMoneylevel.([task_nm,'_',num2str(iAbsMoney)]),2);
@@ -163,6 +190,11 @@ for iTask = 1:nTaskTypes
         sem_conf.perDeltaMoneylevel.([task_nm,'_',num2str(iAbsMoney)]) = sem(conf_perSub.perDeltaMoneylevel.([task_nm,'_',num2str(iAbsMoney)]),2);
         sem_conf.perSignedMoneylevel.([task_nm,'_R_',num2str(iAbsMoney)]) = sem(conf_perSub.perSignedMoneylevel.([task_nm,'_R_',num2str(iAbsMoney)]),2);
         sem_conf.perSignedMoneylevel.([task_nm,'_P_',num2str(iAbsMoney)]) = sem(conf_perSub.perSignedMoneylevel.([task_nm,'_P_',num2str(iAbsMoney)]),2);
+        % sem RT
+        sem_RT.perAbsMoneylevel.([task_nm,'_',num2str(iAbsMoney)]) = sem(RT_perSub.perAbsMoneylevel.([task_nm,'_',num2str(iAbsMoney)]),2);
+        sem_RT.perDeltaMoneylevel.([task_nm,'_',num2str(iAbsMoney)]) = sem(RT_perSub.perDeltaMoneylevel.([task_nm,'_',num2str(iAbsMoney)]),2);
+        sem_RT.perSignedMoneylevel.([task_nm,'_R_',num2str(iAbsMoney)]) = sem(RT_perSub.perSignedMoneylevel.([task_nm,'_R_',num2str(iAbsMoney)]),2);
+        sem_RT.perSignedMoneylevel.([task_nm,'_P_',num2str(iAbsMoney)]) = sem(RT_perSub.perSignedMoneylevel.([task_nm,'_P_',num2str(iAbsMoney)]),2);
     end
     
 end % loop through physical and mental effort
@@ -170,6 +202,7 @@ end % loop through physical and mental effort
 %% figures
 % figure parameters
 lWidth_50percentTrait = 2;
+lWidth = 3;
 pSize = 30;
 bWidth = 0.4;
 bDist = 0.2;
@@ -207,20 +240,25 @@ legend_size(pSize);
 fig;
 % mark the 50% trait
 plot(0:5, 50*ones(1,6),...
-    'LineWidth',lWidth_50percentTrait,'Color','k','LineStyle',':');
+    'LineWidth',lWidth_50percentTrait,...
+    'Color','k','LineStyle',':');
 hold on;
 % R mental effort
 bar_hdl.Em = bar(1, avg_defaultChoice.Em_R,'FaceColor',Em_col);
-errorbar(1, avg_defaultChoice.Em_R, sem_defaultChoice.Em_R,'k');
+errorbar(1, avg_defaultChoice.Em_R, sem_defaultChoice.Em_R,...
+    'k','LineWidth',lWidth);
 % P mental effort
 bar(2, avg_defaultChoice.Em_P,'FaceColor',Em_col);
-errorbar(2, avg_defaultChoice.Em_P, sem_defaultChoice.Em_P,'k');
+errorbar(2, avg_defaultChoice.Em_P, sem_defaultChoice.Em_P,...
+    'k','LineWidth',lWidth);
 % R physical effort
 bar_hdl.Ep = bar(3, avg_defaultChoice.Ep_R,'FaceColor',Ep_col);
-errorbar(3, avg_defaultChoice.Ep_R, sem_defaultChoice.Ep_R,'k');
+errorbar(3, avg_defaultChoice.Ep_R, sem_defaultChoice.Ep_R,...
+    'k','LineWidth',lWidth);
 % P physical effort
 bar(4, avg_defaultChoice.Ep_P,'FaceColor',Ep_col);
-errorbar(4, avg_defaultChoice.Ep_P, sem_defaultChoice.Ep_P,'k');
+errorbar(4, avg_defaultChoice.Ep_P, sem_defaultChoice.Ep_P,...
+    'k','LineWidth',lWidth);
 xticks(1:4);
 xticklabels({'R','P','R','P'});
 ylim([0 100]);
@@ -237,10 +275,20 @@ plot(0:n_bins, 50*ones(1,n_bins+1),...
     'LineWidth',lWidth_50percentTrait,'Color','k','LineStyle',':');
 hold on;
 for iAbsMoney = 1:(n_R_levels - 1)
-    bar_hdl.Em = bar(iAbsMoney-bDist, avg_defaultChoice.perAbsMoneylevel.(['Em_',num2str(iAbsMoney)]), 'FaceColor',Em_col,'BarWidth',bWidth);
-    bar_hdl.Ep = bar(iAbsMoney+bDist, avg_defaultChoice.perAbsMoneylevel.(['Ep_',num2str(iAbsMoney)]), 'FaceColor',Ep_col,'BarWidth',bWidth);
-    errorbar(iAbsMoney-bDist, avg_defaultChoice.perAbsMoneylevel.(['Em_',num2str(iAbsMoney)]), sem_defaultChoice.perAbsMoneylevel.(['Em_',num2str(iAbsMoney)]),'k')
-    errorbar(iAbsMoney+bDist, avg_defaultChoice.perAbsMoneylevel.(['Ep_',num2str(iAbsMoney)]), sem_defaultChoice.perAbsMoneylevel.(['Ep_',num2str(iAbsMoney)]),'k')
+    bar_hdl.Em = bar(iAbsMoney-bDist,...
+        avg_defaultChoice.perAbsMoneylevel.(['Em_',num2str(iAbsMoney)]),...
+        'FaceColor',Em_col,'BarWidth',bWidth);
+    bar_hdl.Ep = bar(iAbsMoney+bDist,...
+        avg_defaultChoice.perAbsMoneylevel.(['Ep_',num2str(iAbsMoney)]),...
+        'FaceColor',Ep_col,'BarWidth',bWidth);
+    errorbar(iAbsMoney-bDist,...
+        avg_defaultChoice.perAbsMoneylevel.(['Em_',num2str(iAbsMoney)]),...
+        sem_defaultChoice.perAbsMoneylevel.(['Em_',num2str(iAbsMoney)]),...
+        'k','LineWidth',lWidth);
+    errorbar(iAbsMoney+bDist,...
+        avg_defaultChoice.perAbsMoneylevel.(['Ep_',num2str(iAbsMoney)]),...
+        sem_defaultChoice.perAbsMoneylevel.(['Ep_',num2str(iAbsMoney)]),...
+        'k','LineWidth',lWidth);
 end
 ylim([0 100]);
 ylabel('Choice = default option (%)');
@@ -262,10 +310,20 @@ plot(0:n_bins, 50*ones(1,n_bins+1),...
     'LineWidth',lWidth_50percentTrait,'Color','k','LineStyle',':');
 hold on;
 for iAbsMoney = 1:(n_R_levels - 1)
-    bar_hdl.Em = bar(iAbsMoney-bDist, avg_defaultChoice.perDeltaMoneylevel.(['Em_',num2str(iAbsMoney)]), 'FaceColor',Em_col,'BarWidth',bWidth);
-    bar_hdl.Ep = bar(iAbsMoney+bDist, avg_defaultChoice.perDeltaMoneylevel.(['Ep_',num2str(iAbsMoney)]), 'FaceColor',Ep_col,'BarWidth',bWidth);
-    errorbar(iAbsMoney-bDist, avg_defaultChoice.perDeltaMoneylevel.(['Em_',num2str(iAbsMoney)]), sem_defaultChoice.perDeltaMoneylevel.(['Em_',num2str(iAbsMoney)]),'k')
-    errorbar(iAbsMoney+bDist, avg_defaultChoice.perDeltaMoneylevel.(['Ep_',num2str(iAbsMoney)]), sem_defaultChoice.perDeltaMoneylevel.(['Ep_',num2str(iAbsMoney)]),'k')
+    bar_hdl.Em = bar(iAbsMoney-bDist,...
+        avg_defaultChoice.perDeltaMoneylevel.(['Em_',num2str(iAbsMoney)]),...
+        'FaceColor',Em_col,'BarWidth',bWidth);
+    bar_hdl.Ep = bar(iAbsMoney+bDist,...
+        avg_defaultChoice.perDeltaMoneylevel.(['Ep_',num2str(iAbsMoney)]),...
+        'FaceColor',Ep_col,'BarWidth',bWidth);
+    errorbar(iAbsMoney-bDist,...
+        avg_defaultChoice.perDeltaMoneylevel.(['Em_',num2str(iAbsMoney)]),...
+        sem_defaultChoice.perDeltaMoneylevel.(['Em_',num2str(iAbsMoney)]),...
+        'k','LineWidth',lWidth);
+    errorbar(iAbsMoney+bDist,...
+        avg_defaultChoice.perDeltaMoneylevel.(['Ep_',num2str(iAbsMoney)]),...
+        sem_defaultChoice.perDeltaMoneylevel.(['Ep_',num2str(iAbsMoney)]),...
+        'k','LineWidth',lWidth);
 end
 ylim([0 100]);
 ylabel('Choice = default option (%)');
@@ -293,10 +351,20 @@ for iMoney = [-(n_R_levels-1):(-1), 1:(n_R_levels - 1)]
     elseif iMoney > 0
         taskCond = 'R';
     end
-    bar_hdl.Em = bar(iMoney-bDist, avg_defaultChoice.perSignedMoneylevel.(['Em_',taskCond','_',num2str(jMoney)]), 'FaceColor',Em_col,'BarWidth',bWidth);
-    bar_hdl.Ep = bar(iMoney+bDist, avg_defaultChoice.perSignedMoneylevel.(['Ep_',taskCond','_',num2str(jMoney)]), 'FaceColor',Ep_col,'BarWidth',bWidth);
-    errorbar(iMoney-bDist, avg_defaultChoice.perSignedMoneylevel.(['Em_',taskCond','_',num2str(jMoney)]), sem_defaultChoice.perSignedMoneylevel.(['Em_',taskCond','_',num2str(jMoney)]),'k')
-    errorbar(iMoney+bDist, avg_defaultChoice.perSignedMoneylevel.(['Ep_',taskCond','_',num2str(jMoney)]), sem_defaultChoice.perSignedMoneylevel.(['Ep_',taskCond','_',num2str(jMoney)]),'k')
+    bar_hdl.Em = bar(iMoney-bDist,...
+        avg_defaultChoice.perSignedMoneylevel.(['Em_',taskCond','_',num2str(jMoney)]),...
+        'FaceColor',Em_col,'BarWidth',bWidth);
+    bar_hdl.Ep = bar(iMoney+bDist,...
+        avg_defaultChoice.perSignedMoneylevel.(['Ep_',taskCond','_',num2str(jMoney)]),...
+        'FaceColor',Ep_col,'BarWidth',bWidth);
+    errorbar(iMoney-bDist,...
+        avg_defaultChoice.perSignedMoneylevel.(['Em_',taskCond','_',num2str(jMoney)]),...
+        sem_defaultChoice.perSignedMoneylevel.(['Em_',taskCond','_',num2str(jMoney)]),...
+        'k','LineWidth',lWidth);
+    errorbar(iMoney+bDist,...
+        avg_defaultChoice.perSignedMoneylevel.(['Ep_',taskCond','_',num2str(jMoney)]),...
+        sem_defaultChoice.perSignedMoneylevel.(['Ep_',taskCond','_',num2str(jMoney)]),...
+        'k','LineWidth',lWidth);
 end
 ylim([0 100]);
 ylabel('Choice = default option (%)');
@@ -320,8 +388,14 @@ hold on;
 for iE = 1:(n_E_levels - 1)
     bar_hdl.Em = bar(iE-bDist, avg_defaultChoice.perElevel.(['Em_',num2str(iE)]), 'FaceColor',Em_col,'BarWidth',bWidth);
     bar_hdl.Ep = bar(iE+bDist, avg_defaultChoice.perElevel.(['Ep_',num2str(iE)]), 'FaceColor',Ep_col,'BarWidth',bWidth);
-    errorbar(iE-bDist, avg_defaultChoice.perElevel.(['Em_',num2str(iE)]), sem_defaultChoice.perElevel.(['Em_',num2str(iE)]),'k')
-    errorbar(iE+bDist, avg_defaultChoice.perElevel.(['Ep_',num2str(iE)]), sem_defaultChoice.perElevel.(['Ep_',num2str(iE)]),'k')
+    errorbar(iE-bDist,...
+        avg_defaultChoice.perElevel.(['Em_',num2str(iE)]),...
+        sem_defaultChoice.perElevel.(['Em_',num2str(iE)]),...
+        'k','LineWidth',lWidth);
+    errorbar(iE+bDist,...
+        avg_defaultChoice.perElevel.(['Ep_',num2str(iE)]),...
+        sem_defaultChoice.perElevel.(['Ep_',num2str(iE)]),...
+        'k','LineWidth',lWidth);
 end
 ylim([0 100]);
 ylabel('Choice = default option (%)');
@@ -348,8 +422,14 @@ for iMoney = [-(n_R_levels-1):(-1), 1:(n_R_levels - 1)]
     end
     bar_hdl.Em = bar(iMoney-bDist, avg_conf.perSignedMoneylevel.(['Em_',taskCond','_',num2str(jMoney)]), 'FaceColor',Em_col,'BarWidth',bWidth);
     bar_hdl.Ep = bar(iMoney+bDist, avg_conf.perSignedMoneylevel.(['Ep_',taskCond','_',num2str(jMoney)]), 'FaceColor',Ep_col,'BarWidth',bWidth);
-    errorbar(iMoney-bDist, avg_conf.perSignedMoneylevel.(['Em_',taskCond','_',num2str(jMoney)]), sem_conf.perSignedMoneylevel.(['Em_',taskCond','_',num2str(jMoney)]),'k')
-    errorbar(iMoney+bDist, avg_conf.perSignedMoneylevel.(['Ep_',taskCond','_',num2str(jMoney)]), sem_conf.perSignedMoneylevel.(['Ep_',taskCond','_',num2str(jMoney)]),'k')
+    errorbar(iMoney-bDist,...
+        avg_conf.perSignedMoneylevel.(['Em_',taskCond','_',num2str(jMoney)]),...
+        sem_conf.perSignedMoneylevel.(['Em_',taskCond','_',num2str(jMoney)]),...
+        'k','LineWidth',lWidth);
+    errorbar(iMoney+bDist,...
+        avg_conf.perSignedMoneylevel.(['Ep_',taskCond','_',num2str(jMoney)]),...
+        sem_conf.perSignedMoneylevel.(['Ep_',taskCond','_',num2str(jMoney)]),...
+        'k','LineWidth',lWidth);
 end
 xticks([-3:-(1), 1:3]);
 xticklabels({'-3','-2','-1','1','2','3'});
@@ -368,10 +448,20 @@ plot(0:n_bins, 50*ones(1,n_bins+1),...
     'LineWidth',lWidth_50percentTrait,'Color','k','LineStyle',':');
 hold on;
 for iE = 1:(n_E_levels - 1)
-    bar_hdl.Em = bar(iE-bDist, avg_conf.perElevel.(['Em_',num2str(iE)]), 'FaceColor',Em_col,'BarWidth',bWidth);
-    bar_hdl.Ep = bar(iE+bDist, avg_conf.perElevel.(['Ep_',num2str(iE)]), 'FaceColor',Ep_col,'BarWidth',bWidth);
-    errorbar(iE-bDist, avg_conf.perElevel.(['Em_',num2str(iE)]), sem_conf.perElevel.(['Em_',num2str(iE)]),'k')
-    errorbar(iE+bDist, avg_conf.perElevel.(['Ep_',num2str(iE)]), sem_conf.perElevel.(['Ep_',num2str(iE)]),'k')
+    bar_hdl.Em = bar(iE-bDist,...
+        avg_conf.perElevel.(['Em_',num2str(iE)]),...
+        'FaceColor',Em_col,'BarWidth',bWidth);
+    bar_hdl.Ep = bar(iE+bDist,...
+        avg_conf.perElevel.(['Ep_',num2str(iE)]),...
+        'FaceColor',Ep_col,'BarWidth',bWidth);
+    errorbar(iE-bDist,...
+        avg_conf.perElevel.(['Em_',num2str(iE)]),...
+        sem_conf.perElevel.(['Em_',num2str(iE)]),...
+        'k','LineWidth',lWidth);
+    errorbar(iE+bDist,...
+        avg_conf.perElevel.(['Ep_',num2str(iE)]),...
+        sem_conf.perElevel.(['Ep_',num2str(iE)]),...
+        'k','LineWidth',lWidth);
 end
 ylim([0 100]);
 ylabel('Confidence');
@@ -408,6 +498,90 @@ ylim([0 100]);
 xlim([0 n_bins+1]);
 xlabel('trial bins');
 ylabel('Confidence (%)');
+legend([bar_hdl.Em, bar_hdl.Ep],'mental','physical');
+legend('boxoff');
+legend_size(pSize);
+
+%% check RT = f(money levels (splitting R and P trials))
+fig;
+hold on;
+for iMoney = [-(n_R_levels-1):(-1), 1:(n_R_levels - 1)]
+    jMoney = abs(iMoney);
+    if iMoney < 0
+        taskCond = 'P';
+    elseif iMoney > 0
+        taskCond = 'R';
+    end
+    bar_hdl.Em = bar(iMoney-bDist,...
+        avg_RT.perSignedMoneylevel.(['Em_',taskCond','_',num2str(jMoney)]),...
+        'FaceColor',Em_col,'BarWidth',bWidth);
+    bar_hdl.Ep = bar(iMoney+bDist,...
+        avg_RT.perSignedMoneylevel.(['Ep_',taskCond','_',num2str(jMoney)]),...
+        'FaceColor',Ep_col,'BarWidth',bWidth);
+    errorbar(iMoney-bDist,...
+        avg_RT.perSignedMoneylevel.(['Em_',taskCond','_',num2str(jMoney)]),...
+        sem_RT.perSignedMoneylevel.(['Em_',taskCond','_',num2str(jMoney)]),...
+        'k','LineWidth',lWidth)
+    errorbar(iMoney+bDist,...
+        avg_RT.perSignedMoneylevel.(['Ep_',taskCond','_',num2str(jMoney)]),...
+        sem_RT.perSignedMoneylevel.(['Ep_',taskCond','_',num2str(jMoney)]),...
+        'k','LineWidth',lWidth)
+end
+xticks([-3:-(1), 1:3]);
+xticklabels({'-3','-2','-1','1','2','3'});
+xlim([-n_R_levels n_R_levels]);
+ylim([1.5 3]);
+ylabel('RT (s)');
+xlabel('Money level');
+legend([bar_hdl.Em, bar_hdl.Ep],'mental','physical');
+legend('boxoff');
+legend_size(pSize);
+
+%% check RT = f(E levels)
+fig;
+hold on;
+for iE = 1:(n_E_levels - 1)
+    bar_hdl.Em = bar(iE-bDist, avg_RT.perElevel.(['Em_',num2str(iE)]),...
+        'FaceColor',Em_col,'BarWidth',bWidth);
+    bar_hdl.Ep = bar(iE+bDist, avg_RT.perElevel.(['Ep_',num2str(iE)]),...
+        'FaceColor',Ep_col,'BarWidth',bWidth);
+    errorbar(iE-bDist,...
+        avg_RT.perElevel.(['Em_',num2str(iE)]), sem_RT.perElevel.(['Em_',num2str(iE)]),...
+        'k','LineWidth',lWidth);
+    errorbar(iE+bDist,...
+        avg_RT.perElevel.(['Ep_',num2str(iE)]), sem_RT.perElevel.(['Ep_',num2str(iE)]),...
+        'k','LineWidth',lWidth);
+end
+ylim([0 5]);
+ylabel('RT (s)');
+xticks(1:3);
+xticklabels({'1','2','3'});
+xlim([0 n_E_levels]);
+ylim([1.5 3]);
+xlabel('Effort level');
+legend([bar_hdl.Em, bar_hdl.Ep],'mental','physical');
+legend('boxoff');
+legend_size(pSize);
+
+%% check RT = f(time)
+fig;
+hold on;
+% mental effort
+bar_hdl.Em = jbfill(1:n_bins,...
+    (avg_RT.Em_f_time + sem_RT.Em_f_time)',...
+    (avg_RT.Em_f_time - sem_RT.Em_f_time)',...
+    avg_RT.Em_f_time',...
+    Em_col);
+% physical effort
+bar_hdl.Ep = jbfill(1:n_bins,...
+    (avg_RT.Ep_f_time + sem_RT.Ep_f_time)',...
+    (avg_RT.Ep_f_time - sem_RT.Ep_f_time)',...
+    avg_RT.Ep_f_time',...
+    Ep_col);
+ylim([1.5 3]);
+xlim([0 n_bins+1]);
+xlabel('trial bins');
+ylabel('RT (s)');
 legend([bar_hdl.Em, bar_hdl.Ep],'mental','physical');
 legend('boxoff');
 legend_size(pSize);
