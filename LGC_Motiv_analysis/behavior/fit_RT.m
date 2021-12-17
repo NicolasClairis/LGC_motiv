@@ -230,9 +230,15 @@ for iPM = 1:2
         R_or_P_trial.(task_id),...
         E_nonDef_levelPerTrial.(task_id) - E_default_levelPerTrial.(task_id),...
         confidence_perTrial.(task_id)];
-    [betas_RT.(task_id).mdl_0, ~, stats_tmp] = glmfit(x.(task_id).mdl_0, RT_perTrial.(task_id), 'normal');
+    [betas_RT_mdl0_tmp, ~, stats_tmp] = glmfit(x.(task_id).mdl_0, RT_perTrial.(task_id), 'normal');
+    betas_RT.(task_id).mdl_0.b0 = betas_RT_mdl0_tmp(1);
+    betas_RT.(task_id).mdl_0.bR = betas_RT_mdl0_tmp(2);
+    betas_RT.(task_id).mdl_0.bP = betas_RT_mdl0_tmp(3);
+    betas_RT.(task_id).mdl_0.bRP = betas_RT_mdl0_tmp(4);
+    betas_RT.(task_id).mdl_0.bE = betas_RT_mdl0_tmp(5);
+    betas_RT.(task_id).mdl_0.bConf = betas_RT_mdl0_tmp(6);
     pval.(task_id).mdl_0 = stats_tmp.p;
-    RTfit_perTrial.(task_id).mdl_0 = glmval(betas_RT.(task_id).mdl_0,...
+    RTfit_perTrial.(task_id).mdl_0 = glmval(betas_RT_mdl0_tmp,...
         x.(task_id).mdl_0,'identity');
      
     % RT = f(Net Value, Confidence) for each choice model
@@ -240,9 +246,12 @@ for iPM = 1:2
         mdl_nm = ['mdl_',num2str(iMdl)];
         x.(task_id).(mdl_nm) = [NV_perTrial.(task_id).(mdl_nm),...
             confidence_perTrial.(task_id)];
-        [betas_RT.(task_id).(mdl_nm), ~, stats_tmp] = glmfit(x.(task_id).(mdl_nm), RT_perTrial.(task_id), 'normal');
+        [betas_RT_mdl_tmp, ~, stats_tmp] = glmfit(x.(task_id).(mdl_nm), RT_perTrial.(task_id), 'normal');
         pval.(task_id).(mdl_nm) = stats_tmp.p;
-        RTfit_perTrial.(task_id).(mdl_nm) = glmval(betas_RT.(task_id).(mdl_nm),...
+        betas_RT.(task_id).(mdl_nm).b0 = betas_RT_mdl_tmp(1);
+        betas_RT.(task_id).(mdl_nm).bNV = betas_RT_mdl_tmp(2);
+        betas_RT.(task_id).(mdl_nm).bConf = betas_RT_mdl_tmp(3);
+        RTfit_perTrial.(task_id).(mdl_nm) = glmval(betas_RT_mdl_tmp,...
             x.(task_id).(mdl_nm),'identity');
     end % model loop
     
@@ -308,10 +317,11 @@ for iPM = 1:2
             [RT_bins.perNVlevel.(mdl_nm).(task_id),...
                 RTfit_bins.perNVlevel.(mdl_nm).(task_id),...
                 NV_bins.perNVlevel.(mdl_nm).(task_id)] = deal(NaN(1,n_NV_bins));
-            [RT_bins.perNVlevel.(mdl_nm).(task_id), ~] = do_bin2(RT_perTrial.(task_id), NV_perTrial.(task_id).(mdl_nm), n_NV_bins);
+            [RT_bins.perNVlevel.(mdl_nm).(task_id), ~] = do_bin2(RT_perTrial.(task_id),...
+                NV_perTrial.(task_id).(mdl_nm), n_NV_bins, 0);
             [RTfit_bins.perNVlevel.(mdl_nm).(task_id),...
                 NV_bins.perNVlevel.(mdl_nm).(task_id)] = do_bin2(RTfit_perTrial.(task_id).(mdl_nm),...
-                NV_perTrial.(task_id).(mdl_nm), n_NV_bins);
+                NV_perTrial.(task_id).(mdl_nm), n_NV_bins, 0);
         end
         
         % confidence
@@ -319,6 +329,10 @@ for iPM = 1:2
         RTfit_bins.perConfidenceLevel.(mdl_nm).(task_id)(1) = nanmean(RTfit_perTrial.(task_id).(mdl_nm)( confidence_perTrial.(task_id) == 0));
         RTfit_bins.perConfidenceLevel.(mdl_nm).(task_id)(2) = nanmean(RTfit_perTrial.(task_id).(mdl_nm)( confidence_perTrial.(task_id) == 1));
         
+        % trial number
+        RTfit_bins.perTrialN.(mdl_nm).(task_id) = NaN(1,n_trialN_bins);
+        [RTfit_bins.perTrialN.(mdl_nm).(task_id)] = do_bin2(RTfit_perTrial.(task_id).(mdl_nm),...
+            trialN_bins.(task_id), n_trialN_bins);
     end % model loop
     
     %% figures
@@ -360,7 +374,7 @@ for iPM = 1:2
             y_legend(RT_type);
             legend_size(pSize);
             
-            % RT = f(R/P)
+            %% RT = f(R/P)
             fig;
             pointMdl = scatter(1:2,...
                 RT_bins.RP.(task_id));
@@ -381,7 +395,7 @@ for iPM = 1:2
             y_legend(RT_type);
             legend_size(pSize);
             
-            % RT = f(E levels)
+            %% RT = f(E levels)
             fig;
             pointMdl = scatter(E_levels,...
                 RT_bins.perEffortLevel.(task_id));
@@ -399,7 +413,7 @@ for iPM = 1:2
             y_legend(RT_type);
             legend_size(pSize);
             
-            % RT = f(NV)
+            %% RT = f(NV)
             if iMdl > 0
                 fig;
                 pointMdl = scatter(NV_bins.perNVlevel.(mdl_nm).(task_id),...
@@ -419,7 +433,7 @@ for iPM = 1:2
                 legend_size(pSize);
             end
             
-            % RT = f(confidence)
+            %% RT = f(confidence)
             fig;
             pointMdl = scatter(1:2,...
                 RT_bins.perConfidenceLevel.(task_id));
@@ -439,12 +453,32 @@ for iPM = 1:2
             xlim([0.5 2.5]);
             y_legend(RT_type);
             legend_size(pSize);
+            
+            %% RT = f(trial number)
+            fig;
+            pointMdl = scatter(trialN_bins.(task_id),...
+                RT_bins.perTrialN.(task_id));
+            pointMdl.MarkerEdgeColor = [0 0 0];
+            pointMdl.MarkerFaceColor = [143 143 143]./255;
+            pointMdl.SizeData = 100;
+            pointMdl.LineWidth = lWidth;
+            hold on;
+            lHdlMdl = plot(trialN_bins.(task_id),...
+                RTfit_bins.perTrialN.(['mdl_',num2str(iMdl)]).(task_id));
+            lHdlMdl.LineStyle = '--';
+            lHdlMdl.LineWidth = lWidth;
+            lHdlMdl.Color = [0 0 0];
+            xlabel([task_fullName,' trial number - model ',num2str(iMdl)']);
+            xlim([0 nTrialsPerRun]);
+            y_legend(RT_type);
+            legend_size(pSize);
         end % model loop
         
     end % figure display
 
 %% extract output
 RTstruct.RT_bins = RT_bins;
+RTstruct.RTfit_bins = RTfit_bins;
 RTstruct.trialN_bins = trialN_bins;
 RTstruct.NV_bins = NV_bins;
 end % physical/mental loop
