@@ -1,6 +1,6 @@
-function[avg_defaultChoice, sd_defaultChoice, avg_conf, avg_RT] = checkChoiceDefaultProportion(subid, figDisp, n_bins)
-%[avg_defaultChoice, sd_defaultChoice, avg_conf, avg_RT] = checkChoiceDefaultProportion(subid, figDisp, n_bins)
-% check choices of the default option in function of the other parameters of the task
+function[avg_nonDefaultChoice, sd_nonDefaultChoice, avg_conf, avg_RT] = checkChoiceNonDefaultProportion(subid, figDisp, n_bins)
+%[avg_defaultChoice, sd_defaultChoice, avg_conf, avg_RT] = checkChoiceNonDefaultProportion(subid, figDisp, n_bins)
+% check choices of the non-default option in function of the other parameters of the task
 % (fatigue, difficulty, physical/mental, reward/punishment, etc.) for each
 % individual.
 %
@@ -14,10 +14,11 @@ function[avg_defaultChoice, sd_defaultChoice, avg_conf, avg_RT] = checkChoiceDef
 % n_bins: number of bins for the analysis of choice = f(fatigue)
 %
 % OUTPUTS
-% avg_defaultChoice: structure with average choice of the default option in
-% function of the other task parameters
+% avg_nonDefaultChoice: structure with average choice of the non-default 
+% option in function of the other task parameters
 %
-% sd_defaultChoice: same as avg_defaultChoice but for standard deviation
+% sd_nonDefaultChoice: same as avg_nonDefaultChoice but for standard 
+% deviation
 %
 % avg_conf: structure with average confidence on the choice in function of
 % other task parameters
@@ -44,22 +45,22 @@ if ~exist('n_bins','var') || isempty(n_bins)
     disp(['n_bins = ',num2str(n_bins),' by default']);
 end
 nBinTrials = nTrials/n_bins;
-[percentageChoiceDefault,...
-    percentage_R_choiceDefault,...
-    percentage_P_choiceDefault,...
+[percentageChoiceNonDefault,...
+    percentage_R_choiceNonDefault,...
+    percentage_P_choiceNonDefault,...
     n_failedChoices] = deal(NaN(1,nRuns));
-[choiceDefault, choice, confidence, RT] = deal( NaN(nRuns,nTrials));
-[choiceDefault_R,...
-    choiceDefault_P] = deal( NaN(nRuns,nTrials/2));
+[choiceNonDefault, choice, confidence, RT] = deal( NaN(nRuns,nTrials));
+[choiceNonDefault_R,...
+    choiceNonDefault_P] = deal( NaN(nRuns,nTrials/2));
 
 % prepare analysis per effort level
 nRepeatsPerEffortLevel = nTrials/(n_E_levels - 1);
 for iE = 1:(n_E_levels - 1)
     E_nm = ['E_level_',num2str(iE)];
-    [choiceDefault_perElevel.(E_nm),...
+    [choiceNonDefault_perElevel.(E_nm),...
         conf_perElevel.(E_nm),...
         RT_perElevel.(E_nm)] = deal(NaN(nRuns, nRepeatsPerEffortLevel));
-    [choiceDefault_perElevel.(['avg_E_',num2str(iE)]),...
+    [choiceNonDefault_perElevel.(['avg_E_',num2str(iE)]),...
         conf_perElevel.(['avg_E_',num2str(iE)]),...
         RT_perElevel.(['avg_E_',num2str(iE)])] = deal(NaN(1,nRuns));
 end
@@ -70,16 +71,16 @@ nRepeatsPerAbsMoneyLevel = nTrials/(n_R_levels - 1);
 for iAbsMoney = 1:(n_R_levels - 1)
     absMoney_nm = ['absMoney_level_',num2str(iAbsMoney)];
     deltaMoney_nm = ['deltaMoney_level_',num2str(iAbsMoney)];
-    [choiceDefault_perAbsMoneylevel.(absMoney_nm),...
+    [choiceNonDefault_perAbsMoneylevel.(absMoney_nm),...
         conf_perAbsMoneylevel.(absMoney_nm),...
         RT_perAbsMoneylevel.(absMoney_nm),...
-        choiceDefault_perDeltaMoneylevel.(deltaMoney_nm),...
+        choiceNonDefault_perDeltaMoneylevel.(deltaMoney_nm),...
         conf_perDeltaMoneylevel.(deltaMoney_nm),...
         RT_perDeltaMoneylevel.(deltaMoney_nm)] = deal(NaN(nRuns, nRepeatsPerAbsMoneyLevel));
-    [choiceDefault_perAbsMoneylevel.(['avg_absMoney_',num2str(iAbsMoney)]),...
+    [choiceNonDefault_perAbsMoneylevel.(['avg_absMoney_',num2str(iAbsMoney)]),...
         conf_perAbsMoneylevel.(['avg_absMoney_',num2str(iAbsMoney)]),...
         RT_perAbsMoneylevel.(['avg_absMoney_',num2str(iAbsMoney)]),...
-        choiceDefault_perDeltaMoneylevel.(['avg_deltaMoney_',num2str(iAbsMoney)]),...
+        choiceNonDefault_perDeltaMoneylevel.(['avg_deltaMoney_',num2str(iAbsMoney)]),...
         conf_perDeltaMoneylevel.(['avg_deltaMoney_',num2str(iAbsMoney)]),...
         RT_perDeltaMoneylevel.(['avg_deltaMoney_',num2str(iAbsMoney)])] = deal(NaN(1,nRuns));
 end
@@ -92,16 +93,16 @@ for iMoney = [-(n_R_levels - 1):(-1), 1:(n_R_levels - 1)]
         signedMoney_nm = ['R_level_',num2str(iMoney)];
     end
     jSignedMoney.(signedMoney_nm) = 0;
-    [choiceDefault_perSignedMoneylevel.(signedMoney_nm),...
+    [choiceNonDefault_perSignedMoneylevel.(signedMoney_nm),...
         conf_perSignedMoneylevel.(signedMoney_nm),...
         RT_perSignedMoneylevel.(signedMoney_nm)] = deal(NaN(nRuns, nRepeatsPerSignedMoneyLevel));
-    [choiceDefault_perSignedMoneylevel.(['avg_',signedMoney_nm]),...
+    [choiceNonDefault_perSignedMoneylevel.(['avg_',signedMoney_nm]),...
         conf_perSignedMoneylevel.(signedMoney_nm),...
         RT_perSignedMoneylevel.(signedMoney_nm)] = deal(NaN(1,nRuns));
 end
 
 %% extract data trial by trial
-[choiceDefault_f_time,...
+[choiceNonDefault_f_time,...
     conf_f_time,...
     RT_f_time] = deal(NaN(nRuns, n_bins));
 for iRun = 1:nRuns
@@ -169,44 +170,46 @@ for iRun = 1:nRuns
 
         %% did the participant choose the default or the non-default option
         % for the current trial?
-        if choiceSide(iTrial) == defaultSide(iTrial)
+        if choiceSide(iTrial) == -defaultSide(iTrial) % choice non-default option
             % extract average selection of the default option
-            choiceDefault(iRun, iTrial) = 1;
+            choiceNonDefault(iRun, iTrial) = 1;
 
             % extract default choices per money level
-            choiceDefault_perAbsMoneylevel.(absMoney_nm)(iRun, jAbsMoney.(absMoney_nm)) = 1;
-            choiceDefault_perSignedMoneylevel.(signedMoney_nm)(iRun, jSignedMoney.(signedMoney_nm)) = 1;
-            choiceDefault_perDeltaMoneylevel.(deltaMoney_nm)(iRun, jDeltaMoney.(deltaMoney_nm)) = 1;
+            choiceNonDefault_perAbsMoneylevel.(absMoney_nm)(iRun, jAbsMoney.(absMoney_nm)) = 1;
+            choiceNonDefault_perSignedMoneylevel.(signedMoney_nm)(iRun, jSignedMoney.(signedMoney_nm)) = 1;
+            choiceNonDefault_perDeltaMoneylevel.(deltaMoney_nm)(iRun, jDeltaMoney.(deltaMoney_nm)) = 1;
 
             % extract average reward (or respectively punishment) default choices
             switch R_or_P{iTrial}
                 case 'R'
-                    choiceDefault_R(iRun,jR) = 1;
+                    choiceNonDefault_R(iRun,jR) = 1;
                 case 'P'
-                    choiceDefault_P(iRun,jP) = 1;
+                    choiceNonDefault_P(iRun,jP) = 1;
             end
             
             % extract choice and perf per effort level
-            choiceDefault_perElevel.(E_nm)(iRun, jE.(E_nm)) = 1;
-        else
+            choiceNonDefault_perElevel.(E_nm)(iRun, jE.(E_nm)) = 1;
+        elseif choiceSide(iTrial) == defaultSide(iTrial) % choice default option
             % extract average selection of the default option
-            choiceDefault(iRun, iTrial) = 0;
+            choiceNonDefault(iRun, iTrial) = 0;
 
             % extract default choices per money level
-            choiceDefault_perAbsMoneylevel.(absMoney_nm)(iRun, jAbsMoney.(absMoney_nm)) = 0;
-            choiceDefault_perSignedMoneylevel.(signedMoney_nm)(iRun, jSignedMoney.(signedMoney_nm)) = 0;
-            choiceDefault_perDeltaMoneylevel.(deltaMoney_nm)(iRun, jDeltaMoney.(deltaMoney_nm)) = 0;
+            choiceNonDefault_perAbsMoneylevel.(absMoney_nm)(iRun, jAbsMoney.(absMoney_nm)) = 0;
+            choiceNonDefault_perSignedMoneylevel.(signedMoney_nm)(iRun, jSignedMoney.(signedMoney_nm)) = 0;
+            choiceNonDefault_perDeltaMoneylevel.(deltaMoney_nm)(iRun, jDeltaMoney.(deltaMoney_nm)) = 0;
 
             % extract average reward (or respectively punishment) default choices
             switch R_or_P{iTrial}
                 case 'R'
-                    choiceDefault_R(iRun,jR) = 0;
+                    choiceNonDefault_R(iRun,jR) = 0;
                 case 'P'
-                    choiceDefault_P(iRun,jP) = 0;
+                    choiceNonDefault_P(iRun,jP) = 0;
             end
             
             % extract choice and perf per effort level
-            choiceDefault_perElevel.(E_nm)(iRun, jE.(E_nm)) = 0;
+            choiceNonDefault_perElevel.(E_nm)(iRun, jE.(E_nm)) = 0;
+        else % no choice was made = ignore the trial
+            
         end
         
         %% level of confidence depending on money/effort
@@ -223,34 +226,34 @@ for iRun = 1:nRuns
     end % trial loop
     
     %% ratio of chosen the default option per run
-    percentageChoiceDefault(iRun) = sum(choiceDefault(iRun,:))/nTrials;
-    percentage_R_choiceDefault(iRun) = sum(choiceDefault_R(iRun,:))/(nTrials/2);
-    percentage_P_choiceDefault(iRun) = sum(choiceDefault_P(iRun,:))/(nTrials/2);
+    percentageChoiceNonDefault(iRun) = sum(choiceNonDefault(iRun,:),'omitnan')/nTrials;
+    percentage_R_choiceNonDefault(iRun) = sum(choiceNonDefault_R(iRun,:),'omitnan')/(nTrials/2);
+    percentage_P_choiceNonDefault(iRun) = sum(choiceNonDefault_P(iRun,:),'omitnan')/(nTrials/2);
     
     %% default choice/confidence = f(time)
     for iBin = 1:n_bins
         trial_idx = (1:nBinTrials) + nBinTrials*(iBin - 1);
-        choiceDefault_f_time(iRun, iBin) = mean( choiceDefault(iRun,trial_idx) );
+        choiceNonDefault_f_time(iRun, iBin) = mean( choiceNonDefault(iRun,trial_idx), 2,'omitnan' );
         conf_f_time(iRun, iBin) = mean( confidence(iRun,trial_idx), 2,'omitnan' );
         RT_f_time(iRun, iBin) = mean( RT(iRun,trial_idx), 2,'omitnan' );
     end
     
     %% sum of failed choices to check
-    n_failedChoices(iRun) = sum(choice(iRun,:) == 0);
+    n_failedChoices(iRun) = sum(choice(iRun,:) == 0,'omitnan');
     
     %% percentage choice of default per effort level
     for iE = 1:(n_E_levels - 1)
-        choiceDefault_perElevel.(['avg_E_',num2str(iE)])(iRun) = 100*sum(choiceDefault_perElevel.(['E_level_',num2str(iE)])(iRun, :))/nRepeatsPerEffortLevel;
+        choiceNonDefault_perElevel.(['avg_E_',num2str(iE)])(iRun) = 100*sum(choiceNonDefault_perElevel.(['E_level_',num2str(iE)])(iRun, :),'omitnan')/nRepeatsPerEffortLevel;
         conf_perElevel.(['avg_E_',num2str(iE)])(iRun) = 100*mean(conf_perElevel.(['E_level_',num2str(iE)])(iRun, :),2,'omitnan');
         RT_perElevel.(['avg_E_',num2str(iE)])(iRun) = mean(RT_perElevel.(['E_level_',num2str(iE)])(iRun, :),2,'omitnan');
     end
 
     %% percentage choice of default per money level
     for iAbsMoney = 1:(n_R_levels - 1)
-        choiceDefault_perAbsMoneylevel.(['avg_absMoney_',num2str(iAbsMoney)])(iRun) = 100*sum(choiceDefault_perAbsMoneylevel.(['absMoney_level_',num2str(iAbsMoney)])(iRun, :))/nRepeatsPerAbsMoneyLevel;
-        choiceDefault_perDeltaMoneylevel.(['avg_deltaMoney_',num2str(iAbsMoney)])(iRun) = 100*sum(choiceDefault_perDeltaMoneylevel.(['deltaMoney_level_',num2str(iAbsMoney)])(iRun, :))/nRepeatsPerAbsMoneyLevel;
-        choiceDefault_perSignedMoneylevel.(['avg_R_',num2str(iAbsMoney)])(iRun) = 100*sum(choiceDefault_perSignedMoneylevel.(['R_level_',num2str(iAbsMoney)])(iRun, :))/nRepeatsPerSignedMoneyLevel;
-        choiceDefault_perSignedMoneylevel.(['avg_P_',num2str(iAbsMoney)])(iRun) = 100*sum(choiceDefault_perSignedMoneylevel.(['P_level_',num2str(iAbsMoney)])(iRun, :))/nRepeatsPerSignedMoneyLevel;
+        choiceNonDefault_perAbsMoneylevel.(['avg_absMoney_',num2str(iAbsMoney)])(iRun) = 100*sum(choiceNonDefault_perAbsMoneylevel.(['absMoney_level_',num2str(iAbsMoney)])(iRun, :),'omitnan')/nRepeatsPerAbsMoneyLevel;
+        choiceNonDefault_perDeltaMoneylevel.(['avg_deltaMoney_',num2str(iAbsMoney)])(iRun) = 100*sum(choiceNonDefault_perDeltaMoneylevel.(['deltaMoney_level_',num2str(iAbsMoney)])(iRun, :),'omitnan')/nRepeatsPerAbsMoneyLevel;
+        choiceNonDefault_perSignedMoneylevel.(['avg_R_',num2str(iAbsMoney)])(iRun) = 100*sum(choiceNonDefault_perSignedMoneylevel.(['R_level_',num2str(iAbsMoney)])(iRun, :),'omitnan')/nRepeatsPerSignedMoneyLevel;
+        choiceNonDefault_perSignedMoneylevel.(['avg_P_',num2str(iAbsMoney)])(iRun) = 100*sum(choiceNonDefault_perSignedMoneylevel.(['P_level_',num2str(iAbsMoney)])(iRun, :),'omitnan')/nRepeatsPerSignedMoneyLevel;
         % same for confidence
         conf_perAbsMoneylevel.(['avg_absMoney_',num2str(iAbsMoney)])(iRun) = mean(100*conf_perAbsMoneylevel.(['absMoney_level_',num2str(iAbsMoney)])(iRun, :),2,'omitnan');
         conf_perDeltaMoneylevel.(['avg_deltaMoney_',num2str(iAbsMoney)])(iRun) = mean(100*conf_perDeltaMoneylevel.(['deltaMoney_level_',num2str(iAbsMoney)])(iRun, :),2,'omitnan');
@@ -283,28 +286,28 @@ end
 
 %% extract average 
 % ratio of choosing default per task
-avg_defaultChoice.Em = mean(percentageChoiceDefault(Em_runs).*100);
-avg_defaultChoice.Ep = mean(percentageChoiceDefault(Ep_runs).*100);
+avg_nonDefaultChoice.Em = mean(percentageChoiceNonDefault(Em_runs).*100);
+avg_nonDefaultChoice.Ep = mean(percentageChoiceNonDefault(Ep_runs).*100);
 % ratio of choosing default per R/P condition per task
-avg_defaultChoice.Em_R = mean(percentage_R_choiceDefault(Em_runs).*100,2,'omitnan');
-avg_defaultChoice.Ep_R = mean(percentage_R_choiceDefault(Ep_runs).*100,2,'omitnan');
-avg_defaultChoice.Em_P = mean(percentage_P_choiceDefault(Em_runs).*100,2,'omitnan');
-avg_defaultChoice.Ep_P = mean(percentage_P_choiceDefault(Ep_runs).*100,2,'omitnan');
+avg_nonDefaultChoice.Em_R = mean(percentage_R_choiceNonDefault(Em_runs).*100,2,'omitnan');
+avg_nonDefaultChoice.Ep_R = mean(percentage_R_choiceNonDefault(Ep_runs).*100,2,'omitnan');
+avg_nonDefaultChoice.Em_P = mean(percentage_P_choiceNonDefault(Em_runs).*100,2,'omitnan');
+avg_nonDefaultChoice.Ep_P = mean(percentage_P_choiceNonDefault(Ep_runs).*100,2,'omitnan');
 % average across tasks
-avg_defaultChoice.R = mean(percentage_R_choiceDefault.*100,2,'omitnan');
-avg_defaultChoice.P = mean(percentage_P_choiceDefault.*100,2,'omitnan');
+avg_nonDefaultChoice.R = mean(percentage_R_choiceNonDefault.*100,2,'omitnan');
+avg_nonDefaultChoice.P = mean(percentage_P_choiceNonDefault.*100,2,'omitnan');
 
 % per task per effort level
 for iE = 1:(n_E_levels - 1)
-    avg_defaultChoice.perElevel.(['Em_',num2str(iE)]) = mean(choiceDefault_perElevel.(['avg_E_',num2str(iE)])(Em_runs));
-    avg_defaultChoice.perElevel.(['Ep_',num2str(iE)]) = mean(choiceDefault_perElevel.(['avg_E_',num2str(iE)])(Ep_runs));
+    avg_nonDefaultChoice.perElevel.(['Em_',num2str(iE)]) = mean(choiceNonDefault_perElevel.(['avg_E_',num2str(iE)])(Em_runs));
+    avg_nonDefaultChoice.perElevel.(['Ep_',num2str(iE)]) = mean(choiceNonDefault_perElevel.(['avg_E_',num2str(iE)])(Ep_runs));
     avg_conf.perElevel.(['Em_',num2str(iE)]) = mean(conf_perElevel.(['avg_E_',num2str(iE)])(Em_runs),'omitnan');
     avg_conf.perElevel.(['Ep_',num2str(iE)]) = mean(conf_perElevel.(['avg_E_',num2str(iE)])(Ep_runs),'omitnan');
     avg_RT.perElevel.(['Em_',num2str(iE)]) = mean(RT_perElevel.(['avg_E_',num2str(iE)])(Em_runs),'omitnan');
     avg_RT.perElevel.(['Ep_',num2str(iE)]) = mean(RT_perElevel.(['avg_E_',num2str(iE)])(Ep_runs),'omitnan');
     % STD
-    sd_defaultChoice.perElevel.(['Em_',num2str(iE)]) = std(choiceDefault_perElevel.(['avg_E_',num2str(iE)])(Em_runs));
-    sd_defaultChoice.perElevel.(['Ep_',num2str(iE)]) = std(choiceDefault_perElevel.(['avg_E_',num2str(iE)])(Ep_runs));
+    sd_nonDefaultChoice.perElevel.(['Em_',num2str(iE)]) = std(choiceNonDefault_perElevel.(['avg_E_',num2str(iE)])(Em_runs));
+    sd_nonDefaultChoice.perElevel.(['Ep_',num2str(iE)]) = std(choiceNonDefault_perElevel.(['avg_E_',num2str(iE)])(Ep_runs));
     sd_conf.perElevel.(['Em_',num2str(iE)]) = std(conf_perElevel.(['avg_E_',num2str(iE)])(Em_runs));
     sd_conf.perElevel.(['Ep_',num2str(iE)]) = std(conf_perElevel.(['avg_E_',num2str(iE)])(Ep_runs));
     sd_RT.perElevel.(['Em_',num2str(iE)]) = std(RT_perElevel.(['avg_E_',num2str(iE)])(Em_runs));
@@ -313,14 +316,14 @@ end
 
 % per task per money level
 for iAbsMoney = 1:(n_R_levels - 1)
-    avg_defaultChoice.perAbsMoneylevel.(['Em_',num2str(iAbsMoney)]) = mean(choiceDefault_perAbsMoneylevel.(['avg_absMoney_',num2str(iAbsMoney)])(Em_runs));
-    avg_defaultChoice.perAbsMoneylevel.(['Ep_',num2str(iAbsMoney)]) = mean(choiceDefault_perAbsMoneylevel.(['avg_absMoney_',num2str(iAbsMoney)])(Ep_runs));
-    avg_defaultChoice.perDeltaMoneylevel.(['Em_',num2str(iAbsMoney)]) = mean(choiceDefault_perDeltaMoneylevel.(['avg_deltaMoney_',num2str(iAbsMoney)])(Em_runs));
-    avg_defaultChoice.perDeltaMoneylevel.(['Ep_',num2str(iAbsMoney)]) = mean(choiceDefault_perDeltaMoneylevel.(['avg_deltaMoney_',num2str(iAbsMoney)])(Ep_runs));
-    avg_defaultChoice.perSignedMoneylevel.(['Em_R_',num2str(iAbsMoney)]) = mean(choiceDefault_perSignedMoneylevel.(['avg_R_',num2str(iAbsMoney)])(Em_runs));
-    avg_defaultChoice.perSignedMoneylevel.(['Ep_R_',num2str(iAbsMoney)]) = mean(choiceDefault_perSignedMoneylevel.(['avg_R_',num2str(iAbsMoney)])(Ep_runs));
-    avg_defaultChoice.perSignedMoneylevel.(['Em_P_',num2str(iAbsMoney)]) = mean(choiceDefault_perSignedMoneylevel.(['avg_P_',num2str(iAbsMoney)])(Em_runs));
-    avg_defaultChoice.perSignedMoneylevel.(['Ep_P_',num2str(iAbsMoney)]) = mean(choiceDefault_perSignedMoneylevel.(['avg_P_',num2str(iAbsMoney)])(Ep_runs));
+    avg_nonDefaultChoice.perAbsMoneylevel.(['Em_',num2str(iAbsMoney)]) = mean(choiceNonDefault_perAbsMoneylevel.(['avg_absMoney_',num2str(iAbsMoney)])(Em_runs));
+    avg_nonDefaultChoice.perAbsMoneylevel.(['Ep_',num2str(iAbsMoney)]) = mean(choiceNonDefault_perAbsMoneylevel.(['avg_absMoney_',num2str(iAbsMoney)])(Ep_runs));
+    avg_nonDefaultChoice.perDeltaMoneylevel.(['Em_',num2str(iAbsMoney)]) = mean(choiceNonDefault_perDeltaMoneylevel.(['avg_deltaMoney_',num2str(iAbsMoney)])(Em_runs));
+    avg_nonDefaultChoice.perDeltaMoneylevel.(['Ep_',num2str(iAbsMoney)]) = mean(choiceNonDefault_perDeltaMoneylevel.(['avg_deltaMoney_',num2str(iAbsMoney)])(Ep_runs));
+    avg_nonDefaultChoice.perSignedMoneylevel.(['Em_R_',num2str(iAbsMoney)]) = mean(choiceNonDefault_perSignedMoneylevel.(['avg_R_',num2str(iAbsMoney)])(Em_runs));
+    avg_nonDefaultChoice.perSignedMoneylevel.(['Ep_R_',num2str(iAbsMoney)]) = mean(choiceNonDefault_perSignedMoneylevel.(['avg_R_',num2str(iAbsMoney)])(Ep_runs));
+    avg_nonDefaultChoice.perSignedMoneylevel.(['Em_P_',num2str(iAbsMoney)]) = mean(choiceNonDefault_perSignedMoneylevel.(['avg_P_',num2str(iAbsMoney)])(Em_runs));
+    avg_nonDefaultChoice.perSignedMoneylevel.(['Ep_P_',num2str(iAbsMoney)]) = mean(choiceNonDefault_perSignedMoneylevel.(['avg_P_',num2str(iAbsMoney)])(Ep_runs));
     avg_conf.perAbsMoneylevel.(['Em_',num2str(iAbsMoney)]) = mean(conf_perAbsMoneylevel.(['avg_absMoney_',num2str(iAbsMoney)])(Em_runs));
     avg_conf.perAbsMoneylevel.(['Ep_',num2str(iAbsMoney)]) = mean(conf_perAbsMoneylevel.(['avg_absMoney_',num2str(iAbsMoney)])(Ep_runs));
     avg_conf.perDeltaMoneylevel.(['Em_',num2str(iAbsMoney)]) = mean(conf_perDeltaMoneylevel.(['avg_deltaMoney_',num2str(iAbsMoney)])(Em_runs));
@@ -338,14 +341,14 @@ for iAbsMoney = 1:(n_R_levels - 1)
     avg_RT.perSignedMoneylevel.(['Em_P_',num2str(iAbsMoney)]) = mean(RT_perSignedMoneylevel.(['avg_P_',num2str(iAbsMoney)])(Em_runs));
     avg_RT.perSignedMoneylevel.(['Ep_P_',num2str(iAbsMoney)]) = mean(RT_perSignedMoneylevel.(['avg_P_',num2str(iAbsMoney)])(Ep_runs));
     % STD
-    sd_defaultChoice.perAbsMoneylevel.(['Em_',num2str(iAbsMoney)]) = std(choiceDefault_perAbsMoneylevel.(['avg_absMoney_',num2str(iAbsMoney)])(Em_runs));
-    sd_defaultChoice.perAbsMoneylevel.(['Ep_',num2str(iAbsMoney)]) = std(choiceDefault_perAbsMoneylevel.(['avg_absMoney_',num2str(iAbsMoney)])(Ep_runs));
-    sd_defaultChoice.perDeltaMoneylevel.(['Em_',num2str(iAbsMoney)]) = std(choiceDefault_perDeltaMoneylevel.(['avg_deltaMoney_',num2str(iAbsMoney)])(Em_runs));
-    sd_defaultChoice.perDeltaMoneylevel.(['Ep_',num2str(iAbsMoney)]) = std(choiceDefault_perDeltaMoneylevel.(['avg_deltaMoney_',num2str(iAbsMoney)])(Ep_runs));
-    sd_defaultChoice.perSignedMoneylevel.(['Em_R_',num2str(iAbsMoney)]) = std(choiceDefault_perSignedMoneylevel.(['avg_R_',num2str(iAbsMoney)])(Em_runs));
-    sd_defaultChoice.perSignedMoneylevel.(['Ep_R_',num2str(iAbsMoney)]) = std(choiceDefault_perSignedMoneylevel.(['avg_R_',num2str(iAbsMoney)])(Ep_runs));
-    sd_defaultChoice.perSignedMoneylevel.(['Em_P_',num2str(iAbsMoney)]) = std(choiceDefault_perSignedMoneylevel.(['avg_P_',num2str(iAbsMoney)])(Em_runs));
-    sd_defaultChoice.perSignedMoneylevel.(['Ep_P_',num2str(iAbsMoney)]) = std(choiceDefault_perSignedMoneylevel.(['avg_P_',num2str(iAbsMoney)])(Ep_runs));
+    sd_nonDefaultChoice.perAbsMoneylevel.(['Em_',num2str(iAbsMoney)]) = std(choiceNonDefault_perAbsMoneylevel.(['avg_absMoney_',num2str(iAbsMoney)])(Em_runs));
+    sd_nonDefaultChoice.perAbsMoneylevel.(['Ep_',num2str(iAbsMoney)]) = std(choiceNonDefault_perAbsMoneylevel.(['avg_absMoney_',num2str(iAbsMoney)])(Ep_runs));
+    sd_nonDefaultChoice.perDeltaMoneylevel.(['Em_',num2str(iAbsMoney)]) = std(choiceNonDefault_perDeltaMoneylevel.(['avg_deltaMoney_',num2str(iAbsMoney)])(Em_runs));
+    sd_nonDefaultChoice.perDeltaMoneylevel.(['Ep_',num2str(iAbsMoney)]) = std(choiceNonDefault_perDeltaMoneylevel.(['avg_deltaMoney_',num2str(iAbsMoney)])(Ep_runs));
+    sd_nonDefaultChoice.perSignedMoneylevel.(['Em_R_',num2str(iAbsMoney)]) = std(choiceNonDefault_perSignedMoneylevel.(['avg_R_',num2str(iAbsMoney)])(Em_runs));
+    sd_nonDefaultChoice.perSignedMoneylevel.(['Ep_R_',num2str(iAbsMoney)]) = std(choiceNonDefault_perSignedMoneylevel.(['avg_R_',num2str(iAbsMoney)])(Ep_runs));
+    sd_nonDefaultChoice.perSignedMoneylevel.(['Em_P_',num2str(iAbsMoney)]) = std(choiceNonDefault_perSignedMoneylevel.(['avg_P_',num2str(iAbsMoney)])(Em_runs));
+    sd_nonDefaultChoice.perSignedMoneylevel.(['Ep_P_',num2str(iAbsMoney)]) = std(choiceNonDefault_perSignedMoneylevel.(['avg_P_',num2str(iAbsMoney)])(Ep_runs));
     sd_conf.perAbsMoneylevel.(['Em_R_',num2str(iAbsMoney)]) = std(conf_perAbsMoneylevel.(['avg_absMoney_',num2str(iAbsMoney)])(Em_runs));
     sd_conf.perAbsMoneylevel.(['Ep_R_',num2str(iAbsMoney)]) = std(conf_perAbsMoneylevel.(['avg_absMoney_',num2str(iAbsMoney)])(Ep_runs));
     sd_conf.perDeltaMoneylevel.(['Em_R_',num2str(iAbsMoney)]) = std(conf_perDeltaMoneylevel.(['avg_deltaMoney_',num2str(iAbsMoney)])(Em_runs));
@@ -364,8 +367,8 @@ for iAbsMoney = 1:(n_R_levels - 1)
     sd_RT.perSignedMoneylevel.(['Ep_P_',num2str(iAbsMoney)]) = std(conf_perSignedMoneylevel.(['avg_P_',num2str(iAbsMoney)])(Ep_runs));
 end
 
-avg_defaultChoice.Em_f_time = mean(choiceDefault_f_time(Em_runs,:),1,'omitnan');
-avg_defaultChoice.Ep_f_time = mean(choiceDefault_f_time(Ep_runs,:),1,'omitnan');
+avg_nonDefaultChoice.Em_f_time = mean(choiceNonDefault_f_time(Em_runs,:),1,'omitnan');
+avg_nonDefaultChoice.Ep_f_time = mean(choiceNonDefault_f_time(Ep_runs,:),1,'omitnan');
 avg_conf.Em_f_time = mean(conf_f_time(Em_runs,:),1,'omitnan');
 avg_conf.Ep_f_time = mean(conf_f_time(Ep_runs,:),1,'omitnan');
 avg_RT.Em_f_time = mean(RT_f_time(Em_runs,:),1,'omitnan');
@@ -393,13 +396,13 @@ if figDisp == 1
         else
             lColour = 'r';
         end
-        plot(1:n_bins, choiceDefault_f_time(iRun, :)*100,...
+        plot(1:n_bins, choiceNonDefault_f_time(iRun, :)*100,...
             'LineWidth',lWidth, 'Color',lColour,'LineStyle','--');
     end
     ylim([0 100]);
     xlim([0 n_bins+1]);
     xlabel('trial bins');
-    ylabel('Choice = default option (%)');
+    ylabel('Choice non-default option (%)');
     legend_size(pSize);
     
     %% check choices = f(R/P)
@@ -408,15 +411,15 @@ if figDisp == 1
     plot(0:3, 50*ones(1,4),...
         'LineWidth',2,'Color','k','LineStyle',':');
     hold on;
-    bar(1, mean(percentage_R_choiceDefault.*100),'FaceColor',[0 153/255 1]);
-    errorbar(1, mean(percentage_R_choiceDefault.*100), std(percentage_R_choiceDefault.*100),'k');
-    bar(2, mean(percentage_P_choiceDefault.*100),'FaceColor',[1 153/255 0]);
-    errorbar(2, mean(percentage_P_choiceDefault.*100), std(percentage_P_choiceDefault.*100),'k');
+    bar(1, mean(percentage_R_choiceNonDefault.*100),'FaceColor',[0 153/255 1]);
+    errorbar(1, mean(percentage_R_choiceNonDefault.*100), std(percentage_R_choiceNonDefault.*100),'k');
+    bar(2, mean(percentage_P_choiceNonDefault.*100),'FaceColor',[1 153/255 0]);
+    errorbar(2, mean(percentage_P_choiceNonDefault.*100), std(percentage_P_choiceNonDefault.*100),'k');
     xticks(1:2);
     xticklabels({'R','P'});
     ylim([0 100]);
     xlim([0 3]);
-    ylabel('Choice = default option (%)');
+    ylabel('Choice non-default option (%)');
     legend_size(pSize);
     
     
@@ -427,20 +430,20 @@ if figDisp == 1
         'LineWidth',2,'Color','k','LineStyle',':');
     hold on;
     for iAbsMoney = 1:(n_R_levels - 1)
-        bar(iAbsMoney-bDist, avg_defaultChoice.perAbsMoneylevel.(['Em_',num2str(iAbsMoney)]), 'FaceColor','g','BarWidth',bWidth);
-        bar(iAbsMoney+bDist, avg_defaultChoice.perAbsMoneylevel.(['Ep_',num2str(iAbsMoney)]), 'FaceColor','b','BarWidth',bWidth);
-        errorbar(iAbsMoney-bDist, avg_defaultChoice.perAbsMoneylevel.(['Em_',num2str(iAbsMoney)]), sd_defaultChoice.perAbsMoneylevel.(['Em_',num2str(iAbsMoney)]),'k')
-        errorbar(iAbsMoney+bDist, avg_defaultChoice.perAbsMoneylevel.(['Ep_',num2str(iAbsMoney)]), sd_defaultChoice.perAbsMoneylevel.(['Ep_',num2str(iAbsMoney)]),'k')
+        bar(iAbsMoney-bDist, avg_nonDefaultChoice.perAbsMoneylevel.(['Em_',num2str(iAbsMoney)]), 'FaceColor','g','BarWidth',bWidth);
+        bar(iAbsMoney+bDist, avg_nonDefaultChoice.perAbsMoneylevel.(['Ep_',num2str(iAbsMoney)]), 'FaceColor','b','BarWidth',bWidth);
+        errorbar(iAbsMoney-bDist, avg_nonDefaultChoice.perAbsMoneylevel.(['Em_',num2str(iAbsMoney)]), sd_nonDefaultChoice.perAbsMoneylevel.(['Em_',num2str(iAbsMoney)]),'k')
+        errorbar(iAbsMoney+bDist, avg_nonDefaultChoice.perAbsMoneylevel.(['Ep_',num2str(iAbsMoney)]), sd_nonDefaultChoice.perAbsMoneylevel.(['Ep_',num2str(iAbsMoney)]),'k')
     end
     ylim([0 100]);
-    ylabel('Choice = default option (%)');
+    ylabel('Choice non-default option (%)');
     xticks(1:3);
     xticklabels({'1','2','3'});
     xlim([0 n_R_levels]);
     xlabel('Money level');
     legend_size(pSize);
     ylim([0 100]);
-    ylabel('Choice = default option (%)');
+    ylabel('Choice non-default option (%)');
     legend_size(pSize);
     
     %% check choices = f(|high money level - default money level|)
@@ -450,13 +453,13 @@ if figDisp == 1
         'LineWidth',2,'Color','k','LineStyle',':');
     hold on;
     for iDeltaMoney = 1:(n_R_levels - 1)
-        bar(iDeltaMoney-bDist, avg_defaultChoice.perDeltaMoneylevel.(['Em_',num2str(iDeltaMoney)]), 'FaceColor','g','BarWidth',bWidth);
-        bar(iDeltaMoney+bDist, avg_defaultChoice.perDeltaMoneylevel.(['Ep_',num2str(iDeltaMoney)]), 'FaceColor','b','BarWidth',bWidth);
-        errorbar(iDeltaMoney-bDist, avg_defaultChoice.perDeltaMoneylevel.(['Em_',num2str(iDeltaMoney)]), sd_defaultChoice.perDeltaMoneylevel.(['Em_',num2str(iDeltaMoney)]),'k')
-        errorbar(iDeltaMoney+bDist, avg_defaultChoice.perDeltaMoneylevel.(['Ep_',num2str(iDeltaMoney)]), sd_defaultChoice.perDeltaMoneylevel.(['Ep_',num2str(iDeltaMoney)]),'k')
+        bar(iDeltaMoney-bDist, avg_nonDefaultChoice.perDeltaMoneylevel.(['Em_',num2str(iDeltaMoney)]), 'FaceColor','g','BarWidth',bWidth);
+        bar(iDeltaMoney+bDist, avg_nonDefaultChoice.perDeltaMoneylevel.(['Ep_',num2str(iDeltaMoney)]), 'FaceColor','b','BarWidth',bWidth);
+        errorbar(iDeltaMoney-bDist, avg_nonDefaultChoice.perDeltaMoneylevel.(['Em_',num2str(iDeltaMoney)]), sd_nonDefaultChoice.perDeltaMoneylevel.(['Em_',num2str(iDeltaMoney)]),'k')
+        errorbar(iDeltaMoney+bDist, avg_nonDefaultChoice.perDeltaMoneylevel.(['Ep_',num2str(iDeltaMoney)]), sd_nonDefaultChoice.perDeltaMoneylevel.(['Ep_',num2str(iDeltaMoney)]),'k')
     end
     ylim([0 100]);
-    ylabel('Choice = default option (%)');
+    ylabel('Choice non-default option (%)');
     xticks(1:3);
     xticklabels({'1','2','3'});
     xlim([0 n_R_levels]);
@@ -476,20 +479,20 @@ if figDisp == 1
         elseif iMoney > 0
             taskCond = 'R';
         end
-        bar(iMoney-bDist, avg_defaultChoice.perSignedMoneylevel.(['Em_',taskCond','_',num2str(jMoney)]), 'FaceColor','g','BarWidth',bWidth);
-        bar(iMoney+bDist, avg_defaultChoice.perSignedMoneylevel.(['Ep_',taskCond','_',num2str(jMoney)]), 'FaceColor','b','BarWidth',bWidth);
-        errorbar(iMoney-bDist, avg_defaultChoice.perSignedMoneylevel.(['Em_',taskCond','_',num2str(jMoney)]), sd_defaultChoice.perSignedMoneylevel.(['Em_',taskCond','_',num2str(jMoney)]),'k')
-        errorbar(iMoney+bDist, avg_defaultChoice.perSignedMoneylevel.(['Ep_',taskCond','_',num2str(jMoney)]), sd_defaultChoice.perSignedMoneylevel.(['Ep_',taskCond','_',num2str(jMoney)]),'k')
+        bar(iMoney-bDist, avg_nonDefaultChoice.perSignedMoneylevel.(['Em_',taskCond','_',num2str(jMoney)]), 'FaceColor','g','BarWidth',bWidth);
+        bar(iMoney+bDist, avg_nonDefaultChoice.perSignedMoneylevel.(['Ep_',taskCond','_',num2str(jMoney)]), 'FaceColor','b','BarWidth',bWidth);
+        errorbar(iMoney-bDist, avg_nonDefaultChoice.perSignedMoneylevel.(['Em_',taskCond','_',num2str(jMoney)]), sd_nonDefaultChoice.perSignedMoneylevel.(['Em_',taskCond','_',num2str(jMoney)]),'k')
+        errorbar(iMoney+bDist, avg_nonDefaultChoice.perSignedMoneylevel.(['Ep_',taskCond','_',num2str(jMoney)]), sd_nonDefaultChoice.perSignedMoneylevel.(['Ep_',taskCond','_',num2str(jMoney)]),'k')
     end
     ylim([0 100]);
-    ylabel('Choice = default option (%)');
+    ylabel('Choice non-default option (%)');
     xticks([-3:-(1), 1:3]);
     xticklabels({'-3','-2','-1','1','2','3'});
     xlim([-n_R_levels n_R_levels]);
     xlabel('Money level');
     legend_size(pSize);
     ylim([0 100]);
-    ylabel('Choice = default option (%)');
+    ylabel('Choice non-default option (%)');
     legend_size(pSize);
     
     %% check choices = f(E level)
@@ -499,13 +502,13 @@ if figDisp == 1
         'LineWidth',2,'Color','k','LineStyle',':');
     hold on;
     for iE = 1:(n_E_levels - 1)
-        bar(iE-bDist, avg_defaultChoice.perElevel.(['Em_',num2str(iE)]), 'FaceColor','g','BarWidth',bWidth);
-        bar(iE+bDist, avg_defaultChoice.perElevel.(['Ep_',num2str(iE)]), 'FaceColor','b','BarWidth',bWidth);
-        errorbar(iE-bDist, avg_defaultChoice.perElevel.(['Em_',num2str(iE)]), sd_defaultChoice.perElevel.(['Em_',num2str(iE)]),'k')
-        errorbar(iE+bDist, avg_defaultChoice.perElevel.(['Ep_',num2str(iE)]), sd_defaultChoice.perElevel.(['Ep_',num2str(iE)]),'k')
+        bar(iE-bDist, avg_nonDefaultChoice.perElevel.(['Em_',num2str(iE)]), 'FaceColor','g','BarWidth',bWidth);
+        bar(iE+bDist, avg_nonDefaultChoice.perElevel.(['Ep_',num2str(iE)]), 'FaceColor','b','BarWidth',bWidth);
+        errorbar(iE-bDist, avg_nonDefaultChoice.perElevel.(['Em_',num2str(iE)]), sd_nonDefaultChoice.perElevel.(['Em_',num2str(iE)]),'k')
+        errorbar(iE+bDist, avg_nonDefaultChoice.perElevel.(['Ep_',num2str(iE)]), sd_nonDefaultChoice.perElevel.(['Ep_',num2str(iE)]),'k')
     end
     ylim([0 100]);
-    ylabel('Choice = default option (%)');
+    ylabel('Choice non-default option (%)');
     xticks(1:3);
     xticklabels({'1','2','3'});
     xlim([0 n_E_levels]);
