@@ -16,7 +16,7 @@ function [standError] = sem(array, dimension)
 
 try
     %  The line that does it all:
-    standError = nanstd(array, 0, dimension)./sqrt(sum(~isnan(array), dimension));
+    standError = std(array, 0, dimension,'omitnan')./sqrt(sum(~isnan(array), dimension));
     
 catch ME
     
@@ -44,7 +44,7 @@ catch ME
     end
     
     %% Try again the computation
-    standError = nanstd(array, 0, dimension)./sqrt(sum(~isnan(array), dimension));
+    standError = std(array, 0, dimension,'omitnan')./sqrt(sum(~isnan(array), dimension));
     
     
 end
