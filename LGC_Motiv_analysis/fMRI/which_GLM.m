@@ -32,17 +32,17 @@ function [GLMprm] = which_GLM(GLM)
 %
 %   .choice/chosen/Eperf/fbk: for each event and each task (Ep/Em) indicate
 %   if a given regressor should be included or not
-%       chosen.RPpool:
+%       choice/chosen.RPpool:
 %       (0) split rewards and punishments as separate events
 %       (1) pool reward and punishment trials
 %
-%       chosen.money_chosen:
+%       chosen.R/P/RP.money_chosen:
 %       (1) money chosen
 %       (2) |money chosen|
 %       (3) money levels chosen
 %       (4) |money levels chosen|
 %
-%       chosen.money_varOption
+%       chosen.R/P/RP.money_varOption
 %       (1) money non-default option
 %       (2) |money non-default option|
 %       (3) money levels non-default option
@@ -418,6 +418,47 @@ switch GLM
             GLMprm.chosen.(Epm_nm).RP.money_chosen = 1;
             GLMprm.chosen.(Epm_nm).RP.E_chosen = 1;
             GLMprm.chosen.(Epm_nm).RP.R_vs_P = 1;
+            % effort performance
+            GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
+            % feedback - split R/P
+            GLMprm.model_onset.(Epm_nm).fbk = 'stick';
+        end
+    case 13 % Rch/Ech during dispChosen option splitting R and P trials and using levels instead of money
+        GLMprm.gal.orth_vars = 1;
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'stick';
+            GLMprm.choice.(Epm_nm).RP.RT = 1;
+            % chosen - split R/P and use R/P and E levels
+            GLMprm.model_onset.(Epm_nm).chosen = 'stick';
+            GLMprm.chosen.(Epm_nm).RPpool = 0;
+            for iRP = 1:length(RP_conds)
+                RP_nm = RP_conds{iRP};
+                GLMprm.chosen.(Epm_nm).(RP_nm).money_chosen = 3;
+                GLMprm.chosen.(Epm_nm).(RP_nm).E_chosen = 1;
+            end
+            % effort performance
+            GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
+            % feedback - split R/P
+            GLMprm.model_onset.(Epm_nm).fbk = 'stick';
+        end
+    case 14 % same as GLM 13 but with temporal derivative
+        GLMprm.gal.orth_vars = 1;
+        GLMprm.gal.add_drv = 1;
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'stick';
+            GLMprm.choice.(Epm_nm).RP.RT = 1;
+            % chosen - split R/P and use R/P and E levels
+            GLMprm.model_onset.(Epm_nm).chosen = 'stick';
+            GLMprm.chosen.(Epm_nm).RPpool = 0;
+            for iRP = 1:length(RP_conds)
+                RP_nm = RP_conds{iRP};
+                GLMprm.chosen.(Epm_nm).(RP_nm).money_chosen = 3;
+                GLMprm.chosen.(Epm_nm).(RP_nm).E_chosen = 1;
+            end
             % effort performance
             GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
             % feedback - split R/P
