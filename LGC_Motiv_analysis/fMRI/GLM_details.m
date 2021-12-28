@@ -530,6 +530,16 @@ for iEpm = 1:length(Epm)
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
             end
             
+            % reward/punishment trial
+            switch GLMprm.chosen.(task_id_nm).(RP_dispChosen_nm).R_vs_P
+                case 1
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG chosen ',RP_dispChosen_nm,': R vs P trials'];
+                    disp([num2str(n_regs.(task_id_nm)),') chosen: R vs P ']);
+                    % if derivative added => add derivatives
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+            end
+            
             % confidence
             switch GLMprm.chosen.(task_id_nm).(RP_dispChosen_nm).confidence
                 case 1
@@ -702,6 +712,7 @@ for iEpm = 1:length(Epm)
                     % if derivative added => add derivatives
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
             end
+            
             % money obtained
             switch GLMprm.fbk.(task_id_nm).(RP_fbk_nm).money_obtained
                 case 1

@@ -367,7 +367,7 @@ if ismember(choiceModel,{'stick','boxcar'})
             if strcmp(RP_choice_nm,'RP')
                 n_choiceMods = n_choiceMods + 1;
                 choice_modNames{n_choiceMods} = 'R vs P';
-                choice_modVals(n_choiceMods,:) = RP_var_binary; % binary variable => no zscore
+                choice_modVals(n_choiceMods,:) = RP_var_binary(choice_trial_idx); % binary variable => no zscore
             else
                 error('cannot split R and P trials and add a variable representing R/P trials') ;
             end
@@ -575,6 +575,7 @@ if ismember(chosenModel,{'stick','boxcar'})
         chosenModel_EnonDefault = GLMprm.chosen.(task_id).(RP_chosen_nm).E_varOption;
         chosenModel_moneyUnchosen = GLMprm.chosen.(task_id).(RP_chosen_nm).money_unchosen;
         chosenModel_Eunchosen = GLMprm.chosen.(task_id).(RP_chosen_nm).E_unchosen;
+        chosenModel_R_vs_P = GLMprm.chosen.(task_id).(RP_chosen_nm).R_vs_P;
         chosenModel_confidence = GLMprm.chosen.(task_id).(RP_chosen_nm).confidence;
 
         % extract trial index for the current loop
@@ -688,6 +689,18 @@ if ismember(chosenModel,{'stick','boxcar'})
             switch chosenModel_EnonDefault
                 case 1
                     chosen_modVals(n_chosenMods,:) = E_varOption(chosen_trial_idx); % binary variable => no zscore
+                otherwise
+                    error('ready yet');
+            end
+        end
+        
+        % reward vs punishment trials
+        if chosenModel_R_vs_P > 0
+            n_chosenMods = n_chosenMods + 1;
+            chosen_modNames{n_chosenMods} = 'R_vs_P';
+            switch chosenModel_R_vs_P
+                case 1
+                    chosen_modVals(n_chosenMods,:) = RP_var_binary(chosen_trial_idx);
                 otherwise
                     error('ready yet');
             end

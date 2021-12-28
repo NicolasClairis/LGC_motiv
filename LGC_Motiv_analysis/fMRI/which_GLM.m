@@ -10,18 +10,47 @@ function [GLMprm] = which_GLM(GLM)
 % GLMprm: GLM parameters = structure with all relevant informations for 1st
 % and 2nd level analysis
 %   .gal: general parameters
-%       .add_drv: derivative (0: no derivative added; 1: temporal
-%       derivative; 2: temporal AND spatial derivative)
-%       .grey_mask: add a grey mask (0: include all voxels; 1: filter based
-%       on individual grey matter; 2: use SPM template grey matter mask)
-%       .orth_vars: orthogonalize variables of the GLM (1) or not (0)
+%       .add_drv: model spatial and/or a temporal derivative of the BOLD
+%       (0) no derivative added
+%       (1) temporal derivative
+%       (2) temporal AND spatial derivative
+%
+%       .grey_mask:
+%       (0) include all voxels
+%       (1) grey-matter filter based on individual grey matter
+%       (2) use SPM template grey matter mask
+%       (3) grey-matter filter based on group average grey-matter
+%
+%       .orth_vars:
+%       (0) don't orthogonalize the regressors
+%       (1) orthogonalize regressors of the GLM (1)
+%
 %   .model_onset: indicate for each task (Ep/Em: physical/mental) for each
 %   event (preChoiceCross/choice/chosen/preEffortCross/Eperf/fbk) if it should be modelled as a
 %   stick ('stick') as a boxcar ('boxcar') or not included in the GLM
 %   ('none')
+%
 %   .choice/chosen/Eperf/fbk: for each event and each task (Ep/Em) indicate
 %   if a given regressor should be included or not
+%       chosen.RPpool:
+%       (0) split rewards and punishments as separate events
+%       (1) pool reward and punishment trials
 %
+%       chosen.money_chosen:
+%       (1) money chosen
+%       (2) |money chosen|
+%       (3) money levels chosen
+%       (4) |money levels chosen|
+%
+%       chosen.money_varOption
+%       (1) money non-default option
+%       (2) |money non-default option|
+%       (3) money levels non-default option
+%       (4) |money levels non-default option|
+%
+% [need to finish detailling information about each regressor.
+% Alternatively, look at GLM_details.m]
+
 
 %% initialize all variables
 
@@ -87,6 +116,7 @@ for iEpm = 1:length(Ep_Em)
             GLMprm.chosen.(EpEm_nm).(RP_nm).E_unchosen,...
             GLMprm.chosen.(EpEm_nm).(RP_nm).money_varOption,...
             GLMprm.chosen.(EpEm_nm).(RP_nm).E_varOption,...
+            GLMprm.chosen.(EpEm_nm).(RP_nm).R_vs_P,...
             GLMprm.chosen.(EpEm_nm).(RP_nm).confidence] = deal(0);
         
         % effort performance
@@ -325,7 +355,8 @@ switch GLM
             GLMprm.model_onset.(Epm_nm).fbk = 'stick';
             GLMprm.fbk.(Epm_nm).RP.win_vs_loss = 1;
         end
-    case 10 % model money amounts during performance instead of choice periode (VS should be trigger by higher rewards)
+    case 10 % model money amounts during performance instead of choice periode
+        % (VS should be triggered by higher rewards)
         GLMprm.gal.orth_vars = 1;
         for iEpm = 1:length(Epm)
             Epm_nm = Epm{iEpm};
@@ -361,6 +392,27 @@ switch GLM
             % chosen - split R/P and use R/P and E levels
             GLMprm.model_onset.(Epm_nm).chosen = 'stick';
             GLMprm.chosen.(Epm_nm).RPpool = 0;
+            for iRP = 1:length(RP_conds)
+                RP_nm = RP_conds{iRP};
+                GLMprm.chosen.(Epm_nm).(RP_nm).money_chosen = 3;
+                GLMprm.chosen.(Epm_nm).(RP_nm).E_chosen = 1;
+            end
+            % effort performance
+            GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
+            % feedback - split R/P
+            GLMprm.model_onset.(Epm_nm).fbk = 'stick';
+            GLMprm.fbk.(Epm_nm).RP.win_vs_loss = 1;
+        end
+    case 12 % Vch/R-P/VE during dispChosen option
+        GLMprm.gal.orth_vars = 1;
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'stick';
+            GLMprm.choice.(Epm_nm).RP.RT = 1;
+            % chosen - split R/P and use R/P and E levels
+            GLMprm.model_onset.(Epm_nm).chosen = 'stick';
+            GLMprm.chosen.(Epm_nm).RPpool = 1;
             for iRP = 1:length(RP_conds)
                 RP_nm = RP_conds{iRP};
                 GLMprm.chosen.(Epm_nm).(RP_nm).money_chosen = 3;
