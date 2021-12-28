@@ -753,7 +753,8 @@ for iEpm = 1:length(Epm)
         reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'movement';
     end
     disp([num2str(n_regs.(task_id_nm)-n_mvmt+1),'-',num2str(n_regs.(task_id_nm)),') movement regressors ']);
-    warning('need to check whether including the derivative also impacts the movement regressors or not. My guess is no but recheck please');
+    % note: if temporal derivative has been added, movement regressors
+    % are not doubled (ie number stays stable independent of add_drv value)
     
 end % physical/mental loop
 end % function
