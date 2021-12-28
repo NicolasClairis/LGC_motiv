@@ -173,7 +173,7 @@ confidence = abs(choice_LRandConf) == 2; % 0 when low confidence and 1 when high
 E_chosen = behavioralDataStruct.(task_behavioral_id).E_chosen;
 E_unchosen = E_left.*(choice_LR == 1) + E_right.*(choice_LR == -1);
 E_chosen_min_E_unchosen = E_chosen - E_unchosen;
-money_amount_chosen = behavioralDataStruct.(task_behavioral_id).R_chosen;
+money_amount_chosen = behavioralDataStruct.(task_behavioral_id).R_chosen.*RP_var;
 money_level_chosen = money_level_left.*(choice_LR == -1) + money_level_right.*(choice_LR == 1);
 money_level_unchosen = money_level_left.*(choice_LR == 1) + money_level_right.*(choice_LR == -1);
 abs_money_amount_chosen = abs(money_amount_chosen);
