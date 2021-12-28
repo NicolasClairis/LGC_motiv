@@ -124,10 +124,12 @@ money_amount_varOption = money_amount_left.*(defaultSide == 1) + money_amount_ri
 abs_money_amount_varOption = abs(money_amount_varOption);
 money_level_left = behavioralDataStruct.(task_behavioral_id).choiceOptions.R.left.*RP_var;
 money_level_right = behavioralDataStruct.(task_behavioral_id).choiceOptions.R.right.*RP_var;
+
 % replace default option level for punishments by higher level (because
 % implies higher amount of money lost)
 money_level_left(money_level_left == 0 & RP_var == -1) = -4;
 money_level_right(money_level_right == 0 & RP_var == -1) = -4;
+
 % fix data for subjects where IP had a bug
 if strcmp(study_nm,'study1')
     if strcmp(sub_nm,'064') && strcmp(task_nm,'mental')
@@ -177,14 +179,19 @@ money_amount_chosen = behavioralDataStruct.(task_behavioral_id).R_chosen.*RP_var
 money_level_chosen = money_level_left.*(choice_LR == -1) + money_level_right.*(choice_LR == 1);
 money_level_unchosen = money_level_left.*(choice_LR == 1) + money_level_right.*(choice_LR == -1);
 abs_money_amount_chosen = abs(money_amount_chosen);
-abs_money_level_chosen = abs(money_level_chosen);
 money_amount_unchosen = money_amount_left.*(choice_LR == 1) + money_amount_right.*(choice_LR == -1);
 abs_money_amount_unchosen = abs(money_amount_unchosen);
-abs_money_level_unchosen = abs(money_level_unchosen);
+
+% reward levels = 0/1/2/3 and punishment levels = 1/2/3/4 in money_level
+% therefore you need to remove 1 to punishments for absolute levels to
+% match with rewards and have only 0/1/2/3 levels
+abs_money_level_chosen = abs(money_level_chosen.*(RP_var == 1) + (money_level_chosen - 1).*(RP_var == -1));
+abs_money_level_unchosen = abs(money_level_unchosen.*(RP_var == 1) + (money_level_unchosen - 1).*(RP_var == -1));
+
 moneyChosen_min_moneyUnchosen_amount = money_amount_chosen - money_amount_unchosen;
 absMoneyChosen_min_moneyUnchosen_amount = abs(money_amount_chosen - money_amount_unchosen);
 moneyChosen_min_moneyUnchosen_level = money_level_chosen - money_level_unchosen;
-absMoneyChosen_min_moneyUnchosen_level = abs(money_level_chosen - money_level_unchosen);
+absMoneyChosen_min_moneyUnchosen_level = abs_money_level_chosen - abs_money_level_unchosen;
 % loading feedback
 money_amount_obtained = behavioralDataStruct.(task_behavioral_id).gain; % could be different from reward chosen (in case of failure) but mostly similar
 win_vs_loss_fbk = money_amount_obtained > 0;
