@@ -40,7 +40,7 @@ switch task_nm
 end
 
 %% load data
-warning('script needs to be updated to take failed trials into account and modelled separately');
+warning('script needs to be updated to be able to model failed trials (choice or perf) separately');
 behavioralDataStruct = load([subj_behavior_folder, currRunBehaviorFileName]);
 
 %% extract all onsets of interest
