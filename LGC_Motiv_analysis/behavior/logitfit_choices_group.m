@@ -179,10 +179,10 @@ for iS = 1:NS
         choiceNonDef.perTrialN.(task_id)(:,iS) = choices_tmp.choiceNonDef.perTrialN.(task_id);
         % extract fit
         for iMdl = 1:nMdl
-            mdl_nm = ['Mdl',num2str(iMdl)];
+            mdl_nm = ['mdl_',num2str(iMdl)];
             choiceNonDef.perNVLevel.(mdl_nm).(task_id)(:,iS) = choices_tmp.choiceNonDef.perNVLevel.(mdl_nm).(task_id);
             choiceFitNonDef.perNVLevel.(mdl_nm).(task_id)(:,iS) = choices_tmp.choiceFitNonDef.perNVLevel.(mdl_nm).(task_id);
-            NV_bins.(mdl_nm).(task_id)(:,iS) = choices_tmp.NV_bins.mdl_1.(task_id);
+            NV_bins.(mdl_nm).(task_id)(:,iS) = choices_tmp.NV_bins.(mdl_nm).(task_id);
             choiceFitNonDef.perMoneyLevel.(mdl_nm).(task_id)(:,iS) = choices_tmp.choiceFitNonDef.perMoneyLevel.(mdl_nm).(task_id);
             choiceFitNonDef.perEffortLevel.(mdl_nm).(task_id)(:,iS) = choices_tmp.choiceFitNonDef.perEffortLevel.(mdl_nm).(task_id);
             choiceFitNonDef.perTrialN.(mdl_nm).(task_id)(:,iS) = choices_tmp.choiceFitNonDef.perTrialN.(mdl_nm).(task_id);
@@ -209,9 +209,9 @@ for iPM = 1:2
     [m_choiceNonDef.perEffortLevel.(task_id),...
         sem_choiceNonDef.perEffortLevel.(task_id)] = mean_sem_sd(choiceNonDef.perEffortLevel.(task_id), 2);
     [m_choiceNonDef.perTrialN.(task_id),...
-        sem_choiceNonDef.perTrialN.(task_id)] = mean_sem_sd(choiceNonDef.perNVLevel.mdl_1.(task_id), 2);
+        sem_choiceNonDef.perTrialN.(task_id)] = mean_sem_sd(choiceNonDef.perTrialN.(task_id), 2);
     for iMdl = 1:nMdl
-        mdl_nm = ['Mdl',num2str(iMdl)];
+        mdl_nm = ['mdl_',num2str(iMdl)];
         [m_choiceFitNonDef.perMoneyLevel.(mdl_nm).(task_id),...
             sem_choiceFitNonDef.perMoneyLevel.(mdl_nm).(task_id)] = mean_sem_sd(choiceFitNonDef.perMoneyLevel.(mdl_nm).(task_id), 2);
         [m_choiceFitNonDef.perEffortLevel.(mdl_nm).(task_id),...
@@ -223,7 +223,7 @@ for iPM = 1:2
         [m_choiceFitNonDef.perNVLevel.(mdl_nm).(task_id),...
             sem_choiceFitNonDef.perNVLevel.(mdl_nm).(task_id)] = mean_sem_sd(choiceFitNonDef.perNVLevel.(mdl_nm).(task_id), 2);
         [m_choiceFitNonDef.perTrialN.(mdl_nm).(task_id),...
-            sem_choiceFitNonDef.perTrialN.(mdl_nm).(task_id)] = mean_sem_sd(choiceFitNonDef.perNVLevel.(mdl_nm).(task_id), 2);
+            sem_choiceFitNonDef.perTrialN.(mdl_nm).(task_id)] = mean_sem_sd(choiceFitNonDef.perTrialN.(mdl_nm).(task_id), 2);
         % average betas
         [betas.mean.(task_id).(mdl_nm).kb0,...
             betas.sem.(task_id).(mdl_nm).kb0,...
@@ -274,7 +274,7 @@ for iPM = 1:2
         lWidth_borders = 1;
         %% loop through models
         for iMdl = 1:nMdl
-            mdl_nm = ['Mdl',num2str(iMdl)];
+            mdl_nm = ['mdl_',num2str(iMdl)];
             
             %% display choice = f(net value)
             fig;
