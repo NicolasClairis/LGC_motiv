@@ -16,8 +16,8 @@ function[meanVar, semVar, sdVar]=mean_sem_sd(var, dim)
 %
 % sd: standard error deviation along dim
 
-meanVar = mean(var, dim);
+meanVar = mean(var, dim,'omitnan');
 semVar = sem(var, dim);
-sdVar = std(var, 0, dim);
+sdVar = std(var, 0, dim,'omitnan');
 
 end % function
