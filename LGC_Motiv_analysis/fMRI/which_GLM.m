@@ -238,49 +238,44 @@ switch GLM
     case 4
         % general parameters
         GLMprm.gal.orth_vars = 1;
-        % choice
-        GLMprm.model_onset.Ep.choice = 'stick';
-        GLMprm.model_onset.Em.choice = 'stick';
-        GLMprm.choice.Ep.RP.R_vs_P = 1;
-        GLMprm.choice.Em.RP.R_vs_P = 1;
-        GLMprm.choice.Ep.RP.money_chosen = 1;
-        GLMprm.choice.Em.RP.money_chosen = 1;
-        GLMprm.choice.Ep.RP.E_chosen = 1;
-        GLMprm.choice.Em.RP.E_chosen = 1;
-        % effort perf
-        GLMprm.model_onset.Ep.Eperf = 'stick';
-        GLMprm.model_onset.Em.Eperf = 'stick';
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'stick';
+            GLMprm.choice.(Epm_nm).RP.R_vs_P = 1;
+            GLMprm.choice.(Epm_nm).RP.money_chosen = 1;
+            GLMprm.choice.(Epm_nm).RP.E_chosen = 1;
+            % effort perf
+            GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
+        end
     case 5
         % general parameters
         GLMprm.gal.orth_vars = 1;
-        % choice
-        GLMprm.model_onset.Ep.choice = 'stick';
-        GLMprm.model_onset.Em.choice = 'stick';
-        GLMprm.choice.Ep.RP.R_vs_P = 1;
-        GLMprm.choice.Em.RP.R_vs_P = 1;
-        % effort perf
-        GLMprm.model_onset.Ep.Eperf = 'stick';
-        GLMprm.model_onset.Em.Eperf = 'stick';
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'stick';
+            GLMprm.choice.(Epm_nm).RP.R_vs_P = 1;
+            % effort perf
+            GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
+        end
     case 6 % testing Vchosen - Vunchosen during choice + adding temporal derivative
         % general parameters
         GLMprm.gal.orth_vars = 1;
         GLMprm.gal.add_drv = 1;
-        % choice
-        GLMprm.model_onset.Ep.choice = 'stick';
-        GLMprm.model_onset.Em.choice = 'stick';
-        GLMprm.choice.Ep.RP.money_ch_min_unch = 1;
-        GLMprm.choice.Em.RP.money_ch_min_unch = 1;
-        GLMprm.choice.Ep.RP.E_ch_min_unch = 1;
-        GLMprm.choice.Em.RP.E_ch_min_unch = 1;
-        % chosen
-        GLMprm.model_onset.Ep.chosen = 'stick';
-        GLMprm.model_onset.Em.chosen = 'stick';
-        % effort perf
-        GLMprm.model_onset.Ep.Eperf = 'stick';
-        GLMprm.model_onset.Em.Eperf = 'stick';
-        % feedback
-        GLMprm.model_onset.Ep.fbk = 'stick';
-        GLMprm.model_onset.Em.fbk = 'stick';
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'stick';
+            GLMprm.choice.(Epm_nm).RP.money_ch_min_unch = 1;
+            GLMprm.choice.(Epm_nm).RP.E_ch_min_unch = 1;
+            % chosen
+            GLMprm.model_onset.(Epm_nm).chosen = 'stick';
+            % effort perf
+            GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
+            % feedback
+            GLMprm.model_onset.(Epm_nm).fbk = 'stick';
+        end
     case 7 % R/P split, Vch/Vunch R/P and E levels during choice
         GLMprm.gal.orth_vars = 1;
         for iEpm = 1:length(Epm)
@@ -461,7 +456,22 @@ switch GLM
             end
             % effort performance
             GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
-            % feedback - split R/P
+            % feedback
+            GLMprm.model_onset.(Epm_nm).fbk = 'stick';
+        end
+    case 15 % like GLM 4 but feedback period modelled as well
+        % general parameters
+        GLMprm.gal.orth_vars = 1;
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'stick';
+            GLMprm.choice.(Epm_nm).RP.R_vs_P = 1;
+            GLMprm.choice.(Epm_nm).RP.money_chosen = 1;
+            GLMprm.choice.(Epm_nm).RP.E_chosen = 1;
+            % effort perf
+            GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
+            % feedback
             GLMprm.model_onset.(Epm_nm).fbk = 'stick';
         end
 end
