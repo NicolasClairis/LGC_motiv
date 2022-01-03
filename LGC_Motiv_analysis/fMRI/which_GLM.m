@@ -29,27 +29,159 @@ function [GLMprm] = which_GLM(GLM)
 %   event (preChoiceCross/choice/chosen/preEffortCross/Eperf/fbk) if it should be modelled as a
 %   stick ('stick') as a boxcar ('boxcar') or not included in the GLM
 %   ('none')
+%       .preChoiceCross: (white) fixation cross before choice period
+%       .choice: choice period (when options are displayed on screen)
+%       .chosen: moment when the chosen option is displayed on screen
+%       .preEffortCross: (black) fixation cross before effort period
+%       .Eperf: physical/mental effort performance period
+%       .fbk: feedback period
 %
-%   .choice/chosen/Eperf/fbk: for each event and each task (Ep/Em) indicate
-%   if a given regressor should be included or not
-%       choice/chosen.RPpool:
+%   .choice/chosen/Eperf/fbk: for each event, for each task (Ep/Em) and 
+%   for each condition (R/P/RP) indicate if a given regressor should be 
+%   included or not.
+%   .Ep/Em: physical (Ep) or mental (Em) effort task
+%   .R/P/RP: reward only (R), punishment only (P) or reward and punishment
+%   trials mixed (RP)
+%
+%       .(choice/chosen).Ep/Em.RPpool:
 %       (0) split rewards and punishments as separate events
 %       (1) pool reward and punishment trials
 %
-%       chosen.R/P/RP.money_chosen:
-%       (1) money chosen
-%       (2) |money chosen|
-%       (3) money levels chosen
-%       (4) |money levels chosen|
+%       .(choice/chosen).(Ep/Em).(R/P/RP).R_vs_P:
+%       (1) 0 when punishment trial, 1 when reward trial
 %
-%       chosen.R/P/RP.money_varOption
-%       (1) money non-default option
-%       (2) |money non-default option|
-%       (3) money levels non-default option
-%       (4) |money levels non-default option|
+%       .choice.(Ep/Em).(R/P/RP).money_left
+%       (1) money amount associated to left option
 %
-% [need to finish detailling information about each regressor.
-% Alternatively, look at GLM_details.m]
+%       .choice.(Ep/Em).(R/P/RP).money_right
+%       (1) money amount associated to right option
+%
+%       .(choice/chosen).(Ep/Em).(R/P/RP).money_chosen:
+%       (1) money chosen amount
+%       (2) |money chosen amount|
+%       (3) money levels (-4/-3/-2/-1/0/1/2/3) chosen
+%       (4) |money levels (0/1/2/3/4) chosen|
+%
+%       .(choice/chosen).(Ep/Em).(R/P/RP).money_unchosen:
+%       (1) money unchosen amount
+%       (2) |money unchosen amount|
+%       (3) money levels (-4/-3/-2/-1/0/1/2/3) unchosen
+%       (4) |money levels (0/1/2/3/4) unchosen|
+%
+%       .(choice/chosen).(Ep/Em).(R/P/RP).money_varOption:
+%       (1) money amount non-default option
+%       (2) |money amount non-default option|
+%       (3) money levels  (-3/-2/-1/1/2/3) non-default option
+%       (4) |money levels (1/2/3) non-default option|
+%
+%       .(choice/chosen).(Ep/Em).(R/P/RP).money_ch_min_unch:
+%       (1) money chosen - money unchosen amount
+%
+%       .(choice/chosen).(Ep/Em).(R/P/RP).money_sum:
+%       (1) money default + money non-default amount
+%
+%       .choice.(Ep/Em).(R/P/RP).E_left
+%       (1) effort level (0/1/2/3) associated to left option
+%       (2) effort difficulty associated to left option (Ep: duration to hold; Em: nb answers to give)
+%
+%       .choice.(Ep/Em).(R/P/RP).E_right
+%       (1) effort level (0/1/2/3) associated to right option
+%       (2) effort difficulty associated to right option (Ep: duration to hold; Em: nb answers to give)
+%
+%       .(choice/chosen).(Ep/Em).(R/P/RP).E_chosen
+%       (1) effort level (0/1/2/3) associated to chosen option
+%       (2) effort difficulty associated to chosen option (Ep: duration to hold; Em: nb answers to give)
+%
+%       .(choice/chosen).(Ep/Em).(R/P/RP).E_unchosen
+%       (1) effort level (0/1/2/3) associated to unchosen option
+%       (2) effort difficulty associated to unchosen option (Ep: duration to hold; Em: nb answers to give)
+%
+%       .(choice/chosen).(Ep/Em).(R/P/RP).E_varOption
+%       (1) effort level (0/1/2/3) associated to the non-default option
+%       (2) effort difficulty associated to the non-default option (Ep: duration to hold; Em: nb answers to give)
+%
+%       .(choice/chosen).(Ep/Em).(R/P/RP).E_ch_min_unch
+%       (1) effort level (0/1/2/3) associated to the chosen option minus
+%       the effort level (0/1/2/3) associated to the unchosen option
+%       (2) effort difficulty associated to the chosen option (Ep: duration to hold; Em: nb answers to give)
+%       minus the effort difficulty associated to the unchosen option (Ep: duration to hold; Em: nb answers to give)
+%
+%       .(choice/chosen).(Ep/Em).(R/P/RP).E_sum
+%       (1) sum of the effort levels (0/1/2/3) associated to both options
+%       (2) sum of the effort difficulties (Ep: duration to hold; Em: nb answers to give) associated to both options
+%
+%       .(choice/chosen).(Ep/Em).(R/P/RP).NV_chosen
+%       (1) net value of the non-default option based on the model defined in
+%       .choice.(Ep.Em).(R/P/RP).NV_mdl (='mdl_X' or 'bayesianModel_X')
+%
+%       .(choice/chosen).(Ep/Em).(R/P/RP).NV_varOption
+%       (1) net value of the chosen option based on the model defined in
+%       .choice.(Ep.Em).(R/P/RP).NV_mdl (='mdl_X' or 'bayesianModel_X')
+%
+%       .(choice/chosen).(Ep/Em).(R/P/RP).confidence
+%       (1) confidence level (0/1) given by the subject for each choice
+%
+%       .(choice/chosen).(Ep/Em).(R/P/RP).RT: reaction time for choice
+%       (1) raw reaction time
+%       (2) reaction time zscored per run
+%       (3) reaction time zscored per subject across all runs
+%
+%
+%       .Eperf.(Ep/Em).(R/P/RP).RPpool
+%       (0) split rewards and punishments as separate events
+%       (1) pool reward and punishment trials
+%
+%       .Eperf.(Ep/Em).(R/P/RP).money_chosen
+%       (1) money chosen amount
+%       (2) |money chosen amount|
+%       (3) money levels (-4/-3/-2/-1/0/1/2/3) chosen
+%       (4) |money levels (0/1/2/3/4) chosen|
+%
+%       .Eperf.(Ep/Em).(R/P/RP).E_chosen
+%       (1) effort level (0/1/2/3) associated to chosen option
+%       (2) effort difficulty associated to chosen option (Ep: duration to hold; Em: nb answers to give)
+%
+%       .Eperf.Ep.(R/P/RP).F_peak: physical effort only: force peak
+%       (1) force peak in newtons
+%
+%       .Eperf.Ep.(R/P/RP).F_integral: physical effort only: force integral
+%       (1) integral of effort performed during the effort period (sum of 
+%       efforts in newtons)
+%
+%       .Eperf.Em.(R/P/RP).RT_avg: mental effort only: average reaction
+%       time for answering N-back task
+%       (1) average reaction time for answering to questions (in seconds)
+%
+%       .Eperf.Em.(R/P/RP).n_errors: mental effort only: number of errors
+%       made per trial
+%       (1) number of errors made
+%
+%       .Eperf.(Ep/Em).(R/P/RP).NV_chosen
+%       (1) net value of the non-default option based on the model defined in
+%       .Eperf.(Ep.Em).(R/P/RP).NV_mdl (='mdl_X' or 'bayesianModel_X')
+%
+%       .Eperf.(Ep/Em).(R/P/RP).NV_varOption
+%       (1) net value of the chosen option based on the model defined in
+%       .choice.(Ep.Em).(R/P/RP).NV_mdl (='mdl_X' or 'bayesianModel_X')
+%
+%       .Eperf.(Ep/Em).(R/P/RP).RT_1stAnswer
+%       (1) raw reaction time for first answer (force above threshold for Ep 
+%       and first answer to first digit for Em)
+%
+%
+%       .fbk.(Ep/Em).(R/P/RP).win_vs_loss
+%       (1) win (1) - loss (0) trials
+%
+%       .fbk.(Ep/Em).(R/P/RP).money_obtained
+%       (1) money level obtained at the end of the trial
+%
+%       .fbk.(Ep/Em).(R/P/RP).E_made
+%       (1) level of effort performed during effort performance
+%
+%       .fbk.(Ep/Em).(R/P/RP).confidence
+%       (1) confidence level (0/1) given by the subject for each choice
+%
+% See also GLM_details.m
 %
 % Nicolas Clairis - 2021/2022
 
@@ -91,41 +223,54 @@ for iEpm = 1:length(Ep_Em)
         
         % pool reward and punishment together (default)
         GLMprm.choice.(EpEm_nm).RPpool = 1;
-        [GLMprm.choice.(EpEm_nm).(RP_nm).money_left,...
+        [GLMprm.choice.(EpEm_nm).(RP_nm).R_vs_P,...
+            GLMprm.choice.(EpEm_nm).(RP_nm).money_left,...
             GLMprm.choice.(EpEm_nm).(RP_nm).money_right,...
             GLMprm.choice.(EpEm_nm).(RP_nm).money_chosen,...
             GLMprm.choice.(EpEm_nm).(RP_nm).money_unchosen,...
+            GLMprm.choice.(EpEm_nm).(RP_nm).money_varOption,...
             GLMprm.choice.(EpEm_nm).(RP_nm).money_ch_min_unch,...
             GLMprm.choice.(EpEm_nm).(RP_nm).money_sum,...
-            GLMprm.choice.(EpEm_nm).(RP_nm).money_varOption,...
             GLMprm.choice.(EpEm_nm).(RP_nm).E_left,...
             GLMprm.choice.(EpEm_nm).(RP_nm).E_right,...
             GLMprm.choice.(EpEm_nm).(RP_nm).E_chosen,...
             GLMprm.choice.(EpEm_nm).(RP_nm).E_unchosen,...
+            GLMprm.choice.(EpEm_nm).(RP_nm).E_varOption,...
             GLMprm.choice.(EpEm_nm).(RP_nm).E_ch_min_unch,...
             GLMprm.choice.(EpEm_nm).(RP_nm).E_sum,...
-            GLMprm.choice.(EpEm_nm).(RP_nm).E_varOption,...
+            GLMprm.choice.(EpEm_nm).(RP_nm).NV_chosen,...
+            GLMprm.choice.(EpEm_nm).(RP_nm).NV_varOption,...
             GLMprm.choice.(EpEm_nm).(RP_nm).confidence,...
-            GLMprm.choice.(EpEm_nm).(RP_nm).RT,...
-            GLMprm.choice.(EpEm_nm).(RP_nm).R_vs_P] = deal(0);
+            GLMprm.choice.(EpEm_nm).(RP_nm).RT] = deal(0);
+        GLMprm.choice.(EpEm_nm).(RP_nm).NV_mdl = '';
         
         % chosen option display
         % pool reward and punishment together (default)
         GLMprm.chosen.(EpEm_nm).RPpool = 1;
-        [GLMprm.chosen.(EpEm_nm).(RP_nm).money_chosen,...
-            GLMprm.chosen.(EpEm_nm).(RP_nm).E_chosen,...
+        [GLMprm.chosen.(EpEm_nm).(RP_nm).R_vs_P,...
+            GLMprm.chosen.(EpEm_nm).(RP_nm).money_chosen,...
             GLMprm.chosen.(EpEm_nm).(RP_nm).money_unchosen,...
-            GLMprm.chosen.(EpEm_nm).(RP_nm).E_unchosen,...
             GLMprm.chosen.(EpEm_nm).(RP_nm).money_varOption,...
+            GLMprm.chosen.(EpEm_nm).(RP_nm).money_ch_min_unch,...
+            GLMprm.chosen.(EpEm_nm).(RP_nm).money_sum,...
+            GLMprm.chosen.(EpEm_nm).(RP_nm).E_chosen,...
+            GLMprm.chosen.(EpEm_nm).(RP_nm).E_unchosen,...
             GLMprm.chosen.(EpEm_nm).(RP_nm).E_varOption,...
-            GLMprm.chosen.(EpEm_nm).(RP_nm).R_vs_P,...
-            GLMprm.chosen.(EpEm_nm).(RP_nm).confidence] = deal(0);
+            GLMprm.chosen.(EpEm_nm).(RP_nm).E_ch_min_unch,...
+            GLMprm.chosen.(EpEm_nm).(RP_nm).E_sum,...
+            GLMprm.chosen.(EpEm_nm).(RP_nm).NV_chosen,...
+            GLMprm.chosen.(EpEm_nm).(RP_nm).NV_varOption,...
+            GLMprm.chosen.(EpEm_nm).(RP_nm).confidence,...
+            GLMprm.chosen.(EpEm_nm).(RP_nm).RT] = deal(0);
+        GLMprm.chosen.(EpEm_nm).(RP_nm).NV_mdl = '';
         
         % effort performance
         % pool reward and punishment together (default)
         GLMprm.Eperf.(EpEm_nm).RPpool = 1;
         [GLMprm.Eperf.(EpEm_nm).(RP_nm).money_chosen,...
             GLMprm.Eperf.(EpEm_nm).(RP_nm).E_chosen,...
+            GLMprm.Eperf.(EpEm_nm).(RP_nm).NV_chosen,...
+            GLMprm.Eperf.(EpEm_nm).(RP_nm).NV_varOption,...
             GLMprm.Eperf.(EpEm_nm).(RP_nm).RT_1stAnswer] = deal(0);
         % specific variables for each effort type
         switch EpEm_nm
@@ -138,6 +283,7 @@ for iEpm = 1:length(Ep_Em)
                 [GLMprm.Eperf.Em.(RP_nm).RT_avg,...
                     GLMprm.Eperf.Em.(RP_nm).n_errors] = deal(0);
         end
+        GLMprm.Eperf.(EpEm_nm).(RP_nm).NV_mdl = '';
         
         % feedback
         % pool reward and punishment together (default)
@@ -474,6 +620,44 @@ switch GLM
             % feedback
             GLMprm.model_onset.(Epm_nm).fbk = 'stick';
         end
+    case 16 % net value + confidence + RT during choice (pooling R and P)
+        % general parameters
+        GLMprm.gal.orth_vars = 1;
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'stick';
+            GLMprm.choice.(Epm_nm).RP.NV_varOption = 1;
+            GLMprm.choice.(Epm_nm).RP.NV_mdl = 'mdl_2';
+            GLMprm.choice.(Epm_nm).RP.RT = 1;
+            % chosen
+            GLMprm.model_onset.(Epm_nm).chosen = 'stick';
+            % effort perf
+            GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
+            % feedback
+            GLMprm.model_onset.(Epm_nm).fbk = 'stick';
+        end
+    case 17 % like GLM 16 but R and P split
+        % general parameters
+        GLMprm.gal.orth_vars = 1;
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'stick';
+                GLMprm.choice.(Epm_nm).RPpool = 0;
+            for iRP = 1:1:length(RP_conds)
+                RP_nm = RP_conds{iRP};
+                GLMprm.choice.(Epm_nm).(RP_nm).NV_varOption = 1;
+                GLMprm.choice.(Epm_nm).(RP_nm).NV_mdl = 'mdl_2';
+                GLMprm.choice.(Epm_nm).(RP_nm).RT = 1;
+            end
+            % chosen
+            GLMprm.model_onset.(Epm_nm).chosen = 'stick';
+            % effort perf
+            GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
+            % feedback
+            GLMprm.model_onset.(Epm_nm).fbk = 'stick';
+        end
 end
 
 %% warnings
@@ -521,5 +705,26 @@ end % Ep/Em loop
 %             'entered.']);
 %     end % check for money amounts
 % end % Ep/Em loop
+
+% net value model
+for iEpm = 1:length(Epm)
+    Epm_nm = Epm{iEpm};
+    RPconditions = {'R','P','RP'};
+    for iRP = 1:length(RPconditions)
+        RP_nm = RPconditions{iRP};
+        if ((GLMprm.choice.(Epm_nm).(RP_nm).NV_chosen ~= 0 ||...
+                GLMprm.choice.(Epm_nm).(RP_nm).NV_varOption ~= 0) &&...
+                isempty(GLMprm.choice.(Epm_nm).(RP_nm).NV_mdl)) ||...
+                ((GLMprm.chosen.(Epm_nm).(RP_nm).NV_chosen ~= 0 ||...
+                GLMprm.chosen.(Epm_nm).(RP_nm).NV_varOption ~= 0) &&...
+                isempty(GLMprm.chosen.(Epm_nm).(RP_nm).NV_mdl)) ||...
+                ((GLMprm.Eperf.(Epm_nm).(RP_nm).NV_chosen ~= 0 ||...
+                GLMprm.Eperf.(Epm_nm).(RP_nm).NV_varOption ~= 0) &&...
+                isempty(GLMprm.Eperf.(Epm_nm).(RP_nm).NV_mdl))
+            error(['you added net value in the model but you didn''t ',...
+                'specify the model number to use. Please fix it.']);
+        end % check
+    end % RP loop
+end % Ep/Em loop
 
 end % function

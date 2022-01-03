@@ -55,16 +55,16 @@ TR = 2.00;
 nb_batch_per_subj = 2; % model + estimate
 
 %% working directories
-computer_root = LGCM_root_paths();
+computerRoot = LGCM_root_paths();
 % scripts_folder = fullfile(computer_root,'GitHub','LGC_motiv','LGC_Motiv_analysis','fMRI');
 % addpath(scripts_folder);
 switch study_nm
     case 'fMRI_pilots'
-        root = fullfile(computer_root,'fMRI_pilots');
+        root = fullfile(computerRoot,'fMRI_pilots');
     case 'study1'
-        root = fullfile(computer_root,'study1');
+        root = fullfile(computerRoot,'study1');
     case 'study2'
-        root = fullfile(computer_root,'study2');
+        root = fullfile(computerRoot,'study2');
 end
 
 %% list subjects to analyze
@@ -158,7 +158,7 @@ for iS = 1:NS
         end
         % perform 1st level
         matlabbatch = First_level_loadRegressors(matlabbatch, GLMprm, study_nm, sub_nm, sub_idx, iRun,...
-            subj_behavior_folder, currRunBehaviorFileNames, task_nm);
+            subj_behavior_folder, currRunBehaviorFileNames, task_nm, computerRoot);
         
         %% global run parameters (rp movement file, etc.)
         matlabbatch{sub_idx}.spm.stats.fmri_spec.sess(iRun).multi = {''};
