@@ -115,6 +115,7 @@ for iPM = 1:2
                     runToInclude = 1;
                 end
         end
+        run_nm = ['run',num2str(jRun)];
         
         if runToInclude == 1
             runTrials_idx = (1:nTrialsPerRun) + nTrialsPerRun*(jRun-1);
@@ -128,35 +129,51 @@ for iPM = 1:2
             
             %% load relevant data
             defaultSide_tmp = choiceOptions_tmp.default_LR;
+            default_left_tmp = defaultSide_tmp == -1;
+            default_right_tmp = defaultSide_tmp == 1;
             RP_var = strcmp(choiceOptions_tmp.R_or_P,'R');
-            money_nonDef_tmp = (choiceOptions_tmp.monetary_amount.left.*(defaultSide_tmp == 1) +...
-                choiceOptions_tmp.monetary_amount.right.*(defaultSide_tmp == -1)).*((RP_var == 1) - (RP_var == 0));
-            money_default_tmp = (choiceOptions_tmp.monetary_amount.left.*(defaultSide_tmp == -1) +...
-                choiceOptions_tmp.monetary_amount.right.*(defaultSide_tmp == 1)).*((RP_var == 1) - (RP_var == 0));
-            R_nonDef_tmp = choiceOptions_tmp.monetary_amount.left.*(RP_var == 1).*(defaultSide_tmp == 1) +...
-                choiceOptions_tmp.monetary_amount.right.*(RP_var == 1).*(defaultSide_tmp == -1);
-            R_default_tmp = choiceOptions_tmp.monetary_amount.left.*(RP_var == 1).*(defaultSide_tmp == -1) +...
-                choiceOptions_tmp.monetary_amount.right.*(RP_var == 1).*(defaultSide_tmp == 1);
-            P_nonDef_tmp = -(choiceOptions_tmp.monetary_amount.left.*(RP_var == 0).*(defaultSide_tmp == 1) +...
-                choiceOptions_tmp.monetary_amount.right.*(RP_var == 0).*(defaultSide_tmp == -1));
-            P_default_tmp = -(choiceOptions_tmp.monetary_amount.left.*(RP_var == 0).*(defaultSide_tmp == -1) +...
-                choiceOptions_tmp.monetary_amount.right.*(RP_var == 0).*(defaultSide_tmp == 1));
-            E_nonDef_tmp = choiceOptions_tmp.E.left.*(defaultSide_tmp == 1) +...
-                choiceOptions_tmp.E.right.*(defaultSide_tmp == -1);
-            E_default_tmp = choiceOptions_tmp.E.left.*(defaultSide_tmp == -1) +...
-                choiceOptions_tmp.E.right.*(defaultSide_tmp == 1);
-            % extract money levels
-            money_level_nonDef_tmp = (choiceOptions_tmp.R.left.*(defaultSide_tmp == 1) +...
-                choiceOptions_tmp.R.right.*(defaultSide_tmp == -1)).*((RP_var == 1) - (RP_var == 0));
             switch task_id
                 case 'Ep'
                     choice_LR_tmp = behaviorStruct_tmp.physicalPerf.choice;
                 case 'Em'
                     choice_LR_tmp = behaviorStruct_tmp.mentalE_perf.choice;
             end
-            % remove confidence information
+            % remove confidence information from choice
             choice_LR_tmp(choice_LR_tmp == -2) = -1;
             choice_LR_tmp(choice_LR_tmp == 2) = 1;
+            % variable with left or right choice
+            choice_left_tmp = choice_LR_tmp == -1;
+            choice_right_tmp = choice_LR_tmp == 1;
+            % extract money/reward/punishment data
+            money_value_nonDef_tmp = (choiceOptions_tmp.monetary_amount.left.*default_right_tmp +...
+                choiceOptions_tmp.monetary_amount.right.*default_left_tmp).*((RP_var == 1) - (RP_var == 0));
+            money_value_default_tmp = (choiceOptions_tmp.monetary_amount.left.*default_left_tmp +...
+                choiceOptions_tmp.monetary_amount.right.*default_right_tmp).*((RP_var == 1) - (RP_var == 0));
+            money_chosen_value_tmp = (choiceOptions_tmp.monetary_amount.left.*choice_left_tmp +...
+                choiceOptions_tmp.monetary_amount.right.*choice_right_tmp).*((RP_var == 1) - (RP_var == 0));
+            R_value_nonDef_tmp = (choiceOptions_tmp.monetary_amount.left.*default_right_tmp +...
+                choiceOptions_tmp.monetary_amount.right.*default_left_tmp).*(RP_var == 1);
+            R_value_default_tmp = (choiceOptions_tmp.monetary_amount.left.*default_left_tmp +...
+                choiceOptions_tmp.monetary_amount.right.*default_right_tmp).*(RP_var == 1);
+            R_chosen_value_tmp = (choiceOptions_tmp.monetary_amount.left.*choice_left_tmp +...
+                choiceOptions_tmp.monetary_amount.right.*choice_right_tmp).*(RP_var == 1);
+            P_value_nonDef_tmp = -(choiceOptions_tmp.monetary_amount.left.*default_right_tmp +...
+                choiceOptions_tmp.monetary_amount.right.*default_left_tmp).*(RP_var == 0);
+            P_value_default_tmp = -(choiceOptions_tmp.monetary_amount.left.*default_left_tmp +...
+                choiceOptions_tmp.monetary_amount.right.*default_right_tmp).*(RP_var == 0);
+            P_chosen_value_tmp = -(choiceOptions_tmp.monetary_amount.left.*choice_left_tmp +...
+                choiceOptions_tmp.monetary_amount.right.*choice_right_tmp).*(RP_var == 0);
+            % extract money levels
+            money_level_nonDef_tmp = (choiceOptions_tmp.R.left.*default_right_tmp +...
+                choiceOptions_tmp.R.right.*default_left_tmp).*((RP_var == 1) - (RP_var == 0));
+            % extract effort levels
+            E_nonDef_tmp = choiceOptions_tmp.E.left.*default_right_tmp +...
+                choiceOptions_tmp.E.right.*default_left_tmp;
+            E_default_tmp = choiceOptions_tmp.E.left.*default_left_tmp +...
+                choiceOptions_tmp.E.right.*default_right_tmp;
+            E_chosen_tmp = (choiceOptions_tmp.E.left.*choice_left_tmp +...
+                choiceOptions_tmp.E.right.*choice_right_tmp);
+            
             
             R_money_tmp = getfield(load([subBehaviorFolder,...
                 'CID',sub_nm,'_session',num2str(iRun),'_',task_fullName,...
@@ -174,63 +191,97 @@ for iPM = 1:2
             % extract relevant data
             choice_nonDef.(task_id)(runTrials_idx) = choice_LR_tmp == -defaultSide_tmp;
             trialN.(task_id)(runTrials_idx) = 1:nTrialsPerRun;
-            R_nonDef_valuePerTrial.(task_id)(runTrials_idx) = R_nonDef_tmp;
-            R_default_valuePerTrial.(task_id)(runTrials_idx) = R_default_tmp;
-            P_nonDef_valuePerTrial.(task_id)(runTrials_idx) = P_nonDef_tmp;
-            P_default_valuePerTrial.(task_id)(runTrials_idx) = P_default_tmp;
-            money_default_valuePerTrial.(task_id)(runTrials_idx) = money_default_tmp;
-            money_nonDef_valuePerTrial.(task_id)(runTrials_idx) = money_nonDef_tmp;
+            R_nonDef_valuePerTrial.(task_id)(runTrials_idx) = R_value_nonDef_tmp;
+            R_default_valuePerTrial.(task_id)(runTrials_idx) = R_value_default_tmp;
+            P_nonDef_valuePerTrial.(task_id)(runTrials_idx) = P_value_nonDef_tmp;
+            P_default_valuePerTrial.(task_id)(runTrials_idx) = P_value_default_tmp;
+            money_default_valuePerTrial.(task_id)(runTrials_idx) = money_value_default_tmp;
+            money_nonDef_valuePerTrial.(task_id)(runTrials_idx) = money_value_nonDef_tmp;
             money_nonDef_levelPerTrial.(task_id)(runTrials_idx) = money_level_nonDef_tmp;
             E_nonDef_levelPerTrial.(task_id)(runTrials_idx) = E_nonDef_tmp;
             E_default_levelPerTrial.(task_id)(runTrials_idx) = E_default_tmp;
+            % extract variables/run
+            trialN_perRun.(task_id).(run_nm) = 1:nTrialsPerRun;
+            money_chosen_valuePerTrial.(task_id).(run_nm) = money_chosen_value_tmp;
+            R_chosen_valuePerTrial.(task_id).(run_nm) = R_chosen_value_tmp;
+            P_chosen_valuePerTrial.(task_id).(run_nm) = P_chosen_value_tmp;
+            E_chosen_levelPerTrial.(task_id).(run_nm) = E_chosen_tmp;
+            money_varOption_valuePerTrialPerRun.(task_id).(run_nm) = money_value_nonDef_tmp;
+            R_varOption_valuePerTrialPerRun.(task_id).(run_nm) = R_value_nonDef_tmp;
+            P_varOption_valuePerTrialPerRun.(task_id).(run_nm) = P_value_nonDef_tmp;
+            E_varOption_levelPerTrialPerRun.(task_id).(run_nm) = E_nonDef_tmp;
         end % run to include?
     end % run loop
+    
+    %% check number of runs
+    if sum(runs_Ep) < 2 || sum(runs_Em) < 2
+       warning('one run had to be removed. please adapt the script accordingly where needed.'); 
+    end
     
     %% perform the fit
     % model 1: SV = kMoney*Money-kE*E
     xModel1 = [money_nonDef_valuePerTrial.(task_id)-money_default_valuePerTrial.(task_id),...
         E_nonDef_levelPerTrial.(task_id)-E_default_levelPerTrial.(task_id)];
     betamdl_1 = glmfit(xModel1, choice_nonDef.(task_id),...
-        'binomial','link','logit');
-    betas.(task_id).mdl_1.kb0 = betamdl_1(1);
-    betas.(task_id).mdl_1.kMoney = betamdl_1(2);
-    betas.(task_id).mdl_1.kEffort = betamdl_1(3);
-    modelFit.mdl_1.(task_id) = glmval(betamdl_1, xModel1, 'logit');
-    deltaNV.mdl_1.(task_id) = betamdl_1(1) +...
-        betamdl_1(2).*xModel1(:,1) +...
-        betamdl_1(3).*xModel1(:,2);
+        'binomial','link','logit','Constant','off');
+    betas.(task_id).mdl_1.kMoney = betamdl_1(1);
+    betas.(task_id).mdl_1.kEffort = betamdl_1(2);
+    modelFit.mdl_1.(task_id) = glmval(betamdl_1, xModel1, 'logit','Constant','off');
+    deltaNV.mdl_1.(task_id) = betamdl_1(1).*xModel1(:,1) +...
+        betamdl_1(2).*xModel1(:,2);
+    for iRun = 1:nRunsPerTask
+        run_nm = ['run',num2str(iRun)];
+        NV_chosen.(task_id).mdl_1.(run_nm) = betas.(task_id).mdl_1.kMoney.*money_chosen_valuePerTrial.(task_id).(run_nm) +...
+            betas.(task_id).mdl_1.kEffort.*E_chosen_levelPerTrial.(task_id).(run_nm);
+        NV_varOption.(task_id).mdl_1.(run_nm) = betas.(task_id).mdl_1.kMoney.*money_varOption_valuePerTrialPerRun.(task_id).(run_nm) +...
+            betas.(task_id).mdl_1.kEffort.*E_varOption_levelPerTrialPerRun.(task_id).(run_nm);
+    end % run loop
     
     % model 2: SV=kR*R+kP*P-kE*E (split R/P factor)
     xModel2 = [R_nonDef_valuePerTrial.(task_id)-R_default_valuePerTrial.(task_id),...
         P_nonDef_valuePerTrial.(task_id)-P_default_valuePerTrial.(task_id),...
         E_nonDef_levelPerTrial.(task_id)-E_default_levelPerTrial.(task_id)];
     betamdl_2 = glmfit(xModel2, choice_nonDef.(task_id),...
-        'binomial','link','logit');
-    betas.(task_id).mdl_2.kb0 = betamdl_2(1);
-    betas.(task_id).mdl_2.kR = betamdl_2(2);
-    betas.(task_id).mdl_2.kP = betamdl_2(3);
-    betas.(task_id).mdl_2.kEffort = betamdl_2(4);
-    modelFit.mdl_2.(task_id) = glmval(betamdl_2, xModel2, 'logit');
-    deltaNV.mdl_2.(task_id) = betamdl_2(1) +...
-        betamdl_2(2).*xModel2(:,1) +...
-        betamdl_2(3).*xModel2(:,2) +...
-        betamdl_2(4).*xModel2(:,3);
+        'binomial','link','logit','Constant','off');
+    betas.(task_id).mdl_2.kR = betamdl_2(1);
+    betas.(task_id).mdl_2.kP = betamdl_2(2);
+    betas.(task_id).mdl_2.kEffort = betamdl_2(3);
+    modelFit.mdl_2.(task_id) = glmval(betamdl_2, xModel2, 'logit','Constant','off');
+    deltaNV.mdl_2.(task_id) = betamdl_2(1).*xModel2(:,1) +...
+        betamdl_2(2).*xModel2(:,2) +...
+        betamdl_2(3).*xModel2(:,3);
+    for iRun = 1:nRunsPerTask
+        run_nm = ['run',num2str(iRun)];
+        NV_chosen.(task_id).mdl_2.(run_nm) = betas.(task_id).mdl_2.kR.*R_chosen_valuePerTrial.(task_id).(run_nm) +...
+            betas.(task_id).mdl_2.kP.*P_chosen_valuePerTrial.(task_id).(run_nm) +...
+            betas.(task_id).mdl_2.kEffort.*E_chosen_levelPerTrial.(task_id).(run_nm);
+        NV_varOption.(task_id).mdl_2.(run_nm) = betas.(task_id).mdl_2.kR.*R_varOption_valuePerTrialPerRun.(task_id).(run_nm) +...
+            betas.(task_id).mdl_2.kP.*P_varOption_valuePerTrialPerRun.(task_id).(run_nm) +...
+            betas.(task_id).mdl_2.kEffort.*E_varOption_levelPerTrialPerRun.(task_id).(run_nm);
+    end % run loop
     
     % model 3: SV = kMoney*Money-kE*E+kF*E*(trial number-1) model with fatigue
     xModel3 = [money_nonDef_valuePerTrial.(task_id)-money_default_valuePerTrial.(task_id),...
         E_nonDef_levelPerTrial.(task_id)-E_default_levelPerTrial.(task_id),...
         (E_nonDef_levelPerTrial.(task_id)-E_default_levelPerTrial.(task_id)).*(trialN.(task_id) - 1)];
     betamdl_3 = glmfit(xModel3, choice_nonDef.(task_id),...
-        'binomial','link','logit');
-    betas.(task_id).mdl_3.kb0 = betamdl_3(1);
-    betas.(task_id).mdl_3.kMoney = betamdl_3(2);
-    betas.(task_id).mdl_3.kEffort = betamdl_3(3);
-    betas.(task_id).mdl_3.kFatigue = betamdl_3(4);
-    modelFit.mdl_3.(task_id) = glmval(betamdl_3, xModel3, 'logit');
-    deltaNV.mdl_3.(task_id) = betamdl_3(1) +...
-        betamdl_3(2).*xModel3(:,1) +...
-        betamdl_3(3).*xModel3(:,2) +...
-        betamdl_3(4).*xModel3(:,3);
+        'binomial','link','logit','Constant','off');
+    betas.(task_id).mdl_3.kMoney = betamdl_3(1);
+    betas.(task_id).mdl_3.kEffort = betamdl_3(2);
+    betas.(task_id).mdl_3.kFatigue = betamdl_3(3);
+    modelFit.mdl_3.(task_id) = glmval(betamdl_3, xModel3, 'logit','Constant','off');
+    deltaNV.mdl_3.(task_id) = betamdl_3(1).*xModel3(:,1) +...
+        betamdl_3(2).*xModel3(:,2) +...
+        betamdl_3(3).*xModel3(:,3);
+    for iRun = 1:nRunsPerTask
+        run_nm = ['run',num2str(iRun)];
+        NV_chosen.(task_id).mdl_3.(run_nm) = betas.(task_id).mdl_3.kMoney.*money_chosen_valuePerTrial.(task_id).(run_nm) +...
+            betas.(task_id).mdl_3.kEffort.*E_chosen_levelPerTrial.(task_id).(run_nm) +...
+            betas.(task_id).mdl_3.kFatigue.*E_chosen_levelPerTrial.(task_id).(run_nm).*trialN_perRun.(task_id).(run_nm);
+        NV_varOption.(task_id).mdl_3.(run_nm) = betas.(task_id).mdl_3.kMoney.*money_varOption_valuePerTrialPerRun.(task_id).(run_nm) +...
+            betas.(task_id).mdl_3.kEffort.*E_varOption_levelPerTrialPerRun.(task_id).(run_nm) +...
+            betas.(task_id).mdl_3.kFatigue.*E_varOption_levelPerTrialPerRun.(task_id).(run_nm).*trialN_perRun.(task_id).(run_nm);
+    end % run loop
     
     % model 4: SV = kR*R-kE*E-kP*P+kF*E*(trial number-1) model with fatigue
     xModel4 = [R_nonDef_valuePerTrial.(task_id)-R_default_valuePerTrial.(task_id),...
@@ -238,18 +289,27 @@ for iPM = 1:2
         E_nonDef_levelPerTrial.(task_id)-E_default_levelPerTrial.(task_id),...
         (E_nonDef_levelPerTrial.(task_id)-E_default_levelPerTrial.(task_id)).*(trialN.(task_id) - 1)];
     betamdl_4 = glmfit(xModel4, choice_nonDef.(task_id),...
-        'binomial','link','logit');
-    betas.(task_id).mdl_4.kb0 = betamdl_4(1);
-    betas.(task_id).mdl_4.kR = betamdl_4(2);
-    betas.(task_id).mdl_4.kP = betamdl_4(3);
-    betas.(task_id).mdl_4.kEffort = betamdl_4(4);
-    betas.(task_id).mdl_4.kFatigue = betamdl_4(5);
-    modelFit.mdl_4.(task_id) = glmval(betamdl_4, xModel4, 'logit');
-    deltaNV.mdl_4.(task_id) = betamdl_4(1) +...
-        betamdl_4(2).*xModel4(:,1) +...
-        betamdl_4(3).*xModel4(:,2) +...
-        betamdl_4(4).*xModel4(:,3) +...
-        betamdl_4(5).*xModel4(:,4);
+        'binomial','link','logit','Constant','off');
+    betas.(task_id).mdl_4.kR = betamdl_4(1);
+    betas.(task_id).mdl_4.kP = betamdl_4(2);
+    betas.(task_id).mdl_4.kEffort = betamdl_4(3);
+    betas.(task_id).mdl_4.kFatigue = betamdl_4(4);
+    modelFit.mdl_4.(task_id) = glmval(betamdl_4, xModel4, 'logit','Constant','off');
+    deltaNV.mdl_4.(task_id) = betamdl_4(1).*xModel4(:,1) +...
+        betamdl_4(2).*xModel4(:,2) +...
+        betamdl_4(3).*xModel4(:,3) +...
+        betamdl_4(4).*xModel4(:,4);
+    for iRun = 1:nRunsPerTask
+        run_nm = ['run',num2str(iRun)];
+        NV_chosen.(task_id).mdl_4.(run_nm) = betas.(task_id).mdl_4.kR.*R_chosen_valuePerTrial.(task_id).(run_nm) +...
+            betas.(task_id).mdl_4.kP.*P_chosen_valuePerTrial.(task_id).(run_nm) +...
+            betas.(task_id).mdl_4.kEffort.*E_chosen_levelPerTrial.(task_id).(run_nm) +...
+            betas.(task_id).mdl_4.kFatigue.*E_chosen_levelPerTrial.(task_id).(run_nm).*trialN_perRun.(task_id).(run_nm);
+        NV_varOption.(task_id).mdl_4.(run_nm) = betas.(task_id).mdl_4.kR.*R_varOption_valuePerTrialPerRun.(task_id).(run_nm) +...
+            betas.(task_id).mdl_4.kP.*P_varOption_valuePerTrialPerRun.(task_id).(run_nm) +...
+            betas.(task_id).mdl_4.kEffort.*E_varOption_levelPerTrialPerRun.(task_id).(run_nm) +...
+            betas.(task_id).mdl_4.kFatigue.*E_varOption_levelPerTrialPerRun.(task_id).(run_nm).*trialN_perRun.(task_id).(run_nm);
+    end % run loop
     
     %% extract choice for each money and effort level
     % initialize variables for the bins
@@ -288,22 +348,22 @@ for iPM = 1:2
     jM = 0;
     for iMoney = money_levels
         jM = jM + 1;
-        choiceNonDef.perMoneyLevel.(task_id)(jM) = nanmean(choice_nonDef.(task_id)( money_nonDef_levelPerTrial.(task_id) == iMoney));
+        choiceNonDef.perMoneyLevel.(task_id)(jM) = mean(choice_nonDef.(task_id)( money_nonDef_levelPerTrial.(task_id) == iMoney),1,'omitnan');
         % loop through models
         for iMdl = 1:nMdl
             mdl_nm = ['mdl_',num2str(iMdl)];
-            choiceFitNonDef.perMoneyLevel.(mdl_nm).(task_id)(jM) = nanmean(modelFit.(mdl_nm).(task_id)( money_nonDef_levelPerTrial.(task_id) == iMoney));
+            choiceFitNonDef.perMoneyLevel.(mdl_nm).(task_id)(jM) = mean(modelFit.(mdl_nm).(task_id)( money_nonDef_levelPerTrial.(task_id) == iMoney),1,'omitnan');
         end % model loop
     end
     % effort level
     jE = 0;
     for iEffort = E_levels
         jE = jE + 1;
-        choiceNonDef.perEffortLevel.(task_id)(jE) = nanmean(choice_nonDef.(task_id)( E_nonDef_levelPerTrial.(task_id) == iEffort));
+        choiceNonDef.perEffortLevel.(task_id)(jE) = mean(choice_nonDef.(task_id)( E_nonDef_levelPerTrial.(task_id) == iEffort),1,'omitnan');
         % loop through models
         for iMdl = 1:nMdl
             mdl_nm = ['mdl_',num2str(iMdl)];
-            choiceFitNonDef.perEffortLevel.(mdl_nm).(task_id)(jE) = nanmean(modelFit.(mdl_nm).(task_id)( E_nonDef_levelPerTrial.(task_id) == iEffort));
+            choiceFitNonDef.perEffortLevel.(mdl_nm).(task_id)(jE) = mean(modelFit.(mdl_nm).(task_id)( E_nonDef_levelPerTrial.(task_id) == iEffort),1,'omitnan');
         end % model loop
     end % effort level
     
@@ -440,5 +500,7 @@ choices.choiceFitNonDef = choiceFitNonDef;
 choices.actualMoney_values = actualMoney_values;
 choices.NV_bins = deltaNV_bins;
 choices.trialN_bins = trialN_bins;
+choices.NV_chosen = NV_chosen;
+choices.NV_varOption = NV_varOption;
 
 end % function
