@@ -46,6 +46,17 @@ switch study_nm
                         runs.nb_runs.Em = 1;
                         runs.tasks = {'Ep','Em','Ep'};
                 end
+            case {'017'}
+                switch condition
+                    case 'behavior'
+                        runs.nb_runs.Ep = 2;
+                        runs.nb_runs.Em = 2;
+                        runs.tasks = {'Em','Ep','Em','Ep'};
+                    case 'fMRI'
+                        runs.nb_runs.Ep = 2;
+                        runs.nb_runs.Em = 1;
+                        runs.tasks = {'Ep','Em','Ep'};
+                end
             case {'036','064','090','087'}
                 runs.nb_runs.Ep = 2;
                 runs.nb_runs.Em = 2;
