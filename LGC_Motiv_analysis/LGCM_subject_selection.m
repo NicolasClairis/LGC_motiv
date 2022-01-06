@@ -21,7 +21,7 @@ switch study_nm
     case 'study1'
 %         subject_id = {'087'};
         subject_id = {'074','036','095','064','061',...
-            '090','079','087','017'};
+            '090','079','087','017','039'};
     case 'study2'
 %         subject_id = {}; % 'XXX'
         error('experiment hasn''started yet...');
