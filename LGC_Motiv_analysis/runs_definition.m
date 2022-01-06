@@ -1,5 +1,5 @@
-function[runs] = runs_definition(study_nm, sub_nm, condition)
-% [runs] = runs_definition(study_nm, sub_nm, condition)
+function[runs, n_runs] = runs_definition(study_nm, sub_nm, condition)
+% [runs, n_runs] = runs_definition(study_nm, sub_nm, condition)
 %runs_definition will define the number and order of the physical and
 %mental effort task for the study and subject entered in input.
 %
@@ -12,10 +12,14 @@ function[runs] = runs_definition(study_nm, sub_nm, condition)
 % variable allows to take into account this so that the corresponding runs
 % are still included in the behavioral analysis but not in the fMRI
 % analysis.
+% 'behavior': behavioral analysis
+% 'fMRI': fMRI analysis
 %
 % OUTPUTS
 % runs: structure with number of runs for each task and also the order of
 % the runs
+%
+% n_runs: number of runs to include
 
 switch study_nm
     case 'fMRI_pilots'
@@ -35,18 +39,9 @@ switch study_nm
         end
     case 'study1'
         switch sub_nm
-            case {'074'}
-                switch condition
-                    case 'behavior'
-                        runs.nb_runs.Ep = 2;
-                        runs.nb_runs.Em = 2;
-                        runs.tasks = {'Em','Ep','Em','Ep'};
-                    case 'fMRI'
-                        runs.nb_runs.Ep = 2;
-                        runs.nb_runs.Em = 1;
-                        runs.tasks = {'Ep','Em','Ep'};
-                end
-            case {'017'}
+            case {'074', '017'}
+                % first run of these subjects: the fMRI crashed so you may
+                % want to remove it from the fMRI analysis
                 switch condition
                     case 'behavior'
                         runs.nb_runs.Ep = 2;
@@ -71,6 +66,9 @@ switch study_nm
     otherwise
         error('study not recognized');
 end
+
+%% extract number of runs
+n_runs = length(runs.tasks);
         
 
 end % function
