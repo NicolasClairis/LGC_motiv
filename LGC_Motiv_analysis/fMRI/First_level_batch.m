@@ -99,7 +99,7 @@ for iS = 1:NS
     end
     
     %% define number of runs
-    nb_runs = nb_runsPerSub(study_nm, sub_nm);
+    [~, nb_runs] = runs_definition(study_nm, sub_nm, 'fMRI');
     
     %% load fMRI data
     subj_scan_folders_names = ls([subj_scans_folder, filesep, '*run*']); % takes all functional runs folders
