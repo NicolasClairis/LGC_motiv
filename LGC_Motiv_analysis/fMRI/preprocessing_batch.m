@@ -1,5 +1,5 @@
-function[] = preprocessing_batch(study_nm)
-%[] = preprocessing_batch(study_nm)
+function[] = preprocessing_batch(study_nm, sub_nm)
+%[] = preprocessing_batch(study_nm, sub_nm)
 % preprocessing for fMRI data
 % enter subject identification in 'subject_id' (sXX_ddMMyy dd: day,
 % MM: month, yy: year) and preprocessing number in 'preproc'
@@ -18,6 +18,10 @@ function[] = preprocessing_batch(study_nm)
 % 'fMRI_pilots': pilots
 % 'study1': first study (dmPFC + AI)
 % 'study2': second study (clinical trial)
+%
+% sub_nm: subject name of the participant you want to preprocess. If left
+% empty, by default the script will preprocess all the individuals of the
+% study defined in 'study_nm' input.
 %
 % See also First_level_batch, contrasts_batch and
 % Second_level_batch
@@ -46,9 +50,13 @@ switch study_nm
     case 'study2'
         root = [fullfile(computerRoot,'study2'),filesep];
 end
-% subject_id = {'pilot_s2'}; % 'pilot_s1','pilot_s2'
-% NS = length(subject_id); % nber of subjects
-[subject_id, NS] = LGCM_subject_selection(study_nm);
+
+if isempty(sub_nm)
+    [subject_id, NS] = LGCM_subject_selection(study_nm);
+else
+    subject_id = {sub_nm};
+    NS = 1;
+end
 
 % give path for anatomical template
 spmTemplatePath = fullfile(spmFolderPath,'spm12','spm12','tpm','TPM.nii');
