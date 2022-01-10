@@ -56,7 +56,7 @@ switch study_nm
                 runs.nb_runs.Ep = 2;
                 runs.nb_runs.Em = 2;
                 runs.tasks = {'Ep','Em','Ep','Em'};
-            case {'095','061','079'}
+            case {'095','061','079','081'}
                 runs.nb_runs.Ep = 2;
                 runs.nb_runs.Em = 2;
                 runs.tasks = {'Em','Ep','Em','Ep'};
