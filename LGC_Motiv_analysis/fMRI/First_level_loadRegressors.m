@@ -307,8 +307,12 @@ if sum(choiceMissedTrials) > 0
     money_amount_obtained(choiceMissedTrials) = [];
     win_vs_loss_fbk(choiceMissedTrials) = [];
     choice_RT(choiceMissedTrials) = [];
-    NV_chosen(choiceMissedTrials) = [];
-    NV_varOption(choiceMissedTrials) = [];
+    if exist('NV_mdl_nm','var') &&...
+            (strcmp(NV_mdl_nm(1:4),'mdl_') ||...
+            strcmp(NV_mdl_nm(1:14),'bayesianModel_'))
+        NV_chosen(choiceMissedTrials) = [];
+        NV_varOption(choiceMissedTrials) = [];
+    end
 end
 
 %% load the batch according to GLMprm variables
