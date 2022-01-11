@@ -245,6 +245,12 @@ for iRP = 1:3
     end % net value
 end % R/P/RP loop
 
+% extract fatigue
+n_theoreticalTrialsPerRun = 54;
+trialN = (1:n_theoreticalTrialsPerRun) - 1; % trial number - 1 to reflect fatigue level
+trialN_dEch = trialN.*E_chosen_min_E_unchosen;
+trialN_dEnonDef = trialN.*E_varOption;
+
 %% remove trials where no choice was performed
 if sum(choiceMissedTrials) > 0
     % extract onsets and durations of missed trials
@@ -313,6 +319,9 @@ if sum(choiceMissedTrials) > 0
         NV_chosen(choiceMissedTrials) = [];
         NV_varOption(choiceMissedTrials) = [];
     end
+    trialN(choiceMissedTrials) = [];
+    trialN_dEch(choiceMissedTrials) = [];
+    trialN_dEnonDef(choiceMissedTrials) = [];
 end
 
 %% load the batch according to GLMprm variables
@@ -399,6 +408,7 @@ if ismember(choiceModel,{'stick','boxcar'})
         choiceModel_NV_varOption                    = GLMprm.choice.(task_id).(RP_choice_nm).NV_varOption;
         choiceModel_conf                            = GLMprm.choice.(task_id).(RP_choice_nm).confidence;
         choiceModel_RT                              = GLMprm.choice.(task_id).(RP_choice_nm).RT;
+        choiceModel_trialN                          = GLMprm.choice.(task_id).(RP_choice_nm).trialN;
 
         % extract trial index for the current loop
         switch RP_choice_nm
@@ -642,6 +652,22 @@ if ismember(choiceModel,{'stick','boxcar'})
                     error('not ready yet');
             end
         end
+        
+        % trial number
+        if choiceModel_trialN > 0
+            n_choiceMods = n_choiceMods + 1;
+            choice_modNames{n_choiceMods} = 'trial number';
+            switch choiceModel_trialN
+                case 1
+                    choice_modVals(n_choiceMods,:) = raw_or_z(trialN(choice_trial_idx));
+                case 2
+                    choice_modVals(n_choiceMods,:) = raw_or_z(trialN_dEch(choice_trial_idx));
+                case 3
+                    choice_modVals(n_choiceMods,:) = raw_or_z(trialN_dEnonDef(choice_trial_idx));
+                otherwise
+                    error('not ready yet');
+            end
+        end
 
         [matlabbatch] = First_level_loadEachCondition(matlabbatch, sub_idx, iRun, iCond,...
             ['choice_',RP_choice_nm], modelChoiceOnset, modelChoiceDur,...
@@ -672,6 +698,7 @@ if ismember(chosenModel,{'stick','boxcar'})
         chosenModel_NV_varOption    = GLMprm.chosen.(task_id).(RP_chosen_nm).NV_varOption;
         chosenModel_confidence      = GLMprm.chosen.(task_id).(RP_chosen_nm).confidence;
         chosenModel_RT              = GLMprm.chosen.(task_id).(RP_chosen_nm).RT;
+        chosenModel_trialN          = GLMprm.chosen.(task_id).(RP_chosen_nm).trialN;
         
         % extract trial index for the current loop
         switch RP_chosen_nm
@@ -896,6 +923,22 @@ if ismember(chosenModel,{'stick','boxcar'})
                     error('not ready yet');
             end
         end
+        
+        % trial number
+        if chosenModel_trialN > 0
+            n_chosenMods = n_chosenMods + 1;
+            chosen_modNames{n_chosenMods} = 'trial number';
+            switch chosenModel_trialN
+                case 1
+                    chosen_modVals(n_chosenMods,:) = raw_or_z(trialN(chosen_trial_idx));
+                case 2
+                    chosen_modVals(n_chosenMods,:) = raw_or_z(trialN_dEch(chosen_trial_idx));
+                case 3
+                    chosen_modVals(n_chosenMods,:) = raw_or_z(trialN_dEnonDef(chosen_trial_idx));
+                otherwise
+                    error('not ready yet');
+            end
+        end
 
         [matlabbatch] = First_level_loadEachCondition(matlabbatch, sub_idx, iRun, iCond,...
             ['dispChosen_',RP_chosen_nm], modelChosenOnset, modelChosenDur,...
@@ -942,6 +985,7 @@ if ismember(EperfModel,{'stick','boxcar'})
         EperfModel_NV_chosen        = GLMprm.Eperf.(task_id).(RP_Eperf_nm).NV_chosen;
         EperfModel_NV_varOption     = GLMprm.Eperf.(task_id).(RP_Eperf_nm).NV_varOption;
         EperfModel_RT1stAnswer      = GLMprm.Eperf.(task_id).(RP_Eperf_nm).RT_1stAnswer;
+        EperfModel_trialN           = GLMprm.Eperf.(task_id).(RP_Eperf_nm).trialN;
 
         % extract trial index for the current loop
         switch RP_Eperf_nm
@@ -1055,6 +1099,22 @@ if ismember(EperfModel,{'stick','boxcar'})
                     error('not ready yet');
             end
         end
+        
+        % trial number
+        if EperfModel_trialN > 0
+            n_EperfMods = n_EperfMods + 1;
+            Eperf_modNames{n_EperfMods} = 'trial number';
+            switch EperfModel_trialN
+                case 1
+                    Eperf_modVals(n_EperfMods,:) = raw_or_z(trialN(Eperf_trial_idx));
+                case 2
+                    Eperf_modVals(n_EperfMods,:) = raw_or_z(trialN_dEch(Eperf_trial_idx));
+                case 3
+                    Eperf_modVals(n_EperfMods,:) = raw_or_z(trialN_dEnonDef(Eperf_trial_idx));
+                otherwise
+                    error('not ready yet');
+            end
+        end
 
         [matlabbatch] = First_level_loadEachCondition(matlabbatch, sub_idx, iRun, iCond,...
             ['Eperf_',RP_Eperf_nm], modelEperfOnset, modelEperfDur,...
@@ -1070,10 +1130,11 @@ if ismember(fbkModel,{'stick','boxcar'})
     for iRP_fbk = 1:length(RPfbkCond)
         RP_fbk_nm = RPfbkCond{iRP_fbk};
         %
-        fbkModel_moneyObtained = GLMprm.fbk.(task_id).(RP_fbk_nm).money_obtained;
-        fbkModel_winVSloss = GLMprm.fbk.(task_id).(RP_fbk_nm).win_vs_loss;
-        fbkModel_Emade = GLMprm.fbk.(task_id).(RP_fbk_nm).E_made;
-        fbkModel_confidence = GLMprm.fbk.(task_id).(RP_fbk_nm).confidence;
+        fbkModel_moneyObtained  = GLMprm.fbk.(task_id).(RP_fbk_nm).money_obtained;
+        fbkModel_winVSloss      = GLMprm.fbk.(task_id).(RP_fbk_nm).win_vs_loss;
+        fbkModel_Emade          = GLMprm.fbk.(task_id).(RP_fbk_nm).E_made;
+        fbkModel_confidence     = GLMprm.fbk.(task_id).(RP_fbk_nm).confidence;
+        fbkModel_trialN         = GLMprm.fbk.(task_id).(RP_fbk_nm).trialN;
 
         % extract trial index for the current loop
         switch RP_fbk_nm
@@ -1150,6 +1211,22 @@ if ismember(fbkModel,{'stick','boxcar'})
                 case 1
                     error('not ready yet');
                     %             fbk_modVals(n_fbkMods,:) = ;
+                otherwise
+                    error('not ready yet');
+            end
+        end
+        
+        % trial number
+        if fbkModel_trialN > 0
+            n_fbkMods = n_fbkMods + 1;
+            fbk_modNames{n_fbkMods} = 'trial number';
+            switch fbkModel_trialN
+                case 1
+                    fbk_modVals(n_fbkMods,:) = raw_or_z(trialN(fbk_trial_idx));
+                case 2
+                    fbk_modVals(n_fbkMods,:) = raw_or_z(trialN_dEch(fbk_trial_idx));
+                case 3
+                    fbk_modVals(n_fbkMods,:) = raw_or_z(trialN_dEnonDef(fbk_trial_idx));
                 otherwise
                     error('not ready yet');
             end
