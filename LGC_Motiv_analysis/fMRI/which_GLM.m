@@ -620,7 +620,7 @@ switch GLM
             % feedback
             GLMprm.model_onset.(Epm_nm).fbk = 'stick';
         end
-    case 16 % net value + confidence + RT during choice (pooling R and P)
+    case 16 % net value + RT during choice (pooling R and P)
         % general parameters
         GLMprm.gal.orth_vars = 1;
         for iEpm = 1:length(Epm)
