@@ -628,7 +628,23 @@ if ismember(choiceModel,{'stick','boxcar'})
                     error('not ready yet');
             end
         end
-
+        
+        % trial number
+        if choiceModel_trialN > 0
+            n_choiceMods = n_choiceMods + 1;
+            choice_modNames{n_choiceMods} = 'trial number';
+            switch choiceModel_trialN
+                case 1
+                    choice_modVals(n_choiceMods,:) = raw_or_z(trialN(choice_trial_idx));
+                case 2
+                    choice_modVals(n_choiceMods,:) = raw_or_z(trialN_dEch(choice_trial_idx));
+                case 3
+                    choice_modVals(n_choiceMods,:) = raw_or_z(trialN_dEnonDef(choice_trial_idx));
+                otherwise
+                    error('not ready yet');
+            end
+        end
+        
         % choice confidence
         if choiceModel_conf > 0
             n_choiceMods = n_choiceMods + 1;
@@ -653,22 +669,6 @@ if ismember(choiceModel,{'stick','boxcar'})
             end
         end
         
-        % trial number
-        if choiceModel_trialN > 0
-            n_choiceMods = n_choiceMods + 1;
-            choice_modNames{n_choiceMods} = 'trial number';
-            switch choiceModel_trialN
-                case 1
-                    choice_modVals(n_choiceMods,:) = raw_or_z(trialN(choice_trial_idx));
-                case 2
-                    choice_modVals(n_choiceMods,:) = raw_or_z(trialN_dEch(choice_trial_idx));
-                case 3
-                    choice_modVals(n_choiceMods,:) = raw_or_z(trialN_dEnonDef(choice_trial_idx));
-                otherwise
-                    error('not ready yet');
-            end
-        end
-
         [matlabbatch] = First_level_loadEachCondition(matlabbatch, sub_idx, iRun, iCond,...
             ['choice_',RP_choice_nm], modelChoiceOnset, modelChoiceDur,...
             n_choiceMods, choice_modNames, choice_modVals,...
@@ -899,7 +899,23 @@ if ismember(chosenModel,{'stick','boxcar'})
                     error('not ready yet');
             end
         end
-
+        
+        % trial number
+        if chosenModel_trialN > 0
+            n_chosenMods = n_chosenMods + 1;
+            chosen_modNames{n_chosenMods} = 'trial number';
+            switch chosenModel_trialN
+                case 1
+                    chosen_modVals(n_chosenMods,:) = raw_or_z(trialN(chosen_trial_idx));
+                case 2
+                    chosen_modVals(n_chosenMods,:) = raw_or_z(trialN_dEch(chosen_trial_idx));
+                case 3
+                    chosen_modVals(n_chosenMods,:) = raw_or_z(trialN_dEnonDef(chosen_trial_idx));
+                otherwise
+                    error('not ready yet');
+            end
+        end
+        
         % confidence
         if chosenModel_confidence > 0
             n_chosenMods = n_chosenMods + 1;
@@ -919,22 +935,6 @@ if ismember(chosenModel,{'stick','boxcar'})
             switch chosenModel_RT
                 case 1
                     chosen_modVals(n_chosenMods,:) = raw_or_z(choice_RT(chosen_trial_idx));
-                otherwise
-                    error('not ready yet');
-            end
-        end
-        
-        % trial number
-        if chosenModel_trialN > 0
-            n_chosenMods = n_chosenMods + 1;
-            chosen_modNames{n_chosenMods} = 'trial number';
-            switch chosenModel_trialN
-                case 1
-                    chosen_modVals(n_chosenMods,:) = raw_or_z(trialN(chosen_trial_idx));
-                case 2
-                    chosen_modVals(n_chosenMods,:) = raw_or_z(trialN_dEch(chosen_trial_idx));
-                case 3
-                    chosen_modVals(n_chosenMods,:) = raw_or_z(trialN_dEnonDef(chosen_trial_idx));
                 otherwise
                     error('not ready yet');
             end
@@ -1202,19 +1202,6 @@ if ismember(fbkModel,{'stick','boxcar'})
                     error('not ready yet');
             end
         end
-
-        % confidence
-        if fbkModel_confidence > 0
-            n_fbkMods = n_fbkMods + 1;
-            fbk_modNames{n_fbkMods} = 'confidence';
-            switch fbkModel_confidence
-                case 1
-                    error('not ready yet');
-                    %             fbk_modVals(n_fbkMods,:) = ;
-                otherwise
-                    error('not ready yet');
-            end
-        end
         
         % trial number
         if fbkModel_trialN > 0
@@ -1227,6 +1214,19 @@ if ismember(fbkModel,{'stick','boxcar'})
                     fbk_modVals(n_fbkMods,:) = raw_or_z(trialN_dEch(fbk_trial_idx));
                 case 3
                     fbk_modVals(n_fbkMods,:) = raw_or_z(trialN_dEnonDef(fbk_trial_idx));
+                otherwise
+                    error('not ready yet');
+            end
+        end
+        
+        % confidence
+        if fbkModel_confidence > 0
+            n_fbkMods = n_fbkMods + 1;
+            fbk_modNames{n_fbkMods} = 'confidence';
+            switch fbkModel_confidence
+                case 1
+                    error('not ready yet');
+                    %             fbk_modVals(n_fbkMods,:) = ;
                 otherwise
                     error('not ready yet');
             end
