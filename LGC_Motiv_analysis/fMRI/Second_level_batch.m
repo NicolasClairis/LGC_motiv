@@ -1,4 +1,5 @@
 function[] = Second_level_batch(study_nm, GLM)
+% Second_level_batch(study_nm, GLM)
 % script to launch second level on LGC Motivation studies
 %
 % INPUTS
