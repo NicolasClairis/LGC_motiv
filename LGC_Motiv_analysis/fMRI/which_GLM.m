@@ -25,6 +25,10 @@ function [GLMprm] = which_GLM(GLM)
 %       (0) don't orthogonalize the regressors
 %       (1) orthogonalize regressors of the GLM (1)
 %
+%       .zPerRun:
+%       (0) raw values (or whatever is defined for each regressor)
+%       (1) values zscored per run
+%
 %   .model_onset: indicate for each task (Ep/Em: physical/mental) for each
 %   event (preChoiceCross/choice/chosen/preEffortCross/Eperf/fbk) if it should be modelled as a
 %   stick ('stick') as a boxcar ('boxcar') or not included in the GLM
@@ -739,6 +743,28 @@ switch GLM
             end
             % effort perf
             GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
+            % feedback
+            GLMprm.model_onset.(Epm_nm).fbk = 'stick';
+        end
+    case 21 % NV during performance R/P split
+        % general parameters
+        GLMprm.gal.orth_vars = 0; % no orthogonalization (nothing to orthogonalize anyway)
+        GLMprm.gal.zPerRun = 1; % zscore net value per run
+        GLMprm.gal.add_drv = 1; % temporal derivative
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'stick';
+            % chosen
+            GLMprm.model_onset.(Epm_nm).chosen = 'stick';
+            % effort perf
+            GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
+            GLMprm.Eperf.(Epm_nm).RPpool = 0;
+            for iRP = 1:length(RP_conds)
+                RP_nm = RP_conds{iRP};
+                GLMprm.Eperf.(Epm_nm).(RP_nm).NV_chosen = 1;
+                GLMprm.Eperf.(Epm_nm).(RP_nm).NV_mdl = 'mdl_4';
+            end
             % feedback
             GLMprm.model_onset.(Epm_nm).fbk = 'stick';
         end
