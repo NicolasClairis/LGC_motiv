@@ -115,7 +115,7 @@ function [GLMprm] = which_GLM(GLM)
 %       (2) sum of the effort difficulties (Ep: duration to hold; Em: nb answers to give) associated to both options
 %
 %       .(choice/chosen).(Ep/Em).(R/P/RP).NV_chosen
-%       (1) net value of the non-default option based on the model defined in
+%       (1) net value of the chosen option based on the model defined in
 %       .choice.(Ep.Em).(R/P/RP).NV_mdl (='mdl_X' or 'bayesianModel_X')
 %
 %       .(choice/chosen).(Ep/Em).(R/P/RP).NV_varOption
@@ -166,7 +166,7 @@ function [GLMprm] = which_GLM(GLM)
 %       (1) number of errors made
 %
 %       .Eperf.(Ep/Em).(R/P/RP).NV_chosen
-%       (1) net value of the non-default option based on the model defined in
+%       (1) net value of the chosen option based on the model defined in
 %       .Eperf.(Ep.Em).(R/P/RP).NV_mdl (='mdl_X' or 'bayesianModel_X')
 %
 %       .Eperf.(Ep/Em).(R/P/RP).NV_varOption
@@ -763,6 +763,272 @@ switch GLM
             for iRP = 1:length(RP_conds)
                 RP_nm = RP_conds{iRP};
                 GLMprm.Eperf.(Epm_nm).(RP_nm).NV_chosen = 1;
+                GLMprm.Eperf.(Epm_nm).(RP_nm).NV_mdl = 'mdl_4';
+            end
+            % feedback
+            GLMprm.model_onset.(Epm_nm).fbk = 'stick';
+        end
+    case 22 % chosen option R/E/trial number/RT during choice
+        % general parameters
+        GLMprm.gal.orth_vars = 0; % no orthogonalization (nothing to orthogonalize anyway)
+        GLMprm.gal.zPerRun = 1; % zscore net value per run
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'stick';
+            GLMprm.choice.(Epm_nm).RPpool = 0;
+            for iRP = 1:length(RP_conds)
+                RP_nm = RP_conds{iRP};
+                GLMprm.choice.(Epm_nm).(RP_nm).money_chosen = 1;
+                GLMprm.choice.(Epm_nm).(RP_nm).E_chosen = 1;
+                GLMprm.choice.(Epm_nm).(RP_nm).trialN = 1;
+                GLMprm.choice.(Epm_nm).(RP_nm).RT = 1;
+            end
+            % chosen
+            GLMprm.model_onset.(Epm_nm).chosen = 'stick';
+            % effort perf
+            GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
+            % feedback
+            GLMprm.model_onset.(Epm_nm).fbk = 'stick';
+        end
+    case 23 % chosen option R/E/trial number/RT during chosen
+        % general parameters
+        GLMprm.gal.orth_vars = 0; % no orthogonalization (nothing to orthogonalize anyway)
+        GLMprm.gal.zPerRun = 1; % zscore net value per run
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'stick';
+            % chosen
+            GLMprm.model_onset.(Epm_nm).chosen = 'stick';
+            GLMprm.chosen.(Epm_nm).RPpool = 0;
+            for iRP = 1:length(RP_conds)
+                RP_nm = RP_conds{iRP};
+                GLMprm.chosen.(Epm_nm).(RP_nm).money_chosen = 1;
+                GLMprm.chosen.(Epm_nm).(RP_nm).E_chosen = 1;
+                GLMprm.chosen.(Epm_nm).(RP_nm).trialN = 1;
+                GLMprm.chosen.(Epm_nm).(RP_nm).RT = 1;
+            end
+            % effort perf
+            GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
+            % feedback
+            GLMprm.model_onset.(Epm_nm).fbk = 'stick';
+        end
+    case 24 % chosen option R/E/trial number during effort performance
+        % general parameters
+        GLMprm.gal.orth_vars = 0; % no orthogonalization (nothing to orthogonalize anyway)
+        GLMprm.gal.zPerRun = 1; % zscore net value per run
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'stick';
+            % chosen
+            GLMprm.model_onset.(Epm_nm).chosen = 'stick';
+            % effort perf
+            GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
+            GLMprm.Eperf.(Epm_nm).RPpool = 0;
+            for iRP = 1:length(RP_conds)
+                RP_nm = RP_conds{iRP};
+                GLMprm.Eperf.(Epm_nm).(RP_nm).money_chosen = 1;
+                GLMprm.Eperf.(Epm_nm).(RP_nm).E_chosen = 1;
+                GLMprm.Eperf.(Epm_nm).(RP_nm).trialN = 1;
+            end
+            % feedback
+            GLMprm.model_onset.(Epm_nm).fbk = 'stick';
+        end
+    case 25 % NV chosen option/RT during choice
+        % general parameters
+        GLMprm.gal.orth_vars = 0; % no orthogonalization (nothing to orthogonalize anyway)
+        GLMprm.gal.zPerRun = 1; % zscore net value per run
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'stick';
+            GLMprm.choice.(Epm_nm).RPpool = 0;
+            for iRP = 1:length(RP_conds)
+                RP_nm = RP_conds{iRP};
+                GLMprm.choice.(Epm_nm).(RP_nm).NV_chosen = 1;
+                GLMprm.choice.(Epm_nm).(RP_nm).NV_mdl = 'mdl_4';
+                GLMprm.choice.(Epm_nm).(RP_nm).RT = 1;
+            end
+            % chosen
+            GLMprm.model_onset.(Epm_nm).chosen = 'stick';
+            % effort perf
+            GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
+            % feedback
+            GLMprm.model_onset.(Epm_nm).fbk = 'stick';
+        end
+    case 26 % NV chosen option/RT during chosen
+        % general parameters
+        GLMprm.gal.orth_vars = 0; % no orthogonalization (nothing to orthogonalize anyway)
+        GLMprm.gal.zPerRun = 1; % zscore net value per run
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'stick';
+            % chosen
+            GLMprm.model_onset.(Epm_nm).chosen = 'stick';
+            GLMprm.chosen.(Epm_nm).RPpool = 0;
+            for iRP = 1:length(RP_conds)
+                RP_nm = RP_conds{iRP};
+                GLMprm.chosen.(Epm_nm).(RP_nm).NV_chosen = 1;
+                GLMprm.chosen.(Epm_nm).(RP_nm).NV_mdl = 'mdl_4';
+                GLMprm.chosen.(Epm_nm).(RP_nm).RT = 1;
+            end
+            % effort perf
+            GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
+            % feedback
+            GLMprm.model_onset.(Epm_nm).fbk = 'stick';
+        end
+    case 27 % NV chosen option during effort performance
+        % general parameters
+        GLMprm.gal.orth_vars = 0; % no orthogonalization (nothing to orthogonalize anyway)
+        GLMprm.gal.zPerRun = 1; % zscore net value per run
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'stick';
+            % chosen
+            GLMprm.model_onset.(Epm_nm).chosen = 'stick';
+            % effort perf
+            GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
+            GLMprm.Eperf.(Epm_nm).RPpool = 0;
+            for iRP = 1:length(RP_conds)
+                RP_nm = RP_conds{iRP};
+                GLMprm.Eperf.(Epm_nm).(RP_nm).NV_chosen = 1;
+                GLMprm.Eperf.(Epm_nm).(RP_nm).NV_mdl = 'mdl_4';
+            end
+            % feedback
+            GLMprm.model_onset.(Epm_nm).fbk = 'stick';
+        end
+    case 28 % non-default option R/E/trial number/RT during choice
+        % general parameters
+        GLMprm.gal.orth_vars = 0; % no orthogonalization (nothing to orthogonalize anyway)
+        GLMprm.gal.zPerRun = 1; % zscore net value per run
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'stick';
+            GLMprm.choice.(Epm_nm).RPpool = 0;
+            for iRP = 1:length(RP_conds)
+                RP_nm = RP_conds{iRP};
+                GLMprm.choice.(Epm_nm).(RP_nm).money_varOption = 1;
+                GLMprm.choice.(Epm_nm).(RP_nm).E_varOption = 1;
+                GLMprm.choice.(Epm_nm).(RP_nm).trialN = 1;
+                GLMprm.choice.(Epm_nm).(RP_nm).RT = 1;
+            end
+            % chosen
+            GLMprm.model_onset.(Epm_nm).chosen = 'stick';
+            % effort perf
+            GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
+            % feedback
+            GLMprm.model_onset.(Epm_nm).fbk = 'stick';
+        end
+    case 29 % non-default option R/E/trial number/RT during chosen
+        % general parameters
+        GLMprm.gal.orth_vars = 0; % no orthogonalization (nothing to orthogonalize anyway)
+        GLMprm.gal.zPerRun = 1; % zscore net value per run
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'stick';
+            % chosen
+            GLMprm.model_onset.(Epm_nm).chosen = 'stick';
+            GLMprm.chosen.(Epm_nm).RPpool = 0;
+            for iRP = 1:length(RP_conds)
+                RP_nm = RP_conds{iRP};
+                GLMprm.chosen.(Epm_nm).(RP_nm).money_varOption = 1;
+                GLMprm.chosen.(Epm_nm).(RP_nm).E_varOption = 1;
+                GLMprm.chosen.(Epm_nm).(RP_nm).trialN = 1;
+                GLMprm.chosen.(Epm_nm).(RP_nm).RT = 1;
+            end
+            % effort perf
+            GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
+            % feedback
+            GLMprm.model_onset.(Epm_nm).fbk = 'stick';
+        end
+    case 30 % non-default option R/E/trial number during effort performance
+        % general parameters
+        GLMprm.gal.orth_vars = 0; % no orthogonalization (nothing to orthogonalize anyway)
+        GLMprm.gal.zPerRun = 1; % zscore net value per run
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'stick';
+            % chosen
+            GLMprm.model_onset.(Epm_nm).chosen = 'stick';
+            % effort perf
+            GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
+            GLMprm.Eperf.(Epm_nm).RPpool = 0;
+            for iRP = 1:length(RP_conds)
+                RP_nm = RP_conds{iRP};
+                GLMprm.Eperf.(Epm_nm).(RP_nm).money_varOption = 1;
+                GLMprm.Eperf.(Epm_nm).(RP_nm).E_varOption = 1;
+                GLMprm.Eperf.(Epm_nm).(RP_nm).trialN = 1;
+            end
+            % feedback
+            GLMprm.model_onset.(Epm_nm).fbk = 'stick';
+        end
+    case 31 % NV non-default option/RT during choice
+        % general parameters
+        GLMprm.gal.orth_vars = 0; % no orthogonalization (nothing to orthogonalize anyway)
+        GLMprm.gal.zPerRun = 1; % zscore net value per run
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'stick';
+            GLMprm.choice.(Epm_nm).RPpool = 0;
+            for iRP = 1:length(RP_conds)
+                RP_nm = RP_conds{iRP};
+                GLMprm.choice.(Epm_nm).(RP_nm).NV_varOption = 1;
+                GLMprm.choice.(Epm_nm).(RP_nm).NV_mdl = 'mdl_4';
+                GLMprm.choice.(Epm_nm).(RP_nm).RT = 1;
+            end
+            % chosen
+            GLMprm.model_onset.(Epm_nm).chosen = 'stick';
+            % effort perf
+            GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
+            % feedback
+            GLMprm.model_onset.(Epm_nm).fbk = 'stick';
+        end
+    case 32 % NV non-default option/RT during chosen
+        % general parameters
+        GLMprm.gal.orth_vars = 0; % no orthogonalization (nothing to orthogonalize anyway)
+        GLMprm.gal.zPerRun = 1; % zscore net value per run
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'stick';
+            % chosen
+            GLMprm.model_onset.(Epm_nm).chosen = 'stick';
+            GLMprm.chosen.(Epm_nm).RPpool = 0;
+            for iRP = 1:length(RP_conds)
+                RP_nm = RP_conds{iRP};
+                GLMprm.chosen.(Epm_nm).(RP_nm).NV_varOption = 1;
+                GLMprm.chosen.(Epm_nm).(RP_nm).NV_mdl = 'mdl_4';
+                GLMprm.chosen.(Epm_nm).(RP_nm).RT = 1;
+            end
+            % effort perf
+            GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
+            % feedback
+            GLMprm.model_onset.(Epm_nm).fbk = 'stick';
+        end
+    case 33 % NV non-default option during effort performance
+        % general parameters
+        GLMprm.gal.orth_vars = 0; % no orthogonalization (nothing to orthogonalize anyway)
+        GLMprm.gal.zPerRun = 1; % zscore net value per run
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'stick';
+            % chosen
+            GLMprm.model_onset.(Epm_nm).chosen = 'stick';
+            % effort perf
+            GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
+            GLMprm.Eperf.(Epm_nm).RPpool = 0;
+            for iRP = 1:length(RP_conds)
+                RP_nm = RP_conds{iRP};
+                GLMprm.Eperf.(Epm_nm).(RP_nm).NV_varOption = 1;
                 GLMprm.Eperf.(Epm_nm).(RP_nm).NV_mdl = 'mdl_4';
             end
             % feedback
