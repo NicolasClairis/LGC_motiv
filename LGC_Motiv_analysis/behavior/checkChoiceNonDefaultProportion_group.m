@@ -59,6 +59,8 @@ end
 n_R_levels = 4;
 n_E_levels = 4;
 
+nTrialsPerRun = 54;
+
 taskTypes = {'Ep','Em'};
 nTaskTypes = length(taskTypes);
 
@@ -228,12 +230,21 @@ bar_hdl.Ep = jbfill(1:n_bins,...
     (avg_nonDefaultChoice.Ep_f_time - sem_nonDefaultChoice.Ep_f_time)'.*100,...
     avg_nonDefaultChoice.Ep_f_time'.*100,...
     Ep_col);
-ylim([0 100]);
-xlim([0 n_bins+1]);
-xlabel('trial bins');
+% ylim([0 100]);
+ylim([40 100]);
+xlim([1 n_bins]);
+xticks(1:n_bins);
+xLabelNames = cell(1,n_bins);
+nTrialsPerBin = nTrialsPerRun/n_bins;
+for iBin = 1:n_bins
+    xLabelNames{iBin} = [num2str( 1 + nTrialsPerBin*(iBin-1)),'-',num2str(nTrialsPerBin*iBin)];
+end
+xticklabels(xLabelNames);
+xlabel('trial number');
 ylabel('Choice non-default option (%)');
 legend([bar_hdl.Em, bar_hdl.Ep],'mental','physical');
 legend('boxoff');
+legend('Location','NorthWest');
 legend_size(pSize);
 
 %% check choices = f(R/P) per task
