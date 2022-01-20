@@ -136,7 +136,7 @@ for iS = 1:NS
     sub_nm = subject_id{iS};
     % load individual data
     [betas_tmp, choices_tmp] = logitfit_choices(computerRoot, study_nm, sub_nm,...
-        figDispIndiv, dispMoneyOrLevels, n_NV_bins);
+        figDispIndiv, dispMoneyOrLevels, n_NV_bins, n_trialN_bins);
     trialN_levels = choices_tmp.trialN_bins.Ep;
     
     % pool data across subjects
@@ -261,7 +261,7 @@ for iPM = 1:2
         lWidth = 3;
         lWidth_borders = 1;
         %% loop through models
-        for iMdl = 1:nMdl
+        for iMdl = 4:nMdl
             mdl_nm = ['mdl_',num2str(iMdl)];
             
             %% display choice = f(net value)
@@ -273,21 +273,25 @@ for iPM = 1:2
             %             sem_NV_bins.mdl_1.(task_id),...
             %             sem_NV_bins.mdl_1.(task_id));
             pointMdl = errorbar(m_NV_bins.(mdl_nm).(task_id),...
-                m_choiceNonDef.perNVLevel.(mdl_nm).(task_id),...
-                sem_choiceNonDef.perNVLevel.(mdl_nm).(task_id));
+                m_choiceNonDef.perNVLevel.(mdl_nm).(task_id).*100,...
+                sem_choiceNonDef.perNVLevel.(mdl_nm).(task_id).*100);
             pointMdl.Color = [0 0 0];
             pointMdl.Marker = 'o';
             pointMdl.LineStyle = 'none';
             pointMdl.LineWidth = lWidth;
             hold on;
-            line(xlim(),[0 0],'LineWidth',lWidth_borders,'Color',[0 0 0]);
-            line(xlim(),[1 1],'LineWidth',lWidth_borders,'Color',[0 0 0]);
-            lHdlMdl = plot(m_NV_bins.(mdl_nm).(task_id), m_choiceFitNonDef.perNVLevel.(mdl_nm).(task_id));
+%             line(xlim(),[0 0],'LineWidth',lWidth_borders,'Color',[0 0 0]);
+%             line(xlim(),[100 100],'LineWidth',lWidth_borders,'Color',[0 0 0]);
+%             line(xlim(),[50 50],'LineWidth',lWidth_borders,'Color',[0 0 0]);
+%             line([0 0],[0 100],'LineWidth',lWidth_borders,'Color',[0 0 0]);
+            lHdlMdl = plot(m_NV_bins.(mdl_nm).(task_id),...
+                m_choiceFitNonDef.perNVLevel.(mdl_nm).(task_id).*100);
             lHdlMdl.LineStyle = '--';
             lHdlMdl.LineWidth = lWidth;
             lHdlMdl.Color = [143 0 0]./255;
-            ylim([-0.2 1.2]);
-            xlabel(['Net value ',task_fullName,' - model ',num2str(iMdl)]);
+            ylim([0 100]);
+            %             xlabel(['Net value ',task_fullName,' - model ',num2str(iMdl)]);
+            xlabel('Net value non-default option');
             ylabel('Choice non-default option (%)');
             legend_size(pSize);
             %         saveas(resultFolder)
@@ -298,30 +302,31 @@ for iPM = 1:2
                 case 'money' % show also error bar in the X dimension
                     money_or_levels = m_actualMoney_values.(task_id);
                     pointMdl = errorbar(m_actualMoney_values.(task_id),...
-                        m_choiceNonDef.perMoneyLevel.(task_id),...
-                        m_choiceNonDef.perMoneyLevel.(task_id)-sem_choiceNonDef.perMoneyLevel.(task_id),...
-                        m_choiceNonDef.perMoneyLevel.(task_id)+sem_choiceNonDef.perMoneyLevel.(task_id),...
+                        m_choiceNonDef.perMoneyLevel.(task_id).*100,...
+                        m_choiceNonDef.perMoneyLevel.(task_id)-sem_choiceNonDef.perMoneyLevel.(task_id).*100,...
+                        m_choiceNonDef.perMoneyLevel.(task_id)+sem_choiceNonDef.perMoneyLevel.(task_id).*100,...
                         m_actualMoney_values.(task_id)-sem_actualMoney_values.(task_id),...
                         m_actualMoney_values.(task_id)+sem_actualMoney_values.(task_id));
                 case 'levels'
                     money_or_levels = money_levels;
                     pointMdl = errorbar(money_levels,...
-                        m_choiceNonDef.perMoneyLevel.(task_id),...
-                        sem_choiceNonDef.perMoneyLevel.(task_id));
+                        m_choiceNonDef.perMoneyLevel.(task_id).*100,...
+                        sem_choiceNonDef.perMoneyLevel.(task_id).*100);
             end
             pointMdl.Color = [0 0 0];
             pointMdl.Marker = 'o';
             pointMdl.LineStyle = 'none';
             pointMdl.LineWidth = lWidth;
             hold on;
-            line(xlim(),[0 0],'LineWidth',lWidth_borders,'Color',[0 0 0]);
-            line(xlim(),[1 1],'LineWidth',lWidth_borders,'Color',[0 0 0]);
+%             line(xlim(),[0 0],'LineWidth',lWidth_borders,'Color',[0 0 0]);
+%             line(xlim(),[100 100],'LineWidth',lWidth_borders,'Color',[0 0 0]);
             lHdlMdl = plot(money_or_levels,...
-                m_choiceFitNonDef.perMoneyLevel.(mdl_nm).(task_id));
+                m_choiceFitNonDef.perMoneyLevel.(mdl_nm).(task_id).*100);
             lHdlMdl.LineStyle = '--';
             lHdlMdl.LineWidth = lWidth;
             lHdlMdl.Color = [143 0 0]./255;
-            ylim([-0.2 1.2]);
+            %             ylim([-0.2 1.2]);
+            ylim([0 100]);
             switch dispMoneyOrLevels
                 case 'money'
                     xlabel([task_fullName,' Money (€) - model ',num2str(iMdl)]);
@@ -335,21 +340,22 @@ for iPM = 1:2
             %% choice non-default = f(effort levels)
             fig;
             pointMdl = errorbar(E_levels,...
-                m_choiceNonDef.perEffortLevel.(task_id),...
-                sem_choiceNonDef.perEffortLevel.(task_id));
+                m_choiceNonDef.perEffortLevel.(task_id).*100,...
+                sem_choiceNonDef.perEffortLevel.(task_id).*100);
             pointMdl.Color = [0 0 0];
             pointMdl.Marker = 'o';
             pointMdl.LineStyle = 'none';
             pointMdl.LineWidth = lWidth;
             hold on;
-            line(xlim(),[0 0],'LineWidth',lWidth_borders,'Color',[0 0 0]);
-            line(xlim(),[1 1],'LineWidth',lWidth_borders,'Color',[0 0 0]);
+%             line(xlim(),[0 0],'LineWidth',lWidth_borders,'Color',[0 0 0]);
+%             line(xlim(),[100 100],'LineWidth',lWidth_borders,'Color',[0 0 0]);
             lHdlMdl = plot(E_levels,...
-                m_choiceFitNonDef.perEffortLevel.(mdl_nm).(task_id));
+                m_choiceFitNonDef.perEffortLevel.(mdl_nm).(task_id).*100);
             lHdlMdl.LineStyle = '--';
             lHdlMdl.LineWidth = lWidth;
             lHdlMdl.Color = [143 0 0]./255;
-            ylim([-0.2 1.2]);
+            %             ylim([-0.2 1.2]);
+            ylim([0 100]);
             xlabel([task_fullName,' effort level - model ',num2str(iMdl)]);
             ylabel('Choice non-default option (%)');
             legend_size(pSize);
@@ -358,21 +364,22 @@ for iPM = 1:2
             %% choice non-default = f(trial number)
             fig;
             pointMdl = errorbar(trialN_levels,...
-                m_choiceNonDef.perTrialN.(task_id),...
-                sem_choiceNonDef.perTrialN.(task_id));
+                m_choiceNonDef.perTrialN.(task_id).*100,...
+                sem_choiceNonDef.perTrialN.(task_id).*100);
             pointMdl.Color = [0 0 0];
             pointMdl.Marker = 'o';
             pointMdl.LineStyle = 'none';
             pointMdl.LineWidth = lWidth;
             hold on;
-            line(xlim(),[0 0],'LineWidth',lWidth_borders,'Color',[0 0 0]);
-            line(xlim(),[1 1],'LineWidth',lWidth_borders,'Color',[0 0 0]);
+%             line(xlim(),[0 0],'LineWidth',lWidth_borders,'Color',[0 0 0]);
+%             line(xlim(),[100 100],'LineWidth',lWidth_borders,'Color',[0 0 0]);
             lHdlMdl = plot(trialN_levels,...
-                m_choiceFitNonDef.perTrialN.(mdl_nm).(task_id));
+                m_choiceFitNonDef.perTrialN.(mdl_nm).(task_id).*100);
             lHdlMdl.LineStyle = '--';
             lHdlMdl.LineWidth = lWidth;
             lHdlMdl.Color = [143 0 0]./255;
-            ylim([-0.2 1.2]);
+            %             ylim([-0.2 1.2]);
+            ylim([0 100]);
             xlabel([task_fullName,' trial number - model ',num2str(iMdl)]);
             ylabel('Choice non-default option (%)');
             legend_size(pSize);
