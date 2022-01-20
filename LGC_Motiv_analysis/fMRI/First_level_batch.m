@@ -1,4 +1,4 @@
-function[] = First_level_batch(study_nm, checking)
+function[] = First_level_batch(study_nm, checking, GLM)
 % First_level_batch will perform 1st level for LGC motivation fMRI studies.
 %
 % INPUTS
@@ -10,6 +10,8 @@ function[] = First_level_batch(study_nm, checking)
 % checking:
 % (0) launch 1st level directly
 % (1) display SPM batch before launching to be able to check the inputs
+%
+% GLM: GLM number
 %
 % See also which_GLM.m, GLM_details.m, LGCM_contrasts_spm.m,
 % First_level_loadEachCondition.m, First_level_loadRegressors.m,
@@ -29,11 +31,14 @@ if ~exist('checking','var') || isempty(checking)
     checking = 0;
 end
 % GLM number
-[GLM_nm] = deal([]);
-while isempty(GLM_nm)
-    % repeat until all questions are answered
-    info = inputdlg({'GLM number?'});
-    [GLM_nm] = info{1};
+if ~exist('GLM','var') || isempty(GLM) || ~isnumeric(GLM) || GLM < 0
+    [GLM_nm] = deal([]);
+    while isempty(GLM_nm)
+        % repeat until all questions are answered
+        info = inputdlg({'GLM number?'});
+        [GLM_nm] = info{1};
+    end
+    GLM = str2double(GLM_nm);
 end
 if ~exist('study_nm','var') || isempty(study_nm)
     %     study_names = {'study1','study2','fMRI_pilots'};
@@ -41,7 +46,6 @@ if ~exist('study_nm','var') || isempty(study_nm)
     %     study_nm = study_names{study_nm_idx};
     study_nm = 'study1'; % define by default
 end
-GLM = str2double(GLM_nm);
 GLMprm = which_GLM(GLM);
 add_drv = GLMprm.gal.add_drv;
 grey_mask = GLMprm.gal.grey_mask;
@@ -55,7 +59,8 @@ TR = 2.00;
 nb_batch_per_subj = 2; % model + estimate
 
 %% working directories
-computerRoot = LGCM_root_paths();
+% computerRoot = LGCM_root_paths();
+computerRoot = ['E:',filesep];
 % scripts_folder = fullfile(computer_root,'GitHub','LGC_motiv','LGC_Motiv_analysis','fMRI');
 % addpath(scripts_folder);
 switch study_nm
