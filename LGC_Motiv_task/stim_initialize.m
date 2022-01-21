@@ -799,28 +799,32 @@ xSizeLeftSure = textSizeLeftSure(3) - textSizeLeftSure(1);
 ySizeLeftSure = textSizeLeftSure(4) - textSizeLeftSure(2);
 stim.leftSure.x = leftBorder + visibleXsize*(1/4) - xSizeLeftSure*(3/2);
 stim.leftSure.y = upperBorder + visibleYsize*(19/20) - ySizeLeftSure/2;
-stim.leftSure.colour = [0 255 0]; % colour corresponding to extreme left button
+% stim.leftSure.colour = [0 255 0]; % colour corresponding to extreme left button: GREEN
+stim.leftSure.colour = [0 0 255]; % colour corresponding to extreme left button: BLUE
 % left unsure
 [~,~,textSizeLeftUnsure] = DrawFormattedText(window,stim.leftUnsure.text,'center','center',white);
 % xSizeLeftUnsure = textSizeLeftUnsure(3) - textSizeLeftUnsure(1);
 ySizeLeftUnsure = textSizeLeftUnsure(4) - textSizeLeftUnsure(2);
 stim.leftUnsure.x = leftBorder + visibleXsize*(1/4) + xSizeLeftSure/2;
 stim.leftUnsure.y = upperBorder + visibleYsize*(19/20) - ySizeLeftUnsure/2;
-stim.leftUnsure.colour = [255 0 0]; % colour corresponding to middle left button
+% stim.leftUnsure.colour = [255 0 0]; % colour corresponding to middle left button: RED
+stim.leftUnsure.colour = [255 255 0]; % colour corresponding to middle left button: YELLOW
 % right unsure
 [~,~,textSizeRightUnsure] = DrawFormattedText(window,stim.rightUnsure.text,'center','center',white);
 xSizeRightUnsure = textSizeRightUnsure(3) - textSizeRightUnsure(1);
 ySizeRightUnsure = textSizeRightUnsure(4) - textSizeRightUnsure(2);
 stim.rightUnsure.x = leftBorder + visibleXsize*(3/4) - xSizeRightUnsure*(3/2);
 stim.rightUnsure.y = upperBorder + visibleYsize*(19/20) - ySizeRightUnsure/2;
-stim.rightUnsure.colour = [0 0 255]; % colour corresponding to middle right button
+% stim.rightUnsure.colour = [0 0 255]; % colour corresponding to middle right button: BLUE
+stim.rightUnsure.colour = [0 255 0]; % colour corresponding to middle right button: GREEN
 % right sure
 [~,~,textSizeRightSure] = DrawFormattedText(window,stim.rightSure.text,'center','center',white);
 % xSizeRightSure = textSizeRightSure(3) - textSizeRightSure(1);
 ySizeRightSure = textSizeRightSure(4) - textSizeRightSure(2);
 stim.rightSure.x = leftBorder + visibleXsize*(3/4) + xSizeRightUnsure/2;
 stim.rightSure.y = upperBorder + visibleYsize*(19/20) - ySizeRightSure/2;
-stim.rightSure.colour = [255 255 0]; % colour corresponding to extreme right button
+% stim.rightSure.colour = [255 255 0]; % colour corresponding to extreme right button: YELLOW
+stim.rightSure.colour = [255 0 0]; % colour corresponding to extreme right button: RED
 %% release buttons message
 switch langage
     case 'fr'

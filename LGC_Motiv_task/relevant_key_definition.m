@@ -77,15 +77,24 @@ elseif IRM == 1
             key.right = 90; % RIGHT BUTTON = yellow, letter 'z' with swiss or english keyboard
             %     key.right = 89; % RIGHT BUTTON = yellow, letter 'y' with french keyboard
         case 4
-            key.leftSure    = 71; % green button (g)
-            key.leftUnsure  = 82; % red button (r)
-            key.rightUnsure = 66; % blue button (b)
-            key.rightSure   = 90; % or 89 depending on the language of the keyboard
-            % corresponds to 'y' or 'z' (for yellow)
+%             key.leftSure    = 71; % green button (g)
+%             key.leftUnsure  = 82; % red button (r)
+%             key.rightUnsure = 66; % blue button (b)
+%             key.rightSure   = 90; % or 89 depending on the language of the keyboard
+%             % corresponds to 'y' or 'z' (for yellow)
+%             
+%             % also need the left/right buttons for the mental effort task
+%             key.left = 71;
+%             key.right = 82;
+            
+            key.leftSure    = 66; % blue button (b)
+            key.leftUnsure  = 90; % yellow button (y/z depending on langage used
+            key.rightUnsure = 71; % green button (g)
+            key.rightSure   = 82; % red button (r)
             
             % also need the left/right buttons for the mental effort task
-            key.left = 71;
-            key.right = 82;
+            key.left = 66;
+            key.right = 90;
     end
     key.space = KbName('Space');
     key.escape = KbName('escape');
