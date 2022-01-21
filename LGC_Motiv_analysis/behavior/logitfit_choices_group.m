@@ -259,7 +259,7 @@ for iPM = 1:2
     if figDispGroup == 1
         pSize = 30;
         lWidth = 3;
-        lWidth_borders = 1;
+%         lWidth_borders = 1;
         %% loop through models
         for iMdl = 4:nMdl
             mdl_nm = ['mdl_',num2str(iMdl)];
@@ -291,7 +291,7 @@ for iPM = 1:2
             lHdlMdl.Color = [143 0 0]./255;
             ylim([0 100]);
             %             xlabel(['Net value ',task_fullName,' - model ',num2str(iMdl)]);
-            xlabel('Net value non-default option');
+            xlabel('Net value non-default - default option');
             ylabel('Choice non-default option (%)');
             legend_size(pSize);
             %         saveas(resultFolder)
