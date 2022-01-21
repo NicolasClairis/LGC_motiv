@@ -1,5 +1,5 @@
-function[avg_nonDefaultChoice, sd_nonDefaultChoice, avg_conf, avg_RT] = checkChoiceNonDefaultProportion(subid, figDisp, n_bins)
-%[avg_defaultChoice, sd_defaultChoice, avg_conf, avg_RT] = checkChoiceNonDefaultProportion(subid, figDisp, n_bins)
+function[avg_nonDefaultChoice, sd_nonDefaultChoice, avg_conf, avg_RT, avg_Eperformance] = checkChoiceNonDefaultProportion(subid, figDisp, n_bins)
+%[avg_defaultChoice, sd_defaultChoice, avg_conf, avg_RT, avg_Eperformance] = checkChoiceNonDefaultProportion(subid, figDisp, n_bins)
 % check choices of the non-default option in function of the other parameters of the task
 % (fatigue, difficulty, physical/mental, reward/punishment, etc.) for each
 % individual.
@@ -25,6 +25,9 @@ function[avg_nonDefaultChoice, sd_nonDefaultChoice, avg_conf, avg_RT] = checkCho
 %
 % avg_RT: structure with average reaction time (RT) of choices in function
 % of other task parameters
+%
+% avg_Eperformance: structure with average effort performance in function
+% of other task parameters
 
 
 %% initialize all variables of interest
@@ -49,7 +52,7 @@ nBinTrials = nTrials/n_bins;
     percentage_R_choiceNonDefault,...
     percentage_P_choiceNonDefault,...
     n_failedChoices] = deal(NaN(1,nRuns));
-[choiceNonDefault, choice, confidence, RT] = deal( NaN(nRuns,nTrials));
+[choiceNonDefault, choice, confidence, RT, Eperformance] = deal( NaN(nRuns,nTrials));
 [choiceNonDefault_R,...
     choiceNonDefault_P] = deal( NaN(nRuns,nTrials/2));
 
@@ -59,10 +62,13 @@ for iE = 1:(n_E_levels - 1)
     E_nm = ['E_level_',num2str(iE)];
     [choiceNonDefault_perElevel.(E_nm),...
         conf_perElevel.(E_nm),...
-        RT_perElevel.(E_nm)] = deal(NaN(nRuns, nRepeatsPerEffortLevel));
+        RT_perElevel.(E_nm),...
+        conf_perElevel.(E_nm),...
+        Eperformance_perElevel.(E_nm)] = deal(NaN(nRuns, nRepeatsPerEffortLevel));
     [choiceNonDefault_perElevel.(['avg_E_',num2str(iE)]),...
         conf_perElevel.(['avg_E_',num2str(iE)]),...
-        RT_perElevel.(['avg_E_',num2str(iE)])] = deal(NaN(1,nRuns));
+        RT_perElevel.(['avg_E_',num2str(iE)]),...
+        Eperformance_perElevel.(['avg_E_',num2str(iE)])] = deal(NaN(1,nRuns));
 end
 % prepare analysis per money level for unsigned (R+P) and signed (P/R)
 % money levels
@@ -74,15 +80,19 @@ for iAbsMoney = 1:(n_R_levels - 1)
     [choiceNonDefault_perAbsMoneylevel.(absMoney_nm),...
         conf_perAbsMoneylevel.(absMoney_nm),...
         RT_perAbsMoneylevel.(absMoney_nm),...
+        Eperformance_perAbsMoneylevel.(absMoney_nm),...
         choiceNonDefault_perDeltaMoneylevel.(deltaMoney_nm),...
         conf_perDeltaMoneylevel.(deltaMoney_nm),...
-        RT_perDeltaMoneylevel.(deltaMoney_nm)] = deal(NaN(nRuns, nRepeatsPerAbsMoneyLevel));
+        RT_perDeltaMoneylevel.(deltaMoney_nm),...
+        Eperformance_perDeltaMoneylevel.(deltaMoney_nm)] = deal(NaN(nRuns, nRepeatsPerAbsMoneyLevel));
     [choiceNonDefault_perAbsMoneylevel.(['avg_absMoney_',num2str(iAbsMoney)]),...
         conf_perAbsMoneylevel.(['avg_absMoney_',num2str(iAbsMoney)]),...
         RT_perAbsMoneylevel.(['avg_absMoney_',num2str(iAbsMoney)]),...
+        Eperformance_perAbsMoneylevel.(['avg_absMoney_',num2str(iAbsMoney)]),...
         choiceNonDefault_perDeltaMoneylevel.(['avg_deltaMoney_',num2str(iAbsMoney)]),...
         conf_perDeltaMoneylevel.(['avg_deltaMoney_',num2str(iAbsMoney)]),...
-        RT_perDeltaMoneylevel.(['avg_deltaMoney_',num2str(iAbsMoney)])] = deal(NaN(1,nRuns));
+        RT_perDeltaMoneylevel.(['avg_deltaMoney_',num2str(iAbsMoney)]),...
+        Eperformance_perDeltaMoneylevel.(['avg_deltaMoney_',num2str(iAbsMoney)])] = deal(NaN(1,nRuns));
 end
 % 2) signed money levels
 nRepeatsPerSignedMoneyLevel = (nTrials/(n_E_levels - 1))*(1/2);
@@ -98,34 +108,40 @@ for iMoney = [-(n_R_levels - 1):(-1), 1:(n_R_levels - 1)]
         RT_perSignedMoneylevel.(signedMoney_nm)] = deal(NaN(nRuns, nRepeatsPerSignedMoneyLevel));
     [choiceNonDefault_perSignedMoneylevel.(['avg_',signedMoney_nm]),...
         conf_perSignedMoneylevel.(signedMoney_nm),...
-        RT_perSignedMoneylevel.(signedMoney_nm)] = deal(NaN(1,nRuns));
+        RT_perSignedMoneylevel.(signedMoney_nm),...
+        Eperformance_perSignedMoneylevel.(signedMoney_nm)] = deal(NaN(1,nRuns));
 end
 
 %% extract data trial by trial
 [choiceNonDefault_f_time,...
     conf_f_time,...
-    RT_f_time] = deal(NaN(nRuns, n_bins));
+    RT_f_time,...
+    Eperformance_f_time] = deal(NaN(nRuns, n_bins));
 for iRun = 1:nRuns
     filenm = ls(['CID',subid,'_session',num2str(iRun),'_*_task_messyAllStuff.mat']);
     runData = load(filenm);
     defaultSide = runData.choiceOptions.default_LR;
     [absMoney_level, E_level] = deal(NaN(1,nTrials));
     R_or_P = runData.choiceOptions.R_or_P;
-    % extract choice
+    %% extract choice
     choice(iRun,:) = runData.perfSummary.choice;
     choiceSide = choice(iRun,:);
     choiceSide(choice(iRun,:) >= 1) = 1;
     choiceSide(choice(iRun,:) <= -1) = -1;
-    % extract confidence
+    %% extract confidence
     conf_tmp = runData.perfSummary.confidence.lowOrHigh;
     confidence(iRun,:) = conf_tmp;
     confidence(iRun, conf_tmp == 0) = NaN; % no answer provided
     confidence(iRun, conf_tmp == 1) = 0; % low confidence
     confidence(iRun, conf_tmp == 2) = 1; % high confidence
-    % extract RT
+    %% extract RT
     RT_tmp = runData.perfSummary.onsets.choice - runData.perfSummary.onsets.dispChoiceOptions;
     RT(iRun,:) = RT_tmp;
-    % reinitialize all counters
+    %% extract effort performance per trial and rescale between 0 and 100%
+    Eperf_tmp = runData.perfSummary.percentagePerf.*100;
+    Eperformance(iRun,:) = Eperf_tmp;
+    
+    %% reinitialize all counters
     [jR, jP] = deal(0);
     for iE = 1:(n_E_levels - 1)
         E_nm = ['E_level_',num2str(iE)];
@@ -223,6 +239,12 @@ for iRun = 1:nRuns
         RT_perSignedMoneylevel.(signedMoney_nm)(iRun, jSignedMoney.(signedMoney_nm)) = RT(iRun,iTrial);
         RT_perDeltaMoneylevel.(deltaMoney_nm)(iRun, jDeltaMoney.(deltaMoney_nm)) =  RT(iRun, iTrial);
         RT_perElevel.(E_nm)(iRun, jE.(E_nm)) = RT(iRun,iTrial);
+        
+        %% level of performance during effort period depending on money/effort
+        Eperformance_perAbsMoneylevel.(absMoney_nm)(iRun, jAbsMoney.(absMoney_nm)) =  Eperformance(iRun, iTrial);
+        Eperformance_perSignedMoneylevel.(signedMoney_nm)(iRun, jSignedMoney.(signedMoney_nm)) = Eperformance(iRun,iTrial);
+        Eperformance_perDeltaMoneylevel.(deltaMoney_nm)(iRun, jDeltaMoney.(deltaMoney_nm)) =  Eperformance(iRun, iTrial);
+        Eperformance_perElevel.(E_nm)(iRun, jE.(E_nm)) = Eperformance(iRun,iTrial);
     end % trial loop
     
     %% ratio of chosen the default option per run
@@ -236,6 +258,7 @@ for iRun = 1:nRuns
         choiceNonDefault_f_time(iRun, iBin) = mean( choiceNonDefault(iRun,trial_idx), 2,'omitnan' );
         conf_f_time(iRun, iBin) = mean( confidence(iRun,trial_idx), 2,'omitnan' );
         RT_f_time(iRun, iBin) = mean( RT(iRun,trial_idx), 2,'omitnan' );
+        Eperformance_f_time(iRun, iBin) = mean( Eperformance(iRun,trial_idx), 2,'omitnan' );
     end
     
     %% sum of failed choices to check
@@ -246,6 +269,7 @@ for iRun = 1:nRuns
         choiceNonDefault_perElevel.(['avg_E_',num2str(iE)])(iRun) = 100*sum(choiceNonDefault_perElevel.(['E_level_',num2str(iE)])(iRun, :),'omitnan')/nRepeatsPerEffortLevel;
         conf_perElevel.(['avg_E_',num2str(iE)])(iRun) = 100*mean(conf_perElevel.(['E_level_',num2str(iE)])(iRun, :),2,'omitnan');
         RT_perElevel.(['avg_E_',num2str(iE)])(iRun) = mean(RT_perElevel.(['E_level_',num2str(iE)])(iRun, :),2,'omitnan');
+        Eperformance_perElevel.(['avg_E_',num2str(iE)])(iRun) = mean(Eperformance_perElevel.(['E_level_',num2str(iE)])(iRun, :),2,'omitnan');
     end
 
     %% percentage choice of default per money level
@@ -264,6 +288,11 @@ for iRun = 1:nRuns
         RT_perDeltaMoneylevel.(['avg_deltaMoney_',num2str(iAbsMoney)])(iRun) = mean(RT_perDeltaMoneylevel.(['deltaMoney_level_',num2str(iAbsMoney)])(iRun, :),2,'omitnan');
         RT_perSignedMoneylevel.(['avg_R_',num2str(iAbsMoney)])(iRun) = mean(RT_perSignedMoneylevel.(['R_level_',num2str(iAbsMoney)])(iRun, :),2,'omitnan');
         RT_perSignedMoneylevel.(['avg_P_',num2str(iAbsMoney)])(iRun) = mean(RT_perSignedMoneylevel.(['P_level_',num2str(iAbsMoney)])(iRun, :),2,'omitnan');
+        % same for effort performance
+        Eperformance_perAbsMoneylevel.(['avg_absMoney_',num2str(iAbsMoney)])(iRun) = mean(Eperformance_perAbsMoneylevel.(['absMoney_level_',num2str(iAbsMoney)])(iRun, :),2,'omitnan');
+        Eperformance_perDeltaMoneylevel.(['avg_deltaMoney_',num2str(iAbsMoney)])(iRun) = mean(Eperformance_perDeltaMoneylevel.(['deltaMoney_level_',num2str(iAbsMoney)])(iRun, :),2,'omitnan');
+        Eperformance_perSignedMoneylevel.(['avg_R_',num2str(iAbsMoney)])(iRun) = mean(Eperformance_perSignedMoneylevel.(['R_level_',num2str(iAbsMoney)])(iRun, :),2,'omitnan');
+        Eperformance_perSignedMoneylevel.(['avg_P_',num2str(iAbsMoney)])(iRun) = mean(Eperformance_perSignedMoneylevel.(['P_level_',num2str(iAbsMoney)])(iRun, :),2,'omitnan');
     end
 end % run loop
 
@@ -305,6 +334,8 @@ for iE = 1:(n_E_levels - 1)
     avg_conf.perElevel.(['Ep_',num2str(iE)]) = mean(conf_perElevel.(['avg_E_',num2str(iE)])(Ep_runs),'omitnan');
     avg_RT.perElevel.(['Em_',num2str(iE)]) = mean(RT_perElevel.(['avg_E_',num2str(iE)])(Em_runs),'omitnan');
     avg_RT.perElevel.(['Ep_',num2str(iE)]) = mean(RT_perElevel.(['avg_E_',num2str(iE)])(Ep_runs),'omitnan');
+    avg_Eperformance.perElevel.(['Em_',num2str(iE)]) = mean(Eperformance_perElevel.(['avg_E_',num2str(iE)])(Em_runs),'omitnan');
+    avg_Eperformance.perElevel.(['Ep_',num2str(iE)]) = mean(Eperformance_perElevel.(['avg_E_',num2str(iE)])(Ep_runs),'omitnan');
     % STD
     sd_nonDefaultChoice.perElevel.(['Em_',num2str(iE)]) = std(choiceNonDefault_perElevel.(['avg_E_',num2str(iE)])(Em_runs));
     sd_nonDefaultChoice.perElevel.(['Ep_',num2str(iE)]) = std(choiceNonDefault_perElevel.(['avg_E_',num2str(iE)])(Ep_runs));
@@ -312,6 +343,8 @@ for iE = 1:(n_E_levels - 1)
     sd_conf.perElevel.(['Ep_',num2str(iE)]) = std(conf_perElevel.(['avg_E_',num2str(iE)])(Ep_runs));
     sd_RT.perElevel.(['Em_',num2str(iE)]) = std(RT_perElevel.(['avg_E_',num2str(iE)])(Em_runs));
     sd_RT.perElevel.(['Ep_',num2str(iE)]) = std(RT_perElevel.(['avg_E_',num2str(iE)])(Ep_runs));
+    sd_Eperformance.perElevel.(['Em_',num2str(iE)]) = std(Eperformance_perElevel.(['avg_E_',num2str(iE)])(Em_runs));
+    sd_Eperformance.perElevel.(['Ep_',num2str(iE)]) = std(Eperformance_perElevel.(['avg_E_',num2str(iE)])(Ep_runs));
 end
 
 % per task per money level
@@ -340,6 +373,14 @@ for iAbsMoney = 1:(n_R_levels - 1)
     avg_RT.perSignedMoneylevel.(['Ep_R_',num2str(iAbsMoney)]) = mean(RT_perSignedMoneylevel.(['avg_R_',num2str(iAbsMoney)])(Ep_runs));
     avg_RT.perSignedMoneylevel.(['Em_P_',num2str(iAbsMoney)]) = mean(RT_perSignedMoneylevel.(['avg_P_',num2str(iAbsMoney)])(Em_runs));
     avg_RT.perSignedMoneylevel.(['Ep_P_',num2str(iAbsMoney)]) = mean(RT_perSignedMoneylevel.(['avg_P_',num2str(iAbsMoney)])(Ep_runs));
+    avg_Eperformance.perAbsMoneylevel.(['Em_',num2str(iAbsMoney)]) = mean(Eperformance_perAbsMoneylevel.(['avg_absMoney_',num2str(iAbsMoney)])(Em_runs));
+    avg_Eperformance.perAbsMoneylevel.(['Ep_',num2str(iAbsMoney)]) = mean(Eperformance_perAbsMoneylevel.(['avg_absMoney_',num2str(iAbsMoney)])(Ep_runs));
+    avg_Eperformance.perDeltaMoneylevel.(['Em_',num2str(iAbsMoney)]) = mean(Eperformance_perDeltaMoneylevel.(['avg_deltaMoney_',num2str(iAbsMoney)])(Em_runs));
+    avg_Eperformance.perDeltaMoneylevel.(['Ep_',num2str(iAbsMoney)]) = mean(Eperformance_perDeltaMoneylevel.(['avg_deltaMoney_',num2str(iAbsMoney)])(Ep_runs));
+    avg_Eperformance.perSignedMoneylevel.(['Em_R_',num2str(iAbsMoney)]) = mean(Eperformance_perSignedMoneylevel.(['avg_R_',num2str(iAbsMoney)])(Em_runs));
+    avg_Eperformance.perSignedMoneylevel.(['Ep_R_',num2str(iAbsMoney)]) = mean(Eperformance_perSignedMoneylevel.(['avg_R_',num2str(iAbsMoney)])(Ep_runs));
+    avg_Eperformance.perSignedMoneylevel.(['Em_P_',num2str(iAbsMoney)]) = mean(Eperformance_perSignedMoneylevel.(['avg_P_',num2str(iAbsMoney)])(Em_runs));
+    avg_Eperformance.perSignedMoneylevel.(['Ep_P_',num2str(iAbsMoney)]) = mean(Eperformance_perSignedMoneylevel.(['avg_P_',num2str(iAbsMoney)])(Ep_runs));
     % STD
     sd_nonDefaultChoice.perAbsMoneylevel.(['Em_',num2str(iAbsMoney)]) = std(choiceNonDefault_perAbsMoneylevel.(['avg_absMoney_',num2str(iAbsMoney)])(Em_runs));
     sd_nonDefaultChoice.perAbsMoneylevel.(['Ep_',num2str(iAbsMoney)]) = std(choiceNonDefault_perAbsMoneylevel.(['avg_absMoney_',num2str(iAbsMoney)])(Ep_runs));
@@ -357,14 +398,22 @@ for iAbsMoney = 1:(n_R_levels - 1)
     sd_conf.perSignedMoneylevel.(['Ep_R_',num2str(iAbsMoney)]) = std(conf_perSignedMoneylevel.(['avg_R_',num2str(iAbsMoney)])(Ep_runs));
     sd_conf.perSignedMoneylevel.(['Em_P_',num2str(iAbsMoney)]) = std(conf_perSignedMoneylevel.(['avg_P_',num2str(iAbsMoney)])(Em_runs));
     sd_conf.perSignedMoneylevel.(['Ep_P_',num2str(iAbsMoney)]) = std(conf_perSignedMoneylevel.(['avg_P_',num2str(iAbsMoney)])(Ep_runs));
-    sd_RT.perAbsMoneylevel.(['Em_R_',num2str(iAbsMoney)]) = std(conf_perAbsMoneylevel.(['avg_absMoney_',num2str(iAbsMoney)])(Em_runs));
-    sd_RT.perAbsMoneylevel.(['Ep_R_',num2str(iAbsMoney)]) = std(conf_perAbsMoneylevel.(['avg_absMoney_',num2str(iAbsMoney)])(Ep_runs));
-    sd_RT.perDeltaMoneylevel.(['Em_R_',num2str(iAbsMoney)]) = std(conf_perDeltaMoneylevel.(['avg_deltaMoney_',num2str(iAbsMoney)])(Em_runs));
-    sd_RT.perDeltaMoneylevel.(['Ep_R_',num2str(iAbsMoney)]) = std(conf_perDeltaMoneylevel.(['avg_deltaMoney_',num2str(iAbsMoney)])(Ep_runs));
-    sd_RT.perSignedMoneylevel.(['Em_R_',num2str(iAbsMoney)]) = std(conf_perSignedMoneylevel.(['avg_R_',num2str(iAbsMoney)])(Em_runs));
-    sd_RT.perSignedMoneylevel.(['Ep_R_',num2str(iAbsMoney)]) = std(conf_perSignedMoneylevel.(['avg_R_',num2str(iAbsMoney)])(Ep_runs));
-    sd_RT.perSignedMoneylevel.(['Em_P_',num2str(iAbsMoney)]) = std(conf_perSignedMoneylevel.(['avg_P_',num2str(iAbsMoney)])(Em_runs));
-    sd_RT.perSignedMoneylevel.(['Ep_P_',num2str(iAbsMoney)]) = std(conf_perSignedMoneylevel.(['avg_P_',num2str(iAbsMoney)])(Ep_runs));
+    sd_RT.perAbsMoneylevel.(['Em_R_',num2str(iAbsMoney)]) = std(RT_perAbsMoneylevel.(['avg_absMoney_',num2str(iAbsMoney)])(Em_runs));
+    sd_RT.perAbsMoneylevel.(['Ep_R_',num2str(iAbsMoney)]) = std(RT_perAbsMoneylevel.(['avg_absMoney_',num2str(iAbsMoney)])(Ep_runs));
+    sd_RT.perDeltaMoneylevel.(['Em_R_',num2str(iAbsMoney)]) = std(RT_perDeltaMoneylevel.(['avg_deltaMoney_',num2str(iAbsMoney)])(Em_runs));
+    sd_RT.perDeltaMoneylevel.(['Ep_R_',num2str(iAbsMoney)]) = std(RT_perDeltaMoneylevel.(['avg_deltaMoney_',num2str(iAbsMoney)])(Ep_runs));
+    sd_RT.perSignedMoneylevel.(['Em_R_',num2str(iAbsMoney)]) = std(RT_perSignedMoneylevel.(['avg_R_',num2str(iAbsMoney)])(Em_runs));
+    sd_RT.perSignedMoneylevel.(['Ep_R_',num2str(iAbsMoney)]) = std(RT_perSignedMoneylevel.(['avg_R_',num2str(iAbsMoney)])(Ep_runs));
+    sd_RT.perSignedMoneylevel.(['Em_P_',num2str(iAbsMoney)]) = std(RT_perSignedMoneylevel.(['avg_P_',num2str(iAbsMoney)])(Em_runs));
+    sd_RT.perSignedMoneylevel.(['Ep_P_',num2str(iAbsMoney)]) = std(RT_perSignedMoneylevel.(['avg_P_',num2str(iAbsMoney)])(Ep_runs));
+    sd_Eperformance.perAbsMoneylevel.(['Em_R_',num2str(iAbsMoney)]) = std(Eperformance_perAbsMoneylevel.(['avg_absMoney_',num2str(iAbsMoney)])(Em_runs));
+    sd_Eperformance.perAbsMoneylevel.(['Ep_R_',num2str(iAbsMoney)]) = std(Eperformance_perAbsMoneylevel.(['avg_absMoney_',num2str(iAbsMoney)])(Ep_runs));
+    sd_Eperformance.perDeltaMoneylevel.(['Em_R_',num2str(iAbsMoney)]) = std(Eperformance_perDeltaMoneylevel.(['avg_deltaMoney_',num2str(iAbsMoney)])(Em_runs));
+    sd_Eperformance.perDeltaMoneylevel.(['Ep_R_',num2str(iAbsMoney)]) = std(Eperformance_perDeltaMoneylevel.(['avg_deltaMoney_',num2str(iAbsMoney)])(Ep_runs));
+    sd_Eperformance.perSignedMoneylevel.(['Em_R_',num2str(iAbsMoney)]) = std(Eperformance_perSignedMoneylevel.(['avg_R_',num2str(iAbsMoney)])(Em_runs));
+    sd_Eperformance.perSignedMoneylevel.(['Ep_R_',num2str(iAbsMoney)]) = std(Eperformance_perSignedMoneylevel.(['avg_R_',num2str(iAbsMoney)])(Ep_runs));
+    sd_Eperformance.perSignedMoneylevel.(['Em_P_',num2str(iAbsMoney)]) = std(Eperformance_perSignedMoneylevel.(['avg_P_',num2str(iAbsMoney)])(Em_runs));
+    sd_Eperformance.perSignedMoneylevel.(['Ep_P_',num2str(iAbsMoney)]) = std(Eperformance_perSignedMoneylevel.(['avg_P_',num2str(iAbsMoney)])(Ep_runs));
 end
 
 avg_nonDefaultChoice.Em_f_time = mean(choiceNonDefault_f_time(Em_runs,:),1,'omitnan');
@@ -373,6 +422,8 @@ avg_conf.Em_f_time = mean(conf_f_time(Em_runs,:),1,'omitnan');
 avg_conf.Ep_f_time = mean(conf_f_time(Ep_runs,:),1,'omitnan');
 avg_RT.Em_f_time = mean(RT_f_time(Em_runs,:),1,'omitnan');
 avg_RT.Ep_f_time = mean(RT_f_time(Ep_runs,:),1,'omitnan');
+avg_Eperformance.Em_f_time = mean(Eperformance_f_time(Em_runs,:),1,'omitnan');
+avg_Eperformance.Ep_f_time = mean(Eperformance_f_time(Ep_runs,:),1,'omitnan');
 
 %% figures
 if figDisp == 1
@@ -651,6 +702,91 @@ if figDisp == 1
     xlim([0 n_bins+1]);
     xlabel('trial bins');
     ylabel('RT (s)');
+    legend_size(pSize);
+    
+    %% check effort performance = f(R/P levels)
+    fig;
+    hold on;
+    for iMoney = [-(n_R_levels-1):(-1), 1:(n_R_levels - 1)]
+        jMoney = abs(iMoney);
+        if iMoney < 0
+            taskCond = 'P';
+        elseif iMoney > 0
+            taskCond = 'R';
+        end
+        bar(iMoney-bDist,...
+            avg_Eperformance.perSignedMoneylevel.(['Em_',taskCond','_',num2str(jMoney)]),...
+            'FaceColor','g','BarWidth',bWidth);
+        bar(iMoney+bDist,...
+            avg_Eperformance.perSignedMoneylevel.(['Ep_',taskCond','_',num2str(jMoney)]),...
+            'FaceColor','b','BarWidth',bWidth);
+        errorbar(iMoney-bDist,...
+            avg_Eperformance.perSignedMoneylevel.(['Em_',taskCond','_',num2str(jMoney)]),...
+            sd_Eperformance.perSignedMoneylevel.(['Em_',taskCond','_',num2str(jMoney)]),...
+            'k')
+        errorbar(iMoney+bDist,...
+            avg_Eperformance.perSignedMoneylevel.(['Ep_',taskCond','_',num2str(jMoney)]),...
+            sd_Eperformance.perSignedMoneylevel.(['Ep_',taskCond','_',num2str(jMoney)]),...
+            'k')
+    end
+    xticks([-3:-(1), 1:3]);
+    xticklabels({'-3','-2','-1','1','2','3'});
+    xlim([-n_R_levels n_R_levels]);
+    ylim([0 100]);
+    ylabel('Effort performance (%)');
+    xlabel('Money level');
+    legend_size(pSize);
+    
+    %% check effort performance = f(E levels)
+    fig;
+    % mark the 50% trait
+    plot(0:n_bins, 50*ones(1,n_bins+1),...
+        'LineWidth',2,'Color','k','LineStyle',':');
+    hold on;
+    for iE = 1:(n_E_levels - 1)
+        bar(iE-bDist,...
+            avg_Eperformance.perElevel.(['Em_',num2str(iE)]),...
+            'FaceColor','g','BarWidth',bWidth);
+        bar(iE+bDist,...
+            avg_Eperformance.perElevel.(['Ep_',num2str(iE)]),...
+            'FaceColor','b','BarWidth',bWidth);
+        errorbar(iE-bDist,...
+            avg_Eperformance.perElevel.(['Em_',num2str(iE)]),...
+            sd_Eperformance.perElevel.(['Em_',num2str(iE)]),...
+            'k')
+        errorbar(iE+bDist,...
+            avg_Eperformance.perElevel.(['Ep_',num2str(iE)]),...
+            sd_Eperformance.perElevel.(['Ep_',num2str(iE)]),...
+            'k')
+    end
+    ylim([0 100]);
+    ylabel('Effort performance (%)');
+    xticks(1:3);
+    xticklabels({'1','2','3'});
+    xlim([0 n_E_levels]);
+    xlabel('Effort level');
+    legend_size(pSize);
+    
+    %% check effort performance = f(time)
+    fig;
+    % mark the 50% trait
+    plot(1:n_bins, 50*ones(1,n_bins),...
+        'LineWidth',2,'Color','k','LineStyle',':');
+    hold on;
+    for iRun = 1:nRuns
+        % different colour for mental and physical effort
+        if ismember(iRun, Em_runs)
+            lColour = 'g';
+        else
+            lColour = 'r';
+        end
+        plot(1:n_bins, Eperformance_f_time(iRun, :),...
+            'LineWidth',lWidth, 'Color',lColour,'LineStyle','--');
+    end
+    ylim([0 100]);
+    xlim([0 n_bins+1]);
+    xlabel('trial bins');
+    ylabel('Effort performance (%)');
     legend_size(pSize);
     
 end % figure display
