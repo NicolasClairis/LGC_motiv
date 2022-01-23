@@ -1,7 +1,7 @@
-function[mentalE_perf, trial_success, onsets] = mental_effort_perf(scr, stim, key,...
+function[mentalE_perf, trial_success, onsets] = mental_effort_perf_bis(scr, stim, key,...
     numberVector, mentalE_prm, n_max_to_reach,...
     learning_instructions, time_limit, t_max, errorLimits)
-%[mentalE_perf, trial_success, onsets] = mental_effort_perf(scr, stim, key,...
+%[mentalE_perf, trial_success, onsets] = mental_effort_perf_bis(scr, stim, key,...
 %     numberVector, mentalE_prm, n_max_to_reach,...
 %     curr_learning_instructions, time_limit, t_max, errorLimits)
 %
@@ -9,6 +9,9 @@ function[mentalE_perf, trial_success, onsets] = mental_effort_perf(scr, stim, ke
 % used both for learning period (with or without instructions) and for the
 % actual task. It corresponds to one mental effort trial (either learning,
 % calibration or task trial).
+%
+% This script is like mental_effort_perf.m but replacing all calls to
+% KbCheck by calls to KbQueueCheck.
 %
 % INPUTS
 % scr: structure with screen parameters
@@ -187,17 +190,21 @@ while (iCorrectAnswers < n_max_to_reach) &&...
     end
     
     %% check key presses
-    [keyisdown, timeAnswer, keyCode] = KbCheck();
-    
+    [keyisdown, ~, ~, lastPress, ~] = KbQueueCheck;
+
     if (keyisdown == 1) &&...
-            ((keyCode(key.left) == 1 && keyCode(key.right) == 0) ||...
-            (keyCode(key.left) == 0 && keyCode(key.right) == 1)) % focus only when 1 single button
+            ((lastPress(key.left) > onset_question_tmp && lastPress(key.right) < onset_question_tmp) ||...
+            (lastPress(key.left) < onset_question_tmp && lastPress(key.right) > onset_question_tmp)) % focus only when 1 single button
         % which belongs to the 2 buttons of interest has been pressed
         
-        if keyCode(key.left) == 1 && keyCode(key.right) == 0 % left answer
+        if lastPress(key.left) > onset_question_tmp &&...
+                lastPress(key.right) < onset_question_tmp % left answer
             sideAnswer(i_question) = -1;
-        elseif keyCode(key.left) == 0 && keyCode(key.right) == 1 % right answer
+            timeAnswer = lastPress(key.left);
+        elseif lastPress(key.left) < onset_question_tmp &&...
+                lastPress(key.right) > onset_question_tmp % right answer
             sideAnswer(i_question) = 1;
+            timeAnswer = lastPress(key.right);
         end % left or right answer? (ignore the rest = if another key has
         % been pressed or if both pressed in the same time for ex.)
         
