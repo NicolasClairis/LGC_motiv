@@ -41,6 +41,6 @@ DrawFormattedText(window, stim.(effortType).(instructionType).title.text,...
 Screen('TextSize', window, baselineTextSize);
 
 % flip information on the screen
-waitSpace(scr, stim, window, keys);
+waitSpace_bis(scr, stim, window, keys);
 
 end % function

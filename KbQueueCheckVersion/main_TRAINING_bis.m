@@ -168,7 +168,7 @@ for i_pm = 1:2
             %% physical MVC (calibrate the Fmax for the whole experiment)
             if strcmp(taskToPerform.physical.calib,'on')
                 n_MVC_repeat = 3;
-                [MVC_tmp, onsets_MVC] = physical_effort_MVC(scr, stim, dq, n_MVC_repeat, calibTimes_Ep, 'MVC', key_Ep);
+                [MVC_tmp, onsets_MVC] = physical_effort_MVC_bis(scr, stim, dq, n_MVC_repeat, calibTimes_Ep, 'MVC', key_Ep);
                 MVC = mean(MVC_tmp.MVC); % expressed in Voltage
                 save(Ep_calib_filenm,'MVC');
             elseif strcmp(taskToPerform.physical.calib,'off') &&...
@@ -181,7 +181,7 @@ for i_pm = 1:2
             %% learning physical (learn each level of force)
             if strcmp(taskToPerform.physical.learning,'on')
                 % introduce physical learning
-                showTitlesInstruction(scr,stim,'learning',p_or_m, key_Ep);
+                showTitlesInstruction_bis(scr,stim,'learning',p_or_m, key_Ep);
 
                 n_Ep_learningForceRepeats = 5; % number of learning repetitions for each level of difficulty (= each level of force)
                 % perform physical learning
@@ -193,7 +193,7 @@ for i_pm = 1:2
             %% training physical (choice + effort)
             if strcmp(taskToPerform.physical.training,'on')
                 % introduce physical training
-                showTitlesInstruction(scr,stim,'training',p_or_m, key_Ep);
+                showTitlesInstruction_bis(scr,stim,'training',p_or_m, key_Ep);
                 
                 % define parameters for the training
                 Ep_vars_training.MVC = MVC;
@@ -248,7 +248,7 @@ for i_pm = 1:2
             %% learning mental: 0-back and 2-back as a calibration
             if strcmp(taskToPerform.mental.learning_1,'on')
                 % display instructions for learning
-                showTitlesInstruction(scr,stim,'learning',p_or_m, key_Em);
+                showTitlesInstruction_bis(scr,stim,'learning',p_or_m, key_Em);
                 
                 %% learning the mapping for answering left/right <5/>5 with and then without the display on the screen (0-back)
                 % learning parameters
@@ -291,7 +291,7 @@ for i_pm = 1:2
                     elseif iLearning_Instructions == 2
                         n_maxToReachLearning_tmp = n_maxLearning.learning_withoutInstructions;
                     end
-                    [learningPerfSummary_Em.(learning_sess_nm).(curr_learning_instructions)] = mental_effort_perf(scr, stim, key_Em,...
+                    [learningPerfSummary_Em.(learning_sess_nm).(curr_learning_instructions)] = mental_effort_perf_bis(scr, stim, key_Em,...
                         numberVector_learning(jLearningSession,:),...
                         mentalE_prm_learning, n_maxToReachLearning_tmp,...
                         curr_learning_instructions, learning_useOfTimeLimit, [], learning_errorLimits);
@@ -322,7 +322,7 @@ for i_pm = 1:2
                 [onsets.endLearningInstructions.learning1_2back_session] = mental_learningInstructions(scr, stim,...
                     learningVersion, mentalE_prm_learning1_2back); % inform about 2-back
                  for iLearning_2backTrial = 1:n_learning1_2back
-                    mentalE_learning1_2backPerfSummary_tmp = mental_effort_perf_Nback(scr, stim, key_Em,...
+                    mentalE_learning1_2backPerfSummary_tmp = mental_effort_perf_Nback_bis(scr, stim, key_Em,...
                         numberVector_learning1_2back(iLearning_2backTrial,:),...
                         mentalE_prm_learning1_2back, n_maxLearning.learning_2back,...
                         'noInstructions', learning1_2back_useOfTimeLimit, [],...
@@ -369,7 +369,7 @@ for i_pm = 1:2
                     learningVersion, mentalE_prm_learning1calibLike);
                 n_maxReachedDuringLearning = NaN(1,n_learning1calibLikeTrials);
                 for iLearning1Trial = 1:n_learning1calibLikeTrials
-                    mentalE_learning1calibLikePerfSummary_tmp = mental_effort_perf_Nback(scr, stim, key_Em,...
+                    mentalE_learning1calibLikePerfSummary_tmp = mental_effort_perf_Nback_bis(scr, stim, key_Em,...
                         numberVector_learning1calibLike(iLearning1Trial,:),...
                         mentalE_prm_learning1calibLike, n_maxToReachForCalib,...
                         'noInstructions', learning1calibLike_useOfTimeLimit, learning1calibLike_timeLimit,...
@@ -407,7 +407,7 @@ for i_pm = 1:2
                         [numberVector_learning1_bonus] = mental_numbers(n_learning1bonusTrialsToLearn);
                         for iLearning1Trial_bonus = 1:n_learning1bonusTrialsToLearn
                             jLearningTrial = jLearningTrial + 1;
-                            mentalE_learning1calibLikePerfSummary_tmp = mental_effort_perf_Nback(scr, stim, key_Em,...
+                            mentalE_learning1calibLikePerfSummary_tmp = mental_effort_perf_Nback_bis(scr, stim, key_Em,...
                                 numberVector_learning1_bonus(iLearning1Trial_bonus,:),...
                                 mentalE_prm_learning1calibLike, n_maxToReachForCalib,...
                                 'noInstructions', learning1calibLike_useOfTimeLimit, learning1calibLike_timeLimit,...
@@ -444,7 +444,7 @@ for i_pm = 1:2
                 %     [numberVector_calib] = mental_numbers(n_calibTrials_Em);
                 [numberVector_calib] = mental_calibNumberVector(n_calibTrials_Em, n_calibMax);
                 % perform the calibration
-                [NMP, calib_summary] = mental_calibNumbers(scr, stim, key_Em,...
+                [NMP, calib_summary] = mental_calibNumbers_bis(scr, stim, key_Em,...
                     numberVector_calib, mentalE_prm_calib, n_calibTrials_Em, calibTimes_Em, langage);
                 calibSummary.calibSummary = calib_summary;
                 calibSummary.n_mental_max_perTrial = NMP;
@@ -461,7 +461,7 @@ for i_pm = 1:2
             %% learning (2) for each difficulty level
             if strcmp(taskToPerform.mental.learning_2,'on')
                 % introduce mental learning
-                showTitlesInstruction(scr,stim,'learning','m', key_Em);
+                showTitlesInstruction_bis(scr,stim,'learning','m', key_Em);
                 
                 % define all difficulty levels based on calibration
                 [n_to_reach] = mental_N_answersPerLevel(n_E_levels, NMP);
@@ -471,13 +471,13 @@ for i_pm = 1:2
                 Em_learningTimings = learningTimes_Em;
                 Em_learningTimings.time_limit = false;
                 % perform all the difficulty levels
-                [learning2PerfSummary_Em, onsets] = mental_learning(scr, stim, key_Em, n_E_levels, n_to_reach, n_Em_learningForceRepeats, Em_learningTimings);
+                [learning2PerfSummary_Em, onsets] = mental_learning_bis(scr, stim, key_Em, n_E_levels, n_to_reach, n_Em_learningForceRepeats, Em_learningTimings);
             end % learning (2)
             
             %% training mental
             if strcmp(taskToPerform.mental.training,'on')
                 % show title before instructions
-                showTitlesInstruction(scr, stim, 'training', 'm', key_Em);
+                showTitlesInstruction_bis(scr, stim, 'training', 'm', key_Em);
 
                 % define parameters for the training
                 [Em_vars_training.n_to_reach] = mental_N_answersPerLevel(n_E_levels, NMP);
@@ -609,7 +609,7 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
                     case 'p'
                         if strcmp(taskToPerform.physical.task,'on')
                             % instructions
-                            showTitlesInstruction(scr,stim,'task',p_or_m, key_Ep);
+                            showTitlesInstruction_bis(scr,stim,'task',p_or_m, key_Ep);
                             
                             % run physical task
                             perf_Ep_IP_tmp = choice_and_perf_staircase_bis(scr, stim, key_Ep,...
@@ -624,7 +624,7 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
                     case 'm'
                         if strcmp(taskToPerform.mental.task,'on')
                             % instructions
-                            showTitlesInstruction(scr,stim,'task',p_or_m, key_Em);
+                            showTitlesInstruction_bis(scr,stim,'task',p_or_m, key_Em);
                             
                             mentalE_prm_instruDisplay = mental_effort_parameters();
                             % Nback version

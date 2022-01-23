@@ -221,13 +221,13 @@ switch effort_type
     case 'mental'
         % perform max perf
         [numberVector_initialMaxPerf] = mental_calibNumberVector(n_MaxPerfTrials, n_calibMax);
-        [n_initialMaxPerf, initialMaxPerfSessionSummary] = mental_calibNumbers(scr, stim, key,...
+        [n_initialMaxPerf, initialMaxPerfSessionSummary] = mental_calibNumbers_bis(scr, stim, key,...
             numberVector_initialMaxPerf, mentalE_prm_calib, n_MaxPerfTrials, calibTimes, langage);
     case 'physical'
         % take an initial MVC measurement (even if it has been done in a
         % previous session, will allow us to keep track of the force level
         % of our participants)
-        [initial_MVC, onsets_initial_MVC] = physical_effort_MVC(scr, stim, dq, n_MaxPerfTrials, calibTimes, 'maxPerf');
+        [initial_MVC, onsets_initial_MVC] = physical_effort_MVC_bis(scr, stim, dq, n_MaxPerfTrials, calibTimes, 'maxPerf');
 end
 
 %% launch main task
@@ -278,7 +278,7 @@ end
 if IRM == 1
     disp('Now waiting for first TTL to start');
     dummy_scans = 1; % number of TTL to wait before starting the task (dummy scans are already integrated in CIBM scanner)
-    [T0, TTL] = keyboard_check_start(dummy_scans, key.trigger_id, key);
+    [T0, TTL] = keyboard_check_start_bis(dummy_scans, key.trigger_id, key);
 end % fMRI check
 
 %% perform choice and performance task
@@ -345,12 +345,12 @@ Screen(window,'Flip');
 % MVC maximum
 switch effort_type
     case 'physical'
-        [last_MVC, onsets_last_MVC] = physical_effort_MVC(scr, stim, dq, n_MaxPerfTrials, calibTimes, 'maxPerf');
+        [last_MVC, onsets_last_MVC] = physical_effort_MVC_bis(scr, stim, dq, n_MaxPerfTrials, calibTimes, 'maxPerf');
     case 'mental'
         % extract numbers to use for each calibration trial
         [numberVector_endCalib] = mental_calibNumberVector(n_MaxPerfTrials, n_calibMax);
         % last max performance measurement
-        [n_finalMaxPerf, finalMaxPerf_SessionSummary] = mental_calibNumbers(scr, stim, key,...
+        [n_finalMaxPerf, finalMaxPerf_SessionSummary] = mental_calibNumbers_bis(scr, stim, key,...
             numberVector_endCalib, mentalE_prm_calib, n_MaxPerfTrials, calibTimes, langage);
 end
 

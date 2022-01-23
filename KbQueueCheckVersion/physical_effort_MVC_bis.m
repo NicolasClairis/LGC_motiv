@@ -66,7 +66,7 @@ switch MVC_or_maxPerf
                 onsets.initial_MVC_instructions = time_disp1;
                 WaitSecs(t_MVC_calib_instructions1);
             elseif iTime == 2
-                waitSpace(scr, stim, window, keys);
+                waitSpace_bis(scr, stim, window, keys);
             end
         end
     case 'maxPerf'
