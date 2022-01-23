@@ -37,7 +37,7 @@ testing_script = 0;
 langage = 'fr';
 
 %% working directories
-scripts_folderName = 'LGC_Motiv_task';
+scripts_folderName = 'KbQueueCheckVersion';
 % define working directories
 cd ..
 main_folder                 = [pwd filesep];
