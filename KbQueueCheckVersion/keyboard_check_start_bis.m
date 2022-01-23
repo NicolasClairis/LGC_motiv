@@ -48,6 +48,9 @@ if key.n_buttonsChoice == 4
     keysOfInterest(key.rightUnsure) = 1;
     keysOfInterest(key.rightSure) = 1;
 end
+% add space and escape to the list
+keysOfInterest(key.space) = 1;
+keysOfInterest(key.escape) = 1;
 % create buffer with keys to check
 KbQueueCreate(0,keysOfInterest); % checks TTL and keys of pad
 % start filling the buffer
