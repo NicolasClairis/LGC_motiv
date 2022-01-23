@@ -278,8 +278,11 @@ end
 if IRM == 1
     disp('Now waiting for first TTL to start');
     dummy_scans = 1; % number of TTL to wait before starting the task (dummy scans are already integrated in CIBM scanner)
-    [T0, TTL] = keyboard_check_start_bis(dummy_scans, key.trigger_id, key);
+else
+    dummy_scans = 0;
+    key.trigger_id = [];
 end % fMRI check
+[T0, TTL] = keyboard_check_start_bis(dummy_scans, key.trigger_id, key, IRM);
 
 %% perform choice and performance task
 [perfSummary] = choice_and_perf_bis(scr, stim, key,...
@@ -330,6 +333,9 @@ if IRM == 1
     % store T0 and TTL timings in onsets structure
     onsets.T0 = T0;
     onsets.TTL = TTL;
+else % release key buffer
+    KbQueueStop;
+    KbQueueRelease;
 end
 
 %% first save before last MVC

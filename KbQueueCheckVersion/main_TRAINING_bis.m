@@ -66,10 +66,10 @@ if ischar(iSubject)
 end
 %% general parameters
 % define subparts of the task to perform (on/off)
-taskToPerform.physical.calib = 'on';
-taskToPerform.physical.learning = 'on';
-taskToPerform.physical.training = 'on';
-taskToPerform.physical.task = 'on';
+taskToPerform.physical.calib = 'off';
+taskToPerform.physical.learning = 'off';
+taskToPerform.physical.training = 'off';
+taskToPerform.physical.task = 'off';
 taskToPerform.mental.learning_1 = 'on';
 taskToPerform.mental.calib = 'on';
 taskToPerform.mental.learning_2 = 'on';
@@ -159,6 +159,18 @@ if strcmp(taskToPerform.mental.calib,'on') ||...
         strcmp(taskToPerform.mental.task,'on')
     % define relevant keys and dynamometer module
     key_Em = relevant_key_definition('mental', IRMbuttons, n_buttonsChoice);
+end
+
+%% start recording key presses
+IRM = 0;
+if strcmp(taskToPerform.mental.calib,'on') ||...
+        strcmp(taskToPerform.mental.learning_1,'on') ||...
+        strcmp(taskToPerform.mental.learning_2,'on') ||...
+        strcmp(taskToPerform.mental.training,'on') ||...
+        strcmp(taskToPerform.mental.task,'on')
+    keyboard_check_start_bis([], [], key_Em, IRM);
+else
+    keyboard_check_start_bis([], [], key_Ep, IRM);
 end
 
 %% run the code twice, each time for p or m conditions
@@ -770,6 +782,10 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
     Screen(window,'Flip');
     WaitSecs(t_endSession);
 end
+
+%% release key presses
+KbQueueStop;
+KbQueueRelease;
 
 %% close PTB
 ShowCursor;

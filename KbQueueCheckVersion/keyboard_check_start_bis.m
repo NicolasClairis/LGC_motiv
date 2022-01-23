@@ -1,5 +1,5 @@
-function[T0, TTL] = keyboard_check_start(dummy_scan, trigger_id, key)
-%[T0, TTL] = keyboard_check_start(dummy_scan, trigger_id, key)
+function[T0, TTL] = keyboard_check_start_bis(dummy_scan, trigger_id, key, IRM)
+%[T0, TTL] = keyboard_check_start_bis(dummy_scan, trigger_id, key, IRM)
 % keyboard_check_start starts recording key presses (and TTL inputs)
 %
 % INPUTS
@@ -10,6 +10,11 @@ function[T0, TTL] = keyboard_check_start(dummy_scan, trigger_id, key)
 % key: structure with subfield with the corresponding key code for left and
 % right key presses
 %
+% IRM:
+% (0) no MRI: no need to check for TTL
+% (1) MRI: wait for first TTL trigger from fMRI + record the TTL sent by
+% the scanner
+%
 % OUTPUTS
 % T0: time of the first TTL on which all onsets will be referenced
 %
@@ -17,6 +22,7 @@ function[T0, TTL] = keyboard_check_start(dummy_scan, trigger_id, key)
 %
 % See also keyboard_check_end.m
 
+if IRM == 1
 next = 0;
 TTL = []; % TTL TIMES
 % wait dummy_scan number of volumes before starting the task
@@ -35,10 +41,16 @@ while next < dummy_scan
         end
     end
 end
+else
+   T0 = [];
+   TTL = [];
+end
 
 %% record all subsequent TTL in the whole task
 keysOfInterest = zeros(1,256);
-keysOfInterest(trigger_id) = 1; % check TTL
+if IRM == 1
+    keysOfInterest(trigger_id) = 1; % check TTL
+end
 % check also all relevant keyboard presses
 keysOfInterest(key.left) = 1;
 keysOfInterest(key.right) = 1;
