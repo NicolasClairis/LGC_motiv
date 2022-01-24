@@ -1,11 +1,9 @@
 function[TTL, keyLeft, keyRight,...
-    keyLeftUnsure, keyLeftSure, keyRightUnsure, keyRightSure] = keyboard_check_end(TTL, key)
+    keyLeftUnsure, keyLeftSure, keyRightUnsure, keyRightSure] = keyboard_check_end(key)
 %[TTL, keyLeft, keyRight,...
-%     keyLeftUnsure, keyLeftSure, keyRightUnsure, keyRightSure] = keyboard_check_end(TTL, trigger_id)
+%     keyLeftUnsure, keyLeftSure, keyRightUnsure, keyRightSure] = keyboard_check_end(trigger_id)
 %
 % INPUTS
-% TTL: vector with initial fMRI TTL timings
-%
 % key: structure with relevant keys
 %   .trigger_id : number corresponding to the key associated to the TTL
 %   .left
@@ -44,6 +42,7 @@ keyRightUnsure.Start = [];
 keyRightUnsure.Release = [];
 keyRightSure.Start = [];
 keyRightSure.Release = [];
+TTL = [];
 %% release all keys and associated timings
 while KbEventAvail
     [event, n] = KbEventGet;
@@ -91,7 +90,7 @@ while KbEventAvail
         elseif event.Pressed == 0 % record time when release
             keyRightSure.Release = [keyRightSure.Release; event.Time];
         end
-    end
+    end % filter code (note space and escape are not recorded here because they are irrelevant)
 end
 
 %% stop KbQueueCreate and clear cache

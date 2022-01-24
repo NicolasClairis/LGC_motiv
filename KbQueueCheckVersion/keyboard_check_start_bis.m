@@ -1,12 +1,8 @@
-function[T0, TTL] = keyboard_check_start_bis(dummy_scan, trigger_id, key, IRM)
-%[T0, TTL] = keyboard_check_start_bis(dummy_scan, trigger_id, key, IRM)
+function[] = keyboard_check_start_bis(key, IRM)
+%[] = keyboard_check_start_bis(key, IRM)
 % keyboard_check_start starts recording key presses (and TTL inputs)
 %
 % INPUTS
-% dummy_scan: number of TTL to wait before starting the task
-%
-% trigger_id: number corresponding to the TTL trigger
-%
 % key: structure with subfield with the corresponding key code for left and
 % right key presses
 %
@@ -15,41 +11,17 @@ function[T0, TTL] = keyboard_check_start_bis(dummy_scan, trigger_id, key, IRM)
 % (1) MRI: wait for first TTL trigger from fMRI + record the TTL sent by
 % the scanner
 %
-% OUTPUTS
-% T0: time of the first TTL on which all onsets will be referenced
-%
-% TTL: vector which will serve to keep all TTL
-%
 % See also keyboard_check_end.m
 
-if IRM == 1
-next = 0;
-TTL = []; % TTL TIMES
-% wait dummy_scan number of volumes before starting the task
-while next < dummy_scan
-    [keyisdown, T0IRM, keycode] = KbCheck;
-    
-    if keyisdown == 1 && keycode(trigger_id) == 1
-        if next == 0
-            T0 = T0IRM;
-        end
-        next = next + 1;
-        disp([num2str(next),' TTL received']);
-        TTL = [TTL; T0IRM];
-        while keycode(trigger_id) == 1
-            [keyisdown, T, keycode] = KbCheck;
-        end
-    end
-end
-else
-   T0 = [];
-   TTL = [];
-end
+%% empty the buffer in case that KbQueue was not closed properly
+KbQueueRelease;
+
+%% initialize keyboard
+keysOfInterest = zeros(1,256);
 
 %% record all subsequent TTL in the whole task
-keysOfInterest = zeros(1,256);
 if IRM == 1
-    keysOfInterest(trigger_id) = 1; % check TTL
+    keysOfInterest(key.trigger_id) = 1; % check TTL
 end
 % check also all relevant keyboard presses
 keysOfInterest(key.left) = 1;
@@ -60,12 +32,16 @@ if key.n_buttonsChoice == 4
     keysOfInterest(key.rightUnsure) = 1;
     keysOfInterest(key.rightSure) = 1;
 end
-% add space and escape to the list
-keysOfInterest(key.space) = 1;
+% record space for training (but useless for fMRI)
+if IRM == 0
+    keysOfInterest(key.space) = 1;
+end
+% record escape in case experiment needs to be crashed
 keysOfInterest(key.escape) = 1;
-% create buffer with keys to check
+
+%% create buffer with keys to check
 KbQueueCreate(0,keysOfInterest); % checks TTL and keys of pad
-% start filling the buffer
+%% start filling the buffer
 KbQueueStart; % starts checking
 
 end % function
