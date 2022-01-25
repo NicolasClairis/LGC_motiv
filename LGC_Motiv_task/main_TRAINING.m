@@ -57,6 +57,11 @@ end
 file_nm_training_Em = ['training_data_Em_CID',num2str(iSubject)];
 file_nm_training_Ep = ['training_data_Ep_CID',num2str(iSubject)];
 file_nm = ['training_data_CID',num2str(iSubject)];
+fullFileNm = [subResultFolder, file_nm,'.mat'];
+if exist(fullFileNm,'file')
+    error([fullFileNm,' file already exists. If the training script was launched and crashed, ',...
+        ' please consider renaming the files already saved to avoid losing data.']);
+end
 Ep_calib_filenm = [subResultFolder,subjectCodeName,'_physicalCalib.mat'];
 Em_calib_filenm = [subResultFolder,subjectCodeName,'_mentalCalib.mat'];
 file_nm_IP = ['delta_IP_CID',num2str(iSubject)];
@@ -188,7 +193,10 @@ for i_pm = 1:2
                 [learningPerfSummary_Ep, learningOnsets_Ep] = physical_learning(scr, stim, dq, n_E_levels, Ep_time_levels,...
                     F_threshold, F_tolerance, MVC,...
                     n_Ep_learningForceRepeats, learningTimes_Ep);
-            end
+                
+                %% temporary save of data
+                save([subResultFolder, file_nm,'.mat']);
+            end % physical learning
             
             %% training physical (choice + effort)
             if strcmp(taskToPerform.physical.training,'on')
@@ -242,7 +250,10 @@ for i_pm = 1:2
                     'center','center',stim.training.Ep.endMsg.colour, scr.wrapat);
                 [~,onsets.EndTrainingMsg] = Screen('Flip',window); % display the cross on screen
                 WaitSecs(trainingTimes_Ep.trainingEnd);
-            end
+                
+                %% temporary save of data
+                save([subResultFolder, file_nm,'.mat']);
+            end % training physical
             
         case 'm'
             %% learning mental: 0-back and 2-back as a calibration
@@ -428,7 +439,10 @@ for i_pm = 1:2
                         learning1done = 1;
                     end
                 end
-            end % learning (1)
+                
+                %% temporary save of data
+                save([subResultFolder, file_nm,'.mat']);
+            end % mental learning (1)
             
             %% calibration mental
             if strcmp(taskToPerform.mental.calib,'on')
@@ -472,6 +486,9 @@ for i_pm = 1:2
                 Em_learningTimings.time_limit = false;
                 % perform all the difficulty levels
                 [learning2PerfSummary_Em, onsets] = mental_learning(scr, stim, key_Em, n_E_levels, n_to_reach, n_Em_learningForceRepeats, Em_learningTimings);
+                
+                %% temporary save of data
+                save([subResultFolder, file_nm,'.mat']);
             end % learning (2)
             
             %% training mental
@@ -519,8 +536,11 @@ for i_pm = 1:2
                         trainingTimes_Em,...
                         subResultFolder, file_nm_training_Em);
                 end % training condition loop
-            end
-    end
+                
+                %% temporary save of data
+                save([subResultFolder, file_nm,'.mat']);
+            end % mental training
+    end % physical/mental loop
     
     %% change m/p for next loop
     if strcmp(p_or_m,'p')
