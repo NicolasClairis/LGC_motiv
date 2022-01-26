@@ -97,19 +97,15 @@ for iTask = 1:nTaskTypes
     end
     % per task per money level
     for iAbsMoney = 1:(n_R_levels - 1)
-        [nonDefaultChoice_perSub.perAbsMoneylevel.([task_nm,'_',num2str(iAbsMoney)]),...
-            nonDefaultChoice_perSub.perDeltaMoneylevel.([task_nm,'_',num2str(iAbsMoney)]),...
+        [nonDefaultChoice_perSub.perDeltaMoneylevel.([task_nm,'_',num2str(iAbsMoney)]),...
             nonDefaultChoice_perSub.perSignedMoneylevel.([task_nm,'_R_',num2str(iAbsMoney)]),...
             nonDefaultChoice_perSub.perSignedMoneylevel.([task_nm,'_P_',num2str(iAbsMoney)]),...
-            conf_perSub.perAbsMoneylevel.([task_nm,'_',num2str(iAbsMoney)]),...
             conf_perSub.perDeltaMoneylevel.([task_nm,'_',num2str(iAbsMoney)]),...
             conf_perSub.perSignedMoneylevel.([task_nm,'_R_',num2str(iAbsMoney)]),...
             conf_perSub.perSignedMoneylevel.([task_nm,'_P_',num2str(iAbsMoney)]),...
-            RT_perSub.perAbsMoneylevel.([task_nm,'_',num2str(iAbsMoney)]),...
             RT_perSub.perDeltaMoneylevel.([task_nm,'_',num2str(iAbsMoney)]),...
             RT_perSub.perSignedMoneylevel.([task_nm,'_R_',num2str(iAbsMoney)]),...
             RT_perSub.perSignedMoneylevel.([task_nm,'_P_',num2str(iAbsMoney)]),...
-            Eperformance_perSub.perAbsMoneylevel.([task_nm,'_',num2str(iAbsMoney)]),...
             Eperformance_perSub.perDeltaMoneylevel.([task_nm,'_',num2str(iAbsMoney)]),...
             Eperformance_perSub.perSignedMoneylevel.([task_nm,'_R_',num2str(iAbsMoney)]),...
             Eperformance_perSub.perSignedMoneylevel.([task_nm,'_P_',num2str(iAbsMoney)])] = deal(NaN(1,NS));
@@ -143,22 +139,18 @@ for iTask = 1:nTaskTypes
         % per task per money level
         for iAbsMoney = 1:(n_R_levels - 1)
             % default choice proportion
-            nonDefaultChoice_perSub.perAbsMoneylevel.([task_nm,'_',num2str(iAbsMoney)])(iS) = avg_nonDefaultChoice_data_perSub{iS}.perAbsMoneylevel.([task_nm,'_',num2str(iAbsMoney)]);
             nonDefaultChoice_perSub.perDeltaMoneylevel.([task_nm,'_',num2str(iAbsMoney)])(iS) = avg_nonDefaultChoice_data_perSub{iS}.perDeltaMoneylevel.([task_nm,'_',num2str(iAbsMoney)]);
             nonDefaultChoice_perSub.perSignedMoneylevel.([task_nm,'_R_',num2str(iAbsMoney)])(iS) = avg_nonDefaultChoice_data_perSub{iS}.perSignedMoneylevel.([task_nm,'_R_',num2str(iAbsMoney)]);
             nonDefaultChoice_perSub.perSignedMoneylevel.([task_nm,'_P_',num2str(iAbsMoney)])(iS) = avg_nonDefaultChoice_data_perSub{iS}.perSignedMoneylevel.([task_nm,'_P_',num2str(iAbsMoney)]);
             % same for confidence
-            conf_perSub.perAbsMoneylevel.([task_nm,'_R_',num2str(iAbsMoney)])(iS) = avg_conf_data_perSub{iS}.perAbsMoneylevel.([task_nm,'_',num2str(iAbsMoney)]);
             conf_perSub.perDeltaMoneylevel.([task_nm,'_R_',num2str(iAbsMoney)])(iS) = avg_conf_data_perSub{iS}.perDeltaMoneylevel.([task_nm,'_',num2str(iAbsMoney)]);
             conf_perSub.perSignedMoneylevel.([task_nm,'_R_',num2str(iAbsMoney)])(iS) = avg_conf_data_perSub{iS}.perSignedMoneylevel.([task_nm,'_R_',num2str(iAbsMoney)]);
             conf_perSub.perSignedMoneylevel.([task_nm,'_P_',num2str(iAbsMoney)])(iS) = avg_conf_data_perSub{iS}.perSignedMoneylevel.([task_nm,'_P_',num2str(iAbsMoney)]);
             % same for RT
-            RT_perSub.perAbsMoneylevel.([task_nm,'_R_',num2str(iAbsMoney)])(iS) = avg_RT_data_perSub{iS}.perAbsMoneylevel.([task_nm,'_',num2str(iAbsMoney)]);
             RT_perSub.perDeltaMoneylevel.([task_nm,'_R_',num2str(iAbsMoney)])(iS) = avg_RT_data_perSub{iS}.perDeltaMoneylevel.([task_nm,'_',num2str(iAbsMoney)]);
             RT_perSub.perSignedMoneylevel.([task_nm,'_R_',num2str(iAbsMoney)])(iS) = avg_RT_data_perSub{iS}.perSignedMoneylevel.([task_nm,'_R_',num2str(iAbsMoney)]);
             RT_perSub.perSignedMoneylevel.([task_nm,'_P_',num2str(iAbsMoney)])(iS) = avg_RT_data_perSub{iS}.perSignedMoneylevel.([task_nm,'_P_',num2str(iAbsMoney)]);
             % same for effort performance
-            Eperformance_perSub.perAbsMoneylevel.([task_nm,'_R_',num2str(iAbsMoney)])(iS) = avg_Eperformance_data_perSub{iS}.perAbsMoneylevel.([task_nm,'_',num2str(iAbsMoney)]);
             Eperformance_perSub.perDeltaMoneylevel.([task_nm,'_R_',num2str(iAbsMoney)])(iS) = avg_Eperformance_data_perSub{iS}.perDeltaMoneylevel.([task_nm,'_',num2str(iAbsMoney)]);
             Eperformance_perSub.perSignedMoneylevel.([task_nm,'_R_',num2str(iAbsMoney)])(iS) = avg_Eperformance_data_perSub{iS}.perSignedMoneylevel.([task_nm,'_R_',num2str(iAbsMoney)]);
             Eperformance_perSub.perSignedMoneylevel.([task_nm,'_P_',num2str(iAbsMoney)])(iS) = avg_Eperformance_data_perSub{iS}.perSignedMoneylevel.([task_nm,'_P_',num2str(iAbsMoney)]);
@@ -203,43 +195,35 @@ for iTask = 1:nTaskTypes
     % per task per money level
     for iAbsMoney = 1:(n_R_levels - 1)
         % mean default choice proportion
-        avg_nonDefaultChoice.perAbsMoneylevel.([task_nm,'_',num2str(iAbsMoney)]) = mean(nonDefaultChoice_perSub.perAbsMoneylevel.([task_nm,'_',num2str(iAbsMoney)]),2,'omitnan');
         avg_nonDefaultChoice.perDeltaMoneylevel.([task_nm,'_',num2str(iAbsMoney)]) = mean(nonDefaultChoice_perSub.perDeltaMoneylevel.([task_nm,'_',num2str(iAbsMoney)]),2,'omitnan');
         avg_nonDefaultChoice.perSignedMoneylevel.([task_nm,'_R_',num2str(iAbsMoney)]) = mean(nonDefaultChoice_perSub.perSignedMoneylevel.([task_nm,'_R_',num2str(iAbsMoney)]),2,'omitnan');
         avg_nonDefaultChoice.perSignedMoneylevel.([task_nm,'_P_',num2str(iAbsMoney)]) = mean(nonDefaultChoice_perSub.perSignedMoneylevel.([task_nm,'_P_',num2str(iAbsMoney)]),2,'omitnan');
         % mean confidence
-        avg_conf.perAbsMoneylevel.([task_nm,'_',num2str(iAbsMoney)]) = mean(conf_perSub.perAbsMoneylevel.([task_nm,'_',num2str(iAbsMoney)]),2,'omitnan');
         avg_conf.perDeltaMoneylevel.([task_nm,'_',num2str(iAbsMoney)]) = mean(conf_perSub.perDeltaMoneylevel.([task_nm,'_',num2str(iAbsMoney)]),2,'omitnan');
         avg_conf.perSignedMoneylevel.([task_nm,'_R_',num2str(iAbsMoney)]) = mean(conf_perSub.perSignedMoneylevel.([task_nm,'_R_',num2str(iAbsMoney)]),2,'omitnan');
         avg_conf.perSignedMoneylevel.([task_nm,'_P_',num2str(iAbsMoney)]) = mean(conf_perSub.perSignedMoneylevel.([task_nm,'_P_',num2str(iAbsMoney)]),2,'omitnan');
         % mean RT
-        avg_RT.perAbsMoneylevel.([task_nm,'_',num2str(iAbsMoney)]) = mean(RT_perSub.perAbsMoneylevel.([task_nm,'_',num2str(iAbsMoney)]),2,'omitnan');
         avg_RT.perDeltaMoneylevel.([task_nm,'_',num2str(iAbsMoney)]) = mean(RT_perSub.perDeltaMoneylevel.([task_nm,'_',num2str(iAbsMoney)]),2,'omitnan');
         avg_RT.perSignedMoneylevel.([task_nm,'_R_',num2str(iAbsMoney)]) = mean(RT_perSub.perSignedMoneylevel.([task_nm,'_R_',num2str(iAbsMoney)]),2,'omitnan');
         avg_RT.perSignedMoneylevel.([task_nm,'_P_',num2str(iAbsMoney)]) = mean(RT_perSub.perSignedMoneylevel.([task_nm,'_P_',num2str(iAbsMoney)]),2,'omitnan');
         % mean effort performance
-        avg_Eperformance.perAbsMoneylevel.([task_nm,'_',num2str(iAbsMoney)]) = mean(Eperformance_perSub.perAbsMoneylevel.([task_nm,'_',num2str(iAbsMoney)]),2,'omitnan');
         avg_Eperformance.perDeltaMoneylevel.([task_nm,'_',num2str(iAbsMoney)]) = mean(Eperformance_perSub.perDeltaMoneylevel.([task_nm,'_',num2str(iAbsMoney)]),2,'omitnan');
         avg_Eperformance.perSignedMoneylevel.([task_nm,'_R_',num2str(iAbsMoney)]) = mean(Eperformance_perSub.perSignedMoneylevel.([task_nm,'_R_',num2str(iAbsMoney)]),2,'omitnan');
         avg_Eperformance.perSignedMoneylevel.([task_nm,'_P_',num2str(iAbsMoney)]) = mean(Eperformance_perSub.perSignedMoneylevel.([task_nm,'_P_',num2str(iAbsMoney)]),2,'omitnan');
         
         % sem choice proportion
-        sem_nonDefaultChoice.perAbsMoneylevel.([task_nm,'_',num2str(iAbsMoney)]) = sem(nonDefaultChoice_perSub.perAbsMoneylevel.([task_nm,'_',num2str(iAbsMoney)]),2);
         sem_nonDefaultChoice.perDeltaMoneylevel.([task_nm,'_',num2str(iAbsMoney)]) = sem(nonDefaultChoice_perSub.perDeltaMoneylevel.([task_nm,'_',num2str(iAbsMoney)]),2);
         sem_nonDefaultChoice.perSignedMoneylevel.([task_nm,'_R_',num2str(iAbsMoney)]) = sem(nonDefaultChoice_perSub.perSignedMoneylevel.([task_nm,'_R_',num2str(iAbsMoney)]),2);
         sem_nonDefaultChoice.perSignedMoneylevel.([task_nm,'_P_',num2str(iAbsMoney)]) = sem(nonDefaultChoice_perSub.perSignedMoneylevel.([task_nm,'_P_',num2str(iAbsMoney)]),2);
         % sem confidence
-        sem_conf.perAbsMoneylevel.([task_nm,'_',num2str(iAbsMoney)]) = sem(conf_perSub.perAbsMoneylevel.([task_nm,'_',num2str(iAbsMoney)]),2);
         sem_conf.perDeltaMoneylevel.([task_nm,'_',num2str(iAbsMoney)]) = sem(conf_perSub.perDeltaMoneylevel.([task_nm,'_',num2str(iAbsMoney)]),2);
         sem_conf.perSignedMoneylevel.([task_nm,'_R_',num2str(iAbsMoney)]) = sem(conf_perSub.perSignedMoneylevel.([task_nm,'_R_',num2str(iAbsMoney)]),2);
         sem_conf.perSignedMoneylevel.([task_nm,'_P_',num2str(iAbsMoney)]) = sem(conf_perSub.perSignedMoneylevel.([task_nm,'_P_',num2str(iAbsMoney)]),2);
         % sem RT
-        sem_RT.perAbsMoneylevel.([task_nm,'_',num2str(iAbsMoney)]) = sem(RT_perSub.perAbsMoneylevel.([task_nm,'_',num2str(iAbsMoney)]),2);
         sem_RT.perDeltaMoneylevel.([task_nm,'_',num2str(iAbsMoney)]) = sem(RT_perSub.perDeltaMoneylevel.([task_nm,'_',num2str(iAbsMoney)]),2);
         sem_RT.perSignedMoneylevel.([task_nm,'_R_',num2str(iAbsMoney)]) = sem(RT_perSub.perSignedMoneylevel.([task_nm,'_R_',num2str(iAbsMoney)]),2);
         sem_RT.perSignedMoneylevel.([task_nm,'_P_',num2str(iAbsMoney)]) = sem(RT_perSub.perSignedMoneylevel.([task_nm,'_P_',num2str(iAbsMoney)]),2);
         % sem effort performance
-        sem_Eperformance.perAbsMoneylevel.([task_nm,'_',num2str(iAbsMoney)]) = sem(Eperformance_perSub.perAbsMoneylevel.([task_nm,'_',num2str(iAbsMoney)]),2);
         sem_Eperformance.perDeltaMoneylevel.([task_nm,'_',num2str(iAbsMoney)]) = sem(Eperformance_perSub.perDeltaMoneylevel.([task_nm,'_',num2str(iAbsMoney)]),2);
         sem_Eperformance.perSignedMoneylevel.([task_nm,'_R_',num2str(iAbsMoney)]) = sem(Eperformance_perSub.perSignedMoneylevel.([task_nm,'_R_',num2str(iAbsMoney)]),2);
         sem_Eperformance.perSignedMoneylevel.([task_nm,'_P_',num2str(iAbsMoney)]) = sem(Eperformance_perSub.perSignedMoneylevel.([task_nm,'_P_',num2str(iAbsMoney)]),2);
@@ -320,41 +304,6 @@ xticks(1:4);
 xticklabels({'R','P','R','P'});
 ylim([0 100]);
 xlim([0 5]);
-ylabel('Choice non-default option (%)');
-legend([bar_hdl.Em, bar_hdl.Ep],'mental','physical');
-legend('boxoff');
-legend_size(pSize);
-
-%% check choices = f(|money level|)
-fig;
-% mark the 50% trait
-plot(0:n_bins, 50*ones(1,n_bins+1),...
-    'LineWidth',lWidth_50percentTrait,'Color','k','LineStyle',':');
-hold on;
-for iAbsMoney = 1:(n_R_levels - 1)
-    bar_hdl.Em = bar(iAbsMoney-bDist,...
-        avg_nonDefaultChoice.perAbsMoneylevel.(['Em_',num2str(iAbsMoney)]),...
-        'FaceColor',Em_col,'BarWidth',bWidth);
-    bar_hdl.Ep = bar(iAbsMoney+bDist,...
-        avg_nonDefaultChoice.perAbsMoneylevel.(['Ep_',num2str(iAbsMoney)]),...
-        'FaceColor',Ep_col,'BarWidth',bWidth);
-    errorbar(iAbsMoney-bDist,...
-        avg_nonDefaultChoice.perAbsMoneylevel.(['Em_',num2str(iAbsMoney)]),...
-        sem_nonDefaultChoice.perAbsMoneylevel.(['Em_',num2str(iAbsMoney)]),...
-        'k','LineWidth',lWidth);
-    errorbar(iAbsMoney+bDist,...
-        avg_nonDefaultChoice.perAbsMoneylevel.(['Ep_',num2str(iAbsMoney)]),...
-        sem_nonDefaultChoice.perAbsMoneylevel.(['Ep_',num2str(iAbsMoney)]),...
-        'k','LineWidth',lWidth);
-end
-ylim([0 100]);
-ylabel('Choice non-default option (%)');
-xticks(1:3);
-xticklabels({'1','2','3'});
-xlim([0 n_R_levels]);
-xlabel('Money level');
-legend_size(pSize);
-ylim([0 100]);
 ylabel('Choice non-default option (%)');
 legend([bar_hdl.Em, bar_hdl.Ep],'mental','physical');
 legend('boxoff');
