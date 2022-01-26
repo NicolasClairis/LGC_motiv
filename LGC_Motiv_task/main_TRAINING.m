@@ -166,6 +166,18 @@ if strcmp(taskToPerform.mental.calib,'on') ||...
     key_Em = relevant_key_definition('mental', IRMbuttons, n_buttonsChoice);
 end
 
+%% start recording key presses
+IRM = 0;
+if strcmp(taskToPerform.mental.calib,'on') ||...
+        strcmp(taskToPerform.mental.learning_1,'on') ||...
+        strcmp(taskToPerform.mental.learning_2,'on') ||...
+        strcmp(taskToPerform.mental.training,'on') ||...
+        strcmp(taskToPerform.mental.task,'on')
+    keyboard_check_start(key_Em, IRM);
+else
+    keyboard_check_start(key_Ep, IRM);
+end
+
 %% run the code twice, each time for p or m conditions
 for i_pm = 1:2
     switch p_or_m
@@ -765,7 +777,7 @@ end
 if strcmp(taskToPerform.mental.task,'on')
     IP_variables.calibration.NMP = NMP;
 end
-% actually save the data
+% actually save the final data
 save([subResultFolder, file_nm,'.mat']);
 
 % save delta_IP and baselineR
@@ -791,6 +803,11 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
     WaitSecs(t_endSession);
 end
 
+%% releyse buffer for key presses
+KbQueueStop;
+KbQueueRelease;
+
 %% close PTB
 ShowCursor;
 sca;
+

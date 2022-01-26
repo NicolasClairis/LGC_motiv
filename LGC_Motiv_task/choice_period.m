@@ -155,76 +155,76 @@ while choicePeriodOver == 0
     end
     
     %% check key press
-    [keyisdown, secs, keycode] = KbCheck;
+    [keyisdown, ~, ~, lastPress, ~] = KbQueueCheck;
     
     %% some key was pressed
     if keyisdown == 1
         if key.n_buttonsChoice == 2
             %% left option chosen
-            if keycode(key.left) == 1 &&...
-                    keycode(key.right) == 0
+            if lastPress(key.left) > onsetDispChoiceOptions &&...
+                    lastPress(key.right) < onsetDispChoiceOptions
                 % record time of chosen option
-                timedown = secs;
+                timedown = lastPress(key.left);
                 % record side of chosen option
                 choice_trial = -1;
                 choicePeriodOver = 1;
                 %% right option chosen
-            elseif keycode(key.left) == 0 &&...
-                    keycode(key.right) == 1
+            elseif lastPress(key.left) < onsetDispChoiceOptions &&...
+                    lastPress(key.right) > onsetDispChoiceOptions
                 % record time of chosen option
-                timedown = secs;
+                timedown = lastPress(key.right);
                 % record side of chosen option
                 choice_trial = 1;
                 choicePeriodOver = 1;
                 %% stop the task
-            elseif keycode(key.escape) == 1
+            elseif lastPress(key.escape) > 0
                 choicePeriodOver = 1;
                 stoptask = 1;
             end
             
         elseif key.n_buttonsChoice == 4
             %% LEFT SURE option chosen
-            if keycode(key.leftSure) == 1 &&...
-                    keycode(key.leftUnsure) == 0 &&...
-                    keycode(key.rightUnsure) == 0 &&...
-                    keycode(key.rightSure) == 0
+            if lastPress(key.leftSure) > onsetDispChoiceOptions &&...
+                    lastPress(key.leftUnsure) < onsetDispChoiceOptions &&...
+                    lastPress(key.rightUnsure) < onsetDispChoiceOptions &&...
+                    lastPress(key.rightSure) < onsetDispChoiceOptions
                 % record time of chosen option
-                timedown = secs;
+                timedown = lastPress(key.leftSure);
                 % record side of chosen option
                 choice_trial = -2;
                 choicePeriodOver = 1;
                 %% LEFT UNSURE option chosen
-            elseif keycode(key.leftSure) == 0 &&...
-                    keycode(key.leftUnsure) == 1 &&...
-                    keycode(key.rightUnsure) == 0 &&...
-                    keycode(key.rightSure) == 0
+            elseif lastPress(key.leftSure) < onsetDispChoiceOptions &&...
+                    lastPress(key.leftUnsure) > onsetDispChoiceOptions &&...
+                    lastPress(key.rightUnsure) < onsetDispChoiceOptions &&...
+                    lastPress(key.rightSure) < onsetDispChoiceOptions
                 % record time of chosen option
-                timedown = secs;
+                timedown = lastPress(key.leftUnsure);
                 % record side of chosen option
                 choice_trial = -1;
                 choicePeriodOver = 1;
                 %% RIGHT UNSURE option chosen
-            elseif keycode(key.leftSure) == 0 &&...
-                    keycode(key.leftUnsure) == 0 &&...
-                    keycode(key.rightUnsure) == 1 &&...
-                    keycode(key.rightSure) == 0
+            elseif lastPress(key.leftSure) < onsetDispChoiceOptions &&...
+                    lastPress(key.leftUnsure) < onsetDispChoiceOptions &&...
+                    lastPress(key.rightUnsure) > onsetDispChoiceOptions &&...
+                    lastPress(key.rightSure) < onsetDispChoiceOptions
                 % record time of chosen option
-                timedown = secs;
+                timedown = lastPress(key.rightUnsure);
                 % record side of chosen option
                 choice_trial = 1;
                 choicePeriodOver = 1;
                 %% RIGHT SURE option chosen
-            elseif keycode(key.leftSure) == 0 &&...
-                    keycode(key.leftUnsure) == 0 &&...
-                    keycode(key.rightUnsure) == 0 &&...
-                    keycode(key.rightSure) == 1
+            elseif lastPress(key.leftSure) < onsetDispChoiceOptions &&...
+                    lastPress(key.leftUnsure) < onsetDispChoiceOptions &&...
+                    lastPress(key.rightUnsure) < onsetDispChoiceOptions &&...
+                    lastPress(key.rightSure) > onsetDispChoiceOptions
                 % record time of chosen option
-                timedown = secs;
+                timedown = lastPress(key.rightSure);
                 % record side of chosen option
                 choice_trial = 2;
                 choicePeriodOver = 1;
                 %% stop the task
-            elseif keycode(key.escape) == 1
+            elseif lastPress(key.escape) > 0
                 choicePeriodOver = 1;
                 stoptask = 1;
             end
@@ -236,9 +236,5 @@ while choicePeriodOver == 0
         onsetChoice = timedown;
     end
 end % choice period
-
-%     warning('you can either leave it that way (no visual feedback at the moment they chose an option',...
-%         ' or show some visual feedback of the selected option already',...
-%         ' or require the subject to keep pressing the button until the end of the trial.');
 
 end % function
