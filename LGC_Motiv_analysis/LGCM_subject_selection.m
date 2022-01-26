@@ -20,12 +20,14 @@ switch study_nm
         %         subject_id = {'pilot_s1','pilot_s2','pilot_s3'};
     case 'study1'
         %% all subjects
-%         subject_id = {'074','036','095','064','061',...
-%             '090','079','087','017','039','081','045','065'};
+        all_subs = {'074','036','095','064','061',...
+            '090','079','087','017','039','081','045','065',...
+            '060'};
 
         %% restrict to subjects of interest
+%         subject_id = all_subs;
         subject_id = {'074','036','064','061',...
-            '090','079','087','017','039','081','045','065'};
+            '090','079','087','017','039','081','045','065','060'};
         
         %% Notes:
         % '095': always chose non-default in physical task => hard to
