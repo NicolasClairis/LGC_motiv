@@ -14,10 +14,10 @@ function[avg_nonDefaultChoice, sd_nonDefaultChoice, avg_conf, avg_RT, avg_Eperfo
 % n_bins: number of bins for the analysis of choice = f(fatigue)
 %
 % OUTPUTS
-% avg_nonDefaultChoice: structure with average choice of the non-default 
+% avg_nonDefaultChoice: structure with average choice of the non-default
 % option in function of the other task parameters
 %
-% sd_nonDefaultChoice: same as avg_nonDefaultChoice but for standard 
+% sd_nonDefaultChoice: same as avg_nonDefaultChoice but for standard
 % deviation
 %
 % avg_conf: structure with average confidence on the choice in function of
@@ -52,7 +52,8 @@ nBinTrials = nTrials/n_bins;
     percentage_R_choiceNonDefault,...
     percentage_P_choiceNonDefault,...
     n_failedChoices] = deal(NaN(1,nRuns));
-[choiceNonDefault, choice, confidence, RT, Eperformance] = deal( NaN(nRuns,nTrials));
+[choiceNonDefault, choice,...
+    confidence, RT, Eperformance] = deal( NaN(nRuns,nTrials));
 [choiceNonDefault_R,...
     choiceNonDefault_P] = deal( NaN(nRuns,nTrials/2));
 
@@ -170,17 +171,17 @@ for iRun = 1:nRuns
         end
         jSignedMoney.(signedMoney_nm) = jSignedMoney.(signedMoney_nm) + 1;
         jDeltaMoney.(deltaMoney_nm) = jDeltaMoney.(deltaMoney_nm) + 1;
-
+        
         %% did the participant choose the default or the non-default option
         % for the current trial?
         if choiceSide(iTrial) == -defaultSide(iTrial) % choice non-default option
             % extract average selection of the default option
             choiceNonDefault(iRun, iTrial) = 1;
-
+            
             % extract default choices per money level
             choiceNonDefault_perSignedMoneylevel.(signedMoney_nm)(iRun, jSignedMoney.(signedMoney_nm)) = 1;
             choiceNonDefault_perDeltaMoneylevel.(deltaMoney_nm)(iRun, jDeltaMoney.(deltaMoney_nm)) = 1;
-
+            
             % extract average reward (or respectively punishment) default choices
             switch R_or_P{iTrial}
                 case 'R'
@@ -194,11 +195,11 @@ for iRun = 1:nRuns
         elseif choiceSide(iTrial) == defaultSide(iTrial) % choice default option
             % extract average selection of the default option
             choiceNonDefault(iRun, iTrial) = 0;
-
+            
             % extract default choices per money level
             choiceNonDefault_perSignedMoneylevel.(signedMoney_nm)(iRun, jSignedMoney.(signedMoney_nm)) = 0;
             choiceNonDefault_perDeltaMoneylevel.(deltaMoney_nm)(iRun, jDeltaMoney.(deltaMoney_nm)) = 0;
-
+            
             % extract average reward (or respectively punishment) default choices
             switch R_or_P{iTrial}
                 case 'R'
@@ -253,7 +254,7 @@ for iRun = 1:nRuns
         RT_perElevel.(['avg_E_',num2str(iE)])(iRun) = mean(RT_perElevel.(['E_level_',num2str(iE)])(iRun, :),2,'omitnan');
         Eperformance_perElevel.(['avg_E_',num2str(iE)])(iRun) = mean(Eperformance_perElevel.(['E_level_',num2str(iE)])(iRun, :),2,'omitnan');
     end
-
+    
     %% percentage choice of default per money level
     for iAbsDeltaMoney = 1:(n_R_levels - 1)
         choiceNonDefault_perDeltaMoneylevel.(['avg_deltaMoney_',num2str(iAbsDeltaMoney)])(iRun) = 100*sum(choiceNonDefault_perDeltaMoneylevel.(['deltaMoney_level_',num2str(iAbsDeltaMoney)])(iRun, :),'omitnan')/nRepeatsPerAbsDeltaMoneyLevel;
@@ -279,19 +280,19 @@ if exist(['CID',subid,'_session1_mental_task_behavioral_tmp.mat'],'file') &&...
         exist(['CID',subid,'_session2_physical_task_behavioral_tmp.mat'],'file') &&...
         exist(['CID',subid,'_session3_mental_task_behavioral_tmp.mat'],'file') &&...
         exist(['CID',subid,'_session4_physical_task_behavioral_tmp.mat'],'file')
-        Em_runs = [1,3];
-        Ep_runs = [2,4];
+    Em_runs = [1,3];
+    Ep_runs = [2,4];
 elseif exist(['CID',subid,'_session1_physical_task_behavioral_tmp.mat'],'file') &&...
         exist(['CID',subid,'_session2_mental_task_behavioral_tmp.mat'],'file') &&...
         exist(['CID',subid,'_session3_physical_task_behavioral_tmp.mat'],'file') &&...
         exist(['CID',subid,'_session4_mental_task_behavioral_tmp.mat'],'file')
-        Em_runs = [2,4];
-        Ep_runs = [1,3];
+    Em_runs = [2,4];
+    Ep_runs = [1,3];
 else
     error('couldn''t find participant task types');
 end
 
-%% extract average 
+%% extract average
 % ratio of choosing default per task
 avg_nonDefaultChoice.Em = mean(percentageChoiceNonDefault(Em_runs).*100);
 avg_nonDefaultChoice.Ep = mean(percentageChoiceNonDefault(Ep_runs).*100);
@@ -394,28 +395,42 @@ if figDisp == 1
     pSize = 30;
     bWidth = 0.4;
     bDist = 0.2;
-
+    
     % check choices = f(fatigue, R/P, level of R, level of E)
     %% check choices = f(fatigue)
     fig;
     % mark the 50% trait
-    plot(1:n_bins, 50*ones(1,n_bins),...
+    plot(0:n_bins+1, 50*ones(1,n_bins+2),...
         'LineWidth',2,'Color','k','LineStyle',':');
     hold on;
+    runType = cell(1,nRuns);
     for iRun = 1:nRuns
-        % different colour for mental and physical effort
-        if ismember(iRun, Em_runs)
-            lColour = 'g';
-        else
-            lColour = 'r';
+        % different colour for mental and physical effort and for each run
+        switch iRun
+            case Em_runs(1)
+                lColour = [0 255 0]./255;
+                runType{iRun} = ['run ',num2str(iRun),' mental'];
+            case Em_runs(2)
+                lColour = [0 143 0]./255;
+                runType{iRun} = ['run ',num2str(iRun),' mental'];
+            case Ep_runs(1)
+                lColour = [0 0 255]./255;
+                runType{iRun} = ['run ',num2str(iRun),' physical'];
+            case Ep_runs(2)
+                lColour = [0 0 143]./255;
+                runType{iRun} = ['run ',num2str(iRun),' physical'];
         end
-        plot(1:n_bins, choiceNonDefault_f_time(iRun, :)*100,...
+        bar_hdl.(['run',num2str(iRun)]) = plot(1:n_bins, choiceNonDefault_f_time(iRun, :)*100,...
             'LineWidth',lWidth, 'Color',lColour,'LineStyle','--');
     end
     ylim([0 100]);
     xlim([0 n_bins+1]);
     xlabel('trial bins');
     ylabel('Choice non-default option (%)');
+    legend([bar_hdl.run1, bar_hdl.run2, bar_hdl.run3, bar_hdl.run4],...
+        runType);
+    legend('boxoff');
+    legend('Location','SouthWest');
     legend_size(pSize);
     
     %% check choices = f(R/P)
@@ -442,10 +457,18 @@ if figDisp == 1
         'LineWidth',2,'Color','k','LineStyle',':');
     hold on;
     for iDeltaMoney = 1:(n_R_levels - 1)
-        bar(iDeltaMoney-bDist, avg_nonDefaultChoice.perDeltaMoneylevel.(['Em_',num2str(iDeltaMoney)]), 'FaceColor','g','BarWidth',bWidth);
-        bar(iDeltaMoney+bDist, avg_nonDefaultChoice.perDeltaMoneylevel.(['Ep_',num2str(iDeltaMoney)]), 'FaceColor','b','BarWidth',bWidth);
-        errorbar(iDeltaMoney-bDist, avg_nonDefaultChoice.perDeltaMoneylevel.(['Em_',num2str(iDeltaMoney)]), sd_nonDefaultChoice.perDeltaMoneylevel.(['Em_',num2str(iDeltaMoney)]),'k')
-        errorbar(iDeltaMoney+bDist, avg_nonDefaultChoice.perDeltaMoneylevel.(['Ep_',num2str(iDeltaMoney)]), sd_nonDefaultChoice.perDeltaMoneylevel.(['Ep_',num2str(iDeltaMoney)]),'k')
+        Em_bar_hdl = bar(iDeltaMoney-bDist, avg_nonDefaultChoice.perDeltaMoneylevel.(['Em_',num2str(iDeltaMoney)]),...
+            'FaceColor','g','BarWidth',bWidth);
+        Ep_bar_hdl = bar(iDeltaMoney+bDist, avg_nonDefaultChoice.perDeltaMoneylevel.(['Ep_',num2str(iDeltaMoney)]),...
+            'FaceColor','b','BarWidth',bWidth);
+        errorbar(iDeltaMoney-bDist,...
+            avg_nonDefaultChoice.perDeltaMoneylevel.(['Em_',num2str(iDeltaMoney)]),...
+            sd_nonDefaultChoice.perDeltaMoneylevel.(['Em_',num2str(iDeltaMoney)]),...
+            'k')
+        errorbar(iDeltaMoney+bDist,...
+            avg_nonDefaultChoice.perDeltaMoneylevel.(['Ep_',num2str(iDeltaMoney)]),...
+            sd_nonDefaultChoice.perDeltaMoneylevel.(['Ep_',num2str(iDeltaMoney)]),...
+            'k')
     end
     ylim([0 100]);
     ylabel('Choice non-default option (%)');
@@ -453,6 +476,9 @@ if figDisp == 1
     xticklabels({'1','2','3'});
     xlim([0 n_R_levels]);
     xlabel('|Δ money| level');
+    legend([Em_bar_hdl, Ep_bar_hdl],'mental','physical');
+    legend('boxoff');
+    legend('Location','NorthWest');
     legend_size(pSize);
     
     %% check choices = f(money levels (splitting R and P trials))
@@ -468,10 +494,20 @@ if figDisp == 1
         elseif iMoney > 0
             taskCond = 'R';
         end
-        bar(iMoney-bDist, avg_nonDefaultChoice.perSignedMoneylevel.(['Em_',taskCond','_',num2str(jMoney)]), 'FaceColor','g','BarWidth',bWidth);
-        bar(iMoney+bDist, avg_nonDefaultChoice.perSignedMoneylevel.(['Ep_',taskCond','_',num2str(jMoney)]), 'FaceColor','b','BarWidth',bWidth);
-        errorbar(iMoney-bDist, avg_nonDefaultChoice.perSignedMoneylevel.(['Em_',taskCond','_',num2str(jMoney)]), sd_nonDefaultChoice.perSignedMoneylevel.(['Em_',taskCond','_',num2str(jMoney)]),'k')
-        errorbar(iMoney+bDist, avg_nonDefaultChoice.perSignedMoneylevel.(['Ep_',taskCond','_',num2str(jMoney)]), sd_nonDefaultChoice.perSignedMoneylevel.(['Ep_',taskCond','_',num2str(jMoney)]),'k')
+        Em_bar_hdl = bar(iMoney-bDist,...
+            avg_nonDefaultChoice.perSignedMoneylevel.(['Em_',taskCond','_',num2str(jMoney)]),...
+            'FaceColor','g','BarWidth',bWidth);
+        Ep_bar_hdl = bar(iMoney+bDist,...
+            avg_nonDefaultChoice.perSignedMoneylevel.(['Ep_',taskCond','_',num2str(jMoney)]),...
+            'FaceColor','b','BarWidth',bWidth);
+        errorbar(iMoney-bDist,...
+            avg_nonDefaultChoice.perSignedMoneylevel.(['Em_',taskCond','_',num2str(jMoney)]),...
+            sd_nonDefaultChoice.perSignedMoneylevel.(['Em_',taskCond','_',num2str(jMoney)]),...
+            'k')
+        errorbar(iMoney+bDist,...
+            avg_nonDefaultChoice.perSignedMoneylevel.(['Ep_',taskCond','_',num2str(jMoney)]),...
+            sd_nonDefaultChoice.perSignedMoneylevel.(['Ep_',taskCond','_',num2str(jMoney)]),...
+            'k')
     end
     ylim([0 100]);
     ylabel('Choice non-default option (%)');
@@ -482,6 +518,9 @@ if figDisp == 1
     legend_size(pSize);
     ylim([0 100]);
     ylabel('Choice non-default option (%)');
+    legend([Em_bar_hdl, Ep_bar_hdl],'mental','physical');
+    legend('boxoff');
+    legend('Location','NorthWest');
     legend_size(pSize);
     
     %% check choices = f(E level)
@@ -491,10 +530,14 @@ if figDisp == 1
         'LineWidth',2,'Color','k','LineStyle',':');
     hold on;
     for iE = 1:(n_E_levels - 1)
-        bar(iE-bDist, avg_nonDefaultChoice.perElevel.(['Em_',num2str(iE)]), 'FaceColor','g','BarWidth',bWidth);
-        bar(iE+bDist, avg_nonDefaultChoice.perElevel.(['Ep_',num2str(iE)]), 'FaceColor','b','BarWidth',bWidth);
-        errorbar(iE-bDist, avg_nonDefaultChoice.perElevel.(['Em_',num2str(iE)]), sd_nonDefaultChoice.perElevel.(['Em_',num2str(iE)]),'k')
-        errorbar(iE+bDist, avg_nonDefaultChoice.perElevel.(['Ep_',num2str(iE)]), sd_nonDefaultChoice.perElevel.(['Ep_',num2str(iE)]),'k')
+        Em_bar_hdl = bar(iE-bDist, avg_nonDefaultChoice.perElevel.(['Em_',num2str(iE)]),...
+            'FaceColor','g','BarWidth',bWidth);
+        Ep_bar_hdl = bar(iE+bDist, avg_nonDefaultChoice.perElevel.(['Ep_',num2str(iE)]),...
+            'FaceColor','b','BarWidth',bWidth);
+        errorbar(iE-bDist, avg_nonDefaultChoice.perElevel.(['Em_',num2str(iE)]),...
+            sd_nonDefaultChoice.perElevel.(['Em_',num2str(iE)]),'k')
+        errorbar(iE+bDist, avg_nonDefaultChoice.perElevel.(['Ep_',num2str(iE)]),...
+            sd_nonDefaultChoice.perElevel.(['Ep_',num2str(iE)]),'k')
     end
     ylim([0 100]);
     ylabel('Choice non-default option (%)');
@@ -502,8 +545,11 @@ if figDisp == 1
     xticklabels({'1','2','3'});
     xlim([0 n_E_levels]);
     xlabel('Effort level');
-    legend_size(pSize);    
-
+    legend([Em_bar_hdl, Ep_bar_hdl],'mental','physical');
+    legend('boxoff');
+    legend('Location','NorthWest');
+    legend_size(pSize);
+    
     %% check confidence = f(R/P levels)
     fig;
     % mark the 50% trait
@@ -517,10 +563,20 @@ if figDisp == 1
         elseif iMoney > 0
             taskCond = 'R';
         end
-        bar(iMoney-bDist, avg_conf.perSignedMoneylevel.(['Em_',taskCond','_',num2str(jMoney)]), 'FaceColor','g','BarWidth',bWidth);
-        bar(iMoney+bDist, avg_conf.perSignedMoneylevel.(['Ep_',taskCond','_',num2str(jMoney)]), 'FaceColor','b','BarWidth',bWidth);
-        errorbar(iMoney-bDist, avg_conf.perSignedMoneylevel.(['Em_',taskCond','_',num2str(jMoney)]), sd_conf.perSignedMoneylevel.(['Em_',taskCond','_',num2str(jMoney)]),'k')
-        errorbar(iMoney+bDist, avg_conf.perSignedMoneylevel.(['Ep_',taskCond','_',num2str(jMoney)]), sd_conf.perSignedMoneylevel.(['Ep_',taskCond','_',num2str(jMoney)]),'k')
+        Em_bar_hdl = bar(iMoney-bDist,...
+            avg_conf.perSignedMoneylevel.(['Em_',taskCond','_',num2str(jMoney)]),...
+            'FaceColor','g','BarWidth',bWidth);
+        Ep_bar_hdl = bar(iMoney+bDist,...
+            avg_conf.perSignedMoneylevel.(['Ep_',taskCond','_',num2str(jMoney)]),...
+            'FaceColor','b','BarWidth',bWidth);
+        errorbar(iMoney-bDist,...
+            avg_conf.perSignedMoneylevel.(['Em_',taskCond','_',num2str(jMoney)]),...
+            sd_conf.perSignedMoneylevel.(['Em_',taskCond','_',num2str(jMoney)]),...
+            'k')
+        errorbar(iMoney+bDist,...
+            avg_conf.perSignedMoneylevel.(['Ep_',taskCond','_',num2str(jMoney)]),...
+            sd_conf.perSignedMoneylevel.(['Ep_',taskCond','_',num2str(jMoney)]),...
+            'k')
     end
     xticks([-3:-(1), 1:3]);
     xticklabels({'-3','-2','-1','1','2','3'});
@@ -528,6 +584,9 @@ if figDisp == 1
     ylim([0 100]);
     ylabel('Level of confidence');
     xlabel('Money level');
+    legend([Em_bar_hdl, Ep_bar_hdl],'mental','physical');
+    legend('boxoff');
+    legend('Location','NorthWest');
     legend_size(pSize);
     
     %% check confidence = f(E levels)
@@ -537,10 +596,16 @@ if figDisp == 1
         'LineWidth',2,'Color','k','LineStyle',':');
     hold on;
     for iE = 1:(n_E_levels - 1)
-        bar(iE-bDist, avg_conf.perElevel.(['Em_',num2str(iE)]), 'FaceColor','g','BarWidth',bWidth);
-        bar(iE+bDist, avg_conf.perElevel.(['Ep_',num2str(iE)]), 'FaceColor','b','BarWidth',bWidth);
-        errorbar(iE-bDist, avg_conf.perElevel.(['Em_',num2str(iE)]), sd_conf.perElevel.(['Em_',num2str(iE)]),'k')
-        errorbar(iE+bDist, avg_conf.perElevel.(['Ep_',num2str(iE)]), sd_conf.perElevel.(['Ep_',num2str(iE)]),'k')
+        Em_bar_hdl = bar(iE-bDist, avg_conf.perElevel.(['Em_',num2str(iE)]),...
+            'FaceColor','g','BarWidth',bWidth);
+        Ep_bar_hdl = bar(iE+bDist, avg_conf.perElevel.(['Ep_',num2str(iE)]),...
+            'FaceColor','b','BarWidth',bWidth);
+        errorbar(iE-bDist,...
+            avg_conf.perElevel.(['Em_',num2str(iE)]),...
+            sd_conf.perElevel.(['Em_',num2str(iE)]),'k')
+        errorbar(iE+bDist,...
+            avg_conf.perElevel.(['Ep_',num2str(iE)]),...
+            sd_conf.perElevel.(['Ep_',num2str(iE)]),'k')
     end
     ylim([0 100]);
     ylabel('Confidence');
@@ -549,11 +614,9 @@ if figDisp == 1
     xlim([0 n_E_levels]);
     xlabel('Effort level');
     legend_size(pSize);
-    
-    
-    ylabel('Level of confidence');
-    xlabel('Effort level');
-    legend_size(pSize);
+    legend([Em_bar_hdl, Ep_bar_hdl],'mental','physical');
+    legend('boxoff');
+    legend('Location','NorthWest');
     
     %% check confidence = f(time)
     fig;
@@ -561,20 +624,34 @@ if figDisp == 1
     plot(1:n_bins, 50*ones(1,n_bins),...
         'LineWidth',2,'Color','k','LineStyle',':');
     hold on;
+    runType = cell(1,nRuns);
     for iRun = 1:nRuns
-        % different colour for mental and physical effort
-        if ismember(iRun, Em_runs)
-            lColour = 'g';
-        else
-            lColour = 'r';
+        % different colour for mental and physical effort and for each run
+        switch iRun
+            case Em_runs(1)
+                lColour = [0 255 0]./255;
+                runType{iRun} = ['run ',num2str(iRun),' mental'];
+            case Em_runs(2)
+                lColour = [0 143 0]./255;
+                runType{iRun} = ['run ',num2str(iRun),' mental'];
+            case Ep_runs(1)
+                lColour = [0 0 255]./255;
+                runType{iRun} = ['run ',num2str(iRun),' physical'];
+            case Ep_runs(2)
+                lColour = [0 0 143]./255;
+                runType{iRun} = ['run ',num2str(iRun),' physical'];
         end
-        plot(1:n_bins, conf_f_time(iRun, :)*100,...
+        bar_hdl.(['run',num2str(iRun)]) = plot(1:n_bins, conf_f_time(iRun, :)*100,...
             'LineWidth',lWidth, 'Color',lColour,'LineStyle','--');
     end
     ylim([0 100]);
     xlim([0 n_bins+1]);
     xlabel('trial bins');
     ylabel('Confidence (%)');
+    legend([bar_hdl.run1, bar_hdl.run2, bar_hdl.run3, bar_hdl.run4],...
+        runType);
+    legend('boxoff');
+    legend('Location','SouthEast');
     legend_size(pSize);
     
     %% check RT = f(R/P levels)
@@ -587,10 +664,20 @@ if figDisp == 1
         elseif iMoney > 0
             taskCond = 'R';
         end
-        bar(iMoney-bDist, avg_RT.perSignedMoneylevel.(['Em_',taskCond','_',num2str(jMoney)]), 'FaceColor','g','BarWidth',bWidth);
-        bar(iMoney+bDist, avg_RT.perSignedMoneylevel.(['Ep_',taskCond','_',num2str(jMoney)]), 'FaceColor','b','BarWidth',bWidth);
-        errorbar(iMoney-bDist, avg_RT.perSignedMoneylevel.(['Em_',taskCond','_',num2str(jMoney)]), sd_RT.perSignedMoneylevel.(['Em_',taskCond','_',num2str(jMoney)]),'k')
-        errorbar(iMoney+bDist, avg_RT.perSignedMoneylevel.(['Ep_',taskCond','_',num2str(jMoney)]), sd_RT.perSignedMoneylevel.(['Ep_',taskCond','_',num2str(jMoney)]),'k')
+        Em_bar_hdl = bar(iMoney-bDist,...
+            avg_RT.perSignedMoneylevel.(['Em_',taskCond','_',num2str(jMoney)]),...
+            'FaceColor','g','BarWidth',bWidth);
+        Ep_bar_hdl = bar(iMoney+bDist,...
+            avg_RT.perSignedMoneylevel.(['Ep_',taskCond','_',num2str(jMoney)]),...
+            'FaceColor','b','BarWidth',bWidth);
+        errorbar(iMoney-bDist,...
+            avg_RT.perSignedMoneylevel.(['Em_',taskCond','_',num2str(jMoney)]),...
+            sd_RT.perSignedMoneylevel.(['Em_',taskCond','_',num2str(jMoney)]),...
+            'k')
+        errorbar(iMoney+bDist,...
+            avg_RT.perSignedMoneylevel.(['Ep_',taskCond','_',num2str(jMoney)]),...
+            sd_RT.perSignedMoneylevel.(['Ep_',taskCond','_',num2str(jMoney)]),...
+            'k')
     end
     xticks([-3:-(1), 1:3]);
     xticklabels({'-3','-2','-1','1','2','3'});
@@ -598,6 +685,9 @@ if figDisp == 1
     ylim([0 5]);
     ylabel('RT (s)');
     xlabel('Money level');
+    legend([Em_bar_hdl, Ep_bar_hdl],'mental','physical');
+    legend('boxoff');
+    legend('Location','NorthWest');
     legend_size(pSize);
     
     %% check RT = f(E levels)
@@ -607,10 +697,14 @@ if figDisp == 1
         'LineWidth',2,'Color','k','LineStyle',':');
     hold on;
     for iE = 1:(n_E_levels - 1)
-        bar(iE-bDist, avg_RT.perElevel.(['Em_',num2str(iE)]), 'FaceColor','g','BarWidth',bWidth);
-        bar(iE+bDist, avg_RT.perElevel.(['Ep_',num2str(iE)]), 'FaceColor','b','BarWidth',bWidth);
-        errorbar(iE-bDist, avg_RT.perElevel.(['Em_',num2str(iE)]), sd_RT.perElevel.(['Em_',num2str(iE)]),'k')
-        errorbar(iE+bDist, avg_RT.perElevel.(['Ep_',num2str(iE)]), sd_RT.perElevel.(['Ep_',num2str(iE)]),'k')
+        Em_bar_hdl = bar(iE-bDist, avg_RT.perElevel.(['Em_',num2str(iE)]),...
+            'FaceColor','g','BarWidth',bWidth);
+        Ep_bar_hdl = bar(iE+bDist, avg_RT.perElevel.(['Ep_',num2str(iE)]),...
+            'FaceColor','b','BarWidth',bWidth);
+        errorbar(iE-bDist, avg_RT.perElevel.(['Em_',num2str(iE)]),...
+            sd_RT.perElevel.(['Em_',num2str(iE)]),'k')
+        errorbar(iE+bDist, avg_RT.perElevel.(['Ep_',num2str(iE)]),...
+            sd_RT.perElevel.(['Ep_',num2str(iE)]),'k')
     end
     ylim([0 5]);
     ylabel('RT (s)');
@@ -618,6 +712,9 @@ if figDisp == 1
     xticklabels({'1','2','3'});
     xlim([0 n_E_levels]);
     xlabel('Effort level');
+    legend([Em_bar_hdl, Ep_bar_hdl],'mental','physical');
+    legend('boxoff');
+    legend('Location','NorthWest');
     legend_size(pSize);
     
     %% check RT = f(time)
@@ -626,20 +723,34 @@ if figDisp == 1
     plot(1:n_bins, 50*ones(1,n_bins),...
         'LineWidth',2,'Color','k','LineStyle',':');
     hold on;
+    runType = cell(1,nRuns);
     for iRun = 1:nRuns
-        % different colour for mental and physical effort
-        if ismember(iRun, Em_runs)
-            lColour = 'g';
-        else
-            lColour = 'r';
+        % different colour for mental and physical effort and for each run
+        switch iRun
+            case Em_runs(1)
+                lColour = [0 255 0]./255;
+                runType{iRun} = ['run ',num2str(iRun),' mental'];
+            case Em_runs(2)
+                lColour = [0 143 0]./255;
+                runType{iRun} = ['run ',num2str(iRun),' mental'];
+            case Ep_runs(1)
+                lColour = [0 0 255]./255;
+                runType{iRun} = ['run ',num2str(iRun),' physical'];
+            case Ep_runs(2)
+                lColour = [0 0 143]./255;
+                runType{iRun} = ['run ',num2str(iRun),' physical'];
         end
-        plot(1:n_bins, RT_f_time(iRun, :),...
+        bar_hdl.(['run',num2str(iRun)]) = plot(1:n_bins, RT_f_time(iRun, :),...
             'LineWidth',lWidth, 'Color',lColour,'LineStyle','--');
     end
     ylim([0 5]);
     xlim([0 n_bins+1]);
     xlabel('trial bins');
     ylabel('RT (s)');
+    legend([bar_hdl.run1, bar_hdl.run2, bar_hdl.run3, bar_hdl.run4],...
+        runType);
+    legend('boxoff');
+    legend('Location','NorthEast');
     legend_size(pSize);
     
     %% check effort performance = f(R/P levels)
@@ -652,10 +763,10 @@ if figDisp == 1
         elseif iMoney > 0
             taskCond = 'R';
         end
-        bar(iMoney-bDist,...
+        Em_bar_hdl = bar(iMoney-bDist,...
             avg_Eperformance.perSignedMoneylevel.(['Em_',taskCond','_',num2str(jMoney)]),...
             'FaceColor','g','BarWidth',bWidth);
-        bar(iMoney+bDist,...
+        Ep_bar_hdl = bar(iMoney+bDist,...
             avg_Eperformance.perSignedMoneylevel.(['Ep_',taskCond','_',num2str(jMoney)]),...
             'FaceColor','b','BarWidth',bWidth);
         errorbar(iMoney-bDist,...
@@ -673,6 +784,9 @@ if figDisp == 1
     ylim([0 100]);
     ylabel('Effort performance (%)');
     xlabel('Money level');
+    legend([Em_bar_hdl, Ep_bar_hdl],'mental','physical');
+    legend('boxoff');
+    legend('Location','NorthWest');
     legend_size(pSize);
     
     %% check effort performance = f(E levels)
@@ -682,10 +796,10 @@ if figDisp == 1
         'LineWidth',2,'Color','k','LineStyle',':');
     hold on;
     for iE = 1:(n_E_levels - 1)
-        bar(iE-bDist,...
+        Em_bar_hdl = bar(iE-bDist,...
             avg_Eperformance.perElevel.(['Em_',num2str(iE)]),...
             'FaceColor','g','BarWidth',bWidth);
-        bar(iE+bDist,...
+        Ep_bar_hdl = bar(iE+bDist,...
             avg_Eperformance.perElevel.(['Ep_',num2str(iE)]),...
             'FaceColor','b','BarWidth',bWidth);
         errorbar(iE-bDist,...
@@ -703,6 +817,9 @@ if figDisp == 1
     xticklabels({'1','2','3'});
     xlim([0 n_E_levels]);
     xlabel('Effort level');
+    legend([Em_bar_hdl, Ep_bar_hdl],'mental','physical');
+    legend('boxoff');
+    legend('Location','NorthWest');
     legend_size(pSize);
     
     %% check effort performance = f(time)
@@ -711,20 +828,34 @@ if figDisp == 1
     plot(1:n_bins, 50*ones(1,n_bins),...
         'LineWidth',2,'Color','k','LineStyle',':');
     hold on;
+    runType = cell(1,nRuns);
     for iRun = 1:nRuns
-        % different colour for mental and physical effort
-        if ismember(iRun, Em_runs)
-            lColour = 'g';
-        else
-            lColour = 'r';
+        % different colour for mental and physical effort and for each run
+        switch iRun
+            case Em_runs(1)
+                lColour = [0 255 0]./255;
+                runType{iRun} = ['run ',num2str(iRun),' mental'];
+            case Em_runs(2)
+                lColour = [0 143 0]./255;
+                runType{iRun} = ['run ',num2str(iRun),' mental'];
+            case Ep_runs(1)
+                lColour = [0 0 255]./255;
+                runType{iRun} = ['run ',num2str(iRun),' physical'];
+            case Ep_runs(2)
+                lColour = [0 0 143]./255;
+                runType{iRun} = ['run ',num2str(iRun),' physical'];
         end
-        plot(1:n_bins, Eperformance_f_time(iRun, :),...
+        bar_hdl.(['run',num2str(iRun)]) = plot(1:n_bins, Eperformance_f_time(iRun, :),...
             'LineWidth',lWidth, 'Color',lColour,'LineStyle','--');
     end
     ylim([0 100]);
     xlim([0 n_bins+1]);
     xlabel('trial bins');
     ylabel('Effort performance (%)');
+    legend([bar_hdl.run1, bar_hdl.run2, bar_hdl.run3, bar_hdl.run4],...
+        runType);
+    legend('boxoff');
+    legend('Location','SouthEast');
     legend_size(pSize);
     
 end % figure display
