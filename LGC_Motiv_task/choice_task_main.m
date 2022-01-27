@@ -212,7 +212,7 @@ if IRM == 1
 end
 
 %% start checking keyboard presses
-keyboard_check_start_bis(key, IRM);
+keyboard_check_start(key, IRM);
 
 %% max perf measurement before start of each fMRI session
 switch effort_type

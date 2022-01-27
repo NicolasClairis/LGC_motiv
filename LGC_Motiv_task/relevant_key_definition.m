@@ -51,6 +51,7 @@ end
 %% keyboard keys configuration + waiting and recording first TTL for fMRI
 KbName('UnifyKeyNames');
 key.escape = KbName('escape');
+key.space = KbName('space');
 if IRM == 0
     %% key configuration
     switch n_buttonsChoice

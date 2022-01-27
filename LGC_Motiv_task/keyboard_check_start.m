@@ -32,10 +32,6 @@ if key.n_buttonsChoice == 4
     keysOfInterest(key.rightUnsure) = 1;
     keysOfInterest(key.rightSure) = 1;
 end
-% record space for training (but useless for fMRI)
-if IRM == 0
-    keysOfInterest(key.space) = 1;
-end
 % record escape in case experiment needs to be crashed
 keysOfInterest(key.escape) = 1;
 
