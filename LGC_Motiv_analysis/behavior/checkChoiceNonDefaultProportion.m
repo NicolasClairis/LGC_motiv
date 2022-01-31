@@ -547,7 +547,7 @@ if figDisp == 1
     xlabel('Effort level');
     legend([Em_bar_hdl, Ep_bar_hdl],'mental','physical');
     legend('boxoff');
-    legend('Location','NorthWest');
+    legend('Location','NorthEast');
     legend_size(pSize);
     
     %% check confidence = f(R/P levels)
