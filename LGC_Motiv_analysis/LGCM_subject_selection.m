@@ -22,13 +22,13 @@ switch study_nm
         %% all subjects
         all_subs = {'074','036','095','064','061',...
             '090','079','087','017','039','081','045','065',...
-            '060','020','046'};
+            '060','020','046','055'};
 
         %% restrict to subjects of interest
         subject_id = all_subs;
-%         subject_id = {'074','036','064','061',...
+% subject_id = {'074','036','064','061',...
 %             '090','079','087','017','039','081','045','065',...
-%             '060','020','046'};
+%             '060','020','046','055'};
         %% Notes:
         % '095': always chose non-default in physical task => hard to
         % analyze
