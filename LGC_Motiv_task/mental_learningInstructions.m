@@ -72,7 +72,7 @@ for iTimeLoop = 1:2
         DrawFormattedText(window, stim.pressWhenReady.text,...
             stim.pressWhenReady.x, stim.pressWhenReady.y, stim.pressWhenReady.colour);
         Screen(window,'Flip');
-        onset_Press = KbWait;
+        onset_Press = KbQueueWait(0,3);
     end
 end % loop over forced reading/manual pass loop
 

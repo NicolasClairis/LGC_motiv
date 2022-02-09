@@ -1,4 +1,5 @@
 function[] = Second_level_batch(study_nm, GLM)
+% Second_level_batch(study_nm, GLM)
 % script to launch second level on LGC Motivation studies
 %
 % INPUTS
@@ -34,7 +35,8 @@ end
 NS_str = num2str(NS);
 
 %% working directories
-computer_root = LGCM_root_paths();
+% computer_root = LGCM_root_paths();
+computer_root = ['E:',filesep];
 % scripts_folder = fullfile(computer_root,'GitHub','LGC_motiv','LGC_Motiv_analysis','fMRI');
 % addpath(scripts_folder);
 switch study_nm

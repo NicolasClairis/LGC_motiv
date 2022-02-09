@@ -17,7 +17,8 @@ function[] = LGCM_contrasts_spm(study_nm, GLM, checking)
 close all; clc;
 
 %% working directories
-computer_root = LGCM_root_paths();
+% computer_root = LGCM_root_paths();
+computer_root = ['E:',filesep];
 if ~exist('study_nm','var') || isempty(study_nm)
     %     study_names = {'study1','study2','fMRI_pilots'};
     %     study_nm_idx = listdlg('ListString',study_names);

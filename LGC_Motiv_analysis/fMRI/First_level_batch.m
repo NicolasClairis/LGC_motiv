@@ -1,4 +1,4 @@
-function[] = First_level_batch(study_nm)
+function[] = First_level_batch(study_nm, checking, GLM)
 % First_level_batch will perform 1st level for LGC motivation fMRI studies.
 %
 % INPUTS
@@ -7,6 +7,16 @@ function[] = First_level_batch(study_nm)
 % 'study1': first study (dmPFC + AI)
 % 'study2': second study (clinical trial)
 %
+% checking:
+% (0) launch 1st level directly
+% (1) display SPM batch before launching to be able to check the inputs
+%
+% GLM: GLM number
+%
+% See also which_GLM.m, GLM_details.m, LGCM_contrasts_spm.m,
+% First_level_loadEachCondition.m, First_level_loadRegressors.m,
+% First_level_subRunFilter.m, LGCM_contrasts.m and Second_level_batch.m
+
 clc; close all;
 
 %% iniate spm
@@ -14,14 +24,21 @@ spm('defaults','fmri');
 spm_jobman('initcfg');
 
 %% general parameters
-% check the batch before launching the script?
-checking = 0;
+
+% by default launch the script unless specified otherwise
+% if checking = 1, then batch will be displayed before launching
+if ~exist('checking','var') || isempty(checking)
+    checking = 0;
+end
 % GLM number
-[GLM_nm] = deal([]);
-while isempty(GLM_nm)
-    % repeat until all questions are answered
-    info = inputdlg({'GLM number?'});
-    [GLM_nm] = info{1};
+if ~exist('GLM','var') || isempty(GLM) || ~isnumeric(GLM) || GLM < 0
+    [GLM_nm] = deal([]);
+    while isempty(GLM_nm)
+        % repeat until all questions are answered
+        info = inputdlg({'GLM number?'});
+        [GLM_nm] = info{1};
+    end
+    GLM = str2double(GLM_nm);
 end
 if ~exist('study_nm','var') || isempty(study_nm)
     %     study_names = {'study1','study2','fMRI_pilots'};
@@ -29,7 +46,6 @@ if ~exist('study_nm','var') || isempty(study_nm)
     %     study_nm = study_names{study_nm_idx};
     study_nm = 'study1'; % define by default
 end
-GLM = str2double(GLM_nm);
 GLMprm = which_GLM(GLM);
 add_drv = GLMprm.gal.add_drv;
 grey_mask = GLMprm.gal.grey_mask;
@@ -43,16 +59,17 @@ TR = 2.00;
 nb_batch_per_subj = 2; % model + estimate
 
 %% working directories
-computer_root = LGCM_root_paths();
+% computerRoot = LGCM_root_paths();
+computerRoot = ['E:',filesep];
 % scripts_folder = fullfile(computer_root,'GitHub','LGC_motiv','LGC_Motiv_analysis','fMRI');
 % addpath(scripts_folder);
 switch study_nm
     case 'fMRI_pilots'
-        root = fullfile(computer_root,'fMRI_pilots');
+        root = fullfile(computerRoot,'fMRI_pilots');
     case 'study1'
-        root = fullfile(computer_root,'study1');
+        root = fullfile(computerRoot,'study1');
     case 'study2'
-        root = fullfile(computer_root,'study2');
+        root = fullfile(computerRoot,'study2');
 end
 
 %% list subjects to analyze
@@ -87,7 +104,7 @@ for iS = 1:NS
     end
     
     %% define number of runs
-    nb_runs = nb_runsPerSub(study_nm, sub_nm);
+    [~, nb_runs] = runs_definition(study_nm, sub_nm, 'fMRI');
     
     %% load fMRI data
     subj_scan_folders_names = ls([subj_scans_folder, filesep, '*run*']); % takes all functional runs folders
@@ -146,7 +163,7 @@ for iS = 1:NS
         end
         % perform 1st level
         matlabbatch = First_level_loadRegressors(matlabbatch, GLMprm, study_nm, sub_nm, sub_idx, iRun,...
-            subj_behavior_folder, currRunBehaviorFileNames, task_nm);
+            subj_behavior_folder, currRunBehaviorFileNames, task_nm, computerRoot);
         
         %% global run parameters (rp movement file, etc.)
         matlabbatch{sub_idx}.spm.stats.fmri_spec.sess(iRun).multi = {''};

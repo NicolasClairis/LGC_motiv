@@ -14,13 +14,13 @@ function[minTotalToObtain, maxTotalToObtain, baselineAmountBasedOnRPDifference] 
 % and punishments which provides with baseline money
 
 %% define number of trials
-nTrialsPerSession = 48;
+nTrialsPerSession = 54;
 nTrialsPerConditionPerSession = nTrialsPerSession/2;
 nSessions = 4;
 nTrials = nTrialsPerSession*nSessions;
 
 %% check baseline difference in reward vs punishment amounts
-n_R_levels = 3;
+n_R_levels = 4;
 punishment_yn = 'yes';
 [R_money] = R_amounts(n_R_levels, punishment_yn);
 RP_difference = R_money.R_1 - R_money.P_1;

@@ -187,17 +187,21 @@ while (iCorrectAnswers < n_max_to_reach) &&...
     end
     
     %% check key presses
-    [keyisdown, timeAnswer, keyCode] = KbCheck();
+    [keyisdown, ~, ~, lastPress, ~] = KbQueueCheck;
     
     if (keyisdown == 1) &&...
-            ((keyCode(key.left) == 1 && keyCode(key.right) == 0) ||...
-            (keyCode(key.left) == 0 && keyCode(key.right) == 1)) % focus only when 1 single button
+            ((lastPress(key.left) > onset_question_tmp && lastPress(key.right) < onset_question_tmp) ||...
+            (lastPress(key.left) < onset_question_tmp && lastPress(key.right) > onset_question_tmp)) % focus only when 1 single button
         % which belongs to the 2 buttons of interest has been pressed
         
-        if keyCode(key.left) == 1 && keyCode(key.right) == 0 % left answer
+        if lastPress(key.left) > onset_question_tmp &&...
+                lastPress(key.right) < onset_question_tmp % left answer
             sideAnswer(i_question) = -1;
-        elseif keyCode(key.left) == 0 && keyCode(key.right) == 1 % right answer
+            timeAnswer = lastPress(key.left);
+        elseif lastPress(key.left) < onset_question_tmp &&...
+                lastPress(key.right) > onset_question_tmp % right answer
             sideAnswer(i_question) = 1;
+            timeAnswer = lastPress(key.right);
         end % left or right answer? (ignore the rest = if another key has
         % been pressed or if both pressed in the same time for ex.)
         

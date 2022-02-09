@@ -273,7 +273,7 @@ else
     %         ' txt(SPM) | par(FSL) | txt(Siemens)', ...
     %         [0 1 2], 0);
     motionFileType = 0;
-    nb_runs = nb_runsPerSub(study_nm, sub_nm);
+    [~, nb_runs] = runs_definition(study_nm, sub_nm, 'fMRI');
     
     P = cell(1,nb_runs);
     M = cell(1,nb_runs);

@@ -17,6 +17,18 @@ function[subj_scan_folders_names, jRun] = First_level_subRunFilter(study_nm, sub
 %
 % jRun: index corrected depending on the runs that are ok
 
+%% check if subject has been well taken into account
+[~, n_runs] = runs_definition(study_nm, sub_nm, 'fMRI');
+if n_runs < 4 &&...
+        ( strcmp(study_nm,'study1') &&...
+        ~ismember(sub_nm,{'017','074'}) ) ||...
+        (strcmp(study_nm,'fMRI_pilots') &&...
+        ~ismember(sub_nm,{'pilot_s1','pilot_s2'}) )
+    error(['study ',study_nm,' subject ',sub_nm,': runs to include/exclude ',...
+        'should be added in First_level_subRunFilter. ',...
+        'Indeed there are only ',num2str(n_runs),' runs for this subject.']);
+end
+
 %% for run file names correction
 if exist('subj_scan_folders_names','var') && ~isempty(subj_scan_folders_names)
 
@@ -35,10 +47,18 @@ if exist('subj_scan_folders_names','var') && ~isempty(subj_scan_folders_names)
             end
         case 'study1'
             switch sub_nm
-                case '074' % remove run 1 (not enough trials)
+                case {'074'} % remove run 1 (not enough trials because fMRI crashed)
                     if strcmp(subj_scan_folders_names(1,:),'3_007_run1_20211102')
                         subj_scan_folders_names(1,:) = [];
-                        disp(['run1 named 3_007_run1_20211102 got removed for CID',sub_nm]);
+                        disp(['run1 named ',subj_scan_folders_names(1,:),' got removed for CID',sub_nm]);
+                    else
+                        error(['file corresponding to run 1 could not be identified for CID',sub_nm,...
+                            '. please fix it and remove it before going further in the analysis.']);
+                    end
+                case {'017'} % remove run 1 (not enough trials because fMRI crashed)
+                    if strcmp(subj_scan_folders_names(1,:),'2_007_run1_20220104')
+                        subj_scan_folders_names(1,:) = [];
+                        disp(['run1 named ',subj_scan_folders_names(1,:),' got removed for CID',sub_nm]);
                     else
                         error(['file corresponding to run 1 could not be identified for CID',sub_nm,...
                             '. please fix it and remove it before going further in the analysis.']);
@@ -56,7 +76,7 @@ if exist('iRun','var') && ~isempty(iRun)
     switch study_nm
         case 'study1'
             switch sub_nm
-                case '074' % adapt index since run 1 has to be ignored
+                case {'074','017'} % adapt index since run 1 has to be ignored
                     jRun = iRun + 1;
                 otherwise % when everything worked, the index is the same
                     jRun = iRun;

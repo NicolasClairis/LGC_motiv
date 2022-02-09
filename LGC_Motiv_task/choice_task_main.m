@@ -211,6 +211,9 @@ if IRM == 1
     disp('OK - space was pressed, physio recording started');
 end
 
+%% start checking keyboard presses
+keyboard_check_start(key, IRM);
+
 %% max perf measurement before start of each fMRI session
 switch effort_type
     case 'mental'
@@ -273,7 +276,7 @@ end
 if IRM == 1
     disp('Now waiting for first TTL to start');
     dummy_scans = 1; % number of TTL to wait before starting the task (dummy scans are already integrated in CIBM scanner)
-    [T0, TTL] = keyboard_check_start(dummy_scans, key.trigger_id, key);
+    [T0] = TTL_wait(dummy_scans, key.trigger_id);
 end % fMRI check
 
 %% perform choice and performance task
@@ -307,25 +310,6 @@ if IRM == 1
     disp('OK - space was pressed');
 end
 
-%% get all TTL from the task
-if IRM == 1
-    [TTL, keyLeft, keyRight,...
-        keyLeftUnsure, keyLeftSure, keyRightUnsure, keyRightSure] = keyboard_check_end(TTL, key);
-    % key storage of when left/right key have been pressed
-    all.keys.keyLeft    = keyLeft;
-    all.keys.keyRight   = keyRight;
-    if key.n_buttonsChoice == 4
-        all.keys.keyLeftUnsure  = keyLeftUnsure;
-        all.keys.keyLeftSure    = keyLeftSure;
-        all.keys.keyRightUnsure = keyRightUnsure;
-        all.keys.keyRightSure   = keyRightSure;
-    end
-    
-    % store T0 and TTL timings in onsets structure
-    onsets.T0 = T0;
-    onsets.TTL = TTL;
-end
-
 %% first save before last MVC
 save([subResultsFolder, file_nm,'_messyAllStuff.mat']);
 
@@ -348,6 +332,28 @@ switch effort_type
             numberVector_endCalib, mentalE_prm_calib, n_MaxPerfTrials, calibTimes, langage);
 end
 
+%% get all TTL from the task
+if IRM == 1
+    [TTL, keyLeft, keyRight,...
+        keyLeftUnsure, keyLeftSure, keyRightUnsure, keyRightSure] = keyboard_check_end(key);
+    % key storage of when left/right key have been pressed
+    all.keys.keyLeft    = keyLeft;
+    all.keys.keyRight   = keyRight;
+    if key.n_buttonsChoice == 4
+        all.keys.keyLeftUnsure  = keyLeftUnsure;
+        all.keys.keyLeftSure    = keyLeftSure;
+        all.keys.keyRightUnsure = keyRightUnsure;
+        all.keys.keyRightSure   = keyRightSure;
+    end
+    
+    % store T0 and TTL timings in onsets structure
+    onsets.T0 = T0;
+    onsets.TTL = TTL;
+else % release key buffer
+    KbQueueStop;
+    KbQueueRelease;
+end
+
 %% display feedback for the current session
 DrawFormattedText(window,...
     ['Felicitations! Cette session est maintenant terminee.',...
@@ -357,6 +363,17 @@ DrawFormattedText(window,...
     white, scr.wrapat);
 [~,onsets.endSessionFbk] = Screen(window,'Flip');
 WaitSecs(t_endSession);
+
+%% STOP physiological recording
+if IRM == 1
+    disp('Please stop physiological recording and then press space.');
+    [~, ~, keyCode] = KbCheck();
+    while(keyCode(key.space) ~= 1)
+        % wait until the key has been pressed
+        [~, ~, keyCode] = KbCheck();
+    end
+    disp('OK - space was pressed, physio recording stopped');
+end
 
 %% Save Data
 if IRM == 1
@@ -399,17 +416,6 @@ if IRM == 1
     
     % Double save to finish: .mat and .csv format
     save([subResultsFolder, file_nm,'.mat'],'-struct','all');
-end
-
-%% STOP physiological recording
-if IRM == 1
-    disp('Please stop physiological recording and then press space.');
-    [~, ~, keyCode] = KbCheck();
-    while(keyCode(key.space) ~= 1)
-        % wait until the key has been pressed
-        [~, ~, keyCode] = KbCheck();
-    end
-    disp('OK - space was pressed, physio recording stopped');
 end
 
 %% Clear the PTB screen

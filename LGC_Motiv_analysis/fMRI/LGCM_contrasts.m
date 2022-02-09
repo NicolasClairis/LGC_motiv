@@ -42,6 +42,7 @@ resultsFolderName = [subj_analysis_folder 'functional', filesep,...
 
 %% extract GLM informations
 [reg_names, n_regsPerTask] = GLM_details(GLM);
+GLMprm = which_GLM(GLM);
 
 %% define runs based on current subject
 runs = runs_definition(study_nm, sub_nm, 'fMRI');
@@ -265,6 +266,99 @@ if runs.nb_runs.Em > 0 && runs.nb_runs.Ep > 0
     end % loop through Ep regressors
     
 end % at least one run of each task has been performed?
+
+%% pool contrasts across R and P trials if have been modelled separately
+n_RP_pool_con = 0;
+timePeriod = {'choice','chosen','Eperf','fbk'};
+n_timePeriods = length(timePeriod);
+timePeriod_names = {'choice','chosen','effort','feedback'};
+regTypes = {'ONSET','REG'};
+nRegTypes = length(regTypes);
+tasks = {'Ep','Em','Ep+Em'};
+nTasks = length(tasks);
+% loop through time periods
+for iTimePeriod = 1:n_timePeriods
+    timePhase_nm = timePeriod{iTimePeriod};
+    timePhase_nm_bis = timePeriod_names{iTimePeriod};
+    
+    % loop through tasks (including tasks pooled)
+    for iTask = 1:nTasks
+        task_nm = tasks{iTask};
+        
+        % check if there is a pool during this phase, otherwise, it is
+        % worthless
+        if (ismember(task_nm,{'Ep','Em'}) && GLMprm.(timePhase_nm).(task_nm).RPpool == 0) ||...
+                (GLMprm.(timePhase_nm).Ep.RPpool == 0 && GLMprm.(timePhase_nm).Em.RPpool == 0)
+            
+            % pool through onsets and regressors
+            for iRegType = 1:nRegTypes
+                regType = regTypes{iRegType};
+                
+                % loop through positive and negative contrasts
+                for iPosNeg = 1:2
+                    switch iPosNeg
+                        case 1
+                            posNeg = '';
+                        case 2
+                            posNeg = '-';
+                    end
+                    % to avoid pooling R+P if already done, add ':' for REG
+                    % specifically (no need for ONSET as full expression is
+                    % already ok)
+                    switch regType
+                        case 'ONSET'
+                            regRExpression = [task_nm,' ',posNeg,'ONSET ',timePhase_nm_bis,' R'];
+                            regPExpression = [task_nm,' ',posNeg,'ONSET ',timePhase_nm_bis,' P'];
+                            areThereRregs = strcmp(con_names, regRExpression);
+                            areTherePregs = strcmp(con_names, regPExpression);
+                        case 'REG'
+                            regRExpression = [task_nm,' ',posNeg,regType,' ',timePhase_nm_bis,' R:'];
+                            regPExpression = [task_nm,' ',posNeg,regType,' ',timePhase_nm_bis,' P:'];
+                            n_regNameSize = length(regRExpression);
+                            areThereRregs = strncmp(con_names, regRExpression, n_regNameSize);
+                            areTherePregs = strncmp(con_names, regPExpression, n_regNameSize);
+                    end
+                    
+                    n_RPregs = sum(areThereRregs);
+                    if n_RPregs > 0
+                        jRregList = find(areThereRregs);
+                        jPregList = find(areTherePregs);
+                        
+                        % loop through regressors to pool
+                        for iRPreg = 1:n_RPregs
+                            Rreg_full_nm = con_names{jRregList(iRPreg)};
+                            Preg_full_nm = con_names{jPregList(iRPreg)};
+                            if strcmp(regType,'REG')
+                                conR_nm = Rreg_full_nm(n_regNameSize+1:end);
+                                conP_nm = Preg_full_nm(n_regNameSize+1:end);
+                                if ~strcmp(conR_nm, conP_nm)
+                                    error('problem mismatch R and P regressor for pooling. Please fix it.');
+                                end % comparison R/P regressor
+                            end
+                            
+                            % pool the two contrasts
+                            con_vec_RP_tmp = con_vector(jRregList(iRPreg), :) +...
+                                con_vector(jPregList(iRPreg), :);
+                            
+                            % positive contrast (no need for negative contrast
+                            % for once, because will automatically be created
+                            % by pooling negative R and P together)
+                            jReg = jReg + 1;
+                            switch regType
+                                case 'ONSET'
+                                    con_names{jReg} = [regRExpression,'P'];
+                                case 'REG'
+                                    con_names{jReg} = [regRExpression(1:(end-1)),'P:',conR_nm];
+                            end
+                            con_vector(jReg, 1:n_totalRegs) = con_vec_RP_tmp;
+                            
+                        end % loop through regressors to pool
+                    end % filter: more than 0 regressors then ok
+                end % positive/negative contrast
+            end % ONSET/REG
+        end % RPpool
+    end % task loop
+end % time loop
 
 %% compare Vchosen - Vunchosen if Vch and Vunch have been modelled
 Epm = {'Ep','Em'};
