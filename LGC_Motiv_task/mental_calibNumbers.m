@@ -92,8 +92,9 @@ for iInstructionsLoop = 1:2
             stim.pressWhenReady.x, stim.pressWhenReady.y, stim.pressWhenReady.colour, wrapat);
         [~, timeInstru_bis] = Screen(window, 'Flip');
         calib_summary.onset_instructions_press = timeInstru_bis;
-        KbWait; % wait for a button press to go to next phase
-        KbReleaseWait; % wait button press to be off to avoid it being recorder as an answer
+%         KbStrokeWait; % wait for button press and button release before moving on
+        KbQueueWait(0,3); % wait for button press and button release before moving on
+        %         KbReleaseWait; % wait button press to be off to avoid it being recorder as an answer
     end
 end
 
@@ -183,9 +184,9 @@ while iCalibTrial <= n_calibTrials
             stim.pressWhenReady.x, stim.pressWhenReady.y, stim.pressWhenReady.colour, wrapat);
         [~, time_fbkPress] = Screen(window, 'Flip');
         onset_fbk_press(iCalibTrial) = time_fbkPress;
-        KbWait; % wait for a button press to go to next phase
+        KbQueueWait(0,3); % wait for button press and button release before moving on
     end
-    KbReleaseWait; % wait button press to be off to avoid it being recorder as an answer
+%     KbReleaseWait; % wait button press to be off to avoid it being recorder as an answer
     
 end % number of tests to try to get max
 

@@ -605,7 +605,7 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
             DrawFormattedText(window, stim.pressWhenReady.text,...
                 stim.pressWhenReady.x, stim.pressWhenReady.y, stim.pressWhenReady.colour);
             [~, onsets.trainingWillStart_bis] = Screen(window, 'Flip');
-            KbWait;
+            KbQueueWait(0,3);
         end
     end % loop over forced reading/manual pass loop
     
