@@ -36,7 +36,7 @@ totalGain = totalGain + getfield(getfield(load([subPath,filenm]),'IP_variables')
 MRStunes = 35;
 IRMftunes = 35;
 MVCtune = 48;
-timeTune = 40;
+timeTune = input('time money?');
 questionnairesTune = 10; % like 1h exp
 % pilots
 % MRStunes = 0;
