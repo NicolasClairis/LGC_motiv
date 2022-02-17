@@ -29,15 +29,17 @@ switch study_nm
 % subject_id = {'074','036','064','061',...
 %             '090','079','087','017','039','081','045','065',...
 %             '060','020','046','055'};
-% subject_id={'074','036','064','061',...
+% subject_id= {'074','036','061',...
 %             '090','079','087','017','039','081','045','065',...
-%             '060','020','046','055','054','008'};
+%             '060','020','046','055','008'};
         %% Notes:
         % '095': always chose non-default in physical task => hard to
         % analyze
+        %
         % '064': creates bug when focusing on chosen option because too few
         % trials during run 3
-        %% '054': very weird behavior, could be considered as outlier
+        %
+        % '054': very weird behavior, could be considered as outlier
     case 'study2'
         %         subject_id = {}; % 'XXX'
         error('experiment hasn''started yet...');
