@@ -26,6 +26,9 @@ end
 % check also all relevant keyboard presses
 keysOfInterest(key.left) = 1;
 keysOfInterest(key.right) = 1;
+if IRM == 0 % check space if no MRI
+    keysOfInterest(key.space) = 1;
+end
 if key.n_buttonsChoice == 4
     keysOfInterest(key.leftSure) = 1;
     keysOfInterest(key.leftUnsure) = 1;

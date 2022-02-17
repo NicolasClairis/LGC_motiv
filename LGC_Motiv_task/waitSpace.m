@@ -26,10 +26,22 @@ DrawFormattedText(window,...
 disp('Please press space');
 
 %% wait for space press
-[~, timePress, keyCode] = KbCheck();
-while(keyCode(keys.space) ~= 1)
+
+% kbcheck version
+% [~, timePress, keyCode] = KbCheck();
+% while(keyCode(keys.space) ~= 1)
+%     % wait until the key has been pressed
+%     [~, timePress, keyCode] = KbCheck();
+% end
+
+% kbqueuecheck version
+[pressed, ~, ~, lastPress, ~] = KbQueueCheck();
+while (pressed == 0) ||...
+        (lastPress(keys.space) <= timeDispWait)
     % wait until the key has been pressed
-    [~, timePress, keyCode] = KbCheck();
+    [pressed, ~, ~, lastPress, ~] = KbQueueCheck();
 end
+% wait until key is released
+KbReleaseWait;
 
 end % function
