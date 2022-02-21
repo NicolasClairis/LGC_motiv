@@ -39,7 +39,7 @@ switch study_nm
         end
     case 'study1'
         switch sub_nm
-            case {'074', '017'}
+            case {'017','074'}
                 % first run of these subjects: the fMRI crashed so you may
                 % want to remove it from the fMRI analysis
                 switch condition
@@ -52,14 +52,13 @@ switch study_nm
                         runs.nb_runs.Em = 1;
                         runs.tasks = {'Ep','Em','Ep'};
                 end
-            case {'036','064','090','087',...
-                    '039','065','060','046',...
-                    '008','009'}
+            case {'008','009','036','039','046',...
+                    '060','064','065','087','090'}
                 runs.nb_runs.Ep = 2;
                 runs.nb_runs.Em = 2;
                 runs.tasks = {'Ep','Em','Ep','Em'};
-            case {'095','061','079','081',...
-                    '045','020','055','054'}
+            case {'020','045','054','055','056',...
+                    '061','079','081','095'}
                 runs.nb_runs.Ep = 2;
                 runs.nb_runs.Em = 2;
                 runs.tasks = {'Em','Ep','Em','Ep'};
