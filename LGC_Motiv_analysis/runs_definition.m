@@ -52,12 +52,12 @@ switch study_nm
                         runs.nb_runs.Em = 1;
                         runs.tasks = {'Ep','Em','Ep'};
                 end
-            case {'008','009','036','039','046',...
+            case {'002','008','009','036','039','046',...
                     '060','064','065','087','090'}
                 runs.nb_runs.Ep = 2;
                 runs.nb_runs.Em = 2;
                 runs.tasks = {'Ep','Em','Ep','Em'};
-            case {'020','045','054','055','056',...
+            case {'020','045','052','054','055','056',...
                     '061','079','081','095'}
                 runs.nb_runs.Ep = 2;
                 runs.nb_runs.Em = 2;
