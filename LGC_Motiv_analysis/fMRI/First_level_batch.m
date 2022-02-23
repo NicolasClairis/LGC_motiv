@@ -1,4 +1,5 @@
 function[] = First_level_batch(study_nm, checking, GLM)
+%[] = First_level_batch(study_nm, checking, GLM)
 % First_level_batch will perform 1st level for LGC motivation fMRI studies.
 %
 % INPUTS
