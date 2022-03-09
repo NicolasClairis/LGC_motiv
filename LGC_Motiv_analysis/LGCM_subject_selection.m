@@ -28,7 +28,7 @@ switch study_nm
             '039','045','046','052','055','056',...
             '060','061','064','065','074','079',...
             '081','090','095'};
-        warning('check 022 and... for movement');
+        warning('check 022, 040, 082 and... for movement');
 
 
         %% restrict to subjects of interest
