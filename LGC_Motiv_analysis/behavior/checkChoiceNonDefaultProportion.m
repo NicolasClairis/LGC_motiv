@@ -1,11 +1,11 @@
-function[avg_nonDefaultChoice, sd_nonDefaultChoice, avg_conf, avg_RT, avg_Eperformance] = checkChoiceNonDefaultProportion(subid, figDisp, n_bins)
-%[avg_defaultChoice, sd_defaultChoice, avg_conf, avg_RT, avg_Eperformance] = checkChoiceNonDefaultProportion(subid, figDisp, n_bins)
+function[avg_nonDefaultChoice, sd_nonDefaultChoice, avg_conf, avg_RT, avg_Eperformance] = checkChoiceNonDefaultProportion(sub_nm, figDisp, n_bins)
+%[avg_defaultChoice, sd_defaultChoice, avg_conf, avg_RT, avg_Eperformance] = checkChoiceNonDefaultProportion(sub_nm, figDisp, n_bins)
 % check choices of the non-default option in function of the other parameters of the task
 % (fatigue, difficulty, physical/mental, reward/punishment, etc.) for each
 % individual.
 %
 % INPUTS
-% subid: string with subject identification number
+% sub_nm: string with subject identification number
 %
 % figDisp:
 % (0) do not display individual figures data
@@ -31,15 +31,19 @@ function[avg_nonDefaultChoice, sd_nonDefaultChoice, avg_conf, avg_RT, avg_Eperfo
 
 
 %% initialize all variables of interest
-if ~exist('subid','var') || isempty(subid)
-    subid = '074';
-    disp(['data for CID',subid]);
+if ~exist('sub_nm','var') || isempty(sub_nm)
+    sub_nm = '074';
+    disp(['data for CID',sub_nm]);
 end
 if ~exist('figDisp','var') || isempty(figDisp)
     figDisp = 1;
     disp('display of individual figures');
 end
-nRuns = 4;
+if strcmp(sub_nm,'040')
+    nRuns = 2;
+else
+    nRuns = 4;
+end
 n_R_levels = 4;
 n_E_levels = 4;
 nTrials = 54;
@@ -110,7 +114,7 @@ end
     RT_f_time,...
     Eperformance_f_time] = deal(NaN(nRuns, n_bins));
 for iRun = 1:nRuns
-    filenm = ls(['CID',subid,'_session',num2str(iRun),'_*_task_messyAllStuff.mat']);
+    filenm = ls(['CID',sub_nm,'_session',num2str(iRun),'_*_task_messyAllStuff.mat']);
     runData = load(filenm);
     defaultSide = runData.choiceOptions.default_LR;
     [absMoney_NonDefault_level, E_nonDefault_level] = deal(NaN(1,nTrials));
@@ -276,20 +280,25 @@ for iRun = 1:nRuns
 end % run loop
 
 %% extract task type order
-if exist(['CID',subid,'_session1_mental_task_behavioral_tmp.mat'],'file') &&...
-        exist(['CID',subid,'_session2_physical_task_behavioral_tmp.mat'],'file') &&...
-        exist(['CID',subid,'_session3_mental_task_behavioral_tmp.mat'],'file') &&...
-        exist(['CID',subid,'_session4_physical_task_behavioral_tmp.mat'],'file')
-    Em_runs = [1,3];
-    Ep_runs = [2,4];
-elseif exist(['CID',subid,'_session1_physical_task_behavioral_tmp.mat'],'file') &&...
-        exist(['CID',subid,'_session2_mental_task_behavioral_tmp.mat'],'file') &&...
-        exist(['CID',subid,'_session3_physical_task_behavioral_tmp.mat'],'file') &&...
-        exist(['CID',subid,'_session4_mental_task_behavioral_tmp.mat'],'file')
-    Em_runs = [2,4];
-    Ep_runs = [1,3];
+if strcmp(sub_nm,'040') % only 2 behavioral runs
+    Em_runs = [2];
+    Ep_runs = [1];
 else
-    error('couldn''t find participant task types');
+    if exist(['CID',sub_nm,'_session1_mental_task_behavioral_tmp.mat'],'file') &&...
+            exist(['CID',sub_nm,'_session2_physical_task_behavioral_tmp.mat'],'file') &&...
+            exist(['CID',sub_nm,'_session3_mental_task_behavioral_tmp.mat'],'file') &&...
+            exist(['CID',sub_nm,'_session4_physical_task_behavioral_tmp.mat'],'file')
+        Em_runs = [1,3];
+        Ep_runs = [2,4];
+    elseif exist(['CID',sub_nm,'_session1_physical_task_behavioral_tmp.mat'],'file') &&...
+            exist(['CID',sub_nm,'_session2_mental_task_behavioral_tmp.mat'],'file') &&...
+            exist(['CID',sub_nm,'_session3_physical_task_behavioral_tmp.mat'],'file') &&...
+            exist(['CID',sub_nm,'_session4_mental_task_behavioral_tmp.mat'],'file')
+        Em_runs = [2,4];
+        Ep_runs = [1,3];
+    else
+        error('couldn''t find participant task types');
+    end
 end
 
 %% extract average
@@ -410,12 +419,12 @@ if figDisp == 1
             case Em_runs(1)
                 lColour = [0 255 0]./255;
                 runType{iRun} = ['run ',num2str(iRun),' mental'];
-            case Em_runs(2)
-                lColour = [0 143 0]./255;
-                runType{iRun} = ['run ',num2str(iRun),' mental'];
             case Ep_runs(1)
                 lColour = [0 0 255]./255;
                 runType{iRun} = ['run ',num2str(iRun),' physical'];
+            case Em_runs(2)
+                lColour = [0 143 0]./255;
+                runType{iRun} = ['run ',num2str(iRun),' mental'];
             case Ep_runs(2)
                 lColour = [0 0 143]./255;
                 runType{iRun} = ['run ',num2str(iRun),' physical'];
@@ -427,8 +436,14 @@ if figDisp == 1
     xlim([0 n_bins+1]);
     xlabel('trial bins');
     ylabel('Choice non-default option (%)');
-    legend([bar_hdl.run1, bar_hdl.run2, bar_hdl.run3, bar_hdl.run4],...
-        runType);
+    if strcmp(sub_nm,'040')
+        legend([bar_hdl.run1, bar_hdl.run2],...
+            runType);
+    else
+        legend([bar_hdl.run1, bar_hdl.run2,...
+            bar_hdl.run3, bar_hdl.run4],...
+            runType);
+    end
     legend('boxoff');
     legend('Location','SouthWest');
     legend_size(pSize);
@@ -631,12 +646,12 @@ if figDisp == 1
             case Em_runs(1)
                 lColour = [0 255 0]./255;
                 runType{iRun} = ['run ',num2str(iRun),' mental'];
-            case Em_runs(2)
-                lColour = [0 143 0]./255;
-                runType{iRun} = ['run ',num2str(iRun),' mental'];
             case Ep_runs(1)
                 lColour = [0 0 255]./255;
                 runType{iRun} = ['run ',num2str(iRun),' physical'];
+            case Em_runs(2)
+                lColour = [0 143 0]./255;
+                runType{iRun} = ['run ',num2str(iRun),' mental'];
             case Ep_runs(2)
                 lColour = [0 0 143]./255;
                 runType{iRun} = ['run ',num2str(iRun),' physical'];
@@ -648,8 +663,14 @@ if figDisp == 1
     xlim([0 n_bins+1]);
     xlabel('trial bins');
     ylabel('Confidence (%)');
-    legend([bar_hdl.run1, bar_hdl.run2, bar_hdl.run3, bar_hdl.run4],...
-        runType);
+    if strcmp(sub_nm,'040')
+        legend([bar_hdl.run1, bar_hdl.run2],...
+            runType);
+    else
+        legend([bar_hdl.run1, bar_hdl.run2,...
+            bar_hdl.run3, bar_hdl.run4],...
+            runType);
+    end
     legend('boxoff');
     legend('Location','SouthEast');
     legend_size(pSize);
@@ -730,12 +751,12 @@ if figDisp == 1
             case Em_runs(1)
                 lColour = [0 255 0]./255;
                 runType{iRun} = ['run ',num2str(iRun),' mental'];
-            case Em_runs(2)
-                lColour = [0 143 0]./255;
-                runType{iRun} = ['run ',num2str(iRun),' mental'];
             case Ep_runs(1)
                 lColour = [0 0 255]./255;
                 runType{iRun} = ['run ',num2str(iRun),' physical'];
+            case Em_runs(2)
+                lColour = [0 143 0]./255;
+                runType{iRun} = ['run ',num2str(iRun),' mental'];
             case Ep_runs(2)
                 lColour = [0 0 143]./255;
                 runType{iRun} = ['run ',num2str(iRun),' physical'];
@@ -747,8 +768,14 @@ if figDisp == 1
     xlim([0 n_bins+1]);
     xlabel('trial bins');
     ylabel('RT (s)');
-    legend([bar_hdl.run1, bar_hdl.run2, bar_hdl.run3, bar_hdl.run4],...
-        runType);
+    if strcmp(sub_nm,'040')
+        legend([bar_hdl.run1, bar_hdl.run2],...
+            runType);
+    else
+        legend([bar_hdl.run1, bar_hdl.run2,...
+            bar_hdl.run3, bar_hdl.run4],...
+            runType);
+    end
     legend('boxoff');
     legend('Location','NorthEast');
     legend_size(pSize);
@@ -835,12 +862,12 @@ if figDisp == 1
             case Em_runs(1)
                 lColour = [0 255 0]./255;
                 runType{iRun} = ['run ',num2str(iRun),' mental'];
-            case Em_runs(2)
-                lColour = [0 143 0]./255;
-                runType{iRun} = ['run ',num2str(iRun),' mental'];
             case Ep_runs(1)
                 lColour = [0 0 255]./255;
                 runType{iRun} = ['run ',num2str(iRun),' physical'];
+            case Em_runs(2)
+                lColour = [0 143 0]./255;
+                runType{iRun} = ['run ',num2str(iRun),' mental'];
             case Ep_runs(2)
                 lColour = [0 0 143]./255;
                 runType{iRun} = ['run ',num2str(iRun),' physical'];
@@ -852,8 +879,14 @@ if figDisp == 1
     xlim([0 n_bins+1]);
     xlabel('trial bins');
     ylabel('Effort performance (%)');
-    legend([bar_hdl.run1, bar_hdl.run2, bar_hdl.run3, bar_hdl.run4],...
-        runType);
+    if strcmp(sub_nm,'040')
+        legend([bar_hdl.run1, bar_hdl.run2],...
+            runType);
+    else
+        legend([bar_hdl.run1, bar_hdl.run2,...
+            bar_hdl.run3, bar_hdl.run4],...
+            runType);
+    end
     legend('boxoff');
     legend('Location','SouthEast');
     legend_size(pSize);

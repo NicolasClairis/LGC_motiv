@@ -72,7 +72,11 @@ end
 %% initialize variables of interest
 nTrialsPerRun = 54;
 % nTrialsPerRPConditionPerRun = nTrialsPerRun/2;
-nRunsPerTask = 2;
+if strcmp(study_nm,'study1') && strcmp(sub_nm,'040')
+    nRunsPerTask = 1;
+else
+    nRunsPerTask = 2;
+end
 nTrials = nTrialsPerRun*nRunsPerTask;
 % nTrialsPerRPCond = nTrialsPerRPConditionPerRun*nRunsPerTask;
 
