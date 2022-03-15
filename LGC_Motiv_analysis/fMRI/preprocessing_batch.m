@@ -117,6 +117,9 @@ for iS = 1:NS % loop through subjects
     if strcmp(study_nm,'fMRI_pilots') &&...
             ismember(sub_nm, {'pilot_s1','pilot_s2','pilot_s3'}) % only 2 sessions for these pilots
         nb_runs = 2;
+    elseif strcmp(study_nm,'study1') &&...
+            ismember(sub_nm,{'040'}) % fMRI had to be crashed during run 3
+        nb_runs = 2;
     else
         nb_runs = 4;
     end
