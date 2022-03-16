@@ -1,10 +1,10 @@
-function[metabolites] = metabolite_load(sub_nm)
-% [metabolites] = metabolite_load(sub_nm)
+function[metabolites] = metabolite_load(subject_id)
+% [metabolites] = metabolite_load(subject_id)
 % metabolite_load will load the metabolite concentrations based on the
 % excel file prepared by Arthur Barakat.
 %
 % INPUTS
-% sub_nm: subject name (if left empty, will load all subjects)
+% subject_id: list of subject names (if left empty, will load all subjects)
 %
 % OUTPUTS
 % metabolites: structure with all the metabolites
@@ -12,12 +12,11 @@ function[metabolites] = metabolite_load(sub_nm)
 %% working directory
 metaboliteFolder = fullfile('M:','human_data_private','analyzed_data','study1');
 
-%% define subject
-if ~exist('sub_nm','var') || isempty(sub_nm)
+%% define subject list
+if ~exist('subject_id','var') || isempty(subject_id)
     [subject_id, NS] = LGCM_subject_selection('study1');
 else
-    subject_id = {sub_nm};
-    NS = 1;
+    NS = length(subject_id);
 end
 
 %% list metabolites

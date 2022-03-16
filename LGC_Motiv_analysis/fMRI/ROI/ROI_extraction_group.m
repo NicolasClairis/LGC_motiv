@@ -1,4 +1,11 @@
-function[con_vec_all, con_avg, con_sem, con_sd, ROI_coords, ttest_ROI] = ROI_extraction_group(study_nm, GLM)
+function[con_vec_all,...
+    con_avg, con_sem, con_sd,...
+    con_names,...
+    ROI_coords, ttest_ROI] = ROI_extraction_group(study_nm, GLM, subject_id, fig_disp)
+% [con_vec_all,...
+%     con_avg, con_sem, con_sd,...
+%     con_names,...
+%     ROI_coords, ttest_ROI] = ROI_extraction_group(study_nm, GLM, subject_id, fig_disp)
 % ROI_extraction_group will serve to extract the ROI data across all
 % participants for a given GLM number.
 %
@@ -9,14 +16,23 @@ function[con_vec_all, con_avg, con_sem, con_sd, ROI_coords, ttest_ROI] = ROI_ext
 %
 % GLM: GLM number for which you want to get the ROI
 %
+% subject_id: list of subject names, if left empty it will select all
+% subjects
+%
+% fig_disp:
+%(0) no display
+%(1) display figure
+%
 % OUTPUTS
 % con_vec_all: contrast*participant*ROI matrix with all the data
 %
 % con_avg: mean ROI contrast value for each participant
 %
-% sem_ROI: sem ROI contrast value for each participant
+% con_sem: sem ROI contrast value for each participant
 %
-% sd_ROI: standard deviation ROI contrast value for each participant
+% con_sd: standard deviation ROI contrast value for each participant
+%
+% con_names: list of contrast names
 %
 % ROI_coords: structure with informations regarding ROI coordinates and
 % name
@@ -36,14 +52,12 @@ dataRoot = [computerRoot,filesep,study_nm,filesep];
 gitFolder = fullfile('C:','Users','Loco','Documents','GitHub','LGC_motiv','Matlab_DIY_functions','ROI');
 ROI_path = [dataRoot,filesep,'results',filesep,'ROI',filesep];
 
-%% general parameters
-pSize = 40;
-
-%% load list of subjects
-% [subject_id, NS] = LGCM_subject_selection(study_nm);
-subject_id = {'002','008','009','017',...
-    '020','036','039','045','046','052','056'};
-NS = length(subject_id);
+%% define subject list
+if ~exist('subject_id','var') || isempty(subject_id)
+    [subject_id, NS] = LGCM_subject_selection(study_nm);
+else
+    NS = length(subject_id);
+end
 
 %% select the ROI to use
 [ ROI_xyz, ~, ROI_nm, n_ROIs ] = ROI_selection(gitFolder);
@@ -65,48 +79,54 @@ beta_or_t_value = 'beta_value';
 % preproc_sm_kernel  = spm_input('preprocessing smoothing kernel?',1,'r');
 preproc_sm_kernel = 8; % by default
 
-%% how many figures do you want to plot
-n_figs = spm_input('How many figures?',1,'e');
-
-% prepare contrast names for question
-[con_names, con_vector] = LGCM_contrasts(study_nm, subject_id{1}, GLM, computerRoot, preproc_sm_kernel);
+%% prepare contrasts
+[con_names] = LGCM_contrasts(study_nm, subject_id{1}, GLM, computerRoot, preproc_sm_kernel);
 n_max_con = length(con_names);
-list_con_question = con_names{1};
-for iCon = 2:n_max_con
-    list_con_question = [list_con_question,' | ',con_names{iCon}];
+
+%% how many figures do you want to plot
+if fig_disp == 1
+    n_figs = spm_input('How many figures?',1,'e');
+    
+    % prepare contrast names for question
+    list_con_question = con_names{1};
+    for iCon = 2:n_max_con
+        list_con_question = [list_con_question,' | ',con_names{iCon}];
+    end
+    list_con_question = [list_con_question,' | If all wished contrasts for this figure selected click here'];
+    % select contrasts to display at the end
+    which_con = zeros(n_figs, n_max_con); % column with 0/1 to see which contrasts to display at the end
 end
-list_con_question = [list_con_question,' | If all wished contrasts for this figure selected click here'];
-% select contrasts to display at the end
-which_con = zeros(n_figs, n_max_con); % column with 0/1 to see which contrasts to display at the end
 
 %% name + contrasts to display for each figure
-conName = cell(n_figs,1);
-for iFig = 1:n_figs
-    %% what name for each figure?
-    conName{iFig} = spm_input(['Name for figure ',num2str(iFig),' please?'],1,'s');
-    
-    %% select which contrasts you want to display for each figure
-    stop_con_loop = 0;
-    while stop_con_loop == 0
-        selectedContrast = spm_input(['What contrast for fig.',num2str(iFig),':',conName{iFig},' ?'],1,'m',...
-            list_con_question, ...
-            1:(n_max_con+1), 0);
-        if selectedContrast < n_max_con + 1
-            which_con(iFig,selectedContrast) = 1; % 1 for selected contrasts
-        elseif selectedContrast == n_max_con + 1 % stop contrast selection loop
-            stop_con_loop = 1;
-        end
-    end % contrast loop
-    
-    %% select which contrasts you want to display for each figure
-    n_con_fig_tmp = sum(which_con(iFig,:));
-    figCon_idx = find(which_con(iFig,:));
-    figConNames.(['fig',num2str(iFig)]) = cell(1,n_con_fig_tmp);
-    for iCon = 1:n_con_fig_tmp
-        figConNames.(['fig',num2str(iFig)]){iCon} = spm_input([con_names{figCon_idx(iCon)},...
-            ' short name:'],1,'s');
-    end % contrast loop
-end % figure loop
+if fig_disp == 1
+    conName = cell(n_figs,1);
+    for iFig = 1:n_figs
+        %% what name for each figure?
+        conName{iFig} = spm_input(['Name for figure ',num2str(iFig),' please?'],1,'s');
+        
+        %% select which contrasts you want to display for each figure
+        stop_con_loop = 0;
+        while stop_con_loop == 0
+            selectedContrast = spm_input(['What contrast for fig.',num2str(iFig),':',conName{iFig},' ?'],1,'m',...
+                list_con_question, ...
+                1:(n_max_con+1), 0);
+            if selectedContrast < n_max_con + 1
+                which_con(iFig,selectedContrast) = 1; % 1 for selected contrasts
+            elseif selectedContrast == n_max_con + 1 % stop contrast selection loop
+                stop_con_loop = 1;
+            end
+        end % contrast loop
+        
+        %% select which contrasts you want to display for each figure
+        n_con_fig_tmp = sum(which_con(iFig,:));
+        figCon_idx = find(which_con(iFig,:));
+        figConNames.(['fig',num2str(iFig)]) = cell(1,n_con_fig_tmp);
+        for iCon = 1:n_con_fig_tmp
+            figConNames.(['fig',num2str(iFig)]){iCon} = spm_input([con_names{figCon_idx(iCon)},...
+                ' short name:'],1,'s');
+        end % contrast loop
+    end % figure loop
+end % figure display
 
 %% create big matrix to store ROI values
 con_vec_all = NaN(n_max_con, NS, n_ROIs);
@@ -170,24 +190,26 @@ end
 
 %% loop through figures as defined when script launched at the
 % beginning
-for iFig = 1:n_figs
-    conFig = which_con(iFig,:);
-    selectedCon = find(conFig == 1); % extract index of contrasts selected
-    % display figure
-    [roi_fig] = roi_graph(selectedCon, n_ROIs,...
-        con_avg, con_sem, figConNames.(['fig',num2str(iFig)]), ttest_pval);
-    % save image
-    cd(ROI_path);
-    img_name = ['GLM',num2str(GLM),'_',beta_or_t_value,'_',conName{iFig},'_',num2str(n_ROIs),'ROIs_',num2str(NS),'_subs.png'];
-    if exist(img_name,'file') ~= 2
-        set(gcf,'PaperPosition',[0 0 1 1]);
-        set(gcf,'PaperPositionMode','auto');
-        saveas(roi_fig,img_name);
-    else
-        warning(['There is already a file with the name ', img_name,' so the figure has not been saved yet.',...
-            ' Please do it manually or change the script to be able to do it automatically in the future.']);
-    end
-end % figure loop
+if fig_disp == 1
+    for iFig = 1:n_figs
+        conFig = which_con(iFig,:);
+        selectedCon = find(conFig == 1); % extract index of contrasts selected
+        % display figure
+        [roi_fig] = roi_graph(selectedCon, n_ROIs,...
+            con_avg, con_sem, figConNames.(['fig',num2str(iFig)]), ttest_pval);
+        % save image
+        cd(ROI_path);
+        img_name = ['GLM',num2str(GLM),'_',beta_or_t_value,'_',conName{iFig},'_',num2str(n_ROIs),'ROIs_',num2str(NS),'_subs.png'];
+        if exist(img_name,'file') ~= 2
+            set(gcf,'PaperPosition',[0 0 1 1]);
+            set(gcf,'PaperPositionMode','auto');
+            saveas(roi_fig,img_name);
+        else
+            warning(['There is already a file with the name ', img_name,' so the figure has not been saved yet.',...
+                ' Please do it manually or change the script to be able to do it automatically in the future.']);
+        end
+    end % figure loop
+end % figure display
 
 %% extract coordinates informations
 ROI_coords.xyz = sxyz_ROI;
