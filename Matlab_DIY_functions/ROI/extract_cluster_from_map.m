@@ -4,7 +4,7 @@ function [  ] = extract_cluster_from_map(  )
 % new ROI containing only the selected clusters/voxels.
 
 %% working directory
-root = fullfile('B:','resultats','ROI_definition');
+root = fullfile('E:','ROI_definition');
 [mask_filenm, select_ok] = spm_select(1,'.nii','Select images you want to pool',{},root);
 if select_ok == 0
     warning('problem in file selection');

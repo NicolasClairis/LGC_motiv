@@ -63,6 +63,6 @@ for iS = 1:NS
         
         cd(path_SubFolders);
         
-    end
+    end % run loop
     
-end
+end % subject loop
