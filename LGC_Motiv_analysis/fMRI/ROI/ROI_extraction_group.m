@@ -46,7 +46,7 @@ subject_id = {'002','008','009','017',...
 NS = length(subject_id);
 
 %% select the ROI to use
-[ ROI_xyz, ROI_sphere_or_mask, ROI_nm, n_ROIs ] = ROI_selection(gitFolder);
+[ ROI_xyz, ~, ROI_nm, n_ROIs ] = ROI_selection(gitFolder);
 
 %% which GLM
 if ~exist('GLM','var') || isempty(GLM)
