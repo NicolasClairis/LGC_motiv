@@ -47,28 +47,31 @@ if exist('subj_scan_folders_names','var') && ~isempty(subj_scan_folders_names)
             end
         case 'study1'
             switch sub_nm
-                case {'074'} % remove run 1 (not enough trials because fMRI crashed)
-                    if strcmp(subj_scan_folders_names(1,:),'3_007_run1_20211102')
-                        subj_scan_folders_names(1,:) = [];
-                        disp(['run1 named ',subj_scan_folders_names(1,:),' got removed for CID',sub_nm]);
-                    else
-                        error(['file corresponding to run 1 could not be identified for CID',sub_nm,...
-                            '. please fix it and remove it before going further in the analysis.']);
-                    end
                 case {'017'} % remove run 1 (not enough trials because fMRI crashed)
-                    if strcmp(subj_scan_folders_names(1,:),'2_007_run1_20220104')
+                    sub017_run1_toRemove = '2_007_run1_20220104';
+                    if strcmp(subj_scan_folders_names(1,:),sub017_run1_toRemove)
                         subj_scan_folders_names(1,:) = [];
-                        disp(['run1 named ',subj_scan_folders_names(1,:),' got removed for CID',sub_nm]);
+                        disp(['run1 named ',sub017_run1_toRemove,' got removed for CID',sub_nm]);
                     else
                         error(['file corresponding to run 1 could not be identified for CID',sub_nm,...
                             '. please fix it and remove it before going further in the analysis.']);
                     end
                 case {'040'} % remove runs 3 and 4 (run3 crashed in the middle and run 4 never executed)
-                    if strcmp(subj_scan_folders_names(1,:),'2_009_run3_20220304')
-                        subj_scan_folders_names(1,:) = [];
-                        disp(['run3 named ',subj_scan_folders_names(1,:),' got removed for CID',sub_nm]);
+                    sub040_run3_toRemove = '2_009_run3_20220304';
+                    if strcmp(subj_scan_folders_names(3,:),sub040_run3_toRemove)
+                        subj_scan_folders_names(3,:) = [];
+                        disp(['run3 named ',sub040_run3_toRemove,' got removed for CID',sub_nm]);
                     else
                         error(['file corresponding to run 3 could not be identified for CID',sub_nm,...
+                            '. please fix it and remove it before going further in the analysis.']);
+                    end
+                case {'074'} % remove run 1 (not enough trials because fMRI crashed)
+                    sub074_run1_toRemove = '3_007_run1_20211102';
+                    if strcmp(subj_scan_folders_names(1,:),sub074_run1_toRemove)
+                        subj_scan_folders_names(1,:) = [];
+                        disp(['run1 named ',sub074_run1_toRemove,' got removed for CID',sub_nm]);
+                    else
+                        error(['file corresponding to run 1 could not be identified for CID',sub_nm,...
                             '. please fix it and remove it before going further in the analysis.']);
                     end
             end
