@@ -54,9 +54,8 @@ for iCon = 1:n_cons
     [con_avg_highMet(iCon),...
         con_sem_lowMet(iCon),...
         con_std_lowMet(iCon)] = mean_sem_sd(con_vec_all(iCon, high_met_subs),2);
-    error('careful current test is a paired t.test, you need an unpaired t.test here');
-    [~,ttest_lowMet_vs_highMet,~,stats_tmp] = ttest(con_vec_all(iCon, low_met_subs), con_vec_all(iCon, high_met_subs))
-    ttest_tval_lowMet_vs_highMet = stats_tmp.tstat;
+    [~,ttest_pval_lowMet_vs_highMet(iCon),~,stats_tmp] = ttest2(con_vec_all(iCon, low_met_subs), con_vec_all(iCon, high_met_subs));
+    ttest_tval_lowMet_vs_highMet(iCon) = stats_tmp.tstat;
 end % contrast loop
 
 %% figure
