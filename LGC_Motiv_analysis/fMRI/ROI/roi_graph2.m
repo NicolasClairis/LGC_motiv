@@ -64,7 +64,7 @@ else
 end
 yscale = [minYscale,  maxYscale];
 fig_size = abs(yscale(2) - yscale(1));
-% position of stars for each column
+% position of line and stars for each column
 if (con_avg1(selectedContrastIndex) > 0) || (con_avg2(selectedContrastIndex) > 0)
     dYpos_yscale = abs(yscale(2) - maxYvalue);
     pval_line_Ypos = maxYvalue + (1/3)*dYpos_yscale;
