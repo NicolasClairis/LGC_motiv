@@ -55,9 +55,6 @@ else
 end
 yscale = [minYscale,  maxYscale];
 fig_size = abs(yscale(2) - yscale(1));
-% position of stars for each column
-pval_Ypos_pos = yscale(2) - fig_size/6;
-pval_Ypos_neg = yscale(1) + fig_size/6;
 
 %% display figure
 scale_ok_idx = 0;
@@ -90,28 +87,39 @@ while scale_ok_idx == 0
             pval_xpos = xpos(iCon);
             % disp p.value (above bar when positive contrast and below when
             % negative)
-            if con_avg(selectedCon(iCon)) >= 0
-                pval_Ypos = pval_Ypos_pos;
+            maxYvalue_tmp = con_avg(selectedCon(iCon), iROI) + con_sem(selectedCon(iCon), iROI);
+            minYvalue_tmp = con_avg(selectedCon(iCon), iROI) - con_sem(selectedCon(iCon), iROI);
+            if maxYvalue_tmp > 0
+                dYpos_yscale_tmp = abs(yscale(2) - maxYvalue_tmp);
+                pval_Ypos = maxYvalue_tmp + (1/3)*dYpos_yscale_tmp;
             else
-                pval_Ypos = pval_Ypos_neg;
+                dYpos_yscale_tmp = abs(yscale(1) - minYvalue_tmp);
+                pval_Ypos = minYvalue_tmp - (1/3)*dYpos_yscale_tmp;
             end
-            if ttest_pval(selectedCon(iCon), iROI) <= 0.05 && ttest_pval(selectedCon(iCon), iROI) > 0.01
-                text(pval_xpos, pval_Ypos, '*', 'HorizontalAlignment','center','VerticalAlignment', 'top', 'FontSize', 18)
-            elseif ttest_pval(selectedCon(iCon), iROI) <= 0.01 && ttest_pval(selectedCon(iCon), iROI) > 0.005
-                text(pval_xpos, pval_Ypos, '**', 'HorizontalAlignment', 'center','VerticalAlignment', 'top', 'FontSize', 18)
-            elseif ttest_pval(selectedCon(iCon), iROI) <= 0.005 && ttest_pval(selectedCon(iCon), iROI) > 0.001
-                text(pval_xpos, pval_Ypos, '***', 'HorizontalAlignment', 'center','VerticalAlignment', 'top', 'FontSize', 18)
-            elseif ttest_pval(selectedCon(iCon), iROI) <= 0.001
-                text(pval_xpos, pval_Ypos, '****', 'HorizontalAlignment', 'center','VerticalAlignment', 'top', 'FontSize', 18)
-            end
+
+            if ttest_pval(selectedCon(iCon), iROI) <= 0.05
+                if ttest_pval(selectedCon(iCon), iROI) <= 0.05 && ttest_pval(selectedCon(iCon), iROI) > 0.01
+                    text(pval_xpos, pval_Ypos, '*',...
+                        'HorizontalAlignment','center','VerticalAlignment', 'top', 'FontSize', 18)
+                elseif ttest_pval(selectedCon(iCon), iROI) <= 0.01 && ttest_pval(selectedCon(iCon), iROI) > 0.005
+                    text(pval_xpos, pval_Ypos, '**',...
+                        'HorizontalAlignment', 'center','VerticalAlignment', 'top', 'FontSize', 18)
+                elseif ttest_pval(selectedCon(iCon), iROI) <= 0.005 && ttest_pval(selectedCon(iCon), iROI) > 0.001
+                    text(pval_xpos, pval_Ypos, '***',...
+                        'HorizontalAlignment', 'center','VerticalAlignment', 'top', 'FontSize', 18)
+                elseif ttest_pval(selectedCon(iCon), iROI) <= 0.001
+                    text(pval_xpos, pval_Ypos, '****',...
+                        'HorizontalAlignment', 'center','VerticalAlignment', 'top', 'FontSize', 18)
+                end % how many stars for p.value?
+            end % is p.value significant?
         end % contrast loop
-        
-        % draw a line to show where the zero stands
-        line(xlim(),[0 0],'Color','k','LineStyle','-','LineWidth',lSize);
         
         % define graph limits
         xlim([0 n_cons+1]);
         ylim(yscale);
+
+        % draw a line to show where the zero stands
+        line(xlim(),[0 0],'Color','k','LineStyle','-','LineWidth',lSize);
         
         xticks(1:n_cons);
         set(gca,'xtick',xpos,'XTickLabel',con_names);
