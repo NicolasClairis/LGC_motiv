@@ -10,8 +10,9 @@ function[metabolites] = metabolite_load(subject_id)
 % metabolites: structure with all the metabolites
 
 %% working directory
+root = pwd;
 metaboliteFolder = fullfile('M:','human_data_private','analyzed_data','study1');
-
+cd(metaboliteFolder);
 %% define subject list
 if ~exist('subject_id','var') || isempty(subject_id)
     [subject_id, NS] = LGCM_subject_selection('study1');
@@ -61,5 +62,8 @@ for iROI = 1:nROIs
         metabolites.(ROI_nm).Gln_div_Glu(iS) = metabolites.(ROI_nm).Gln(iS)./metabolites.(ROI_nm).Glu(iS);
     end % subject loop
 end % ROI loop
+
+%% go back to root
+cd(root);
 
 end % function
