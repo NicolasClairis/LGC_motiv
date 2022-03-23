@@ -42,10 +42,10 @@ roi_color = ([143, 0, 0])./255;
 % roi_color = ([143 143 143])./255;
 
 % default yscale values
-minYvalue1 = min(min(min(min(con_avg1(selectedContrastIndex,:) - con_errorbar1(selectedContrastIndex,:) )))); % extract min beta value across subs and ROI
-maxYvalue1 = max(max(max(max(con_avg1(selectedContrastIndex,:) + con_errorbar1(selectedContrastIndex,:) )))); % extract max beta value across subs and ROI
-minYvalue2 = min(min(min(min(con_avg2(selectedContrastIndex,:) - con_errorbar2(selectedContrastIndex,:) )))); % extract min beta value across subs and ROI
-maxYvalue2 = max(max(max(max(con_avg2(selectedContrastIndex,:) + con_errorbar2(selectedContrastIndex,:) )))); % extract max beta value across subs and ROI
+minYvalue1 = min(min(min(min(con_avg1(selectedContrastIndex) - con_errorbar1(selectedContrastIndex) )))); % extract min beta value across subs and ROI
+maxYvalue1 = max(max(max(max(con_avg1(selectedContrastIndex) + con_errorbar1(selectedContrastIndex) )))); % extract max beta value across subs and ROI
+minYvalue2 = min(min(min(min(con_avg2(selectedContrastIndex) - con_errorbar2(selectedContrastIndex) )))); % extract min beta value across subs and ROI
+maxYvalue2 = max(max(max(max(con_avg2(selectedContrastIndex) + con_errorbar2(selectedContrastIndex) )))); % extract max beta value across subs and ROI
 minYvalue = min(minYvalue1, minYvalue2);
 maxYvalue = max(maxYvalue1, maxYvalue2);
 dist_min_max_Yvalue = abs(maxYvalue - minYvalue);
