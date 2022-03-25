@@ -1055,6 +1055,26 @@ switch GLM
             % feedback
             GLMprm.model_onset.(Epm_nm).fbk = 'stick';
         end
+    case 35 % same as GLM 34 R/E/trial number during choice + RT during choice
+        % general parameters
+        GLMprm.gal.orth_vars = 0; % no orthogonalization (nothing to orthogonalize anyway)
+        GLMprm.gal.zPerRun = 1; % zscore net value per run
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'stick';
+            GLMprm.choice.(Epm_nm).RPpool = 1;
+            GLMprm.choice.(Epm_nm).RP.money_chosen = 1;
+            GLMprm.choice.(Epm_nm).RP.E_chosen = 1;
+            GLMprm.choice.(Epm_nm).RP.trialN = 1;
+            GLMprm.choice.(Epm_nm).RP.RT = 1;
+            % chosen
+            GLMprm.model_onset.(Epm_nm).chosen = 'stick';
+            % effort perf
+            GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
+            % feedback
+            GLMprm.model_onset.(Epm_nm).fbk = 'stick';
+        end
 end
 
 %% warnings: check compatibility of the GLM parameters entered
