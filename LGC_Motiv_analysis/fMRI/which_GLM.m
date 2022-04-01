@@ -116,11 +116,11 @@ function [GLMprm] = which_GLM(GLM)
 %
 %       .(choice/chosen).(Ep/Em).(R/P/RP).NV_chosen
 %       (1) net value of the chosen option based on the model defined in
-%       .choice.(Ep.Em).(R/P/RP).NV_mdl (='mdl_X' or 'bayesianModel_X')
+%       .(choice/chosen).(Ep.Em).(R/P/RP).NV_mdl (='mdl_X' or 'bayesianModel_X')
 %
 %       .(choice/chosen).(Ep/Em).(R/P/RP).NV_varOption
 %       (1) net value of the chosen option based on the model defined in
-%       .choice.(Ep.Em).(R/P/RP).NV_mdl (='mdl_X' or 'bayesianModel_X')
+%       .(choice/chosen).(Ep.Em).(R/P/RP).NV_mdl (='mdl_X' or 'bayesianModel_X')
 %
 %       .(choice/chosen).(Ep/Em).(R/P/RP).trialN
 %       (1) trial number
@@ -129,6 +129,8 @@ function [GLMprm] = which_GLM(GLM)
 %
 %       .(choice/chosen).(Ep/Em).(R/P/RP).confidence
 %       (1) confidence level (0/1) given by the subject for each choice
+%       (2) confidence inferred by the model (p(choice)-0.5)² for the model
+%       defined in .(choice/chosen).(Ep.Em).(R/P/RP).NV_mdl (='mdl_X' or 'bayesianModel_X')
 %
 %       .(choice/chosen).(Ep/Em).(R/P/RP).RT: reaction time for choice
 %       (1) raw reaction time
@@ -171,7 +173,7 @@ function [GLMprm] = which_GLM(GLM)
 %
 %       .Eperf.(Ep/Em).(R/P/RP).NV_varOption
 %       (1) net value of the chosen option based on the model defined in
-%       .choice.(Ep.Em).(R/P/RP).NV_mdl (='mdl_X' or 'bayesianModel_X')
+%       .Eperf.(Ep.Em).(R/P/RP).NV_mdl (='mdl_X' or 'bayesianModel_X')
 %
 %       .Eperf.(Ep/Em).(R/P/RP).RT_1stAnswer
 %       (1) raw reaction time for first answer (force above threshold for Ep 
@@ -199,6 +201,8 @@ function [GLMprm] = which_GLM(GLM)
 %
 %       .fbk.(Ep/Em).(R/P/RP).confidence
 %       (1) confidence level (0/1) given by the subject for each choice
+%       (2) confidence inferred by the model (p(choice)-0.5)² for the model
+%       defined in .fbk.(Ep.Em).(R/P/RP).NV_mdl (='mdl_X' or 'bayesianModel_X')
 %
 % See also GLM_details.m
 %
@@ -1070,6 +1074,26 @@ switch GLM
             GLMprm.choice.(Epm_nm).RP.RT = 1;
             % chosen
             GLMprm.model_onset.(Epm_nm).chosen = 'stick';
+            % effort perf
+            GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
+            % feedback
+            GLMprm.model_onset.(Epm_nm).fbk = 'stick';
+        end
+    case 36 % RT during choice/NV chosen during chosen
+        % general parameters
+        GLMprm.gal.orth_vars = 0; % no orthogonalization (nothing to orthogonalize anyway)
+        GLMprm.gal.zPerRun = 1; % zscore net value per run
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'stick';
+            GLMprm.choice.(Epm_nm).RPpool = 1;
+            GLMprm.choice.(Epm_nm).RP.RT = 1;
+            % chosen
+            GLMprm.model_onset.(Epm_nm).chosen = 'stick';
+            GLMprm.chosen.(Epm_nm).RPpool = 1;
+            GLMprm.chosen.(Epm_nm).RP.NV_chosen = 1;
+            GLMprm.chosen.(Epm_nm).RP.NV_mdl = 'mdl_4';
             % effort perf
             GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
             % feedback
