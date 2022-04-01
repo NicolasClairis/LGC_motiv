@@ -436,10 +436,16 @@ for iEpm = 1:length(Epm)
             
             % confidence
             switch GLMprm.choice.(task_id_nm).(RP_dispChoice_nm).confidence
-                case 1
+                case 1 % confidence ratings 0/1
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                     reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG choice ',RP_dispChoice_nm,': confidence'];
                     disp([num2str(n_regs.(task_id_nm)),') choice: confidence (levels) ']);
+                    % if derivative added => add derivatives
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                case 2 % confidence inferred by the model
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG choice ',RP_dispChoice_nm,': confidence'];
+                    disp([num2str(n_regs.(task_id_nm)),') choice: confidence (inferred by the model) ']);
                     % if derivative added => add derivatives
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
             end
@@ -723,10 +729,16 @@ for iEpm = 1:length(Epm)
             
             % confidence
             switch GLMprm.chosen.(task_id_nm).(RP_dispChosen_nm).confidence
-                case 1
+                case 1 % confidence rating by the subjects
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                     reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG chosen ',RP_dispChosen_nm,': confidence'];
                     disp([num2str(n_regs.(task_id_nm)),') chosen: confidence (levels) ']);
+                    % if derivative added => add derivatives
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                case 2 % confidence inferred by the model
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG chosen ',RP_dispChosen_nm,': confidence'];
+                    disp([num2str(n_regs.(task_id_nm)),') chosen: confidence (inferred by the model) ']);
                     % if derivative added => add derivatives
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
             end
@@ -1003,10 +1015,16 @@ for iEpm = 1:length(Epm)
             
             % confidence
             switch GLMprm.fbk.(task_id_nm).(RP_fbk_nm).confidence
-                case 1
+                case 1 % confidence rated by the subjects
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                     reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG feedback ',RP_fbk_nm,': confidence'];
                     disp([num2str(n_regs.(task_id_nm)),') feedback: confidence (levels) ']);
+                    % if derivative added => add derivatives
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                case 2 % confidence inferred by the model
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG feedback ',RP_fbk_nm,': confidence'];
+                    disp([num2str(n_regs.(task_id_nm)),') feedback: confidence (inferred by the model) ']);
                     % if derivative added => add derivatives
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
             end
