@@ -234,7 +234,7 @@ for iPM = 1:2
     % extract fitted choices
     modelFit.mdl_1.(task_id) = glmval(betamdl_1, xModel1, 'logit','Constant','off');
     % extract corresponding confidence and net value inferred by the model
-    confidence.mdl_1.(task_id) = (modelFit.mdl_1.(task_id) - 0.5).^2;
+    confidence.mdl_1.(task_id).allTrials = (modelFit.mdl_1.(task_id) - 0.5).^2;
     deltaNV.mdl_1.(task_id) = betamdl_1(1).*xModel1(:,1) +...
         betamdl_1(2).*xModel1(:,2);
     for iRun = 1:nRunsPerTask
@@ -243,6 +243,7 @@ for iPM = 1:2
             betas.(task_id).mdl_1.kEffort.*E_chosen_levelPerTrial.(task_id).(run_nm);
         NV_varOption.(task_id).mdl_1.(run_nm) = betas.(task_id).mdl_1.kMoney.*money_varOption_valuePerTrialPerRun.(task_id).(run_nm) +...
             betas.(task_id).mdl_1.kEffort.*E_varOption_levelPerTrialPerRun.(task_id).(run_nm);
+        confidence.mdl_1.(task_id).(run_nm) = 
     end % run loop
     
     % model 2: SV=kR*R+kP*P-kE*E (split R/P factor)
@@ -258,7 +259,7 @@ for iPM = 1:2
     % extract fitted choices
     modelFit.mdl_2.(task_id) = glmval(betamdl_2, xModel2, 'logit','Constant','off');
     % extract corresponding confidence and net value inferred by the model
-    confidence.mdl_2.(task_id) = (modelFit.mdl_2.(task_id) - 0.5).^2;
+    confidence.mdl_2.(task_id).allTrials = (modelFit.mdl_2.(task_id) - 0.5).^2;
     deltaNV.mdl_2.(task_id) = betamdl_2(1).*xModel2(:,1) +...
         betamdl_2(2).*xModel2(:,2) +...
         betamdl_2(3).*xModel2(:,3);
@@ -270,6 +271,7 @@ for iPM = 1:2
         NV_varOption.(task_id).mdl_2.(run_nm) = betas.(task_id).mdl_2.kR.*R_varOption_valuePerTrialPerRun.(task_id).(run_nm) +...
             betas.(task_id).mdl_2.kP.*P_varOption_valuePerTrialPerRun.(task_id).(run_nm) +...
             betas.(task_id).mdl_2.kEffort.*E_varOption_levelPerTrialPerRun.(task_id).(run_nm);
+        confidence.mdl_2.(task_id).(run_nm) = 
     end % run loop
     
     % model 3: SV = kMoney*Money-kE*E+kF*E*(trial number-1) model with fatigue
@@ -285,7 +287,7 @@ for iPM = 1:2
     % extract fitted choices
     modelFit.mdl_3.(task_id) = glmval(betamdl_3, xModel3, 'logit','Constant','off');
     % extract corresponding confidence and net value inferred by the model
-    confidence.mdl_3.(task_id) = (modelFit.mdl_3.(task_id) - 0.5).^2;
+    confidence.mdl_3.(task_id).allTrials = (modelFit.mdl_3.(task_id) - 0.5).^2;
     deltaNV.mdl_3.(task_id) = betamdl_3(1).*xModel3(:,1) +...
         betamdl_3(2).*xModel3(:,2) +...
         betamdl_3(3).*xModel3(:,3);
@@ -297,6 +299,7 @@ for iPM = 1:2
         NV_varOption.(task_id).mdl_3.(run_nm) = betas.(task_id).mdl_3.kMoney.*money_varOption_valuePerTrialPerRun.(task_id).(run_nm) +...
             betas.(task_id).mdl_3.kEffort.*E_varOption_levelPerTrialPerRun.(task_id).(run_nm) +...
             betas.(task_id).mdl_3.kFatigue.*E_varOption_levelPerTrialPerRun.(task_id).(run_nm).*trialN_perRun.(task_id).(run_nm);
+        confidence.mdl_3.(task_id).(run_nm) = 
     end % run loop
     
     % model 4: SV = kR*R-kE*E-kP*P+kF*E*(trial number-1) model with fatigue
@@ -314,7 +317,7 @@ for iPM = 1:2
     % extract fitted choices
     modelFit.mdl_4.(task_id) = glmval(betamdl_4, xModel4, 'logit','Constant','off');
     % extract corresponding confidence and net value inferred by the model
-    confidence.mdl_4.(task_id) = (modelFit.mdl_4.(task_id) - 0.5).^2;
+    confidence.mdl_4.(task_id).allTrials = (modelFit.mdl_4.(task_id) - 0.5).^2;
     deltaNV.mdl_4.(task_id) = betamdl_4(1).*xModel4(:,1) +...
         betamdl_4(2).*xModel4(:,2) +...
         betamdl_4(3).*xModel4(:,3) +...
@@ -329,6 +332,7 @@ for iPM = 1:2
             betas.(task_id).mdl_4.kP.*P_varOption_valuePerTrialPerRun.(task_id).(run_nm) +...
             betas.(task_id).mdl_4.kEffort.*E_varOption_levelPerTrialPerRun.(task_id).(run_nm) +...
             betas.(task_id).mdl_4.kFatigue.*E_varOption_levelPerTrialPerRun.(task_id).(run_nm).*trialN_perRun.(task_id).(run_nm);
+        confidence.mdl_4.(task_id).(run_nm) = 
     end % run loop
     
     %% extract choice for each money and effort level

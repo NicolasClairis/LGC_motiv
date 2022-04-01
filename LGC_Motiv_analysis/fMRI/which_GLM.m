@@ -130,7 +130,7 @@ function [GLMprm] = which_GLM(GLM)
 %       .(choice/chosen).(Ep/Em).(R/P/RP).confidence
 %       (1) confidence level (0/1) given by the subject for each choice
 %       (2) confidence inferred by the model (p(choice)-0.5)² for the model
-%       defined in .(choice/chosen).(Ep.Em).(R/P/RP).NV_mdl (='mdl_X' or 'bayesianModel_X')
+%       defined in .(choice/chosen).(Ep.Em).(R/P/RP).conf_mdl (='mdl_X' or 'bayesianModel_X')
 %
 %       .(choice/chosen).(Ep/Em).(R/P/RP).RT: reaction time for choice
 %       (1) raw reaction time
@@ -202,7 +202,7 @@ function [GLMprm] = which_GLM(GLM)
 %       .fbk.(Ep/Em).(R/P/RP).confidence
 %       (1) confidence level (0/1) given by the subject for each choice
 %       (2) confidence inferred by the model (p(choice)-0.5)² for the model
-%       defined in .fbk.(Ep.Em).(R/P/RP).NV_mdl (='mdl_X' or 'bayesianModel_X')
+%       defined in .fbk.(Ep.Em).(R/P/RP).conf_mdl (='mdl_X' or 'bayesianModel_X')
 %
 % See also GLM_details.m
 %
@@ -266,7 +266,8 @@ for iEpm = 1:length(Ep_Em)
             GLMprm.choice.(EpEm_nm).(RP_nm).confidence,...
             GLMprm.choice.(EpEm_nm).(RP_nm).RT,...
             GLMprm.choice.(EpEm_nm).(RP_nm).trialN] = deal(0);
-        GLMprm.choice.(EpEm_nm).(RP_nm).NV_mdl = '';
+        [GLMprm.choice.(EpEm_nm).(RP_nm).NV_mdl,...
+            GLMprm.choice.(EpEm_nm).(RP_nm).conf_mdl] = deal('');
         
         % chosen option display
         % pool reward and punishment together (default)
@@ -287,7 +288,8 @@ for iEpm = 1:length(Ep_Em)
             GLMprm.chosen.(EpEm_nm).(RP_nm).confidence,...
             GLMprm.chosen.(EpEm_nm).(RP_nm).RT,...
             GLMprm.chosen.(EpEm_nm).(RP_nm).trialN] = deal(0);
-        GLMprm.chosen.(EpEm_nm).(RP_nm).NV_mdl = '';
+        [GLMprm.chosen.(EpEm_nm).(RP_nm).NV_mdl,...
+            GLMprm.chosen.(EpEm_nm).(RP_nm).conf_mdl] = deal('');
         
         % effort performance
         % pool reward and punishment together (default)
@@ -309,7 +311,8 @@ for iEpm = 1:length(Ep_Em)
                 [GLMprm.Eperf.Em.(RP_nm).RT_avg,...
                     GLMprm.Eperf.Em.(RP_nm).n_errors] = deal(0);
         end
-        GLMprm.Eperf.(EpEm_nm).(RP_nm).NV_mdl = '';
+        [GLMprm.Eperf.(EpEm_nm).(RP_nm).NV_mdl,...
+            GLMprm.Eperf.(EpEm_nm).(RP_nm).conf_mdl] = deal('');
         
         % feedback
         % pool reward and punishment together (default)
@@ -319,6 +322,7 @@ for iEpm = 1:length(Ep_Em)
             GLMprm.fbk.(EpEm_nm).(RP_nm).E_made,...
             GLMprm.fbk.(EpEm_nm).(RP_nm).confidence,...
             GLMprm.fbk.(EpEm_nm).(RP_nm).trialN] = deal(0);
+        GLMprm.fbk.(EpEm_nm).(RP_nm).conf_mdl = '';
     end % RP
 end % effort type
     
