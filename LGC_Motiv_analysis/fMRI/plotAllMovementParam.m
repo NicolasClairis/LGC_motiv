@@ -33,6 +33,9 @@ for iS = 1:NS
     
     n_files = size(listRunFolders, 1);
     n_runs = size(listRunFolders, 1);
+    if strcmp(study_nm,'study1') && strcmp(sub_nm,'040')
+        n_runs = n_runs - 1;
+    end
     
     for iRun = 1:n_runs
         
