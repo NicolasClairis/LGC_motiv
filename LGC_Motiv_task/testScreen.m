@@ -5,6 +5,7 @@ IRM = 1;
 [scr, xScreenCenter, yScreenCenter, window, baselineTextSize] = ScreenConfiguration(IRM, 0);
 ShowCursor;
 
+
 %% prepare the parameters
 n_R_levels=4;
 n_E_levels = 4;
@@ -14,6 +15,10 @@ confidenceDisp = 1;
 [stim] = stim_initialize(scr, n_E_levels, langage);
 key = relevant_key_definition('mental', IRM, n_buttonsChoice);
 timeParameter.timeLimit = false;
+
+
+%% start checking
+keyboard_check_start(key, IRM);
 
 %% display a choice trial on the screen (script will wait one of the 4 buttons to be pressed)
 disp('please press one of the four buttons to move on');
@@ -36,3 +41,5 @@ end
 
 %% shut down PTB
 sca;
+KbQueueStop;
+KbQueueRelease;
