@@ -272,7 +272,7 @@ for iRP = 1:3
             end
             % extract confidence
             if strcmp(conf_mdl_nm(1:4),'mdl_') % classic model
-                confidence = modelledDataStruct.confidence.(task_id).(conf_mdl_nm).(run_nm);
+                confidence = modelledDataStruct.confidence.(conf_mdl_nm).(task_id).(run_nm);
             elseif strcmp(conf_mdl_nm(1:14),'bayesianModel_') % bayesian model
                 error('bayesian net value input not ready yet.');
             else

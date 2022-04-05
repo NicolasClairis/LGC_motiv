@@ -28,7 +28,8 @@ function[betas, choices] = logitfit_choices(computerRoot, study_nm, sub_nm,...
 
 %% if root not defined => ask for it
 if ~exist('computerRoot','var') || isempty(computerRoot)
-    computerRoot = LGCM_root_paths;
+    computerRoot = 'E:\';
+%     computerRoot = LGCM_root_paths;
 end
 
 %% working directories
@@ -237,14 +238,6 @@ for iPM = 1:2
     confidence.mdl_1.(task_id).allTrials = (modelFit.mdl_1.(task_id) - 0.5).^2;
     deltaNV.mdl_1.(task_id) = betamdl_1(1).*xModel1(:,1) +...
         betamdl_1(2).*xModel1(:,2);
-    for iRun = 1:nRunsPerTask
-        run_nm = ['run',num2str(iRun)];
-        NV_chosen.(task_id).mdl_1.(run_nm) = betas.(task_id).mdl_1.kMoney.*money_chosen_valuePerTrial.(task_id).(run_nm) +...
-            betas.(task_id).mdl_1.kEffort.*E_chosen_levelPerTrial.(task_id).(run_nm);
-        NV_varOption.(task_id).mdl_1.(run_nm) = betas.(task_id).mdl_1.kMoney.*money_varOption_valuePerTrialPerRun.(task_id).(run_nm) +...
-            betas.(task_id).mdl_1.kEffort.*E_varOption_levelPerTrialPerRun.(task_id).(run_nm);
-        confidence.mdl_1.(task_id).(run_nm) = 
-    end % run loop
     
     % model 2: SV=kR*R+kP*P-kE*E (split R/P factor)
     xModel2 = [R_nonDef_valuePerTrial.(task_id)-R_default_valuePerTrial.(task_id),...
@@ -263,16 +256,6 @@ for iPM = 1:2
     deltaNV.mdl_2.(task_id) = betamdl_2(1).*xModel2(:,1) +...
         betamdl_2(2).*xModel2(:,2) +...
         betamdl_2(3).*xModel2(:,3);
-    for iRun = 1:nRunsPerTask
-        run_nm = ['run',num2str(iRun)];
-        NV_chosen.(task_id).mdl_2.(run_nm) = betas.(task_id).mdl_2.kR.*R_chosen_valuePerTrial.(task_id).(run_nm) +...
-            betas.(task_id).mdl_2.kP.*P_chosen_valuePerTrial.(task_id).(run_nm) +...
-            betas.(task_id).mdl_2.kEffort.*E_chosen_levelPerTrial.(task_id).(run_nm);
-        NV_varOption.(task_id).mdl_2.(run_nm) = betas.(task_id).mdl_2.kR.*R_varOption_valuePerTrialPerRun.(task_id).(run_nm) +...
-            betas.(task_id).mdl_2.kP.*P_varOption_valuePerTrialPerRun.(task_id).(run_nm) +...
-            betas.(task_id).mdl_2.kEffort.*E_varOption_levelPerTrialPerRun.(task_id).(run_nm);
-        confidence.mdl_2.(task_id).(run_nm) = 
-    end % run loop
     
     % model 3: SV = kMoney*Money-kE*E+kF*E*(trial number-1) model with fatigue
     xModel3 = [money_nonDef_valuePerTrial.(task_id)-money_default_valuePerTrial.(task_id),...
@@ -291,16 +274,6 @@ for iPM = 1:2
     deltaNV.mdl_3.(task_id) = betamdl_3(1).*xModel3(:,1) +...
         betamdl_3(2).*xModel3(:,2) +...
         betamdl_3(3).*xModel3(:,3);
-    for iRun = 1:nRunsPerTask
-        run_nm = ['run',num2str(iRun)];
-        NV_chosen.(task_id).mdl_3.(run_nm) = betas.(task_id).mdl_3.kMoney.*money_chosen_valuePerTrial.(task_id).(run_nm) +...
-            betas.(task_id).mdl_3.kEffort.*E_chosen_levelPerTrial.(task_id).(run_nm) +...
-            betas.(task_id).mdl_3.kFatigue.*E_chosen_levelPerTrial.(task_id).(run_nm).*trialN_perRun.(task_id).(run_nm);
-        NV_varOption.(task_id).mdl_3.(run_nm) = betas.(task_id).mdl_3.kMoney.*money_varOption_valuePerTrialPerRun.(task_id).(run_nm) +...
-            betas.(task_id).mdl_3.kEffort.*E_varOption_levelPerTrialPerRun.(task_id).(run_nm) +...
-            betas.(task_id).mdl_3.kFatigue.*E_varOption_levelPerTrialPerRun.(task_id).(run_nm).*trialN_perRun.(task_id).(run_nm);
-        confidence.mdl_3.(task_id).(run_nm) = 
-    end % run loop
     
     % model 4: SV = kR*R-kE*E-kP*P+kF*E*(trial number-1) model with fatigue
     xModel4 = [R_nonDef_valuePerTrial.(task_id)-R_default_valuePerTrial.(task_id),...
@@ -322,17 +295,68 @@ for iPM = 1:2
         betamdl_4(2).*xModel4(:,2) +...
         betamdl_4(3).*xModel4(:,3) +...
         betamdl_4(4).*xModel4(:,4);
-    for iRun = 1:nRunsPerTask
-        run_nm = ['run',num2str(iRun)];
-        NV_chosen.(task_id).mdl_4.(run_nm) = betas.(task_id).mdl_4.kR.*R_chosen_valuePerTrial.(task_id).(run_nm) +...
-            betas.(task_id).mdl_4.kP.*P_chosen_valuePerTrial.(task_id).(run_nm) +...
-            betas.(task_id).mdl_4.kEffort.*E_chosen_levelPerTrial.(task_id).(run_nm) +...
-            betas.(task_id).mdl_4.kFatigue.*E_chosen_levelPerTrial.(task_id).(run_nm).*trialN_perRun.(task_id).(run_nm);
-        NV_varOption.(task_id).mdl_4.(run_nm) = betas.(task_id).mdl_4.kR.*R_varOption_valuePerTrialPerRun.(task_id).(run_nm) +...
-            betas.(task_id).mdl_4.kP.*P_varOption_valuePerTrialPerRun.(task_id).(run_nm) +...
-            betas.(task_id).mdl_4.kEffort.*E_varOption_levelPerTrialPerRun.(task_id).(run_nm) +...
-            betas.(task_id).mdl_4.kFatigue.*E_varOption_levelPerTrialPerRun.(task_id).(run_nm).*trialN_perRun.(task_id).(run_nm);
-        confidence.mdl_4.(task_id).(run_nm) = 
+    
+    % extract data per run for each model
+    jRun = 0;
+    for iRun = 1:nRuns
+        runToInclude = 0;
+        switch task_id
+            case 'Ep'
+                if runs_Ep(iRun) == 1
+                    jRun = jRun + 1;
+                    runToInclude = 1;
+                end
+            case 'Em'
+                if runs_Em(iRun) == 1
+                    jRun = jRun + 1;
+                    runToInclude = 1;
+                end
+        end
+        run_nm = ['run',num2str(iRun)]; % run number with one single index
+        run_nm_bis = ['run',num2str(jRun)]; % run number where index is independent for each task
+        
+        if runToInclude == 1
+            runTrials_idx = (1:nTrialsPerRun) + nTrialsPerRun*(jRun-1);
+            % model 1
+            confidence.mdl_1.(run_nm) = confidence.mdl_1.(task_id).allTrials(runTrials_idx);
+            NV_chosen.(task_id).mdl_1.(run_nm_bis) = betas.(task_id).mdl_1.kMoney.*money_chosen_valuePerTrial.(task_id).(run_nm_bis) +...
+                betas.(task_id).mdl_1.kEffort.*E_chosen_levelPerTrial.(task_id).(run_nm_bis);
+            NV_varOption.(task_id).mdl_1.(run_nm_bis) = betas.(task_id).mdl_1.kMoney.*money_varOption_valuePerTrialPerRun.(task_id).(run_nm_bis) +...
+                betas.(task_id).mdl_1.kEffort.*E_varOption_levelPerTrialPerRun.(task_id).(run_nm_bis);
+            confidence.mdl_1.(task_id).(run_nm_bis) = confidence.mdl_1.(task_id).allTrials(runTrials_idx);
+            
+            % model 2
+            confidence.mdl_2.(run_nm) = confidence.mdl_2.(task_id).allTrials(runTrials_idx);
+            NV_chosen.(task_id).mdl_2.(run_nm_bis) = betas.(task_id).mdl_2.kR.*R_chosen_valuePerTrial.(task_id).(run_nm_bis) +...
+                betas.(task_id).mdl_2.kP.*P_chosen_valuePerTrial.(task_id).(run_nm_bis) +...
+                betas.(task_id).mdl_2.kEffort.*E_chosen_levelPerTrial.(task_id).(run_nm_bis);
+            NV_varOption.(task_id).mdl_2.(run_nm_bis) = betas.(task_id).mdl_2.kR.*R_varOption_valuePerTrialPerRun.(task_id).(run_nm_bis) +...
+                betas.(task_id).mdl_2.kP.*P_varOption_valuePerTrialPerRun.(task_id).(run_nm_bis) +...
+                betas.(task_id).mdl_2.kEffort.*E_varOption_levelPerTrialPerRun.(task_id).(run_nm_bis);
+            confidence.mdl_2.(task_id).(run_nm_bis) = confidence.mdl_2.(task_id).allTrials(runTrials_idx);
+            
+            % model 3
+            confidence.mdl_3.(run_nm) = confidence.mdl_3.(task_id).allTrials(runTrials_idx);
+            NV_chosen.(task_id).mdl_3.(run_nm_bis) = betas.(task_id).mdl_3.kMoney.*money_chosen_valuePerTrial.(task_id).(run_nm_bis) +...
+                betas.(task_id).mdl_3.kEffort.*E_chosen_levelPerTrial.(task_id).(run_nm_bis) +...
+                betas.(task_id).mdl_3.kFatigue.*E_chosen_levelPerTrial.(task_id).(run_nm_bis).*trialN_perRun.(task_id).(run_nm_bis);
+            NV_varOption.(task_id).mdl_3.(run_nm_bis) = betas.(task_id).mdl_3.kMoney.*money_varOption_valuePerTrialPerRun.(task_id).(run_nm_bis) +...
+                betas.(task_id).mdl_3.kEffort.*E_varOption_levelPerTrialPerRun.(task_id).(run_nm_bis) +...
+                betas.(task_id).mdl_3.kFatigue.*E_varOption_levelPerTrialPerRun.(task_id).(run_nm_bis).*trialN_perRun.(task_id).(run_nm_bis);
+            confidence.mdl_3.(task_id).(run_nm_bis) = confidence.mdl_3.(task_id).allTrials(runTrials_idx);
+            
+            % model 4
+            confidence.mdl_4.(run_nm) = confidence.mdl_4.(task_id).allTrials(runTrials_idx);
+            NV_chosen.(task_id).mdl_4.(run_nm_bis) = betas.(task_id).mdl_4.kR.*R_chosen_valuePerTrial.(task_id).(run_nm_bis) +...
+                betas.(task_id).mdl_4.kP.*P_chosen_valuePerTrial.(task_id).(run_nm_bis) +...
+                betas.(task_id).mdl_4.kEffort.*E_chosen_levelPerTrial.(task_id).(run_nm_bis) +...
+                betas.(task_id).mdl_4.kFatigue.*E_chosen_levelPerTrial.(task_id).(run_nm_bis).*trialN_perRun.(task_id).(run_nm_bis);
+            NV_varOption.(task_id).mdl_4.(run_nm_bis) = betas.(task_id).mdl_4.kR.*R_varOption_valuePerTrialPerRun.(task_id).(run_nm_bis) +...
+                betas.(task_id).mdl_4.kP.*P_varOption_valuePerTrialPerRun.(task_id).(run_nm_bis) +...
+                betas.(task_id).mdl_4.kEffort.*E_varOption_levelPerTrialPerRun.(task_id).(run_nm_bis) +...
+                betas.(task_id).mdl_4.kFatigue.*E_varOption_levelPerTrialPerRun.(task_id).(run_nm_bis).*trialN_perRun.(task_id).(run_nm_bis);
+            confidence.mdl_4.(task_id).(run_nm_bis) = confidence.mdl_4.(task_id).allTrials(runTrials_idx);
+        end % run to include
     end % run loop
     
     %% extract choice for each money and effort level
@@ -393,7 +417,7 @@ for iPM = 1:2
         for iMdl = 1:nMdl
             mdl_nm = ['mdl_',num2str(iMdl)];
             choiceFitNonDef.perMoneyLevel.(mdl_nm).(task_id)(jM) = mean(modelFit.(mdl_nm).(task_id)( money_nonDef_levelPerTrial.(task_id) == iMoney),1,'omitnan');
-            confidence.perMoneyLevel.(mdl_nm).(task_id)(jM) = mean(confidence.(mdl_nm).(task_id)( money_nonDef_levelPerTrial.(task_id) == iMoney),1,'omitnan');
+            confidence.perMoneyLevel.(mdl_nm).(task_id)(jM) = mean(confidence.(mdl_nm).(task_id).allTrials( money_nonDef_levelPerTrial.(task_id) == iMoney),1,'omitnan');
         end % model loop
     end
     % effort level
@@ -405,7 +429,7 @@ for iPM = 1:2
         for iMdl = 1:nMdl
             mdl_nm = ['mdl_',num2str(iMdl)];
             choiceFitNonDef.perEffortLevel.(mdl_nm).(task_id)(jE) = mean(modelFit.(mdl_nm).(task_id)( E_nonDef_levelPerTrial.(task_id) == iEffort),1,'omitnan');
-            confidence.perEffortLevel.(mdl_nm).(task_id)(jE) = mean(confidence.(mdl_nm).(task_id)( E_nonDef_levelPerTrial.(task_id) == iEffort),1,'omitnan');
+            confidence.perEffortLevel.(mdl_nm).(task_id)(jE) = mean(confidence.(mdl_nm).(task_id).allTrials( E_nonDef_levelPerTrial.(task_id) == iEffort),1,'omitnan');
         end % model loop
     end % effort level
     
@@ -418,7 +442,7 @@ for iPM = 1:2
         [choiceFitNonDef.perNVLevel.(mdl_nm).(task_id),...
             deltaNV_bins.(mdl_nm).(task_id)] = do_bin2(modelFit.(mdl_nm).(task_id), deltaNV.(mdl_nm).(task_id), n_NV_bins, 0);
         [confidence.perNVLevel.(mdl_nm).(task_id),...
-            deltaNV_bins.(mdl_nm).(task_id)] = do_bin2(confidence.(mdl_nm).(task_id), deltaNV.(mdl_nm).(task_id), n_NV_bins, 0);
+            deltaNV_bins.(mdl_nm).(task_id)] = do_bin2(confidence.(mdl_nm).(task_id).allTrials, deltaNV.(mdl_nm).(task_id), n_NV_bins, 0);
     end
     
     % fatigue
@@ -431,7 +455,7 @@ for iPM = 1:2
             trialN.(task_id),...
             n_trialN_bins, 0);
         [confidence.perTrialN.(mdl_nm).(task_id),...
-            trialN_bins.(task_id)] = do_bin2(confidence.(mdl_nm).(task_id),...
+            trialN_bins.(task_id)] = do_bin2(confidence.(mdl_nm).(task_id).allTrials,...
             trialN.(task_id),...
             n_trialN_bins, 0);
     end % model loop
