@@ -1,5 +1,5 @@
-function[] = First_level_batch(study_nm, checking, GLM)
-%[] = First_level_batch(study_nm, checking, GLM)
+function[] = First_level_batch(GLM, checking)
+%[] = First_level_batch(GLM, checking)
 % First_level_batch will perform 1st level for LGC motivation fMRI studies.
 %
 % INPUTS
@@ -8,11 +8,11 @@ function[] = First_level_batch(study_nm, checking, GLM)
 % 'study1': first study (dmPFC + AI)
 % 'study2': second study (clinical trial)
 %
+% GLM: GLM number
+%
 % checking:
 % (0) launch 1st level directly
 % (1) display SPM batch before launching to be able to check the inputs
-%
-% GLM: GLM number
 %
 % See also which_GLM.m, GLM_details.m, LGCM_contrasts_spm.m,
 % First_level_loadEachCondition.m, First_level_loadRegressors.m,
