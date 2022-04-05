@@ -921,7 +921,7 @@ for iEpm = 1:length(Epm)
                     disp([num2str(n_regs.(task_id_nm)),') effort period: trial number ']);
                     % if derivative added => add derivatives
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
-                    case 2
+                case 2
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                     reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG effort ',RP_Eperf_nm,': trial number x (Echosen-Eunchosen) (E levels)'];
                     disp([num2str(n_regs.(task_id_nm)),') effort period: trial number x (effort chosen-effort unchosen) (effort levels) ']);
@@ -931,6 +931,22 @@ for iEpm = 1:length(Epm)
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                     reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG effort ',RP_Eperf_nm,': trial number x (EnonDef-Edef) (E levels)'];
                     disp([num2str(n_regs.(task_id_nm)),') effort period: trial number x (effort non-default - effort default) (effort levels) ']);
+                    % if derivative added => add derivatives
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+            end
+            
+            % confidence
+            switch GLMprm.Eperf.(task_id_nm).(RP_Eperf_nm).confidence
+                case 1 % confidence ratings 0/1
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG effort ',RP_Eperf_nm,': confidence'];
+                    disp([num2str(n_regs.(task_id_nm)),') effort period: confidence (levels) ']);
+                    % if derivative added => add derivatives
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                case 2 % confidence inferred by the model
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG effort ',RP_Eperf_nm,': confidence'];
+                    disp([num2str(n_regs.(task_id_nm)),') effort period: confidence (inferred by the model) ']);
                     % if derivative added => add derivatives
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
             end
