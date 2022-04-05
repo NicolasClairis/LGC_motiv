@@ -1120,7 +1120,8 @@ switch GLM
             GLMprm.choice.(Epm_nm).RPpool = 1;
             GLMprm.choice.(Epm_nm).RP.NV_varOption = 1;
             GLMprm.choice.(Epm_nm).RP.NV_mdl = 'mdl_4';
-            GLMprm.choice.(Epm_nm).RP.confidence = 1;
+            GLMprm.choice.(Epm_nm).RP.confidence = 2;
+            GLMprm.choice.(Epm_nm).RP.conf_mdl = 'mdl_4';
             GLMprm.choice.(Epm_nm).RP.RT = 1;
             % chosen
             GLMprm.model_onset.(Epm_nm).chosen = 'stick';
