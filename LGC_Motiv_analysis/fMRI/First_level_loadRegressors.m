@@ -686,10 +686,10 @@ if ismember(choiceModel,{'stick','boxcar'})
         if choiceModel_conf > 0
             n_choiceMods = n_choiceMods + 1;
             choice_modNames{n_choiceMods} = 'confidence';
-            switch choiceModel_conf % binary variable => no zscore
-                case 1
+            switch choiceModel_conf
+                case 1 % binary variable => no zscore
                     choice_modVals(n_choiceMods,:) = confidence(choice_trial_idx);
-                case 2
+                case 2 % confidence inferred by the model => ok to zscore
                     choice_modVals(n_choiceMods,:) = raw_or_z(confidence(choice_trial_idx));
                 otherwise
                     error('not ready yet');
