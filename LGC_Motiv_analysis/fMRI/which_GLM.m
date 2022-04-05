@@ -184,6 +184,11 @@ function [GLMprm] = which_GLM(GLM)
 %       (2) trial number*(E chosen - E non-chosen option)
 %       (3) trial number*(E non-default - E default option)
 %
+%       .Eperf.(Ep/Em).(R/P/RP).confidence
+%       (1) confidence level (0/1) given by the subject for each choice
+%       (2) confidence inferred by the model (p(choice)-0.5)² for the model
+%       defined in .Eperf.(Ep.Em).(R/P/RP).conf_mdl (='mdl_X' or 'bayesianModel_X')
+%
 %
 %       .fbk.(Ep/Em).(R/P/RP).win_vs_loss
 %       (1) win (1) - loss (0) trials
@@ -299,7 +304,8 @@ for iEpm = 1:length(Ep_Em)
             GLMprm.Eperf.(EpEm_nm).(RP_nm).NV_chosen,...
             GLMprm.Eperf.(EpEm_nm).(RP_nm).NV_varOption,...
             GLMprm.Eperf.(EpEm_nm).(RP_nm).RT_1stAnswer,...
-            GLMprm.Eperf.(EpEm_nm).(RP_nm).trialN] = deal(0);
+            GLMprm.Eperf.(EpEm_nm).(RP_nm).trialN,...
+            GLMprm.Eperf.(EpEm_nm).(RP_nm).confidence] = deal(0);
         % specific variables for each effort type
         switch EpEm_nm
             case 'Ep'
