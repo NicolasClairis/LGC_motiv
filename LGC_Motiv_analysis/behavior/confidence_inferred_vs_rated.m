@@ -102,8 +102,7 @@ confInferredAllTrials = confInferredAllTrials(goodTrials);
 [betas, ~, stats] = glmfit(confInferredAllTrials',...
     confRatedAllTrials', 'binomial');
 pval = stats.p;
-fittedConf = glmval(betas, confInferred_bin',...
-    'identity');
+fittedConf = glmval(betas, confInferred_bin', 'identity');
 % xData = 0:0.001:1;
 
 %% display result

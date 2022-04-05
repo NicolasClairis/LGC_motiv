@@ -1,5 +1,5 @@
-function[] = confidence_inferred_vs_rated_group(study_nm, iModel, n_conf_bins, figGroupDisp)
-% [] = confidence_inferred_vs_rated_group(study_nm, iModel, n_conf_bins, figGroupDisp)
+function[betas, pval] = confidence_inferred_vs_rated_group(study_nm, iModel, n_conf_bins, figGroupDisp)
+% [betas, pval] = confidence_inferred_vs_rated_group(study_nm, iModel, n_conf_bins, figGroupDisp)
 % confidence_inferred_vs_rated_group will compare confidence based on
 % ratings given by the subjects during the choice to the confidence
 % inferred by the model "iModel" according to the formula (pChoice-0.5)^2.
@@ -53,6 +53,20 @@ end % subject loop
 [avg_confRated, sem_confRated] = mean_sem_sd(confRated_bin, 2);
 [avg_fittedConf] = mean_sem_sd(confRatedVsInferredFitted_bin, 2);
 
+%% betas store and t.test
+% store betas
+betas.beta_zero         = beta_zero;
+betas.beta_confInferred = beta_confInferred;
+[betas.avg_beta_zero,...
+    betas.sem_beta_zero,...
+    betas.sd_beta_zero] = mean_sem_sd(beta_zero, 2);
+[betas.avg_beta_confInferred,...
+    betas.sem_beta_confInferred,...
+    betas.sd_beta_confInferred] = mean_sem_sd(beta_confInferred, 2);
+% t.test of betas
+[~,pval.beta_zero] = ttest(beta_zero);
+[~,pval.beta_confInferred] = ttest(beta_confInferred);
+
 %% display result
 if figGroupDisp == 1
     pSize = 50;
@@ -62,9 +76,11 @@ if figGroupDisp == 1
     fig;
     
     % represent rated confidence = f(inferred confidence)
-    avgHdl = errorbar(avg_confInferred, avg_confRated,...
-        avg_confRated-sem_confRated, avg_confRated+sem_confRated,...
-        avg_confInferred-sem_confInferred, avg_confInferred+sem_confInferred);
+    avgHdl = errorbar(avg_confInferred, avg_confRated, sem_confRated);
+%     avgHdl = errorbar(avg_confInferred, avg_confRated,...
+%         avg_confRated-sem_confRated, avg_confRated+sem_confRated,...
+%         avg_confInferred-sem_confInferred, avg_confInferred+sem_confInferred);
+%     avgHdl = scatter(avg_confInferred, avg_confRated);
     avgHdl.Color = 'k';
     avgHdl.LineStyle = 'none';
     avgHdl.LineWidth = lWidth;
@@ -77,8 +93,8 @@ if figGroupDisp == 1
     plotHdl.LineWidth = lWidth;
     
     % define thresholds
-    xlim([-0.5 0.5]);
-    ylim([-0.5 0.5]);
+    xlim([0 0.5]);
+    ylim([0.5 2]);
     
     xlabel('inferred confidence');
     ylabel('rated confidence');
