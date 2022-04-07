@@ -166,5 +166,5 @@ matlabbatch{batch_idx}.spm.stats.con.delete = 0;
 cd(results_folder);
 
 %% display spm batch before running it
-% spm_jobman('interactive',matlabbatch);
-spm_jobman('run',matlabbatch);
+spm_jobman('interactive',matlabbatch);
+% spm_jobman('run',matlabbatch);
