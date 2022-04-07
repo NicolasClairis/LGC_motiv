@@ -75,18 +75,8 @@ elseif IRM == 1
     %% fMRI key configuration
     switch n_buttonsChoice
         case 2
-            switch button_mode
-                case '2buttons_letters'
-                    key.left = 71; % green button ('g')
-                    key.right = 82; % red button ('r')
-                case '4buttons_letters'
-                    key.left = 66; % blue button (letter 'b')
-                    key.right = 90; % yellow button (letter 'z' with swiss or english keyboard)
-                    %     key.right = 89; % yellow button (letter 'y' with french keyboard)
-                case '4buttons_numeric'
-                    key.left = 49; % button (1)
-                    key.right = 50; % button (2)
-            end
+            key.left = KbName('LeftArrow');
+            key.right = KbName('RightArrow');
         case 4
             switch button_mode
                 case '2buttons_letters'
