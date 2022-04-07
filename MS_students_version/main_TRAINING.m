@@ -11,8 +11,8 @@ clc;
 % launch within the folder where scripts are stored or will not work
 cd ..
 main_folder                 = [pwd filesep]; % you have to be sure that you are in the correct path when you launch the script
-main_task_folder            = [main_folder, 'LGC_Motiv_task' filesep];
-results_folder              = [main_folder, 'LGC_Motiv_results' filesep];
+main_task_folder            = [main_folder, 'MS_students_version' filesep];
+results_folder              = [main_folder, 'MS_students_results' filesep];
 % BioPac_folder               = [main_folder, 'BioPac_functions' filesep];
 % pics_folder                 = [main_task_folder, 'Coin_PNG', filesep];
 Matlab_DIY_functions_folder = [main_folder, 'Matlab_DIY_functions', filesep];
@@ -36,13 +36,14 @@ iSubject = [];
 langue = 'f';
 IRMdisp = 0; % defines the screen parameters (0 for training screen, 1 for fMRI screen)
 IRMbuttons = 1; % defines the buttons to use (1 = same as in fMRI)
-testing_script = 0; % use all computer resources (particularly for mental calibration)
+testing_script = 1; % use all computer resources (particularly for mental calibration)
 while isempty(iSubject) || length(iSubject) ~= 3
     % repeat until all questions are answered
-    info = inputdlg({'Subject CID (XXX)','p/m'});
-    [iSubject,p_or_m] = info{[1,2]};
+    info = inputdlg({'Subject CID (XXX)'});
+    [iSubject] = info{[1]};
     %     warning('when real experiment starts, remember to block in french and IRM = 1');
 end
+p_or_m = 'p'; % start with physical effort
 % Create subjectCodeName which is used as a file saving name
 subjectCodeName = strcat('CID',iSubject);
 subResultFolder = [results_folder, subjectCodeName, filesep,'behavior',filesep];
@@ -58,10 +59,6 @@ file_nm_training_Em = ['training_data_Em_CID',num2str(iSubject)];
 file_nm_training_Ep = ['training_data_Ep_CID',num2str(iSubject)];
 file_nm = ['training_data_CID',num2str(iSubject)];
 fullFileNm = [subResultFolder, file_nm,'.mat'];
-if exist(fullFileNm,'file')
-    error([fullFileNm,' file already exists. If the training script was launched and crashed, ',...
-        ' please consider renaming the files already saved to avoid losing data.']);
-end
 Ep_calib_filenm = [subResultFolder,subjectCodeName,'_physicalCalib.mat'];
 Em_calib_filenm = [subResultFolder,subjectCodeName,'_mentalCalib.mat'];
 file_nm_IP = ['delta_IP_CID',num2str(iSubject)];
@@ -72,14 +69,17 @@ end
 %% general parameters
 % define subparts of the task to perform (on/off)
 taskToPerform.physical.calib = 'on';
-taskToPerform.physical.learning = 'on';
 taskToPerform.physical.training = 'on';
-taskToPerform.physical.task = 'on';
-taskToPerform.mental.learning_1 = 'on';
 taskToPerform.mental.calib = 'on';
-taskToPerform.mental.learning_2 = 'on';
 taskToPerform.mental.training = 'on';
-taskToPerform.mental.task = 'on';
+
+% not for MS students
+taskToPerform.physical.learning = 'off';
+taskToPerform.physical.task = 'off';
+taskToPerform.mental.learning_1 = 'off';
+taskToPerform.mental.learning_2 = 'off';
+taskToPerform.mental.task = 'off';
+
 switch langue
     case 'f'
         langage = 'fr';
@@ -125,12 +125,7 @@ n_trialsPerSession = 5;
 n_sessions = 2;
 
 % number of buttons to answer
-switch IRMbuttons
-    case 0
-        n_buttonsChoice = 4;
-    case 1 % test buttons
-        n_buttonsChoice = 4;
-end
+n_buttonsChoice = 2;
 
 % mental calibration: consider calibration failed if more than
 % errorThreshold errors have been made during the calibration => do again
@@ -184,15 +179,10 @@ for i_pm = 1:2
         case 'p'
             %% physical MVC (calibrate the Fmax for the whole experiment)
             if strcmp(taskToPerform.physical.calib,'on')
-                n_MVC_repeat = 3;
+                n_MVC_repeat = 10;
                 [MVC_tmp, onsets_MVC] = physical_effort_MVC(scr, stim, dq, n_MVC_repeat, calibTimes_Ep, 'MVC', key_Ep);
                 MVC = mean(MVC_tmp.MVC); % expressed in Voltage
                 save(Ep_calib_filenm,'MVC');
-            elseif strcmp(taskToPerform.physical.calib,'off') &&...
-                    ( strcmp(taskToPerform.physical.learning,'on') ||...
-                    strcmp(taskToPerform.physical.training,'on') ||...
-                    strcmp(taskToPerform.physical.task,'on') )
-                MVC = getfield(load(Ep_calib_filenm,'MVC'),'MVC');
             end
             
             %% learning physical (learn each level of force)
@@ -229,7 +219,7 @@ for i_pm = 1:2
                 % perform physical training in 2 phases:
                 % 1) with confidence mapping;
                 % 2) without confidence mapping
-                trainingConfConditions = {'RP_withConfMapping','RP_withoutConfMapping'};
+                trainingConfConditions = {'RP_withoutConfMapping'};
                 n_trainingConfConditions = length(trainingConfConditions); % with/without confidence mapping
                 if n_trainingConfConditions == 2
                     n_trialsPerTrainingCondition = n_trainingTrials/2;
@@ -459,7 +449,7 @@ for i_pm = 1:2
             %% calibration mental
             if strcmp(taskToPerform.mental.calib,'on')
                 % number of calibration trials
-                n_calibTrials_Em = 3;
+                n_calibTrials_Em = 5;
                 
                 % mental calibration parameters
                 mentalE_prm_calib = mental_effort_parameters();
@@ -520,14 +510,9 @@ for i_pm = 1:2
                 % perform physical training in 2 phases:
                 % 1) with confidence mapping;
                 % 2) without confidence mapping
-                trainingConfConditions = {'RP_withConfMapping','RP_withoutConfMapping'};
+                trainingConfConditions = {'RP_withoutConfMapping'};
                 n_trainingConfConditions = length(trainingConfConditions); % with/without confidence mapping
-                if n_trainingConfConditions == 2
-                    n_trialsPerTrainingCondition = n_trainingTrials/2;
-                    if floor(n_trialsPerTrainingCondition) < (n_trainingTrials/2)
-                        error('number of training trials should be pair. Please fix your training design matrix.');
-                    end
-                end
+                n_trialsPerTrainingCondition = 2;
                 % perform the training
                 for iTrainingCondition = 1:n_trainingConfConditions
                     trainingConfCond = trainingConfConditions{iTrainingCondition};
