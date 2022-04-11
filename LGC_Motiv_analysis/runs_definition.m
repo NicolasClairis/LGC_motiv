@@ -56,12 +56,12 @@ switch study_nm
                 runs.nb_runs.Ep = 1;
                 runs.nb_runs.Em = 1;
                 runs.tasks = {'Ep','Em'};
-            case {'002','008','009','036','039','046','047','050',...
+            case {'002','003','008','009','036','039','046','047','050',...
                     '060','064','065','087','090','093'}
                 runs.nb_runs.Ep = 2;
                 runs.nb_runs.Em = 2;
                 runs.tasks = {'Ep','Em','Ep','Em'};
-            case {'020','022','029','045','052','054','055','056',...
+            case {'020','022','029','044','045','052','054','055','056',...
                     '061','071','079','081','082','095','100'}
                 runs.nb_runs.Ep = 2;
                 runs.nb_runs.Em = 2;
@@ -75,6 +75,5 @@ end
 
 %% extract number of runs
 n_runs = length(runs.tasks);
-        
 
 end % function
