@@ -332,7 +332,9 @@ if sum(choiceMissedTrials) > 0
     E_varOption(choiceMissedTrials) = [];
     choice_LRandConf(choiceMissedTrials) = [];
     choice_LR(choiceMissedTrials) = [];
-    confidence(choiceMissedTrials) = [];
+    if exist('confidence','var') && ~isempty(confidence)
+        confidence(choiceMissedTrials) = [];
+    end
     E_chosen(choiceMissedTrials) = [];
     E_unchosen(choiceMissedTrials) = [];
     E_chosen_min_E_unchosen(choiceMissedTrials) = [];
