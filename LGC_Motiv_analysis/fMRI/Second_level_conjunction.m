@@ -34,19 +34,36 @@ preproc_sm_kernel = 8;
 % preproc_sm_kernel = spm_input('smoothing kernel to use?',1,'e','8');
 
 %% extract subjects
-[subject_id, NS] = LGCM_subject_selection('study1');
+[subject_id, NS] = LGCM_subject_selection(study_nm);
 NS_str = num2str(NS);
 
 %% define contrasts on which conjunction will be operated
-[con_names, con_vector] = LGCM_contrasts(study_nm, subject_id{iS}, GLM, computerRoot, preproc_sm_kernel);
+[con_names, con_vector] = LGCM_contrasts(study_nm, subject_id{1}, GLM, computerRoot, preproc_sm_kernel);
+n_cons = length(con_names);
 
 selectedCon = NaN(1,2);
+selectedConNames = cell(1,2);
 for iCon = 1:2
-    selectedCon(iCon) = spm_input();
+    selectedCon(iCon) = spm_input(['Please select contrast ',num2str(iCon),...
+        ' for conjunction:'],...
+        1,'m',con_names,1:n_cons,0);
+    selectedConNames{iCon} = spm_input(['Short name for: ',...
+        con_names{selectedCon(iCon)}],1,'s');
 end % contrast loop
+% create name for resulting conjunction
+conj_name = [selectedConNames{1},'_CONJ_',selectedConNames{2}];
+% replace spaces by '_' if some spaces were left
+conj_name = strrep(conj_name,' ','_');
 
 %% extract folder of interest
-GLM_folder = [computerRoot, filesep, 'GLM', GLM_str];
+GLM_folder = [studyRoot, filesep,'Second_level',filesep,...
+    'GLM', GLM_str,'_conjunction_',NS_str,'subs',filesep,...
+    conj_name];
+if ~exist(GLM_folder,'dir')
+    mkdir(GLM_folder);
+else
+    error([GLM_folder,' already exists. Please rename folders to avoid confusion.']);
+end
 
 %% initialize
 batch_idx = 0;
@@ -58,8 +75,11 @@ wms_anat = cell(NS,1);
 % add all the anat files for all the subjects
 % extract anat EPI
 for iS = 1:NS
-    wms_anat_name = ls([studyRoot,subject_id{iS}, filesep, 'fMRI_analysis',filesep,'anatomical',filesep 'wms*']);
-    wms_anat(iS) = {[studyRoot,subject_id{iS}, filesep, 'fMRI_analysis', filesep, 'anatomical', filesep, wms_anat_name]};
+    sub_nm = subject_id{iS};
+    subPath = [studyRoot,filesep,'CID',sub_nm, filesep,...
+        'fMRI_analysis',filesep,'anatomical',filesep];
+    wms_anat_name = ls([subPath, 'wms*']);
+    wms_anat(iS) = {[subPath, wms_anat_name]};
 end
 
 % spm calculation of the mean
