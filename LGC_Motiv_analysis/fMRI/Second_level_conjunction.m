@@ -41,8 +41,9 @@ NS_str = num2str(NS);
 [con_names, con_vector] = LGCM_contrasts(study_nm, subject_id{1}, GLM, computerRoot, preproc_sm_kernel);
 n_cons = length(con_names);
 
-selectedCon = NaN(1,2);
-selectedConNames = cell(1,2);
+nConsForConj = 2;
+selectedCon = NaN(1, nConsForConj);
+selectedConNames = cell(1,nConsForConj);
 for iCon = 1:2
     selectedCon(iCon) = spm_input(['Please select contrast ',num2str(iCon),...
         ' for conjunction:'],...
@@ -56,13 +57,13 @@ conj_name = [selectedConNames{1},'_CONJ_',selectedConNames{2}];
 conj_name = strrep(conj_name,' ','_');
 
 %% extract folder of interest
-GLM_folder = [studyRoot, filesep,'Second_level',filesep,...
+resultsFolder = [studyRoot, filesep,'Second_level',filesep,...
     'GLM', GLM_str,'_conjunction_',NS_str,'subs',filesep,...
     conj_name];
-if ~exist(GLM_folder,'dir')
-    mkdir(GLM_folder);
+if ~exist(resultsFolder,'dir')
+    mkdir(resultsFolder);
 else
-    error([GLM_folder,' already exists. Please rename folders to avoid confusion.']);
+    error([resultsFolder,' already exists. Please rename folders to avoid confusion.']);
 end
 
 %% initialize
@@ -76,17 +77,17 @@ wms_anat = cell(NS,1);
 % extract anat EPI
 for iS = 1:NS
     sub_nm = subject_id{iS};
-    subPath = [studyRoot,filesep,'CID',sub_nm, filesep,...
+    subAnatPath = [studyRoot,filesep,'CID',sub_nm, filesep,...
         'fMRI_analysis',filesep,'anatomical',filesep];
-    wms_anat_name = ls([subPath, 'wms*']);
-    wms_anat(iS) = {[subPath, wms_anat_name]};
+    wms_anat_name = ls([subAnatPath, 'wms*']);
+    wms_anat(iS) = {[subAnatPath, wms_anat_name]};
 end
 
 % spm calculation of the mean
 batch_idx = batch_idx + 1;
 matlabbatch{batch_idx}.spm.util.imcalc.input = wms_anat;
 matlabbatch{batch_idx}.spm.util.imcalc.output = mean_filename;
-matlabbatch{batch_idx}.spm.util.imcalc.outdir = {taskResults_folder(1:end-1)};
+matlabbatch{batch_idx}.spm.util.imcalc.outdir = {resultsFolder(1:end-1)};
 matlabbatch{batch_idx}.spm.util.imcalc.expression = 'mean(X)';
 matlabbatch{batch_idx}.spm.util.imcalc.var = struct('name', {}, 'value', {});
 matlabbatch{batch_idx}.spm.util.imcalc.options.dmtx = 1;
@@ -99,20 +100,25 @@ matlabbatch{batch_idx}.spm.util.imcalc.options.dtype = 4;
 batch_idx = batch_idx + 1;
 
 % start second level:
-matlabbatch{batch_idx}.spm.stats.factorial_design.dir = {GLM_folder};
+matlabbatch{batch_idx}.spm.stats.factorial_design.dir = {resultsFolder};
 % list of inputs
-conlist = cell(NS,con_length); % 1 con per EPI-subject
+conlist = cell(NS, nConsForConj); % 1 con per EPI-subject
 % extract MBBjune2016 contrasts
-for iContrast = 1:con_length
-    con_str = num2str(conOfInterest(iContrast));
-    for iS = 1:NS        
-        subject_folder = [sub_firstLevel_folder, 'GLM',GLM_str,'_megaconcatenation', filesep];
-        if conOfInterest(iContrast) < 10
-            conlist(iS,iContrast) = {[subject_folder,s,'con_000',con_str,'.nii,1']};
-        elseif conOfInterest(iContrast) >= 10 && conOfInterest(iContrast) < 100
-            conlist(iS,iContrast) = {[subject_folder,s,'con_00',con_str,'.nii,1']};
-        elseif conOfInterest(iContrast) >= 100 && conOfInterest(iContrast) < 1000
-            conlist(iS,iContrast) = {[subject_folder,s,'con_0',con_str,'.nii,1']};
+for iCon = 1:nConsForConj
+    con_idx = selectedCon(iCon);
+    con_str = num2str(con_idx);
+    for iS = 1:NS
+        sub_nm = subject_id{iS};
+        subfMRIPath = [studyRoot,filesep,'CID',sub_nm, filesep,...
+            'fMRI_analysis',filesep,'functional',filesep,...
+            'preproc_sm_',num2str(preproc_sm_kernel),'mm',filesep,...
+            'GLM',GLM_str, filesep];
+        if con_idx < 10
+            conlist(iS,iCon) = {[subfMRIPath,'con_000',con_str,'.nii,1']};
+        elseif con_idx >= 10 && con_idx < 100
+            conlist(iS,iCon) = {[subfMRIPath,'con_00',con_str,'.nii,1']};
+        elseif con_idx >= 100 && con_idx < 1000
+            conlist(iS,iCon) = {[subfMRIPath,'con_0',con_str,'.nii,1']};
         end
     end
 end
@@ -136,13 +142,13 @@ elseif which_technique == 2
     
     % one covariate per contrast of interest
     % 0 everywhere except for the con of interest = 1
-    for iContrast = 1:con_length
-        tmp = zeros(NS*con_length,1);
-        tmp(1+(iContrast-1)*NS:iContrast*NS) = 1;
-        matlabbatch{batch_idx}.spm.stats.factorial_design.cov(iContrast).c = tmp;
-        matlabbatch{batch_idx}.spm.stats.factorial_design.cov(iContrast).cname = list_con{conOfInterest(iContrast)};
-        matlabbatch{batch_idx}.spm.stats.factorial_design.cov(iContrast).iCFI = 1;
-        matlabbatch{batch_idx}.spm.stats.factorial_design.cov(iContrast).iCC = 5;
+    for iCon = 1:con_length
+        tmp = zeros(NS*n_cons,1);
+        tmp(1+(iCon-1)*NS:iCon*NS) = 1;
+        matlabbatch{batch_idx}.spm.stats.factorial_design.cov(iCon).c = tmp;
+        matlabbatch{batch_idx}.spm.stats.factorial_design.cov(iCon).cname = list_con{selectedCon(iCon)};
+        matlabbatch{batch_idx}.spm.stats.factorial_design.cov(iCon).iCFI = 1;
+        matlabbatch{batch_idx}.spm.stats.factorial_design.cov(iCon).iCC = 5;
     end
 end
 
@@ -157,33 +163,36 @@ matlabbatch{batch_idx}.spm.stats.factorial_design.globalm.glonorm = 1;
 %% model estimation
 batch_model_rtg = batch_idx;
 batch_idx = batch_idx + 1;
-matlabbatch{batch_idx}.spm.stats.fmri_est.spmmat(1) = cfg_dep('Factorial design specification: SPM.mat File', substruct('.','val', '{}',{batch_model_rtg}, '.','val', '{}',{1}, '.','val', '{}',{1}), substruct('.','spmmat'));
+matlabbatch{batch_idx}.spm.stats.fmri_est.spmmat(1) = cfg_dep('Factorial design specification: SPM.mat File',...
+    substruct('.','val', '{}',{batch_model_rtg}, '.','val', '{}',{1}, '.','val', '{}',{1}), substruct('.','spmmat'));
 matlabbatch{batch_idx}.spm.stats.fmri_est.write_residuals = 0;
 matlabbatch{batch_idx}.spm.stats.fmri_est.method.Classical = 1;
 
 %% t.contrast
 batch_estm_rtg = batch_idx;
 batch_idx = batch_idx + 1;
-matlabbatch{batch_idx}.spm.stats.con.spmmat(1) = cfg_dep('Model estimation: SPM.mat File', substruct('.','val', '{}',{batch_estm_rtg}, '.','val', '{}',{1}, '.','val', '{}',{1}), substruct('.','spmmat'));
+matlabbatch{batch_idx}.spm.stats.con.spmmat(1) = cfg_dep('Model estimation: SPM.mat File',...
+    substruct('.','val', '{}',{batch_estm_rtg}, '.','val', '{}',{1}, '.','val', '{}',{1}), substruct('.','spmmat'));
 
-for iContrast = 1:con_length
-    matlabbatch{batch_idx}.spm.stats.con.consess{iContrast}.tcon.name = list_con{conOfInterest(iContrast)};
-    matlabbatch{batch_idx}.spm.stats.con.consess{iContrast}.tcon.weights = [zeros(1, iContrast - 1), 1, zeros(1,con_length - iContrast)];
-    matlabbatch{batch_idx}.spm.stats.con.consess{iContrast}.tcon.sessrep = 'none';
+for iCon = 1:nConsForConj
+    matlabbatch{batch_idx}.spm.stats.con.consess{iCon}.tcon.name = con_names{selectedCon(iCon)};
+    matlabbatch{batch_idx}.spm.stats.con.consess{iCon}.tcon.weights = [zeros(1, iCon - 1), 1, zeros(1,nConsForConj - iCon)];
+    matlabbatch{batch_idx}.spm.stats.con.consess{iCon}.tcon.sessrep = 'none';
     matlabbatch{batch_idx}.spm.stats.con.delete = 0;
 end
 
 %% f.contrast
-fIdentityConne = eye(con_length);
+fIdentityConne = eye(nConsForConj);
 batch_idx = batch_idx + 1;
-matlabbatch{batch_idx}.spm.stats.con.spmmat(1) = cfg_dep('Model estimation: SPM.mat File', substruct('.','val', '{}',{batch_estm_rtg}, '.','val', '{}',{1}, '.','val', '{}',{1}), substruct('.','spmmat'));
+matlabbatch{batch_idx}.spm.stats.con.spmmat(1) = cfg_dep('Model estimation: SPM.mat File',...
+    substruct('.','val', '{}',{batch_estm_rtg}, '.','val', '{}',{1}, '.','val', '{}',{1}), substruct('.','spmmat'));
 matlabbatch{batch_idx}.spm.stats.con.consess{1}.fcon.name = 'Fcon_conjunction';
 matlabbatch{batch_idx}.spm.stats.con.consess{1}.fcon.weights = fIdentityConne;
 matlabbatch{batch_idx}.spm.stats.con.consess{1}.fcon.sessrep = 'none';
 matlabbatch{batch_idx}.spm.stats.con.delete = 0;
 
 %%
-cd(results_folder);
+cd(resultsFolder);
 
 %% display spm batch before running it
 spm_jobman('interactive',matlabbatch);
