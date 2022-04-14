@@ -79,7 +79,7 @@ for iS = 1:NS
     sub_nm = subject_id{iS};
     subAnatPath = [studyRoot,filesep,'CID',sub_nm, filesep,...
         'fMRI_analysis',filesep,'anatomical',filesep];
-    wms_anat_name = ls([subAnatPath, 'wms*']);
+    wms_anat_name = ls([subAnatPath, 'wm*']);
     wms_anat(iS) = {[subAnatPath, wms_anat_name]};
 end
 
@@ -103,7 +103,7 @@ batch_idx = batch_idx + 1;
 matlabbatch{batch_idx}.spm.stats.factorial_design.dir = {resultsFolder};
 % list of inputs
 conlist = cell(NS, nConsForConj); % 1 con per EPI-subject
-% extract MBBjune2016 contrasts
+% extract contrasts for each subject
 for iCon = 1:nConsForConj
     con_idx = selectedCon(iCon);
     con_str = num2str(con_idx);
@@ -124,6 +124,7 @@ for iCon = 1:nConsForConj
 end
 
 %% Be careful t2.scans (for two-sample t.test)
+which_technique = 1;
 if which_technique == 1
     
     matlabbatch{batch_idx}.spm.stats.factorial_design.des.t2.scans1 = conlist(:,1);
@@ -133,7 +134,8 @@ if which_technique == 1
     matlabbatch{batch_idx}.spm.stats.factorial_design.des.t2.variance = 1;
     matlabbatch{batch_idx}.spm.stats.factorial_design.des.t2.gmsca = 0;
     matlabbatch{batch_idx}.spm.stats.factorial_design.des.t2.ancova = 0;
-    matlabbatch{batch_idx}.spm.stats.factorial_design.cov = struct('c', {}, 'cname', {}, 'iCFI', {}, 'iCC', {});
+    matlabbatch{batch_idx}.spm.stats.factorial_design.cov = struct('c', {},...
+        'cname', {}, 'iCFI', {}, 'iCC', {});
 elseif which_technique == 2
     allConList = [conlist(:,1); conlist(:,2)];
     matlabbatch{batch_idx}.spm.stats.factorial_design.des.mreg.scans = allConList;
