@@ -58,14 +58,16 @@ conj_name = strrep(conj_name,' ','_');
 
 %% extract folder of interest
 resultsFolder = [studyRoot, filesep,'Second_level',filesep,...
-    'GLM', GLM_str,'_conjunction_',NS_str,'subs',filesep,...
-    conj_name];
+    'GLM', GLM_str,'_conjunction_',NS_str,'subs',filesep];
 if ~exist(resultsFolder,'dir')
     mkdir(resultsFolder);
-else
-    error([resultsFolder,' already exists. Please rename folders to avoid confusion.']);
 end
-
+conResultsFolder = [resultsFolder,filesep,conj_name];
+if ~exist(conResultsFolder,'dir')
+    mkdir(conResultsFolder);
+else
+    error([conResultsFolder,' already exists. Please rename folders to avoid confusion.']);
+end
 %% initialize
 batch_idx = 0;
 
@@ -100,7 +102,7 @@ matlabbatch{batch_idx}.spm.util.imcalc.options.dtype = 4;
 batch_idx = batch_idx + 1;
 
 % start second level:
-matlabbatch{batch_idx}.spm.stats.factorial_design.dir = {resultsFolder};
+matlabbatch{batch_idx}.spm.stats.factorial_design.dir = {conResultsFolder};
 % list of inputs
 conlist = cell(NS, nConsForConj); % 1 con per EPI-subject
 % extract contrasts for each subject
