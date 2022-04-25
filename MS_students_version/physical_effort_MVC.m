@@ -151,6 +151,7 @@ for iCalib_MVC = 1:n_MVC_repeat
     [~,timeNow]  = Screen(window,'Flip');
     onsets.initial_MVC_rest(iCalib_MVC) = timeNow;
     WaitSecs(t_MVC_rest);
+    waitSpace(scr, stim, window, keys);
     
     %% extract max force for this session (in Voltage)
     MVC_perCalibSession(iCalib_MVC) = max(forceCalib.(['calibTrial_',num2str(iCalib_MVC)])(:,3));

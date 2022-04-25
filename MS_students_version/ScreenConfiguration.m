@@ -60,9 +60,9 @@ Screen('Preference','VisualDebugLevel', 0);
 % require the computer to have best timing performance only when not
 % testing
 switch testing_script
-    case 0 % CIBM
-        Screen('Preference', 'SkipSyncTests', 0); % needs all other processes shut off
-    case 1 % my own computer
+    case 0
+        Screen('Preference', 'SkipSyncTests', 1); % needs all other processes shut off
+    case 1
         Screen('Preference', 'SkipSyncTests', 1); % can work even if other softwares are on but displays an ugly red triangle at start
 end
 

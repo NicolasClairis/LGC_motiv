@@ -179,7 +179,7 @@ for i_pm = 1:2
         case 'p'
             %% physical MVC (calibrate the Fmax for the whole experiment)
             if strcmp(taskToPerform.physical.calib,'on')
-                n_MVC_repeat = 10;
+                n_MVC_repeat = 7;
                 [MVC_tmp, onsets_MVC] = physical_effort_MVC(scr, stim, dq, n_MVC_repeat, calibTimes_Ep, 'MVC', key_Ep);
                 MVC = mean(MVC_tmp.MVC); % expressed in Voltage
                 save(Ep_calib_filenm,'MVC');
@@ -221,6 +221,7 @@ for i_pm = 1:2
                 % 2) without confidence mapping
                 trainingConfConditions = {'RP_withoutConfMapping'};
                 n_trainingConfConditions = length(trainingConfConditions); % with/without confidence mapping
+                n_trialsPerTrainingCondition = 2;
                 if n_trainingConfConditions == 2
                     n_trialsPerTrainingCondition = n_trainingTrials/2;
                     if floor(n_trialsPerTrainingCondition) < (n_trainingTrials/2)
@@ -449,7 +450,7 @@ for i_pm = 1:2
             %% calibration mental
             if strcmp(taskToPerform.mental.calib,'on')
                 % number of calibration trials
-                n_calibTrials_Em = 5;
+                n_calibTrials_Em = 7;
                 
                 % mental calibration parameters
                 mentalE_prm_calib = mental_effort_parameters();

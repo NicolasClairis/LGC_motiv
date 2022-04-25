@@ -33,6 +33,14 @@ if n_calibMax <= 40 % need to have a few more numbers in case of mistakes during
             numberVector_calib(3,:) = [3 6 1 4 7 9 2 8, 1 3 4 6 9 7 8 2, 9 4 8 7 3 2 6 1, 6 4 3 7 2 1 9 8, 2 3 6 4 9 1 8 7];
             numberVector_calib(4,:) = [2 9 1 8 6 4 7 3, 7 2 6 4 3 9 8 1, 7 9 8 4 3 2 1 6, 8 4 7 6 2 9 1 3, 4 9 2 3 8 1 7 6];
             numberVector_calib(5,:) = [7 2 8 3 9 6 1 4, 6 2 3 7 4 9 8 1, 6 1 4 3 9 8 7 2, 9 8 1 3 6 2 7 4, 8 7 2 4 9 1 3 6];
+        case 7 % for MS students
+            numberVector_calib(1,:) = [1 7 6 4 9 2 3 8, 4 2 8 9 6 3 1 7, 1 7 2 9 8 3 4 6, 1 9 2 6 3 8 4 7, 3 1 4 6 2 7 9 8];
+            numberVector_calib(2,:) = [9 8 3 7 1 2 6 4, 3 2 7 1 8 9 6 4, 6 7 2 4 1 9 8 3, 2 7 1 8 6 9 3 4, 8 1 6 7 4 3 2 9];
+            numberVector_calib(3,:) = [3 6 1 4 7 9 2 8, 1 3 4 6 9 7 8 2, 9 4 8 7 3 2 6 1, 6 4 3 7 2 1 9 8, 2 3 6 4 9 1 8 7];
+            numberVector_calib(4,:) = [2 9 1 8 6 4 7 3, 7 2 6 4 3 9 8 1, 7 9 8 4 3 2 1 6, 8 4 7 6 2 9 1 3, 4 9 2 3 8 1 7 6];
+            numberVector_calib(5,:) = [7 2 8 3 9 6 1 4, 6 2 3 7 4 9 8 1, 6 1 4 3 9 8 7 2, 9 8 1 3 6 2 7 4, 8 7 2 4 9 1 3 6];
+            numberVector_calib(6,:) = [1 6 7 4 9 2 3 8, 2 4 8 9 6 3 1 7, 1 7 2 9 8 3 4 6, 9 1 2 8 3 6 4 7, 3 1 6 4 2 7 8 9];
+            numberVector_calib(7,:) = [7 2 9 3 8 6 1 4, 7 2 3 6 4 9 8 1, 8 1 4 3 9 6 7 2, 9 8 1 3 6 2 7 4, 8 7 4 2 6 1 3 9];
         otherwise
             error('case not ready yet');
     end
