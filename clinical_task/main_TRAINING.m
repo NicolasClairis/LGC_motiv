@@ -39,8 +39,8 @@ IRMbuttons = 1; % defines the buttons to use (1 = same as in fMRI)
 testing_script = 0; % use all computer resources (particularly for mental calibration)
 while isempty(iSubject) || length(iSubject) ~= 3
     % repeat until all questions are answered
-    info = inputdlg({'Subject CID (XXX)','p/m'});
-    [iSubject,p_or_m] = info{[1,2]};
+    info = inputdlg({'Subject CID (XXX)','p/m','visit?'});
+    [iSubject, p_or_m, visit] = info{[1,2,3]};
     %     warning('when real experiment starts, remember to block in french and IRM = 1');
 end
 % Create subjectCodeName which is used as a file saving name
@@ -50,21 +50,32 @@ if ~exist(subResultFolder,'dir')
     mkdir(subResultFolder);
 end
 
+
 if strcmp(p_or_m,'m') == 0 && strcmp(p_or_m,'p') == 0
     error('this letter has no definition');
 end
 
-file_nm_training_Em = ['training_data_Em_CID',num2str(iSubject)];
-file_nm_training_Ep = ['training_data_Ep_CID',num2str(iSubject)];
-file_nm = ['training_data_CID',num2str(iSubject)];
+n_visit = str2double(visit);
+if ~ismember(n_visit,[1,2,3])
+    error(['visit number other than 1, 2 or 3 not possible and you defined visit number as ',visit]);
+end
+visit_nm = ['_v',visit];
+
+file_nm_training_Em = ['training_data_Em_CID',num2str(iSubject),visit_nm];
+file_nm_training_Ep = ['training_data_Ep_CID',num2str(iSubject),visit_nm];
+file_nm = ['training_data_CID',num2str(iSubject),visit_nm];
 fullFileNm = [subResultFolder, file_nm,'.mat'];
 if exist(fullFileNm,'file')
     error([fullFileNm,' file already exists. If the training script was launched and crashed, ',...
         ' please consider renaming the files already saved to avoid losing data.']);
 end
-Ep_calib_filenm = [subResultFolder,subjectCodeName,'_physicalCalib.mat'];
-Em_calib_filenm = [subResultFolder,subjectCodeName,'_mentalCalib.mat'];
-file_nm_IP = ['delta_IP_CID',num2str(iSubject)];
+Ep_visitCalib_filenm = [subResultFolder,subjectCodeName,'_physicalCalib',visit_nm,'.mat'];
+Em_visitCalib_filenm = [subResultFolder,subjectCodeName,'_mentalCalib',visit_nm,'.mat'];
+% baseline max
+Ep_calib_filenm = [subResultFolder,subjectCodeName,'_physicalCalib_v1.mat'];
+Em_calib_filenm = [subResultFolder,subjectCodeName,'_mentalCalib_v1.mat'];
+% IP file name
+file_nm_IP = ['delta_IP_CID',num2str(iSubject),visit_nm];
 % convert subject CID into number (only if used to perform actual task)
 if ischar(iSubject)
     iSubject = str2double(iSubject);
@@ -187,11 +198,14 @@ for i_pm = 1:2
                 n_MVC_repeat = 3;
                 [MVC_tmp, onsets_MVC] = physical_effort_MVC(scr, stim, dq, n_MVC_repeat, calibTimes_Ep, 'MVC', key_Ep);
                 MVC = mean(MVC_tmp.MVC); % expressed in Voltage
-                save(Ep_calib_filenm,'MVC');
+                save(Ep_visitCalib_filenm,'MVC');
             elseif strcmp(taskToPerform.physical.calib,'off') &&...
                     ( strcmp(taskToPerform.physical.learning,'on') ||...
                     strcmp(taskToPerform.physical.training,'on') ||...
-                    strcmp(taskToPerform.physical.task,'on') )
+                    strcmp(taskToPerform.physical.task,'on') )                
+                MVC = getfield(load(Ep_calib_filenm,'MVC'),'MVC');
+            end
+            if n_visit > 1
                 MVC = getfield(load(Ep_calib_filenm,'MVC'),'MVC');
             end
             
@@ -484,7 +498,7 @@ for i_pm = 1:2
                 calibSummary.calibSummary = calib_summary;
                 calibSummary.n_mental_max_perTrial = NMP;
                 % record number of maximal performance (NMP)
-                save(Em_calib_filenm,'NMP');
+                save(Em_visitCalib_filenm,'NMP');
             elseif strcmp(taskToPerform.mental.calib,'off') &&...
                     ( strcmp(taskToPerform.mental.learning_1,'on') ||...
                     strcmp(taskToPerform.mental.learning_2,'on') ||...
@@ -492,6 +506,9 @@ for i_pm = 1:2
                     strcmp(taskToPerform.mental.task,'on') )
                 NMP = getfield(load(Em_calib_filenm,'NMP'),'NMP');
             end % calibration
+            if n_visit > 1
+                NMP = getfield(load(Em_calib_filenm,'NMP'),'NMP');
+            end
             
             %% learning (2) for each difficulty level
             if strcmp(taskToPerform.mental.learning_2,'on')
