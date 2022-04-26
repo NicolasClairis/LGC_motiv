@@ -402,11 +402,14 @@ for i_pm = 1:2
                     
                     % extract new best performance
                     nMaxReachedUntilNowLearning = max(nMaxReachedUntilNowLearning, n_maxReachedDuringLearning(iLearning1Trial));
-                    % small break between each answer
+                    % small break between each answer, when they press a
+                    % button break is over
                     DrawFormattedText(window, stim.training.Em.endTrialMsg.text,'center',yScreenCenter/2,white);
                     DrawFormattedText(window,stim.training.Em.endTrialMsg_bis.text,'center','center',white);
+                    DrawFormattedText(window, stim.pressWhenReady.text,...
+                        stim.pressWhenReady.x, stim.pressWhenReady.y, stim.pressWhenReady.colour, wrapat);
                     [~,~,onsets.timeLearningFbk.(['trial_',num2str(iLearning1Trial)])] = Screen(window,'Flip');
-                    WaitSecs(learningTimes_Em.learning_rest);
+                    KbQueueWait(0,3); % wait for button press and button release before moving on
                     disp(['Mental learning (1) calibration-like trial ',num2str(iLearning1Trial),'/',num2str(n_learning1calibLikeTrials),' done']);
                 end % trial loop
                 
@@ -443,8 +446,14 @@ for i_pm = 1:2
                             % small break between each answer
                             DrawFormattedText(window, stim.training.Em.endTrialMsg.text,'center',yScreenCenter/2,white);
                             DrawFormattedText(window,stim.training.Em.endTrialMsg_bis.text,'center','center',white);
+                            % small break between each answer, when they press a
+                            % button break is over
+                            DrawFormattedText(window, stim.training.Em.endTrialMsg.text,'center',yScreenCenter/2,white);
+                            DrawFormattedText(window,stim.training.Em.endTrialMsg_bis.text,'center','center',white);
+                            DrawFormattedText(window, stim.pressWhenReady.text,...
+                                stim.pressWhenReady.x, stim.pressWhenReady.y, stim.pressWhenReady.colour, wrapat);
                             [~,~,onsets.timeLearningFbk.(['trial_',num2str(jLearningTrial)])] = Screen(window,'Flip');
-                            WaitSecs(learningTimes_Em.learning_rest);
+                            KbQueueWait(0,3); % wait for button press and button release before moving on
                             disp(['Mental learning (1) calibration-like BONUS trial ',num2str(iLearning1Trial_bonus),'/',num2str(n_learning1bonusTrialsToLearn),' done']);
                         end % trial loop
                     else
