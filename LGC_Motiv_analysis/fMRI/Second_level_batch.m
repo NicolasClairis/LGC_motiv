@@ -1,5 +1,5 @@
-function[] = Second_level_batch(study_nm, GLM)
-% Second_level_batch(study_nm, GLM)
+function[] = Second_level_batch(GLM)
+% Second_level_batch(GLM)
 % script to launch second level on LGC Motivation studies
 %
 % INPUTS
@@ -41,11 +41,11 @@ computer_root = ['E:',filesep];
 % addpath(scripts_folder);
 switch study_nm
     case 'fMRI_pilots'
-        root = fullfile(computer_root,'fMRI_pilots');
+        studyRoot = fullfile(computer_root,'fMRI_pilots');
     case 'study1'
-        root = fullfile(computer_root,'study1');
+        studyRoot = fullfile(computer_root,'study1');
     case 'study2'
-        root = fullfile(computer_root,'study2');
+        studyRoot = fullfile(computer_root,'study2');
 end
 
 %% define GLM
@@ -56,7 +56,7 @@ GLM_str = num2str(GLM);
 GLMprm = which_GLM(GLM);
 
 %% create results folder
-results_folder = [root,filesep,'Second_level',filesep,...
+results_folder = [studyRoot,filesep,'Second_level',filesep,...
     'GLM',GLM_str,'_',NS_str,'subs_preprocSm',num2str(preproc_sm_kernel),'mm',filesep];
 if exist(results_folder,'dir') ~= 7
     mkdir(results_folder);
@@ -71,7 +71,7 @@ wms_anat = cell(NS,1);
 % add all the anat files for all the subjects
 % extract anat EPI
 for iS = 1:NS
-    sub_anat_folder = [root,filesep,'CID',subject_id{iS},filesep,...
+    sub_anat_folder = [studyRoot,filesep,'CID',subject_id{iS},filesep,...
         'fMRI_analysis',filesep,'anatomical',filesep];
     wms_anat_name = ls([sub_anat_folder,'wm*']);
     wms_anat(iS) = {[sub_anat_folder, wms_anat_name]};
@@ -119,7 +119,7 @@ for iCon = 1:n_con
         % analysis
         checkGLM_and_subjectIncompatibility(study_nm, sub_nm, GLMprm);
 
-        subject_folder = [root,filesep,'CID',sub_nm, filesep, 'fMRI_analysis' filesep,...
+        subject_folder = [studyRoot,filesep,'CID',sub_nm, filesep, 'fMRI_analysis' filesep,...
             'functional' filesep, 'preproc_sm_',num2str(preproc_sm_kernel),'mm',filesep...
             'GLM',GLM_str, filesep];
         if iCon < 10

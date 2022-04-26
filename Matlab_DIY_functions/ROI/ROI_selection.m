@@ -156,6 +156,7 @@ for iROI = 1:nb_ROIs
         ROI_nm.(['ROI_',num2str(iROI)])                 = [sphere_nm,'_',num2str(r),'mm_sphere']; % should not start with a number or next scripts will bug
         ROI_nm.(['ROI_',num2str(iROI),'_centerCoords']) = num2str(ROI_coord_center); % store coordinates of the center of the sphere
         
+        [ROI_vol, ROI_mask] = deal([]);
         
         %% using a mask
     elseif sphere_mask == 1

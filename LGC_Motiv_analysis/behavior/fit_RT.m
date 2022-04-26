@@ -88,8 +88,8 @@ end
 choice_models = fieldnames(betas_choices.Ep);
 nModels = length(choice_models);
 for iMdl = 1:nModels
-    NV_perTrial.Ep.(['mdl_',num2str(iMdl)]) = choices.deltaNV.(['mdl',num2str(iMdl)]).Ep;
-    NV_perTrial.Em.(['mdl_',num2str(iMdl)]) = choices.deltaNV.(['mdl',num2str(iMdl)]).Em;
+    NV_perTrial.Ep.(['mdl_',num2str(iMdl)]) = choices.deltaNV.(['mdl_',num2str(iMdl)]).Ep;
+    NV_perTrial.Em.(['mdl_',num2str(iMdl)]) = choices.deltaNV.(['mdl_',num2str(iMdl)]).Em;
 end % model loop
 
 %% initialize variables of interest

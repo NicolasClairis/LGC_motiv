@@ -39,7 +39,7 @@ switch study_nm
         end
     case 'study1'
         switch sub_nm
-            case {'074', '017'}
+            case {'017','074'}
                 % first run of these subjects: the fMRI crashed so you may
                 % want to remove it from the fMRI analysis
                 switch condition
@@ -52,11 +52,17 @@ switch study_nm
                         runs.nb_runs.Em = 1;
                         runs.tasks = {'Ep','Em','Ep'};
                 end
-            case {'036','064','090','087','039','065','060','046'}
+            case {'040'} % only performed 1 run of each task
+                runs.nb_runs.Ep = 1;
+                runs.nb_runs.Em = 1;
+                runs.tasks = {'Ep','Em'};
+            case {'002','003','008','009','015','036','039','046','047',...
+                    '050','060','064','065','069','076','087','090','093'}
                 runs.nb_runs.Ep = 2;
                 runs.nb_runs.Em = 2;
                 runs.tasks = {'Ep','Em','Ep','Em'};
-            case {'095','061','079','081','045','020','055'}
+            case {'020','022','029','035','044','045','052','054','055','056',...
+                    '061','068','071','075','079','081','082','095','100'}
                 runs.nb_runs.Ep = 2;
                 runs.nb_runs.Em = 2;
                 runs.tasks = {'Em','Ep','Em','Ep'};
@@ -69,6 +75,5 @@ end
 
 %% extract number of runs
 n_runs = length(runs.tasks);
-        
 
 end % function

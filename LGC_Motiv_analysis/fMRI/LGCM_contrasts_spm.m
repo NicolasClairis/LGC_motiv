@@ -1,5 +1,5 @@
-function[] = LGCM_contrasts_spm(study_nm, GLM, checking)
-% [] = LGCM_contrasts_spm(study_nm, GLM, checking)
+function[] = LGCM_contrasts_spm(GLM, checking)
+% [] = LGCM_contrasts_spm(GLM, checking)
 % LGCM_contrasts_spm prepares the batch for SPM to perform the first level
 % contrasts in each individual of the study
 %

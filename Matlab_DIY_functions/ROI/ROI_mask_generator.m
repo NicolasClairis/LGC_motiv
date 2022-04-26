@@ -50,7 +50,7 @@ end
 
 %% 2) select the images you want to pool
 % directory containing all the raw images
-root = ['B:',filesep,'resultats',filesep,'ROI_definition'];
+root = ['E:',filesep,'ROI_definition'];
 if sum_or_cunj ~= 3
     [raw_imgs, select_ok] = spm_select(nb_raw_img,'.nii','Select images you want to pool',{},root);
     if select_ok == 0

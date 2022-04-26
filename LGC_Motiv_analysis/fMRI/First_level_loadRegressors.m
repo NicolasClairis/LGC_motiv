@@ -173,7 +173,6 @@ choice_LRandConf = behavioralDataStruct.(task_behavioral_id).choice;
 choice_LR = choice_LRandConf;
 choice_LR(choice_LRandConf == -2) = -1;
 choice_LR(choice_LRandConf == 2) = 1;
-confidence = abs(choice_LRandConf) == 2; % 0 when low confidence and 1 when high confidence
 % loading chosen variables
 E_chosen = behavioralDataStruct.(task_behavioral_id).E_chosen;
 E_unchosen = E_left.*(choice_LR == 1) + E_right.*(choice_LR == -1);
@@ -198,11 +197,21 @@ absMoneyChosen_min_moneyUnchosen_level = abs_money_level_chosen - abs_money_leve
 % loading feedback
 money_amount_obtained = behavioralDataStruct.(task_behavioral_id).gain; % could be different from reward chosen (in case of failure) but mostly similar
 win_vs_loss_fbk = money_amount_obtained > 0;
-
-% load net value
+% load run name
+switch iRun
+    case {1,2}
+        run_nm = 'run1';
+    case {3,4}
+        run_nm = 'run2';
+    otherwise
+        error('case not ready yet: net value in the model and more than 4 runs.');
+end
+% load net value and confidence
 RPconds = {'R','P','RP'};
 for iRP = 1:3
     RP_nm = RPconds{iRP};
+    
+    % load net value
     if GLMprm.choice.(task_id).(RP_nm).NV_chosen > 0 ||...
             GLMprm.choice.(task_id).(RP_nm).NV_varOption > 0 ||...
             GLMprm.chosen.(task_id).(RP_nm).NV_chosen > 0 ||...
@@ -210,7 +219,7 @@ for iRP = 1:3
             GLMprm.Eperf.(task_id).(RP_nm).NV_chosen > 0 ||...
             GLMprm.Eperf.(task_id).(RP_nm).NV_varOption > 0
         % load net value
-        [~, NVstruct] = logitfit_choices(computerRoot, study_nm, sub_nm,...
+        [~, modelledDataStruct] = logitfit_choices(computerRoot, study_nm, sub_nm,...
             0, 'levels', 6, 6);
         
         % extract NV model name
@@ -224,25 +233,53 @@ for iRP = 1:3
                 GLMprm.Eperf.(task_id).(RP_nm).NV_varOption > 0
             NV_mdl_nm = GLMprm.Eperf.(task_id).(RP_nm).NV_mdl;
         end
-        % load run name
-        switch iRun
-            case {1,2}
-                NV_run_nm = 'run1';
-            case {3,4}
-                NV_run_nm = 'run2';
-            otherwise
-                error('case not ready yet: net value in the model and more than 4 runs.');
-        end
         % extract net value
         if strcmp(NV_mdl_nm(1:4),'mdl_') % classic model
-            NV_chosen = NVstruct.NV_chosen.(task_id).(NV_mdl_nm).(NV_run_nm);
-            NV_varOption = NVstruct.NV_varOption.(task_id).(NV_mdl_nm).(NV_run_nm);
+            NV_chosen = modelledDataStruct.NV_chosen.(task_id).(NV_mdl_nm).(run_nm);
+            NV_varOption = modelledDataStruct.NV_varOption.(task_id).(NV_mdl_nm).(run_nm);
         elseif strcmp(NV_mdl_nm(1:14),'bayesianModel_') % bayesian model
             error('bayesian net value input not ready yet.');
         else
             error(['model with ',NV_mdl_nm,' not ready yet']);
         end
     end % net value
+    
+    % load confidence
+    if GLMprm.choice.(task_id).(RP_nm).confidence > 0 ||...
+            GLMprm.chosen.(task_id).(RP_nm).confidence > 0 ||...
+            GLMprm.Eperf.(task_id).(RP_nm).confidence > 0 ||...
+            GLMprm.fbk.(task_id).(RP_nm).confidence > 0
+        
+        % use confidence based on ratings
+        if GLMprm.choice.(task_id).(RP_nm).confidence == 1 ||...
+                GLMprm.chosen.(task_id).(RP_nm).confidence == 1 ||...
+                GLMprm.Eperf.(task_id).(RP_nm).confidence == 1 ||...
+                GLMprm.fbk.(task_id).(RP_nm).confidence == 1
+            confidence = abs(choice_LRandConf) == 2; % 0 when low confidence and 1 when high confidence
+        else
+            % load inferred confidence
+            [~, modelledDataStruct] = logitfit_choices(computerRoot, study_nm, sub_nm,...
+                0, 'levels', 6, 6);
+            % extract NV model name
+            if GLMprm.choice.(task_id).(RP_nm).confidence > 1
+                conf_mdl_nm = GLMprm.choice.(task_id).(RP_nm).conf_mdl;
+            elseif GLMprm.chosen.(task_id).(RP_nm).confidence > 1
+                conf_mdl_nm = GLMprm.chosen.(task_id).(RP_nm).conf_mdl;
+            elseif GLMprm.Eperf.(task_id).(RP_nm).confidence > 1
+                conf_mdl_nm = GLMprm.Eperf.(task_id).(RP_nm).conf_mdl;
+            elseif GLMprm.fbk.(task_id).(RP_nm).confidence > 1
+                conf_mdl_nm = GLMprm.fbk.(task_id).(RP_nm).conf_mdl;
+            end
+            % extract confidence
+            if strcmp(conf_mdl_nm(1:4),'mdl_') % classic model
+                confidence = modelledDataStruct.confidenceFitted.(conf_mdl_nm).(task_id).(run_nm);
+            elseif strcmp(conf_mdl_nm(1:14),'bayesianModel_') % bayesian model
+                error('bayesian net value input not ready yet.');
+            else
+                error(['model with ',conf_mdl_nm,' not ready yet']);
+            end
+        end % which confidence to use
+    end % confidence
 end % R/P/RP loop
 
 % extract fatigue
@@ -295,7 +332,9 @@ if sum(choiceMissedTrials) > 0
     E_varOption(choiceMissedTrials) = [];
     choice_LRandConf(choiceMissedTrials) = [];
     choice_LR(choiceMissedTrials) = [];
-    confidence(choiceMissedTrials) = [];
+    if exist('confidence','var') && ~isempty(confidence)
+        confidence(choiceMissedTrials) = [];
+    end
     E_chosen(choiceMissedTrials) = [];
     E_unchosen(choiceMissedTrials) = [];
     E_chosen_min_E_unchosen(choiceMissedTrials) = [];
@@ -649,9 +688,11 @@ if ismember(choiceModel,{'stick','boxcar'})
         if choiceModel_conf > 0
             n_choiceMods = n_choiceMods + 1;
             choice_modNames{n_choiceMods} = 'confidence';
-            switch choiceModel_conf % binary variable => no zscore
-                case 1
+            switch choiceModel_conf
+                case 1 % binary variable => no zscore
                     choice_modVals(n_choiceMods,:) = confidence(choice_trial_idx);
+                case 2 % confidence inferred by the model => ok to zscore
+                    choice_modVals(n_choiceMods,:) = raw_or_z(confidence(choice_trial_idx));
                 otherwise
                     error('not ready yet');
             end
@@ -923,6 +964,8 @@ if ismember(chosenModel,{'stick','boxcar'})
             switch chosenModel_confidence
                 case 1
                     chosen_modVals(n_chosenMods,:) = confidence(chosen_trial_idx); % binary variable => no zscore
+                case 2
+                    chosen_modVals(n_chosenMods,:) = raw_or_z(confidence(chosen_trial_idx)); % confidence inferred by the model
                 otherwise
                     error('ready yet');
             end
