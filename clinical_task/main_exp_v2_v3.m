@@ -66,22 +66,23 @@ if ~ismember(n_visit,[1,2,3])
 end
 visit_nm = ['_v',visit];
 
-file_nm_training_Em = ['training_data_Em_CID',num2str(iSubject),visit_nm];
-file_nm_training_Ep = ['training_data_Ep_CID',num2str(iSubject),visit_nm];
-file_nm = ['training_data_CID',num2str(iSubject),visit_nm];
-fullFileNm = [subResultFolder, file_nm,'.mat'];
-if exist(fullFileNm,'file')
-    error([fullFileNm,' file already exists. If the training script was launched and crashed, ',...
-        ' please consider renaming the files already saved to avoid losing data.']);
-end
-Ep_visitCalib_filenm = [subResultFolder,subjectCodeName,'_physicalCalib',visit_nm,'.mat'];
-Em_visitCalib_filenm = [subResultFolder,subjectCodeName,'_mentalCalib',visit_nm,'.mat'];
-% baseline max
-Ep_calib_filenm = [subResultFolder,subjectCodeName,'_physicalCalib_v1.mat'];
-Em_calib_filenm = [subResultFolder,subjectCodeName,'_mentalCalib_v1.mat'];
-% IP file name
-file_nm_IP = ['delta_IP_CID',num2str(iSubject),visit_nm];
-% convert subject CID into number (only if used to perform actual task)
-if ischar(iSubject)
-    iSubject = str2double(iSubject);
-end
+IRMdisp = 0; % 0 = display on main screen, 1=display on secondary screen
+IRMbuttons = 1; % 0 = use keyboard, 1 = use keypad
+testing_script = 0; % 0 = ignore problems with computer resources,
+% 1=use all computer resources (important for proper timing measurements)
+
+%% initialize psychtoolbox once for all scripts
+[scr, xScreenCenter, yScreenCenter,...
+    window, baselineTextSize] = ScreenConfiguration(IRMdisp, testing_script);
+
+%% re-training effort tasks
+
+
+%% main effort task
+
+
+%% social training
+
+
+%% social task
+
