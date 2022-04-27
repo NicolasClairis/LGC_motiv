@@ -10,6 +10,7 @@
 % according to difficulty (mental version of the task).
 %
 % developed by Arthur Barakat & Nicolas Clairis - 2020/2021
+% Adapted by Nicolas Clairis may 2022 for clinical trial
 %
 % See also ScreenConfiguration.m, physical_effort_perf.m,
 % mental_effort_perf_Nback.m
