@@ -37,7 +37,7 @@ totalGain = totalGain + getfield(getfield(load([subPath,filenm]),'IP_variables')
 
 
 % add the other resources
-questionnairesMoney = 10; % like 1h exp
+questionnairesMoney = 10;
 moneyPerVisit = 20*nVisits;
 supplementationMoney = 150*(nVisits - 1);
 MVCmoney = 48*nVisits;
