@@ -1,66 +1,6 @@
-% script for training participants before performing the main experiment
+function [] = LGCmotiv_training(window, visit_nm, n_buttonsChoice)
 
-%% clean workspace before starting
-sca;
-clearvars;
-close all;
-instrreset; % Disconnect and delete all instrument objects
-clc;
-
-%% working directories
-% launch within the folder where scripts are stored or will not work
-cd ..
-main_folder                 = [pwd filesep]; % you have to be sure that you are in the correct path when you launch the script
-main_task_folder            = [main_folder, 'LGC_Motiv_task' filesep];
-results_folder              = [main_folder, 'LGC_Motiv_results' filesep];
-% BioPac_folder               = [main_folder, 'BioPac_functions' filesep];
-% pics_folder                 = [main_task_folder, 'Coin_PNG', filesep];
-Matlab_DIY_functions_folder = [main_folder, 'Matlab_DIY_functions', filesep];
-
-% add personal functions (needed for PTB opening at least)
-addpath(genpath(main_task_folder));
-% addpath(BioPac_folder);
-addpath(Matlab_DIY_functions_folder);
-
-% create results folder if no -subject has been acquired yet
-if ~exist(results_folder,'dir')
-    mkdir(results_folder);
-end
-% go back to folder with scripts
-cd(main_task_folder);
-
-%% Define subject ID
-
-% Insert the initials, the number of the participants
-iSubject = [];
-langue = 'f';
-IRMdisp = 0; % defines the screen parameters (0 for training screen, 1 for fMRI screen)
-IRMbuttons = 1; % defines the buttons to use (1 = same as in fMRI)
-testing_script = 0; % use all computer resources (particularly for mental calibration)
-while isempty(iSubject) || length(iSubject) ~= 3
-    % repeat until all questions are answered
-    info = inputdlg({'Subject CID (XXX)','p/m','visit?'});
-    [iSubject, p_or_m, visit] = info{[1,2,3]};
-    %     warning('when real experiment starts, remember to block in french and IRM = 1');
-end
-% Create subjectCodeName which is used as a file saving name
-subjectCodeName = strcat('CID',iSubject);
-subResultFolder = [results_folder, subjectCodeName, filesep,'behavior',filesep];
-if ~exist(subResultFolder,'dir')
-    mkdir(subResultFolder);
-end
-
-
-if strcmp(p_or_m,'m') == 0 && strcmp(p_or_m,'p') == 0
-    error('this letter has no definition');
-end
-
-n_visit = str2double(visit);
-if ~ismember(n_visit,[1,2,3])
-    error(['visit number other than 1, 2 or 3 not possible and you defined visit number as ',visit]);
-end
-visit_nm = ['_v',visit];
-
+%% define output file names
 file_nm_training_Em = ['training_data_Em_CID',num2str(iSubject),visit_nm];
 file_nm_training_Ep = ['training_data_Ep_CID',num2str(iSubject),visit_nm];
 file_nm = ['training_data_CID',num2str(iSubject),visit_nm];
@@ -76,10 +16,7 @@ Ep_calib_filenm = [subResultFolder,subjectCodeName,'_physicalCalib_v1.mat'];
 Em_calib_filenm = [subResultFolder,subjectCodeName,'_mentalCalib_v1.mat'];
 % IP file name
 file_nm_IP = ['delta_IP_CID',num2str(iSubject),visit_nm];
-% convert subject CID into number (only if used to perform actual task)
-if ischar(iSubject)
-    iSubject = str2double(iSubject);
-end
+
 %% general parameters
 % define subparts of the task to perform (on/off)
 taskToPerform.physical.calib = 'on';
@@ -91,21 +28,6 @@ taskToPerform.mental.calib = 'on';
 taskToPerform.mental.learning_2 = 'on';
 taskToPerform.mental.training = 'on';
 taskToPerform.mental.task = 'on';
-switch langue
-    case 'f'
-        langage = 'fr';
-    case 'e'
-        langage = 'engl'; % 'fr'/'engl' french or english?
-    otherwise
-        error('langage not recognised');
-end
-% initialize screen
-[scr, xScreenCenter, yScreenCenter,...
-    window, baselineTextSize] = ScreenConfiguration(IRMdisp, testing_script);
-% ShowCursor;
-white = scr.colours.white;
-black = scr.colours.black;
-
 % include punishment condition?
 punishment_yn = 'yes'; % include punishment trials?
 
@@ -134,14 +56,6 @@ n_trialsPerSession = 5;
 
 
 n_IPsessions = 2;
-
-% number of buttons to answer
-switch IRMbuttons
-    case 0
-        n_buttonsChoice = 4;
-    case 1 % test buttons
-        n_buttonsChoice = 4;
-end
 
 % mental calibration: consider calibration failed if more than
 % errorThreshold errors have been made during the calibration => do again
@@ -177,18 +91,6 @@ if strcmp(taskToPerform.mental.calib,'on') ||...
     key_Em = relevant_key_definition('mental', IRMbuttons, n_buttonsChoice);
 end
 
-%% start recording key presses
-IRM = 0;
-if strcmp(taskToPerform.mental.calib,'on') ||...
-        strcmp(taskToPerform.mental.learning_1,'on') ||...
-        strcmp(taskToPerform.mental.learning_2,'on') ||...
-        strcmp(taskToPerform.mental.training,'on') ||...
-        strcmp(taskToPerform.mental.task,'on')
-    keyboard_check_start(key_Em, IRM);
-else
-    keyboard_check_start(key_Ep, IRM);
-end
-
 %% run the code twice, each time for p or m conditions
 for i_pm = 1:2
     switch p_or_m
@@ -199,15 +101,8 @@ for i_pm = 1:2
                 [MVC_tmp, onsets_MVC] = physical_effort_MVC(scr, stim, dq, n_MVC_repeat, calibTimes_Ep, 'MVC', key_Ep);
                 MVC = mean(MVC_tmp.MVC); % expressed in Voltage
                 save(Ep_visitCalib_filenm,'MVC');
-            elseif strcmp(taskToPerform.physical.calib,'off') &&...
-                    ( strcmp(taskToPerform.physical.learning,'on') ||...
-                    strcmp(taskToPerform.physical.training,'on') ||...
-                    strcmp(taskToPerform.physical.task,'on') )                
-                MVC = getfield(load(Ep_calib_filenm,'MVC'),'MVC');
             end
-            if n_visit > 1
-                MVC = getfield(load(Ep_calib_filenm,'MVC'),'MVC');
-            end
+            MVC_v1 = getfield(load(Ep_calib_filenm,'MVC'),'MVC');
             
             %% learning physical (learn each level of force)
             if strcmp(taskToPerform.physical.learning,'on')
@@ -217,7 +112,7 @@ for i_pm = 1:2
                 n_Ep_learningForceRepeats = 5; % number of learning repetitions for each level of difficulty (= each level of force)
                 % perform physical learning
                 [learningPerfSummary_Ep, learningOnsets_Ep] = physical_learning(scr, stim, dq, n_E_levels, Ep_time_levels,...
-                    F_threshold, F_tolerance, MVC,...
+                    F_threshold, F_tolerance, MVC_v1,...
                     n_Ep_learningForceRepeats, learningTimes_Ep);
                 
                 %% temporary save of data
@@ -230,7 +125,7 @@ for i_pm = 1:2
                 showTitlesInstruction(scr,stim,'training',p_or_m, key_Ep);
                 
                 % define parameters for the training
-                Ep_vars_training.MVC = MVC;
+                Ep_vars_training.MVC = MVC_v1;
                 Ep_vars_training.dq = dq;
                 Ep_vars_training.Ep_time_levels = Ep_time_levels;
                 Ep_vars_training.F_threshold = F_threshold;
@@ -511,9 +406,7 @@ for i_pm = 1:2
                     strcmp(taskToPerform.mental.task,'on') )
                 NMP = getfield(load(Em_calib_filenm,'NMP'),'NMP');
             end % calibration
-            if n_visit > 1
-                NMP = getfield(load(Em_calib_filenm,'NMP'),'NMP');
-            end
+            NMP_v1 = getfield(load(Em_calib_filenm,'NMP'),'NMP');
             
             %% learning (2) for each difficulty level
             if strcmp(taskToPerform.mental.learning_2,'on')
@@ -521,7 +414,7 @@ for i_pm = 1:2
                 showTitlesInstruction(scr,stim,'learning','m', key_Em);
                 
                 % define all difficulty levels based on calibration
-                [n_to_reach] = mental_N_answersPerLevel(n_E_levels, NMP);
+                [n_to_reach] = mental_N_answersPerLevel(n_E_levels, NMP_v1);
                 % define number of learning trials
                 n_Em_learningForceRepeats = 5; % number of learning repetitions for each level of difficulty (= each level of force)
                 % timings
@@ -540,7 +433,7 @@ for i_pm = 1:2
                 showTitlesInstruction(scr, stim, 'training', 'm', key_Em);
 
                 % define parameters for the training
-                [Em_vars_training.n_to_reach] = mental_N_answersPerLevel(n_E_levels, NMP);
+                [Em_vars_training.n_to_reach] = mental_N_answersPerLevel(n_E_levels, NMP_v1);
                 Em_vars_training.errorLimits.useOfErrorMapping = false;
                 Em_vars_training.errorLimits.useOfErrorThreshold = false;
                 Em_vars_training.timeRemainingEndTrial_ONOFF = 0;
@@ -642,7 +535,7 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
     
     % for physical effort
     if strcmp(taskToPerform.physical.task,'on')
-        Ep_vars.MVC = MVC;
+        Ep_vars.MVC = MVC_v1;
         Ep_vars.dq = dq;
         Ep_vars.Ep_time_levels = Ep_time_levels;
         Ep_vars.F_threshold = F_threshold;
@@ -691,7 +584,7 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
                             
                             mentalE_prm_instruDisplay = mental_effort_parameters();
                             % Nback version
-                            [Em_vars.n_to_reach] = mental_N_answersPerLevel(n_E_levels, NMP);
+                            [Em_vars.n_to_reach] = mental_N_answersPerLevel(n_E_levels, NMP_v1);
                             % run mental task
                             % for actual task: no display of mapping but consider 3
                             % errors as a trial failure
@@ -718,13 +611,11 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
             switch langage
                 case 'fr'
                     DrawFormattedText(window,...
-                        ['Felicitations! Cette session est maintenant terminee.',...
-                        'Vous avez obtenu: ',finalGain_str,' chf au cours de cette session.'],...
+                        ['Felicitations! Cette session est maintenant terminee.'],...
                         'center', yScreenCenter*(5/3), scr.colours.white, scr.wrapat);
                 case 'engl'
                     DrawFormattedText(window,...
-                        ['Congratulations! This session is now completed.',...
-                        'You got: ',finalGain_str,' chf during this session.'],...
+                        ['Congratulations! This session is now completed.'],...
                         'center', yScreenCenter*(5/3), scr.colours.white, scr.wrapat);
             end
             Screen(window,'Flip');
@@ -745,10 +636,10 @@ end
 
 % calibration
 if strcmp(taskToPerform.physical.calib,'on')
-    all.physical.MVC = MVC;
+    all.physical.MVC = MVC_v1;
 end
 if strcmp(taskToPerform.mental.calib,'on')
-    all.physical.NMP = NMP;
+    all.physical.NMP = NMP_v1;
 end
 % learning performance
 if strcmp(taskToPerform.mental.learning_1,'on')
@@ -814,31 +705,4 @@ save([subResultFolder, file_nm,'.mat']);
 % save delta_IP and baselineR
 save([subResultFolder, file_nm_IP,'.mat'],'IP_variables');
 
-%% Show a final screen if and only if they performed the task or nonsense since no amount involved
-if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,'on')
-    totalGain_str = sprintf('%0.2f',totalGain);
-    % display feedback for the current session
-    switch langage
-        case 'fr'
-            DrawFormattedText(window,...
-                ['Felicitations! Cette experience est maintenant terminee.',...
-                'Vous avez obtenu: ',totalGain_str,' chf au cours de cette session.'],...
-                'center', 'center', scr.colours.white, scr.wrapat);
-        case 'engl'
-            DrawFormattedText(window,...
-                ['Congratulations! This session is now completed.',...
-                'You got: ',totalGain_str,' chf during this session.'],...
-                'center', 'center', scr.colours.white, scr.wrapat);
-    end
-    Screen(window,'Flip');
-    WaitSecs(t_endSession);
-end
-
-%% release buffer for key presses
-KbQueueStop;
-KbQueueRelease;
-
-%% close PTB
-ShowCursor;
-sca;
-
+end % function
