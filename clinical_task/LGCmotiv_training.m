@@ -1,4 +1,25 @@
-function [] = LGCmotiv_training(window, visit_nm, n_buttonsChoice)
+function [] = LGCmotiv_training(scr, iSubject, subResultFolder, n_visit, p_or_m, keys, n_buttonsChoice, taskToPerform)
+% [] = LGCmotiv_training(window, visit_nm, n_buttonsChoice, taskToPerform)
+% LGCmotiv_training will perform the LGC motivation training for visits 1,
+% 2 and 3 of the clinical trial depending on the inputs.
+%
+% INPUTS
+% scr: structure with information on window where stimuli will be displayed
+%
+% n_visit: visit number (1/2/3)
+%
+% n_buttonsChoice: number of buttons to use for the choice
+%
+% taskToPerform: structure indicating which subtasks have to be performed
+% with on/off criterium
+%
+% Developed by Nicolas Clairis and Arthur Barakat - 2020-2022
+
+% check visit number ok
+if ~ismember(n_visit,[1,2,3])
+    error('problem with visit number');
+end
+visit_nm = ['_v',num2str(n_visit)];
 
 %% define output file names
 file_nm_training_Em = ['training_data_Em_CID',num2str(iSubject),visit_nm];
@@ -9,6 +30,7 @@ if exist(fullFileNm,'file')
     error([fullFileNm,' file already exists. If the training script was launched and crashed, ',...
         ' please consider renaming the files already saved to avoid losing data.']);
 end
+subjectCodeName = ['CID',iSubject];
 Ep_visitCalib_filenm = [subResultFolder,subjectCodeName,'_physicalCalib',visit_nm,'.mat'];
 Em_visitCalib_filenm = [subResultFolder,subjectCodeName,'_mentalCalib',visit_nm,'.mat'];
 % baseline max
@@ -18,16 +40,7 @@ Em_calib_filenm = [subResultFolder,subjectCodeName,'_mentalCalib_v1.mat'];
 file_nm_IP = ['delta_IP_CID',num2str(iSubject),visit_nm];
 
 %% general parameters
-% define subparts of the task to perform (on/off)
-taskToPerform.physical.calib = 'on';
-taskToPerform.physical.learning = 'on';
-taskToPerform.physical.training = 'on';
-taskToPerform.physical.task = 'on';
-taskToPerform.mental.learning_1 = 'on';
-taskToPerform.mental.calib = 'on';
-taskToPerform.mental.learning_2 = 'on';
-taskToPerform.mental.training = 'on';
-taskToPerform.mental.task = 'on';
+window = scr.window;
 % include punishment condition?
 punishment_yn = 'yes'; % include punishment trials?
 
@@ -57,13 +70,6 @@ n_trialsPerSession = 5;
 
 n_IPsessions = 2;
 
-% mental calibration: consider calibration failed if more than
-% errorThreshold errors have been made during the calibration => do again
-if strcmp(taskToPerform.mental.calib,'on') || strcmp(taskToPerform.mental.task,'on')
-    calib_errorLimits_Em.useOfErrorMapping = false;
-    calib_errorLimits_Em.useOfErrorThreshold = true;
-    calib_errorLimits_Em.errorThreshold = 2;
-end
 % time for end of session
 t_endSession = trainingTimes_Ep.endSession;
 
@@ -73,22 +79,14 @@ if strcmp(taskToPerform.physical.calib,'on') ||...
         strcmp(taskToPerform.physical.training,'on') ||...
         strcmp(taskToPerform.physical.task,'on')
     % define relevant keys and dynamometer module
-    [key_Ep, dq] = relevant_key_definition('physical', IRMbuttons, n_buttonsChoice);
+    [dq] = grip_initialization();
     % define conditions
     F_threshold = 55; % force should be maintained above this threshold (expressed in % of MVC)
     F_tolerance = 2.5; % tolerance allowed around the threshold (expressed in % of MVC)
     % need to define timings for each level of force
     [Ep_time_levels] = physical_effortLevels(n_E_levels);
-end
-
-%% mental parameters
-if strcmp(taskToPerform.mental.calib,'on') ||...
-        strcmp(taskToPerform.mental.learning_1,'on') ||...
-        strcmp(taskToPerform.mental.learning_2,'on') ||...
-        strcmp(taskToPerform.mental.training,'on') ||...
-        strcmp(taskToPerform.mental.task,'on')
-    % define relevant keys and dynamometer module
-    key_Em = relevant_key_definition('mental', IRMbuttons, n_buttonsChoice);
+else
+    dq = [];
 end
 
 %% run the code twice, each time for p or m conditions
@@ -98,16 +96,20 @@ for i_pm = 1:2
             %% physical MVC (calibrate the Fmax for the whole experiment)
             if strcmp(taskToPerform.physical.calib,'on')
                 n_MVC_repeat = 3;
-                [MVC_tmp, onsets_MVC] = physical_effort_MVC(scr, stim, dq, n_MVC_repeat, calibTimes_Ep, 'MVC', key_Ep);
+                [MVC_tmp, onsets_MVC] = physical_effort_MVC(scr, stim, dq, n_MVC_repeat, calibTimes_Ep, 'MVC', keys);
                 MVC = mean(MVC_tmp.MVC); % expressed in Voltage
                 save(Ep_visitCalib_filenm,'MVC');
             end
-            MVC_v1 = getfield(load(Ep_calib_filenm,'MVC'),'MVC');
+            if n_visit == 1
+                MVC_v1 = MVC;
+            elseif n_visit > 1
+                MVC_v1 = getfield(load(Ep_calib_filenm,'MVC'),'MVC');
+            end
             
             %% learning physical (learn each level of force)
             if strcmp(taskToPerform.physical.learning,'on')
                 % introduce physical learning
-                showTitlesInstruction(scr,stim,'learning',p_or_m, key_Ep);
+                showTitlesInstruction(scr,stim,'learning',p_or_m, keys);
 
                 n_Ep_learningForceRepeats = 5; % number of learning repetitions for each level of difficulty (= each level of force)
                 % perform physical learning
@@ -122,7 +124,7 @@ for i_pm = 1:2
             %% training physical (choice + effort)
             if strcmp(taskToPerform.physical.training,'on')
                 % introduce physical training
-                showTitlesInstruction(scr,stim,'training',p_or_m, key_Ep);
+                showTitlesInstruction(scr,stim,'training',p_or_m, keys);
                 
                 % define parameters for the training
                 Ep_vars_training.MVC = MVC_v1;
@@ -157,11 +159,10 @@ for i_pm = 1:2
                         confidenceChoiceDisplay = true;
                     end
                     % extract trials to use
-                    trainingTrials_idx = (1:n_trialsPerTrainingCondition) + n_trialsPerTrainingCondition*(iTrainingCondition - 1);
                     % training instruction
                     [onsets_Ep_training.(['session',num2str(iTrainingCondition),'_',trainingConfCond])] = choice_and_perf_trainingInstructions(scr, stim, trainingConfCond, trainingTimes_Ep.instructions);
                     % perform the training
-                    [trainingSummary_Ep.(['session',num2str(iTrainingCondition),'_',trainingConfCond])] = choice_and_perf(scr, stim, key_Ep, 'physical', Ep_vars_training,...
+                    [trainingSummary_Ep.(['session',num2str(iTrainingCondition),'_',trainingConfCond])] = choice_and_perf(scr, stim, keys, 'physical', Ep_vars_training,...
                         trainingRP_P_or_R, n_trialsPerTrainingCondition, trainingChoiceOptions_Ep_tmp, confidenceChoiceDisplay,...
                         trainingTimes_Ep,...
                         subResultFolder, file_nm_training_Ep);
@@ -180,7 +181,7 @@ for i_pm = 1:2
             %% learning mental: 0-back and 2-back as a calibration
             if strcmp(taskToPerform.mental.learning_1,'on')
                 % display instructions for learning
-                showTitlesInstruction(scr,stim,'learning',p_or_m, key_Em);
+                showTitlesInstruction(scr,stim,'learning',p_or_m, keys);
                 
                 %% learning the mapping for answering left/right <5/>5 with and then without the display on the screen (0-back)
                 % learning parameters
@@ -223,7 +224,7 @@ for i_pm = 1:2
                     elseif iLearning_Instructions == 2
                         n_maxToReachLearning_tmp = n_maxLearning.learning_withoutInstructions;
                     end
-                    [learningPerfSummary_Em.(learning_sess_nm).(curr_learning_instructions)] = mental_effort_perf(scr, stim, key_Em,...
+                    [learningPerfSummary_Em.(learning_sess_nm).(curr_learning_instructions)] = mental_effort_perf(scr, stim, keys,...
                         numberVector_learning(jLearningSession,:),...
                         mentalE_prm_learning, n_maxToReachLearning_tmp,...
                         curr_learning_instructions, learning_useOfTimeLimit, [], learning_errorLimits);
@@ -254,7 +255,7 @@ for i_pm = 1:2
                 [onsets.endLearningInstructions.learning1_2back_session] = mental_learningInstructions(scr, stim,...
                     learningVersion, mentalE_prm_learning1_2back); % inform about 2-back
                  for iLearning_2backTrial = 1:n_learning1_2back
-                    mentalE_learning1_2backPerfSummary_tmp = mental_effort_perf_Nback(scr, stim, key_Em,...
+                    mentalE_learning1_2backPerfSummary_tmp = mental_effort_perf_Nback(scr, stim, keys,...
                         numberVector_learning1_2back(iLearning_2backTrial,:),...
                         mentalE_prm_learning1_2back, n_maxLearning.learning_2back,...
                         'noInstructions', learning1_2back_useOfTimeLimit, [],...
@@ -301,7 +302,7 @@ for i_pm = 1:2
                     learningVersion, mentalE_prm_learning1calibLike);
                 n_maxReachedDuringLearning = NaN(1,n_learning1calibLikeTrials);
                 for iLearning1Trial = 1:n_learning1calibLikeTrials
-                    mentalE_learning1calibLikePerfSummary_tmp = mental_effort_perf_Nback(scr, stim, key_Em,...
+                    mentalE_learning1calibLikePerfSummary_tmp = mental_effort_perf_Nback(scr, stim, keys,...
                         numberVector_learning1calibLike(iLearning1Trial,:),...
                         mentalE_prm_learning1calibLike, n_maxToReachForCalib,...
                         'noInstructions', learning1calibLike_useOfTimeLimit, learning1calibLike_timeLimit,...
@@ -346,7 +347,7 @@ for i_pm = 1:2
                         [numberVector_learning1_bonus] = mental_numbers(n_learning1bonusTrialsToLearn);
                         for iLearning1Trial_bonus = 1:n_learning1bonusTrialsToLearn
                             jLearning1Trial = jLearning1Trial + 1;
-                            mentalE_learning1calibLikePerfSummary_tmp = mental_effort_perf_Nback(scr, stim, key_Em,...
+                            mentalE_learning1calibLikePerfSummary_tmp = mental_effort_perf_Nback(scr, stim, keys,...
                                 numberVector_learning1_bonus(iLearning1Trial_bonus,:),...
                                 mentalE_prm_learning1calibLike, n_maxToReachForCalib,...
                                 'noInstructions', learning1calibLike_useOfTimeLimit, learning1calibLike_timeLimit,...
@@ -393,7 +394,7 @@ for i_pm = 1:2
                 %     [numberVector_calib] = mental_numbers(n_calibTrials_Em);
                 [numberVector_calib] = mental_calibNumberVector(n_calibTrials_Em, n_calibMax);
                 % perform the calibration
-                [NMP, calib_summary] = mental_calibNumbers(scr, stim, key_Em,...
+                [NMP, calib_summary] = mental_calibNumbers(scr, stim, keys,...
                     numberVector_calib, mentalE_prm_calib, n_calibTrials_Em, calibTimes_Em, langage);
                 calibSummary.calibSummary = calib_summary;
                 calibSummary.n_mental_max_perTrial = NMP;
@@ -406,12 +407,16 @@ for i_pm = 1:2
                     strcmp(taskToPerform.mental.task,'on') )
                 NMP = getfield(load(Em_calib_filenm,'NMP'),'NMP');
             end % calibration
-            NMP_v1 = getfield(load(Em_calib_filenm,'NMP'),'NMP');
+            if n_visit == 1
+                NMP_v1 = NMP;
+            elseif n_visit > 1
+                NMP_v1 = getfield(load(Em_calib_filenm,'NMP'),'NMP');
+            end
             
             %% learning (2) for each difficulty level
             if strcmp(taskToPerform.mental.learning_2,'on')
                 % introduce mental learning
-                showTitlesInstruction(scr,stim,'learning','m', key_Em);
+                showTitlesInstruction(scr,stim,'learning','m', keys);
                 
                 % define all difficulty levels based on calibration
                 [n_to_reach] = mental_N_answersPerLevel(n_E_levels, NMP_v1);
@@ -421,7 +426,7 @@ for i_pm = 1:2
                 Em_learningTimings = learningTimes_Em;
                 Em_learningTimings.time_limit = false;
                 % perform all the difficulty levels
-                [learning2PerfSummary_Em, onsets] = mental_learning(scr, stim, key_Em, n_E_levels, n_to_reach, n_Em_learningForceRepeats, Em_learningTimings);
+                [learning2PerfSummary_Em, onsets] = mental_learning(scr, stim, keys, n_E_levels, n_to_reach, n_Em_learningForceRepeats, Em_learningTimings);
                 
                 %% temporary save of data
                 save([subResultFolder, file_nm,'.mat']);
@@ -430,7 +435,7 @@ for i_pm = 1:2
             %% training mental
             if strcmp(taskToPerform.mental.training,'on')
                 % show title before instructions
-                showTitlesInstruction(scr, stim, 'training', 'm', key_Em);
+                showTitlesInstruction(scr, stim, 'training', 'm', keys);
 
                 % define parameters for the training
                 [Em_vars_training.n_to_reach] = mental_N_answersPerLevel(n_E_levels, NMP_v1);
@@ -467,7 +472,7 @@ for i_pm = 1:2
                     % training instruction
                     [onsets_Em_training.(['session',num2str(iTrainingCondition),'_',trainingConfCond])] = choice_and_perf_trainingInstructions(scr, stim, trainingConfCond, trainingTimes_Em.instructions);
                     % select effort level
-                    [trainingSummary_Em.(trainingConfCond)] = choice_and_perf(scr, stim, key_Em, 'mental', Em_vars_training,...
+                    [trainingSummary_Em.(trainingConfCond)] = choice_and_perf(scr, stim, keys, 'mental', Em_vars_training,...
                         trainingRP_P_or_R, n_trialsPerTrainingCondition, trainingChoiceOptions_Em_tmp, confidenceChoiceDisplay,...
                         trainingTimes_Em,...
                         subResultFolder, file_nm_training_Em);
@@ -505,7 +510,6 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
     % for how many levels of effort will you measure the IP?
     E_right = 2;
     E_left  = 0;
-    nbEffortLvl = 1;
     
     % Baseline Reward (CHF)
     baselineR = 0.5;
@@ -513,7 +517,6 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
     
     % Total amount of money to be given
     totalGain = 0;
-    sessionFinalGain = 0;
     
     for iTimeLoop = 1:2
         DrawFormattedText(window,...
@@ -542,104 +545,102 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
         Ep_vars.F_tolerance = F_tolerance;
         Ep_vars.timeRemainingEndTrial_ONOFF = 0;
     end
-    
-    for iEffortLevel = 1:nbEffortLvl
-        % keep track of the current session for mental and physical (only important for saving)
-        iMental = 1;
-        iPhysical = 1;
-        
-        % number of runs
-        for iSession = 1:n_IPsessions
-            % session gains
-            sessionFinalGain = 0;
-            
-            % define if they will see a punishment or reward trial
-            % always start with a reward, they have to win money first
-            session_nm = ['session_nb',num2str(iSession)];
-            R_or_P = 'R'; % compute IP only for rewards
-            
-            for i_pm = 1:2
-                
-                % perform physical or mental IP according to inputs
-                switch p_or_m
-                    case 'p'
-                        if strcmp(taskToPerform.physical.task,'on')
-                            % instructions
-                            showTitlesInstruction(scr,stim,'task',p_or_m, key_Ep);
-                            
-                            % run physical task
-                            perf_Ep_IP_tmp = choice_and_perf_staircase(scr, stim, key_Ep,...
-                                'physical', Ep_vars,...
-                                R_or_P,E_right(iEffortLevel),E_left(iEffortLevel), n_trialsPerSession, taskTimes_Ep,...
-                                subResultFolder, [file_nm,'_physical_session_nb',session_nm,'_effort_lvl',num2str(iEffortLevel)]);
-                            perfSummary.physical.(['session_nb',num2str(iPhysical)]).(['Effort_lvl',(num2str(iEffortLevel))]) = perf_Ep_IP_tmp;
-                            sessionFinalGain = sessionFinalGain + perf_Ep_IP_tmp.totalGain(end);
-                            iPhysical = iPhysical + 1;
-                        end
-                        
-                    case 'm'
-                        if strcmp(taskToPerform.mental.task,'on')
-                            % instructions
-                            showTitlesInstruction(scr,stim,'task',p_or_m, key_Em);
-                            
-                            mentalE_prm_instruDisplay = mental_effort_parameters();
-                            % Nback version
-                            [Em_vars.n_to_reach] = mental_N_answersPerLevel(n_E_levels, NMP_v1);
-                            % run mental task
-                            % for actual task: no display of mapping but consider 3
-                            % errors as a trial failure
-                            Em_vars.errorLimits.useOfErrorMapping = false;
-                            Em_vars.errorLimits.useOfErrorThreshold = false;
-                            Em_vars.timeRemainingEndTrial_ONOFF = 0;
-                            perf_Em_IP_tmp = choice_and_perf_staircase(scr, stim, key_Em,...
-                                'mental', Em_vars,...
-                                R_or_P,E_right((iEffortLevel)),E_left(iEffortLevel), n_trialsPerSession, taskTimes_Em,...
-                                subResultFolder, [file_nm,'_mental_session_nb',session_nm,'_effort_lvl',num2str(iEffortLevel)]);
-                            perfSummary.mental.(['session_nb',num2str(iMental)]).(['Effort_lvl',(num2str(iEffortLevel))]) = perf_Em_IP_tmp;
-                            sessionFinalGain = sessionFinalGain + perf_Em_IP_tmp.totalGain(end);
-                            iMental = iMental +1;
-                        end
-                end
-                if strcmp(p_or_m,'p')
-                    p_or_m = 'm';
-                else
-                    p_or_m = 'p';
-                end
-            end % session loop
-            % display feedback for the current session
-            finalGain_str = sprintf('%0.2f',sessionFinalGain);
-            switch langage
-                case 'fr'
-                    DrawFormattedText(window,...
-                        ['Felicitations! Cette session est maintenant terminee.'],...
-                        'center', yScreenCenter*(5/3), scr.colours.white, scr.wrapat);
-                case 'engl'
-                    DrawFormattedText(window,...
-                        ['Congratulations! This session is now completed.'],...
-                        'center', yScreenCenter*(5/3), scr.colours.white, scr.wrapat);
+
+    % keep track of the current session for mental and physical (only important for saving)
+    iMental = 1;
+    iPhysical = 1;
+
+    % number of runs
+    for iSession = 1:n_IPsessions
+        % session gains
+        sessionFinalGain = 0;
+
+        % define if they will see a punishment or reward trial
+        % always start with a reward, they have to win money first
+        session_nm = ['session_nb',num2str(iSession)];
+        R_or_P = 'R'; % compute IP only for rewards
+
+        for i_pm = 1:2
+
+            % perform physical or mental IP according to inputs
+            switch p_or_m
+                case 'p'
+                    if strcmp(taskToPerform.physical.task,'on')
+                        % instructions
+                        showTitlesInstruction(scr,stim,'task',p_or_m, keys);
+
+                        % run physical task
+                        perf_Ep_IP_tmp = choice_and_perf_staircase(scr, stim, keys,...
+                            'physical', Ep_vars,...
+                            R_or_P,E_right(iEffortLevel),E_left(iEffortLevel), n_trialsPerSession, taskTimes_Ep,...
+                            subResultFolder, [file_nm,'_physical_session_nb',session_nm,'_effort_lvl',num2str(iEffortLevel)]);
+                        perfSummary.physical.(['session_nb',num2str(iPhysical)]).(['Effort_lvl',(num2str(iEffortLevel))]) = perf_Ep_IP_tmp;
+                        sessionFinalGain = sessionFinalGain + perf_Ep_IP_tmp.totalGain(end);
+                        iPhysical = iPhysical + 1;
+                    end
+
+                case 'm'
+                    if strcmp(taskToPerform.mental.task,'on')
+                        % instructions
+                        showTitlesInstruction(scr,stim,'task',p_or_m, keys);
+
+                        mentalE_prm_instruDisplay = mental_effort_parameters();
+                        % Nback version
+                        [Em_vars.n_to_reach] = mental_N_answersPerLevel(n_E_levels, NMP_v1);
+                        % run mental task
+                        % for actual task: no display of mapping but consider 3
+                        % errors as a trial failure
+                        Em_vars.errorLimits.useOfErrorMapping = false;
+                        Em_vars.errorLimits.useOfErrorThreshold = false;
+                        Em_vars.timeRemainingEndTrial_ONOFF = 0;
+                        perf_Em_IP_tmp = choice_and_perf_staircase(scr, stim, keys,...
+                            'mental', Em_vars,...
+                            R_or_P,E_right((iEffortLevel)),E_left(iEffortLevel), n_trialsPerSession, taskTimes_Em,...
+                            subResultFolder, [file_nm,'_mental_session_nb',session_nm,'_effort_lvl',num2str(iEffortLevel)]);
+                        perfSummary.mental.(['session_nb',num2str(iMental)]).(['Effort_lvl',(num2str(iEffortLevel))]) = perf_Em_IP_tmp;
+                        sessionFinalGain = sessionFinalGain + perf_Em_IP_tmp.totalGain(end);
+                        iMental = iMental +1;
+                    end
             end
-            Screen(window,'Flip');
-            % give break after 4 IP
-            WaitSecs(t_endSession);
-            totalGain = totalGain + sessionFinalGain;
-            
-            
-        end % end of all sessions for 1 effort lvl
-        %change m/p for next loop
-        
-        
-    end
+            if strcmp(p_or_m,'p')
+                p_or_m = 'm';
+            else
+                p_or_m = 'p';
+            end
+        end % session loop
+        % display feedback for the current session
+        finalGain_str = sprintf('%0.2f',sessionFinalGain);
+        switch langage
+            case 'fr'
+                DrawFormattedText(window,...
+                    ['Felicitations! Cette session est maintenant terminee.'],...
+                    'center', yScreenCenter*(5/3), scr.colours.white, scr.wrapat);
+            case 'engl'
+                DrawFormattedText(window,...
+                    ['Congratulations! This session is now completed.'],...
+                    'center', yScreenCenter*(5/3), scr.colours.white, scr.wrapat);
+        end
+        Screen(window,'Flip');
+        % give break after 4 IP
+        WaitSecs(t_endSession);
+        totalGain = totalGain + sessionFinalGain;
+
+
+    end % session loop
+    %change m/p for next loop
     
-end
+end % mental/physical on?
 
 %% save the data
 
 % calibration
 if strcmp(taskToPerform.physical.calib,'on')
-    all.physical.MVC = MVC_v1;
+    all.physical.MVC = MVC;
+    all.physical.onsets_MVC = onsets_MVC;
 end
 if strcmp(taskToPerform.mental.calib,'on')
-    all.physical.NMP = NMP_v1;
+    all.mental.NMP = NMP;
+    all.mental.calib_summary = calib_summary;
 end
 % learning performance
 if strcmp(taskToPerform.mental.learning_1,'on')
@@ -650,7 +651,8 @@ if strcmp(taskToPerform.mental.learning_2,'on')
     all.mental.learning_2 = learning2PerfSummary_Em;
 end
 if strcmp(taskToPerform.physical.learning,'on')
-    all.mental.learning = learningPerfSummary_Ep;
+    all.physical.learning = learningPerfSummary_Ep;
+    all.physical.learning = learningOnsets_Ep;
 end
 
 % training performance

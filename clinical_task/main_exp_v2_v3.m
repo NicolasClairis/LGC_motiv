@@ -38,19 +38,9 @@ cd(main_task_folder);
 
 % Insert the initials, the number of the participants
 iSubject = [];
-langue = 'f';
-switch langue
-    case 'f'
-        langage = 'fr';
-    case 'e'
-        langage = 'engl'; % 'fr'/'engl' french or english?
-    otherwise
-        error('langage not recognised');
-end
-IRMdisp = 0; % defines the screen parameters (0 for training screen, 1 for fMRI screen)
-IRMbuttons = 1; % defines the buttons to use (1 = same as in fMRI)
-testing_script = 0; % use all computer resources (particularly for mental calibration)
-while isempty(iSubject) || length(iSubject) ~= 3
+while isempty(iSubject) || length(iSubject) ~= 3 ||...
+        ~ismember(p_or_m,{'p','m'}) ||...
+        ~ismember(str2double(visit),[1,2,3])
     % repeat until all questions are answered
     info = inputdlg({'Subject CID (XXX)','p/m first?','visit?'});
     [iSubject, p_or_m, visit] = info{[1,2,3]};
@@ -67,25 +57,41 @@ if ischar(iSubject)
     iSubject = str2double(iSubject);
 end
 
-if strcmp(p_or_m,'m') == 0 && strcmp(p_or_m,'p') == 0
-    error('this letter has no definition');
-end
-
 n_visit = str2double(visit);
-if ~ismember(n_visit,[1,2,3])
-    error(['visit number other than 1, 2 or 3 not possible and you defined visit number as ',visit]);
-end
-visit_nm = ['_v',visit];
 
+% other main parameters set by default
 IRMdisp = 0; % 0 = display on main screen, 1=display on secondary screen
 IRMbuttons = 1; % 0 = use keyboard, 1 = use keypad
-IRM = 0; % is exp in MRI (ie need to check TTL) or out of MRI?
+IRM = 0; % is exp in MRI (ie need to check the fMRI TTL) then set IRM=1 or out of MRI (IRM=0)?
 testing_script = 0; % 0 = ignore problems with computer resources,
 % 1=use all computer resources (important for proper timing measurements)
 n_buttonsChoice = 4; % set to 4 if you want to measure confidence
 
+% initialize the langage for the experiment
+langue = 'f';
+switch langue
+    case 'f'
+        langage = 'fr';
+    case 'e'
+        langage = 'engl'; % 'fr'/'engl' french or english?
+    otherwise
+        error('langage not recognised');
+end
+
 %% in case of bug (or for debugging) allow to select which scripts to launch
 taskToPerform.motivTraining = 'on';
+% define which subtasks of the training you want to perform
+if strcmp(taskToPerform.motivTraining,'on')
+    trainingTaskToPerform.physical.calib = 'on';
+    trainingTaskToPerform.physical.learning = 'on';
+    trainingTaskToPerform.physical.training = 'on';
+    trainingTaskToPerform.physical.task = 'on';
+    trainingTaskToPerform.mental.learning_1 = 'on';
+    trainingTaskToPerform.mental.calib = 'on';
+    trainingTaskToPerform.mental.learning_2 = 'on';
+    trainingTaskToPerform.mental.training = 'on';
+    trainingTaskToPerform.mental.task = 'on';
+end
 taskToPerform.motivTask = 'on';
 taskToPerform.socialTraining = 'on';
 taskToPerform.socialTask = 'on';
@@ -105,65 +111,77 @@ pressWhenReadyX = xScreenCenter - (textSizePressWhenReady(3) - textSizePressWhen
 pressWhenReadyY = ySize*(15/16) - (textSizePressWhenReady(4) - textSizePressWhenReady(2))/2;
 
 %% launch check of button presses
-keyboard_check_start(key, IRM);
-
-
+keys = relevant_key_definition(IRM, n_buttonsChoice);
+keyboard_check_start(keys, IRM);
 
 %% re-training effort tasks
 switch taskToPerform.motivTraining
     case 'on'
+        % introduce the training
         DrawFormattedText(window,'Re-entraînement','center','center',white);
         DrawFormattedText(window,pressWhenReadyText,pressWhenReadyX,pressWhenReadyY,white,wrapat);
         Screen(window,'Flip');
+        KbQueueWait(0,3);
 
-        LGCmotiv_training(window, visit_nm, n_buttonsChoice);
+        % launch the training
+        LGCmotiv_training(scr, iSubject, subResultFolder, n_visit, p_or_m, keys, n_buttonsChoice, trainingTaskToPerform)
 
+        % finalize the training
         DrawFormattedText(window,'Re-entraînement terminé','center','center',white);
         DrawFormattedText(window,pressWhenReadyText,pressWhenReadyX,pressWhenReadyY,white,wrapat);
         Screen(window,'Flip');
+        KbQueueWait(0,3);
 end
 
 %% main effort task
 switch taskToPerform.motivTask
     case 'on'
+        % introduce the task
         DrawFormattedText(window,'Tâche principale','center','center',white);
         DrawFormattedText(window,pressWhenReadyText,pressWhenReadyX,pressWhenReadyY,white,wrapat);
         Screen(window,'Flip');
+        KbQueueWait(0,3);
 
-
-
+        % finalize the task
         DrawFormattedText(window,'Bravo! Vous avez terminé la tâche principale.','center','center',white,wrapat);
         DrawFormattedText(window,pressWhenReadyText,pressWhenReadyX,pressWhenReadyY,white,wrapat);
         Screen(window,'Flip');
+        KbQueueWait(0,3);
 end
 
 %% social training
 switch taskToPerform.socialTraining
     case 'on'
+        % introduce the training
         DrawFormattedText(window,'Entraînement deuxième tâche','center','center',white);
         DrawFormattedText(window,pressWhenReadyText,pressWhenReadyX,pressWhenReadyY,white,wrapat);
         Screen(window,'Flip');
+        KbQueueWait(0,3);
 
 
-
+        % finalize the training
         DrawFormattedText(window,'Entraînement terminé','center','center',white);
         DrawFormattedText(window,pressWhenReadyText,pressWhenReadyX,pressWhenReadyY,white,wrapat);
         Screen(window,'Flip');
+        KbQueueWait(0,3);
 end
 
 %% social task
 switch taskToPerform.socialTask
     case 'on'
+        % introduce the task
         DrawFormattedText(window,'Tâche avec visages','center','center',white);
         DrawFormattedText(window,pressWhenReadyText,pressWhenReadyX,pressWhenReadyY,white,wrapat);
         Screen(window,'Flip');
+        KbQueueWait(0,3);
 
-        
 
+        % finalize the task
         DrawFormattedText(window,'Bravo! Vous avez terminé l''expérience!',...
             'center','center',white,wrapat);
         DrawFormattedText(window,pressWhenReadyText,pressWhenReadyX,pressWhenReadyY,white,wrapat);
         Screen(window,'Flip');
+        KbQueueWait(0,3);
 end
 
 %% stop checking buttons: release key buffer
