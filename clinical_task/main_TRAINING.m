@@ -367,7 +367,7 @@ for i_pm = 1:2
                     learningPerfSummary_Em.learning1_2back.(['trial_',num2str(iLearning_2backTrial)]) = mentalE_learning1_2backPerfSummary_tmp;
                     
                     % small break between each answer
-                    DrawFormattedText(window, stim.training.Em.endTrialMsg.text,'center',yScreenCenter/2,white);
+                    DrawFormattedText(window, stim.training.Em.endTrialMsg_good.text,'center',yScreenCenter/2,white);
                     DrawFormattedText(window,stim.training.Em.endTrialMsg_bis.text,'center','center',white);
                     [~,~,onsets.timeLearning2backFbk.(['trial_',num2str(iLearning_2backTrial)])] = Screen(window,'Flip');
                     WaitSecs(learningTimes_Em.learning_rest);
@@ -418,7 +418,11 @@ for i_pm = 1:2
                     nMaxReachedUntilNowLearning = max(nMaxReachedUntilNowLearning, n_maxReachedDuringLearning(iLearning1Trial));
                     % small break between each answer, when they press a
                     % button break is over
-                    DrawFormattedText(window, stim.training.Em.endTrialMsg.text,'center',yScreenCenter/2,white);
+                    if n_maxReachedDuringLearning(iLearning1Trial) >= n_maxToReachForCalib % congrats only when perf is good
+                        DrawFormattedText(window, stim.training.Em.endTrialMsg_good.text,'center',yScreenCenter/2,white);
+                    else
+                        DrawFormattedText(window, stim.training.Em.endTrialMsg_bad.text,'center',yScreenCenter/2,white);
+                    end
                     DrawFormattedText(window,stim.training.Em.endTrialMsg_bis.text,'center','center',white);
                     DrawFormattedText(window, stim.pressWhenReady.text,...
                         stim.pressWhenReady.x, stim.pressWhenReady.y, stim.pressWhenReady.colour, wrapat);
@@ -431,7 +435,7 @@ for i_pm = 1:2
                 n_learning1bonusTrialsToLearn = 5; % how many trials to use as a learning penalty
                 n_lastTrialsToCheck = 5; % how many trials to check
                 n_trialsCorrectThreshold = 4; % if less (<) than this number of trials was correct in the n_lastTrialsToCheck trials, redo more trials
-                jLearningTrial = n_learning1calibLikeTrials;
+                jLearning1Trial = n_learning1calibLikeTrials;
                 iBlockRepeats = 0;
                 while learning1done == 0
                     learningPerf_lastTrials = zeros(1,n_lastTrialsToCheck);
@@ -446,27 +450,28 @@ for i_pm = 1:2
                         disp(['starting now the ',num2str(iBlockRepeats),' bonus block of the mental learning.']);
                         [numberVector_learning1_bonus] = mental_numbers(n_learning1bonusTrialsToLearn);
                         for iLearning1Trial_bonus = 1:n_learning1bonusTrialsToLearn
-                            jLearningTrial = jLearningTrial + 1;
+                            jLearning1Trial = jLearning1Trial + 1;
                             mentalE_learning1calibLikePerfSummary_tmp = mental_effort_perf_Nback(scr, stim, key_Em,...
                                 numberVector_learning1_bonus(iLearning1Trial_bonus,:),...
                                 mentalE_prm_learning1calibLike, n_maxToReachForCalib,...
                                 'noInstructions', learning1calibLike_useOfTimeLimit, learning1calibLike_timeLimit,...
                                 learning1calibLike_errorLimits, nMaxReachedUntilNowLearning, n_Em_learning1calibLike_MinToReach);
-                            learningPerfSummary_Em.learning1calibLike.(['trial_',num2str(jLearningTrial)]) = mentalE_learning1calibLikePerfSummary_tmp;
-                            n_maxReachedDuringLearning(jLearningTrial) = mentalE_learning1calibLikePerfSummary_tmp.n_correctAnswersForDisplay;
+                            learningPerfSummary_Em.learning1calibLike.(['trial_',num2str(jLearning1Trial)]) = mentalE_learning1calibLikePerfSummary_tmp;
+                            n_maxReachedDuringLearning(jLearning1Trial) = mentalE_learning1calibLikePerfSummary_tmp.n_correctAnswersForDisplay;
 
                             % extract new best performance
-                            nMaxReachedUntilNowLearning = max(nMaxReachedUntilNowLearning, n_maxReachedDuringLearning(jLearningTrial));
-                            % small break between each answer
-                            DrawFormattedText(window, stim.training.Em.endTrialMsg.text,'center',yScreenCenter/2,white);
-                            DrawFormattedText(window,stim.training.Em.endTrialMsg_bis.text,'center','center',white);
+                            nMaxReachedUntilNowLearning = max(nMaxReachedUntilNowLearning, n_maxReachedDuringLearning(jLearning1Trial));
                             % small break between each answer, when they press a
                             % button break is over
-                            DrawFormattedText(window, stim.training.Em.endTrialMsg.text,'center',yScreenCenter/2,white);
+                            if n_maxReachedDuringLearning(jLearning1Trial) >= n_maxToReachForCalib % congrats only when perf is good
+                                DrawFormattedText(window, stim.training.Em.endTrialMsg_good.text,'center',yScreenCenter/2,white);
+                            else
+                                DrawFormattedText(window, stim.training.Em.endTrialMsg_bad.text,'center',yScreenCenter/2,white);
+                            end
                             DrawFormattedText(window,stim.training.Em.endTrialMsg_bis.text,'center','center',white);
                             DrawFormattedText(window, stim.pressWhenReady.text,...
                                 stim.pressWhenReady.x, stim.pressWhenReady.y, stim.pressWhenReady.colour, wrapat);
-                            [~,~,onsets.timeLearningFbk.(['trial_',num2str(jLearningTrial)])] = Screen(window,'Flip');
+                            [~,~,onsets.timeLearningFbk.(['trial_',num2str(jLearning1Trial)])] = Screen(window,'Flip');
                             KbQueueWait(0,3); % wait for button press and button release before moving on
                             disp(['Mental learning (1) calibration-like BONUS trial ',num2str(iLearning1Trial_bonus),'/',num2str(n_learning1bonusTrialsToLearn),' done']);
                         end % trial loop

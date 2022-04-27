@@ -477,15 +477,26 @@ stim.training.Em.endMsg.colour = white;
 % mental learning end of learning trial
 switch langage
     case 'fr'
-        stim.training.Em.endTrialMsg.text = 'Bravo!';
+        stim.training.Em.endTrialMsg_good.text = 'Bravo!';
     case 'engl'
-        stim.training.Em.endTrialMsg.text = 'Congratulations!';
+        stim.training.Em.endTrialMsg_good.text = 'Congratulations!';
 end
-[~,~,textSizeEmTrialEndTraining] = DrawFormattedText(window,stim.training.Em.endTrialMsg.text,...
+[~,~,textSizeEmTrialEndGoodTraining] = DrawFormattedText(window,stim.training.Em.endTrialMsg_good.text,...
     'center','center',white, wrapat);
-stim.training.Em.endTrialMsg.x = x_centerCoordinates(xScreenCenter, textSizeEmTrialEndTraining);
-stim.training.Em.endTrialMsg.y = y_coordinates(upperBorder, visibleYsize, 1/4, textSizeEmTrialEndTraining);
-stim.training.Em.endTrialMsg.colour = white;
+stim.training.Em.endTrialMsg_good.x = x_centerCoordinates(xScreenCenter, textSizeEmTrialEndGoodTraining);
+stim.training.Em.endTrialMsg_good.y = y_coordinates(upperBorder, visibleYsize, 1/4, textSizeEmTrialEndGoodTraining);
+stim.training.Em.endTrialMsg_good.colour = white;
+switch langage
+    case 'fr'
+        stim.training.Em.endTrialMsg_bad.text = ' ';
+    case 'engl'
+        stim.training.Em.endTrialMsg_bad.text = ' ';
+end
+[~,~,textSizeEmTrialEndBadTraining] = DrawFormattedText(window,stim.training.Em.endTrialMsg_bad.text,...
+    'center','center',white, wrapat);
+stim.training.Em.endTrialMsg_bad.x = x_centerCoordinates(xScreenCenter, textSizeEmTrialEndBadTraining);
+stim.training.Em.endTrialMsg_bad.y = y_coordinates(upperBorder, visibleYsize, 1/4, textSizeEmTrialEndBadTraining);
+stim.training.Em.endTrialMsg_bad.colour = white;
 switch langage
     case 'fr'
         stim.training.Em.endTrialMsg_bis.text = 'Au suivant!';
