@@ -36,7 +36,9 @@ spm('defaults','fmri');
 spm_jobman('initcfg');
 
 %% define subjects and working directories
-[computerRoot, spmFolderPath] = LGCM_root_paths();
+% [computerRoot, spmFolderPath] = LGCM_root_paths();
+computerRoot = ['E:',filesep];
+spmFolderPath = fullfile('C:','Users','clairis','Desktop');
 if ~exist('study_nm','var') || isempty(study_nm)
     study_nm_List = {'study1','study2','fMRI_pilots'};
     study_nm_idx = listdlg('ListString',study_nm_List);
