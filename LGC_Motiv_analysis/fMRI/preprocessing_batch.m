@@ -294,6 +294,8 @@ for iS = 1:NS
             mkdir(preproc_newFolder_nm);
         else
             error(['preprocessing folder ',preproc_newFolder_nm,' already exists for subject ',sub_fullNm,' run ',num2str(iRun)]);
+            % note: something should be done above to avoid re-doing the
+            % preprocessing for the subjects where it was already done
         end
         
         if strcmp(study_nm,'fMRI_pilots')
