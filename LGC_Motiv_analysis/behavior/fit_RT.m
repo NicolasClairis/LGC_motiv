@@ -94,10 +94,6 @@ end % model loop
 
 %% initialize variables of interest
 nTrialsPerRun = 54;
-nTrialsPerRPConditionPerRun = nTrialsPerRun/2;
-nRunsPerTask = 2;
-nTrials = nTrialsPerRun*nRunsPerTask;
-nTrialsPerRPCond = nTrialsPerRPConditionPerRun*nRunsPerTask;
 
 %% loop through physical and mental
 for iPM = 1:2
@@ -105,10 +101,13 @@ for iPM = 1:2
         case 1
             task_id = 'Ep';
             task_fullName = 'physical';
+            nRunsPerTask = sum(runs_Ep);
         case 2
             task_id = 'Em';
             task_fullName = 'mental';
+            nRunsPerTask = sum(runs_Em);
     end
+    nTrials = nTrialsPerRun*nRunsPerTask;
     
     % initialize variables to store variables across all trials
     [RT_perTrial.(task_id),...
