@@ -99,11 +99,15 @@ confInferredAllTrials = confInferredAllTrials(goodTrials);
     n_conf_bins, 0);
 
 %% correlate inferred and rated confidence
-[betas, ~, stats] = glmfit(confInferredAllTrials',...
-    confRatedAllTrials', 'binomial');
-pval = stats.p;
-fittedConf = glmval(betas, confInferred_bin', 'identity');
+% [betas, ~, stats] = glmfit(confInferredAllTrials',...
+%     confRatedAllTrials', 'normal');
+% pval = stats.p;
+% fittedConf = glmval(betas, confInferred_bin', 'identity');
 % xData = 0:0.001:1;
+[betas, ~, stats] = glmfit(confInferredAllTrials',...
+    confRatedAllTrials', 'binomial','Link','logit');
+pval = stats.p;
+fittedConf = glmval(betas, confInferred_bin', 'logit');
 
 %% display result
 if figDisp == 1
@@ -127,8 +131,8 @@ if figDisp == 1
     plotHdl.LineWidth = lWidth;
     
     % define thresholds
-    xlim([-0.5 0.5]);
-    ylim([-0.5 0.5]);
+    xlim([0 1]);
+    ylim([0 1]);
     
     ylabel('rated confidence');
     xlabel('inferred confidence');

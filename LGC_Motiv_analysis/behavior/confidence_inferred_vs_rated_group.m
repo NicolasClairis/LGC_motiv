@@ -93,8 +93,8 @@ if figGroupDisp == 1
     plotHdl.LineWidth = lWidth;
     
     % define thresholds
-    xlim([0 0.5]);
-    ylim([0.5 2]);
+    xlim([0 0.25]);
+    ylim([0.6 0.85]);
     
     xlabel('inferred confidence');
     ylabel('rated confidence');
