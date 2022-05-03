@@ -53,14 +53,20 @@ switch study_nm
         root = [fullfile(computerRoot,'study2'),filesep];
 end
 
-if isempty(sub_nm)
-    [subject_id, NS] = LGCM_subject_selection(study_nm);
+if ~exist('sub_nm','var') || isempty(sub_nm)
+    subject_id = LGCM_subject_selection(study_nm);
 else
     subject_id = {sub_nm};
-    NS = 1;
 end
 
-% give path for anatomical template
+%% smoothing kernel
+smKernel = 8;
+
+%% remove from the list participants for which preprocessing was already made
+[subject_id, NS] = preproc_already_made(computerRoot, study_nm, subject_id, smKernel);
+
+if NS > 1
+%% give path for anatomical template
 spmTemplatePath = fullfile(spmFolderPath,'spm12','spm12','tpm','TPM.nii');
 
 
@@ -73,9 +79,7 @@ nb_preprocessingSteps = 6;
  % 4) normalization functional
  % 5) normalization anatomical
  % 6) smoothing functional
- 
- %% smoothing kernel
- smKernel = 8;
+
  
  %% initialize batch
  matlabbatch = cell(nb_preprocessingSteps*NS,1);
@@ -118,15 +122,15 @@ for iS = 1:NS % loop through subjects
     %% define number of sessions to analyze
     if strcmp(study_nm,'fMRI_pilots') &&...
             ismember(sub_nm, {'pilot_s1','pilot_s2','pilot_s3'}) % only 2 sessions for these pilots
-        nb_runs = 2;
+        n_runs = 2;
     elseif strcmp(study_nm,'study1') &&...
             ismember(sub_nm,{'040'}) % fMRI had to be crashed during run 3
-        nb_runs = 2;
+        n_runs = 2;
     else
-        nb_runs = 4;
+        n_runs = 4;
     end
     cd(subj_scans_folder);
-    for iRun = 1:nb_runs % loop through runs for 3 ratings, 3 choices 1D, 3 choices 2D runs
+    for iRun = 1:n_runs % loop through runs
         cd(subj_scan_folders_names(iRun,:)); % go to run folder
         if strcmp(study_nm,'fMRI_pilots')
             if ismember(sub_nm,{'pilot_s1'})
@@ -150,8 +154,8 @@ for iS = 1:NS % loop through subjects
     cd(subj_scans_folder);
     preproc_step = 1; % first step of preprocessing
     realign_step = nb_preprocessingSteps*(iS-1) + preproc_step; % number depends also on the number of subjects
-    matlabbatch{realign_step}.spm.spatial.realign.estwrite.data = cell(nb_runs, 1);
-    for iRun = 1:nb_runs
+    matlabbatch{realign_step}.spm.spatial.realign.estwrite.data = cell(n_runs, 1);
+    for iRun = 1:n_runs
         matlabbatch{realign_step}.spm.spatial.realign.estwrite.data{iRun,1} = runFileNames.(['run_',num2str(iRun)]);
     end
     matlabbatch{realign_step}.spm.spatial.realign.estwrite.eoptions.quality = 0.9;
@@ -229,10 +233,10 @@ for iS = 1:NS % loop through subjects
     preproc_step = 4;
     normf_step = nb_preprocessingSteps*(iS-1) + preproc_step;
     matlabbatch{normf_step}.spm.spatial.normalise.write.subj.def(1) = cfg_dep('Segment: Forward Deformations', substruct('.','val', '{}',{segm_step}, '.','val', '{}',{1}, '.','val', '{}',{1}), substruct('.','fordef', '()',{':'}));
-    for iRun = 1:nb_runs
+    for iRun = 1:n_runs
         matlabbatch{normf_step}.spm.spatial.normalise.write.subj.resample(iRun) = cfg_dep(['Realign: Estimate & Reslice: Resliced Images (Sess ',num2str(iRun),')'], substruct('.','val', '{}',{realign_step}, '.','val', '{}',{1}, '.','val', '{}',{1}, '.','val', '{}',{1}), substruct('.','sess', '()',{iRun}, '.','rfiles'));
     end
-    matlabbatch{normf_step}.spm.spatial.normalise.write.subj.resample(nb_runs+1) = cfg_dep('Realign: Estimate & Reslice: Mean Image', substruct('.','val', '{}',{realign_step}, '.','val', '{}',{1}, '.','val', '{}',{1}, '.','val', '{}',{1}), substruct('.','rmean'));
+    matlabbatch{normf_step}.spm.spatial.normalise.write.subj.resample(n_runs+1) = cfg_dep('Realign: Estimate & Reslice: Mean Image', substruct('.','val', '{}',{realign_step}, '.','val', '{}',{1}, '.','val', '{}',{1}, '.','val', '{}',{1}), substruct('.','rmean'));
     matlabbatch{normf_step}.spm.spatial.normalise.write.woptions.bb = [-78 -112 -70
         78 76 85];
     matlabbatch{normf_step}.spm.spatial.normalise.write.woptions.vox = [2 2 2];
@@ -279,15 +283,15 @@ for iS = 1:NS
     %% define number of sessions to analyze
     if strcmp(study_nm,'fMRI_pilots') &&...
             ismember(sub_nm, {'pilot_s1','pilot_s2','pilot_s3'}) % only 2 sessions for these pilots
-        nb_runs = 2;
+        n_runs = 2;
     elseif strcmp(study_nm,'study1') &&...
             ismember(sub_nm,{'040'}) % fMRI had to be crashed during run 3
-        nb_runs = 2;
+        n_runs = 2;
     else
-        nb_runs = 4;
+        n_runs = 4;
     end
     
-    for iRun = 1:nb_runs % loop through runs for 3 ratings, 3 choices 1D, 3 choices 2D runs
+    for iRun = 1:n_runs % loop through runs for 3 ratings, 3 choices 1D, 3 choices 2D runs
         cd(subj_scan_folders_names(iRun,:)); % go to run folder
         preproc_newFolder_nm = ['preproc_sm_',num2str(smKernel),'mm'];
         if ~exist(preproc_newFolder_nm,'dir')
@@ -322,3 +326,10 @@ for iS = 1:NS
         cd(subj_scans_folder);
     end % run loop
 end % subject loop
+
+else
+    disp(['All subjects have already been preprocessed with smoothing ',...
+        'kernel of ',num2str(smKernel),'mm.']);
+end % if all subjects have already been preprocessed, don't do anything
+
+end % function
