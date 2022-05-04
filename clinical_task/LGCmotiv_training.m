@@ -15,27 +15,35 @@ function [] = LGCmotiv_training(scr, iSubject, subResultFolder, n_visit, p_or_m,
 %
 % Developed by Nicolas Clairis and Arthur Barakat - 2020-2022
 
-% check visit number ok
+%% check visit number ok
 if ~ismember(n_visit,[1,2,3])
     error('problem with visit number');
 end
 visit_nm = ['_v',num2str(n_visit)];
 
+% create new folder
+subVisitResultsFolder = [subResultFolder, filesep, 'visit',num2str(n_visit),filesep];
+if ~exist(subVisitResultsFolder,'dir')
+    mkdir(subVisitResultsFolder);
+else
+    error('problem: the folder with the current visit number already exists for this subject, please delete first.')
+end
+
 %% define output file names
 file_nm_training_Em = ['training_data_Em_CID',num2str(iSubject),visit_nm];
 file_nm_training_Ep = ['training_data_Ep_CID',num2str(iSubject),visit_nm];
 file_nm = ['training_data_CID',num2str(iSubject),visit_nm];
-fullFileNm = [subResultFolder, file_nm,'.mat'];
+fullFileNm = [subVisitResultsFolder, file_nm,'.mat'];
 if exist(fullFileNm,'file')
     error([fullFileNm,' file already exists. If the training script was launched and crashed, ',...
         ' please consider renaming the files already saved to avoid losing data.']);
 end
 subjectCodeName = ['CID',iSubject];
-Ep_visitCalib_filenm = [subResultFolder,subjectCodeName,'_physicalCalib',visit_nm,'.mat'];
-Em_visitCalib_filenm = [subResultFolder,subjectCodeName,'_mentalCalib',visit_nm,'.mat'];
+Ep_visitCalib_filenm = [subVisitResultsFolder,subjectCodeName,'_physicalCalib',visit_nm,'.mat'];
+Em_visitCalib_filenm = [subVisitResultsFolder,subjectCodeName,'_mentalCalib',visit_nm,'.mat'];
 % baseline max
-Ep_calib_filenm = [subResultFolder,subjectCodeName,'_physicalCalib_v1.mat'];
-Em_calib_filenm = [subResultFolder,subjectCodeName,'_mentalCalib_v1.mat'];
+Ep_calib_filenm = [subResultFolder,'visit_1',filesep,subjectCodeName,'_physicalCalib_v1.mat'];
+Em_calib_filenm = [subResultFolder,'visit_1',filesep,subjectCodeName,'_mentalCalib_v1.mat'];
 % IP file name
 file_nm_IP = ['delta_IP_CID',num2str(iSubject),visit_nm];
 
@@ -118,7 +126,7 @@ for i_pm = 1:2
                     n_Ep_learningForceRepeats, learningTimes_Ep);
                 
                 %% temporary save of data
-                save([subResultFolder, file_nm,'.mat']);
+                save([subVisitResultsFolder, file_nm,'.mat']);
             end % physical learning
             
             %% training physical (choice + effort)
@@ -165,7 +173,7 @@ for i_pm = 1:2
                     [trainingSummary_Ep.(['session',num2str(iTrainingCondition),'_',trainingConfCond])] = choice_and_perf(scr, stim, keys, 'physical', Ep_vars_training,...
                         trainingRP_P_or_R, n_trialsPerTrainingCondition, trainingChoiceOptions_Ep_tmp, confidenceChoiceDisplay,...
                         trainingTimes_Ep,...
-                        subResultFolder, file_nm_training_Ep);
+                        subVisitResultsFolder, file_nm_training_Ep);
                 end % learning condition loop
                 
                 DrawFormattedText(window, stim.training.Ep.endMsg.text,...
@@ -174,7 +182,7 @@ for i_pm = 1:2
                 WaitSecs(trainingTimes_Ep.trainingEnd);
                 
                 %% temporary save of data
-                save([subResultFolder, file_nm,'.mat']);
+                save([subVisitResultsFolder, file_nm,'.mat']);
             end % training physical
             
         case 'm'
@@ -377,7 +385,7 @@ for i_pm = 1:2
                 end
                 
                 %% temporary save of data
-                save([subResultFolder, file_nm,'.mat']);
+                save([subVisitResultsFolder, file_nm,'.mat']);
             end % mental learning (1)
             
             %% calibration mental
@@ -429,7 +437,7 @@ for i_pm = 1:2
                 [learning2PerfSummary_Em, onsets] = mental_learning(scr, stim, keys, n_E_levels, n_to_reach, n_Em_learningForceRepeats, Em_learningTimings);
                 
                 %% temporary save of data
-                save([subResultFolder, file_nm,'.mat']);
+                save([subVisitResultsFolder, file_nm,'.mat']);
             end % learning (2)
             
             %% training mental
@@ -475,11 +483,11 @@ for i_pm = 1:2
                     [trainingSummary_Em.(trainingConfCond)] = choice_and_perf(scr, stim, keys, 'mental', Em_vars_training,...
                         trainingRP_P_or_R, n_trialsPerTrainingCondition, trainingChoiceOptions_Em_tmp, confidenceChoiceDisplay,...
                         trainingTimes_Em,...
-                        subResultFolder, file_nm_training_Em);
+                        subVisitResultsFolder, file_nm_training_Em);
                 end % training condition loop
                 
                 %% temporary save of data
-                save([subResultFolder, file_nm,'.mat']);
+                save([subVisitResultsFolder, file_nm,'.mat']);
             end % mental training
     end % physical/mental loop
     
@@ -573,7 +581,7 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
                         perf_Ep_IP_tmp = choice_and_perf_staircase(scr, stim, keys,...
                             'physical', Ep_vars,...
                             R_or_P,E_right(iEffortLevel),E_left(iEffortLevel), n_trialsPerSession, taskTimes_Ep,...
-                            subResultFolder, [file_nm,'_physical_session_nb',session_nm,'_effort_lvl',num2str(iEffortLevel)]);
+                            subVisitResultsFolder, [file_nm,'_physical_session_nb',session_nm,'_effort_lvl',num2str(iEffortLevel),visit_nm]);
                         perfSummary.physical.(['session_nb',num2str(iPhysical)]).(['Effort_lvl',(num2str(iEffortLevel))]) = perf_Ep_IP_tmp;
                         sessionFinalGain = sessionFinalGain + perf_Ep_IP_tmp.totalGain(end);
                         iPhysical = iPhysical + 1;
@@ -596,7 +604,7 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
                         perf_Em_IP_tmp = choice_and_perf_staircase(scr, stim, keys,...
                             'mental', Em_vars,...
                             R_or_P,E_right((iEffortLevel)),E_left(iEffortLevel), n_trialsPerSession, taskTimes_Em,...
-                            subResultFolder, [file_nm,'_mental_session_nb',session_nm,'_effort_lvl',num2str(iEffortLevel)]);
+                            subVisitResultsFolder, [file_nm,'_mental_session_nb',session_nm,'_effort_lvl',num2str(iEffortLevel),visit_nm]);
                         perfSummary.mental.(['session_nb',num2str(iMental)]).(['Effort_lvl',(num2str(iEffortLevel))]) = perf_Em_IP_tmp;
                         sessionFinalGain = sessionFinalGain + perf_Em_IP_tmp.totalGain(end);
                         iMental = iMental +1;
@@ -701,9 +709,9 @@ if strcmp(taskToPerform.mental.task,'on')
     IP_variables.calibration.NMP = NMP;
 end
 % actually save the final data
-save([subResultFolder, file_nm,'.mat']);
+save([subVisitResultsFolder, file_nm,'.mat']);
 
 % save delta_IP and baselineR
-save([subResultFolder, file_nm_IP,'.mat'],'IP_variables');
+save([subVisitResultsFolder, file_nm_IP,'.mat'],'IP_variables');
 
 end % function
