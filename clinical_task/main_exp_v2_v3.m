@@ -39,18 +39,18 @@ cd(main_task_folder);
 % Insert the initials, the number of the participants
 iSubject = [];
 while isempty(iSubject) || length(iSubject) ~= 3 ||...
-        ~ismember(p_or_m,{'p','m'}) ||...
+        ~ismember(p_or_m_first,{'p','m'}) ||...
         ~ismember(str2double(visit),[1,2,3])
     % repeat until all questions are answered
     info = inputdlg({'Subject CID (XXX)','p/m first?','visit?'});
-    [iSubject, p_or_m, visit] = info{[1,2,3]};
+    [iSubject, p_or_m_first, visit] = info{[1,2,3]};
     %     warning('when real experiment starts, remember to block in french and IRM = 1');
 end
 % Create subjectCodeName which is used as a file saving name
 subjectCodeName = strcat('CID',iSubject);
-subResultFolder = [results_folder, subjectCodeName, filesep,'behavior',filesep];
-if ~exist(subResultFolder,'dir')
-    mkdir(subResultFolder);
+subResultsFolder = [results_folder, subjectCodeName, filesep,'behavior',filesep];
+if ~exist(subResultsFolder,'dir')
+    mkdir(subResultsFolder);
 end
 % convert subject CID into number (only if used to perform actual task)
 if ischar(iSubject)
@@ -124,7 +124,8 @@ switch taskToPerform.motivTraining
         KbQueueWait(0,3);
 
         % launch the training
-        LGCmotiv_training(scr, iSubject, subResultFolder, n_visit, p_or_m, keys, n_buttonsChoice, trainingTaskToPerform)
+        LGCmotiv_training(scr, iSubject, subResultsFolder, n_visit, p_or_m_first,...
+            keys, n_buttonsChoice, trainingTaskToPerform)
 
         % finalize the training
         DrawFormattedText(window,'Re-entraînement terminé','center','center',white);
@@ -142,6 +143,19 @@ switch taskToPerform.motivTask
         Screen(window,'Flip');
         KbQueueWait(0,3);
 
+        for iRun = 1:4
+            % define task type
+            if (ismember(iRun,[1,3]) && strcmp(p_or_m_first,'p')) ||...
+                    (ismember(iRun,[2,4]) && strcmp(p_or_m_first,'m'))
+                run_p_or_m = 'physical';
+            elseif (ismember(iRun,[1,3]) && strcmp(p_or_m_first,'m')) ||...
+                    (ismember(iRun,[2,4]) && strcmp(p_or_m_first,'p'))
+                run_p_or_m = 'mental';
+            end % task type
+            % perform the task
+
+        end % run loop
+
         % finalize the task
         DrawFormattedText(window,'Bravo! Vous avez terminé la tâche principale.','center','center',white,wrapat);
         DrawFormattedText(window,pressWhenReadyText,pressWhenReadyX,pressWhenReadyY,white,wrapat);
@@ -157,6 +171,7 @@ switch taskToPerform.socialTraining
         DrawFormattedText(window,pressWhenReadyText,pressWhenReadyX,pressWhenReadyY,white,wrapat);
         Screen(window,'Flip');
         KbQueueWait(0,3);
+
 
 
         % finalize the training

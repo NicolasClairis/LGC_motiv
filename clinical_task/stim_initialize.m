@@ -137,6 +137,19 @@ end
 stim.expWillStart.x = x_centerCoordinates(xScreenCenter, textSizeExpWillStart);
 stim.expWillStart.y = y_coordinates(upperBorder, visibleYsize, 5/6, textSizeExpWillStart);
 
+% task start bis
+switch langage
+    case 'fr'
+        stim.expWillStartBis.text = 'L''experience va bientot demarrer';
+    case 'engl'
+        stim.expWillStartBis.text = 'The experiment will start soon';
+end
+[~,~,textSizeExpWillStartBis] = DrawFormattedText(window,...
+    stim.expWillStartBis.text,...
+    'center', 'center', white, wrapat);
+stim.expWillStartBis.x = x_centerCoordinates(xScreenCenter, textSizeExpWillStartBis);
+stim.expWillStartBis.y = y_coordinates(upperBorder, visibleYsize, 5/6, textSizeExpWillStartBis);
+
 % press space
 switch langage
     case 'fr'
@@ -537,12 +550,12 @@ stim.endfMRIMessage.y = y_coordinates(upperBorder, visibleYsize, 1/2, textSizeEn
 % total gains end of session
 switch langage
     case 'fr'
-        [~,~,textSizeEndMsg] = DrawFormattedText(window,['Felicitations! Cette session est maintenant terminee.',...
-            'Vous avez obtenu: 0.00 chf au cours de cette session.'],'center','center',white, wrapat);
+        stim.endSessionMessage.text = 'Felicitations! Cette session est maintenant terminee.';
     case 'engl'
-        [~,~,textSizeEndMsg] = DrawFormattedText(window,['Congratulations! This session is now completed.',...
-            'You got: 0.00 chf during this session.'],'center','center',white, wrapat);
+        stim.endSessionMessage.text = 'Congratulations! This session is now completed.';
 end
+[~,~,textSizeEndMsg] = DrawFormattedText(window,stim.endSessionMessage.text,...
+            'center','center',white, wrapat);
 stim.endSessionMessage.x = x_centerCoordinates(xScreenCenter, textSizeEndMsg);
 stim.endSessionMessage.y = y_coordinates(upperBorder, visibleYsize, 1/2, textSizeEndMsg);
 

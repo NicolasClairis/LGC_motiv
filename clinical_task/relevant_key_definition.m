@@ -20,26 +20,6 @@ button_mode = '4buttons_numeric'; % '2buttons_letters'/'4buttons_letters'/'4butt
 KbName('UnifyKeyNames');
 key.escape = KbName('escape');
 key.space = KbName('space');
-if IRM == 0
-    %% key configuration
-    switch n_buttonsChoice
-        case 2
-            key.left = KbName('LeftArrow');
-            key.right = KbName('RightArrow');
-        case 4
-            key.leftSure    = KbName('c');
-            key.leftUnsure  = KbName('v');
-            key.rightUnsure = KbName('b');
-            key.rightSure   = KbName('n');
-            % also need the left/right buttons for the mental effort task
-            %             if strcmp(effort_type,'mental')
-            %             key.left = KbName('LeftArrow');
-            %             key.right = KbName('RightArrow');
-            key.left = KbName('c');
-            key.right = KbName('v');
-            %             end
-    end
-elseif IRM == 1
     %% fMRI key configuration
     switch n_buttonsChoice
         case 2
@@ -94,6 +74,7 @@ elseif IRM == 1
     end
     
     %% fMRI TTL triggers
+    if IRM == 1
     switch button_mode
         case {'2buttons_letters','4buttons_letters'}
             %% mode 0 (letters)
