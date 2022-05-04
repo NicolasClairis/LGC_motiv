@@ -39,7 +39,7 @@ scripts_folderName = 'LGC_Motiv_task';
 cd ..
 main_folder                 = [pwd filesep];
 main_task_folder            = [main_folder, scripts_folderName filesep];
-results_folder              = [main_folder, 'LGC_Motiv_results' filesep];
+results_folder              = [main_folder, 'INRB_results' filesep];
 % BioPac_folder               = [main_folder, 'BioPac_functions' filesep];
 % pics_folder                 = [main_task_folder, 'Coin_PNG', filesep];
 Matlab_DIY_functions_folder = [main_folder, 'Matlab_DIY_functions', filesep];
@@ -76,7 +76,7 @@ end
 % Create subjectCodeName which is used as a file saving name
 subjectCodeName = strcat('CID',iSubject);
 % subject specific folder where to store the results
-subResultsFolder = [results_folder, subjectCodeName, filesep, 'behavior', filesep];
+subResultsFolder = [results_folder, subjectCodeName, filesep, 'behavior', filesep, 'visit_1',filesep];
 % create subject results folder
 if ~exist(subResultsFolder,'dir')
     error(['it seems that the folder ',subResultsFolder,' was not created during the training. Please fix it.']);
@@ -86,7 +86,7 @@ end
 calibPerf_file_nm = [subResultsFolder, subjectCodeName,'_',effort_type,'Calib.mat'];
 
 % file name for main session
-file_nm = [subjectCodeName,'_session',session_nm,'_',effort_type,'_task'];
+file_nm = [subjectCodeName,'_session',session_nm,'_',effort_type,'_task_v1'];
 % verify the files do not already exist
 if exist([subResultsFolder, file_nm,'.mat'],'file')
     error(['The file name ',file_nm,'.mat already exists.',...
@@ -137,7 +137,7 @@ nTrials = 54;
 
 % extract money amount corresponding to each reward level for the
 % computation of the gains
-file_nm_IP = ['delta_IP_CID',num2str(iSubject)];
+file_nm_IP = ['delta_IP_CID',num2str(iSubject),'_v1'];
 if ~exist([subResultsFolder, file_nm_IP,'.mat'],'file')
     error(['couldn''t find ',file_nm_IP,' file. Please verify the IP was done.']);
 end
