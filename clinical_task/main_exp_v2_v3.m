@@ -147,13 +147,18 @@ switch taskToPerform.motivTask
             % define task type
             if (ismember(iRun,[1,3]) && strcmp(p_or_m_first,'p')) ||...
                     (ismember(iRun,[2,4]) && strcmp(p_or_m_first,'m'))
-                run_p_or_m = 'physical';
+                runEffort_type = 'physical';
             elseif (ismember(iRun,[1,3]) && strcmp(p_or_m_first,'m')) ||...
                     (ismember(iRun,[2,4]) && strcmp(p_or_m_first,'p'))
-                run_p_or_m = 'mental';
+                runEffort_type = 'mental';
+            else
+                runEffort_type = input(['Unexpected situation: run different from 1-4, ',...
+                    'please define if run is ''physical'' or ''mental''.'],'s');
             end % task type
-            % perform the task
 
+            % perform the task
+            choice_task_main_v2_v3(scr, iSubject, subResultsFolder, n_visit, iRun, runEffort_type,...
+                keys, n_buttonsChoice, trainingTaskToPerform);
         end % run loop
 
         % finalize the task
