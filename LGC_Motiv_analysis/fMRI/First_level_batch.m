@@ -1,5 +1,5 @@
-function[] = First_level_batch(GLM, checking)
-%[] = First_level_batch(GLM, checking)
+function[] = First_level_batch(GLM, checking, condition)
+%[] = First_level_batch(GLM, checking, condition)
 % First_level_batch will perform 1st level for LGC motivation fMRI studies.
 %
 % INPUTS
@@ -13,6 +13,10 @@ function[] = First_level_batch(GLM, checking)
 % checking:
 % (0) launch 1st level directly
 % (1) display SPM batch before launching to be able to check the inputs
+%
+% condition:
+% 'fMRI': all fMRI compatible data
+% 'fMRI_no_move': remove runs with too much movement
 %
 % See also which_GLM.m, GLM_details.m, LGCM_contrasts_spm.m,
 % First_level_loadEachCondition.m, First_level_loadRegressors.m,
@@ -74,7 +78,7 @@ switch study_nm
 end
 
 %% list subjects to analyze
-[subject_id, NS] = LGCM_subject_selection(study_nm);
+[subject_id, NS] = LGCM_subject_selection(study_nm, condition);
 %% loop through subjects
 matlabbatch = cell(nb_batch_per_subj*NS,1);
 for iS = 1:NS
@@ -94,7 +98,12 @@ for iS = 1:NS
     if ~exist(sm_folderName,'dir')
         mkdir(sm_folderName);
     end
-    resultsFolderName = [sm_folderName, 'GLM',num2str(GLM)];
+    switch condition
+        case {'fMRI','fMRI_no_move_bis'}
+            resultsFolderName = [sm_folderName, 'GLM',num2str(GLM)];
+        case 'fMRI_no_move'
+            resultsFolderName = [sm_folderName, 'GLM',num2str(GLM),'_no_movementRun'];
+    end
     if ~exist(resultsFolderName,'dir')
         mkdir(resultsFolderName);
     else
@@ -105,13 +114,14 @@ for iS = 1:NS
     end
     
     %% define number of runs
-    [~, nb_runs] = runs_definition(study_nm, sub_nm, 'fMRI');
+    [~, n_runs] = runs_definition(study_nm, sub_nm, condition);
     
     %% load fMRI data
     subj_scan_folders_names = ls([subj_scans_folder, filesep, '*run*']); % takes all functional runs folders
     % clear files that should not be taken into account in the first level
     % analysis
-    [subj_scan_folders_names] = First_level_subRunFilter(study_nm, sub_nm, subj_scan_folders_names);
+    [subj_scan_folders_names] = First_level_subRunFilter(study_nm, sub_nm,...
+        subj_scan_folders_names, [], condition);
     
     %% starting 1st level GLM batch
     sub_idx = nb_batch_per_subj*(iS-1) + 1 ;
@@ -122,9 +132,9 @@ for iS = 1:NS
     matlabbatch{sub_idx}.spm.stats.fmri_spec.timing.fmri_t0 = 8;
     
     % loop through runs and tasks
-    for iRun = 1:nb_runs
+    for iRun = 1:n_runs
         % fix run index if some runs were removed
-        [~, jRun] = First_level_subRunFilter(study_nm, sub_nm, [], iRun);
+        [~, jRun] = First_level_subRunFilter(study_nm, sub_nm, [], iRun, condition);
         run_nm = num2str(jRun);
         % erase useless spaces from folder with run name
         n_char = size(subj_scan_folders_names(iRun,:),2);

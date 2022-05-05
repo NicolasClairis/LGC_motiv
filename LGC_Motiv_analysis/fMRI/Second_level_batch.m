@@ -1,12 +1,13 @@
-function[] = Second_level_batch(GLM)
-% Second_level_batch(GLM)
+function[] = Second_level_batch(GLM, condition)
+% Second_level_batch(GLM, condition)
 % script to launch second level on LGC Motivation studies
 %
 % INPUTS
-% study_nm : name of the study to analyze
-%
 % GLM: number of the GLM
-
+%
+% condition: define subjects and runs to include
+% 'fMRI': all subjects where fMRI ok
+% 'fMRI_no_move': remove runs with too much movement
 
 %% clear workspace
 close all; clc;
@@ -31,7 +32,7 @@ if ~exist('study_nm','var') || isempty(study_nm)
 end
 
 % define subjects
-[subject_id, NS] = LGCM_subject_selection(study_nm);
+[subject_id, NS] = LGCM_subject_selection(study_nm, condition);
 NS_str = num2str(NS);
 
 %% working directories
@@ -92,7 +93,8 @@ matlabbatch{batch_idx}.spm.util.imcalc.options.dtype = 4;
 %% perform the second level
 
 % load all contrasts of interest
-con_names = LGCM_contrasts(study_nm, subject_id{1}, GLM, computer_root, preproc_sm_kernel);
+con_names = LGCM_contrasts(study_nm, subject_id{1}, GLM,...
+    computer_root, preproc_sm_kernel, condition);
 n_con = length(con_names);
 
 % loop over contrasts
@@ -118,10 +120,17 @@ for iCon = 1:n_con
         % if you need to redefine the list of subjects included in the
         % analysis
         checkGLM_and_subjectIncompatibility(study_nm, sub_nm, GLMprm);
-
-        subject_folder = [studyRoot,filesep,'CID',sub_nm, filesep, 'fMRI_analysis' filesep,...
-            'functional' filesep, 'preproc_sm_',num2str(preproc_sm_kernel),'mm',filesep...
-            'GLM',GLM_str, filesep];
+        
+        switch condition
+            case {'fMRI','fMRI_no_move_bis'}
+                subject_folder = [studyRoot,filesep,'CID',sub_nm, filesep, 'fMRI_analysis' filesep,...
+                    'functional' filesep, 'preproc_sm_',num2str(preproc_sm_kernel),'mm',filesep...
+                    'GLM',GLM_str, filesep];
+            case 'fMRI_no_move'
+                subject_folder = [studyRoot,filesep,'CID',sub_nm, filesep, 'fMRI_analysis' filesep,...
+                    'functional' filesep, 'preproc_sm_',num2str(preproc_sm_kernel),'mm',filesep...
+                    'GLM',GLM_str,'_no_movementRun' filesep];
+        end
         if iCon < 10
             conlist(iS) = {[subject_folder,'con_000',con_str,'.nii,1']};
         elseif iCon >= 10 && iCon < 100

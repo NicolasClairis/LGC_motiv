@@ -1,5 +1,7 @@
-function[con_names, con_vector] = LGCM_contrasts(study_nm, sub_nm, GLM, computer_root, preproc_sm_kernel)
-% [con_names, con_vector] = LGCM_contrasts(study_nm, sub_nm, GLM, computer_root, preproc_sm_kernel)
+function[con_names, con_vector] = LGCM_contrasts(study_nm, sub_nm, GLM,...
+    computer_root, preproc_sm_kernel, condition)
+% [con_names, con_vector] = LGCM_contrasts(study_nm, sub_nm, GLM,...
+%   computer_root, preproc_sm_kernel, condition)
 % LGCM_contrasts will define the contrast names and contrast vector for the
 % subject and study entered in input.
 %
@@ -16,6 +18,10 @@ function[con_names, con_vector] = LGCM_contrasts(study_nm, sub_nm, GLM, computer
 % GLM: GLM number
 %
 % preproc_sm_kernel: kernel used in preprocessing for smoothing the data
+%
+% condition: define subjects and runs to include
+% 'fMRI': all subjects where fMRI ok
+% 'fMRI_no_move': remove runs with too much movement
 %
 % OUTPUTS
 % con_names: list of contrast names
@@ -45,7 +51,7 @@ resultsFolderName = [subj_analysis_folder 'functional', filesep,...
 GLMprm = which_GLM(GLM);
 
 %% define runs based on current subject
-runs = runs_definition(study_nm, sub_nm, 'fMRI');
+runs = runs_definition(study_nm, sub_nm, condition);
 
 %% initialize variables of interest
 con_names = {};

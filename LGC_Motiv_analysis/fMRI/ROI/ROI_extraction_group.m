@@ -1,11 +1,13 @@
 function[con_vec_all,...
     con_avg, con_sem, con_sd,...
     con_names,...
-    ROI_coords, ttest_ROI] = ROI_extraction_group(study_nm, GLM, subject_id, fig_disp)
+    ROI_coords, ttest_ROI] = ROI_extraction_group(study_nm, GLM,...
+    subject_id, condition, fig_disp)
 % [con_vec_all,...
 %     con_avg, con_sem, con_sd,...
 %     con_names,...
-%     ROI_coords, ttest_ROI] = ROI_extraction_group(study_nm, GLM, subject_id, fig_disp)
+%     ROI_coords, ttest_ROI] = ROI_extraction_group(study_nm, GLM,...
+%     subject_id, condition, fig_disp)
 % ROI_extraction_group will serve to extract the ROI data across all
 % participants for a given GLM number.
 %
@@ -18,6 +20,10 @@ function[con_vec_all,...
 %
 % subject_id: list of subject names, if left empty it will select all
 % subjects
+%
+% condition: define subjects and runs to include
+% 'fMRI': all subjects where fMRI ok
+% 'fMRI_no_move': remove runs with too much movement
 %
 % fig_disp:
 %(0) no display
@@ -80,7 +86,8 @@ beta_or_t_value = 'beta_value';
 preproc_sm_kernel = 8; % by default
 
 %% prepare contrasts
-[con_names] = LGCM_contrasts(study_nm, subject_id{1}, GLM, computerRoot, preproc_sm_kernel);
+[con_names] = LGCM_contrasts(study_nm, subject_id{1}, GLM,...
+    computerRoot, preproc_sm_kernel, condition);
 n_max_con = length(con_names);
 
 %% how many figures do you want to plot

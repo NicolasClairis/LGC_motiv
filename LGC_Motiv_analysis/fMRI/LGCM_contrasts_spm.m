@@ -55,7 +55,8 @@ spm('defaults','fmri');
 spm_jobman('initcfg');
 
 %% define subjects of interest
-[subject_id, NS] = LGCM_subject_selection(study_nm);
+condition = 'fMRI_no_move';
+[subject_id, NS] = LGCM_subject_selection(study_nm, condition);
 
 %% loop through subjects to extract all the regressors
 matlabbatch = cell(NS,1);
@@ -65,10 +66,22 @@ for iSubject = 1:NS
     sub_nm = subject_id{iSubject};
     
     %% extract contrasts list (vectors + corresponding names
-    [con_names, con_vector] = LGCM_contrasts(study_nm, sub_nm, GLM, computer_root, preproc_sm_kernel);
+    [con_names, con_vector] = LGCM_contrasts(study_nm, sub_nm, GLM,...
+        computer_root, preproc_sm_kernel, condition);
     
     %% define results directory
-    matlabbatch{iSubject}.spm.stats.con.spmmat = {fullfile(root,['CID',sub_nm],'fMRI_analysis','functional',['preproc_sm_',num2str(preproc_sm_kernel),'mm'],['GLM',num2str(GLM)],'SPM.mat')};
+    switch condition
+        case {'fMRI','fMRI_no_move_bis'}
+            matlabbatch{iSubject}.spm.stats.con.spmmat = {fullfile(root,['CID',sub_nm],...
+                'fMRI_analysis','functional',...
+                ['preproc_sm_',num2str(preproc_sm_kernel),'mm'],...
+                ['GLM',num2str(GLM)],'SPM.mat')};
+        case 'fMRI_no_move'
+            matlabbatch{iSubject}.spm.stats.con.spmmat = {fullfile(root,['CID',sub_nm],...
+                'fMRI_analysis','functional',...
+                ['preproc_sm_',num2str(preproc_sm_kernel),'mm'],...
+                ['GLM',num2str(GLM),'_no_movementRun'],'SPM.mat')};
+    end
     %% add each contrast to the list
     for iCon = 1:length(con_names)
         matlabbatch{iSubject}.spm.stats.con.consess{iCon}.tcon.name     = con_names{iCon};

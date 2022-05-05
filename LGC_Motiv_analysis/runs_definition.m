@@ -13,7 +13,10 @@ function[runs, n_runs] = runs_definition(study_nm, sub_nm, condition)
 % are still included in the behavioral analysis but not in the fMRI
 % analysis.
 % 'behavior': behavioral analysis
+% 'behavior_no_sat': behavioral analysis without the runs where subject
+% saturated
 % 'fMRI': fMRI analysis
+% 'fMRI_no_move': fMRI analysis without runs where too much movement
 %
 % OUTPUTS
 % runs: structure with number of runs for each task and also the order of
@@ -21,6 +24,7 @@ function[runs, n_runs] = runs_definition(study_nm, sub_nm, condition)
 %
 % n_runs: number of runs to include
 
+%% extract main structure of the task for behavior and for fMRI
 switch study_nm
     case 'fMRI_pilots'
         switch sub_nm
@@ -39,40 +43,136 @@ switch study_nm
         end
     case 'study1'
         switch sub_nm
-            case {'017','074'}
-                % first run of these subjects: the fMRI crashed so you may
-                % want to remove it from the fMRI analysis
-                switch condition
-                    case 'behavior'
-                        runs.nb_runs.Ep = 2;
-                        runs.nb_runs.Em = 2;
-                        runs.tasks = {'Em','Ep','Em','Ep'};
-                    case 'fMRI'
-                        runs.nb_runs.Ep = 2;
-                        runs.nb_runs.Em = 1;
-                        runs.tasks = {'Ep','Em','Ep'};
-                end
             case {'040'} % only performed 1 run of each task
                 runs.nb_runs.Ep = 1;
                 runs.nb_runs.Em = 1;
                 runs.tasks = {'Ep','Em'};
-            case {'002','003','008','009','015','018','036','039','046','047',...
+            case {'001','002','003','008','009','015','018','036','039','046','047',...
                     '050','060','064','065','069','076','087','090','093'}
                 runs.nb_runs.Ep = 2;
                 runs.nb_runs.Em = 2;
                 runs.tasks = {'Ep','Em','Ep','Em'};
-            case {'020','022','029','032','035','044','045','052','054',...
+            case {'017','020','022','029','032','035','044','045','052','054',...
                     '055','056',...
-                    '061','068','071','075','079','081','082','095','100'}
-                runs.nb_runs.Ep = 2;
-                runs.nb_runs.Em = 2;
-                runs.tasks = {'Em','Ep','Em','Ep'};
+                    '061','068','071','074','075','079','081','082','095','100'}
+                        runs.nb_runs.Ep = 2;
+                        runs.nb_runs.Em = 2;
+                        runs.tasks = {'Em','Ep','Em','Ep'};
         end
     case 'study2_clinical'
         error('need to attribute runs');
     otherwise
         error('study not recognized');
 end
+
+%% remove runs that were problematic
+% (either behavioral saturation or runs with too much movement in the fMRI)
+
+switch study_nm
+    case 'study1'
+        
+        % by default include all sessions
+        runs.runsToKeep = 1:4;
+        runs.runsToIgnore = [];
+        
+        % define subject/subject the details
+        switch sub_nm
+            case {'017','074'}
+                % first run of these subjects: the fMRI crashed so you
+                % should remove it from the fMRI analysis
+                switch condition
+                    case {'fMRI','fMRI_no_move'}
+                        runs.nb_runs.Ep = 2;
+                        runs.nb_runs.Em = 1;
+                        runs.tasks = {'Ep','Em','Ep'};
+                        runs.runsToKeep = 2:4;
+                        runs.runsToIgnore = 1;
+                end % condition
+            case {'018'}
+                switch condition
+                    case {'fMRI_no_move'}
+                        runs.nb_runs.Ep = 1;
+                        runs.nb_runs.Em = 2;
+                        runs.tasks = {'Ep','Em','Em'};
+                        runs.runsToKeep = [1,2,4];
+                        runs.runsToIgnore = 3;
+                end
+            case {'029'}
+                switch condition
+                    case {'fMRI_no_move'}
+                        runs.nb_runs.Ep = 1;
+                        runs.nb_runs.Em = 2;
+                        runs.tasks = {'Ep','Em','Em'};
+                        runs.runsToKeep = [1,2,3];
+                        runs.runsToIgnore = 4;
+                end
+            case {'044','054','071'}
+                switch condition
+                    case {'fMRI_no_move'}
+                        runs.nb_runs.Ep = 0;
+                        runs.nb_runs.Em = 2;
+                        runs.tasks = {'Em','Em'};
+                        runs.runsToKeep = [1,3];
+                        runs.runsToIgnore = [2,4];
+                end % condition
+            case {'047'}
+                switch condition
+                    case {'fMRI_no_move'}
+                        runs.nb_runs.Ep = 1;
+                        runs.nb_runs.Em = 2;
+                        runs.tasks = {'Ep','Em','Em'};
+                        runs.runsToKeep = [1,2,4];
+                        runs.runsToIgnore = 3;
+                end % condition
+            case {'065'}
+                switch condition
+                    case {'fMRI_no_move'}
+                        runs.nb_runs.Ep = 1;
+                        runs.nb_runs.Em = 2;
+                        runs.tasks = {'Ep','Em','Em'};
+                        runs.runsToKeep = [1,2,4];
+                        runs.runsToIgnore = 3;
+                end
+            case {'076'}
+                switch condition
+                    case {'fMRI_no_move'}
+                        runs.nb_runs.Ep = 1;
+                        runs.nb_runs.Em = 2;
+                        runs.tasks = {'Em','Ep','Em'};
+                        runs.runsToKeep = 2:4;
+                        runs.runsToIgnore = 1;
+                end
+            case {'087'}
+                switch condition
+                    case {'fMRI_no_move'}
+                        runs.nb_runs.Ep = 0;
+                        runs.nb_runs.Em = 1;
+                        runs.tasks = {'Em'};
+                        runs.runsToKeep = 1;
+                        runs.runsToIgnore = [2,3,4];
+                end % condition
+            case {'093'}
+                switch condition
+                    case {'fMRI_no_move'}
+                        runs.nb_runs.Ep = 1;
+                        runs.nb_runs.Em = 2;
+                        runs.tasks = {'Em','Ep','Em'};
+                        runs.runsToKeep = [2,3,4];
+                        runs.runsToIgnore = 1;
+                end % condition
+            case {'008','022'} % ignore all runs
+                switch condition
+                    case {'fMRI_no_move'}
+                        runs.nb_runs.Ep = 0;
+                        runs.nb_runs.Em = 0;
+                        runs.tasks = {};
+                        runs.runsToKeep = 0;
+                        runs.runsToIgnore = 1:4;
+                end
+        end % subject
+    otherwise
+        error('case not ready yet');
+end % study
 
 %% extract number of runs
 n_runs = length(runs.tasks);

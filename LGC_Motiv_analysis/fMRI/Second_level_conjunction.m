@@ -33,12 +33,16 @@ GLM_str = num2str(GLM);
 preproc_sm_kernel = 8;
 % preproc_sm_kernel = spm_input('smoothing kernel to use?',1,'e','8');
 
+%% extract runs that are ok
+condition = 'fMRI'; 
+
 %% extract subjects
-[subject_id, NS] = LGCM_subject_selection(study_nm);
+[subject_id, NS] = LGCM_subject_selection(study_nm, condition);
 NS_str = num2str(NS);
 
 %% define contrasts on which conjunction will be operated
-[con_names, con_vector] = LGCM_contrasts(study_nm, subject_id{1}, GLM, computerRoot, preproc_sm_kernel);
+[con_names, con_vector] = LGCM_contrasts(study_nm, subject_id{1}, GLM,...
+    computerRoot, preproc_sm_kernel, condition);
 n_cons = length(con_names);
 
 nConsForConj = 2;

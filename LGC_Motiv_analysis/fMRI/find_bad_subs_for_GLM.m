@@ -1,11 +1,15 @@
-function[badSubList] = find_bad_subs_for_GLM(GLM)
-%[badSubList] = find_bad_subs_for_GLM(GLM)
+function[badSubList] = find_bad_subs_for_GLM(GLM, condition)
+%[badSubList] = find_bad_subs_for_GLM(GLM, condition)
 % find_bad_subs_for_GLM aims at identifying the subjects for which the
 % first level and/or the contrasts failed for a given GLM (specified in the
 % inputs).
 %
 % INPUTS
 % GLM: GLM number
+%
+% condition: define subjects and runs to include
+% 'fMRI': all subjects where fMRI ok
+% 'fMRI_no_move': remove runs with too much movement
 %
 % OUTPUTS
 % badSubList: structure with names of the subjects where the GLM was not
@@ -48,7 +52,7 @@ GLM_path = [filesep, 'fMRI_analysis',filesep,'functional',filesep,...
 [~, n_regsPerTask] = GLM_details(GLM);
 
 %% get full subject list
-[subject_id, NS] = LGCM_subject_selection(study_nm);
+[subject_id, NS] = LGCM_subject_selection(study_nm, condition);
 
 % prepare the vectors of participants where GLM failed
 [badFirstLevel_idx, badContrast_idx] = deal(NaN(1,NS));
@@ -59,10 +63,10 @@ for iS = 1:NS
     subFolder = [studyRoot, filesep, 'CID',sub_nm, GLM_path];
     % get the theoretical number of contrasts
     con_names = LGCM_contrasts(study_nm, sub_nm, GLM,...
-        computerRoot, preproc_sm_kernel);
+        computerRoot, preproc_sm_kernel, condition);
     n_cons = size(con_names,2);
     % get the theoretical number of runs
-    runs = runs_definition(study_nm, sub_nm, 'fMRI');
+    runs = runs_definition(study_nm, sub_nm, condition);
     % get number of regressors/task*number of runs/task + 1 constant/run
     n_totalRegs = n_regsPerTask.Ep*(runs.nb_runs.Ep) +...
         n_regsPerTask.Em*(runs.nb_runs.Em) +...
