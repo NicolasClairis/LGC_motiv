@@ -1,5 +1,5 @@
-function [choiceND_perRun] = choiceNDproportion_perRun_group(figGrpDisp)
-%[choiceND_perRun] = choiceNDproportion_perRun_group()
+function [choiceND_perRun, saturationSubs] = choiceNDproportion_perRun_group(figGrpDisp)
+%[choiceND_perRun, saturationSubs] = choiceNDproportion_perRun_group()
 % choiceNDproportion_perRun_group will extract the average proportion of
 % non-default choices per run across all subjects.
 %
@@ -9,6 +9,12 @@ function [choiceND_perRun] = choiceNDproportion_perRun_group(figGrpDisp)
 % OUTPUTS
 % choiceND_perRun: structure with average, SD and SEM of percentage of 
 % choosing the non-default option across subjects
+%
+% saturationSubs: structure indicating which subjects saturated and for
+% which run
+%   .allSat: list with all the subject who had a saturation in either side
+%   (non
+%   .fullDef: list with all the subjects who saturated by always getting 
 %
 % See also choiceNDproportion_perRun
 
@@ -54,13 +60,32 @@ nRunPerTask = 2;
 nTasks = 2; % physical/mental
 task_names = {'Ep','Em'};
 %% extract data per subject
+[saturationSubs.allSat.subList,...
+    saturationSubs.fullNonDef.subList,...
+    saturationSubs.fullDef.subList] = deal(cell(1,NS));
 for iS = 1:NS
     sub_nm = subject_id{iS};
-    cd([studyRoot, filesep, 'CID',sub_nm, filesep,'behavior']);
+    sub_nm_bis = ['CID',sub_nm];
+    cd([studyRoot, filesep, sub_nm_bis, filesep,'behavior']);
     [choiceND_perRun_tmp] = choiceNDproportion_perRun(sub_nm, figIndivDisp);
     for iRun = 1:nRuns
         run_nm = ['run',num2str(iRun)];
         choiceND_perRun.(run_nm)(iS) = choiceND_perRun_tmp.(run_nm);
+        
+        % extract name of subject if subject saturated
+        if choiceND_perRun_tmp.(run_nm) == 100 % always took non-default option
+            if sum(strcmp(saturationSubs.allSat.subList, sub_nm)) == 0 % add subject to the list
+                saturationSubs.allSat.subList{iS} = sub_nm;
+                saturationSubs.fullNonDef.subList{iS} = sub_nm;
+            end
+            saturationSubs.satRunsPerSub.(sub_nm_bis).(run_nm) = 'all_ND';
+        elseif choiceND_perRun_tmp.(run_nm) == 0 % always took the default option
+            if sum(strcmp(saturationSubs.allSat.subList, sub_nm)) == 0 % add subject to the list
+                saturationSubs.allSat.subList{iS} = sub_nm;
+                saturationSubs.fullDef.subList{iS} = sub_nm;
+            end
+            saturationSubs.satRunsPerSub.(sub_nm_bis).(run_nm) = 'all_Def';
+        end
     end % run loop
     
     for iPM = 1:nTasks
@@ -72,6 +97,19 @@ for iS = 1:NS
     end % physical/mental loop
 end % subject loop
 cd(studyRoot);
+
+% clean subjects without any saturation
+[subjectToRemoveAllSat,...
+   subjectToRemoveNDSat,...
+   subjectToRemoveDefSat] = deal(false(1,NS));
+for iS = 1:NS
+    subjectToRemoveAllSat(iS) = isempty(saturationSubs.allSat.subList{iS});
+    subjectToRemoveDefSat(iS) = isempty(saturationSubs.fullDef.subList{iS});
+    subjectToRemoveNDSat(iS) = isempty(saturationSubs.fullNonDef.subList{iS});
+end
+saturationSubs.allSat.subList(subjectToRemoveAllSat) = [];
+saturationSubs.fullDef.subList(subjectToRemoveDefSat) = [];
+saturationSubs.fullNonDef.subList(subjectToRemoveNDSat) = [];
 
 %% average across subjects
 for iRun = 1:nRuns
