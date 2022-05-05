@@ -29,34 +29,22 @@ switch study_nm
     case 'fMRI_pilots'
         switch sub_nm
             case 'pilot_s1'
-                runs.nb_runs.Ep = 1;
-                runs.nb_runs.Em = 1;
                 runs.tasks = {'Ep','Em'};
             case 'pilot_s2'
-                runs.nb_runs.Ep = 1;
-                runs.nb_runs.Em = 0;
                 runs.tasks = {'Ep'};
             case 'pilot_s3'
-                runs.nb_runs.Ep = 1;
-                runs.nb_runs.Em = 1;
                 runs.tasks = {'Em','Ep'};
         end
     case 'study1'
         switch sub_nm
             case {'040'} % only performed 1 run of each task
-                runs.nb_runs.Ep = 1;
-                runs.nb_runs.Em = 1;
                 runs.tasks = {'Ep','Em'};
             case {'001','002','003','008','009','015','018','036','039','046','047',...
                     '050','060','064','065','069','076','087','090','093'}
-                runs.nb_runs.Ep = 2;
-                runs.nb_runs.Em = 2;
                 runs.tasks = {'Ep','Em','Ep','Em'};
             case {'017','020','022','029','032','035','044','045','052','054',...
                     '055','056',...
                     '061','068','071','074','075','079','081','082','095','100'}
-                        runs.nb_runs.Ep = 2;
-                        runs.nb_runs.Em = 2;
                         runs.tasks = {'Em','Ep','Em','Ep'};
         end
     case 'study2_clinical'
@@ -82,97 +70,74 @@ switch study_nm
                 % should remove it from the fMRI analysis
                 switch condition
                     case {'fMRI','fMRI_no_move'}
-                        runs.nb_runs.Ep = 2;
-                        runs.nb_runs.Em = 1;
-                        runs.tasks = {'Ep','Em','Ep'};
                         runs.runsToKeep = 2:4;
                         runs.runsToIgnore = 1;
                 end % condition
             case {'018'}
                 switch condition
                     case {'fMRI_no_move'}
-                        runs.nb_runs.Ep = 1;
-                        runs.nb_runs.Em = 2;
-                        runs.tasks = {'Ep','Em','Em'};
                         runs.runsToKeep = [1,2,4];
                         runs.runsToIgnore = 3;
                 end
             case {'029'}
                 switch condition
                     case {'fMRI_no_move'}
-                        runs.nb_runs.Ep = 1;
-                        runs.nb_runs.Em = 2;
-                        runs.tasks = {'Em','Ep','Em'};
                         runs.runsToKeep = [1,2,3];
                         runs.runsToIgnore = 4;
                 end
             case {'044','054','071'}
                 switch condition
                     case {'fMRI_no_move'}
-                        runs.nb_runs.Ep = 0;
-                        runs.nb_runs.Em = 2;
-                        runs.tasks = {'Em','Em'};
                         runs.runsToKeep = [1,3];
                         runs.runsToIgnore = [2,4];
                 end % condition
             case {'047'}
                 switch condition
                     case {'fMRI_no_move'}
-                        runs.nb_runs.Ep = 1;
-                        runs.nb_runs.Em = 2;
-                        runs.tasks = {'Ep','Em','Em'};
                         runs.runsToKeep = [1,2,4];
                         runs.runsToIgnore = 3;
                 end % condition
             case {'065'}
                 switch condition
                     case {'fMRI_no_move'}
-                        runs.nb_runs.Ep = 1;
-                        runs.nb_runs.Em = 2;
-                        runs.tasks = {'Ep','Em','Em'};
                         runs.runsToKeep = [1,2,4];
                         runs.runsToIgnore = 3;
                 end
             case {'076'}
                 switch condition
                     case {'fMRI_no_move'}
-                        runs.nb_runs.Ep = 1;
-                        runs.nb_runs.Em = 2;
-                        runs.tasks = {'Em','Ep','Em'};
                         runs.runsToKeep = 2:4;
                         runs.runsToIgnore = 1;
                 end
             case {'087'}
                 switch condition
                     case {'fMRI_no_move'}
-                        runs.nb_runs.Ep = 0;
-                        runs.nb_runs.Em = 1;
-                        runs.tasks = {'Em'};
                         runs.runsToKeep = 1;
                         runs.runsToIgnore = [2,3,4];
                 end % condition
             case {'093'}
                 switch condition
                     case {'fMRI_no_move'}
-                        runs.nb_runs.Ep = 1;
-                        runs.nb_runs.Em = 2;
-                        runs.tasks = {'Em','Ep','Em'};
                         runs.runsToKeep = [2,3,4];
                         runs.runsToIgnore = 1;
                 end % condition
             case {'008','022'} % ignore all runs
                 switch condition
                     case {'fMRI_no_move'}
-                        runs.nb_runs.Ep = 0;
-                        runs.nb_runs.Em = 0;
-                        runs.tasks = {};
-                        runs.runsToKeep = 0;
+                        runs.runsToKeep = [];
                         runs.runsToIgnore = 1:4;
                 end
         end % subject
     otherwise
         error('case not ready yet');
 end % study
+
+% update task types depending on the runs to keep
+runs.tasks = runs.tasks(runs.runsToKeep);
+
+%% extract number of runs of each task type
+runs.nb_runs.Ep = sum(strcmp(runs.tasks,'Ep'));
+runs.nb_runs.Em = sum(strcmp(runs.tasks,'Em'));
 
 %% extract number of runs
 n_runs = length(runs.tasks);
