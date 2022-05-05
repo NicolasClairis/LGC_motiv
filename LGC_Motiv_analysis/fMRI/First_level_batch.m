@@ -176,7 +176,7 @@ for iS = 1:NS
         % runs_definition.m script to be sure that all works ok
         if (strcmp(task_nm,'physical') && ~strcmp(runs.tasks(iRun),'Ep')) ||...
             (strcmp(task_nm,'mental') && ~strcmp(runs.tasks(iRun),'Em'))
-            error(['problem with run task type for subject ',sub_nm,' and run ',]);
+            error(['problem with run task type for subject ',sub_nm,' and run ',num2str(jRun)]);
         end
         % perform 1st level
         matlabbatch = First_level_loadRegressors(matlabbatch, GLMprm, study_nm, sub_nm, sub_idx, iRun,...
