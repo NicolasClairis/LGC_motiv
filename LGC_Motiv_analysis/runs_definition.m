@@ -102,7 +102,7 @@ switch study_nm
                     case {'fMRI_no_move'}
                         runs.nb_runs.Ep = 1;
                         runs.nb_runs.Em = 2;
-                        runs.tasks = {'Ep','Em','Em'};
+                        runs.tasks = {'Em','Ep','Em'};
                         runs.runsToKeep = [1,2,3];
                         runs.runsToIgnore = 4;
                 end
