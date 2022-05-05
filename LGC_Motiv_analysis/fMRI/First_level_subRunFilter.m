@@ -27,6 +27,7 @@ function[subj_scan_folders_names, jRun] = First_level_subRunFilter(study_nm, sub
 [runs, n_runs] = runs_definition(study_nm, sub_nm, condition);
 % check for 'fMRI' condition (ie all fMRI data)
 if n_runs < 4 &&...
+        (strcmp(condition,'fMRI') || strcmp(condition,'fMRI_no_move_bis')) &&...
         ( strcmp(study_nm,'study1') &&...
         ~ismember(sub_nm,{'017','040','074'}) ) ||...
         (strcmp(study_nm,'fMRI_pilots') &&...
@@ -154,8 +155,8 @@ if exist('subj_scan_folders_names','var') && ~isempty(subj_scan_folders_names)
                                 '. please fix it and remove it before going further in the analysis.']);
                         end
                     case '054'
-                        sub054_run2_toRemove = '3_008_run2_20220408';
-                        sub054_run4_toRemove = '3_010_run4_20220408';
+                        sub054_run2_toRemove = '2_008_run2_20220208';
+                        sub054_run4_toRemove = '2_010_run4_20220208';
                         % remove run 4 first
                         if strcmp(subj_scan_folders_names(4,:),sub054_run4_toRemove)
                             subj_scan_folders_names(4,:) = [];
