@@ -108,7 +108,7 @@ if exist('subj_scan_folders_names','var') && ~isempty(subj_scan_folders_names)
                         if strcmp(subj_scan_folders_names(3,:),sub018_run3_toRemove)
                             subj_scan_folders_names(3,:) = [];
                             disp(['run3 named ',sub018_run3_toRemove,' got removed for CID',sub_nm,...
-                                'because of too much movement.']);
+                                ' because of too much movement.']);
                         else
                             error(['file corresponding to run 3 could not be identified for CID',sub_nm,...
                                 '. please fix it and remove it before going further in the analysis.']);
@@ -118,7 +118,7 @@ if exist('subj_scan_folders_names','var') && ~isempty(subj_scan_folders_names)
                         if strcmp(subj_scan_folders_names(4,:),sub029_run4_toRemove)
                             subj_scan_folders_names(4,:) = [];
                             disp(['run4 named ',sub029_run4_toRemove,' got removed for CID',sub_nm,...
-                                'because of too much movement.']);
+                                ' because of too much movement.']);
                         else
                             error(['file corresponding to run 4 could not be identified for CID',sub_nm,...
                                 '. please fix it and remove it before going further in the analysis.']);
@@ -130,7 +130,7 @@ if exist('subj_scan_folders_names','var') && ~isempty(subj_scan_folders_names)
                         if strcmp(subj_scan_folders_names(4,:),sub044_run4_toRemove)
                             subj_scan_folders_names(4,:) = [];
                             disp(['run4 named ',sub044_run4_toRemove,' got removed for CID',sub_nm,...
-                                'because of too much movement.']);
+                                ' because of too much movement.']);
                         else
                             error(['file corresponding to run 4 could not be identified for CID',sub_nm,...
                                 '. please fix it and remove it before going further in the analysis.']);
@@ -139,7 +139,7 @@ if exist('subj_scan_folders_names','var') && ~isempty(subj_scan_folders_names)
                         if strcmp(subj_scan_folders_names(2,:),sub044_run2_toRemove)
                             subj_scan_folders_names(2,:) = [];
                             disp(['run2 named ',sub044_run2_toRemove,' got removed for CID',sub_nm,...
-                                'because of too much movement.']);
+                                ' because of too much movement.']);
                         else
                             error(['file corresponding to run 2 could not be identified for CID',sub_nm,...
                                 '. please fix it and remove it before going further in the analysis.']);
@@ -149,7 +149,7 @@ if exist('subj_scan_folders_names','var') && ~isempty(subj_scan_folders_names)
                         if strcmp(subj_scan_folders_names(3,:),sub047_run3_toRemove)
                             subj_scan_folders_names(3,:) = [];
                             disp(['run3 named ',sub047_run3_toRemove,' got removed for CID',sub_nm,...
-                                'because of too much movement.']);
+                                ' because of too much movement.']);
                         else
                             error(['file corresponding to run 3 could not be identified for CID',sub_nm,...
                                 '. please fix it and remove it before going further in the analysis.']);
@@ -161,7 +161,7 @@ if exist('subj_scan_folders_names','var') && ~isempty(subj_scan_folders_names)
                         if strcmp(subj_scan_folders_names(4,:),sub054_run4_toRemove)
                             subj_scan_folders_names(4,:) = [];
                             disp(['run4 named ',sub054_run4_toRemove,' got removed for CID',sub_nm,...
-                                'because of too much movement.']);
+                                ' because of too much movement.']);
                         else
                             error(['file corresponding to run 4 could not be identified for CID',sub_nm,...
                                 '. please fix it and remove it before going further in the analysis.']);
@@ -170,7 +170,7 @@ if exist('subj_scan_folders_names','var') && ~isempty(subj_scan_folders_names)
                         if strcmp(subj_scan_folders_names(2,:),sub054_run2_toRemove)
                             subj_scan_folders_names(2,:) = [];
                             disp(['run2 named ',sub054_run2_toRemove,' got removed for CID',sub_nm,...
-                                'because of too much movement.']);
+                                ' because of too much movement.']);
                         else
                             error(['file corresponding to run 2 could not be identified for CID',sub_nm,...
                                 '. please fix it and remove it before going further in the analysis.']);
@@ -180,7 +180,7 @@ if exist('subj_scan_folders_names','var') && ~isempty(subj_scan_folders_names)
                         if strcmp(subj_scan_folders_names(3,:),sub065_run3_toRemove)
                             subj_scan_folders_names(3,:) = [];
                             disp(['run3 named ',sub065_run3_toRemove,' got removed for CID',sub_nm,...
-                                'because of too much movement.']);
+                                ' because of too much movement.']);
                         else
                             error(['file corresponding to run 3 could not be identified for CID',sub_nm,...
                                 '. please fix it and remove it before going further in the analysis.']);
@@ -192,7 +192,7 @@ if exist('subj_scan_folders_names','var') && ~isempty(subj_scan_folders_names)
                         if strcmp(subj_scan_folders_names(4,:),sub071_run4_toRemove)
                             subj_scan_folders_names(4,:) = [];
                             disp(['run4 named ',sub071_run4_toRemove,' got removed for CID',sub_nm,...
-                                'because of too much movement.']);
+                                ' because of too much movement.']);
                         else
                             error(['file corresponding to run 4 could not be identified for CID',sub_nm,...
                                 '. please fix it and remove it before going further in the analysis.']);
@@ -201,7 +201,7 @@ if exist('subj_scan_folders_names','var') && ~isempty(subj_scan_folders_names)
                         if strcmp(subj_scan_folders_names(2,:),sub071_run2_toRemove)
                             subj_scan_folders_names(2,:) = [];
                             disp(['run2 named ',sub071_run2_toRemove,' got removed for CID',sub_nm,...
-                                'because of too much movement.']);
+                                ' because of too much movement.']);
                         else
                             error(['file corresponding to run 2 could not be identified for CID',sub_nm,...
                                 '. please fix it and remove it before going further in the analysis.']);
@@ -211,7 +211,7 @@ if exist('subj_scan_folders_names','var') && ~isempty(subj_scan_folders_names)
                         if strcmp(subj_scan_folders_names(1,:),sub076_run1_toRemove)
                             subj_scan_folders_names(1,:) = [];
                             disp(['run1 named ',sub076_run1_toRemove,' got removed for CID',sub_nm,...
-                                'because of too much movement.']);
+                                ' because of too much movement.']);
                         else
                             error(['file corresponding to run 1 could not be identified for CID',sub_nm,...
                                 '. please fix it and remove it before going further in the analysis.']);
@@ -224,7 +224,7 @@ if exist('subj_scan_folders_names','var') && ~isempty(subj_scan_folders_names)
                         if strcmp(subj_scan_folders_names(4,:),sub087_run4_toRemove)
                             subj_scan_folders_names(4,:) = [];
                             disp(['run4 named ',sub087_run4_toRemove,' got removed for CID',sub_nm,...
-                                'because of too much movement.']);
+                                ' because of too much movement.']);
                         else
                             error(['file corresponding to run 4 could not be identified for CID',sub_nm,...
                                 '. please fix it and remove it before going further in the analysis.']);
@@ -233,7 +233,7 @@ if exist('subj_scan_folders_names','var') && ~isempty(subj_scan_folders_names)
                         if strcmp(subj_scan_folders_names(3,:),sub087_run3_toRemove)
                             subj_scan_folders_names(3,:) = [];
                             disp(['run3 named ',sub087_run3_toRemove,' got removed for CID',sub_nm,...
-                                'because of too much movement.']);
+                                ' because of too much movement.']);
                         else
                             error(['file corresponding to run 3 could not be identified for CID',sub_nm,...
                                 '. please fix it and remove it before going further in the analysis.']);
@@ -242,7 +242,7 @@ if exist('subj_scan_folders_names','var') && ~isempty(subj_scan_folders_names)
                         if strcmp(subj_scan_folders_names(2,:),sub087_run2_toRemove)
                             subj_scan_folders_names(2,:) = [];
                             disp(['run2 named ',sub087_run2_toRemove,' got removed for CID',sub_nm,...
-                                'because of too much movement.']);
+                                ' because of too much movement.']);
                         else
                             error(['file corresponding to run 2 could not be identified for CID',sub_nm,...
                                 '. please fix it and remove it before going further in the analysis.']);
@@ -252,7 +252,7 @@ if exist('subj_scan_folders_names','var') && ~isempty(subj_scan_folders_names)
                         if strcmp(subj_scan_folders_names(1,:),sub093_run1_toRemove)
                             subj_scan_folders_names(1,:) = [];
                             disp(['run1 named ',sub093_run1_toRemove,' got removed for CID',sub_nm,...
-                                'because of too much movement.']);
+                                ' because of too much movement.']);
                         else
                             error(['file corresponding to run 1 could not be identified for CID',sub_nm,...
                                 '. please fix it and remove it before going further in the analysis.']);
@@ -267,20 +267,6 @@ else
 end % subj_scan_folders_names correction
 
 %% fix index of the run
-% if exist('iRun','var') && ~isempty(iRun)
-%     switch study_nm
-%         case 'study1'
-%             switch sub_nm
-%                 case {'074','017'} % adapt index since run 1 has to be ignored
-%                     jRun = iRun + 1;
-%                 otherwise % when everything worked, the index is the same
-%                     jRun = iRun;
-%             end
-%     end
-% else
-%     jRun = [];
-% end
-
 if exist('iRun','var') && ~isempty(iRun)
     jRun = runs.runsToKeep(iRun);
 end
