@@ -42,9 +42,16 @@ switch study_nm
 end
 subj_folder             = [root, filesep, 'CID',sub_nm];
 subj_analysis_folder    = [subj_folder, filesep, 'fMRI_analysis' filesep];
-resultsFolderName = [subj_analysis_folder 'functional', filesep,...
-    'preproc_sm_',num2str(preproc_sm_kernel),'mm', filesep,...
-    'GLM',num2str(GLM),filesep];
+switch condition
+    case {'fMRI','fMRI_no_move_bis'}
+        resultsFolderName = [subj_analysis_folder 'functional', filesep,...
+            'preproc_sm_',num2str(preproc_sm_kernel),'mm', filesep,...
+            'GLM',num2str(GLM),filesep];
+    case 'fMRI_no_move'
+        resultsFolderName = [subj_analysis_folder 'functional', filesep,...
+            'preproc_sm_',num2str(preproc_sm_kernel),'mm', filesep,...
+            'GLM',num2str(GLM),'_no_movementRun',filesep];
+end
 
 %% extract GLM informations
 [reg_names, n_regsPerTask] = GLM_details(GLM);
@@ -83,67 +90,39 @@ if runs.nb_runs.Ep > 0
         
         if ~strcmp(reg_nm,'movement') && ~isempty(reg_nm) % ignore movement regressors (labelled as 'movement') and temporal derivative regressors (empty name)
             
-            % define basic contrasts per task (pool runs of the same task)
-            if runs.nb_runs.Ep == 2 && runs.nb_runs.Em == 2 % default case = 2 Ep runs & 2 Em runs
-                if Ep_runs(1) == 1 && Ep_runs(2) == 0 && Ep_runs(3) == 1 && Ep_runs(4) == 0 &&...
-                        Em_runs(1) == 0 && Em_runs(2) == 1 && Em_runs(3) == 0 && Em_runs(4) == 1
-                    % Ep/Em/Ep/Em
-                    con_vec_Ep_tmp = [strcmp(reg_names.Ep, reg_nm),...
-                        zeros(1,n_regsPerTask.Em),...
-                        strcmp(reg_names.Ep, reg_nm),...
-                        zeros(1,n_regsPerTask.Em),...
-                        zeros(1, runs.nb_runs.Ep), zeros(1, runs.nb_runs.Em)] ;
-                elseif Ep_runs(1) == 0 && Ep_runs(2) == 1 && Ep_runs(3) == 0 && Ep_runs(4) == 1 &&...
-                        Em_runs(1) == 1 && Em_runs(2) == 0 && Em_runs(3) == 1 && Em_runs(4) == 0
-                    % Em/Ep/Em/Ep
-                    con_vec_Ep_tmp = [zeros(1,n_regsPerTask.Em),...
-                        strcmp(reg_names.Ep, reg_nm),...
-                        zeros(1,n_regsPerTask.Em),...
-                        strcmp(reg_names.Ep, reg_nm),...
-                        zeros(1, runs.nb_runs.Ep), zeros(1, runs.nb_runs.Em)] ;
-                else
-                    error('case not ready yet');
-                end
-                
-            elseif runs.nb_runs.Ep == 1 && runs.nb_runs.Em == 1
-                if Ep_runs(1) == 1 && Ep_runs(2) == 0 &&...
-                        Em_runs(1) == 0 && Em_runs(2) == 1
-                    % Ep/Em
-                    con_vec_Ep_tmp = [strcmp(reg_names.Ep, reg_nm),...
-                        zeros(1,n_regsPerTask.Em),...
-                        zeros(1, runs.nb_runs.Ep), zeros(1, runs.nb_runs.Em)] ;
-                elseif Ep_runs(1) == 0 && Ep_runs(2) == 1 &&...
-                        Em_runs(1) == 1 && Em_runs(2) == 0
-                    % Em/Ep
-                    con_vec_Ep_tmp = [zeros(1,n_regsPerTask.Em),...
-                        strcmp(reg_names.Ep, reg_nm),...
-                        zeros(1, runs.nb_runs.Ep), zeros(1, runs.nb_runs.Em)] ;
-                else
-                    error('case not ready yet');
-                end
-                
-            elseif runs.nb_runs.Ep == 1 && runs.nb_runs.Em == 0
-                if Ep_runs(1) == 1
-                    % Ep
-                    con_vec_Ep_tmp = [strcmp(reg_names.Ep, reg_nm),...
-                        zeros(1, runs.nb_runs.Ep)] ;
-                else
-                    error('case not ready yet');
-                end
-            elseif runs.nb_runs.Ep == 2 && runs.nb_runs.Em == 1
-                if Ep_runs(1) == 1 && Ep_runs(2) == 0 && Ep_runs(3) == 1 &&...
-                        Em_runs(1) == 0 && Em_runs(2) == 1 && Em_runs(3) == 0
-                    % Ep/Em/Ep
-                    con_vec_Ep_tmp = [strcmp(reg_names.Ep, reg_nm),...
-                        zeros(1,n_regsPerTask.Em),...
-                        strcmp(reg_names.Ep, reg_nm),...
-                        zeros(1, runs.nb_runs.Ep), zeros(1, runs.nb_runs.Em)] ;
-                else
-                    error('case not ready yet');
-                end
+            % run 1
+            run1_Ep_vec = (strcmp(reg_names.Ep, reg_nm).*(Ep_runs(1) == 1)) +...
+                (zeros(1,n_regsPerTask.Em).*(Em_runs(1) == 1));
+            
+            % run 2
+            if runs.nb_runs.Ep + runs.nb_runs.Em >= 2
+                run2_Ep_vec = (strcmp(reg_names.Ep, reg_nm).*(Ep_runs(2) == 1)) +...
+                    (zeros(1,n_regsPerTask.Em).*(Em_runs(2) == 1));
             else
-                error('case not ready yet');
+                run2_Ep_vec = [];
             end
+            
+            % run 3
+            if runs.nb_runs.Ep + runs.nb_runs.Em >= 3
+                run3_Ep_vec =  (strcmp(reg_names.Ep, reg_nm).*(Ep_runs(3) == 1)) +...
+                    (zeros(1,n_regsPerTask.Em).*(Em_runs(3) == 1));
+            else
+                run3_Ep_vec = [];
+            end
+            
+            % run 4
+            if runs.nb_runs.Ep + runs.nb_runs.Em == 4
+                run4_Ep_vec =  (strcmp(reg_names.Ep, reg_nm).*(Ep_runs(4) == 1)) +...
+                    (zeros(1,n_regsPerTask.Em).*(Em_runs(4) == 1));
+            else
+                run4_Ep_vec = [];
+            end
+            
+            con_vec_Ep_tmp = [run1_Ep_vec,...
+                        run2_Ep_vec,...
+                        run3_Ep_vec,...
+                        run4_Ep_vec,...
+                        zeros(1, runs.nb_runs.Ep), zeros(1, runs.nb_runs.Em)];
             
             % positive contrast
             jReg = jReg + 1;
@@ -166,71 +145,39 @@ if runs.nb_runs.Em > 0
         
         if ~strcmp(reg_nm,'movement') && ~isempty(reg_nm) % ignore movement regressors (labelled as 'movement') and temporal derivative regressors (empty name)
             
-            % define basic contrasts per task (pool runs of the same task)
-            if runs.nb_runs.Ep == 2 && runs.nb_runs.Em == 2 % default case = 2 Ep runs & 2 Em runs
-                if Ep_runs(1) == 1 && Ep_runs(2) == 0 && Ep_runs(3) == 1 && Ep_runs(4) == 0 &&...
-                        Em_runs(1) == 0 && Em_runs(2) == 1 && Em_runs(3) == 0 && Em_runs(4) == 1
-                    % Ep/Em/Ep/Em
-                    con_vec_Em_tmp = [zeros(1,n_regsPerTask.Ep),...
-                        strcmp(reg_names.Em, reg_nm),...
-                        zeros(1,n_regsPerTask.Ep),...
-                        strcmp(reg_names.Em, reg_nm),...
-                        zeros(1, runs.nb_runs.Ep), zeros(1, runs.nb_runs.Em)] ;
-                elseif Ep_runs(1) == 0 && Ep_runs(2) == 1 && Ep_runs(3) == 0 && Ep_runs(4) == 1 &&...
-                        Em_runs(1) == 1 && Em_runs(2) == 0 && Em_runs(3) == 1 && Em_runs(4) == 0
-                    % Em/Ep/Em/Ep
-                    con_vec_Em_tmp = [strcmp(reg_names.Em, reg_nm),...
-                        zeros(1,n_regsPerTask.Ep),...
-                        strcmp(reg_names.Em, reg_nm),...
-                        zeros(1,n_regsPerTask.Ep),...
-                        zeros(1, runs.nb_runs.Ep), zeros(1, runs.nb_runs.Em)] ;
-                else
-                    error('case not ready yet');
-                end
-                
-            elseif runs.nb_runs.Ep == 1 && runs.nb_runs.Em == 1
-                if Ep_runs(1) == 1 && Ep_runs(2) == 0 &&...
-                        Em_runs(1) == 0 && Em_runs(2) == 1
-                    % Ep/Em
-                    con_vec_Em_tmp = [zeros(1,n_regsPerTask.Ep),...
-                        strcmp(reg_names.Em, reg_nm),...
-                        zeros(1, runs.nb_runs.Ep), zeros(1, runs.nb_runs.Em)] ;
-                elseif Ep_runs(1) == 0 && Ep_runs(2) == 1 &&...
-                        Em_runs(1) == 1 && Em_runs(2) == 0
-                    % Em/Ep
-                    con_vec_Em_tmp = [strcmp(reg_names.Em, reg_nm),...
-                        zeros(1,n_regsPerTask.Ep),...
-                        zeros(1, runs.nb_runs.Ep), zeros(1, runs.nb_runs.Em)] ;
-                else
-                    error('case not ready yet');
-                end
-
-            elseif runs.nb_runs.Em == 1 && runs.nb_runs.Ep == 0
-                if Em_runs(1) == 1
-                    % Em
-                    con_vec_Em_tmp = [strcmp(reg_names.Em, reg_nm),...
-                        zeros(1, runs.nb_runs.Em)] ;
-                elseif Ep_runs(1) == 1
-                    % Ep
-                    con_vec_Em_tmp = [strcmp(reg_names.Ep, reg_nm),...
-                        zeros(1, runs.nb_runs.Ep)] ;
-                else
-                    error('case not ready yet');
-                end
-            elseif runs.nb_runs.Ep == 2 && runs.nb_runs.Em == 1
-                if Ep_runs(1) == 1 && Ep_runs(2) == 0 && Ep_runs(3) == 1 &&...
-                        Em_runs(1) == 0 && Em_runs(2) == 1 && Em_runs(3) == 0
-                    % Ep/Em/Ep
-                    con_vec_Em_tmp = [zeros(1,n_regsPerTask.Ep),...
-                        strcmp(reg_names.Em, reg_nm),...
-                        zeros(1,n_regsPerTask.Ep),...
-                        zeros(1, runs.nb_runs.Ep), zeros(1, runs.nb_runs.Em)] ;
-                else
-                    error('case not ready yet');
-                end
+            % run 1
+            run1_Em_vec = (strcmp(reg_names.Em, reg_nm).*(Em_runs(1) == 1)) +...
+                (zeros(1,n_regsPerTask.Ep).*(Ep_runs(1) == 1));
+            
+            % run 2
+            if runs.nb_runs.Ep + runs.nb_runs.Em >= 2
+                run2_Em_vec = (strcmp(reg_names.Em, reg_nm).*(Em_runs(2) == 1)) +...
+                    (zeros(1,n_regsPerTask.Ep).*(Ep_runs(2) == 1));
             else
-                error('case not ready yet');
+                run2_Em_vec = [];
             end
+            
+            % run 3
+            if runs.nb_runs.Ep + runs.nb_runs.Em >= 3
+                run3_Em_vec =  (strcmp(reg_names.Em, reg_nm).*(Em_runs(3) == 1)) +...
+                    (zeros(1,n_regsPerTask.Ep).*(Ep_runs(3) == 1));
+            else
+                run3_Em_vec = [];
+            end
+            
+            % run 4
+            if runs.nb_runs.Ep + runs.nb_runs.Em == 4
+                run4_Em_vec =  (strcmp(reg_names.Em, reg_nm).*(Em_runs(4) == 1)) +...
+                    (zeros(1,n_regsPerTask.Ep).*(Ep_runs(4) == 1));
+            else
+                run4_Em_vec = [];
+            end
+            
+            con_vec_Em_tmp = [run1_Em_vec,...
+                        run2_Em_vec,...
+                        run3_Em_vec,...
+                        run4_Em_vec,...
+                        zeros(1, runs.nb_runs.Ep), zeros(1, runs.nb_runs.Em)];
             
             % positive contrast
             jReg = jReg + 1;
@@ -274,7 +221,6 @@ if runs.nb_runs.Em > 0 && runs.nb_runs.Ep > 0
 end % at least one run of each task has been performed?
 
 %% pool contrasts across R and P trials if have been modelled separately
-n_RP_pool_con = 0;
 timePeriod = {'choice','chosen','Eperf','fbk'};
 n_timePeriods = length(timePeriod);
 timePeriod_names = {'choice','chosen','effort','feedback'};

@@ -1,5 +1,5 @@
-function[] = LGCM_contrasts_spm(GLM, checking)
-% [] = LGCM_contrasts_spm(GLM, checking)
+function[] = LGCM_contrasts_spm(GLM, checking, condition)
+% [] = LGCM_contrasts_spm(GLM, checking, condition)
 % LGCM_contrasts_spm prepares the batch for SPM to perform the first level
 % contrasts in each individual of the study
 %
@@ -12,7 +12,10 @@ function[] = LGCM_contrasts_spm(GLM, checking)
 % GLM: GLM number
 %
 % checking: display batch before performing it or not? (1 by default)
-
+%
+% condition:
+% 'fMRI': all fMRI compatible data
+% 'fMRI_no_move': remove runs with too much movement
 
 close all; clc;
 
@@ -55,7 +58,10 @@ spm('defaults','fmri');
 spm_jobman('initcfg');
 
 %% define subjects of interest
+if ~exist('condition','var') ||...
+        ~ismember(condition,{'fMRI','fMRI_no_move','fMRI_no_move_bis'})
 condition = 'fMRI_no_move';
+end
 [subject_id, NS] = LGCM_subject_selection(study_nm, condition);
 
 %% loop through subjects to extract all the regressors
