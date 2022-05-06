@@ -32,7 +32,7 @@ if ~exist('figGrpDisp','var') || isempty(figGrpDisp)
 end
 
 %% subject list
-[subject_id, NS] = LGCM_subject_selection(study_nm);
+[subject_id, NS] = LGCM_subject_selection(study_nm, 'behavior');
 
 %% working directories
 % computer_root = LGCM_root_paths();
