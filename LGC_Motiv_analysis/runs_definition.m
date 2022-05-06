@@ -85,6 +85,10 @@ switch study_nm
                         runs.runsToKeep = [1,2,3];
                         runs.runsToIgnore = 4;
                 end
+            case '040' % fMRI crashed during run 3 and subject was already stressing a lot
+                % => avoid including this run
+                runs.runsToKeep = [1,2];
+                runs.runsToIgnore = 3:4;
             case {'044','054','071'}
                 switch condition
                     case {'fMRI_no_move'}
