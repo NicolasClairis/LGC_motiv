@@ -57,8 +57,20 @@ GLM_str = num2str(GLM);
 GLMprm = which_GLM(GLM);
 
 %% create results folder
-results_folder = [studyRoot,filesep,'Second_level',filesep,...
-    'GLM',GLM_str,'_',NS_str,'subs_preprocSm',num2str(preproc_sm_kernel),'mm',filesep];
+switch condition
+    case 'fMRI'
+        results_folder = [studyRoot,filesep,'Second_level',filesep,...
+            'GLM',GLM_str,'_',NS_str,'subs_',...
+            'preprocSm',num2str(preproc_sm_kernel),'mm',filesep];
+    case 'fMRI_no_move'
+        results_folder = [studyRoot,filesep,'Second_level',filesep,...
+            'GLM',GLM_str,'_',NS_str,'subs_',...
+            'preprocSm',num2str(preproc_sm_kernel),'mm_no_moveRun',filesep];
+    case 'fMRI_no_move_bis'
+        results_folder = [studyRoot,filesep,'Second_level',filesep,...
+            'GLM',GLM_str,'_',NS_str,'subs_',...
+            'preprocSm',num2str(preproc_sm_kernel),'mm_no_moveSubs',filesep];
+end
 if exist(results_folder,'dir') ~= 7
     mkdir(results_folder);
 end
@@ -100,9 +112,10 @@ n_con = length(con_names);
 % loop over contrasts
 for iCon = 1:n_con
     con_str = num2str(iCon);
+    current_con_nm = con_names{iCon};
 
     % directory for concatenated contrast
-    conFolder_nm = strrep(con_names{iCon},' ','_');
+    conFolder_nm = strrep(current_con_nm,' ','_');
     conFolder_nm = strrep(conFolder_nm,':','');
     conFolder_nm = [results_folder, conFolder_nm];
     mkdir(conFolder_nm);
@@ -115,7 +128,7 @@ for iCon = 1:n_con
     % extract contrasts per subject
     for iS = 1:NS
         sub_nm = subject_id{iS};
-
+        
         % check incompatibility between some GLM and some subjects to see
         % if you need to redefine the list of subjects included in the
         % analysis
@@ -131,16 +144,30 @@ for iCon = 1:n_con
                     'functional' filesep, 'preproc_sm_',num2str(preproc_sm_kernel),'mm',filesep...
                     'GLM',GLM_str,'_no_movementRun' filesep];
         end
-        if iCon < 10
-            conlist(iS) = {[subject_folder,'con_000',con_str,'.nii,1']};
-        elseif iCon >= 10 && iCon < 100
-            conlist(iS) = {[subject_folder,'con_00',con_str,'.nii,1']};
-        elseif iCon >= 100 && iCon < 1000
-            conlist(iS) = {[subject_folder,'con_0',con_str,'.nii,1']};
-        elseif iCon >= 1000 && iCon < 10000
-            conlist(iS) = {[subject_folder,'con_',con_str,'.nii,1']};
-        end
-    end
+        
+        %% adapt contrast index since some conditions and contrasts are missing for some subjects
+        con_names_perSub = LGCM_contrasts(study_nm, sub_nm, GLM,...
+            computer_root, preproc_sm_kernel, condition);
+        if sum(strcmp(current_con_nm, con_names_perSub)) > 0
+            % extract index (for this subject) of the current contrast
+            jCon = find(strcmp(current_con_nm, con_names_perSub));
+            
+            % extract name for this particular subject of the contrast of
+            % interest
+            if jCon < 10
+                conlist(iS) = {[subject_folder,'con_000',con_str,'.nii,1']};
+            elseif jCon >= 10 && jCon < 100
+                conlist(iS) = {[subject_folder,'con_00',con_str,'.nii,1']};
+            elseif jCon >= 100 && jCon < 1000
+                conlist(iS) = {[subject_folder,'con_0',con_str,'.nii,1']};
+            elseif jCon >= 1000 && jCon < 10000
+                conlist(iS) = {[subject_folder,'con_',con_str,'.nii,1']};
+            end
+        end % in case contrast exists for the current subject
+    end % subject loop
+    
+    % remove empty subjects from the list for the current contrast
+    conlist(cellfun(@isempty,conlist)) = [];
 
     matlabbatch{batch_idx}.spm.stats.factorial_design.des.t1.scans = conlist;
 
@@ -166,7 +193,7 @@ for iCon = 1:n_con
     batch_idx = batch_idx + 1;
     matlabbatch{batch_idx}.spm.stats.con.spmmat(1) = cfg_dep('Model estimation: SPM.mat File',...
         substruct('.','val', '{}',{batch_estm_rtg}, '.','val', '{}',{1}, '.','val', '{}',{1}), substruct('.','spmmat'));
-    matlabbatch{batch_idx}.spm.stats.con.consess{1}.tcon.name = con_names{iCon};
+    matlabbatch{batch_idx}.spm.stats.con.consess{1}.tcon.name = current_con_nm;
     matlabbatch{batch_idx}.spm.stats.con.consess{1}.tcon.weights = 1;
     matlabbatch{batch_idx}.spm.stats.con.consess{1}.tcon.sessrep = 'none';
     matlabbatch{batch_idx}.spm.stats.con.delete = 0;
