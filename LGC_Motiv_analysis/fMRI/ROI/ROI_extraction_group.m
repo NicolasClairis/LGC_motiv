@@ -25,6 +25,12 @@ function[con_vec_all,...
 % 'fMRI': all subjects where fMRI ok
 % 'fMRI_no_move': remove runs with too much movement
 %
+% condition:
+% 'fMRI': all fMRI compatible data
+% 'fMRI_no_move': remove runs with too much movement
+% 'fMRI_no_move_bis': remove subjects with any run bearing too much
+% movement
+%
 % fig_disp:
 %(0) no display
 %(1) display figure
@@ -59,8 +65,9 @@ gitFolder = fullfile('C:','Users','Loco','Documents','GitHub','LGC_motiv','Matla
 ROI_path = [dataRoot,filesep,'results',filesep,'ROI',filesep];
 
 %% define subject list
+condition = 'fMRI';
 if ~exist('subject_id','var') || isempty(subject_id)
-    [subject_id, NS] = LGCM_subject_selection(study_nm);
+    [subject_id, NS] = LGCM_subject_selection(study_nm, condition);
 else
     NS = length(subject_id);
 end
@@ -149,12 +156,18 @@ for iROI = 1:n_ROIs
         sub_fMRI_path = [fullfile(dataRoot,...
             ['CID',sub_nm], 'fMRI_analysis','functional',...
             ['preproc_sm_',num2str(preproc_sm_kernel),'mm'],['GLM',GLMstr]),filesep];
+        % extract contrasts for the current subject
+        [con_names_currSub] = LGCM_contrasts(study_nm, sub_nm, GLM,...
+            computerRoot, preproc_sm_kernel, condition);
         
         % extract contrast for the current subject in the current ROI
         % for each contrast
         for iCon = 1:n_max_con
-            [ con_value ] = ROI_extraction( '', iCon, sub_fMRI_path, sxyz_ROI, beta_or_t_value );
-            con_vec_all(iCon, iS, iROI) = con_value; % save mean beta for the selected ROI inside the big resulting matrix
+            jCon = find(strcmp(con_names(iCon), con_names_currSub));
+            if ~isempty(jCon) % if participant doesn't have the corresponding contrast, just ignore this subject
+                [ con_value ] = ROI_extraction( '', jCon, sub_fMRI_path, sxyz_ROI, beta_or_t_value );
+                con_vec_all(iCon, iS, iROI) = con_value; % save mean beta for the selected ROI inside the big resulting matrix
+            end
         end % contrast
         
         %% indicator subjectdone

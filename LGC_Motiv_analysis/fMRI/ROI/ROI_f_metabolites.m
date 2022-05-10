@@ -27,7 +27,8 @@ metabolite_nm = metabolites{metabolite_idx};
 GLM = spm_input('GLM number',1,'e');
 
 %% define all subjects
-[subject_id, NS] = LGCM_subject_selection('study1');
+condition = 'fMRI';
+[subject_id, NS] = LGCM_subject_selection('study1', condition);
 
 %% extract all metabolites
 [metabolites] = metabolite_load(subject_id);
@@ -44,7 +45,8 @@ high_met_subs = metabolite_allSubs > med_metabolite_allSubs;
 [con_vec_all,...
     ~, ~, ~,...
     con_names,...
-    ROI_coords, ttest_ROI] = ROI_extraction_group('study1', GLM, subject_id, 0);
+    ROI_coords, ttest_ROI] = ROI_extraction_group('study1', GLM,...
+    subject_id, condition, 0);
 n_cons = size(con_vec_all, 1);
 
 %% extract ROI data split according to the metabolite levels
