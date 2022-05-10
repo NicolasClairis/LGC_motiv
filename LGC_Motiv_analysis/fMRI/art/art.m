@@ -253,7 +253,7 @@ else
     end
     
     % select subject
-    [subject_id, NS] = LGCM_subject_selection(study_nm);
+    [subject_id, NS] = LGCM_subject_selection(study_nm, 'fMRI');
     subjectList = subject_id{1};
     for iS = 2:NS
         subjectList = [subjectList,' | ',subject_id{iS}];
