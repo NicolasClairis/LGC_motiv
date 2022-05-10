@@ -111,7 +111,6 @@ n_con = length(con_names);
 
 % loop over contrasts
 for iCon = 1:n_con
-    con_str = num2str(iCon);
     current_con_nm = con_names{iCon};
 
     % directory for concatenated contrast
@@ -151,6 +150,7 @@ for iCon = 1:n_con
         if sum(strcmp(current_con_nm, con_names_perSub)) > 0
             % extract index (for this subject) of the current contrast
             jCon = find(strcmp(current_con_nm, con_names_perSub));
+            con_str = num2str(jCon);
             
             % extract name for this particular subject of the contrast of
             % interest
