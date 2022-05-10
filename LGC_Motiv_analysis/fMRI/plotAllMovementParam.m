@@ -21,7 +21,7 @@ if ~exist(storageFolder,'dir')
     mkdir(storageFolder);
 end
 
-[subject_id, NS] = LGCM_subject_selection(study_nm);
+[subject_id, NS] = LGCM_subject_selection(study_nm,'fMRI');
 
 yScale = [-3 3];
 
