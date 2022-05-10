@@ -63,14 +63,15 @@ function [GLMprm] = which_GLM(GLM)
 %       .(choice/chosen).(Ep/Em).(R/P/RP).money_chosen:
 %       (1) money chosen amount
 %       (2) |money chosen amount|
-%       (3) money levels (-4/-3/-2/-1/0/1/2/3) chosen
-%       (4) |money levels (0/1/2/3/4) chosen|
+%       (3) money levels (-4/-3/-2/-1/1/2/3/4) chosen from highest loss
+%       until highest gain
+%       (4) |money levels (1/2/3/4) chosen|
 %
 %       .(choice/chosen).(Ep/Em).(R/P/RP).money_unchosen:
 %       (1) money unchosen amount
 %       (2) |money unchosen amount|
-%       (3) money levels (-4/-3/-2/-1/0/1/2/3) unchosen
-%       (4) |money levels (0/1/2/3/4) unchosen|
+%       (3) money levels (-4/-3/-2/-1/1/2/3/4) unchosen
+%       (4) |money levels (1/2/3/4) unchosen|
 %
 %       .(choice/chosen).(Ep/Em).(R/P/RP).money_varOption:
 %       (1) money amount non-default option
@@ -145,8 +146,8 @@ function [GLMprm] = which_GLM(GLM)
 %       .Eperf.(Ep/Em).(R/P/RP).money_chosen
 %       (1) money chosen amount
 %       (2) |money chosen amount|
-%       (3) money levels (-4/-3/-2/-1/0/1/2/3) chosen
-%       (4) |money levels (0/1/2/3/4) chosen|
+%       (3) money levels (-4/-3/-2/-1/1/2/3/4) chosen
+%       (4) |money levels (1/2/3/4) chosen|
 %
 %       .Eperf.(Ep/Em).(R/P/RP).E_chosen
 %       (1) effort level (0/1/2/3) associated to chosen option
@@ -1132,8 +1133,28 @@ switch GLM
             GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
             % feedback
             GLMprm.model_onset.(Epm_nm).fbk = 'stick';
+            
         end % physical/mental loop
-end % GLM number
+    case 38 % dACC special= choice: confidence/RT; chosen+effort: incentive + effort
+        % general parameters
+        GLMprm.gal.orth_vars = 1; % orthogonalization to remove uncertainty from RT regressor
+        GLMprm.gal.zPerRun = 1; % zscore net value per run
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'stick';
+            GLMprm.choice.(Epm_nm).RPpool = 1;
+            GLMprm.choice.(Epm_nm).RP.confidence = 2;
+            GLMprm.choice.(Epm_nm).RP.conf_mdl = 'mdl_4';
+            GLMprm.choice.(Epm_nm).RP.RT = 1;
+            % chosen
+            GLMprm.model_onset.(Epm_nm).chosen = 'boxcar_bis';
+            GLMprm.chosen.(Epm_nm).RPpool = 1;
+            GLMprm.chosen.(Epm_nm).RP.money_chosen = 3;
+            GLMprm.chosen.(Epm_nm).RP.E_chosen = 1;
+            % feedback
+            GLMprm.model_onset.(Epm_nm).fbk = 'stick';
+        end % GLM number
 
 %% warnings: check compatibility of the GLM parameters entered
 isGLMokCheck(GLMprm);

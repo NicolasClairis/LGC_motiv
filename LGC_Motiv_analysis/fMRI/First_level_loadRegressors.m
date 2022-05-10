@@ -133,7 +133,8 @@ money_level_right = behavioralDataStruct.(task_behavioral_id).choiceOptions.R.ri
 money_level_left(money_level_left == 0 & RP_var == -1) = -4;
 money_level_right(money_level_right == 0 & RP_var == -1) = -4;
 
-% fix data for subjects where IP had a bug
+% fix data for subjects where IP had a bug and two options were based on
+% the same amount
 if strcmp(study_nm,'study1')
     if strcmp(sub_nm,'064') && strcmp(task_nm,'mental')
         money_level_left(money_level_left == 3) = 2;
@@ -159,6 +160,19 @@ if strcmp(study_nm,'study1')
         money_level_right(money_level_right == -4) = -3;
     end
 end
+
+% increase all reward levels to have a range between 1 and 4 instead of
+% between 0 and 3
+money_level_left(money_level_left == 3 & RP_var == 1) = 4;
+money_level_left(money_level_left == 2 & RP_var == 1) = 3;
+money_level_left(money_level_left == 1 & RP_var == 1) = 2;
+money_level_left(money_level_left == 0 & RP_var == 1) = 1;
+money_level_right(money_level_right == 3 & RP_var == 1) = 4;
+money_level_right(money_level_right == 2 & RP_var == 1) = 3;
+money_level_right(money_level_right == 1 & RP_var == 1) = 2;
+money_level_right(money_level_right == 0 & RP_var == 1) = 1;
+
+% extract other relevant variables
 money_level_varOption = money_level_left.*(defaultSide == 1) + money_level_right.*(defaultSide == -1);
 abs_money_level_varOption = abs(money_level_varOption);
 % loading effort choice
@@ -719,7 +733,7 @@ end % model choice
 
 %% chosen period
 chosenModel = GLMprm.model_onset.(task_id).chosen;
-if ismember(chosenModel,{'stick','boxcar'})
+if ismember(chosenModel,{'stick','boxcar','boxcar_bis'})
 
     for iRP_chosen = 1:length(RPchosenCond)
         RP_chosen_nm = RPchosenCond{iRP_chosen};
@@ -758,8 +772,13 @@ if ismember(chosenModel,{'stick','boxcar'})
         switch chosenModel
             case 'stick'
                 modelChosenDur = 0;
-            case 'boxcar'
+            case 'boxcar' % duration displaying the chosen option
                 modelChosenDur = dispChosenDur(chosen_trial_idx);
+            case 'boxcar_bis' % duration going form display of chosen option
+                % until the end of the exertion of the effort
+                modelChosenDur = dispChosenDur(chosen_trial_idx) +...
+                    preEffortCrossDur(chosen_trial_idx) +...
+                    EperfDur(chosen_trial_idx);
         end
 
         % modulators
