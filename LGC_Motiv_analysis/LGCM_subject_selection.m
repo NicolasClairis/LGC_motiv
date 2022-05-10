@@ -45,7 +45,9 @@ switch study_nm
                     '054','055',...
                     '056','060','061','064','065','068','069','071','074','075',...
                     '076','079',...
-                    '081','082','087','090','093','095','100'}; % 008 and 022 removed
+                    '081','082','087','090','093','095','100'};
+                % 008 and 022 completely removed (because all runs are bad
+                % in terms of movement)
             case 'fMRI_no_move_bis'
                 % ignore subjects with too much movement in ANY RUN (ie no
                 % filtering of bad runs, but only of bad subjects who had
@@ -65,8 +67,7 @@ switch study_nm
         % 056 (run 2 + 3), 064 (run 2), 065 (run3), 069 (run3 and 4),
         % 079 (run 3), 090 (run 3), 093 (run1 + 3), 095 (run 1)
         warning('check 001, 005 and... for movement');
-
-
+        
         %% restrict to subjects of interest
         subject_id = all_subs;
         %% Notes:
