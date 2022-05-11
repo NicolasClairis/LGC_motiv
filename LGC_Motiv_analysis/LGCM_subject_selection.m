@@ -87,7 +87,6 @@ switch study_nm
     otherwise
         error('error in study definition');
 end
-
 NS = length(subject_id);
 
 end % function
