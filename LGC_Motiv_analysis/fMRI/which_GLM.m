@@ -32,7 +32,8 @@ function [GLMprm] = which_GLM(GLM)
 %   .model_onset: indicate for each task (Ep/Em: physical/mental) for each
 %   event (preChoiceCross/choice/chosen/preEffortCross/Eperf/fbk) if it should be modelled as a
 %   stick ('stick') as a boxcar ('boxcar') or not included in the GLM
-%   ('none')
+%   ('none'), for some cases, 'boxcar_bis' corresponds to situation where
+%   the boxcar also entails following periods of the task
 %       .preChoiceCross: (white) fixation cross before choice period
 %       .choice: choice period (when options are displayed on screen)
 %       .chosen: moment when the chosen option is displayed on screen
@@ -40,7 +41,7 @@ function [GLMprm] = which_GLM(GLM)
 %       .Eperf: physical/mental effort performance period
 %       .fbk: feedback period
 %
-%   .choice/chosen/Eperf/fbk: for each event, for each task (Ep/Em) and 
+%   .choice/chosen/preEffortCross/Eperf/fbk: for each event, for each task (Ep/Em) and 
 %   for each condition (R/P/RP) indicate if a given regressor should be 
 %   included or not.
 %   .Ep/Em: physical (Ep) or mental (Em) effort task
@@ -296,6 +297,30 @@ for iEpm = 1:length(Ep_Em)
             GLMprm.chosen.(EpEm_nm).(RP_nm).trialN] = deal(0);
         [GLMprm.chosen.(EpEm_nm).(RP_nm).NV_mdl,...
             GLMprm.chosen.(EpEm_nm).(RP_nm).conf_mdl] = deal('');
+        
+        % pre-effort black cross
+        % pool reward and punishment together (default)
+        GLMprm.preEffortCross.(EpEm_nm).RPpool = 1;
+        [GLMprm.preEffortCross.(EpEm_nm).(RP_nm).money_chosen,...
+            GLMprm.preEffortCross.(EpEm_nm).(RP_nm).E_chosen,...
+            GLMprm.preEffortCross.(EpEm_nm).(RP_nm).NV_chosen,...
+            GLMprm.preEffortCross.(EpEm_nm).(RP_nm).NV_varOption,...
+            GLMprm.preEffortCross.(EpEm_nm).(RP_nm).RT_1stAnswer,...
+            GLMprm.preEffortCross.(EpEm_nm).(RP_nm).trialN,...
+            GLMprm.preEffortCross.(EpEm_nm).(RP_nm).confidence] = deal(0);
+        % specific variables for each effort type
+        switch EpEm_nm
+            case 'Ep'
+                % effort performance
+                [GLMprm.preEffortCross.Ep.(RP_nm).F_peak,...
+                    GLMprm.preEffortCross.Ep.(RP_nm).F_integral] = deal(0);
+            case 'Em'
+                % effort performance
+                [GLMprm.preEffortCross.Em.(RP_nm).RT_avg,...
+                    GLMprm.preEffortCross.Em.(RP_nm).n_errors] = deal(0);
+        end
+        [GLMprm.preEffortCross.(EpEm_nm).(RP_nm).NV_mdl,...
+            GLMprm.preEffortCross.(EpEm_nm).(RP_nm).conf_mdl] = deal('');
         
         % effort performance
         % pool reward and punishment together (default)
