@@ -29,7 +29,7 @@ switch study_nm
         switch condition
             case {'behavior','fMRI'}
                 %% all subjects
-                all_subs = {'001','002','003','008','009','015','017','018',...
+                all_subs = {'001','002','003','005','008','009','015','017','018',...
                     '020','022','029','032',...
                     '035','036','039','040','044','045','046','047','050','052',...
                     '054','055',...
@@ -66,7 +66,7 @@ switch study_nm
         % borderline movement: 022 (all), 040 (run 4), 050 (run4), 052 (run 2),
         % 056 (run 2 + 3), 064 (run 2), 065 (run3), 069 (run3 and 4),
         % 079 (run 3), 090 (run 3), 093 (run1 + 3), 095 (run 1)
-        warning('check 001, 005 and... for movement');
+        warning('check 001, 005, 088 and... for movement');
         
         %% restrict to subjects of interest
         subject_id = all_subs;
