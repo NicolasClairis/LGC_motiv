@@ -403,6 +403,13 @@ switch chosen_RPpool
     case 1
         RPchosenCond = {'RP'};
 end
+preEcross_RPpool = GLMprm.preEffortCross.(task_id).RPpool;
+switch preEcross_RPpool
+    case 0
+        RPpreEcrossCond = {'R','P'};
+    case 1
+        RPpreEcrossCond = {'RP'};
+end
 Eperf_RPpool = GLMprm.Eperf.(task_id).RPpool;
 switch Eperf_RPpool
     case 0
@@ -1011,17 +1018,168 @@ end % model chosen period
 
 %% fixation cross before effort
 preEffortCrossModel = GLMprm.model_onset.(task_id).preEffortCross;
-if ismember(preEffortCrossModel,{'stick','boxcar'})
-    iCond = iCond + 1;
-    switch preEffortCrossModel
-        case 'stick'
-            modelPreEffortCrossdur = 0;
-        case 'boxcar'
-            modelPreEffortCrossdur = preEffortCrossDur;
-    end
-    [matlabbatch] = First_level_loadEachCondition(matlabbatch, sub_idx, iRun, iCond,...
-        'preEffort fixation cross', preEffortCrossOnsets, modelPreEffortCrossdur, 0, '', [], orth_vars);
-end
+if ismember(preEffortCrossModel,{'stick','boxcar','boxcar_bis'})
+
+    for iRP_preEcross = 1:length(RPpreEcrossCond)
+        RP_preEcross_nm = RPpreEcrossCond{iRP_preEcross};
+        %
+        preEcrossModel_money_chosen     = GLMprm.preEffortCross.(task_id).(RP_preEcross_nm).money_chosen;
+        preEcrossModel_effort_chosen    = GLMprm.preEffortCross.(task_id).(RP_preEcross_nm).E_chosen;
+        switch task_id
+            case 'Ep'
+                preEcrossModel_F_peak           = GLMprm.preEffortCross.(task_id).(RP_preEcross_nm).F_peak;
+                preEcrossModel_F_integral       = GLMprm.preEffortCross.(task_id).(RP_preEcross_nm).F_integral;
+                preEcrossModel_RT_avg = 0;
+                preEcrossModel_n_errors = 0;
+            case 'Em'
+                preEcrossModel_F_peak = 0;
+                preEcrossModel_F_integral = 0;
+                preEcrossModel_RT_avg           = GLMprm.preEffortCross.(task_id).(RP_preEcross_nm).RT_avg;
+                preEcrossModel_n_errors         = GLMprm.preEffortCross.(task_id).(RP_preEcross_nm).n_errors;
+        end
+        preEcrossModel_NV_chosen        = GLMprm.preEffortCross.(task_id).(RP_preEcross_nm).NV_chosen;
+        preEcrossModel_NV_varOption     = GLMprm.preEffortCross.(task_id).(RP_preEcross_nm).NV_varOption;
+        preEcrossModel_RT1stAnswer      = GLMprm.preEffortCross.(task_id).(RP_preEcross_nm).RT_1stAnswer;
+        preEcrossModel_trialN           = GLMprm.preEffortCross.(task_id).(RP_preEcross_nm).trialN;
+
+        % extract trial index for the current loop
+        switch RP_preEcross_nm
+            case 'RP'
+                preEcross_trial_idx = 1:length(RP_var_binary);
+            case 'R'
+                preEcross_trial_idx = RP_var_binary == 1;
+            case 'P'
+                preEcross_trial_idx = RP_var_binary == 0;
+        end
+        
+        % onset
+        iCond = iCond + 1;
+        modelpreEcrossOnset = preEffortCrossOnsets(preEcross_trial_idx);
+        % duration
+        switch preEffortCrossModel
+            case 'stick'
+                modelPreEffortCrossdur = 0;
+            case 'boxcar'
+                modelPreEffortCrossdur = preEffortCrossDur(preEcross_trial_idx);
+            case 'boxcar_bis'
+                modelPreEffortCrossdur = preEffortCrossDur(preEcross_trial_idx) +...
+                    EperfDur(preEcross_trial_idx);
+        end
+
+        % modulators
+        n_preEcrossMods = 0;
+        preEcross_modNames = cell(1,1);
+        preEcross_modVals = [];
+
+        % money chosen
+        if preEcrossModel_money_chosen > 0
+            n_preEcrossMods = n_preEcrossMods + 1;
+            preEcross_modNames{n_preEcrossMods} = 'money chosen';
+            switch preEcrossModel_money_chosen
+                case 1
+                    preEcross_modVals(n_preEcrossMods,:) = raw_or_z(money_amount_chosen(preEcross_trial_idx));
+                case 2
+                    preEcross_modVals(n_preEcrossMods,:) = raw_or_z(abs_money_amount_chosen(preEcross_trial_idx));
+                case 3
+                    preEcross_modVals(n_preEcrossMods,:) = raw_or_z(money_level_chosen(preEcross_trial_idx));
+                case 4
+                    preEcross_modVals(n_preEcrossMods,:) = raw_or_z(abs_money_level_chosen(preEcross_trial_idx));
+                otherwise
+                    error('not ready yet');
+            end
+        end
+
+        % effort chosen
+        if preEcrossModel_effort_chosen > 0
+            n_preEcrossMods = n_preEcrossMods + 1;
+            preEcross_modNames{n_preEcrossMods} = 'effort chosen';
+            switch preEcrossModel_effort_chosen
+                case 1
+                    preEcross_modVals(n_preEcrossMods,:) = raw_or_z(E_chosen(preEcross_trial_idx));
+                otherwise
+                    error('not ready yet');
+            end
+        end
+        
+        % force peak
+        if preEcrossModel_F_peak> 0
+            error('case not ready yet.');
+        end
+        
+        % force integral
+        if preEcrossModel_F_integral > 0
+            error('case not ready yet.');
+        end
+        
+        % RT average
+        if preEcrossModel_RT_avg > 0
+            error('case not ready yet.');
+        end
+        
+        % number of errors
+        if preEcrossModel_n_errors > 0
+            error('case not ready yet.');
+        end
+        
+        % net value chosen
+        if preEcrossModel_NV_chosen > 0
+            n_preEcrossMods = n_preEcrossMods + 1;
+            preEcross_modNames{n_preEcrossMods} = 'NV chosen';
+            switch preEcrossModel_NV_chosen
+                case 1
+                    preEcross_modVals(n_preEcrossMods,:) = raw_or_z(NV_chosen(preEcross_trial_idx));
+                otherwise
+                    error('not ready yet');
+            end
+        end
+        
+        % net value non-default option
+        if preEcrossModel_NV_varOption > 0
+            n_preEcrossMods = n_preEcrossMods + 1;
+            preEcross_modNames{n_preEcrossMods} = 'NV non-default';
+            switch preEcrossModel_NV_varOption
+                case 1
+                    preEcross_modVals(n_preEcrossMods,:) = raw_or_z(NV_varOption(preEcross_trial_idx));
+                otherwise
+                    error('not ready yet');
+            end
+        end
+        
+        % RT 1st answer
+        if preEcrossModel_RT1stAnswer > 0
+            n_preEcrossMods = n_preEcrossMods + 1;
+            preEcross_modNames{n_preEcrossMods} = 'RT 1st answer';
+            switch preEcrossModel_RT1stAnswer
+                case 1
+                    error('not ready yet');
+                    %             preEcross_modVals(n_preEcrossMods,:) = ;
+                otherwise
+                    error('not ready yet');
+            end
+        end
+        
+        % trial number
+        if preEcrossModel_trialN > 0
+            n_preEcrossMods = n_preEcrossMods + 1;
+            preEcross_modNames{n_preEcrossMods} = 'trial number';
+            switch preEcrossModel_trialN
+                case 1
+                    preEcross_modVals(n_preEcrossMods,:) = raw_or_z(trialN(preEcross_trial_idx));
+                case 2
+                    preEcross_modVals(n_preEcrossMods,:) = raw_or_z(trialN_dEch(preEcross_trial_idx));
+                case 3
+                    preEcross_modVals(n_preEcrossMods,:) = raw_or_z(trialN_dEnonDef(preEcross_trial_idx));
+                otherwise
+                    error('not ready yet');
+            end
+        end
+
+        [matlabbatch] = First_level_loadEachCondition(matlabbatch, sub_idx, iRun, iCond,...
+            ['preEffort fixation cross',RP_preEcross_nm], modelpreEcrossOnset, modelPreEffortCrossdur,...
+            n_preEcrossMods, preEcross_modNames, preEcross_modVals,...
+            orth_vars);
+    end % RP
+end % model pre-effort cross
 
 %% effort performance
 EperfModel = GLMprm.model_onset.(task_id).Eperf;
@@ -1183,7 +1341,7 @@ if ismember(EperfModel,{'stick','boxcar'})
             n_EperfMods, Eperf_modNames, Eperf_modVals,...
             orth_vars);
     end % RP
-end % model chosen period
+end % model effort performance period
 
 %% feedback
 fbkModel = GLMprm.model_onset.(task_id).fbk;
