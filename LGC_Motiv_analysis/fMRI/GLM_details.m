@@ -604,7 +604,7 @@ for iEpm = 1:length(Epm)
             end
             
             % money sum of both options
-            switch GLMprm.choice.(task_id_nm).(RP_dispChosen_nm).money_sum
+            switch GLMprm.chosen.(task_id_nm).(RP_dispChosen_nm).money_sum
                 case 1
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                     reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG chosen ',RP_dispChosen_nm,': money sum'];
@@ -797,25 +797,25 @@ for iEpm = 1:length(Epm)
             switch GLMprm.preEffortCross.(task_id_nm).(RP_preEcross_nm).money_chosen
                 case 1
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
-                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG effort ',RP_preEcross_nm,': money chosen'];
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG preEffort cross ',RP_preEcross_nm,': money chosen'];
                     disp([num2str(n_regs.(task_id_nm)),') effort period: money chosen (amounts) ']);
                     % if derivative added => add derivatives
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
                 case 2
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
-                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG effort ',RP_preEcross_nm,': money chosen'];
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG preEffort cross ',RP_preEcross_nm,': money chosen'];
                     disp([num2str(n_regs.(task_id_nm)),') effort period: |money chosen| (amounts) ']);
                     % if derivative added => add derivatives
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
                 case 3
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
-                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG effort ',RP_preEcross_nm,': money chosen'];
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG preEffort cross ',RP_preEcross_nm,': money chosen'];
                     disp([num2str(n_regs.(task_id_nm)),') effort period: money chosen (levels) ']);
                     % if derivative added => add derivatives
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
                 case 4
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
-                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG effort ',RP_preEcross_nm,': money chosen'];
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG preEffort cross ',RP_preEcross_nm,': money chosen'];
                     disp([num2str(n_regs.(task_id_nm)),') effort period: |money chosen| (levels) ']);
                     % if derivative added => add derivatives
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
@@ -825,7 +825,7 @@ for iEpm = 1:length(Epm)
             switch GLMprm.preEffortCross.(task_id_nm).(RP_preEcross_nm).E_chosen
                 case 1
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
-                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG effort ',RP_preEcross_nm,': effort chosen'];
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG preEffort cross ',RP_preEcross_nm,': effort chosen'];
                     disp([num2str(n_regs.(task_id_nm)),') effort period: effort chosen (levels) ']);
                     % if derivative added => add derivatives
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
@@ -837,7 +837,7 @@ for iEpm = 1:length(Epm)
                     switch GLMprm.preEffortCross.(task_id_nm).(RP_preEcross_nm).F_peak
                         case 1
                             n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
-                            reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG effort ',RP_preEcross_nm,': force peak'];
+                            reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG preEffort cross ',RP_preEcross_nm,': force peak'];
                             disp([num2str(n_regs.(task_id_nm)),') effort period: force peak ']);
                             % if derivative added => add derivatives
                             n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
@@ -847,7 +847,7 @@ for iEpm = 1:length(Epm)
                     switch GLMprm.preEffortCross.(task_id_nm).(RP_preEcross_nm).F_integral
                         case 1
                             n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
-                            reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG effort ',RP_preEcross_nm,': force integral'];
+                            reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG preEffort cross ',RP_preEcross_nm,': force integral'];
                             disp([num2str(n_regs.(task_id_nm)),') effort period: force integral ']);
                             % if derivative added => add derivatives
                             n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
@@ -858,7 +858,7 @@ for iEpm = 1:length(Epm)
                     switch GLMprm.preEffortCross.(task_id_nm).(RP_preEcross_nm).RT_avg
                         case 1
                             n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
-                            reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG effort ',RP_preEcross_nm,': average RT effort'];
+                            reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG preEffort cross ',RP_preEcross_nm,': average RT effort'];
                             disp([num2str(n_regs.(task_id_nm)),') effort period: average RT effort ']);
                             % if derivative added => add derivatives
                             n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
@@ -868,7 +868,7 @@ for iEpm = 1:length(Epm)
                     switch GLMprm.preEffortCross.(task_id_nm).(RP_preEcross_nm).n_errors
                         case 1
                             n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
-                            reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG effort ',RP_preEcross_nm,': number of errors'];
+                            reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG preEffort cross ',RP_preEcross_nm,': number of errors'];
                             disp([num2str(n_regs.(task_id_nm)),') effort period: number of errors ']);
                             % if derivative added => add derivatives
                             n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
@@ -879,7 +879,7 @@ for iEpm = 1:length(Epm)
             switch GLMprm.preEffortCross.(task_id_nm).(RP_preEcross_nm).NV_chosen
                 case 1
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
-                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG effort ',RP_preEcross_nm,': net value chosen'];
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG preEffort cross ',RP_preEcross_nm,': net value chosen'];
                     disp([num2str(n_regs.(task_id_nm)),') effort period: net value chosen ']);
                     % if derivative added => add derivatives
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
