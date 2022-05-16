@@ -1195,7 +1195,7 @@ switch GLM
             GLMprm.choice.(Epm_nm).RP.conf_mdl = 'mdl_4';
             GLMprm.choice.(Epm_nm).RP.RT = 1;
             % chosen
-            GLMprm.model_onset.(Epm_nm).chosen = 'boxcar_bis';
+            GLMprm.model_onset.(Epm_nm).chosen = 'stick';
             % pre-effort cross (effort preparation)
             GLMprm.model_onset.(Epm_nm).preEffortCross = 'boxcar_bis';
             GLMprm.preEffortCross.(Epm_nm).RPpool = 1;
