@@ -798,25 +798,25 @@ for iEpm = 1:length(Epm)
                 case 1
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                     reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG preEffort cross ',RP_preEcross_nm,': money chosen'];
-                    disp([num2str(n_regs.(task_id_nm)),') effort period: money chosen (amounts) ']);
+                    disp([num2str(n_regs.(task_id_nm)),') pre-effort cross: money chosen (amounts) ']);
                     % if derivative added => add derivatives
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
                 case 2
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                     reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG preEffort cross ',RP_preEcross_nm,': money chosen'];
-                    disp([num2str(n_regs.(task_id_nm)),') effort period: |money chosen| (amounts) ']);
+                    disp([num2str(n_regs.(task_id_nm)),') pre-effort cross: |money chosen| (amounts) ']);
                     % if derivative added => add derivatives
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
                 case 3
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                     reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG preEffort cross ',RP_preEcross_nm,': money chosen'];
-                    disp([num2str(n_regs.(task_id_nm)),') effort period: money chosen (levels) ']);
+                    disp([num2str(n_regs.(task_id_nm)),') pre-effort cross: money chosen (levels) ']);
                     % if derivative added => add derivatives
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
                 case 4
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                     reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG preEffort cross ',RP_preEcross_nm,': money chosen'];
-                    disp([num2str(n_regs.(task_id_nm)),') effort period: |money chosen| (levels) ']);
+                    disp([num2str(n_regs.(task_id_nm)),') pre-effort cross: |money chosen| (levels) ']);
                     % if derivative added => add derivatives
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
             end
@@ -826,7 +826,7 @@ for iEpm = 1:length(Epm)
                 case 1
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                     reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG preEffort cross ',RP_preEcross_nm,': effort chosen'];
-                    disp([num2str(n_regs.(task_id_nm)),') effort period: effort chosen (levels) ']);
+                    disp([num2str(n_regs.(task_id_nm)),') pre-effort cross: effort chosen (levels) ']);
                     % if derivative added => add derivatives
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
             end
@@ -838,7 +838,7 @@ for iEpm = 1:length(Epm)
                         case 1
                             n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                             reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG preEffort cross ',RP_preEcross_nm,': force peak'];
-                            disp([num2str(n_regs.(task_id_nm)),') effort period: force peak ']);
+                            disp([num2str(n_regs.(task_id_nm)),') pre-effort cross: force peak ']);
                             % if derivative added => add derivatives
                             n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
                     end
@@ -848,7 +848,7 @@ for iEpm = 1:length(Epm)
                         case 1
                             n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                             reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG preEffort cross ',RP_preEcross_nm,': force integral'];
-                            disp([num2str(n_regs.(task_id_nm)),') effort period: force integral ']);
+                            disp([num2str(n_regs.(task_id_nm)),') pre-effort cross: force integral ']);
                             % if derivative added => add derivatives
                             n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
                     end
@@ -859,7 +859,7 @@ for iEpm = 1:length(Epm)
                         case 1
                             n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                             reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG preEffort cross ',RP_preEcross_nm,': average RT effort'];
-                            disp([num2str(n_regs.(task_id_nm)),') effort period: average RT effort ']);
+                            disp([num2str(n_regs.(task_id_nm)),') pre-effort cross: average RT effort ']);
                             % if derivative added => add derivatives
                             n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
                     end
@@ -869,7 +869,7 @@ for iEpm = 1:length(Epm)
                         case 1
                             n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                             reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG preEffort cross ',RP_preEcross_nm,': number of errors'];
-                            disp([num2str(n_regs.(task_id_nm)),') effort period: number of errors ']);
+                            disp([num2str(n_regs.(task_id_nm)),') pre-effort cross: number of errors ']);
                             % if derivative added => add derivatives
                             n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
                     end
@@ -880,7 +880,7 @@ for iEpm = 1:length(Epm)
                 case 1
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                     reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG preEffort cross ',RP_preEcross_nm,': net value chosen'];
-                    disp([num2str(n_regs.(task_id_nm)),') effort period: net value chosen ']);
+                    disp([num2str(n_regs.(task_id_nm)),') pre-effort cross: net value chosen ']);
                     % if derivative added => add derivatives
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
             end
@@ -890,7 +890,7 @@ for iEpm = 1:length(Epm)
                 case 1
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                     reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG effort ',RP_preEcross_nm,': net value non-default option'];
-                    disp([num2str(n_regs.(task_id_nm)),') effort period: net value non-default ']);
+                    disp([num2str(n_regs.(task_id_nm)),') pre-effort cross: net value non-default ']);
                     % if derivative added => add derivatives
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
             end
@@ -900,7 +900,7 @@ for iEpm = 1:length(Epm)
                 case 1
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                     reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG effort ',RP_preEcross_nm,': RT 1st answer'];
-                    disp([num2str(n_regs.(task_id_nm)),') effort period: RT 1st answer (raw) ']);
+                    disp([num2str(n_regs.(task_id_nm)),') pre-effort cross: RT 1st answer (raw) ']);
                     % if derivative added => add derivatives
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
             end
@@ -910,19 +910,19 @@ for iEpm = 1:length(Epm)
                 case 1
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                     reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG effort ',RP_preEcross_nm,': trial number'];
-                    disp([num2str(n_regs.(task_id_nm)),') effort period: trial number ']);
+                    disp([num2str(n_regs.(task_id_nm)),') pre-effort cross: trial number ']);
                     % if derivative added => add derivatives
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
                 case 2
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                     reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG effort ',RP_preEcross_nm,': trial number x (Echosen-Eunchosen) (E levels)'];
-                    disp([num2str(n_regs.(task_id_nm)),') effort period: trial number x (effort chosen-effort unchosen) (effort levels) ']);
+                    disp([num2str(n_regs.(task_id_nm)),') pre-effort cross: trial number x (effort chosen-effort unchosen) (effort levels) ']);
                     % if derivative added => add derivatives
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
                 case 3
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                     reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG effort ',RP_preEcross_nm,': trial number x (EnonDef-Edef) (E levels)'];
-                    disp([num2str(n_regs.(task_id_nm)),') effort period: trial number x (effort non-default - effort default) (effort levels) ']);
+                    disp([num2str(n_regs.(task_id_nm)),') pre-effort cross: trial number x (effort non-default - effort default) (effort levels) ']);
                     % if derivative added => add derivatives
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
             end
@@ -932,13 +932,13 @@ for iEpm = 1:length(Epm)
                 case 1 % confidence ratings 0/1
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                     reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG effort ',RP_preEcross_nm,': confidence'];
-                    disp([num2str(n_regs.(task_id_nm)),') effort period: confidence (levels) ']);
+                    disp([num2str(n_regs.(task_id_nm)),') pre-effort cross: confidence (levels) ']);
                     % if derivative added => add derivatives
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
                 case 2 % confidence inferred by the model
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                     reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG effort ',RP_preEcross_nm,': confidence'];
-                    disp([num2str(n_regs.(task_id_nm)),') effort period: confidence (inferred by the model) ']);
+                    disp([num2str(n_regs.(task_id_nm)),') pre-effort cross: confidence (inferred by the model) ']);
                     % if derivative added => add derivatives
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
             end
