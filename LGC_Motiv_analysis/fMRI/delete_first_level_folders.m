@@ -24,7 +24,10 @@ if del_check ~= 1
     return;
 end
 
-[subject_id, NS] = LGCM_subject_selection(study_nm);
+condition = 'fMRI';
+warning('should add a filter here to select fMRI/fMRI_noMove/etc.');
+
+[subject_id, NS] = LGCM_subject_selection(study_nm, condition);
 
 %% working directories
 computer_root = LGCM_root_paths();
