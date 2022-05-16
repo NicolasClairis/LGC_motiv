@@ -1204,6 +1204,35 @@ switch GLM
             % feedback
             GLMprm.model_onset.(Epm_nm).fbk = 'stick';
         end % physical/mental loop
+    case 40 % dACC special bis = choice: confidence/RT; effort cross and effort: incentive + effort
+        % general parameters
+        GLMprm.gal.orth_vars = 1; % orthogonalization to remove uncertainty from RT regressor
+        GLMprm.gal.zPerRun = 1; % zscore net value per run
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % initial cross
+            GLMprm.model_onset.(Epm_nm).preChoiceCross = 'stick';
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'stick';
+            GLMprm.choice.(Epm_nm).RPpool = 1;
+            GLMprm.choice.(Epm_nm).RP.confidence = 2;
+            GLMprm.choice.(Epm_nm).RP.conf_mdl = 'mdl_4';
+            GLMprm.choice.(Epm_nm).RP.RT = 1;
+            % chosen
+            GLMprm.model_onset.(Epm_nm).chosen = 'stick';
+            % pre-effort cross (effort preparation)
+            GLMprm.model_onset.(Epm_nm).preEffortCross = 'stick';
+            GLMprm.preEffortCross.(Epm_nm).RPpool = 1;
+            GLMprm.preEffortCross.(Epm_nm).RP.money_chosen = 3;
+            GLMprm.preEffortCross.(Epm_nm).RP.E_chosen = 1;
+            % effort perf (effort execution)
+            GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
+            GLMprm.Eperf.(Epm_nm).RPpool = 1;
+            GLMprm.Eperf.(Epm_nm).RP.money_chosen = 3;
+            GLMprm.Eperf.(Epm_nm).RP.E_chosen = 1;
+            % feedback
+            GLMprm.model_onset.(Epm_nm).fbk = 'stick';
+        end % physical/mental loop
 end % GLM number
 %% warnings: check compatibility of the GLM parameters entered
 isGLMokCheck(GLMprm);
