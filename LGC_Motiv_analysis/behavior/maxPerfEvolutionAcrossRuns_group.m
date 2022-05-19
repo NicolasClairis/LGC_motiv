@@ -39,7 +39,7 @@ if ~exist(resultFolder,'dir')
 end
 
 %% subject selection
-[subject_id, NS] = LGCM_subject_selection(study_nm);
+[subject_id, NS] = LGCM_subject_selection(study_nm, 'behavior');
 
 %% by default, display group figure
 if ~exist('figGroupDisp','var') || isempty(figGroupDisp)

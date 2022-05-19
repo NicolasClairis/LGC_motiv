@@ -42,7 +42,7 @@ if ~exist('study_nm','var') || isempty(study_nm)
     study_nm_idx = listdlg('ListString',study_names);
     study_nm = study_names{study_nm_idx};
 end
-[subs, NS] = LGCM_subject_selection(study_nm);
+[subs, NS] = LGCM_subject_selection(study_nm, 'behavior');
 
 %% working directories
 switch study_nm

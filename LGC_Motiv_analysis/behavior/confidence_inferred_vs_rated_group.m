@@ -1,5 +1,5 @@
-function[betas, pval] = confidence_inferred_vs_rated_group(study_nm, iModel, n_conf_bins, figGroupDisp)
-% [betas, pval] = confidence_inferred_vs_rated_group(study_nm, iModel, n_conf_bins, figGroupDisp)
+function[betas, pval] = confidence_inferred_vs_rated_group(study_nm, condition, iModel, n_conf_bins, figGroupDisp)
+% [betas, pval] = confidence_inferred_vs_rated_group(study_nm, condition, iModel, n_conf_bins, figGroupDisp)
 % confidence_inferred_vs_rated_group will compare confidence based on
 % ratings given by the subjects during the choice to the confidence
 % inferred by the model "iModel" according to the formula (pChoice-0.5)^2.
@@ -8,7 +8,14 @@ function[betas, pval] = confidence_inferred_vs_rated_group(study_nm, iModel, n_c
 % study_nm: name of the study to look at
 % 'study1': first study (dmPFC + AI)
 % 'study2': second study (clinical trial)
-% 
+%
+% condition:
+% 'behavior': behavioral files
+% 'behavior_noSat': behavior but removing all runs (or subjects with all
+% runs) with saturation
+% 'fMRI': all fMRI compatible data
+% 'fMRI_no_move': remove runs with too much movement
+%
 % iModel: number of the model to check
 %
 % n_conf_bins: number of confidence bins
@@ -23,7 +30,7 @@ function[betas, pval] = confidence_inferred_vs_rated_group(study_nm, iModel, n_c
 
 
 %% define subjects
-[subject_id, NS] = LGCM_subject_selection(study_nm);
+[subject_id, NS] = LGCM_subject_selection(study_nm, condition);
 
 %% general parameters
 % avoid displaying individual figures
