@@ -4,8 +4,19 @@
 
 %% load data
 load('M:\Nicolas_Clairis\study1\subs_physio_variables.mat',...
-    'BMI','age','gender','eNAMPT','datesExp','weight','height');
-
+    'BMI','age','gender','eNAMPT','datesExp','weight','height',...
+    'experimenter');
+load('M:\Nicolas_Clairis\study1\CTQ.mat','CTQ');
+% 
+% rmv_subsNulleNAMPT = eNAMPT == 0;
+% BMI(rmv_subsNulleNAMPT) = [];
+% age(rmv_subsNulleNAMPT) = [];
+% gender(rmv_subsNulleNAMPT) = [];
+% datesExp(rmv_subsNulleNAMPT) = [];
+% weight(rmv_subsNulleNAMPT) = [];
+% height(rmv_subsNulleNAMPT) = [];
+% experimenter(rmv_subsNulleNAMPT) = [];
+% eNAMPT(rmv_subsNulleNAMPT) = [];
 %% look at correlation between BMI and eNAMPT concentrations
 
 figure;
@@ -153,3 +164,40 @@ for iCTQ = 1:n_ctq_scores
 %         CTQ_vs_eNAMPT_stats.(ctq_field).stats] = glmfit(CTQ_var(goodSubs),...
 %         eNAMPT(goodSubs),'normal','constant','off');
 end
+
+%%
+%% sanity check to look at results/experimenter to verify that everybody does it properly
+% extract list of all experimenters
+experimenters = unique(experimenter);
+n_experimenters = length(experimenters);
+% extract proportion of non-null eNAMPT results/experimenter
+[meanValsPerExp, propNonNullPerExp] = deal(NaN(1,n_experimenters));
+for iExp = 1:n_experimenters
+    expName = experimenters{iExp};
+    eNAMPT_perExp.(expName).allVals = eNAMPT(strcmp(expName, experimenter));
+    eNAMPT_perExp.(expName).n_nonNull = sum(eNAMPT(strcmp(expName, experimenter)) > 0);
+    eNAMPT_perExp.(expName).n_null = sum(eNAMPT(strcmp(expName, experimenter)) == 0);
+    eNAMPT_perExp.(expName).proportion_nonNull = eNAMPT_perExp.(expName).n_nonNull./(eNAMPT_perExp.(expName).n_null + eNAMPT_perExp.(expName).n_nonNull);
+    meanValsPerExp(iExp) = mean(eNAMPT(strcmp(expName, experimenter)),'omitnan');
+    propNonNullPerExp(iExp) = eNAMPT_perExp.(expName).n_nonNull./(eNAMPT_perExp.(expName).n_null + eNAMPT_perExp.(expName).n_nonNull);
+end % experimenter loop
+
+% display mean values per experimenter
+figure;
+bar(1:n_experimenters, meanValsPerExp);
+xticks(1:n_experimenters);
+xticklabels(experimenters);
+
+% add legends
+ylabel('mean eNAMPT (ng/mL)');
+legend_size(30);
+
+% display proportion non-null per experimenter
+figure;
+bar(1:n_experimenters, propNonNullPerExp);
+xticks(1:n_experimenters);
+xticklabels(experimenters);
+
+% add legends
+ylabel('proportion eNAMPT > 0');
+legend_size(30);
