@@ -48,7 +48,7 @@ function [GLMprm] = which_GLM(GLM)
 %   .R/P/RP: reward only (R), punishment only (P) or reward and punishment
 %   trials mixed (RP)
 %
-%       .(choice/chosen).Ep/Em.RPpool:
+%       .(choice/chosen).(Ep/Em).RPpool:
 %       (0) split rewards and punishments as separate events
 %       (1) pool reward and punishment trials
 %
@@ -140,7 +140,7 @@ function [GLMprm] = which_GLM(GLM)
 %       (3) reaction time zscored per subject across all runs
 %
 %
-%       .Eperf.(Ep/Em).(R/P/RP).RPpool
+%       .Eperf.(Ep/Em).RPpool
 %       (0) split rewards and punishments as separate events
 %       (1) pool reward and punishment trials
 %
@@ -1262,6 +1262,36 @@ switch GLM
             % feedback
             GLMprm.model_onset.(Epm_nm).fbk = 'stick';
         end % physical/mental loop
+    case 42
+        % general parameters
+        GLMprm.gal.orth_vars = 0;
+        GLMprm.gal.zPerRun = 1;
+        % loop per task
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % initial cross
+            GLMprm.model_onset.(Epm_nm).preChoiceCross = 'boxcar';
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'boxcar';
+            GLMprm.choice.(Epm_nm).RP.RT = 1;
+            % chosen
+            GLMprm.model_onset.(Epm_nm).chosen = 'boxcar';
+            GLMprm.chosen.(Epm_nm).RP.confidence = 2;
+            GLMprm.chosen.(Epm_nm).RP.conf_mdl = 'mdl_4';
+            % pre-effort cross
+            GLMprm.model_onset.(Epm_nm).preEffortCross = 'boxcar';
+            % effort perf (effort execution)
+            GLMprm.model_onset.(Epm_nm).Eperf = 'boxcar';
+            GLMprm.Eperf.(Epm_nm).RPpool = 0;
+            for iRP = 1:length(RP_conds)
+                RP_nm = RP_conds{iRP};
+                GLMprm.Eperf.(Epm_nm).(RP_nm).money_chosen = 1;
+                GLMprm.Eperf.(Epm_nm).(RP_nm).E_chosen = 1;
+            end
+            % feedback
+            GLMprm.model_onset.(Epm_nm).fbk = 'boxcar';
+            GLMprm.fbk.(Epm_nm).RP.win_vs_loss = 1;
+        end % physical/mental  loop
 end % GLM number
 %% warnings: check compatibility of the GLM parameters entered
 isGLMokCheck(GLMprm);
