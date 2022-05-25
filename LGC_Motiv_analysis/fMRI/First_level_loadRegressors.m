@@ -439,7 +439,7 @@ if ismember(preChoiceCrossModel,{'stick','boxcar'})
             modelPreChoiceCrossdur = preChoiceCrossDur;
     end
     [matlabbatch] = First_level_loadEachCondition(matlabbatch, sub_idx, iRun, iCond,...
-        'preChoice fixation cross', whiteCrossOnsets, modelPreChoiceCrossdur, 0, '', [], orth_vars);
+        'preChoice fixation cross', preChoiceCrossOnsets, modelPreChoiceCrossdur, 0, '', [], orth_vars);
 end
 
 
