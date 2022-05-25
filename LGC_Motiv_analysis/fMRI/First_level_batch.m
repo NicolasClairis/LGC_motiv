@@ -111,10 +111,16 @@ for iS = 1:NS
     if ~exist(resultsFolderName,'dir')
         mkdir(resultsFolderName);
     else
-        rmdir(resultsFolderName,'s');
-        mkdir(resultsFolderName);
-        warning(['First level folder ',resultsFolderName,' already existed. ',...
-            'It was deleted and recreated for CID',sub_nm,'.']);
+        if checking == 0
+            rmdir(resultsFolderName,'s');
+            mkdir(resultsFolderName);
+            warning(['First level folder ',resultsFolderName,' already existed. ',...
+                'It was deleted and recreated for CID',sub_nm,'.']);
+        elseif checking == 1
+            warning(['First level folder ',resultsFolderName,' already exists ',...
+                'for CID',sub_nm,'. Please check as much as you want ',...
+                'but don''t run this before deleting the folder.']);
+        end
     end
     
     %% define number of runs
