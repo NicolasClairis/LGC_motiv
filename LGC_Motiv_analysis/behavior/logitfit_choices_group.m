@@ -77,7 +77,7 @@ if ~exist(resultFolder,'dir')
 end
 
 %% subject selection
-condition = 'behavior_noSatTask';
+[condition] = subject_condition();
 [subject_id, NS] = LGCM_subject_selection(study_nm, condition);
 
 %% initialize variables of interest
