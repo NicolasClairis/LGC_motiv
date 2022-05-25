@@ -132,6 +132,12 @@ switch study_nm
                         runs.runsToKeep = 2:4;
                         runs.runsToIgnore = 1;
                 end
+            case {'083'}
+                switch condition
+                    case {'fMRI_no_move'}
+                        runs.runsToKeep = [1,2,4];
+                        runs.runsToIgnore = 3;
+                end
             case {'087'}
                 switch condition
                     case {'fMRI_no_move'}
