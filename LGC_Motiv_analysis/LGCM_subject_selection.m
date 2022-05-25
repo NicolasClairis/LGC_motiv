@@ -88,7 +88,7 @@ switch study_nm
                     '050','052','054','055','056',...
                     '060','061','064','065','068','069',...
                     '071','074','075','076','079',...
-                    '081','082','087','088',...
+                    '081','082','083','087','088',...
                     '090','093','095',...
                     '100'};
                 % 008 and 022 completely removed (because all runs are bad
@@ -114,13 +114,14 @@ switch study_nm
         % 029 (run 4 physical),
         % 044 (run2 and 4 physical), 047 (run 3 mostly, physical run),
         % 054 (run2 and run4 mostly, ie physical runs),
-        % 071 (run2 and run 4 ie physical runs), 076 (run 1), 087(runs 2-4)
+        % 071 (run2 and run 4 ie physical runs), 076 (run 1)
+        % 083 (run3 physical), 087(runs 2-4)
         %
         % borderline movement: 005(run1,3 and 4 a little bit of movement), 022 (all),
         % 040 (run 4), 050 (run4), 052 (run 2),
         % 056 (run 2 + 3), 064 (run 2), 065 (run3), 069 (run3 and 4),
         % 079 (run 3), 090 (run 3), 093 (run1 + 3), 095 (run 1)
-        warning('check 083 and... for movement');
+        warning('check and... for movement');
         
         %% restrict to subjects of interest
         subject_id = all_subs;
