@@ -27,7 +27,7 @@ metabolite_nm = metabolites{metabolite_idx};
 GLM = spm_input('GLM number',1,'e');
 
 %% define all subjects
-condition = 'fMRI_noSatRun';
+condition = subject_condition();
 [subject_id, NS] = LGCM_subject_selection('study1', condition);
 
 %% extract all metabolites
