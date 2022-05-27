@@ -1312,7 +1312,6 @@ switch GLM
             GLMprm.model_onset.(Epm_nm).preEffortCross = 'stick';
             % effort perf (effort execution)
             GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
-            GLMprm.Eperf.(Epm_nm).RPpool = 0;
             GLMprm.Eperf.(Epm_nm).RP.money_chosen = 1;
             GLMprm.Eperf.(Epm_nm).RP.E_chosen = 1;
             % feedback
