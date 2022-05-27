@@ -42,8 +42,9 @@ switch study_nm
         switch condition
             case {'behavior','fMRI'} % all subjects
 %                 % for confidence remove saturated subjects:
-%                 bad_subs = ismember(fullSubList,{'047','095'});
-%                 all_subs(bad_subs) = [];
+% also remove 042 because data not added yet.
+                bad_subs = ismember(fullSubList,{'042','047','095'});
+                all_subs(bad_subs) = [];
             case {'behavior_noSatRun','fMRI_noSatRun'}
                 % remove subjects who saturated the behavioral task in any
                 % run
