@@ -44,13 +44,12 @@ switch study_nm
 %                 % for confidence remove saturated subjects:
 % also remove 042 because data not added yet.
                 bad_subs = ismember(fullSubList,{'042','047','095'});
-                all_subs(bad_subs) = [];
+                
             case {'behavior_noSatRun','fMRI_noSatRun'}
                 % remove subjects who saturated the behavioral task in any
                 % run
                 bad_subs = ismember(fullSubList,{'002','005','032',...
                     '047','048','052','076','095','100'});
-                all_subs(bad_subs) = [];
                 % subjects with a full task saturated
                 % 047: all ND for Em task (runs 2 and 4) and for Ep run 1
                 % 052: all ND for Em task (runs 1 and 3)
@@ -68,7 +67,6 @@ switch study_nm
                 % remove subjects for which either mental (Em) or physical
                 % (Ep) task was fully saturated during choices
                 bad_subs = ismember(fullSubList,{'047','052','095'});
-                all_subs(bad_subs) = [];
                 % 047: all ND for Em task (runs 2 and 4) and for Ep run 1
                 % 052: all ND for Em task (runs 1 and 3)
                 % 095: all ND for Ep task (runs 2 and 4)
@@ -77,7 +75,6 @@ switch study_nm
                 % ignore subjects with too much movement in ALL runs (runs
                 % with too much movement will be filtered for each subject)
                 bad_subs = ismember(fullSubList,{'008','022'});
-                all_subs(bad_subs) = [];
                 % 008 and 022 completely removed (because all runs are bad
                 % in terms of movement)
             case 'fMRI_no_move_bis'
@@ -88,7 +85,6 @@ switch study_nm
                     '021','022','029',...
                     '044','047','054',...
                     '071','076','083','087'});
-                all_subs(bad_subs) = [];
                 % too much movement for 008 (all runs)
                 % 021 (run 2, 3 and 4)
                 % 029 (run 4 physical),
@@ -102,8 +98,11 @@ switch study_nm
                 % 056 (run 2 + 3), 064 (run 2), 065 (run3), 069 (run3 and 4),
                 % 079 (run 3), 090 (run 3), 093 (run1 + 3), 095 (run 1)
         end
+        % remove irrelevant subjects from the current analysis
+        all_subs(bad_subs) = [];
         
-        warning('check 042 and... for movement');
+        % reminder to check the last acquired subjects:
+        warning('check 042,... and other last subjects for movement');
         
         %% restrict to subjects of interest
         subject_id = all_subs;
