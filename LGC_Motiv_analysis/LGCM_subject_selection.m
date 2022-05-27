@@ -100,7 +100,6 @@ switch study_nm
         end
         % remove irrelevant subjects from the current analysis
         all_subs(bad_subs) = [];
-        
         % reminder to check the last acquired subjects:
         warning('check 042,... and other last subjects for movement');
         
