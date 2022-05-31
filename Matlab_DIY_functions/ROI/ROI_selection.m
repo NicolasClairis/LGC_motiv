@@ -55,15 +55,18 @@ for iROI = 1:nb_ROIs
     if sphere_mask == 0
         ROI_center = spm_input('What ROI do you want to analyze?',1,'m',...
             ['manual input |'...
+            'vmPFC value ((-10,48,-12) Clairis 2022) |'...
             'vmPFC ((0,40,-12) Bartra 2013) |'...
-            'vmPFC ((-10,44,-8) Lebreton 2009) |'...
-            'vmPFC ((-2,52,-2) Lebreton 2015 |'...
+            'vmPFC value ((-10,44,-8) Lebreton 2009) |'...
+            'vmPFC value ((-2,52,-2) Lebreton 2015 |'...
             'vmPFC/pgACC ((2,40,10) Lopez 2017) |'...
             'left NAcc ((-16,4,-4) Bartra 2013) |'...
             'right Nacc ((18,6,-6), Bartra 2013) |'...
             'left hippocampus ((-18,-36,-10) Lebreton 2009) |'...
-            'left hippocampus ((-28,-18,-16) Neurosynth)|'...
+            'left hippocampus ((-28,-18,-16) Neurosynth) |'...
             'right hippocampus ((28,-18,-16) Neurosynth) |'...
+            'mPFC Confidence ((-8,52,18) Clairis 2022) |'...
+            'dmPFC DT/Effort ((10,12,48) Clairis 2022) |'...
             'left dmFC ((-2,16,48) Engstrom 2015) |'...
             'left dmFC ((-8,20,46) Lopez 2017) |'...
             'right dmFC ((4,24,40) Engstrom 2015) |'...
@@ -75,50 +78,56 @@ for iROI = 1:nb_ROIs
             'left SMA ((-9, -7, 58) Klein-Flugge 2016) |'...
             'left dACC ((-3, 11, 34) Klein-Flugge 2016) |'...
             'right dACC ((10,26,34) Lopez 2017)'], ...
-            1:21, 0);
+            1:24, 0);
         
         switch ROI_center
             case 1 % manual input
                 ROI_coord_center = spm_input('Enter x y z coordinates of your ROI',1,'c');
-            case 2 % vmPFC ((0,40,-12) Bartra 2013)
+            case 2 % vmPFC value ((-10,48,-12) Clairis 2022)
+                ROI_coord_center = [-10, 48, -12];
+            case 3 % vmPFC ((0,40,-12) Bartra 2013)
                 ROI_coord_center = [0, 40, -12];
-            case  3 % vmPFC ((-10,44,-8) Lebreton 2009)
+            case 4 % vmPFC ((-10,44,-8) Lebreton 2009)
                 ROI_coord_center = [-10, 44, -8];
-            case 4 % vmPFC ((-2,52,-2) Lebreton 2015)
+            case 5 % vmPFC ((-2,52,-2) Lebreton 2015)
                 ROI_coord_center = [-2, 52, -2];
-            case 5 % vmPFC/pgACC ((2,40,10) Lopez 2017)
+            case 6 % vmPFC/pgACC ((2,40,10) Lopez 2017)
                 ROI_coord_center = [2, 40, 10];
-            case 6 % left NAcc ((-16,4,-4) Bartra 2013)
+            case 7 % left NAcc ((-16,4,-4) Bartra 2013)
                 ROI_coord_center = [-16, 4,-4];
-            case 7 % right Nacc ((18,6,-6), Bartra 2013)
+            case 8 % right Nacc ((18,6,-6), Bartra 2013)
                 ROI_coord_center = [18, 6, -6];
-            case 8 % left hippocampus ((-18,-36,-10) Lebreton 2009)
+            case 9 % left hippocampus ((-18,-36,-10) Lebreton 2009)
                 ROI_coord_center = [-18, -36, -10];
-            case 9 % left hippocampus ((-28, -18, -16) Neurosynth)
+            case 10 % left hippocampus ((-28, -18, -16) Neurosynth)
                 ROI_coord_center = [-28, -18, -16];
-            case 10 % right hippocampus ((28, -18, -16) Neurosynth)
+            case 11 % right hippocampus ((28, -18, -16) Neurosynth)
                 ROI_coord_center = [28, -18, -16];
-            case 11 % left dmFC ((-2,16,48) Engstrom 2015)
+            case 12 % mPFC confidence ((-8,52,18) Clairis 2022)
+                ROI_coord_center = [-8, 52, 18];
+            case 13 % dmPFC DT/Effort ((10,12,48) Clairis 2022)
+                ROI_coord_center = [10, 12, 48];
+            case 14 % left dmFC ((-2,16,48) Engstrom 2015)
                 ROI_coord_center = [-2, 16, 48];
-            case 12 % left dmFC ((-8,20,46) Lopez 2017)
+            case 15 % left dmFC ((-8,20,46) Lopez 2017)
                 ROI_coord_center = [-8,20,46];
-            case 13 % right dmFC ((4,24,40) Engstrom 2015)
+            case 16 % right dmFC ((4,24,40) Engstrom 2015)
                 ROI_coord_center = [4, 24, 40];
-            case 14 % right dmFC ((8,18,46) Lopez 2017)
+            case 17 % right dmFC ((8,18,46) Lopez 2017)
                 ROI_coord_center = [8,18,46];
-            case 15 % left anterior insula ((-32,26,0) Bartra 2013)
+            case 18 % left anterior insula ((-32,26,0) Bartra 2013)
                 ROI_coord_center = [-32, 26, 0];
-            case 16 % left anterior insula ((-30,26,2) Lopez 2017)
+            case 19 % left anterior insula ((-30,26,2) Lopez 2017)
                 ROI_coord_center = [-30,26,2];
-            case 17 % right anterior insula ((32,20,-6) Bartra 2013)
+            case 20 % right anterior insula ((32,20,-6) Bartra 2013)
                 ROI_coord_center = [32, 20, -6];
-            case 18 % right anterior insula ((30,28,0) Lopez 2017)
+            case 21 % right anterior insula ((30,28,0) Lopez 2017)
                 ROI_coord_center = [30,28,0];
-            case 19 % left SMA ((-9, -7, 58) Klein-Flugge 2016)
+            case 22 % left SMA ((-9, -7, 58) Klein-Flugge 2016)
                 ROI_coord_center = [-9, -7, 58];
-            case 20 % left dACC ((-3, 11, 34) Klein-Flugge 2016)
+            case 23 % left dACC ((-3, 11, 34) Klein-Flugge 2016)
                 ROI_coord_center = [-3, 11, 34];
-            case 21 % right dACC ((10,26,34) Lopez 2017)
+            case 24 % right dACC ((10,26,34) Lopez 2017)
                 ROI_coord_center = [10,26,34];
         end
         
