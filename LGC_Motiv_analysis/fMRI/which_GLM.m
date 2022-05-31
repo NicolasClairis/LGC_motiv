@@ -86,11 +86,11 @@ function [GLMprm] = which_GLM(GLM)
 %       .(choice/chosen).(Ep/Em).(R/P/RP).money_sum:
 %       (1) money default + money non-default amount
 %
-%       .choice.(Ep/Em).(R/P/RP).E_left
+%       .(choice/chosen).(Ep/Em).(R/P/RP).E_left
 %       (1) effort level (0/1/2/3) associated to left option
 %       (2) effort difficulty associated to left option (Ep: duration to hold; Em: nb answers to give)
 %
-%       .choice.(Ep/Em).(R/P/RP).E_right
+%       .(choice/chosen).(Ep/Em).(R/P/RP).E_right
 %       (1) effort level (0/1/2/3) associated to right option
 %       (2) effort difficulty associated to right option (Ep: duration to hold; Em: nb answers to give)
 %
