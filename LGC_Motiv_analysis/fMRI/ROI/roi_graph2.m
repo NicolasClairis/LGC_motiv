@@ -84,7 +84,8 @@ while scale_ok_idx == 0
     xpos = (1:2)';
 
     bar_hdl = bar(xpos,...
-        [con_avg1(selectedContrastIndex), con_avg2(selectedContrastIndex)]);
+        [con_avg1(selectedContrastIndex),...
+        con_avg2(selectedContrastIndex)]);
     bar_hdl.EdgeColor = roi_color;
     bar_hdl.FaceColor = roi_color;
     hold on;
