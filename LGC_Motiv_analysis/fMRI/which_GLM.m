@@ -83,6 +83,10 @@ function [GLMprm] = which_GLM(GLM)
 %       .(choice/chosen).(Ep/Em).(R/P/RP).money_ch_min_unch:
 %       (1) money chosen - money unchosen amount
 %
+%       .(choice/chosen).(Ep/Em).(R/P/RP).money_ch_min_fixOption:
+%       (1) money chosen - money default option - amount
+%       (2) money chosen - money default option - levels (1/2/3/4 - 1)
+%
 %       .(choice/chosen).(Ep/Em).(R/P/RP).money_sum:
 %       (1) money default + money non-default amount
 %
@@ -111,6 +115,9 @@ function [GLMprm] = which_GLM(GLM)
 %       the effort level (0/1/2/3) associated to the unchosen option
 %       (2) effort difficulty associated to the chosen option (Ep: duration to hold; Em: nb answers to give)
 %       minus the effort difficulty associated to the unchosen option (Ep: duration to hold; Em: nb answers to give)
+%
+%       .(choice/chosen).(Ep/Em).(R/P/RP).E_ch_min_fixOption:
+%       (1) E chosen - E default option - levels (0/1/2/3)
 %
 %       .(choice/chosen).(Ep/Em).(R/P/RP).E_sum
 %       (1) sum of the effort levels (0/1/2/3) associated to both options
@@ -1335,6 +1342,31 @@ switch GLM
             GLMprm.model_onset.(Epm_nm).chosen = 'stick';
             GLMprm.chosen.(Epm_nm).RP.money_chosen = 1;
             GLMprm.chosen.(Epm_nm).RP.E_chosen = 1;
+            % pre-effort cross
+            GLMprm.model_onset.(Epm_nm).preEffortCross = 'stick';
+            % effort perf (effort execution)
+            GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
+            % feedback
+            GLMprm.model_onset.(Epm_nm).fbk = 'stick';
+        end % physical/mental  loop
+    case 45 % check chosen - default frame
+        % general parameters
+        GLMprm.gal.orth_vars = 1;
+        GLMprm.gal.zPerRun = 1;
+        % loop per task
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % initial cross
+            GLMprm.model_onset.(Epm_nm).preChoiceCross = 'stick';
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'stick';
+            GLMprm.choice.(Epm_nm).RP.money_ch_min_fixOption = 1;
+            GLMprm.choice.(Epm_nm).RP.E_ch_min_fixOption = 1;
+            GLMprm.choice.(Epm_nm).RP.confidence = 2;
+            GLMprm.choice.(Epm_nm).RP.conf_mdl = 'mdl_4';
+            GLMprm.choice.(Epm_nm).RP.RT = 1;
+            % chosen
+            GLMprm.model_onset.(Epm_nm).chosen = 'stick';
             % pre-effort cross
             GLMprm.model_onset.(Epm_nm).preEffortCross = 'stick';
             % effort perf (effort execution)

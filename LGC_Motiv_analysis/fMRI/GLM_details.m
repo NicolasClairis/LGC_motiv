@@ -235,6 +235,22 @@ for iEpm = 1:length(Epm)
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
             end
             
+            % money chosen - money default
+            switch GLMprm.choice.(task_id_nm).(RP_dispChoice_nm).money_ch_min_fixOption
+                case 1
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG choice ',RP_dispChoice_nm,': money ch-def'];
+                    disp([num2str(n_regs.(task_id_nm)),') choice: money chosen-default (amount) ']);
+                    % if derivative added => add derivatives
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                case 2
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG choice ',RP_dispChoice_nm,': money ch-def'];
+                    disp([num2str(n_regs.(task_id_nm)),') choice: money chosen-default (level) ']);
+                    % if derivative added => add derivatives
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+            end
+            
             % money sum of both options
             switch GLMprm.choice.(task_id_nm).(RP_dispChoice_nm).money_sum
                 case 1
@@ -367,6 +383,16 @@ for iEpm = 1:length(Epm)
                         case 'Em'
                             disp([num2str(n_regs.(task_id_nm)),') choice: effort ch-unch (nb answers to give) ']);
                     end
+                    % if derivative added => add derivatives
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+            end
+            
+            % effort chosen - fixed low effort option
+            switch GLMprm.choice.(task_id_nm).(RP_dispChoice_nm).E_ch_min_fixOption
+                case 1
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG choice ',RP_dispChoice_nm,': effort ch-def'];
+                    disp([num2str(n_regs.(task_id_nm)),') choice: effort ch-def (levels) ']);
                     % if derivative added => add derivatives
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
             end
@@ -603,6 +629,22 @@ for iEpm = 1:length(Epm)
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
             end
             
+            % money chosen - money default
+            switch GLMprm.chosen.(task_id_nm).(RP_dispChosen_nm).money_ch_min_fixOption
+                case 1
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG chosen ',RP_dispChosen_nm,': money ch-def'];
+                    disp([num2str(n_regs.(task_id_nm)),') chosen: money chosen-default (amount) ']);
+                    % if derivative added => add derivatives
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                case 2
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG chosen ',RP_dispChosen_nm,': money ch-def'];
+                    disp([num2str(n_regs.(task_id_nm)),') chosen: money chosen-default (level) ']);
+                    % if derivative added => add derivatives
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+            end
+            
             % money sum of both options
             switch GLMprm.chosen.(task_id_nm).(RP_dispChosen_nm).money_sum
                 case 1
@@ -660,6 +702,16 @@ for iEpm = 1:length(Epm)
                         case 'Em'
                             disp([num2str(n_regs.(task_id_nm)),') chosen: effort ch-unch (nb answers to give) ']);
                     end
+                    % if derivative added => add derivatives
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+            end
+            
+            % effort chosen - fixed low effort option
+            switch GLMprm.chosen.(task_id_nm).(RP_dispChosen_nm).E_ch_min_fixOption
+                case 1
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG chosen ',RP_dispChosen_nm,': effort ch-def'];
+                    disp([num2str(n_regs.(task_id_nm)),') chosen: effort ch-def (levels) ']);
                     % if derivative added => add derivatives
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
             end

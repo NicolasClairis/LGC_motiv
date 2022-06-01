@@ -127,6 +127,7 @@ money_amount_varOption = money_amount_left.*(defaultSide == 1) + money_amount_ri
 abs_money_amount_varOption = abs(money_amount_varOption);
 money_level_left = behavioralDataStruct.(task_behavioral_id).choiceOptions.R.left.*RP_var;
 money_level_right = behavioralDataStruct.(task_behavioral_id).choiceOptions.R.right.*RP_var;
+money_amount_fixedOption = money_amount_left.*(defaultSide == -1) + money_amount_right.*(defaultSide == 1);
 
 % replace default option level for punishments by higher level (because
 % implies higher amount of money lost)
@@ -174,12 +175,14 @@ money_level_right(money_level_right == 0 & RP_var == 1) = 1;
 
 % extract other relevant variables
 money_level_varOption = money_level_left.*(defaultSide == 1) + money_level_right.*(defaultSide == -1);
+money_level_fixedOption = money_level_left.*(defaultSide == -1) + money_level_right.*(defaultSide == 1);
 abs_money_level_varOption = abs(money_level_varOption);
 % loading effort choice
 E_left = behavioralDataStruct.(task_behavioral_id).choiceOptions.E.left.*RP_var;
 E_right = behavioralDataStruct.(task_behavioral_id).choiceOptions.E.left.*RP_var;
 E_sum = E_left + E_right;
 E_varOption = E_left.*(defaultSide == 1) + E_right.*(defaultSide == -1);
+E_fixedOption = E_left.*(defaultSide == -1) + E_right.*(defaultSide == 1);
 % loading chosen option
 choice_LRandConf = behavioralDataStruct.(task_behavioral_id).choice;
 % transform into one variable equal to -1 when choice = left and 1 when
@@ -203,11 +206,16 @@ abs_money_amount_unchosen = abs(money_amount_unchosen);
 % match with rewards and have only 0/1/2/3 levels
 abs_money_level_chosen = abs(money_level_chosen.*(RP_var == 1) + (money_level_chosen - 1).*(RP_var == -1));
 abs_money_level_unchosen = abs(money_level_unchosen.*(RP_var == 1) + (money_level_unchosen - 1).*(RP_var == -1));
-
+% money chosen - money unchosen option
 moneyChosen_min_moneyUnchosen_amount = money_amount_chosen - money_amount_unchosen;
 absMoneyChosen_min_moneyUnchosen_amount = abs(money_amount_chosen - money_amount_unchosen);
 moneyChosen_min_moneyUnchosen_level = money_level_chosen - money_level_unchosen;
 absMoneyChosen_min_moneyUnchosen_level = abs_money_level_chosen - abs_money_level_unchosen;
+% money chosen - money fixed option
+moneyChosen_min_moneyFixed_amount = money_amount_chosen - money_amount_fixedOption;
+moneyChosen_min_moneyFixed_level = money_level_chosen - money_level_fixedOption;
+% E chosen - E fixed option
+Ech_min_Efixed = E_chosen - E_fixedOption;
 % loading feedback
 money_amount_obtained = behavioralDataStruct.(task_behavioral_id).gain; % could be different from reward chosen (in case of failure) but mostly similar
 win_vs_loss_fbk = money_amount_obtained > 0;
@@ -335,6 +343,7 @@ if sum(choiceMissedTrials) > 0
     money_amount_right(choiceMissedTrials) = [];
     money_amount_sum(choiceMissedTrials) = [];
     money_amount_varOption(choiceMissedTrials) = [];
+    money_amount_fixedOption(choiceMissedTrials) = [];
     money_level_left(choiceMissedTrials) = [];
     money_level_right(choiceMissedTrials) = [];
     money_level_varOption(choiceMissedTrials) = [];
@@ -352,6 +361,7 @@ if sum(choiceMissedTrials) > 0
     E_chosen(choiceMissedTrials) = [];
     E_unchosen(choiceMissedTrials) = [];
     E_chosen_min_E_unchosen(choiceMissedTrials) = [];
+    Ech_min_Efixed(choiceMissedTrials) = [];
     money_amount_chosen(choiceMissedTrials) = [];
     abs_money_amount_chosen(choiceMissedTrials) = [];
     abs_money_level_chosen(choiceMissedTrials) = [];
@@ -363,6 +373,8 @@ if sum(choiceMissedTrials) > 0
     absMoneyChosen_min_moneyUnchosen_amount(choiceMissedTrials) = [];
     moneyChosen_min_moneyUnchosen_level(choiceMissedTrials) = [];
     absMoneyChosen_min_moneyUnchosen_level(choiceMissedTrials) = [];
+    moneyChosen_min_moneyFixed_amount(choiceMissedTrials) = [];
+    moneyChosen_min_moneyFixed_level(choiceMissedTrials) = [];
     money_amount_obtained(choiceMissedTrials) = [];
     win_vs_loss_fbk(choiceMissedTrials) = [];
     choice_RT(choiceMissedTrials) = [];
@@ -455,14 +467,16 @@ if ismember(choiceModel,{'stick','boxcar'})
         choiceModel_moneyChosen                     = GLMprm.choice.(task_id).(RP_choice_nm).money_chosen;
         choiceModel_moneyUnchosen                   = GLMprm.choice.(task_id).(RP_choice_nm).money_unchosen;
         choiceModel_moneyNonDefault                 = GLMprm.choice.(task_id).(RP_choice_nm).money_varOption;
-        choiceModel_money_chosen_min_money_unchosen = GLMprm.choice.(task_id).(RP_choice_nm).money_ch_min_unch;
+        choiceModel_moneyChosen_min_moneyUnchosen   = GLMprm.choice.(task_id).(RP_choice_nm).money_ch_min_unch;
+        choiceModel_moneyChosen_min_moneyDefault    = GLMprm.choice.(task_id).(RP_choice_nm).money_ch_min_fixOption;
         choiceModel_moneySum                        = GLMprm.choice.(task_id).(RP_choice_nm).money_sum;
         choiceModel_E_left                          = GLMprm.choice.(task_id).(RP_choice_nm).E_left;
         choiceModel_E_right                         = GLMprm.choice.(task_id).(RP_choice_nm).E_right;
         choiceModel_E_chosen                        = GLMprm.choice.(task_id).(RP_choice_nm).E_chosen;
         choiceModel_E_unchosen                      = GLMprm.choice.(task_id).(RP_choice_nm).E_unchosen;
         choiceModel_E_nonDefault                    = GLMprm.choice.(task_id).(RP_choice_nm).E_varOption;
-        choiceModel_E_chosen_min_E_unchosen         = GLMprm.choice.(task_id).(RP_choice_nm).E_ch_min_unch;
+        choiceModel_Ech_min_Eunch                   = GLMprm.choice.(task_id).(RP_choice_nm).E_ch_min_unch;
+        choiceModel_Ech_min_Efixed                  = GLMprm.choice.(task_id).(RP_choice_nm).E_ch_min_fixOption;
         choiceModel_E_sum                           = GLMprm.choice.(task_id).(RP_choice_nm).E_sum;
         choiceModel_NV_chosen                       = GLMprm.choice.(task_id).(RP_choice_nm).NV_chosen;
         choiceModel_NV_varOption                    = GLMprm.choice.(task_id).(RP_choice_nm).NV_varOption;
@@ -572,12 +586,26 @@ if ismember(choiceModel,{'stick','boxcar'})
         end
         
         % money chosen - money unchosen
-        if choiceModel_money_chosen_min_money_unchosen > 0
+        if choiceModel_moneyChosen_min_moneyUnchosen > 0
             n_choiceMods = n_choiceMods + 1;
             choice_modNames{n_choiceMods} = 'money chosen - unchosen';
-            switch choiceModel_money_chosen_min_money_unchosen
+            switch choiceModel_moneyChosen_min_moneyUnchosen
                 case 1
                     choice_modVals(n_choiceMods,:) = raw_or_z(moneyChosen_min_moneyUnchosen_amount(choice_trial_idx));
+                otherwise
+                    error('not ready yet');
+            end
+        end
+        
+        % money chosen - money fixed option (low R low E)
+        if choiceModel_moneyChosen_min_moneyDefault > 0
+            n_choiceMods = n_choiceMods + 1;
+            choice_modNames{n_choiceMods} = 'money chosen - money fixed';
+            switch choiceModel_moneyChosen_min_moneyDefault
+                case 1
+                    choice_modVals(n_choiceMods,:) = raw_or_z(moneyChosen_min_moneyFixed_amount(choice_trial_idx));
+                case 2
+                    choice_modVals(n_choiceMods,:) = raw_or_z(moneyChosen_min_moneyFixed_level(choice_trial_idx));
                 otherwise
                     error('not ready yet');
             end
@@ -642,12 +670,24 @@ if ismember(choiceModel,{'stick','boxcar'})
         end
 
         % effort chosen - unchosen
-        if choiceModel_E_chosen_min_E_unchosen > 0
+        if choiceModel_Ech_min_Eunch > 0
             n_choiceMods = n_choiceMods + 1;
             choice_modNames{n_choiceMods} = 'effort chosen - unchosen';
-            switch choiceModel_E_chosen_min_E_unchosen
+            switch choiceModel_Ech_min_Eunch
                 case 1
                     choice_modVals(n_choiceMods,:) = raw_or_z(E_chosen_min_E_unchosen(choice_trial_idx));
+                otherwise
+                    error('not ready yet');
+            end
+        end
+        
+        % effort chosen - fixed option
+        if choiceModel_Ech_min_Efixed > 0
+            n_choiceMods = n_choiceMods + 1;
+            choice_modNames{n_choiceMods} = 'effort chosen - fixed';
+            switch choiceModel_Ech_min_Efixed
+                case 1
+                    choice_modVals(n_choiceMods,:) = raw_or_z(Ech_min_Efixed(choice_trial_idx));
                 otherwise
                     error('not ready yet');
             end
@@ -750,11 +790,13 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis'})
         chosenModel_moneyUnchosen   = GLMprm.chosen.(task_id).(RP_chosen_nm).money_unchosen;
         chosenModel_moneyNonDefault = GLMprm.chosen.(task_id).(RP_chosen_nm).money_varOption;
         chosenModel_money_chosen_min_money_unchosen = GLMprm.chosen.(task_id).(RP_chosen_nm).money_ch_min_unch;
+        chosenModel_moneyChosen_min_moneyDefault    = GLMprm.chosen.(task_id).(RP_chosen_nm).money_ch_min_fixOption;
         chosenModel_moneySum        = GLMprm.chosen.(task_id).(RP_chosen_nm).money_sum;
         chosenModel_Echosen         = GLMprm.chosen.(task_id).(RP_chosen_nm).E_chosen;
         chosenModel_Eunchosen       = GLMprm.chosen.(task_id).(RP_chosen_nm).E_unchosen;
         chosenModel_EnonDefault     = GLMprm.chosen.(task_id).(RP_chosen_nm).E_varOption;
-        chosenModel_E_chosen_min_E_unchosen = GLMprm.chosen.(task_id).(RP_chosen_nm).E_ch_min_unch;
+        chosenModel_Ech_min_Eunch   = GLMprm.chosen.(task_id).(RP_chosen_nm).E_ch_min_unch;
+        chosenModel_Ech_min_Efixed  = GLMprm.chosen.(task_id).(RP_chosen_nm).E_ch_min_fixOption;
         chosenModel_E_sum           = GLMprm.chosen.(task_id).(RP_chosen_nm).E_sum;
         chosenModel_NV_chosen       = GLMprm.chosen.(task_id).(RP_chosen_nm).NV_chosen;
         chosenModel_NV_varOption    = GLMprm.chosen.(task_id).(RP_chosen_nm).NV_varOption;
@@ -870,6 +912,20 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis'})
                     error('not ready yet');
             end
         end
+        
+        % money chosen - money fixed option (low R low E)
+        if chosenModel_moneyChosen_min_moneyDefault > 0
+            n_chosenMods = n_chosenMods + 1;
+            chosen_modNames{n_chosenMods} = 'money chosen - money fixed';
+            switch chosenModel_moneyChosen_min_moneyDefault
+                case 1
+                    chosen_modVals(n_chosenMods,:) = raw_or_z(moneyChosen_min_moneyFixed_amount(chosen_trial_idx));
+                case 2
+                    chosen_modVals(n_chosenMods,:) = raw_or_z(moneyChosen_min_moneyFixed_level(chosen_trial_idx));
+                otherwise
+                    error('not ready yet');
+            end
+        end
 
         % sum of money
         if chosenModel_moneySum > 0
@@ -920,12 +976,24 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis'})
         end
         
         % effort chosen - unchosen
-        if chosenModel_E_chosen_min_E_unchosen > 0
+        if chosenModel_Ech_min_Eunch > 0
             n_chosenMods = n_chosenMods + 1;
             chosen_modNames{n_chosenMods} = 'effort chosen - unchosen';
-            switch chosenModel_E_chosen_min_E_unchosen
+            switch chosenModel_Ech_min_Eunch
                 case 1
                     chosen_modVals(n_chosenMods,:) = raw_or_z(E_chosen_min_E_unchosen(chosen_trial_idx));
+                otherwise
+                    error('not ready yet');
+            end
+        end
+        
+        % effort chosen - fixed option
+        if chosenModel_Ech_min_Efixed > 0
+            n_chosenMods = n_chosenMods + 1;
+            chosen_modNames{n_chosenMods} = 'effort chosen - fixed';
+            switch chosenModel_Ech_min_Efixed
+                case 1
+                    chosen_modVals(n_chosenMods,:) = raw_or_z(Ech_min_Efixed(chosen_trial_idx));
                 otherwise
                     error('not ready yet');
             end
