@@ -61,21 +61,24 @@ GLM_path = [filesep, 'fMRI_analysis',filesep,'functional',filesep,...
 for iS = 1:NS
     sub_nm = subject_id{iS};
     subFolder = [studyRoot, filesep, 'CID',sub_nm, GLM_path];
-    % get the theoretical number of contrasts
-    con_names = LGCM_contrasts(study_nm, sub_nm, GLM,...
-        computerRoot, preproc_sm_kernel, condition);
-    n_cons = size(con_names,2);
     % get the theoretical number of runs
     runs = runs_definition(study_nm, sub_nm, condition);
-    % get number of regressors/task*number of runs/task + 1 constant/run
-    n_totalRegs = n_regsPerTask.Ep*(runs.nb_runs.Ep) +...
-        n_regsPerTask.Em*(runs.nb_runs.Em) +...
-        runs.nb_runs.Ep + runs.nb_runs.Em;
-
-    if ~exist(subFolder,'dir')
+    
+    if ~exist(subFolder,'dir') % no first level performed for this subject
         badFirstLevel_idx(iS) = true;
         badContrast_idx(iS) = true;
-    else
+    else % first level folder exists => is there data? were contrasts performed?
+        % get the theoretical number of contrasts
+        con_names = LGCM_contrasts(study_nm, sub_nm, GLM,...
+            computerRoot, preproc_sm_kernel, condition);
+        n_cons = size(con_names,2);
+        
+        % get number of regressors/task*number of runs/task + 1 constant/run
+        n_totalRegs = n_regsPerTask.Ep*(runs.nb_runs.Ep) +...
+            n_regsPerTask.Em*(runs.nb_runs.Em) +...
+            runs.nb_runs.Ep + runs.nb_runs.Em;
+        
+        
         betaFiles = ls([subFolder,'beta_*.nii']);
         n_1stLevelBetas = size(betaFiles,1);
         if ~exist([subFolder,'SPM.mat'],'file') || n_1stLevelBetas < n_totalRegs
@@ -89,7 +92,7 @@ for iS = 1:NS
                 badContrast_idx(iS) = true;
             else
                 badContrast_idx(iS) = false;
-            end % contrasts            
+            end % contrasts
         end % 1st level
     end % check for first level
 end % subject loop
