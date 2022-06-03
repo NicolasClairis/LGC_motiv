@@ -1389,7 +1389,7 @@ switch GLM
             GLMprm.model_onset.(Epm_nm).preChoiceCross = 'stick';
             % choice
             GLMprm.model_onset.(Epm_nm).choice = 'stick';
-            GLMprm.Eperf.(Epm_nm).RPpool = 0;
+            GLMprm.choice.(Epm_nm).RPpool = 0;
             for iRP = 1:length(RP_conds)
                 RP_nm = RP_conds{iRP};
                 GLMprm.choice.(Epm_nm).(RP_nm).money_varOption = 1;
