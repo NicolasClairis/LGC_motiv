@@ -79,7 +79,8 @@ end
 %% subject selection
 [condition] = subject_condition();
 [subject_id, NS] = LGCM_subject_selection(study_nm, condition);
-
+% store subject list to know which beta corresponds to which subject
+betas.subList = subject_id;
 %% initialize variables of interest
 for iPM = 1:2
     switch iPM
