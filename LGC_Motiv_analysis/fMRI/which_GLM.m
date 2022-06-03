@@ -1378,9 +1378,9 @@ switch GLM
             % feedback
             GLMprm.model_onset.(Epm_nm).fbk = 'stick';
         end % physical/mental  loop
-    case 46 % check chosen - default frame for money splitting R and P
+    case 46 % check non-default option during choice
         % general parameters
-        GLMprm.gal.orth_vars = 1;
+        GLMprm.gal.orth_vars = 0;
         GLMprm.gal.zPerRun = 1;
         % loop per task
         for iEpm = 1:length(Epm)
@@ -1392,8 +1392,8 @@ switch GLM
             GLMprm.Eperf.(Epm_nm).RPpool = 0;
             for iRP = 1:length(RP_conds)
                 RP_nm = RP_conds{iRP};
-                GLMprm.choice.(Epm_nm).(RP_nm).money_ch_min_fixOption = 1;
-                GLMprm.choice.(Epm_nm).(RP_nm).E_chosen = 1;
+                GLMprm.choice.(Epm_nm).(RP_nm).money_varOption = 1;
+                GLMprm.choice.(Epm_nm).(RP_nm).E_varOption = 1;
                 GLMprm.choice.(Epm_nm).(RP_nm).confidence = 2;
                 GLMprm.choice.(Epm_nm).(RP_nm).conf_mdl = 'mdl_4';
                 GLMprm.choice.(Epm_nm).(RP_nm).RT = 1;
