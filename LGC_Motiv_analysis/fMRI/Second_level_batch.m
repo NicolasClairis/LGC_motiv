@@ -70,9 +70,19 @@ switch condition
         results_folder = [studyRoot,filesep,'Second_level',filesep,...
             'GLM',GLM_str,'_',NS_str,'subs_',...
             'preprocSm',num2str(preproc_sm_kernel),'mm_no_moveSubs',filesep];
+    case 'fMRI_noSatTask'
+        results_folder = [studyRoot,filesep,'Second_level',filesep,...
+            'GLM',GLM_str,'_',NS_str,'subs_',...
+            'preprocSm',num2str(preproc_sm_kernel),'mm_noSatTaskSubs',filesep];
+    otherwise
+        error(['folder not ready yet for the condition ',condition]);
 end
-if exist(results_folder,'dir') ~= 7
+
+% create folder to store the results
+if ~exist(results_folder,'dir')
     mkdir(results_folder);
+else
+    error(['run folder with the name ',c,' already exists.']);
 end
 
 %% 1) take mean anatomy across participants
@@ -134,7 +144,7 @@ for iCon = 1:n_con
         checkGLM_and_subjectIncompatibility(study_nm, sub_nm, GLMprm);
         
         switch condition
-            case {'fMRI','fMRI_no_move_bis'}
+            case {'fMRI','fMRI_no_move_bis','fMRI_noSatTask'}
                 subject_folder = [studyRoot,filesep,'CID',sub_nm, filesep, 'fMRI_analysis' filesep,...
                     'functional' filesep, 'preproc_sm_',num2str(preproc_sm_kernel),'mm',filesep...
                     'GLM',GLM_str, filesep];
