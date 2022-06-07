@@ -82,7 +82,9 @@ switch study_nm
                 % first run of these subjects: the fMRI crashed so you
                 % should remove it from the fMRI analysis
                 switch condition
-                    case {'fMRI','fMRI_no_move'}
+                    case {'fMRI',...
+                            'fMRI_no_move','fMRI_no_move_bis',...
+                            'fMRI_noSatTask','fMRI_noSatRun'}
                         runs.runsToKeep = 2:4;
                         runs.runsToIgnore = 1;
                 end % condition
