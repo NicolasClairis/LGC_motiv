@@ -1,4 +1,6 @@
 %% script to correlate brain metabolites with behavioral scores
+%
+% designed by N.Clairis - 2022
 
 %% define metabolite and ROI you want to focus on
 % ROI

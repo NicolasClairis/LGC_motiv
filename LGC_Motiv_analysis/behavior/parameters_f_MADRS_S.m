@@ -1,5 +1,7 @@
 %% script to correlate basic parameters from the behavioral model
 % with MADRS-S scores
+%
+% designed by N.Clairis - 2022
 
 %% perform behavioral model
 computerRoot = LGCM_root_paths;
