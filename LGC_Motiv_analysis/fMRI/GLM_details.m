@@ -1209,10 +1209,16 @@ for iEpm = 1:length(Epm)
             
             % money obtained
             switch GLMprm.fbk.(task_id_nm).(RP_fbk_nm).money_obtained
-                case 1
+                case 1 % money amount
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                     reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG feedback ',RP_fbk_nm,': money obtained'];
-                    disp([num2str(n_regs.(task_id_nm)),') feedback: money obtained (levels) ']);
+                    disp([num2str(n_regs.(task_id_nm)),') feedback: money obtained (amount) ']);
+                    % if derivative added => add derivatives
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                case 2 % |money amount|
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG feedback ',RP_fbk_nm,': |money obtained|'];
+                    disp([num2str(n_regs.(task_id_nm)),') feedback: |money obtained| (amount) ']);
                     % if derivative added => add derivatives
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
             end

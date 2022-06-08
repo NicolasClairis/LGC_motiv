@@ -203,7 +203,8 @@ function [GLMprm] = which_GLM(GLM)
 %       (1) win (1) - loss (0) trials
 %
 %       .fbk.(Ep/Em).(R/P/RP).money_obtained
-%       (1) money level obtained at the end of the trial
+%       (1) money amount obtained at the end of the trial
+%       (1) |money amount| obtained at the end of the trial (~saliency)
 %
 %       .fbk.(Ep/Em).(R/P/RP).E_made
 %       (1) level of effort performed during effort performance

@@ -1471,8 +1471,10 @@ if ismember(fbkModel,{'stick','boxcar'})
             n_fbkMods = n_fbkMods + 1;
             fbk_modNames{n_fbkMods} = 'money obtained';
             switch fbkModel_moneyObtained
-                case 1
+                case 1 % money amount
                     fbk_modVals(n_fbkMods,:) = raw_or_z(money_amount_obtained(fbk_trial_idx));
+                case 2 % |money amount|
+                    fbk_modVals(n_fbkMods,:) = raw_or_z(abs(money_amount_obtained(fbk_trial_idx)));
                 otherwise
                     error('not ready yet');
             end
