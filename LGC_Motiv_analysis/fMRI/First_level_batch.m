@@ -103,7 +103,7 @@ for iS = 1:NS
         mkdir(sm_folderName);
     end
     switch condition
-        case {'fMRI','fMRI_no_move_bis'}
+        case {'fMRI','fMRI_no_move_bis','fMRI_noSatTask'}
             resultsFolderName = [sm_folderName, 'GLM',num2str(GLM)];
         case 'fMRI_no_move'
             resultsFolderName = [sm_folderName, 'GLM',num2str(GLM),'_no_movementRun'];

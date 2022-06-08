@@ -59,8 +59,10 @@ spm_jobman('initcfg');
 
 %% define subjects of interest
 if ~exist('condition','var') ||...
-        ~ismember(condition,{'fMRI','fMRI_no_move','fMRI_no_move_bis'})
-condition = 'fMRI_no_move';
+        ~ismember(condition,{'fMRI',...
+        'fMRI_no_move','fMRI_no_move_bis',...
+        'fMRI_noSatTask'})
+condition = 'fMRI';
 end
 [subject_id, NS] = LGCM_subject_selection(study_nm, condition);
 
@@ -77,7 +79,7 @@ for iSubject = 1:NS
     
     %% define results directory
     switch condition
-        case {'fMRI','fMRI_no_move_bis'}
+        case {'fMRI','fMRI_no_move_bis','fMRI_noSatTask'}
             matlabbatch{iSubject}.spm.stats.con.spmmat = {fullfile(root,['CID',sub_nm],...
                 'fMRI_analysis','functional',...
                 ['preproc_sm_',num2str(preproc_sm_kernel),'mm'],...
