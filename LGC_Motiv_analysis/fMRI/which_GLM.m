@@ -133,8 +133,9 @@ function [GLMprm] = which_GLM(GLM)
 %
 %       .(choice/chosen).(Ep/Em).(R/P/RP).trialN
 %       (1) trial number
-%       (2) trial number*(E chosen - E non-chosen option)
-%       (3) trial number*(E non-default - E default option)
+%       (2) (trial number)*(E chosen - E non-chosen option)
+%       (3) (trial number)*(E non-default - E default option)
+%       (4) (trial number)*(E non-default)
 %
 %       .(choice/chosen).(Ep/Em).(R/P/RP).confidence
 %       (1) confidence level (0/1) given by the subject for each choice
@@ -190,8 +191,9 @@ function [GLMprm] = which_GLM(GLM)
 %
 %       .Eperf.(Ep/Em).(R/P/RP).trialN
 %       (1) trial number
-%       (2) trial number*(E chosen - E non-chosen option)
-%       (3) trial number*(E non-default - E default option)
+%       (2) (trial number)*(E chosen - E non-chosen option)
+%       (3) (trial number)*(E non-default - E default option)
+%       (4) (trial number)*(E non-default)
 %
 %       .Eperf.(Ep/Em).(R/P/RP).confidence
 %       (1) confidence level (0/1) given by the subject for each choice
@@ -211,8 +213,9 @@ function [GLMprm] = which_GLM(GLM)
 %
 %       .fbk.(Ep/Em).(R/P/RP).trialN
 %       (1) trial number
-%       (2) trial number*(E chosen - E non-chosen option)
-%       (3) trial number*(E non-default - E default option)
+%       (2) (trial number)*(E chosen - E non-chosen option)
+%       (3) (trial number)*(E non-default - E default option)
+%       (4) (trial number)*(E non-default)
 %
 %       .fbk.(Ep/Em).(R/P/RP).confidence
 %       (1) confidence level (0/1) given by the subject for each choice

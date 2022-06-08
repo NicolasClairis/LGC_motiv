@@ -308,6 +308,7 @@ end % R/P/RP loop
 n_theoreticalTrialsPerRun = 54;
 trialN = (1:n_theoreticalTrialsPerRun) - 1; % trial number - 1 to reflect fatigue level
 trialN_dEch = trialN.*E_chosen_min_E_unchosen;
+trialN_dEnonDef_min_Edef = trialN.*(E_varOption - E_fixedOption);
 trialN_dEnonDef = trialN.*E_varOption;
 
 %% remove trials where no choice was performed
@@ -386,6 +387,7 @@ if sum(choiceMissedTrials) > 0
     end
     trialN(choiceMissedTrials) = [];
     trialN_dEch(choiceMissedTrials) = [];
+    trialN_dEnonDef_min_Edef(choiceMissedTrials) = [];
     trialN_dEnonDef(choiceMissedTrials) = [];
 end
 
@@ -739,6 +741,8 @@ if ismember(choiceModel,{'stick','boxcar'})
                 case 2
                     choice_modVals(n_choiceMods,:) = raw_or_z(trialN_dEch(choice_trial_idx));
                 case 3
+                    choice_modVals(n_choiceMods,:) = raw_or_z(trialN_dEnonDef_min_Edef(choice_trial_idx));
+                case 4
                     choice_modVals(n_choiceMods,:) = raw_or_z(trialN_dEnonDef(choice_trial_idx));
                 otherwise
                     error('not ready yet');
@@ -1045,6 +1049,8 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis'})
                 case 2
                     chosen_modVals(n_chosenMods,:) = raw_or_z(trialN_dEch(chosen_trial_idx));
                 case 3
+                    chosen_modVals(n_chosenMods,:) = raw_or_z(trialN_dEnonDef_min_Edef(chosen_trial_idx));
+                case 4
                     chosen_modVals(n_chosenMods,:) = raw_or_z(trialN_dEnonDef(chosen_trial_idx));
                 otherwise
                     error('not ready yet');
@@ -1236,6 +1242,8 @@ if ismember(preEffortCrossModel,{'stick','boxcar','boxcar_bis'})
                 case 2
                     preEcross_modVals(n_preEcrossMods,:) = raw_or_z(trialN_dEch(preEcross_trial_idx));
                 case 3
+                    preEcross_modVals(n_preEcrossMods,:) = raw_or_z(trialN_dEnonDef_min_Edef(preEcross_trial_idx));
+                case 4
                     preEcross_modVals(n_preEcrossMods,:) = raw_or_z(trialN_dEnonDef(preEcross_trial_idx));
                 otherwise
                     error('not ready yet');
@@ -1398,6 +1406,8 @@ if ismember(EperfModel,{'stick','boxcar'})
                 case 2
                     Eperf_modVals(n_EperfMods,:) = raw_or_z(trialN_dEch(Eperf_trial_idx));
                 case 3
+                    Eperf_modVals(n_EperfMods,:) = raw_or_z(trialN_dEnonDef_min_Edef(Eperf_trial_idx));
+                case 4
                     Eperf_modVals(n_EperfMods,:) = raw_or_z(trialN_dEnonDef(Eperf_trial_idx));
                 otherwise
                     error('not ready yet');
@@ -1503,6 +1513,8 @@ if ismember(fbkModel,{'stick','boxcar'})
                 case 2
                     fbk_modVals(n_fbkMods,:) = raw_or_z(trialN_dEch(fbk_trial_idx));
                 case 3
+                    fbk_modVals(n_fbkMods,:) = raw_or_z(trialN_dEnonDef_min_Edef(fbk_trial_idx));
+                case 4
                     fbk_modVals(n_fbkMods,:) = raw_or_z(trialN_dEnonDef(fbk_trial_idx));
                 otherwise
                     error('not ready yet');

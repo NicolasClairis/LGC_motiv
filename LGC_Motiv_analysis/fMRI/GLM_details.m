@@ -448,14 +448,20 @@ for iEpm = 1:length(Epm)
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
                 case 2
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
-                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG choice ',RP_dispChoice_nm,': trial number x (Echosen-Eunchosen) (E levels)'];
-                    disp([num2str(n_regs.(task_id_nm)),') choice: trial number x (effort chosen-effort unchosen) (effort levels) ']);
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG choice ',RP_dispChoice_nm,': (trial number)x(Echosen-Eunchosen) (E levels)'];
+                    disp([num2str(n_regs.(task_id_nm)),') choice: (trial number)x(effort chosen-effort unchosen) (effort levels) ']);
                     % if derivative added => add derivatives
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
                 case 3
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                     reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG choice ',RP_dispChoice_nm,': trial number x (EnonDef-Edef) (E levels)'];
-                    disp([num2str(n_regs.(task_id_nm)),') choice: trial number x (effort non-default - effort default) (effort levels) ']);
+                    disp([num2str(n_regs.(task_id_nm)),') choice: (trial number)x(effort non-default - effort default) (effort levels) ']);
+                    % if derivative added => add derivatives
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                case 4
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG choice ',RP_dispChoice_nm,': (trial number)x(EnonDef) (E levels)'];
+                    disp([num2str(n_regs.(task_id_nm)),') choice: (trial number)x(effort non-default) (effort levels) ']);
                     % if derivative added => add derivatives
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
             end
@@ -765,16 +771,22 @@ for iEpm = 1:length(Epm)
                     disp([num2str(n_regs.(task_id_nm)),') chosen: trial number ']);
                     % if derivative added => add derivatives
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
-                    case 2
+                case 2
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
-                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG chosen ',RP_dispChosen_nm,': trial number x (Echosen-Eunchosen) (E levels)'];
-                    disp([num2str(n_regs.(task_id_nm)),') chosen: trial number x (effort chosen-effort unchosen) (effort levels) ']);
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG chosen ',RP_dispChosen_nm,': (trial number)x(Echosen-Eunchosen) (E levels)'];
+                    disp([num2str(n_regs.(task_id_nm)),') chosen: (trial number)x(effort chosen-effort unchosen) (effort levels) ']);
                     % if derivative added => add derivatives
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
                 case 3
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
-                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG chosen ',RP_dispChosen_nm,': trial number x (EnonDef-Edef) (E levels)'];
-                    disp([num2str(n_regs.(task_id_nm)),') chosen: trial number x (effort non-default - effort default) (effort levels) ']);
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG chosen ',RP_dispChosen_nm,': (trial number)x(EnonDef-Edef) (E levels)'];
+                    disp([num2str(n_regs.(task_id_nm)),') chosen: (trial number)x(effort non-default - effort default) (effort levels) ']);
+                    % if derivative added => add derivatives
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                case 4
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG chosen ',RP_dispChosen_nm,': (trial number)x(EnonDef) (E levels)'];
+                    disp([num2str(n_regs.(task_id_nm)),') chosen: (trial number)x(effort non-default) (effort levels) ']);
                     % if derivative added => add derivatives
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
             end
@@ -967,14 +979,20 @@ for iEpm = 1:length(Epm)
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
                 case 2
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
-                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG effort ',RP_preEcross_nm,': trial number x (Echosen-Eunchosen) (E levels)'];
-                    disp([num2str(n_regs.(task_id_nm)),') pre-effort cross: trial number x (effort chosen-effort unchosen) (effort levels) ']);
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG effort ',RP_preEcross_nm,': (trial number)x(Echosen-Eunchosen) (E levels)'];
+                    disp([num2str(n_regs.(task_id_nm)),') pre-effort cross: (trial number)x(effort chosen-effort unchosen) (effort levels) ']);
                     % if derivative added => add derivatives
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
                 case 3
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
-                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG effort ',RP_preEcross_nm,': trial number x (EnonDef-Edef) (E levels)'];
-                    disp([num2str(n_regs.(task_id_nm)),') pre-effort cross: trial number x (effort non-default - effort default) (effort levels) ']);
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG effort ',RP_preEcross_nm,': (trial number)x(EnonDef-Edef) (E levels)'];
+                    disp([num2str(n_regs.(task_id_nm)),') pre-effort cross: (trial number)x(effort non-default - effort default) (effort levels) ']);
+                    % if derivative added => add derivatives
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                case 4
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG effort ',RP_preEcross_nm,': (trial number)x(EnonDef) (E levels)'];
+                    disp([num2str(n_regs.(task_id_nm)),') pre-effort cross: (trial number)x(effort non-default) (effort levels) ']);
                     % if derivative added => add derivatives
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
             end
@@ -1143,14 +1161,20 @@ for iEpm = 1:length(Epm)
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
                 case 2
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
-                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG effort ',RP_Eperf_nm,': trial number x (Echosen-Eunchosen) (E levels)'];
-                    disp([num2str(n_regs.(task_id_nm)),') effort period: trial number x (effort chosen-effort unchosen) (effort levels) ']);
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG effort ',RP_Eperf_nm,': (trial number)x(Echosen-Eunchosen) (E levels)'];
+                    disp([num2str(n_regs.(task_id_nm)),') effort period: (trial number)x(effort chosen-effort unchosen) (effort levels) ']);
                     % if derivative added => add derivatives
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
                 case 3
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
-                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG effort ',RP_Eperf_nm,': trial number x (EnonDef-Edef) (E levels)'];
-                    disp([num2str(n_regs.(task_id_nm)),') effort period: trial number x (effort non-default - effort default) (effort levels) ']);
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG effort ',RP_Eperf_nm,': (trial number)x(EnonDef-Edef) (E levels)'];
+                    disp([num2str(n_regs.(task_id_nm)),') effort period: (trial number)x(effort non-default - effort default) (effort levels) ']);
+                    % if derivative added => add derivatives
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                case 4
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG effort ',RP_Eperf_nm,': (trial number)x(EnonDef) (E levels)'];
+                    disp([num2str(n_regs.(task_id_nm)),') effort period: (trial number)x(effort non-default) (effort levels) ']);
                     % if derivative added => add derivatives
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
             end
