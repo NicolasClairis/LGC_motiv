@@ -144,15 +144,15 @@ for iTask = 1:nTaskTypes
             nonDefaultChoice_perSub.perSignedMoneylevel.([task_nm,'_R_',num2str(iAbsMoney)])(iS) = avg_nonDefaultChoice_data_perSub{iS}.perSignedMoneylevel.([task_nm,'_R_',num2str(iAbsMoney)]);
             nonDefaultChoice_perSub.perSignedMoneylevel.([task_nm,'_P_',num2str(iAbsMoney)])(iS) = avg_nonDefaultChoice_data_perSub{iS}.perSignedMoneylevel.([task_nm,'_P_',num2str(iAbsMoney)]);
             % same for confidence
-            conf_perSub.perDeltaMoneylevel.([task_nm,'_R_',num2str(iAbsMoney)])(iS) = avg_conf_data_perSub{iS}.perDeltaMoneylevel.([task_nm,'_',num2str(iAbsMoney)]);
+            conf_perSub.perDeltaMoneylevel.([task_nm,'_',num2str(iAbsMoney)])(iS) = avg_conf_data_perSub{iS}.perDeltaMoneylevel.([task_nm,'_',num2str(iAbsMoney)]);
             conf_perSub.perSignedMoneylevel.([task_nm,'_R_',num2str(iAbsMoney)])(iS) = avg_conf_data_perSub{iS}.perSignedMoneylevel.([task_nm,'_R_',num2str(iAbsMoney)]);
             conf_perSub.perSignedMoneylevel.([task_nm,'_P_',num2str(iAbsMoney)])(iS) = avg_conf_data_perSub{iS}.perSignedMoneylevel.([task_nm,'_P_',num2str(iAbsMoney)]);
             % same for RT
-            RT_perSub.perDeltaMoneylevel.([task_nm,'_R_',num2str(iAbsMoney)])(iS) = avg_RT_data_perSub{iS}.perDeltaMoneylevel.([task_nm,'_',num2str(iAbsMoney)]);
+            RT_perSub.perDeltaMoneylevel.([task_nm,'_',num2str(iAbsMoney)])(iS) = avg_RT_data_perSub{iS}.perDeltaMoneylevel.([task_nm,'_',num2str(iAbsMoney)]);
             RT_perSub.perSignedMoneylevel.([task_nm,'_R_',num2str(iAbsMoney)])(iS) = avg_RT_data_perSub{iS}.perSignedMoneylevel.([task_nm,'_R_',num2str(iAbsMoney)]);
             RT_perSub.perSignedMoneylevel.([task_nm,'_P_',num2str(iAbsMoney)])(iS) = avg_RT_data_perSub{iS}.perSignedMoneylevel.([task_nm,'_P_',num2str(iAbsMoney)]);
             % same for effort performance
-            Eperformance_perSub.perDeltaMoneylevel.([task_nm,'_R_',num2str(iAbsMoney)])(iS) = avg_Eperformance_data_perSub{iS}.perDeltaMoneylevel.([task_nm,'_',num2str(iAbsMoney)]);
+            Eperformance_perSub.perDeltaMoneylevel.([task_nm,'_',num2str(iAbsMoney)])(iS) = avg_Eperformance_data_perSub{iS}.perDeltaMoneylevel.([task_nm,'_',num2str(iAbsMoney)]);
             Eperformance_perSub.perSignedMoneylevel.([task_nm,'_R_',num2str(iAbsMoney)])(iS) = avg_Eperformance_data_perSub{iS}.perSignedMoneylevel.([task_nm,'_R_',num2str(iAbsMoney)]);
             Eperformance_perSub.perSignedMoneylevel.([task_nm,'_P_',num2str(iAbsMoney)])(iS) = avg_Eperformance_data_perSub{iS}.perSignedMoneylevel.([task_nm,'_P_',num2str(iAbsMoney)]);
         end
@@ -236,7 +236,7 @@ end % loop through physical and mental effort
 % figure parameters
 lWidth_50percentTrait = 2;
 lWidth = 3;
-pSize = 30;
+pSize = 40;
 bWidth = 0.4;
 bDist = 0.2;
 Em_col = [0 1 0];
@@ -593,6 +593,36 @@ legend([bar_hdl.Em, bar_hdl.Ep],'mental','physical');
 legend('boxoff');
 legend_size(pSize);
 
+%% check effort performance = f(|delta money| level)
+fig;
+hold on;
+for iAbsMoney = 1:(n_R_levels - 1)
+    bar_hdl.Em = bar(iAbsMoney-bDist,...
+        avg_Eperformance.perDeltaMoneylevel.(['Em_',num2str(iAbsMoney)]),...
+        'FaceColor',Em_col,'BarWidth',bWidth);
+    bar_hdl.Ep = bar(iAbsMoney+bDist,...
+        avg_Eperformance.perDeltaMoneylevel.(['Ep_',num2str(iAbsMoney)]),...
+        'FaceColor',Ep_col,'BarWidth',bWidth);
+    errorbar(iAbsMoney-bDist,...
+        avg_Eperformance.perDeltaMoneylevel.(['Em_',num2str(iAbsMoney)]),...
+        sem_Eperformance.perDeltaMoneylevel.(['Em_',num2str(iAbsMoney)]),...
+        'k','LineWidth',lWidth);
+    errorbar(iAbsMoney+bDist,...
+        avg_Eperformance.perDeltaMoneylevel.(['Ep_',num2str(iAbsMoney)]),...
+        sem_Eperformance.perDeltaMoneylevel.(['Ep_',num2str(iAbsMoney)]),...
+        'k','LineWidth',lWidth);
+end
+ylim([90 100]);
+ylabel('Effort performance (%)');
+xticks(1:3);
+xticklabels({'1','2','3'});
+xlim([0 n_R_levels]);
+xlabel('|Δ money| level');
+legend_size(pSize);
+ylim([90 100]);
+legend([bar_hdl.Em, bar_hdl.Ep],'mental','physical');
+legend('boxoff');
+legend_size(pSize);
 
 %% check effort performance = f(money levels (splitting R and P trials))
 fig;
