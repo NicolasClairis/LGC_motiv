@@ -333,6 +333,36 @@ for iPM = 1:2
         end % model loop
 
     end % loop through low/high metabolite levels
+
+    % compare two groups (low/high)
+    for iMdl = 0:nMdl
+            mdl_nm = ['mdl_',num2str(iMdl)];
+
+            % beta 0
+            [~,pval.(task_id).(mdl_nm).b0.low_vs_high] = ttest2(betas.(task_id).(mdl_nm).b0(:,low_met_subs),...
+                betas.(task_id).(mdl_nm).b0(:,high_met_subs));
+            % beta confidence
+            [~,pval.(task_id).(mdl_nm).bConf.low_vs_high] = ttest2(betas.(task_id).(mdl_nm).bConf(:,low_met_subs),...
+                betas.(task_id).(mdl_nm).bConf(:,high_met_subs));
+            switch mdl_nm
+                case 'mdl_0'
+                    % beta net value
+                    [~,pval.(task_id).(mdl_nm).bR.low_vs_high] = ttest2(betas.(task_id).(mdl_nm).bR(:,low_met_subs),...
+                betas.(task_id).(mdl_nm).bR(:,high_met_subs));
+                    % beta punishment
+                    [~,pval.(task_id).(mdl_nm).bP.low_vs_high] = ttest2(betas.(task_id).(mdl_nm).bP(:,low_met_subs),...
+                betas.(task_id).(mdl_nm).bP(:,high_met_subs));
+                    % beta R vs P
+                    [~,pval.(task_id).(mdl_nm).bRP.low_vs_high] = ttest2(betas.(task_id).(mdl_nm).bRP(:,low_met_subs),...
+                betas.(task_id).(mdl_nm).bRP(:,high_met_subs));
+                    % beta effort
+                    [~,pval.(task_id).(mdl_nm).bE.low_vs_high] = ttest2(betas.(task_id).(mdl_nm).bE(:,low_met_subs),...
+                betas.(task_id).(mdl_nm).bE(:,high_met_subs));
+                case {'mdl_1','mdl_2','mdl_3','mdl_4'}
+                    [~,pval.(task_id).(mdl_nm).bNV.low_vs_high] = ttest2(betas.(task_id).(mdl_nm).bNV(:,low_met_subs),...
+                betas.(task_id).(mdl_nm).bNV(:,high_met_subs));
+            end
+    end % model loop
 end % physical/mental loop
 
 %% display the data
