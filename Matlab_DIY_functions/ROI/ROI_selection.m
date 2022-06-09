@@ -162,6 +162,7 @@ for iROI = 1:nb_ROIs
         %% extract in output
         ROI_xyz.(['ROI_',num2str(iROI)])                = sxyz_ROI;
         ROI_sphere_or_mask.(['ROI_',num2str(iROI)])     = sphere_mask;
+        ROI_nm.(['ROI_',num2str(iROI),'_shortName'])    = sphere_nm;
         ROI_nm.(['ROI_',num2str(iROI)])                 = [sphere_nm,'_',num2str(r),'mm_sphere']; % should not start with a number or next scripts will bug
         ROI_nm.(['ROI_',num2str(iROI),'_centerCoords']) = num2str(ROI_coord_center); % store coordinates of the center of the sphere
         
@@ -239,6 +240,7 @@ for iROI = 1:nb_ROIs
         %% extract in output
         ROI_xyz.(['ROI_',num2str(iROI)])            = sxyz_ROI;
         ROI_sphere_or_mask.(['ROI_',num2str(iROI)]) = sphere_mask;
+        ROI_nm.(['ROI_',num2str(iROI),'_shortName'])= maskName;
         ROI_nm.(['ROI_',num2str(iROI)])             = maskName;
         ROI_nm.fullpath.(['ROI_',num2str(iROI)])    = mask_img;
         

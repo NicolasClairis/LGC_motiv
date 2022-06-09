@@ -173,6 +173,11 @@ for iROI = 1:n_ROIs
         %% indicator subjectdone
         disp(['Subject ',num2str(iS),'/',num2str(NS),' extracted']);
     end % subject loop
+    
+    %% extract coordinates informations
+    ROI_coords.(['ROI_',num2str(iROI)]).xyz = sxyz_ROI;
+    ROI_coords.ROI_nm = ROI_nm;
+    ROI_coords.n_ROIs = n_ROIs;
 end % roi loop
 
 %% average across subjects
@@ -230,9 +235,5 @@ if fig_disp == 1
         end
     end % figure loop
 end % figure display
-
-%% extract coordinates informations
-ROI_coords.xyz = sxyz_ROI;
-ROI_coords.ROI_nm = ROI_nm;
 
 end % function

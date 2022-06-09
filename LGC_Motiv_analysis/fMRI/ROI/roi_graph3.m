@@ -1,11 +1,11 @@
 function[roi_fig] = roi_graph3(selectedContrastIndex,...
             con_data,...
             low_subs, high_subs,...
-            figConName, ttest_pval_1_vs_2, xname1, xname2)
+            figConName, ttest_pval_1_vs_2, xname1, xname2, ROI_BOLD_nm)
 % [roi_fig] = roi_graph2(selectedContrastIndextrastIndex,...
 %             con_data,...
 %             low_subs, high_subs,...
-%             figConName, ttest_pval_1_vs_2, name1, name2)
+%             figConName, ttest_pval_1_vs_2, name1, name2, ROI_BOLD_nm)
 % roi_graph3 will display a violin plot graph showing 2 columns with a star if the
 % difference between the two is significant.
 %
@@ -25,6 +25,8 @@ function[roi_fig] = roi_graph3(selectedContrastIndex,...
 % xname1: name for first column
 %
 % xname2: name for second column
+%
+% ROI_BOLD_nm: name of the area where the regression estimate was extracted
 %
 % OUTPUTS
 %
@@ -74,6 +76,8 @@ end
 scale_ok_idx = 0;
 while scale_ok_idx == 0
     roi_fig = fig();
+    
+    title(ROI_BOLD_nm);
 
     %% loop through sequences
     xpos = (1:2)';
