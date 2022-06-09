@@ -13,7 +13,7 @@ Nicolas_homePath = [fullfile('C:','Users','Loco','Downloads'),filesep];
 % Nicolas_labPath = [fullfile('C:','Users','clairis','Desktop'),filesep];
 Nicolas_labPath = [fullfile('E:'),filesep];
 % human_serverPath = [fullfile('svfas5.epfl.ch','Sandi-Lab','human_data_private'),filesep];
-human_serverPath = [fullfile('L:','human_data_private','analyzed_data'),filesep];
+human_serverPath = [fullfile('L:','human_data_private','raw_data_subject'),filesep];
 Arthur_serverPath = [fullfile('svfas5.epfl.ch','Sandi-Lab','Arthur'),filesep];
 
 % spm specific
