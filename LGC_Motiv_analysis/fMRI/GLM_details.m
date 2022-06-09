@@ -111,6 +111,29 @@ for iEpm = 1:length(Epm)
             n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
             
             %% choice regressors
+            
+            % RT (first regressor)
+            switch GLMprm.choice.(task_id_nm).(RP_dispChoice_nm).RT
+                case 4
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG choice ',RP_dispChoice_nm,': RT'];
+                    disp([num2str(n_regs.(task_id_nm)),') choice: RT (raw) ']);
+                    % if derivative added => add derivatives
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                case 5
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG choice ',RP_dispChoice_nm,': RT'];
+                    disp([num2str(n_regs.(task_id_nm)),') choice: RT (zscored per run) ']);
+                    % if derivative added => add derivatives
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                case 6
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG choice ',RP_dispChoice_nm,': RT'];
+                    disp([num2str(n_regs.(task_id_nm)),') choice: RT (zscored per subject ie across all runs) ']);
+                    % if derivative added => add derivatives
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+            end
+            
             % Reward > Punishment
             if GLMprm.choice.(task_id_nm).(RP_dispChoice_nm).R_vs_P == 1
                 n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
@@ -482,7 +505,7 @@ for iEpm = 1:length(Epm)
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
             end
             
-            % RT
+            % RT (last regressor)
             switch GLMprm.choice.(task_id_nm).(RP_dispChoice_nm).RT
                 case 1
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
@@ -522,14 +545,37 @@ for iEpm = 1:length(Epm)
         for iRP_chosen = 1:n_RP_chosen
             RP_dispChosen_nm = RP_chosen{iRP_chosen};
             
-            % chosen onset
+            %% chosen onset
             n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
             reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['ONSET chosen ',RP_dispChosen_nm];
             disp([num2str(n_regs.(task_id_nm)),') ONSET chosen option display ',RP_dispChosen_nm,': ',GLMprm.model_onset.(task_id_nm).chosen,' ']);
             % if derivative added => add derivatives
             n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
             
-            % chosen regressors
+            %% chosen regressors
+            
+            % RT (first regressor)
+            switch GLMprm.chosen.(task_id_nm).(RP_dispChosen_nm).RT
+                case 4
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG chosen ',RP_dispChosen_nm,': RT'];
+                    disp([num2str(n_regs.(task_id_nm)),') chosen: RT (raw) ']);
+                    % if derivative added => add derivatives
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                case 5
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG chosen ',RP_dispChosen_nm,': RT'];
+                    disp([num2str(n_regs.(task_id_nm)),') chosen: RT (zscored per run) ']);
+                    % if derivative added => add derivatives
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                case 6
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG chosen ',RP_dispChosen_nm,': RT'];
+                    disp([num2str(n_regs.(task_id_nm)),') chosen: RT (zscored per subject ie across all runs) ']);
+                    % if derivative added => add derivatives
+                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+            end
+            
             % reward/punishment trial
             switch GLMprm.chosen.(task_id_nm).(RP_dispChosen_nm).R_vs_P
                 case 1
@@ -807,7 +853,7 @@ for iEpm = 1:length(Epm)
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
             end
             
-            % RT
+            % RT (last regressor)
             switch GLMprm.chosen.(task_id_nm).(RP_dispChosen_nm).RT
                 case 1
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
@@ -828,7 +874,6 @@ for iEpm = 1:length(Epm)
                     % if derivative added => add derivatives
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
             end
-            
             
         end % loop reward/punishment
     end % chosen onset

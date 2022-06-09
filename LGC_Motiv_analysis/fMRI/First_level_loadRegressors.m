@@ -496,7 +496,7 @@ if ismember(choiceModel,{'stick','boxcar'})
                 choice_trial_idx = RP_var_binary == 0;
         end
         
-        % onset
+        %% choice onset
         iCond = iCond + 1;
         modelChoiceOnset = dispChoiceOptionOnsets(choice_trial_idx);
         % duration
@@ -507,11 +507,23 @@ if ismember(choiceModel,{'stick','boxcar'})
                 modelChoiceDur = dispChoiceOptionsDur(choice_trial_idx);
         end
 
-        % modulators
+        %% choice modulators
         n_choiceMods = 0;
         choice_modNames = cell(1,1);
         choice_modVals = [];
 
+        % RT (first regressor)
+        if choiceModel_RT > 0 && ismember(choiceModel_RT,[4,5,6])
+            n_choiceMods = n_choiceMods + 1;
+            choice_modNames{n_choiceMods} = 'choice RT';
+            switch choiceModel_RT
+                case 4
+                    choice_modVals(n_choiceMods,:) = raw_or_z(choice_RT(choice_trial_idx));
+                otherwise
+                    error('not ready yet');
+            end
+        end
+        
         % reward vs punishments
         if choiceModel_RP == 1
             if strcmp(RP_choice_nm,'RP')
@@ -763,8 +775,8 @@ if ismember(choiceModel,{'stick','boxcar'})
             end
         end
 
-        % RT
-        if choiceModel_RT > 0
+        % RT (last regressor)
+        if choiceModel_RT > 0 && ismember(choiceModel_RT,[1,2,3])
             n_choiceMods = n_choiceMods + 1;
             choice_modNames{n_choiceMods} = 'choice RT';
             switch choiceModel_RT
@@ -818,7 +830,7 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis'})
                 chosen_trial_idx = RP_var_binary == 0;
         end
         
-        % onset
+        %% chosen onset
         iCond = iCond + 1;
         modelChosenOnset = dispChosenOnsets(chosen_trial_idx);
         % duration
@@ -834,10 +846,22 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis'})
                     EperfDur(chosen_trial_idx);
         end
 
-        % modulators
+        %% chosen modulators
         n_chosenMods = 0;
         chosen_modNames = cell(1,1);
         chosen_modVals = [];
+        
+        % RT (first regressor)
+        if chosenModel_RT > 0 && ismember(chosenModel_RT,[4,5,6])
+            n_chosenMods = n_chosenMods + 1;
+            chosen_modNames{n_chosenMods} = 'choice RT';
+            switch chosenModel_RT
+                case 4
+                    chosen_modVals(n_chosenMods,:) = raw_or_z(choice_RT(chosen_trial_idx));
+                otherwise
+                    error('not ready yet');
+            end
+        end
         
         % reward vs punishment trials
         if chosenModel_R_vs_P > 0
@@ -1071,8 +1095,8 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis'})
             end
         end
         
-        % RT
-        if chosenModel_RT > 0
+        % RT (last regressor)
+        if chosenModel_RT > 0 && ismember(chosenModel_RT,[1,2,3])
             n_chosenMods = n_chosenMods + 1;
             chosen_modNames{n_chosenMods} = 'choice RT';
             switch chosenModel_RT
@@ -1126,7 +1150,7 @@ if ismember(preEffortCrossModel,{'stick','boxcar','boxcar_bis'})
                 preEcross_trial_idx = RP_var_binary == 0;
         end
         
-        % onset
+        %% pre-effort cross onset
         iCond = iCond + 1;
         modelpreEcrossOnset = preEffortCrossOnsets(preEcross_trial_idx);
         % duration
@@ -1140,7 +1164,7 @@ if ismember(preEffortCrossModel,{'stick','boxcar','boxcar_bis'})
                     EperfDur(preEcross_trial_idx);
         end
 
-        % modulators
+        %% pre-effort cross modulators
         n_preEcrossMods = 0;
         preEcross_modNames = cell(1,1);
         preEcross_modVals = [];
@@ -1293,7 +1317,7 @@ if ismember(EperfModel,{'stick','boxcar'})
                 Eperf_trial_idx = RP_var_binary == 0;
         end
         
-        % onset
+        %% Effort performance onset
         iCond = iCond + 1;
         modelEperfOnset = EperfOnsets(Eperf_trial_idx);
         % duration
@@ -1304,7 +1328,7 @@ if ismember(EperfModel,{'stick','boxcar'})
                 modelEperfDur = EperfDur(Eperf_trial_idx);
         end
 
-        % modulators
+        %% Effort performance modulators
         n_EperfMods = 0;
         Eperf_modNames = cell(1,1);
         Eperf_modVals = [];
@@ -1444,7 +1468,7 @@ if ismember(fbkModel,{'stick','boxcar'})
                 fbk_trial_idx = RP_var_binary == 0;
         end
         
-        % onset
+        %% feedback onset
         iCond = iCond + 1;
         modelFbkOnset = fbkOnsets(fbk_trial_idx);
         % duration
@@ -1455,7 +1479,7 @@ if ismember(fbkModel,{'stick','boxcar'})
                 modelFbkDur = fbkDur(fbk_trial_idx);
         end
 
-        % modulators
+        %% feedback modulators
         n_fbkMods = 0;
         fbk_modNames = cell(1,1);
         fbk_modVals = [];

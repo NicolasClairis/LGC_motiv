@@ -146,6 +146,7 @@ function [GLMprm] = which_GLM(GLM)
 %       (1) raw reaction time
 %       (2) reaction time zscored per run
 %       (3) reaction time zscored per subject across all runs
+%       (4-6) same as (1-3) but with RT as first regressor instead of last
 %
 %
 %       .Eperf.(Ep/Em).RPpool
