@@ -1,16 +1,9 @@
-function[betas, pvalues] = logitfit_choices_group(computerRoot, study_nm,...
-    figDispGroup, figDispIndiv, dispMoneyOrLevels, n_NV_bins, n_trialN_bins)
+function[betas, pvalues] = logitfit_choices_group(figDispGroup, dispMoneyOrLevels)
 % [betas, pvalues] = logitfit_choices_group(computerRoot, study_nm,...
 %       figDispGroup, figDispIndiv, dispMoneyOrLevels, n_NV_bins, n_trialN_bins)
 %
 % INPUTS
-% computerRoot: pathway where data is
-%
-% study_nm: study name
-%
 % figDispGroup: display group figures (1) or not (0)
-%
-% figDispIndiv: display individual figures (1) or not (0)
 %
 % dispMoneyOrLevels: display actual money ('money') or reward levels
 % ('levels')
