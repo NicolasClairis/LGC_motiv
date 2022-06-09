@@ -81,8 +81,6 @@ end
 scale_ok_idx = 0;
 while scale_ok_idx == 0
     roi_fig = fig();
-    
-    title(ROI_BOLD_nm);
 
     %% loop through sequences
     xpos = (1:2)';
@@ -134,7 +132,7 @@ while scale_ok_idx == 0
 
     xticks(xpos);
     set(gca,'xtick',xpos,'XTickLabel',{xname1,xname2});
-    title(figConName);
+    title([ROI_BOLD_nm,' - ',figConName]);
     switch langage
         case 'engl'
             ylabel('Regression estimate');
