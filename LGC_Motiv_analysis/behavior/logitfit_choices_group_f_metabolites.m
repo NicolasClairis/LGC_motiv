@@ -21,15 +21,11 @@ end
 %% by default, display group figures
 if ~exist('figDispGroup','var') || isempty(figDispGroup)
     figDispGroup = 1;
-    disp(['figDispGroup was not defined in the inputs so that by default ',...
-        'group figures are displayed.']);
 end
 
 %% by default, do not display individual figures
 if ~exist('figDispIndiv','var') || isempty(figDispIndiv)
     figDispIndiv = 0;
-    disp(['figDispGroup was not defined in the inputs so that by default ',...
-        'individual figures are not displayed.']);
 end
 %% by default, display monetary levels instead of actual monetary amounts
 if ~exist('dispMoneyOrLevels','var') || isempty(dispMoneyOrLevels)
@@ -283,26 +279,27 @@ for iPM = 1:2
                 sem_actualMoney_values.(task_id)] = mean_sem_sd(actualMoney_values.(task_id), 2);
         end % model loop
 
-        % compare the betas of high group
-        for iMdl = 1:nMdl
-            mdl_nm = ['mdl_',num2str(iMdl)];
-            if ismember(iMdl,[1,3])
-                [~,pvalues.(task_id).(mdl_nm).kMoney.(grp_nm)] = ttest2(betas.(task_id).(mdl_nm).kMoney(:,low_met_subs),...
-                    betas.(task_id).(mdl_nm).kMoney(:,high_met_subs));
-            elseif ismember(iMdl,[2,4])
-                [~,pvalues.(task_id).(mdl_nm).kR.(grp_nm)] = ttest2(betas.(task_id).(mdl_nm).kR(:,low_met_subs),...
-                    betas.(task_id).(mdl_nm).kR(:,high_met_subs));
-                [~,pvalues.(task_id).(mdl_nm).kP.(grp_nm)] = ttest2(betas.(task_id).(mdl_nm).kP(:,low_met_subs),...
-                    betas.(task_id).(mdl_nm).kP(:,high_met_subs));
-            end
-            [~,pvalues.(task_id).(mdl_nm).kEffort.(grp_nm)] = ttest2(betas.(task_id).(mdl_nm).kEffort(:,low_met_subs),...
-                    betas.(task_id).(mdl_nm).kEffort(:,high_met_subs));
-            if ismember(iMdl,[3,4])
-                [~,pvalues.(task_id).(mdl_nm).kFatigue.(grp_nm)] = ttest2(betas.(task_id).(mdl_nm).kFatigue(:,low_met_subs),...
-                    betas.(task_id).(mdl_nm).kFatigue(:,high_met_subs));
-            end
-        end
     end % loop through low/high metabolite levels
+
+    % compare the betas of low vs high group
+    for iMdl = 1:nMdl
+        mdl_nm = ['mdl_',num2str(iMdl)];
+        if ismember(iMdl,[1,3])
+            [~,pvalues.(task_id).(mdl_nm).kMoney.low_vs_high] = ttest2(betas.(task_id).(mdl_nm).kMoney(:,low_met_subs),...
+                betas.(task_id).(mdl_nm).kMoney(:,high_met_subs));
+        elseif ismember(iMdl,[2,4])
+            [~,pvalues.(task_id).(mdl_nm).kR.low_vs_high] = ttest2(betas.(task_id).(mdl_nm).kR(:,low_met_subs),...
+                betas.(task_id).(mdl_nm).kR(:,high_met_subs));
+            [~,pvalues.(task_id).(mdl_nm).kP.low_vs_high] = ttest2(betas.(task_id).(mdl_nm).kP(:,low_met_subs),...
+                betas.(task_id).(mdl_nm).kP(:,high_met_subs));
+        end
+        [~,pvalues.(task_id).(mdl_nm).kEffort.low_vs_high] = ttest2(betas.(task_id).(mdl_nm).kEffort(:,low_met_subs),...
+            betas.(task_id).(mdl_nm).kEffort(:,high_met_subs));
+        if ismember(iMdl,[3,4])
+            [~,pvalues.(task_id).(mdl_nm).kFatigue.low_vs_high] = ttest2(betas.(task_id).(mdl_nm).kFatigue(:,low_met_subs),...
+                betas.(task_id).(mdl_nm).kFatigue(:,high_met_subs));
+        end
+    end
 
     %% display average data
     if figDispGroup == 1
@@ -327,11 +324,13 @@ for iPM = 1:2
                     m_choiceNonDef.perNVLevel.(mdl_nm).(task_id).(grp_nm).*100,...
                     sem_choiceNonDef.perNVLevel.(mdl_nm).(task_id).(grp_nm).*100);
                 pointMdl.Color = [0 0 0];
+                pointMdl.Marker = 'o';
+                pointMdl.MarkerSize = 10;
                 switch iGrp
                     case 1
-                        pointMdl.Marker = 'o';
+                        pointMdl.MarkerFaceColor = [0 0 0];
                     case 2
-                        pointMdl.Marker = '+';
+                        pointMdl.MarkerFaceColor = [1 1 1];
                 end
                 pointMdl.LineStyle = 'none';
                 pointMdl.LineWidth = lWidth;
@@ -378,11 +377,13 @@ for iPM = 1:2
                             sem_choiceNonDef.perMoneyLevel.(task_id).(grp_nm).*100);
                 end
                 pointMdl.Color = [0 0 0];
+                pointMdl.Marker = 'o';
+                pointMdl.MarkerSize = 10;
                 switch iGrp
                     case 1
-                        pointMdl.Marker = 'o';
+                        pointMdl.MarkerFaceColor = [0 0 0];
                     case 2
-                        pointMdl.Marker = '+';
+                        pointMdl.MarkerFaceColor = [1 1 1];
                 end
                 pointMdl.LineStyle = 'none';
                 pointMdl.LineWidth = lWidth;
@@ -420,11 +421,13 @@ for iPM = 1:2
                     m_choiceNonDef.perEffortLevel.(task_id).(grp_nm).*100,...
                     sem_choiceNonDef.perEffortLevel.(task_id).(grp_nm).*100);
                 pointMdl.Color = [0 0 0];
+                pointMdl.Marker = 'o';
+                pointMdl.MarkerSize = 10;
                 switch iGrp
                     case 1
-                        pointMdl.Marker = 'o';
+                        pointMdl.MarkerFaceColor = [0 0 0];
                     case 2
-                        pointMdl.Marker = '+';
+                        pointMdl.MarkerFaceColor = [1 1 1];
                 end
                 pointMdl.LineStyle = 'none';
                 pointMdl.LineWidth = lWidth;
@@ -457,11 +460,13 @@ for iPM = 1:2
                     m_choiceNonDef.perTrialN.(task_id).(grp_nm).*100,...
                     sem_choiceNonDef.perTrialN.(task_id).(grp_nm).*100);
                 pointMdl.Color = [0 0 0];
+                pointMdl.Marker = 'o';
+                pointMdl.MarkerSize = 10;
                 switch iGrp
                     case 1
-                        pointMdl.Marker = 'o';
+                        pointMdl.MarkerFaceColor = [0 0 0];
                     case 2
-                        pointMdl.Marker = '+';
+                        pointMdl.MarkerFaceColor = [1 1 1];
                 end
                 pointMdl.LineStyle = 'none';
                 pointMdl.LineWidth = lWidth;
