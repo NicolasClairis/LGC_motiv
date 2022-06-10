@@ -30,15 +30,9 @@ metabolite_allSubs = metabolites.(ROI_nm).(metabolite_nm);
 
 %% extract behavioral parameters
 %% perform behavioral model
-computerRoot = LGCM_root_paths;
-study_nm = 'study1';
 figDispGroup = 0;
-figDispIndiv = 0;
 dispMoneyOrLevels = 'levels';
-n_NV_bins = 6;
-n_trialN_bins = 6;
-[betas_fullList, pvalues_fullList] = logitfit_choices_group(computerRoot, study_nm,...
-    figDispGroup, figDispIndiv, dispMoneyOrLevels, n_NV_bins, n_trialN_bins);
+[betas_fullList, pvalues_fullList] = logitfit_choices_group(figDispGroup, dispMoneyOrLevels);
 
 [prm.kRp, prm.kPp, prm.kEp, prm.kFp,...
     prm.kRm, prm.kPm, prm.kEm, prm.kFm] = deal(NaN(1,NS));
@@ -62,12 +56,14 @@ end % subject list
 parameters = {'kRp','kPp','kEp','kFp',...
     'kRm','kPm','kEm','kFm'};
 n_prm = length(parameters);
+% remove NaN subjects
+goodSubs = ~isnan(metabolite_allSubs);
 for iPrm = 1:n_prm
     prm_nm = parameters{iPrm};
     var_nm = [prm_nm,'_f_',metabolite_nm];
-    [betas.(var_nm), ~,stats_tmp] = glmfit(metabolite_allSubs, prm.(prm_nm),'normal');
+    [betas.(var_nm), ~,stats_tmp] = glmfit(metabolite_allSubs(goodSubs), prm.(prm_nm)(goodSubs),'normal');
     pval.(var_nm) = stats_tmp.p;
-    prm_f_metabolite_fit.(var_nm) = glmval(betas.(var_nm),metabolite_allSubs,'identity');
+    prm_f_metabolite_fit.(var_nm) = glmval(betas.(var_nm),metabolite_allSubs(goodSubs),'identity');
 end % parameters loop
 
 %% display results
@@ -79,10 +75,10 @@ for iPrm = 1:n_prm
     hdl=scatter(metabolite_allSubs, prm.(prm_nm),...
         'MarkerEdgeColor','k','SizeData',100,'LineWidth',3);
     hold on;
-    [metabolite_allSubs_sorted, idx_sorted] = sort(metabolite_allSubs);
+    [metabolite_allSubs_sorted, idx_sorted] = sort(metabolite_allSubs(goodSubs));
     plot(metabolite_allSubs_sorted, prm_f_metabolite_fit.(var_nm)(idx_sorted),...
         'LineStyle','--','LineWidth',3);
-    xlabel('');
+    xlabel([ROI_nm,' ',metabolite_nm]);
     ylabel(prm_nm);
     legend_size(pSize);
 
