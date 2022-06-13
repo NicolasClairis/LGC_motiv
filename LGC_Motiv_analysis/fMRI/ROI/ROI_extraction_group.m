@@ -61,7 +61,12 @@ end
 
 dataRoot = [computerRoot,filesep,study_nm,filesep];
 
-gitFolder = fullfile('C:','Users','Loco','Documents','GitHub','LGC_motiv','Matlab_DIY_functions','ROI');
+switch computerRoot
+    case 'E:\' % lab computer
+        gitFolder = fullfile('C:','Users','clairis','Desktop','GitHub','LGC_motiv','Matlab_DIY_functions','ROI');
+    case 'L:\human_data_private\raw_data_subject\' % home computer
+        gitFolder = fullfile('C:','Users','Loco','Documents','GitHub','LGC_motiv','Matlab_DIY_functions','ROI');
+end
 ROI_path = [dataRoot,filesep,'results',filesep,'ROI',filesep];
 
 %% define subject list

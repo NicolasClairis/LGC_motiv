@@ -1,12 +1,12 @@
-function [ ROI_xyz, ROI_sphere_or_mask, ROI_nm, nb_ROIs, ROI_vol, ROI_mask ] = ROI_selection(gitFolder)
-%[ ROI_xyz, ROI_sphere_or_mask, ROI_nm, nb_ROIs, ROI_vol, ROI_mask ] = ROI_selection(gitFolder)
+function [ ROI_xyz, ROI_sphere_or_mask, ROI_nm, nb_ROIs, ROI_vol, ROI_mask ] = ROI_selection(roiFolder)
+%[ ROI_xyz, ROI_sphere_or_mask, ROI_nm, nb_ROIs, ROI_vol, ROI_mask ] = ROI_selection(roiFolder)
 % proposes different ROI and asks you which one(s) you want to use.
 %
 % Note that this script requires the SPM toolbox (version 12 works,
 % previous versions should be tested)
 %
 % INPUTS
-% gitFolder: path where git ROI scripts are stored
+% roiFolder: path where ROI masks are stored
 %
 % OUTPUTS
 % ROI_xyz: structure containing one subfield per ROI named as
@@ -171,7 +171,7 @@ for iROI = 1:nb_ROIs
         %% using a mask
     elseif sphere_mask == 1
         
-        maskFolder = [gitFolder, filesep, 'NicoC_masks', filesep];
+        maskFolder = [roiFolder, filesep, 'NicoC_masks', filesep];
         
         % choice of the area(s) on which you want to focus
         possibleMaskAreas = {'vmPFC','PCC',...
@@ -190,7 +190,7 @@ for iROI = 1:nb_ROIs
             'mPFC |',...
             'dmPFC |',...
             'dlPFC |',...
-            'GLM-based masks'],...
+            'GLM-based_masks'],...
             1:nb_possible_areas, 0);
         
         % define mask to be used
