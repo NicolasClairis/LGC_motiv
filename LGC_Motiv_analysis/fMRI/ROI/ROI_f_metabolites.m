@@ -92,7 +92,7 @@ if fig_disp == 1
             ' short name:'],1,'s');
 
         %% figures
-        for iROI =2% 1:n_ROIs
+        for iROI = 1:n_ROIs
             ROI_BOLD_nm = ROI_coords.ROI_nm.(['ROI_',num2str(iROI),'_shortName']);
             % first figure: simple bar graph
             [roi_fig1] = roi_graph2(selectedContrast,...

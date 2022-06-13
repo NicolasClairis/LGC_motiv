@@ -299,7 +299,7 @@ if figDispGroup == 1
     lWidth_borders = 1;
     
     %% loop through models (for the fit)
-    for iMdl = 0:nMdl
+    for iMdl = 3%0:nMdl
         mdl_nm = ['mdl_',num2str(iMdl)];
         
         %% loop through tasks
