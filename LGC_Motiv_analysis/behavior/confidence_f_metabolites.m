@@ -43,8 +43,8 @@ for iS = 1:NS
         0, 'levels', 6, 6);
     for iRun = 1:nRuns
         run_nm = ['run',num2str(iRun)];
-        if ismember(iRun, subjectRuns.runsToKepp)
-            run_task_id = runsStruct.tasks{iRun};
+        if ismember(iRun, subjectRuns.runsToKeep)
+            run_task_id = subjectRuns.tasks{iRun};
             switch run_task_id
                 case 'Ep'
                     task_fullName = 'physical';
@@ -70,14 +70,14 @@ for iS = 1:NS
             conf_tmp(abs(choice_LR_tmp) == 2) = 1;
             conf_tmp(abs(choice_LR_tmp) == 1) = 0;
             conf_tmp(abs(choice_LR_tmp) == 0) = NaN;
-            conf_rated(run_trials_idx, iS) = conf_tmp;
+            conf_rated(run_trial_idx, iS) = conf_tmp;
         end % filter good runs
     end % run loop
 end % subject loop
 
 %% take one value per subject
-confInferredPerSub_bis = mean(conf_inferred,2,'omitnan');
-confRatedPerSub_bis = mean(conf_rated,2,'omitnan');
+confInferredPerSub_bis = mean(conf_inferred,1,'omitnan');
+confRatedPerSub_bis = mean(conf_rated,1,'omitnan');
 
 %% average for each group
 confInferred.low    = confInferredPerSub_bis(low_met_subs);
@@ -94,16 +94,17 @@ confRated.high      = confRatedPerSub_bis(high_met_subs);
 [confRated.avg.high, confRated.sem.high] = mean_sem_sd(confRated.high,2);
 
 %% display results
-bWdth = 0.2;
+bWdth = 0.4;
+lWdth = 3;
 pSize = 30;
 
 % inferred confidence
 fig;
 hold on;
-bar(1-0.2, confInferred.avg.low, 'BandWidth',bWdth);
-bar(1+0.2, confInferred.avg.high, 'BandWidth',bWdth);
-errorbar(1-0.2, confInferred.avg.low, confInferred.sem.low, 'LineWidth',lWdth);
-errorbar(1+0.2, confInferred.avg.high, confInferred.sem.high,'LineWidth',lWdth);
+bar(1-0.2, confInferred.avg.low, 'BarWidth',bWdth);
+bar(1+0.2, confInferred.avg.high, 'BarWidth',bWdth);
+errorbar(1-0.2, confInferred.avg.low, confInferred.sem.low, 'LineWidth',lWdth,'Color','k');
+errorbar(1+0.2, confInferred.avg.high, confInferred.sem.high,'LineWidth',lWdth,'Color','k');
 xticks([1-0.2, 1+0.2]);
 xticklabels({['low ',metabolite_nm],['high ',metabolite_nm]});
 ylabel('Conf inferred by the model');
@@ -112,11 +113,11 @@ legend_size(pSize);
 % rated confidence
 fig;
 hold on;
-bar(1-0.2, confRated.avg.low, 'BandWidth',bWdth);
-bar(1+0.2, confRated.avg.high, 'BandWidth',bWdth);
-errorbar(1-0.2, confRated.avg.low, confRated.sem.low, 'LineWidth',lWdth);
-errorbar(1+0.2, confRated.avg.high, confRated.sem.high,'LineWidth',lWdth);
+bar(1-0.2, confRated.avg.low, 'BarWidth',bWdth);
+bar(1+0.2, confRated.avg.high, 'BarWidth',bWdth);
+errorbar(1-0.2, confRated.avg.low, confRated.sem.low, 'LineWidth',lWdth,'Color','k');
+errorbar(1+0.2, confRated.avg.high, confRated.sem.high,'LineWidth',lWdth,'Color','k');
 xticks([1-0.2, 1+0.2]);
 xticklabels({['low ',metabolite_nm],['high ',metabolite_nm]});
-ylabel('Conf inferred by the model');
+ylabel('Conf rated');
 legend_size(pSize);
