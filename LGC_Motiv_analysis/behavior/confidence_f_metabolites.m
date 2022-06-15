@@ -87,3 +87,36 @@ confRated.high      = confRatedPerSub_bis(high_met_subs);
 % compare both groups
 [~,pval.confRated.low_vs_high] = ttest2(confRated.low, confRated.high);
 [~,pval.confInferred.low_vs_high] = ttest2(confInferred.low, confInferred.high);
+% average
+[confInferred.avg.low, confInferred.sem.low] = mean_sem_sd(confInferred.low,2);
+[confInferred.avg.high, confInferred.sem.high] = mean_sem_sd(confInferred.high,2);
+[confRated.avg.low, confRated.sem.low] = mean_sem_sd(confRated.low,2);
+[confRated.avg.high, confRated.sem.high] = mean_sem_sd(confRated.high,2);
+
+%% display results
+bWdth = 0.2;
+pSize = 30;
+
+% inferred confidence
+fig;
+hold on;
+bar(1-0.2, confInferred.avg.low, 'BandWidth',bWdth);
+bar(1+0.2, confInferred.avg.high, 'BandWidth',bWdth);
+errorbar(1-0.2, confInferred.avg.low, confInferred.sem.low, 'LineWidth',lWdth);
+errorbar(1+0.2, confInferred.avg.high, confInferred.sem.high,'LineWidth',lWdth);
+xticks([1-0.2, 1+0.2]);
+xticklabels({['low ',metabolite_nm],['high ',metabolite_nm]});
+ylabel('Conf inferred by the model');
+legend_size(pSize);
+
+% rated confidence
+fig;
+hold on;
+bar(1-0.2, confRated.avg.low, 'BandWidth',bWdth);
+bar(1+0.2, confRated.avg.high, 'BandWidth',bWdth);
+errorbar(1-0.2, confRated.avg.low, confRated.sem.low, 'LineWidth',lWdth);
+errorbar(1+0.2, confRated.avg.high, confRated.sem.high,'LineWidth',lWdth);
+xticks([1-0.2, 1+0.2]);
+xticklabels({['low ',metabolite_nm],['high ',metabolite_nm]});
+ylabel('Conf inferred by the model');
+legend_size(pSize);
