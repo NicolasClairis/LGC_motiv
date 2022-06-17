@@ -36,7 +36,7 @@ dispMoneyOrLevels = 'levels';
 
 [prm.kRp, prm.kPp, prm.kEp, prm.kFp,...
     prm.kRm, prm.kPm, prm.kEm, prm.kFm] = deal(NaN(1,NS));
-mdl_nm = 'mdl_4';
+mdl_nm = 'mdl_3';
 for iS = 1:NS
     sub_nm = subject_id{iS};
     % extract physical task parameters
