@@ -79,10 +79,16 @@ while scale_ok_idx == 0
 
     %% loop through sequences
     xpos = (1:2)';
-
-    violinplot([con_data(selectedContrastIndex, low_subs);...
-        con_data(selectedContrastIndex, high_subs)]',...
-        {xname1, xname2});
+    if sum(low_subs) == sum(high_subs)
+        violinplot([con_data(selectedContrastIndex, low_subs);...
+            con_data(selectedContrastIndex, high_subs)]',...
+            {xname1, xname2});
+    else % if not same number, violinplot won't work => use Violin instead
+        Violin({con_data(selectedContrastIndex, low_subs)'}, 1);
+        Violin({con_data(selectedContrastIndex, high_subs)'}, 2);
+        xticks(xpos)
+        xticklabels({xname1, xname2});
+    end
 
     % adapt p.value position depending on number of contrasts and number of sequences
     pval_xpos = 1.5;
