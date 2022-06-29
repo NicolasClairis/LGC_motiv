@@ -37,6 +37,7 @@ switch study_nm
             '071','072','074','075','076','079',...
             '081','082','083','087','088',...
             '090','093','095','100'};
+        warning('add 058, 027, 059');
         % firstly remove subjects where behavior and fMRI could not be performed:
         bad_subs1 = ismember(fullSubList,{'030','049'});
         fullSubList(bad_subs1) = [];
