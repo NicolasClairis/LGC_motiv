@@ -89,7 +89,7 @@ n_prm = length(parameters);
 % remove NaN subjects
 for iPrm = 1:n_prm
     prm_nm = parameters{iPrm};
-    goodSubs = ~isnan(metabolite_allSubs).*~isnan(prm.(prm_nm));
+    goodSubs = (~isnan(metabolite_allSubs).*~isnan(prm.(prm_nm)))==true;
     var_nm = [prm_nm,'_f_',metabolite_nm];
     [betas.(var_nm), ~,stats_tmp] = glmfit(metabolite_allSubs(goodSubs), prm.(prm_nm)(goodSubs),'normal');
     pval.(var_nm) = stats_tmp.p;
