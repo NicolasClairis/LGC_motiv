@@ -224,18 +224,30 @@ for iPM = 1:2
     
     %% perform the fits
     % basic fit: RT = f(R, P, R/P, E, Conf)
-    x.(task_id).mdl_0 = [R_nonDef_valuePerTrial.(task_id) - R_default_valuePerTrial.(task_id),...
-        P_nonDef_valuePerTrial.(task_id) - P_default_valuePerTrial.(task_id),...
+%     x.(task_id).mdl_0 = [R_nonDef_valuePerTrial.(task_id) - R_default_valuePerTrial.(task_id),...
+%         P_nonDef_valuePerTrial.(task_id) - P_default_valuePerTrial.(task_id),...
+%         R_or_P_trial.(task_id),...
+%         E_nonDef_levelPerTrial.(task_id) - E_default_levelPerTrial.(task_id),...
+%         confidence_perTrial.(task_id)];
+    
+    x.(task_id).mdl_0 = [money_nonDef_valuePerTrial.(task_id) - money_default_valuePerTrial.(task_id),...
         R_or_P_trial.(task_id),...
         E_nonDef_levelPerTrial.(task_id) - E_default_levelPerTrial.(task_id),...
-        confidence_perTrial.(task_id)];
+        confidence_perTrial.(task_id),...
+        trialN.(task_id)];
     [betas_RT_mdl0_tmp, ~, stats_tmp] = glmfit(x.(task_id).mdl_0, RT_perTrial.(task_id), 'normal');
+    %     betas_RT.(task_id).mdl_0.b0 = betas_RT_mdl0_tmp(1);
+    %     betas_RT.(task_id).mdl_0.bR = betas_RT_mdl0_tmp(2);
+    %     betas_RT.(task_id).mdl_0.bP = betas_RT_mdl0_tmp(3);
+    %     betas_RT.(task_id).mdl_0.bRP = betas_RT_mdl0_tmp(4);
+    %     betas_RT.(task_id).mdl_0.bE = betas_RT_mdl0_tmp(5);
+    %     betas_RT.(task_id).mdl_0.bConf = betas_RT_mdl0_tmp(6);
     betas_RT.(task_id).mdl_0.b0 = betas_RT_mdl0_tmp(1);
-    betas_RT.(task_id).mdl_0.bR = betas_RT_mdl0_tmp(2);
-    betas_RT.(task_id).mdl_0.bP = betas_RT_mdl0_tmp(3);
-    betas_RT.(task_id).mdl_0.bRP = betas_RT_mdl0_tmp(4);
-    betas_RT.(task_id).mdl_0.bE = betas_RT_mdl0_tmp(5);
-    betas_RT.(task_id).mdl_0.bConf = betas_RT_mdl0_tmp(6);
+    betas_RT.(task_id).mdl_0.bM = betas_RT_mdl0_tmp(2);
+    betas_RT.(task_id).mdl_0.bRP = betas_RT_mdl0_tmp(3);
+    betas_RT.(task_id).mdl_0.bE = betas_RT_mdl0_tmp(4);
+    betas_RT.(task_id).mdl_0.bConf = betas_RT_mdl0_tmp(5);
+    betas_RT.(task_id).mdl_0.bTrialN = betas_RT_mdl0_tmp(6);
     pval.(task_id).mdl_0 = stats_tmp.p;
     RTfit_perTrial.(task_id).mdl_0 = glmval(betas_RT_mdl0_tmp,...
         x.(task_id).mdl_0,'identity');
@@ -260,20 +272,20 @@ for iPM = 1:2
     jM = 0;
     for iMoney = money_levels
         jM = jM + 1;
-        RT_bins.perMoneyLevel.(task_id)(jM) = nanmean(RT_perTrial.(task_id)( money_nonDef_levelPerTrial.(task_id) == iMoney));
+        RT_bins.perMoneyLevel.(task_id)(jM) = mean(RT_perTrial.(task_id)( money_nonDef_levelPerTrial.(task_id) == iMoney),'omitnan');
     end
     
     % pool all reward and all punishment trial
     RT_bins.RP.(task_id) = NaN(1,2);
-    RT_bins.RP.(task_id)(1) = nanmean(RT_perTrial.(task_id)( R_or_P_trial.(task_id) == 1));
-    RT_bins.RP.(task_id)(2) = nanmean(RT_perTrial.(task_id)( R_or_P_trial.(task_id) == 0));
+    RT_bins.RP.(task_id)(1) = mean(RT_perTrial.(task_id)( R_or_P_trial.(task_id) == 1),'omitnan');
+    RT_bins.RP.(task_id)(2) = mean(RT_perTrial.(task_id)( R_or_P_trial.(task_id) == 0),'omitnan');
     
     % effort level
     RT_bins.perEffortLevel.(task_id) = deal(NaN(1,nELevels));
     jE = 0;
     for iEffort = E_levels
         jE = jE + 1;
-        RT_bins.perEffortLevel.(task_id)(jE) = nanmean(RT_perTrial.(task_id)( E_nonDef_levelPerTrial.(task_id) == iEffort));
+        RT_bins.perEffortLevel.(task_id)(jE) = mean(RT_perTrial.(task_id)( E_nonDef_levelPerTrial.(task_id) == iEffort),'omitnan');
     end % effort level
     
     % trial number
@@ -283,8 +295,8 @@ for iPM = 1:2
     
     % confidence
     RT_bins.perConfidenceLevel.(task_id) = deal(NaN(1, 2));
-    RT_bins.perConfidenceLevel.(task_id)(1) = nanmean(RT_perTrial.(task_id)( confidence_perTrial.(task_id) == 0));
-    RT_bins.perConfidenceLevel.(task_id)(2) = nanmean(RT_perTrial.(task_id)( confidence_perTrial.(task_id) == 1));
+    RT_bins.perConfidenceLevel.(task_id)(1) = mean(RT_perTrial.(task_id)( confidence_perTrial.(task_id) == 0),'omitnan');
+    RT_bins.perConfidenceLevel.(task_id)(2) = mean(RT_perTrial.(task_id)( confidence_perTrial.(task_id) == 1),'omitnan');
     
     %% extract the bins for data based on the models
     for iMdl = 0:nModels
@@ -295,20 +307,20 @@ for iPM = 1:2
         jM = 0;
         for iMoney = money_levels
             jM = jM + 1;
-            RTfit_bins.perMoneyLevel.(mdl_nm).(task_id)(jM) = nanmean(RTfit_perTrial.(task_id).(mdl_nm)( money_nonDef_levelPerTrial.(task_id) == iMoney));
+            RTfit_bins.perMoneyLevel.(mdl_nm).(task_id)(jM) = mean(RTfit_perTrial.(task_id).(mdl_nm)( money_nonDef_levelPerTrial.(task_id) == iMoney),'omitnan');
         end
         
         % reward/punishment
         RTfit_bins.RP.(mdl_nm).(task_id) = NaN(1,2);
-        RTfit_bins.RP.(mdl_nm).(task_id)(1) = nanmean(RTfit_perTrial.(task_id).(mdl_nm)( R_or_P_trial.(task_id) == 1));
-        RTfit_bins.RP.(mdl_nm).(task_id)(2) = nanmean(RTfit_perTrial.(task_id).(mdl_nm)( R_or_P_trial.(task_id) == 0));
+        RTfit_bins.RP.(mdl_nm).(task_id)(1) = mean(RTfit_perTrial.(task_id).(mdl_nm)( R_or_P_trial.(task_id) == 1),'omitnan');
+        RTfit_bins.RP.(mdl_nm).(task_id)(2) = mean(RTfit_perTrial.(task_id).(mdl_nm)( R_or_P_trial.(task_id) == 0),'omitnan');
     
         % effort level
         RTfit_bins.perEffortLevel.(mdl_nm).(task_id) = deal(NaN(1,nELevels));
         jE = 0;
         for iEffort = E_levels
             jE = jE + 1;
-            RTfit_bins.perEffortLevel.(mdl_nm).(task_id)(jE) = nanmean(RTfit_perTrial.(task_id).(mdl_nm)( E_nonDef_levelPerTrial.(task_id) == iEffort));
+            RTfit_bins.perEffortLevel.(mdl_nm).(task_id)(jE) = mean(RTfit_perTrial.(task_id).(mdl_nm)( E_nonDef_levelPerTrial.(task_id) == iEffort),'omitnan');
         end % effort level
         
         % net value based on the models
@@ -325,8 +337,8 @@ for iPM = 1:2
         
         % confidence
         RTfit_bins.perConfidenceLevel.(mdl_nm).(task_id) = deal(NaN(1, 2));
-        RTfit_bins.perConfidenceLevel.(mdl_nm).(task_id)(1) = nanmean(RTfit_perTrial.(task_id).(mdl_nm)( confidence_perTrial.(task_id) == 0));
-        RTfit_bins.perConfidenceLevel.(mdl_nm).(task_id)(2) = nanmean(RTfit_perTrial.(task_id).(mdl_nm)( confidence_perTrial.(task_id) == 1));
+        RTfit_bins.perConfidenceLevel.(mdl_nm).(task_id)(1) = mean(RTfit_perTrial.(task_id).(mdl_nm)( confidence_perTrial.(task_id) == 0),'omitnan');
+        RTfit_bins.perConfidenceLevel.(mdl_nm).(task_id)(2) = mean(RTfit_perTrial.(task_id).(mdl_nm)( confidence_perTrial.(task_id) == 1),'omitnan');
         
         % trial number
         RTfit_bins.perTrialN.(mdl_nm).(task_id) = NaN(1,n_trialN_bins);
@@ -338,7 +350,6 @@ for iPM = 1:2
     if figDisp == 1
         pSize = 30;
         lWidth = 3;
-        lWidth_borders = 1;
         
         %% loop through models (for the fit)
         for iMdl = 0:nModels
