@@ -475,11 +475,11 @@ for iPM = 1:2
         
     end % figure display
 
-%% extract output
-RTstruct.RT_bins = RT_bins;
-RTstruct.RTfit_bins = RTfit_bins;
-RTstruct.trialN_bins = trialN_bins;
-RTstruct.NV_bins = NV_bins;
+    %% extract output
+    RTstruct.RT_bins = RT_bins;
+    RTstruct.RTfit_bins = RTfit_bins;
+    RTstruct.trialN_bins = trialN_bins;
+    RTstruct.NV_bins = NV_bins;
 end % physical/mental loop
 
 end % function
