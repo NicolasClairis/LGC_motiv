@@ -334,6 +334,7 @@ for iAbsMoney = 1:(n_R_levels - 1)
 end
 ylim([0 100]);
 ylabel('Choice non-default option (%)');
+ylabel('High effort choice (%)');
 xticks(1:3);
 xticklabels({'1','2','3'});
 xlim([0 n_R_levels]);
@@ -585,7 +586,7 @@ bar_hdl.Ep = jbfill(1:n_bins,...
     (avg_RT.Ep_f_time - sem_RT.Ep_f_time)',...
     avg_RT.Ep_f_time',...
     Ep_col);
-ylim([1.5 3]);
+ylim([1.8 2.5]);
 xlim([0 n_bins+1]);
 xlabel('trial bins');
 ylabel('RT (s)');
