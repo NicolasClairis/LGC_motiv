@@ -537,7 +537,7 @@ end
 xticks([-3:-(1), 1:3]);
 xticklabels({'-3','-2','-1','1','2','3'});
 xlim([-n_R_levels n_R_levels]);
-ylim([1.5 3]);
+ylim([1.7 2.4]);
 ylabel('RT (s)');
 xlabel('Money level');
 legend([bar_hdl.Em, bar_hdl.Ep],'mental','physical');
@@ -564,7 +564,7 @@ ylabel('RT (s)');
 xticks(1:3);
 xticklabels({'1','2','3'});
 xlim([0 n_E_levels]);
-ylim([1.5 3]);
+ylim([1.8 2.3]);
 xlabel('Effort level');
 legend([bar_hdl.Em, bar_hdl.Ep],'mental','physical');
 legend('boxoff');

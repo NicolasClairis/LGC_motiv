@@ -39,10 +39,10 @@ function[avg_nonDefaultChoice, sem_nonDefaultChoice,...
 
 %% list of subjects
 if ~exist('study_nm','var') || isempty(study_nm)
-%     study_names = {'fMRI_pilots','study1','study2'};
-%     study_nm_idx = listdlg('ListString',study_names);
-%     study_nm = study_names{study_nm_idx};
-study_nm = 'study1';
+    %     study_names = {'fMRI_pilots','study1','study2'};
+    %     study_nm_idx = listdlg('ListString',study_names);
+    %     study_nm = study_names{study_nm_idx};
+    study_nm = 'study1';
 end
 condition = subject_condition();
 [subject_id, NS] = LGCM_subject_selection(study_nm, condition);
