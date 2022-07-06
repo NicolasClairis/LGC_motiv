@@ -1,8 +1,8 @@
 % script aimed at extracting ROI in a given GLM based on the level of a
 % metabolite of interest (to select) in one of the two brain areas of study
 % that can be checked (dmPFC/aIns). Then, you can select some specific
-% contrast of interest and look at the difference in BOLD activity between
-% the two groups
+% contrast of interest and look at the linear correlation between the level
+% of metabolite in the given brain area and the BOLD activity.
 
 %% figure display?
 fig_disp = 1;
@@ -14,8 +14,27 @@ GLM = spm_input('GLM number',1,'e');
 condition = subject_condition();
 [subject_id, NS] = LGCM_subject_selection('study1', condition);
 
-%% extract metabolite levels
-[low_met_subs, high_met_subs, metabolite_nm] = medSplit_metabolites(subject_id);
+%% define metabolite and ROI you want to focus on
+% ROI
+ROIs = {'dmPFC','aIns'};
+nROIs = length(ROIs);
+ROI_idx = spm_input('Metabolites in which brain area?',1,'m',...
+    ROIs,1:nROIs,0);
+ROI_nm = ROIs{ROI_idx};
+% select metabolite of interest
+metabolites = {'Mac','Ala','Asp','PCho','Cr','PCr','GABA',...
+    'Gln','Glu','GSH','Gly','Ins','Lac','NAA','Scyllo','Tau',...
+    'Asc','Glc','NAAG','GPC','PE','Ser',...
+    'NAA_NAAG','Glu_Gln','GPC_PCho','Cr_PCr','Gly_Ins','Gln_div_Glu'};
+n_met = length(metabolites);
+metabolite_idx = spm_input('Which metabolite to focus on?',1,'m',...
+    metabolites,1:n_met,0);
+metabolite_nm = metabolites{metabolite_idx};
+
+%% extract all metabolites
+[metabolites] = metabolite_load(subject_id);
+% focus on metabolite and brain area selected
+metabolite_allSubs = metabolites.(ROI_nm).(metabolite_nm);
 
 %% extract ROI
 [con_vec_all,...
@@ -26,23 +45,8 @@ condition = subject_condition();
 n_cons = size(con_vec_all, 1);
 n_ROIs = size(con_vec_all,3);
 
-%% extract ROI data split according to the metabolite levels
-[con_avg_lowMet, con_avg_highMet,...
-    con_sem_lowMet, con_sem_highMet,...
-    con_std_lowMet, con_std_highMet,...
-    ttest_pval_lowMet_vs_highMet, ttest_tval_lowMet_vs_highMet] = deal(NaN(n_ROIs, n_cons));
-for iROI = 1:n_ROIs
-    for iCon = 1:n_cons
-        [con_avg_lowMet(iROI, iCon),...
-            con_sem_lowMet(iROI, iCon),...
-            con_std_lowMet(iROI, iCon)] = mean_sem_sd(con_vec_all(iCon, low_met_subs, iROI),2);
-        [con_avg_highMet(iROI, iCon),...
-            con_sem_highMet(iROI, iCon),...
-            con_std_highMet(iROI, iCon)] = mean_sem_sd(con_vec_all(iCon, high_met_subs, iROI),2);
-        [~,ttest_pval_lowMet_vs_highMet(iROI, iCon),~,stats_tmp] = ttest2(con_vec_all(iCon, low_met_subs, iROI), con_vec_all(iCon, high_met_subs, iROI));
-        ttest_tval_lowMet_vs_highMet(iROI, iCon) = stats_tmp.tstat;
-    end % contrast loop
-end % ROI loop
+%% perform the correlation
+glmfit(,'normal');
 
 %% how many figures do you want to plot
 if fig_disp == 1
