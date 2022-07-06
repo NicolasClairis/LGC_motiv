@@ -33,10 +33,8 @@ GLM_str = num2str(GLM);
 preproc_sm_kernel = 8;
 % preproc_sm_kernel = spm_input('smoothing kernel to use?',1,'e','8');
 
-%% extract runs that are ok
-condition = 'fMRI'; 
-
 %% extract subjects
+[condition] = subject_condition;
 [subject_id, NS] = LGCM_subject_selection(study_nm, condition);
 NS_str = num2str(NS);
 
