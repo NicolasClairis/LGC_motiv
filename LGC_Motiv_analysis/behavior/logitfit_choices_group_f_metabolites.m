@@ -282,7 +282,7 @@ for iPM = 1:2
         lWidth = 3;
         %         lWidth_borders = 1;
         %% loop through models
-        for iMdl = 4:nMdl
+        for iMdl = 3%1:nMdl
             mdl_nm = ['mdl_',num2str(iMdl)];
 
             %% display choice = f(net value)
