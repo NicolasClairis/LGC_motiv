@@ -1618,6 +1618,57 @@ switch GLM
             % feedback
             GLMprm.model_onset.(Epm_nm).fbk = 'stick';
         end % physical/mental  loop
+    case 55 % like GLM45 but replacing confidence model4 by model3
+        % general parameters
+        GLMprm.gal.orth_vars = 1;
+        GLMprm.gal.zPerRun = 1;
+        % loop per task
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % initial cross
+            GLMprm.model_onset.(Epm_nm).preChoiceCross = 'stick';
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'stick';
+            GLMprm.choice.(Epm_nm).RP.money_ch_min_fixOption = 1;
+            GLMprm.choice.(Epm_nm).RP.E_ch_min_fixOption = 1;
+            GLMprm.choice.(Epm_nm).RP.confidence = 2;
+            GLMprm.choice.(Epm_nm).RP.conf_mdl = 'mdl_3';
+            GLMprm.choice.(Epm_nm).RP.RT = 1;
+            % chosen
+            GLMprm.model_onset.(Epm_nm).chosen = 'stick';
+            % pre-effort cross
+            GLMprm.model_onset.(Epm_nm).preEffortCross = 'stick';
+            % effort perf (effort execution)
+            GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
+            % feedback
+            GLMprm.model_onset.(Epm_nm).fbk = 'stick';
+        end % physical/mental  loop
+    case 56 % like GLM54 but replacing confidence model4 by model3
+        % (in other words, like GLM55 but with DT as first regressor)
+        % general parameters
+        GLMprm.gal.orth_vars = 1;
+        GLMprm.gal.zPerRun = 1;
+        % loop per task
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % initial cross
+            GLMprm.model_onset.(Epm_nm).preChoiceCross = 'stick';
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'stick';
+            GLMprm.choice.(Epm_nm).RP.RT = 4;
+            GLMprm.choice.(Epm_nm).RP.money_ch_min_fixOption = 1;
+            GLMprm.choice.(Epm_nm).RP.E_ch_min_fixOption = 1;
+            GLMprm.choice.(Epm_nm).RP.confidence = 2;
+            GLMprm.choice.(Epm_nm).RP.conf_mdl = 'mdl_3';
+            % chosen
+            GLMprm.model_onset.(Epm_nm).chosen = 'stick';
+            % pre-effort cross
+            GLMprm.model_onset.(Epm_nm).preEffortCross = 'stick';
+            % effort perf (effort execution)
+            GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
+            % feedback
+            GLMprm.model_onset.(Epm_nm).fbk = 'stick';
+        end % physical/mental  loop
 end % GLM number
 %% warnings: check compatibility of the GLM parameters entered
 isGLMokCheck(GLMprm);
