@@ -15,7 +15,8 @@ metaboliteFolder = fullfile('M:','human_data_private','analyzed_data','study1');
 cd(metaboliteFolder);
 %% define subject list
 if ~exist('subject_id','var') || isempty(subject_id)
-    [subject_id, NS] = LGCM_subject_selection('study1');
+    condition = subject_condition;
+    [subject_id, NS] = LGCM_subject_selection('study1', condition);
 else
     NS = length(subject_id);
 end
