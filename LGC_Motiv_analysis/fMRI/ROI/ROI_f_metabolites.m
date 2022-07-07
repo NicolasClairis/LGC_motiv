@@ -45,9 +45,6 @@ metabolite_allSubs = metabolites.(ROI_nm).(metabolite_nm);
 n_cons = size(con_vec_all, 1);
 n_ROIs = size(con_vec_all,3);
 
-%% perform the correlation
-glmfit(,'normal');
-
 %% how many figures do you want to plot
 if fig_disp == 1
     n_figs = spm_input('How many figures?',1,'e');
@@ -70,23 +67,21 @@ if fig_disp == 1
         % give name to the contrast for the figure
         figConName= spm_input([con_names{selectedContrast},...
             ' short name:'],1,'s');
-
+        
         %% figures
         for iROI = 1:n_ROIs
             ROI_BOLD_nm = ROI_coords.ROI_nm.(['ROI_',num2str(iROI),'_shortName']);
-            % display values
-            disp(['Blow = ',num2str(round(con_avg_lowMet(iROI,selectedContrast),3)),...
-                '+/-',num2str(round(con_sem_lowMet(iROI,selectedContrast),3))]);
-            disp(['Bhigh = ',num2str(round(con_avg_highMet(iROI,selectedContrast),3)),...
-                '+/-',num2str(round(con_sem_highMet(iROI,selectedContrast),3))]);
-            disp(['p.value = ',num2str(ttest_pval_lowMet_vs_highMet(iROI,selectedContrast))]);
+            
+            %% perform the correlation
+            beta_values = con_vec_all(selectedContrast,:,iROI);
+            [betas_tmp, ~, stats_tmp] = glmfit(metabolite_allSubs, beta_values, 'normal');
+            betas.(['MRS_',ROI_nm,'-',metabolite_nm]).(['fMRI_',ROI_BOLD_nm]) = betas_tmp;
+            pval.(['MRS_',ROI_nm,'-',metabolite_nm]).(['fMRI_',ROI_BOLD_nm]) = stats_tmp.p;
+            
             % first figure: simple bar graph
-            [roi_fig1] = roi_graph2(selectedContrast,...
-                con_avg_lowMet(iROI,:), con_sem_lowMet(iROI,:),...
-                con_avg_highMet(iROI,:), con_sem_highMet(iROI,:),...
-                figConName, ttest_pval_lowMet_vs_highMet(iROI,:),...
-                ['low ',metabolite_nm],['high ',metabolite_nm],...
-                ROI_BOLD_nm);
+            fig;
+            scatter(metabolite_allSubs, beta_values);
+            legend_size(pSize);
             % second figure: same but with violin plots
             [roi_fig2] = roi_graph3(selectedContrast,...
                 con_vec_all(:,:, iROI),...
