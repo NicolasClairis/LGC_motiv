@@ -11,7 +11,10 @@ function[metabolites] = metabolite_load(subject_id)
 
 %% working directory
 root = pwd;
+% lab pc path:
 metaboliteFolder = fullfile('M:','human_data_private','analyzed_data','study1');
+% home pc path:
+% metaboliteFolder = fullfile('L:','human_data_private','analyzed_data','study1');
 cd(metaboliteFolder);
 %% define subject list
 if ~exist('subject_id','var') || isempty(subject_id)
