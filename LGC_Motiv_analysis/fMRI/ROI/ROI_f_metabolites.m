@@ -77,18 +77,22 @@ if fig_disp == 1
             %% perform the correlation
             ROI_beta_values = NaN(1,NS);
             ROI_beta_values(:) = con_vec_all(selectedContrast,:,iROI);
-            [betas_tmp, ~, stats_tmp] = glmfit(metabolite_allSubs, ROI_beta_values, 'normal');
-            betas.(['MRS_',ROI_nm,'-',metabolite_nm]).(['fMRI_',ROI_BOLD_nm]) = betas_tmp;
-            pval.(['MRS_',ROI_nm,'-',metabolite_nm]).(['fMRI_',ROI_BOLD_nm]) = stats_tmp.p;
-            fitted_ROIbetas_tmp = glmval(betas_tmp, metabolite_allSubs, 'identity');
+            good_subs = ~isnan(metabolite_allSubs);
+            [betas_tmp, ~, stats_tmp] = glmfit(metabolite_allSubs(good_subs), ROI_beta_values(good_subs), 'normal');
+            betas.(['MRS_',ROI_nm,'_',metabolite_nm]).(['fMRI_',ROI_BOLD_nm]) = betas_tmp;
+            pval.(['MRS_',ROI_nm,'_',metabolite_nm]).(['fMRI_',ROI_BOLD_nm]) = stats_tmp.p;
+            fitted_ROIbetas_tmp = glmval(betas_tmp, metabolite_allSubs(good_subs), 'identity');
             
             % display figure with correlation data
             fig;
             hold on;
-            scatter(metabolite_allSubs, ROI_beta_values,...
+            scatter(metabolite_allSubs(good_subs), ROI_beta_values(good_subs),...
                 'LineWidth',3);
-            plot(metabolite_allSubs, fitted_ROIbetas_tmp,...
+            plot(metabolite_allSubs(good_subs), fitted_ROIbetas_tmp,...
                 'LineStyle','--','LineWidth',lSize,'Color','k');
+            xlabel([ROI_nm,' ',metabolite_nm]);
+            ylabel([ROI_BOLD_nm,' regression estimate']);
+            title(figConName);
             legend_size(pSize);
         end % ROI loop
     end % figure loop

@@ -59,7 +59,9 @@ for iROI = 1:nROIs
         subj_line = strcmp(excelRead_tmp.CID, sub_nm);
         for iMet = 1:n_metabolites
             met_nm = all_metabolites{iMet};
-            metabolites.(ROI_nm).(met_nm)(iS) = excelRead_tmp.(met_nm)(subj_line);
+            if excelRead_tmp.(met_nm)(subj_line) > 0 % ignore subjects where data not extracted
+                metabolites.(ROI_nm).(met_nm)(iS) = excelRead_tmp.(met_nm)(subj_line);
+            end
         end % metabolites
         
         % perform also division Glu/Gln
