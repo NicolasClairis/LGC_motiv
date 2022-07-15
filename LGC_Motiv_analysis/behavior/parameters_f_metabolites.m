@@ -33,7 +33,6 @@ listPossibleConditions = {'bayesian','simple'};
 mdlType_idx = listdlg('promptstring','Which model type?','ListString',listPossibleConditions);
 mdlType = listPossibleConditions{mdlType_idx};
 
-
 switch mdlType
     case 'bayesian'
         bayesian_mdl = getfield(load('behavioral_prm_tmp.mat','bayesian_mdl3'),...
