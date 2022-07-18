@@ -67,6 +67,7 @@ con_data(:) = con_vec_all(con_idx, :, 1);
 %% extract behavioural parameters
 [prm] = prm_extraction(subject_id);
 parameters = fieldnames(prm);
+behavPrm_CID = parameters.CID;
 parameter_names = parameters;
 parameter_names(strcmp(parameter_names,'CID'))=[]; % remove indication of subject ID
 
@@ -76,18 +77,23 @@ behavPrm_idx = listdlg('promptstring','Which behavioural parameter?',...
 prm_nm = parameter_names{behavPrm_idx};
 behavPrm = prm.(prm_nm);
 
-%% need to fix the index of the subjects before finishing
-
 %% perform each path of the mediation
 goodSubs = ~isnan(metabolite_allSubs);
+
 % test correlation between metabolites and fMRI BOLD
 [betas_1,~,stats_1] = glmfit(metabolite_allSubs(goodSubs), con_data(goodSubs),'normal');
+
 % test correlation between fMRI BOLD and behavioural parameter
 % remove variance related to first path
 con_data_residual = con_data(goodSubs) - betas_1(2).*metabolite_allSubs(goodSubs);
-[betas_2,~,stats_2] = glmfit(con_data_residual(goodSubs), behavPrm(goodSubs),'normal');
-% test direct path from metabolites to behavioural parameter
-[betas_3,~,stats_3] = glmfit(metabolite_allSubs(goodSubs), behavPrm(goodSubs),'normal');
+% test correlation between fMRI BOLD, behavioural parameter and direct path
+[betas_2,~,stats_2] = glmfit([con_data_residual',...
+    metabolite_allSubs(goodSubs)'],...
+    behavPrm(goodSubs),'normal');
+
+% test also direct path
+[betas_3,~,stats_3] = glmfit(metabolite_allSubs(goodSubs),...
+    behavPrm(goodSubs),'normal');
 
 % display relevant p.values
 disp(['metabolites -> fMRI ',...
@@ -97,7 +103,9 @@ disp(['metabolites -> fMRI ',...
 disp(['fMRI -> behaviour ',...
     prm_nm,'= ',num2str(round(betas_2(1),2)),...
     ' + ',num2str(round(betas_2(2),2)),'*fMRI; ',...
-    'p=',num2str(stats_2.p(2))]);
+    ' + ',num2str(round(betas_2(3),2)),'*metabolites; ',...
+    'pfMRI=',num2str(stats_2.p(2)),';',...
+    'pMetabolites=',num2str(stats_2.p(3))]);
 disp(['metabolites -> behaviour ',...
     'behaviour= ',num2str(round(betas_3(1),2)),...
     ' + ',num2str(round(betas_3(2),2)),'*metabolites; ',...
