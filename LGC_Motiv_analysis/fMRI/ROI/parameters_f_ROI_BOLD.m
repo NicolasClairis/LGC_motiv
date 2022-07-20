@@ -14,6 +14,7 @@ fMRI_GLM = spm_input('fMRI GLM number',1,'e');
 
 %% extract list of all potential parameters
 allPrm_names = fieldnames(prm);
+allPrm_names(strcmp(allPrm_names,'CID')) = [];
 nPrm = length(allPrm_names);
 
 %% extract ROI contrasts
