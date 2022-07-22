@@ -1,5 +1,5 @@
-function[subject_id, NS] = LGCM_subject_selection(study_nm, condition)
-% [subject_id, NS] = LGCM_subject_selection(study_nm, condition)
+function[subject_id, NS] = LGCM_subject_selection(study_nm, condition, genderFilter)
+% [subject_id, NS] = LGCM_subject_selection(study_nm, condition, genderFilter)
 % LGCM_subject_selection will select the subject names and number of
 % subjects for the current study.
 %
@@ -16,11 +16,22 @@ function[subject_id, NS] = LGCM_subject_selection(study_nm, condition)
 % 'fMRI': all fMRI compatible data
 % 'fMRI_no_move': remove runs with too much movement
 %
+% genderFilter:
+% 'all': by default, include all subjects
+% 'malesOnly': remove females
+% 'femalesOnly': remove males
+%
 % OUTPUTS
 % subject_id: list of subject names
 %
 % NS: number of subjects
 
+% by default include all subjects
+if ~exist('genderFilter','var') || isempty(genderFilter)
+    genderFilter = 'all';
+end
+
+% extract list of subjects
 switch study_nm
     case 'fMRI_pilots'
         subject_id = {'pilot_s1','pilot_s2','pilot_s3'};
@@ -33,10 +44,10 @@ switch study_nm
             '030','032','035','036','038','039',...
             '040','042','043','044','045','046','047','048','049',...
             '050','052','054','055','056','058','059',...
-            '060','061','064','065','068','069',...
+            '060','061','062','064','065','068','069',...
             '071','072','074','075','076','078','079',...
             '080','081','082','083','087','088',...
-            '090','093','095','099','100'};
+            '090','091','093','095','097','099','100'};
         warning('add last subjects: 013');
         % firstly remove subjects where behavior and fMRI could not be performed:
         bad_subs1 = ismember(fullSubList,{'030','049'});
@@ -71,7 +82,8 @@ switch study_nm
                 % 076: run 4 ND for Em task
                 % 100: run 3 (Em) and run 4 (Ep) ND
                  warning('don''t forget to check last subjects');
-            case {'behavior_noSatTask','fMRI_noSatTask'}
+            case {'behavior_noSatTask','fMRI_noSatTask',...
+                    'fMRI_noSatTask_malesOnly','fMRI_noSatTask_femalesOnly'}
                 % remove subjects for which either mental (Em) or physical
                 % (Ep) task was fully saturated during choices
                 bad_subs = ismember(fullSubList,{'027','047','052','095'});
@@ -127,6 +139,33 @@ switch study_nm
                 % 093 (run 1 + 3)
                 % 095 (run 1)
         end
+        % remove also based on gender
+        males = {'002',...
+            '013','017',...
+            '020','021','022','028',...
+            '032','035','036',...
+            '040','043','045','047','049',...
+            '054','056','058','059',...
+            '060','065','068','069',...
+            '074','076',...
+            '087',...
+            '090','091','092','097'};
+        females = {'001','003','005','008','009',...
+        '015','018','027','029',...
+        '030','038','039',...
+        '042','044','046','048',...
+        '050','052','055',...
+        '061','064','066',...
+        '071','072','075','078','079',...
+        '080','081','082','083','088',...
+        '093','095','099','100'};
+        switch genderFilter
+            case 'malesOnly'
+                bad_subs(ismember(fullSubList, females)) = true;
+            case 'femalesOnly'
+                bad_subs(ismember(fullSubList, males)) = true;
+        end
+
         % remove irrelevant subjects from the current analysis
         all_subs(bad_subs) = [];
         % reminder to check the last acquired subjects:
