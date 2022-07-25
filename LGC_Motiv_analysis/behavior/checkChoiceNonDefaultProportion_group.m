@@ -243,6 +243,33 @@ Em_col = [0 1 0];
 Ep_col = [0 153/255 1];
 
 % check choices = f(fatigue, R/P, level of R, level of E)
+%% check choices = f(fatigue) displaying all subjects
+fig;
+% mark the 50% trait
+plot(1:n_bins, 50*ones(1,n_bins),...
+    'LineWidth',lWidth_50percentTrait,'Color','k','LineStyle',':');
+hold on;
+for iS = 1:NS
+    plot(1:n_bins, nonDefaultChoice_perSub.Em_f_time(:,iS),...
+        'Color',Em_col, 'LineWidth',1)
+    plot(1:n_bins, nonDefaultChoice_perSub.Ep_f_time(:,iS),...
+        'Color',Ep_col, 'LineWidth',1)
+end
+% ylim([0 100]);
+ylim([40 100]);
+xlim([1 n_bins]);
+xticks(1:n_bins);
+xLabelNames = cell(1,n_bins);
+nTrialsPerBin = nTrialsPerRun/n_bins;
+for iBin = 1:n_bins
+    xLabelNames{iBin} = [num2str( 1 + nTrialsPerBin*(iBin-1)),'-',num2str(nTrialsPerBin*iBin)];
+end
+xticklabels(xLabelNames);
+xlabel('trial number');
+ylabel('Choice high effort (%)');
+legend('boxoff');
+legend('Location','NorthWest');
+legend_size(pSize);
 %% check choices = f(fatigue)
 fig;
 % mark the 50% trait
