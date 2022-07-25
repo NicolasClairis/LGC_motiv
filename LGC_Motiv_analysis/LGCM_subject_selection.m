@@ -48,7 +48,7 @@ switch study_nm
             '071','072','074','075','076','078','079',...
             '080','081','082','083','087','088',...
             '090','091','093','095','097','099','100'};
-        warning('add last subjects: 013');
+        warning('add last subjects:');
         % firstly remove subjects where behavior and fMRI could not be performed:
         bad_subs1 = ismember(fullSubList,{'030','049'});
         fullSubList(bad_subs1) = [];
@@ -165,11 +165,15 @@ switch study_nm
             case 'femalesOnly'
                 bad_subs(ismember(fullSubList, males)) = true;
         end
-
+        % remove subjects who did behavior but not fMRI
+        if strcmp(condition(1:4),'fMRI')
+            bad_subs(strcmp(fullSubList,'091')) = true;
+        end
         % remove irrelevant subjects from the current analysis
         all_subs(bad_subs) = [];
         % reminder to check the last acquired subjects:
-        warning('check 027, 038, 058, 059, 078, 080, 099... and other last subjects for movement');
+        warning(['check 027, 038, 058, 059, 078, 080,'...
+            '091, 097, 099... and other last subjects for movement']);
         
         %% restrict to subjects of interest
         subject_id = all_subs;
