@@ -10,7 +10,7 @@
 %% define subjects to include
 study_nm = 'study1';
 condition = subject_condition();
-[subject_id, NS] = LGCM_subject_selection(study_nm, condition);
+[subject_id, NS] = LGCM_subject_selection(study_nm, condition, 'all');
 
 %% define metabolite and ROI you want to focus on
 % ROI
