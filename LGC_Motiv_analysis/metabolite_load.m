@@ -11,10 +11,16 @@ function[metabolites] = metabolite_load(subject_id)
 
 %% working directory
 root = pwd;
-% lab pc path:
-metaboliteFolder = fullfile('M:','human_data_private','analyzed_data','study1');
-% home pc path:
-% metaboliteFolder = fullfile('L:','human_data_private','analyzed_data','study1');
+list_pcs = {'Lab','Home'};
+% which_pc_idx = listdlg('PromptString',{'Lab or home pc?'},...
+%     'SelectionMode','single','ListString',list_pcs);
+which_pc_idx = 2;
+switch list_pcs{which_pc_idx}
+    case 'Lab'
+        metaboliteFolder = fullfile('M:','human_data_private','analyzed_data','study1');
+    case 'Home'
+        metaboliteFolder = fullfile('L:','human_data_private','analyzed_data','study1');
+end
 cd(metaboliteFolder);
 %% define subject list
 if ~exist('subject_id','var') || isempty(subject_id)
