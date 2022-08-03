@@ -14,7 +14,7 @@ root = pwd;
 list_pcs = {'Lab','Home'};
 % which_pc_idx = listdlg('PromptString',{'Lab or home pc?'},...
 %     'SelectionMode','single','ListString',list_pcs);
-which_pc_idx = 2;
+which_pc_idx = 1;
 switch list_pcs{which_pc_idx}
     case 'Lab'
         metaboliteFolder = fullfile('M:','human_data_private','analyzed_data','study1');
