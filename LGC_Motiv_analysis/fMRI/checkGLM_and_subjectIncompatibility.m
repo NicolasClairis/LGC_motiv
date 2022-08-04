@@ -9,4 +9,7 @@ if strcmp(study_nm,'fMRI_pilots') &&...
         'Please update GLM used for this participant.']);
 end
 
+%% should add a check here for subjects who saturated and GLMs including 
+% variables such as confidence or value or choice
+
 end % function

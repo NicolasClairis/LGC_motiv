@@ -79,7 +79,7 @@ end
 
 %% list subjects to analyze
 if ~exist('condition','var') ||...
-        ~ismember(condition,{'fMRI','fMRI_no_move','fMRI_no_move_bis'})
+        ~strcmp(condition(1:4),'fMRI')
     condition = 'fMRI';
 end
 [subject_id, NS] = LGCM_subject_selection(study_nm, condition);

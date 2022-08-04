@@ -191,7 +191,7 @@ choice_LR = choice_LRandConf;
 choice_LR(choice_LRandConf == -2) = -1;
 choice_LR(choice_LRandConf == 2) = 1;
 % choice = high effort
-choice_hE = choice_LR ~= defaultSide;
+choice_hE = double(choice_LR ~= defaultSide);
 choice_hE(choice_LR == 0) = NaN;
 % loading chosen variables
 E_chosen = behavioralDataStruct.(task_behavioral_id).E_chosen;
@@ -1141,7 +1141,7 @@ if ismember(preEffortCrossModel,{'stick','boxcar','boxcar_bis'})
     for iRP_preEcross = 1:length(RPpreEcrossCond)
         RP_preEcross_nm = RPpreEcrossCond{iRP_preEcross};
         %
-        preEcrossModel_choiceE          = GLMprm.preEffortCross.(task_id).(RP_preEcross_nm).choiceHighE;
+        preEcrossModel_choicehE         = GLMprm.preEffortCross.(task_id).(RP_preEcross_nm).choiceHighE;
         preEcrossModel_money_chosen     = GLMprm.preEffortCross.(task_id).(RP_preEcross_nm).money_chosen;
         preEcrossModel_effort_chosen    = GLMprm.preEffortCross.(task_id).(RP_preEcross_nm).E_chosen;
         switch task_id

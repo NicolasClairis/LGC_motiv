@@ -11,10 +11,16 @@ function[subject_id, NS] = LGCM_subject_selection(study_nm, condition, genderFil
 %
 % condition:
 % 'behavior': behavioral files
-% 'behavior_noSat': behavior but removing all runs (or subjects with all
-% runs) with saturation
+% 'behavior_noSatRun': behavior but removing all subjects who saturated 
+% completely any of the runs
+% 'behavior_noSatTask': remove subjects who saturated completely one of the
+% tasks
 % 'fMRI': all fMRI compatible data
-% 'fMRI_no_move': remove runs with too much movement
+% 'fMRI_no_move': remove subjects with too much movement in ALL runs
+% 'fMRI_no_move_bis': remove subjects with too much movement in ANY run
+% 'fMRI_noSatTask': remove subjects who saturated completely one of the
+% tasks
+% 'fMRI_noSatRun': remove subjects who saturated completely any of the runs
 %
 % genderFilter:
 % 'all': by default, include all subjects
@@ -24,7 +30,7 @@ function[subject_id, NS] = LGCM_subject_selection(study_nm, condition, genderFil
 % OUTPUTS
 % subject_id: list of subject names
 %
-% NS: number of subjects
+% NS: number of subjects included in the final list
 
 % by default include all subjects
 if ~exist('genderFilter','var') || isempty(genderFilter)
@@ -59,7 +65,7 @@ switch study_nm
         switch condition
             case {'behavior','fMRI'} % all subjects
                 % for confidence, you should remove saturated subjects
-                bad_subs = [];
+                bad_subs = false(1,length(fullSubList));
                 warning(['if you want to look at confidence in your GLM, ',...
                     'you should remove the subjects saturating behavior using ',...
                     'behavior_noSatRun/fMRI_noSatRun/behavior_noSatTask/fMRI_noSatTask',...
