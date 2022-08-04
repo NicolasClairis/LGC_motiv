@@ -143,6 +143,15 @@ for iEpm = 1:length(Epm)
                 n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
             end
             
+            % binary variable indicating when choice = high effort option
+            if GLMprm.choice.(task_id_nm).(RP_dispChoice_nm).choiceHighE == 1
+                n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG choice ',RP_dispChoice_nm,': choice = highE'];
+                disp([num2str(n_regs.(task_id_nm)),') choice: choice hE ']);
+                % if derivative added => add derivatives
+                n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+            end
+            
             % money left
             switch GLMprm.choice.(task_id_nm).(RP_dispChoice_nm).money_left
                 case 1
@@ -586,6 +595,15 @@ for iEpm = 1:length(Epm)
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
             end
             
+            % binary variable indicating when choice = high effort option
+            if GLMprm.chosen.(task_id_nm).(RP_dispChosen_nm).choiceHighE == 1
+                n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG chosen ',RP_dispChosen_nm,': choice = highE'];
+                disp([num2str(n_regs.(task_id_nm)),') chosen: choice hE ']);
+                % if derivative added => add derivatives
+                n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+            end
+            
             % money chosen
             switch GLMprm.chosen.(task_id_nm).(RP_dispChosen_nm).money_chosen
                 case 1
@@ -894,14 +912,23 @@ for iEpm = 1:length(Epm)
         for iRP_preEcross = 1:n_RP_preEcross
             RP_preEcross_nm = RP_preEcross{iRP_preEcross};
             
-            % effort period onset
+            %% effort period onset
             n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
             reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['ONSET preEffort black cross ',RP_preEcross_nm];
             disp([num2str(n_regs.(task_id_nm)),') ONSET preEffort black cross ',RP_preEcross_nm,': ',GLMprm.model_onset.(task_id_nm).preEffortCross,' ']);
             % if derivative added => add derivatives
             n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
             
-            % effort period regressors
+            %% effort period regressors
+            % binary variable indicating when choice = high effort option
+            if GLMprm.preEffortCross.(task_id_nm).(RP_preEcross_nm).choiceHighE == 1
+                n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG preEffort cross ',RP_preEcross_nm,': choice = highE'];
+                disp([num2str(n_regs.(task_id_nm)),') pre-effort cross: choice hE ']);
+                % if derivative added => add derivatives
+                n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+            end
+            
             % money chosen
             switch GLMprm.preEffortCross.(task_id_nm).(RP_preEcross_nm).money_chosen
                 case 1
@@ -1076,14 +1103,23 @@ for iEpm = 1:length(Epm)
         for iRP_Eperf = 1:n_RP_Eperf
             RP_Eperf_nm = RP_Eperf{iRP_Eperf};
             
-            % effort period onset
+            %% effort period onset
             n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
             reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['ONSET effort ',RP_Eperf_nm];
             disp([num2str(n_regs.(task_id_nm)),') ONSET effort period ',RP_Eperf_nm,': ',GLMprm.model_onset.(task_id_nm).Eperf,' ']);
             % if derivative added => add derivatives
             n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
             
-            % effort period regressors
+            %% effort period regressors
+            % binary variable indicating when choice = high effort option
+            if GLMprm.Eperf.(task_id_nm).(RP_Eperf_nm).choiceHighE == 1
+                n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG effort ',RP_Eperf_nm,': choice = highE'];
+                disp([num2str(n_regs.(task_id_nm)),') effort period: choice hE ']);
+                % if derivative added => add derivatives
+                n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+            end
+            
             % money chosen
             switch GLMprm.Eperf.(task_id_nm).(RP_Eperf_nm).money_chosen
                 case 1
@@ -1258,14 +1294,14 @@ for iEpm = 1:length(Epm)
         for iRP_fbk = 1:n_RP_fbk
             RP_fbk_nm = RP_fbk{iRP_fbk};
             
-            % feedback onset
+            %% feedback onset
             n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
             reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['ONSET feedback ',RP_fbk_nm];
             disp([num2str(n_regs.(task_id_nm)),') ONSET feedback: ',GLMprm.model_onset.(task_id_nm).fbk,' ']);
             % if derivative added => add derivatives
             n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
             
-            % feedback regressors
+            %% feedback regressors
             % win vs loss
             switch GLMprm.fbk.(task_id_nm).(RP_fbk_nm).win_vs_loss
                 case 1
@@ -1274,6 +1310,15 @@ for iEpm = 1:length(Epm)
                     disp([num2str(n_regs.(task_id_nm)),') feedback: win-loss ']);
                     % if derivative added => add derivatives
                     n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+            end
+            
+            % binary variable indicating when choice = high effort option
+            if GLMprm.fbk.(task_id_nm).(RP_fbk_nm).choiceHighE == 1
+                n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG feedback ',RP_fbk_nm,': choice = highE'];
+                disp([num2str(n_regs.(task_id_nm)),') feedback: choice hE ']);
+                % if derivative added => add derivatives
+                n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
             end
             
             % money obtained

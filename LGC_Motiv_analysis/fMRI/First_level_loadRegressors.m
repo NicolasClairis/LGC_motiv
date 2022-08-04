@@ -190,6 +190,9 @@ choice_LRandConf = behavioralDataStruct.(task_behavioral_id).choice;
 choice_LR = choice_LRandConf;
 choice_LR(choice_LRandConf == -2) = -1;
 choice_LR(choice_LRandConf == 2) = 1;
+% choice = high effort
+choice_hE = choice_LR ~= defaultSide;
+choice_hE(choice_LR == 0) = NaN;
 % loading chosen variables
 E_chosen = behavioralDataStruct.(task_behavioral_id).E_chosen;
 E_unchosen = E_left.*(choice_LR == 1) + E_right.*(choice_LR == -1);
@@ -339,6 +342,7 @@ if sum(choiceMissedTrials) > 0
     % regressors
     defaultSide(choiceMissedTrials) = [];
     RP_var_binary(choiceMissedTrials) = [];
+    choice_hE(choiceMissedTrials) = [];
     money_level_chosen(choiceMissedTrials) = [];
     money_amount_left(choiceMissedTrials) = [];
     money_amount_right(choiceMissedTrials) = [];
@@ -464,6 +468,7 @@ if ismember(choiceModel,{'stick','boxcar'})
     for iRP_choice = 1:length(RPchoiceCond)
         RP_choice_nm                                = RPchoiceCond{iRP_choice};
         choiceModel_RP                              = GLMprm.choice.(task_id).(RP_choice_nm).R_vs_P;
+        choiceModel_choicehE                        = GLMprm.choice.(task_id).(RP_choice_nm).choiceHighE;
         choiceModel_moneyLeft                       = GLMprm.choice.(task_id).(RP_choice_nm).money_left;
         choiceModel_moneyRight                      = GLMprm.choice.(task_id).(RP_choice_nm).money_right;
         choiceModel_moneyChosen                     = GLMprm.choice.(task_id).(RP_choice_nm).money_chosen;
@@ -533,6 +538,13 @@ if ismember(choiceModel,{'stick','boxcar'})
             else
                 error('cannot split R and P trials and add a variable representing R/P trials') ;
             end
+        end
+        
+        % choice = high effort
+        if choiceModel_choicehE == 1
+            n_choiceMods = n_choiceMods + 1;
+            choice_modNames{n_choiceMods} = 'choice = high effort';
+            choice_modVals(n_choiceMods,:) = choice_hE(choice_trial_idx); % binary variable => no zscore
         end
 
         % money left
@@ -802,6 +814,7 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis'})
         RP_chosen_nm = RPchosenCond{iRP_chosen};
 
         chosenModel_R_vs_P          = GLMprm.chosen.(task_id).(RP_chosen_nm).R_vs_P;
+        chosenModel_choicehE        = GLMprm.chosen.(task_id).(RP_chosen_nm).choiceHighE;
         chosenModel_moneyChosen     = GLMprm.chosen.(task_id).(RP_chosen_nm).money_chosen;
         chosenModel_moneyUnchosen   = GLMprm.chosen.(task_id).(RP_chosen_nm).money_unchosen;
         chosenModel_moneyNonDefault = GLMprm.chosen.(task_id).(RP_chosen_nm).money_varOption;
@@ -873,6 +886,13 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis'})
                 otherwise
                     error('ready yet');
             end
+        end
+        
+        % choice = high effort
+        if chosenModel_choicehE == 1
+            n_chosenMods = n_chosenMods + 1;
+            chosen_modNames{n_chosenMods} = 'choice = high effort';
+            chosen_modVals(n_chosenMods,:) = choice_hE(chosen_trial_idx); % binary variable => no zscore
         end
 
         % money chosen
@@ -1121,6 +1141,7 @@ if ismember(preEffortCrossModel,{'stick','boxcar','boxcar_bis'})
     for iRP_preEcross = 1:length(RPpreEcrossCond)
         RP_preEcross_nm = RPpreEcrossCond{iRP_preEcross};
         %
+        preEcrossModel_choiceE          = GLMprm.preEffortCross.(task_id).(RP_preEcross_nm).choiceHighE;
         preEcrossModel_money_chosen     = GLMprm.preEffortCross.(task_id).(RP_preEcross_nm).money_chosen;
         preEcrossModel_effort_chosen    = GLMprm.preEffortCross.(task_id).(RP_preEcross_nm).E_chosen;
         switch task_id
@@ -1169,6 +1190,14 @@ if ismember(preEffortCrossModel,{'stick','boxcar','boxcar_bis'})
         preEcross_modNames = cell(1,1);
         preEcross_modVals = [];
 
+        
+        % choice = high effort
+        if preEcrossModel_choicehE == 1
+            n_preEcrossMods = n_preEcrossMods + 1;
+            preEcross_modNames{n_preEcrossMods} = 'choice = high effort';
+            preEcross_modVals(n_preEcrossMods,:) = choice_hE(preEcross_trial_idx); % binary variable => no zscore
+        end
+        
         % money chosen
         if preEcrossModel_money_chosen > 0
             n_preEcrossMods = n_preEcrossMods + 1;
@@ -1288,6 +1317,7 @@ if ismember(EperfModel,{'stick','boxcar'})
     for iRP_Eperf = 1:length(RPperfCond)
         RP_Eperf_nm = RPperfCond{iRP_Eperf};
         %
+        EperfModel_choicehE         = GLMprm.Eperf.(task_id).(RP_Eperf_nm).choiceHighE;
         EperfModel_money_chosen     = GLMprm.Eperf.(task_id).(RP_Eperf_nm).money_chosen;
         EperfModel_effort_chosen    = GLMprm.Eperf.(task_id).(RP_Eperf_nm).E_chosen;
         switch task_id
@@ -1333,6 +1363,13 @@ if ismember(EperfModel,{'stick','boxcar'})
         Eperf_modNames = cell(1,1);
         Eperf_modVals = [];
 
+        % choice = high effort
+        if EperfModel_choicehE == 1
+            n_EperfMods = n_EperfMods + 1;
+            Eperf_modNames{n_EperfMods} = 'choice = high effort';
+            Eperf_modVals(n_EperfMods,:) = choice_hE(Eperf_trial_idx); % binary variable => no zscore
+        end
+        
         % money chosen
         if EperfModel_money_chosen > 0
             n_EperfMods = n_EperfMods + 1;
@@ -1454,6 +1491,7 @@ if ismember(fbkModel,{'stick','boxcar'})
         %
         fbkModel_moneyObtained  = GLMprm.fbk.(task_id).(RP_fbk_nm).money_obtained;
         fbkModel_winVSloss      = GLMprm.fbk.(task_id).(RP_fbk_nm).win_vs_loss;
+        fbkModel_choicehE       = GLMprm.fbk.(task_id).(RP_fbk_nm).choiceHighE;
         fbkModel_Emade          = GLMprm.fbk.(task_id).(RP_fbk_nm).E_made;
         fbkModel_confidence     = GLMprm.fbk.(task_id).(RP_fbk_nm).confidence;
         fbkModel_trialN         = GLMprm.fbk.(task_id).(RP_fbk_nm).trialN;
@@ -1499,7 +1537,14 @@ if ismember(fbkModel,{'stick','boxcar'})
                 error('cannot split R and P trials and add a variable representing R/P trials') ;
             end
         end
-
+        
+        % choice = high effort
+        if fbkModel_choicehE == 1
+            n_fbkMods = n_fbkMods + 1;
+            fbk_modNames{n_fbkMods} = 'choice = high effort';
+            fbk_modVals(n_fbkMods,:) = choice_hE(fbk_trial_idx); % binary variable => no zscore
+        end
+        
         % money chosen
         if fbkModel_moneyObtained > 0
             n_fbkMods = n_fbkMods + 1;
