@@ -74,6 +74,10 @@ switch condition
         results_folder = [studyRoot,filesep,'Second_level',filesep,...
             'GLM',GLM_str,'_',NS_str,'subs_',...
             'preprocSm',num2str(preproc_sm_kernel),'mm_noSatTaskSubs',filesep];
+    case 'fMRI_noSatRun'
+        results_folder = [studyRoot,filesep,'Second_level',filesep,...
+            'GLM',GLM_str,'_',NS_str,'subs_',...
+            'preprocSm',num2str(preproc_sm_kernel),'mm_noSatRunSubs',filesep];
     otherwise
         error(['folder not ready yet for the condition ',condition]);
 end
@@ -144,7 +148,7 @@ for iCon = 1:n_con
         checkGLM_and_subjectIncompatibility(study_nm, sub_nm, GLMprm);
         
         switch condition
-            case {'fMRI','fMRI_no_move_bis','fMRI_noSatTask'}
+            case {'fMRI','fMRI_no_move_bis','fMRI_noSatTask','fMRI_noSatRun'}
                 subject_folder = [studyRoot,filesep,'CID',sub_nm, filesep, 'fMRI_analysis' filesep,...
                     'functional' filesep, 'preproc_sm_',num2str(preproc_sm_kernel),'mm',filesep...
                     'GLM',GLM_str, filesep];
