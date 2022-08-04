@@ -102,6 +102,10 @@ for iS = 1:NS
                         onsets_tmp = behaviorStruct_tmp.mentalE_perf.onsets;
                         choice_LR_tmp = behaviorStruct_tmp.mentalE_perf.choice;
                 end
+                % remove confidence information from choice
+                choice_LR_tmp(choice_LR_tmp == 2) = 1;
+                choice_LR_tmp(choice_LR_tmp == -2) = -1;
+                % extract RT
                 RT_tmp = onsets_tmp.choice - onsets_tmp.dispChoiceOptions;
                 RT_perTrial_tmp.(task_id)(runTrials_idx) = RT_tmp;
                 % extract choice made
