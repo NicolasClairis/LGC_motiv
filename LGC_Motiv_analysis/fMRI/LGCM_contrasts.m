@@ -72,7 +72,8 @@ betaFiles = ls([resultsFolderName,'beta_*.nii']);
 n_1stLevelBetas = size(betaFiles,1);
 if n_1stLevelBetas ~= n_totalRegs
     error(['Problem: number of regressors predicted by contrasts = ',num2str(n_totalRegs),...
-        ' while number of betas produced by 1st level = ',num2str(n_1stLevelBetas)]);
+        ' while number of betas produced by 1st level = ',num2str(n_1stLevelBetas),...
+        ' for subject ',sub_nm]);
 else
     disp(['CID',sub_nm,' number of regressors and number of betas produced in 1st level - ok'])
 end
