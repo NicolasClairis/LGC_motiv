@@ -42,107 +42,114 @@ function [GLMprm] = which_GLM(GLM)
 %       .fbk: feedback period
 %
 %   .choice/chosen/preEffortCross/Eperf/fbk: for each event, for each task (Ep/Em) and 
-%   for each condition (R/P/RP) indicate if a given regressor should be 
+%   for each condition (R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3) indicate if a given regressor should be 
 %   included or not.
 %   .Ep/Em: physical (Ep) or mental (Em) effort task
-%   .R/P/RP: reward only (R), punishment only (P) or reward and punishment
-%   trials mixed (RP)
+%   .R/P/RP/splitPerE/splitPerEch: reward only (R), punishment only (P) or reward and punishment
+%   trials mixed (RP) or split per effort proposed (splitPerE) or per
+%   effort chosen (splitPerEch)
 %
 %       .(choice/chosen).(Ep/Em).RPpool:
 %       (0) split rewards and punishments as separate events
 %       (1) pool reward and punishment trials
 %
-%       .(choice/chosen).(Ep/Em).(R/P/RP).R_vs_P:
+%       .(choice/chosen).(Ep/Em).splitPerE:
+%       (0) pool all effort together
+%       (1) split per level of effort proposed (E1/E2/E3)
+%       (2) split per level of effort chosen (Ech0/Ech1/Ech2/Ech3)
+%       (3) split per option chosen (low/default vs high/non-default effort chosen)
+%
+%       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).R_vs_P:
 %       (1) 0 when punishment trial, 1 when reward trial
 %
-%       .choice.(Ep/Em).(R/P/RP).money_left
+%       .choice.(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).money_left
 %       (1) money amount associated to left option
 %
-%       .choice.(Ep/Em).(R/P/RP).money_right
+%       .choice.(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).money_right
 %       (1) money amount associated to right option
 %
-%       .(choice/chosen).(Ep/Em).(R/P/RP).money_chosen:
+%       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).money_chosen:
 %       (1) money chosen amount
 %       (2) |money chosen amount|
 %       (3) money levels (-4/-3/-2/-1/1/2/3/4) chosen from highest loss
 %       until highest gain
 %       (4) |money levels (1/2/3/4) chosen|
 %
-%       .(choice/chosen).(Ep/Em).(R/P/RP).money_unchosen:
+%       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).money_unchosen:
 %       (1) money unchosen amount
 %       (2) |money unchosen amount|
 %       (3) money levels (-4/-3/-2/-1/1/2/3/4) unchosen
 %       (4) |money levels (1/2/3/4) unchosen|
 %
-%       .(choice/chosen).(Ep/Em).(R/P/RP).money_varOption:
+%       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).money_varOption:
 %       (1) money amount non-default option
 %       (2) |money amount non-default option|
 %       (3) money levels  (-3/-2/-1/1/2/3) non-default option
 %       (4) |money levels (1/2/3) non-default option|
 %
-%       .(choice/chosen).(Ep/Em).(R/P/RP).money_ch_min_unch:
+%       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).money_ch_min_unch:
 %       (1) money chosen - money unchosen amount
 %
-%       .(choice/chosen).(Ep/Em).(R/P/RP).money_ch_min_fixOption:
+%       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).money_ch_min_fixOption:
 %       (1) money chosen - money default option - amount
 %       (2) money chosen - money default option - levels (1/2/3/4 - 1)
 %
-%       .(choice/chosen).(Ep/Em).(R/P/RP).money_sum:
+%       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).money_sum:
 %       (1) money default + money non-default amount
 %
-%       .(choice/chosen).(Ep/Em).(R/P/RP).E_left
+%       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).E_left
 %       (1) effort level (0/1/2/3) associated to left option
 %       (2) effort difficulty associated to left option (Ep: duration to hold; Em: nb answers to give)
 %
-%       .(choice/chosen).(Ep/Em).(R/P/RP).E_right
+%       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).E_right
 %       (1) effort level (0/1/2/3) associated to right option
 %       (2) effort difficulty associated to right option (Ep: duration to hold; Em: nb answers to give)
 %
-%       .(choice/chosen).(Ep/Em).(R/P/RP).E_chosen
+%       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).E_chosen
 %       (1) effort level (0/1/2/3) associated to chosen option
 %       (2) effort difficulty associated to chosen option (Ep: duration to hold; Em: nb answers to give)
 %
-%       .(choice/chosen).(Ep/Em).(R/P/RP).E_unchosen
+%       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).E_unchosen
 %       (1) effort level (0/1/2/3) associated to unchosen option
 %       (2) effort difficulty associated to unchosen option (Ep: duration to hold; Em: nb answers to give)
 %
-%       .(choice/chosen).(Ep/Em).(R/P/RP).E_varOption
+%       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).E_varOption
 %       (1) effort level (0/1/2/3) associated to the non-default option
 %       (2) effort difficulty associated to the non-default option (Ep: duration to hold; Em: nb answers to give)
 %
-%       .(choice/chosen).(Ep/Em).(R/P/RP).E_ch_min_unch
+%       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).E_ch_min_unch
 %       (1) effort level (0/1/2/3) associated to the chosen option minus
 %       the effort level (0/1/2/3) associated to the unchosen option
 %       (2) effort difficulty associated to the chosen option (Ep: duration to hold; Em: nb answers to give)
 %       minus the effort difficulty associated to the unchosen option (Ep: duration to hold; Em: nb answers to give)
 %
-%       .(choice/chosen).(Ep/Em).(R/P/RP).E_ch_min_fixOption:
+%       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).E_ch_min_fixOption:
 %       (1) E chosen - E default option - levels (0/1/2/3)
 %
-%       .(choice/chosen).(Ep/Em).(R/P/RP).E_sum
+%       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).E_sum
 %       (1) sum of the effort levels (0/1/2/3) associated to both options
 %       (2) sum of the effort difficulties (Ep: duration to hold; Em: nb answers to give) associated to both options
 %
-%       .(choice/chosen).(Ep/Em).(R/P/RP).NV_chosen
+%       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).NV_chosen
 %       (1) net value of the chosen option based on the model defined in
-%       .(choice/chosen).(Ep.Em).(R/P/RP).NV_mdl (='mdl_X' or 'bayesianModel_X')
+%       .(choice/chosen).(Ep.Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).NV_mdl (='mdl_X' or 'bayesianModel_X')
 %
-%       .(choice/chosen).(Ep/Em).(R/P/RP).NV_varOption
+%       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).NV_varOption
 %       (1) net value of the chosen option based on the model defined in
-%       .(choice/chosen).(Ep.Em).(R/P/RP).NV_mdl (='mdl_X' or 'bayesianModel_X')
+%       .(choice/chosen).(Ep.Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).NV_mdl (='mdl_X' or 'bayesianModel_X')
 %
-%       .(choice/chosen).(Ep/Em).(R/P/RP).trialN
+%       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).trialN
 %       (1) trial number
 %       (2) (trial number)*(E chosen - E non-chosen option)
 %       (3) (trial number)*(E non-default - E default option)
 %       (4) (trial number)*(E non-default)
 %
-%       .(choice/chosen).(Ep/Em).(R/P/RP).confidence
+%       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).confidence
 %       (1) confidence level (0/1) given by the subject for each choice
 %       (2) confidence inferred by the model (p(choice)-0.5)² for the model
-%       defined in .(choice/chosen).(Ep.Em).(R/P/RP).conf_mdl (='mdl_X' or 'bayesianModel_X')
+%       defined in .(choice/chosen).(Ep.Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).conf_mdl (='mdl_X' or 'bayesianModel_X')
 %
-%       .(choice/chosen).(Ep/Em).(R/P/RP).RT: reaction time for choice
+%       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).RT: reaction time for choice
 %       (1) raw reaction time
 %       (2) reaction time zscored per run
 %       (3) reaction time zscored per subject across all runs
@@ -153,75 +160,91 @@ function [GLMprm] = which_GLM(GLM)
 %       (0) split rewards and punishments as separate events
 %       (1) pool reward and punishment trials
 %
-%       .Eperf.(Ep/Em).(R/P/RP).money_chosen
+%       .Eperf.(Ep/Em).splitPerE:
+%       (0) pool all effort together
+%       (1) split per level of effort proposed (E1/E2/E3)
+%       (2) split per level of effort chosen (Ech0/Ech1/Ech2/Ech3)
+%       (3) split per option chosen (low/default vs high/non-default effort chosen)
+%
+%       .Eperf.(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).money_chosen
 %       (1) money chosen amount
 %       (2) |money chosen amount|
 %       (3) money levels (-4/-3/-2/-1/1/2/3/4) chosen
 %       (4) |money levels (1/2/3/4) chosen|
 %
-%       .Eperf.(Ep/Em).(R/P/RP).E_chosen
+%       .Eperf.(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).E_chosen
 %       (1) effort level (0/1/2/3) associated to chosen option
 %       (2) effort difficulty associated to chosen option (Ep: duration to hold; Em: nb answers to give)
 %
-%       .Eperf.Ep.(R/P/RP).F_peak: physical effort only: force peak
+%       .Eperf.Ep.(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).F_peak: physical effort only: force peak
 %       (1) force peak in newtons
 %
-%       .Eperf.Ep.(R/P/RP).F_integral: physical effort only: force integral
+%       .Eperf.Ep.(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).F_integral: physical effort only: force integral
 %       (1) integral of effort performed during the effort period (sum of 
 %       efforts in newtons)
 %
-%       .Eperf.Em.(R/P/RP).RT_avg: mental effort only: average reaction
+%       .Eperf.Em.(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).RT_avg: mental effort only: average reaction
 %       time for answering N-back task
 %       (1) average reaction time for answering to questions (in seconds)
 %
-%       .Eperf.Em.(R/P/RP).n_errors: mental effort only: number of errors
+%       .Eperf.Em.(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).n_errors: mental effort only: number of errors
 %       made per trial
 %       (1) number of errors made
 %
-%       .Eperf.(Ep/Em).(R/P/RP).NV_chosen
+%       .Eperf.(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).NV_chosen
 %       (1) net value of the chosen option based on the model defined in
-%       .Eperf.(Ep.Em).(R/P/RP).NV_mdl (='mdl_X' or 'bayesianModel_X')
+%       .Eperf.(Ep.Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).NV_mdl (='mdl_X' or 'bayesianModel_X')
 %
-%       .Eperf.(Ep/Em).(R/P/RP).NV_varOption
+%       .Eperf.(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).NV_varOption
 %       (1) net value of the chosen option based on the model defined in
-%       .Eperf.(Ep.Em).(R/P/RP).NV_mdl (='mdl_X' or 'bayesianModel_X')
+%       .Eperf.(Ep.Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).NV_mdl (='mdl_X' or 'bayesianModel_X')
 %
-%       .Eperf.(Ep/Em).(R/P/RP).RT_1stAnswer
+%       .Eperf.(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).RT_1stAnswer
 %       (1) raw reaction time for first answer (force above threshold for Ep 
 %       and first answer to first digit for Em)
 %
-%       .Eperf.(Ep/Em).(R/P/RP).trialN
+%       .Eperf.(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).trialN
 %       (1) trial number
 %       (2) (trial number)*(E chosen - E non-chosen option)
 %       (3) (trial number)*(E non-default - E default option)
 %       (4) (trial number)*(E non-default)
 %
-%       .Eperf.(Ep/Em).(R/P/RP).confidence
+%       .Eperf.(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).confidence
 %       (1) confidence level (0/1) given by the subject for each choice
 %       (2) confidence inferred by the model (p(choice)-0.5)² for the model
-%       defined in .Eperf.(Ep.Em).(R/P/RP).conf_mdl (='mdl_X' or 'bayesianModel_X')
+%       defined in .Eperf.(Ep.Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).conf_mdl (='mdl_X' or 'bayesianModel_X')
 %
 %
-%       .fbk.(Ep/Em).(R/P/RP).win_vs_loss
+%       .fbk.(Ep/Em).RPpool
+%       (0) split rewards and punishments as separate events
+%       (1) pool reward and punishment trials
+%
+%       .fbk.(Ep/Em).splitPerE:
+%       (0) pool all effort together
+%       (1) split per level of effort proposed (E1/E2/E3)
+%       (2) split per level of effort chosen (Ech0/Ech1/Ech2/Ech3)
+%       (3) split per option chosen (low/default vs high/non-default effort chosen)
+%
+%       .fbk.(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).win_vs_loss
 %       (1) win (1) - loss (0) trials
 %
-%       .fbk.(Ep/Em).(R/P/RP).money_obtained
+%       .fbk.(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).money_obtained
 %       (1) money amount obtained at the end of the trial
 %       (1) |money amount| obtained at the end of the trial (~saliency)
 %
-%       .fbk.(Ep/Em).(R/P/RP).E_made
+%       .fbk.(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).E_made
 %       (1) level of effort performed during effort performance
 %
-%       .fbk.(Ep/Em).(R/P/RP).trialN
+%       .fbk.(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).trialN
 %       (1) trial number
 %       (2) (trial number)*(E chosen - E non-chosen option)
 %       (3) (trial number)*(E non-default - E default option)
 %       (4) (trial number)*(E non-default)
 %
-%       .fbk.(Ep/Em).(R/P/RP).confidence
+%       .fbk.(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).confidence
 %       (1) confidence level (0/1) given by the subject for each choice
 %       (2) confidence inferred by the model (p(choice)-0.5)² for the model
-%       defined in .fbk.(Ep.Em).(R/P/RP).conf_mdl (='mdl_X' or 'bayesianModel_X')
+%       defined in .fbk.(Ep.Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).conf_mdl (='mdl_X' or 'bayesianModel_X')
 %
 % See also GLM_details.m
 %
@@ -259,125 +282,144 @@ function [GLMprm] = which_GLM(GLM)
 Ep_Em = {'Ep','Em'}; % apply same or different conditions to physical and mental effort
 for iEpm = 1:length(Ep_Em)
     EpEm_nm = Ep_Em{iEpm};
+    
+    % pool reward and punishment together (default)
+    GLMprm.choice.(EpEm_nm).RPpool = 1;
+    GLMprm.chosen.(EpEm_nm).RPpool = 1;
+    GLMprm.preEffortCross.(EpEm_nm).RPpool = 1;
+    GLMprm.Eperf.(EpEm_nm).RPpool = 1;
+    GLMprm.fbk.(EpEm_nm).RPpool = 1;
     RPconditions = {'R','P','RP'};
+    
+    % by default pool all effort trials
+    GLMprm.choice.(EpEm_nm).splitPerE = 0;
+    GLMprm.chosen.(EpEm_nm).splitPerE = 0;
+    GLMprm.preEffortCross.(EpEm_nm).splitPerE = 0;
+    GLMprm.Eperf.(EpEm_nm).splitPerE = 0;
+    GLMprm.fbk.(EpEm_nm).splitPerE = 0;
+    
+    Econditions = {'E','E1','E2','E3',...
+        'E1','E2','E3',...
+        'Ech0','Ech1','Ech2','Ech3',...
+        'lowEch','highEch'};
+    % loop through conditions
     for iRP = 1:length(RPconditions)
         RP_nm = RPconditions{iRP};
         
-        % pool reward and punishment together (default)
-        GLMprm.choice.(EpEm_nm).RPpool = 1;
-        [GLMprm.choice.(EpEm_nm).(RP_nm).R_vs_P,...
-            GLMprm.choice.(EpEm_nm).(RP_nm).choiceHighE,...
-            GLMprm.choice.(EpEm_nm).(RP_nm).money_left,...
-            GLMprm.choice.(EpEm_nm).(RP_nm).money_right,...
-            GLMprm.choice.(EpEm_nm).(RP_nm).money_chosen,...
-            GLMprm.choice.(EpEm_nm).(RP_nm).money_unchosen,...
-            GLMprm.choice.(EpEm_nm).(RP_nm).money_varOption,...
-            GLMprm.choice.(EpEm_nm).(RP_nm).money_ch_min_unch,...
-            GLMprm.choice.(EpEm_nm).(RP_nm).money_ch_min_fixOption,...
-            GLMprm.choice.(EpEm_nm).(RP_nm).money_sum,...
-            GLMprm.choice.(EpEm_nm).(RP_nm).E_left,...
-            GLMprm.choice.(EpEm_nm).(RP_nm).E_right,...
-            GLMprm.choice.(EpEm_nm).(RP_nm).E_chosen,...
-            GLMprm.choice.(EpEm_nm).(RP_nm).E_unchosen,...
-            GLMprm.choice.(EpEm_nm).(RP_nm).E_varOption,...
-            GLMprm.choice.(EpEm_nm).(RP_nm).E_ch_min_unch,...
-            GLMprm.choice.(EpEm_nm).(RP_nm).E_ch_min_fixOption,...
-            GLMprm.choice.(EpEm_nm).(RP_nm).E_sum,...
-            GLMprm.choice.(EpEm_nm).(RP_nm).NV_chosen,...
-            GLMprm.choice.(EpEm_nm).(RP_nm).NV_varOption,...
-            GLMprm.choice.(EpEm_nm).(RP_nm).confidence,...
-            GLMprm.choice.(EpEm_nm).(RP_nm).RT,...
-            GLMprm.choice.(EpEm_nm).(RP_nm).trialN] = deal(0);
-        [GLMprm.choice.(EpEm_nm).(RP_nm).NV_mdl,...
-            GLMprm.choice.(EpEm_nm).(RP_nm).conf_mdl] = deal('');
-        
-        % chosen option display
-        % pool reward and punishment together (default)
-        GLMprm.chosen.(EpEm_nm).RPpool = 1;
-        [GLMprm.chosen.(EpEm_nm).(RP_nm).R_vs_P,...
-            GLMprm.chosen.(EpEm_nm).(RP_nm).choiceHighE,...
-            GLMprm.chosen.(EpEm_nm).(RP_nm).money_chosen,...
-            GLMprm.chosen.(EpEm_nm).(RP_nm).money_unchosen,...
-            GLMprm.chosen.(EpEm_nm).(RP_nm).money_varOption,...
-            GLMprm.chosen.(EpEm_nm).(RP_nm).money_ch_min_unch,...
-            GLMprm.chosen.(EpEm_nm).(RP_nm).money_ch_min_fixOption,...
-            GLMprm.chosen.(EpEm_nm).(RP_nm).money_sum,...
-            GLMprm.chosen.(EpEm_nm).(RP_nm).E_chosen,...
-            GLMprm.chosen.(EpEm_nm).(RP_nm).E_unchosen,...
-            GLMprm.chosen.(EpEm_nm).(RP_nm).E_varOption,...
-            GLMprm.chosen.(EpEm_nm).(RP_nm).E_ch_min_unch,...
-            GLMprm.chosen.(EpEm_nm).(RP_nm).E_ch_min_fixOption,...
-            GLMprm.chosen.(EpEm_nm).(RP_nm).E_sum,...
-            GLMprm.chosen.(EpEm_nm).(RP_nm).NV_chosen,...
-            GLMprm.chosen.(EpEm_nm).(RP_nm).NV_varOption,...
-            GLMprm.chosen.(EpEm_nm).(RP_nm).confidence,...
-            GLMprm.chosen.(EpEm_nm).(RP_nm).RT,...
-            GLMprm.chosen.(EpEm_nm).(RP_nm).trialN] = deal(0);
-        [GLMprm.chosen.(EpEm_nm).(RP_nm).NV_mdl,...
-            GLMprm.chosen.(EpEm_nm).(RP_nm).conf_mdl] = deal('');
-        
-        % pre-effort black cross
-        % pool reward and punishment together (default)
-        GLMprm.preEffortCross.(EpEm_nm).RPpool = 1;
-        [GLMprm.preEffortCross.(EpEm_nm).(RP_nm).choiceHighE,...
-            GLMprm.preEffortCross.(EpEm_nm).(RP_nm).money_chosen,...
-            GLMprm.preEffortCross.(EpEm_nm).(RP_nm).E_chosen,...
-            GLMprm.preEffortCross.(EpEm_nm).(RP_nm).NV_chosen,...
-            GLMprm.preEffortCross.(EpEm_nm).(RP_nm).NV_varOption,...
-            GLMprm.preEffortCross.(EpEm_nm).(RP_nm).RT_1stAnswer,...
-            GLMprm.preEffortCross.(EpEm_nm).(RP_nm).trialN,...
-            GLMprm.preEffortCross.(EpEm_nm).(RP_nm).confidence] = deal(0);
-        % specific variables for each effort type
-        switch EpEm_nm
-            case 'Ep'
-                % effort performance
-                [GLMprm.preEffortCross.Ep.(RP_nm).F_peak,...
-                    GLMprm.preEffortCross.Ep.(RP_nm).F_integral] = deal(0);
-            case 'Em'
-                % effort performance
-                [GLMprm.preEffortCross.Em.(RP_nm).RT_avg,...
-                    GLMprm.preEffortCross.Em.(RP_nm).n_errors] = deal(0);
-        end
-        [GLMprm.preEffortCross.(EpEm_nm).(RP_nm).NV_mdl,...
-            GLMprm.preEffortCross.(EpEm_nm).(RP_nm).conf_mdl] = deal('');
-        
-        % effort performance
-        % pool reward and punishment together (default)
-        GLMprm.Eperf.(EpEm_nm).RPpool = 1;
-        [GLMprm.Eperf.(EpEm_nm).(RP_nm).choiceHighE,...
-            GLMprm.Eperf.(EpEm_nm).(RP_nm).money_chosen,...
-            GLMprm.Eperf.(EpEm_nm).(RP_nm).E_chosen,...
-            GLMprm.Eperf.(EpEm_nm).(RP_nm).NV_chosen,...
-            GLMprm.Eperf.(EpEm_nm).(RP_nm).NV_varOption,...
-            GLMprm.Eperf.(EpEm_nm).(RP_nm).RT_1stAnswer,...
-            GLMprm.Eperf.(EpEm_nm).(RP_nm).trialN,...
-            GLMprm.Eperf.(EpEm_nm).(RP_nm).confidence] = deal(0);
-        % specific variables for each effort type
-        switch EpEm_nm
-            case 'Ep'
-                % effort performance
-                [GLMprm.Eperf.Ep.(RP_nm).F_peak,...
-                    GLMprm.Eperf.Ep.(RP_nm).F_integral] = deal(0);
-            case 'Em'
-                % effort performance
-                [GLMprm.Eperf.Em.(RP_nm).RT_avg,...
-                    GLMprm.Eperf.Em.(RP_nm).n_errors] = deal(0);
-        end
-        [GLMprm.Eperf.(EpEm_nm).(RP_nm).NV_mdl,...
-            GLMprm.Eperf.(EpEm_nm).(RP_nm).conf_mdl] = deal('');
-        
-        % feedback
-        % pool reward and punishment together (default)
-        GLMprm.fbk.(EpEm_nm).RPpool = 1;
-        [GLMprm.fbk.(EpEm_nm).(RP_nm).choiceHighE,...
-            GLMprm.fbk.(EpEm_nm).(RP_nm).money_obtained,...
-            GLMprm.fbk.(EpEm_nm).(RP_nm).win_vs_loss,...
-            GLMprm.fbk.(EpEm_nm).(RP_nm).E_made,...
-            GLMprm.fbk.(EpEm_nm).(RP_nm).confidence,...
-            GLMprm.fbk.(EpEm_nm).(RP_nm).trialN] = deal(0);
-        GLMprm.fbk.(EpEm_nm).(RP_nm).conf_mdl = '';
-    end % RP
-end % effort type
+        for iEsplit = 1:length(Econditions)
+            Econd_nm = Econditions{iEsplit};
+            
+            % by default all regressors are not included
+            [GLMprm.choice.(EpEm_nm).(RP_nm).(Econd_nm).R_vs_P,...
+                GLMprm.choice.(EpEm_nm).(RP_nm).(Econd_nm).choiceHighE,...
+                GLMprm.choice.(EpEm_nm).(RP_nm).(Econd_nm).money_left,...
+                GLMprm.choice.(EpEm_nm).(RP_nm).(Econd_nm).money_right,...
+                GLMprm.choice.(EpEm_nm).(RP_nm).(Econd_nm).money_chosen,...
+                GLMprm.choice.(EpEm_nm).(RP_nm).(Econd_nm).money_unchosen,...
+                GLMprm.choice.(EpEm_nm).(RP_nm).(Econd_nm).money_varOption,...
+                GLMprm.choice.(EpEm_nm).(RP_nm).(Econd_nm).money_ch_min_unch,...
+                GLMprm.choice.(EpEm_nm).(RP_nm).(Econd_nm).money_ch_min_fixOption,...
+                GLMprm.choice.(EpEm_nm).(RP_nm).(Econd_nm).money_sum,...
+                GLMprm.choice.(EpEm_nm).(RP_nm).(Econd_nm).E_left,...
+                GLMprm.choice.(EpEm_nm).(RP_nm).(Econd_nm).E_right,...
+                GLMprm.choice.(EpEm_nm).(RP_nm).(Econd_nm).E_chosen,...
+                GLMprm.choice.(EpEm_nm).(RP_nm).(Econd_nm).E_unchosen,...
+                GLMprm.choice.(EpEm_nm).(RP_nm).(Econd_nm).E_varOption,...
+                GLMprm.choice.(EpEm_nm).(RP_nm).(Econd_nm).E_ch_min_unch,...
+                GLMprm.choice.(EpEm_nm).(RP_nm).(Econd_nm).E_ch_min_fixOption,...
+                GLMprm.choice.(EpEm_nm).(RP_nm).(Econd_nm).E_sum,...
+                GLMprm.choice.(EpEm_nm).(RP_nm).(Econd_nm).NV_chosen,...
+                GLMprm.choice.(EpEm_nm).(RP_nm).(Econd_nm).NV_varOption,...
+                GLMprm.choice.(EpEm_nm).(RP_nm).(Econd_nm).confidence,...
+                GLMprm.choice.(EpEm_nm).(RP_nm).(Econd_nm).RT,...
+                GLMprm.choice.(EpEm_nm).(RP_nm).(Econd_nm).trialN] = deal(0);
+            [GLMprm.choice.(EpEm_nm).(RP_nm).(Econd_nm).NV_mdl,...
+                GLMprm.choice.(EpEm_nm).(RP_nm).(Econd_nm).conf_mdl] = deal('');
+            
+            % chosen option display
+            % by default all regressors are not included
+            [GLMprm.chosen.(EpEm_nm).(RP_nm).(Econd_nm).R_vs_P,...
+                GLMprm.chosen.(EpEm_nm).(RP_nm).(Econd_nm).choiceHighE,...
+                GLMprm.chosen.(EpEm_nm).(RP_nm).(Econd_nm).money_chosen,...
+                GLMprm.chosen.(EpEm_nm).(RP_nm).(Econd_nm).money_unchosen,...
+                GLMprm.chosen.(EpEm_nm).(RP_nm).(Econd_nm).money_varOption,...
+                GLMprm.chosen.(EpEm_nm).(RP_nm).(Econd_nm).money_ch_min_unch,...
+                GLMprm.chosen.(EpEm_nm).(RP_nm).(Econd_nm).money_ch_min_fixOption,...
+                GLMprm.chosen.(EpEm_nm).(RP_nm).(Econd_nm).money_sum,...
+                GLMprm.chosen.(EpEm_nm).(RP_nm).(Econd_nm).E_chosen,...
+                GLMprm.chosen.(EpEm_nm).(RP_nm).(Econd_nm).E_unchosen,...
+                GLMprm.chosen.(EpEm_nm).(RP_nm).(Econd_nm).E_varOption,...
+                GLMprm.chosen.(EpEm_nm).(RP_nm).(Econd_nm).E_ch_min_unch,...
+                GLMprm.chosen.(EpEm_nm).(RP_nm).(Econd_nm).E_ch_min_fixOption,...
+                GLMprm.chosen.(EpEm_nm).(RP_nm).(Econd_nm).E_sum,...
+                GLMprm.chosen.(EpEm_nm).(RP_nm).(Econd_nm).NV_chosen,...
+                GLMprm.chosen.(EpEm_nm).(RP_nm).(Econd_nm).NV_varOption,...
+                GLMprm.chosen.(EpEm_nm).(RP_nm).(Econd_nm).confidence,...
+                GLMprm.chosen.(EpEm_nm).(RP_nm).(Econd_nm).RT,...
+                GLMprm.chosen.(EpEm_nm).(RP_nm).(Econd_nm).trialN] = deal(0);
+            [GLMprm.chosen.(EpEm_nm).(RP_nm).(Econd_nm).NV_mdl,...
+                GLMprm.chosen.(EpEm_nm).(RP_nm).(Econd_nm).conf_mdl] = deal('');
+            
+            % pre-effort black cross
+            % by default all regressors are not included
+            [GLMprm.preEffortCross.(EpEm_nm).(RP_nm).(Econd_nm).choiceHighE,...
+                GLMprm.preEffortCross.(EpEm_nm).(RP_nm).(Econd_nm).money_chosen,...
+                GLMprm.preEffortCross.(EpEm_nm).(RP_nm).(Econd_nm).E_chosen,...
+                GLMprm.preEffortCross.(EpEm_nm).(RP_nm).(Econd_nm).NV_chosen,...
+                GLMprm.preEffortCross.(EpEm_nm).(RP_nm).(Econd_nm).NV_varOption,...
+                GLMprm.preEffortCross.(EpEm_nm).(RP_nm).(Econd_nm).RT_1stAnswer,...
+                GLMprm.preEffortCross.(EpEm_nm).(RP_nm).(Econd_nm).trialN,...
+                GLMprm.preEffortCross.(EpEm_nm).(RP_nm).(Econd_nm).confidence] = deal(0);
+            % specific variables for each effort type
+            switch EpEm_nm
+                case 'Ep'
+                    % effort performance
+                    [GLMprm.preEffortCross.Ep.(RP_nm).(Econd_nm).F_peak,...
+                        GLMprm.preEffortCross.Ep.(RP_nm).(Econd_nm).F_integral] = deal(0);
+                case 'Em'
+                    % effort performance
+                    [GLMprm.preEffortCross.Em.(RP_nm).(Econd_nm).RT_avg,...
+                        GLMprm.preEffortCross.Em.(RP_nm).(Econd_nm).n_errors] = deal(0);
+            end
+            [GLMprm.preEffortCross.(EpEm_nm).(RP_nm).(Econd_nm).NV_mdl,...
+                GLMprm.preEffortCross.(EpEm_nm).(RP_nm).(Econd_nm).conf_mdl] = deal('');
+            
+            % effort performance
+            % by default all regressors are not included
+            [GLMprm.Eperf.(EpEm_nm).(RP_nm).(Econd_nm).choiceHighE,...
+                GLMprm.Eperf.(EpEm_nm).(RP_nm).(Econd_nm).money_chosen,...
+                GLMprm.Eperf.(EpEm_nm).(RP_nm).(Econd_nm).E_chosen,...
+                GLMprm.Eperf.(EpEm_nm).(RP_nm).(Econd_nm).NV_chosen,...
+                GLMprm.Eperf.(EpEm_nm).(RP_nm).(Econd_nm).NV_varOption,...
+                GLMprm.Eperf.(EpEm_nm).(RP_nm).(Econd_nm).RT_1stAnswer,...
+                GLMprm.Eperf.(EpEm_nm).(RP_nm).(Econd_nm).trialN,...
+                GLMprm.Eperf.(EpEm_nm).(RP_nm).(Econd_nm).confidence] = deal(0);
+            % specific variables for each effort type
+            switch EpEm_nm
+                case 'Ep'
+                    % effort performance
+                    [GLMprm.Eperf.Ep.(RP_nm).(Econd_nm).F_peak,...
+                        GLMprm.Eperf.Ep.(RP_nm).(Econd_nm).F_integral] = deal(0);
+                case 'Em'
+                    % effort performance
+                    [GLMprm.Eperf.Em.(RP_nm).(Econd_nm).RT_avg,...
+                        GLMprm.Eperf.Em.(RP_nm).(Econd_nm).n_errors] = deal(0);
+            end
+            [GLMprm.Eperf.(EpEm_nm).(RP_nm).(Econd_nm).NV_mdl,...
+                GLMprm.Eperf.(EpEm_nm).(RP_nm).(Econd_nm).conf_mdl] = deal('');
+            
+            % feedback
+            % by default all regressors are not included
+            [GLMprm.fbk.(EpEm_nm).(RP_nm).(Econd_nm).choiceHighE,...
+                GLMprm.fbk.(EpEm_nm).(RP_nm).(Econd_nm).money_obtained,...
+                GLMprm.fbk.(EpEm_nm).(RP_nm).(Econd_nm).win_vs_loss,...
+                GLMprm.fbk.(EpEm_nm).(RP_nm).(Econd_nm).E_made,...
+                GLMprm.fbk.(EpEm_nm).(RP_nm).(Econd_nm).confidence,...
+                GLMprm.fbk.(EpEm_nm).(RP_nm).(Econd_nm).trialN] = deal(0);
+            GLMprm.fbk.(EpEm_nm).(RP_nm).(Econd_nm).conf_mdl = '';
+        end % effort loop
+    end % RP loop
+end % task loop
     
 %% define variables according to GLM number
 Epm = {'Ep','Em'};
@@ -392,27 +434,27 @@ switch GLM
         % choice
         GLMprm.model_onset.Ep.choice = 'stick';
         GLMprm.model_onset.Em.choice = 'stick';
-        GLMprm.choice.Ep.RP.money_sum = 1;
-        GLMprm.choice.Em.RP.money_sum = 1;
-        GLMprm.choice.Ep.RP.E_sum = 1;
-        GLMprm.choice.Em.RP.E_sum = 1;
-        GLMprm.choice.Ep.RP.RT = 1;
-        GLMprm.choice.Em.RP.RT = 1;
+        GLMprm.choice.Ep.RP.E.money_sum = 1;
+        GLMprm.choice.Em.RP.E.money_sum = 1;
+        GLMprm.choice.Ep.RP.E.E_sum = 1;
+        GLMprm.choice.Em.RP.E.E_sum = 1;
+        GLMprm.choice.Ep.RP.E.RT = 1;
+        GLMprm.choice.Em.RP.E.RT = 1;
         % disp chosen
         GLMprm.model_onset.Ep.chosen = 'stick';
         GLMprm.model_onset.Em.chosen = 'stick';
-        GLMprm.chosen.Ep.RP.money_chosen = 1;
-        GLMprm.chosen.Em.RP.money_chosen = 1;
-        GLMprm.chosen.Ep.RP.E_chosen = 1;
-        GLMprm.chosen.Em.RP.E_chosen = 1;
+        GLMprm.chosen.Ep.RP.E.money_chosen = 1;
+        GLMprm.chosen.Em.RP.E.money_chosen = 1;
+        GLMprm.chosen.Ep.RP.E.E_chosen = 1;
+        GLMprm.chosen.Em.RP.E.E_chosen = 1;
         % effort perf
         GLMprm.model_onset.Ep.Eperf = 'stick';
         GLMprm.model_onset.Em.Eperf = 'stick';
         % feedback
         GLMprm.model_onset.Ep.fbk = 'stick';
         GLMprm.model_onset.Em.fbk = 'stick';
-        GLMprm.fbk.Ep.RP.money_obtained = 1;
-        GLMprm.fbk.Em.RP.money_obtained = 1;
+        GLMprm.fbk.Ep.RP.E.money_obtained = 1;
+        GLMprm.fbk.Em.RP.E.money_obtained = 1;
     case 2
         % general parameters
         GLMprm.gal.orth_vars = 1;
@@ -422,23 +464,23 @@ switch GLM
         % choice
         GLMprm.model_onset.Ep.choice = 'stick';
         GLMprm.model_onset.Em.choice = 'stick';
-        GLMprm.choice.Ep.RP.RT = 1;
-        GLMprm.choice.Em.RP.RT = 1;
+        GLMprm.choice.Ep.RP.E.RT = 1;
+        GLMprm.choice.Em.RP.E.RT = 1;
         % disp chosen
         GLMprm.model_onset.Ep.chosen = 'stick';
         GLMprm.model_onset.Em.chosen = 'stick';
-        GLMprm.chosen.Ep.RP.money_chosen = 1;
-        GLMprm.chosen.Em.RP.money_chosen = 1;
-        GLMprm.chosen.Ep.RP.E_chosen = 1;
-        GLMprm.chosen.Em.RP.E_chosen = 1;
+        GLMprm.chosen.Ep.RP.E.money_chosen = 1;
+        GLMprm.chosen.Em.RP.E.money_chosen = 1;
+        GLMprm.chosen.Ep.RP.E.E_chosen = 1;
+        GLMprm.chosen.Em.RP.E.E_chosen = 1;
         % effort perf
         GLMprm.model_onset.Ep.Eperf = 'stick';
         GLMprm.model_onset.Em.Eperf = 'stick';
         % feedback
         GLMprm.model_onset.Ep.fbk = 'stick';
         GLMprm.model_onset.Em.fbk = 'stick';
-        GLMprm.fbk.Ep.RP.win_vs_loss = 1;
-        GLMprm.fbk.Em.RP.win_vs_loss = 1;
+        GLMprm.fbk.Ep.RP.E.win_vs_loss = 1;
+        GLMprm.fbk.Em.RP.E.win_vs_loss = 1;
     case 3
         % general parameters
         GLMprm.gal.orth_vars = 1;
@@ -448,17 +490,17 @@ switch GLM
         % choice
         GLMprm.model_onset.Ep.choice = 'stick';
         GLMprm.model_onset.Em.choice = 'stick';
-        GLMprm.choice.Ep.RP.R_vs_P = 1;
-        GLMprm.choice.Em.RP.R_vs_P = 1;
-        GLMprm.choice.Ep.RP.RT = 1;
-        GLMprm.choice.Em.RP.RT = 1;
+        GLMprm.choice.Ep.RP.E.R_vs_P = 1;
+        GLMprm.choice.Em.RP.E.R_vs_P = 1;
+        GLMprm.choice.Ep.RP.E.RT = 1;
+        GLMprm.choice.Em.RP.E.RT = 1;
         % disp chosen
         GLMprm.model_onset.Ep.chosen = 'stick';
         GLMprm.model_onset.Em.chosen = 'stick';
-        GLMprm.chosen.Ep.RP.money_chosen = 1;
-        GLMprm.chosen.Em.RP.money_chosen = 1;
-        GLMprm.chosen.Ep.RP.E_chosen = 1;
-        GLMprm.chosen.Em.RP.E_chosen = 1;
+        GLMprm.chosen.Ep.RP.E.money_chosen = 1;
+        GLMprm.chosen.Em.RP.E.money_chosen = 1;
+        GLMprm.chosen.Ep.RP.E.E_chosen = 1;
+        GLMprm.chosen.Em.RP.E.E_chosen = 1;
         % effort perf
         GLMprm.model_onset.Ep.Eperf = 'stick';
         GLMprm.model_onset.Em.Eperf = 'stick';
@@ -472,9 +514,9 @@ switch GLM
             Epm_nm = Epm{iEpm};
             % choice
             GLMprm.model_onset.(Epm_nm).choice = 'stick';
-            GLMprm.choice.(Epm_nm).RP.R_vs_P = 1;
-            GLMprm.choice.(Epm_nm).RP.money_chosen = 1;
-            GLMprm.choice.(Epm_nm).RP.E_chosen = 1;
+            GLMprm.choice.(Epm_nm).RP.E.R_vs_P = 1;
+            GLMprm.choice.(Epm_nm).RP.E.money_chosen = 1;
+            GLMprm.choice.(Epm_nm).RP.E.E_chosen = 1;
             % effort perf
             GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
         end
@@ -485,7 +527,7 @@ switch GLM
             Epm_nm = Epm{iEpm};
             % choice
             GLMprm.model_onset.(Epm_nm).choice = 'stick';
-            GLMprm.choice.(Epm_nm).RP.R_vs_P = 1;
+            GLMprm.choice.(Epm_nm).RP.E.R_vs_P = 1;
             % effort perf
             GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
         end
@@ -497,8 +539,8 @@ switch GLM
             Epm_nm = Epm{iEpm};
             % choice
             GLMprm.model_onset.(Epm_nm).choice = 'stick';
-            GLMprm.choice.(Epm_nm).RP.money_ch_min_unch = 1;
-            GLMprm.choice.(Epm_nm).RP.E_ch_min_unch = 1;
+            GLMprm.choice.(Epm_nm).RP.E.money_ch_min_unch = 1;
+            GLMprm.choice.(Epm_nm).RP.E.E_ch_min_unch = 1;
             % chosen
             GLMprm.model_onset.(Epm_nm).chosen = 'stick';
             % effort perf
@@ -518,11 +560,11 @@ switch GLM
             GLMprm.choice.(Epm_nm).RPpool = 0;
             for iRP = 1:length(RP_conds)
                 RP_nm = RP_conds{iRP};
-                GLMprm.choice.(Epm_nm).(RP_nm).money_chosen = 3;
-                GLMprm.choice.(Epm_nm).(RP_nm).money_unchosen = 3;
-                GLMprm.choice.(Epm_nm).(RP_nm).E_chosen = 1;
-                GLMprm.choice.(Epm_nm).(RP_nm).E_unchosen = 1;
-                GLMprm.choice.(Epm_nm).(RP_nm).RT = 1;
+                GLMprm.choice.(Epm_nm).(RP_nm).E.money_chosen = 3;
+                GLMprm.choice.(Epm_nm).(RP_nm).E.money_unchosen = 3;
+                GLMprm.choice.(Epm_nm).(RP_nm).E.E_chosen = 1;
+                GLMprm.choice.(Epm_nm).(RP_nm).E.E_unchosen = 1;
+                GLMprm.choice.(Epm_nm).(RP_nm).E.RT = 1;
             end
             % chosen
             GLMprm.model_onset.(Epm_nm).chosen = 'stick';
@@ -530,7 +572,7 @@ switch GLM
             GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
             % feedback - split R/P
             GLMprm.model_onset.(Epm_nm).fbk = 'stick';
-            GLMprm.fbk.(Epm_nm).RP.win_vs_loss = 1;
+            GLMprm.fbk.(Epm_nm).RP.E.win_vs_loss = 1;
         end
     case 8 % R/P split, Vch/Vunch R/P and E levels during disp chosen
         GLMprm.gal.orth_vars = 1;
@@ -541,22 +583,22 @@ switch GLM
             GLMprm.model_onset.(Epm_nm).preEffortCross = 'stick';
             % choice
             GLMprm.model_onset.(Epm_nm).choice = 'stick';
-            GLMprm.choice.(Epm_nm).RP.RT = 1;
+            GLMprm.choice.(Epm_nm).RP.E.RT = 1;
             % chosen - split R/P and use R/P and E levels
             GLMprm.model_onset.(Epm_nm).chosen = 'stick';
             GLMprm.chosen.(Epm_nm).RPpool = 0;
             for iRP = 1:length(RP_conds)
                 RP_nm = RP_conds{iRP};
-                GLMprm.chosen.(Epm_nm).(RP_nm).money_chosen = 3;
-                GLMprm.chosen.(Epm_nm).(RP_nm).money_unchosen = 3;
-                GLMprm.chosen.(Epm_nm).(RP_nm).E_chosen = 1;
-                GLMprm.chosen.(Epm_nm).(RP_nm).E_unchosen = 1;
+                GLMprm.chosen.(Epm_nm).(RP_nm).E.money_chosen = 3;
+                GLMprm.chosen.(Epm_nm).(RP_nm).E.money_unchosen = 3;
+                GLMprm.chosen.(Epm_nm).(RP_nm).E.E_chosen = 1;
+                GLMprm.chosen.(Epm_nm).(RP_nm).E.E_unchosen = 1;
             end
             % effort performance
             GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
             % feedback - split R/P
             GLMprm.model_onset.(Epm_nm).fbk = 'stick';
-            GLMprm.fbk.(Epm_nm).RP.win_vs_loss = 1;
+            GLMprm.fbk.(Epm_nm).RP.E.win_vs_loss = 1;
         end
     case 9 % R/P split, levels of variable option in R/P and E during choice
         GLMprm.gal.orth_vars = 1;
@@ -570,9 +612,9 @@ switch GLM
             GLMprm.choice.(Epm_nm).RPpool = 0;
             for iRP = 1:length(RP_conds)
                 RP_nm = RP_conds{iRP};
-                GLMprm.choice.(Epm_nm).(RP_nm).money_varOption = 3;
-                GLMprm.choice.(Epm_nm).(RP_nm).E_varOption = 1;
-                GLMprm.choice.(Epm_nm).(RP_nm).RT = 1;
+                GLMprm.choice.(Epm_nm).(RP_nm).E.money_varOption = 3;
+                GLMprm.choice.(Epm_nm).(RP_nm).E.E_varOption = 1;
+                GLMprm.choice.(Epm_nm).(RP_nm).E.RT = 1;
             end
             % chosen
             GLMprm.model_onset.(Epm_nm).chosen = 'stick';
@@ -580,7 +622,7 @@ switch GLM
             GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
             % feedback - split R/P
             GLMprm.model_onset.(Epm_nm).fbk = 'stick';
-            GLMprm.fbk.(Epm_nm).RP.win_vs_loss = 1;
+            GLMprm.fbk.(Epm_nm).RP.E.win_vs_loss = 1;
         end
     case 10 % model money amounts during performance instead of choice periode
         % (VS should be triggered by higher rewards)
@@ -599,12 +641,12 @@ switch GLM
             GLMprm.Eperf.(Epm_nm).RPpool = 0;
             for iRP = 1:length(RP_conds)
                 RP_nm = RP_conds{iRP};
-                GLMprm.Eperf.(Epm_nm).(RP_nm).money_chosen = 3;
-                GLMprm.Eperf.(Epm_nm).(RP_nm).E_chosen = 1;
+                GLMprm.Eperf.(Epm_nm).(RP_nm).E.money_chosen = 3;
+                GLMprm.Eperf.(Epm_nm).(RP_nm).E.E_chosen = 1;
             end
             % feedback - split R/P
             GLMprm.model_onset.(Epm_nm).fbk = 'stick';
-            GLMprm.fbk.(Epm_nm).RP.win_vs_loss = 1;
+            GLMprm.fbk.(Epm_nm).RP.E.win_vs_loss = 1;
         end
     case 11 % R/P split, Vch R/P and E levels during disp chosen, like GLM8 but without the Vunchosen
         GLMprm.gal.orth_vars = 1;
@@ -615,20 +657,20 @@ switch GLM
             GLMprm.model_onset.(Epm_nm).preEffortCross = 'stick';
             % choice
             GLMprm.model_onset.(Epm_nm).choice = 'stick';
-            GLMprm.choice.(Epm_nm).RP.RT = 1;
+            GLMprm.choice.(Epm_nm).RP.E.RT = 1;
             % chosen - split R/P and use R/P and E levels
             GLMprm.model_onset.(Epm_nm).chosen = 'stick';
             GLMprm.chosen.(Epm_nm).RPpool = 0;
             for iRP = 1:length(RP_conds)
                 RP_nm = RP_conds{iRP};
-                GLMprm.chosen.(Epm_nm).(RP_nm).money_chosen = 3;
-                GLMprm.chosen.(Epm_nm).(RP_nm).E_chosen = 1;
+                GLMprm.chosen.(Epm_nm).(RP_nm).E.money_chosen = 3;
+                GLMprm.chosen.(Epm_nm).(RP_nm).E.E_chosen = 1;
             end
             % effort performance
             GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
             % feedback - split R/P
             GLMprm.model_onset.(Epm_nm).fbk = 'stick';
-            GLMprm.fbk.(Epm_nm).RP.win_vs_loss = 1;
+            GLMprm.fbk.(Epm_nm).RP.E.win_vs_loss = 1;
         end
     case 12 % Vch/R-P/VE during dispChosen option
         GLMprm.gal.orth_vars = 1;
@@ -636,13 +678,13 @@ switch GLM
             Epm_nm = Epm{iEpm};
             % choice
             GLMprm.model_onset.(Epm_nm).choice = 'stick';
-            GLMprm.choice.(Epm_nm).RP.RT = 1;
+            GLMprm.choice.(Epm_nm).RP.E.RT = 1;
             % chosen - split R/P and use R/P and E levels
             GLMprm.model_onset.(Epm_nm).chosen = 'stick';
             GLMprm.chosen.(Epm_nm).RPpool = 1;
-            GLMprm.chosen.(Epm_nm).RP.money_chosen = 1;
-            GLMprm.chosen.(Epm_nm).RP.E_chosen = 1;
-            GLMprm.chosen.(Epm_nm).RP.R_vs_P = 1;
+            GLMprm.chosen.(Epm_nm).RP.E.money_chosen = 1;
+            GLMprm.chosen.(Epm_nm).RP.E.E_chosen = 1;
+            GLMprm.chosen.(Epm_nm).RP.E.R_vs_P = 1;
             % effort performance
             GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
             % feedback - split R/P
@@ -654,14 +696,14 @@ switch GLM
             Epm_nm = Epm{iEpm};
             % choice
             GLMprm.model_onset.(Epm_nm).choice = 'stick';
-            GLMprm.choice.(Epm_nm).RP.RT = 1;
+            GLMprm.choice.(Epm_nm).RP.E.RT = 1;
             % chosen - split R/P and use R/P and E levels
             GLMprm.model_onset.(Epm_nm).chosen = 'stick';
             GLMprm.chosen.(Epm_nm).RPpool = 0;
             for iRP = 1:length(RP_conds)
                 RP_nm = RP_conds{iRP};
-                GLMprm.chosen.(Epm_nm).(RP_nm).money_chosen = 3;
-                GLMprm.chosen.(Epm_nm).(RP_nm).E_chosen = 1;
+                GLMprm.chosen.(Epm_nm).(RP_nm).E.money_chosen = 3;
+                GLMprm.chosen.(Epm_nm).(RP_nm).E.E_chosen = 1;
             end
             % effort performance
             GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
@@ -675,14 +717,14 @@ switch GLM
             Epm_nm = Epm{iEpm};
             % choice
             GLMprm.model_onset.(Epm_nm).choice = 'stick';
-            GLMprm.choice.(Epm_nm).RP.RT = 1;
+            GLMprm.choice.(Epm_nm).RP.E.RT = 1;
             % chosen - split R/P and use R/P and E levels
             GLMprm.model_onset.(Epm_nm).chosen = 'stick';
             GLMprm.chosen.(Epm_nm).RPpool = 0;
             for iRP = 1:length(RP_conds)
                 RP_nm = RP_conds{iRP};
-                GLMprm.chosen.(Epm_nm).(RP_nm).money_chosen = 3;
-                GLMprm.chosen.(Epm_nm).(RP_nm).E_chosen = 1;
+                GLMprm.chosen.(Epm_nm).(RP_nm).E.money_chosen = 3;
+                GLMprm.chosen.(Epm_nm).(RP_nm).E.E_chosen = 1;
             end
             % effort performance
             GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
@@ -696,9 +738,9 @@ switch GLM
             Epm_nm = Epm{iEpm};
             % choice
             GLMprm.model_onset.(Epm_nm).choice = 'stick';
-            GLMprm.choice.(Epm_nm).RP.R_vs_P = 1;
-            GLMprm.choice.(Epm_nm).RP.money_chosen = 1;
-            GLMprm.choice.(Epm_nm).RP.E_chosen = 1;
+            GLMprm.choice.(Epm_nm).RP.E.R_vs_P = 1;
+            GLMprm.choice.(Epm_nm).RP.E.money_chosen = 1;
+            GLMprm.choice.(Epm_nm).RP.E.E_chosen = 1;
             % effort perf
             GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
             % feedback
@@ -711,9 +753,9 @@ switch GLM
             Epm_nm = Epm{iEpm};
             % choice
             GLMprm.model_onset.(Epm_nm).choice = 'stick';
-            GLMprm.choice.(Epm_nm).RP.NV_varOption = 1;
-            GLMprm.choice.(Epm_nm).RP.NV_mdl = 'mdl_2';
-            GLMprm.choice.(Epm_nm).RP.RT = 1;
+            GLMprm.choice.(Epm_nm).RP.E.NV_varOption = 1;
+            GLMprm.choice.(Epm_nm).RP.E.NV_mdl = 'mdl_2';
+            GLMprm.choice.(Epm_nm).RP.E.RT = 1;
             % chosen
             GLMprm.model_onset.(Epm_nm).chosen = 'stick';
             % effort perf
@@ -731,9 +773,9 @@ switch GLM
                 GLMprm.choice.(Epm_nm).RPpool = 0;
             for iRP = 1:length(RP_conds)
                 RP_nm = RP_conds{iRP};
-                GLMprm.choice.(Epm_nm).(RP_nm).NV_varOption = 1;
-                GLMprm.choice.(Epm_nm).(RP_nm).NV_mdl = 'mdl_2';
-                GLMprm.choice.(Epm_nm).(RP_nm).RT = 1;
+                GLMprm.choice.(Epm_nm).(RP_nm).E.NV_varOption = 1;
+                GLMprm.choice.(Epm_nm).(RP_nm).E.NV_mdl = 'mdl_2';
+                GLMprm.choice.(Epm_nm).(RP_nm).E.RT = 1;
             end
             % chosen
             GLMprm.model_onset.(Epm_nm).chosen = 'stick';
@@ -754,9 +796,9 @@ switch GLM
             GLMprm.chosen.(Epm_nm).RPpool = 0;
             for iRP = 1:length(RP_conds)
                 RP_nm = RP_conds{iRP};
-                GLMprm.chosen.(Epm_nm).(RP_nm).NV_chosen = 1;
-                GLMprm.chosen.(Epm_nm).(RP_nm).NV_mdl = 'mdl_2';
-                GLMprm.chosen.(Epm_nm).(RP_nm).RT = 1;
+                GLMprm.chosen.(Epm_nm).(RP_nm).E.NV_chosen = 1;
+                GLMprm.chosen.(Epm_nm).(RP_nm).E.NV_mdl = 'mdl_2';
+                GLMprm.chosen.(Epm_nm).(RP_nm).E.RT = 1;
             end
             % effort perf
             GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
@@ -773,10 +815,10 @@ switch GLM
             GLMprm.choice.(Epm_nm).RPpool = 0;
             for iRP = 1:length(RP_conds)
                 RP_nm = RP_conds{iRP};
-                GLMprm.choice.(Epm_nm).(RP_nm).money_varOption = 3;
-                GLMprm.choice.(Epm_nm).(RP_nm).E_varOption = 1;
-                GLMprm.choice.(Epm_nm).(RP_nm).trialN = 3;
-                GLMprm.choice.(Epm_nm).(RP_nm).RT = 1;
+                GLMprm.choice.(Epm_nm).(RP_nm).E.money_varOption = 3;
+                GLMprm.choice.(Epm_nm).(RP_nm).E.E_varOption = 1;
+                GLMprm.choice.(Epm_nm).(RP_nm).E.trialN = 3;
+                GLMprm.choice.(Epm_nm).(RP_nm).E.RT = 1;
             end
             % chosen
             GLMprm.model_onset.(Epm_nm).chosen = 'stick';
@@ -797,10 +839,10 @@ switch GLM
             GLMprm.chosen.(Epm_nm).RPpool = 0;
             for iRP = 1:length(RP_conds)
                 RP_nm = RP_conds{iRP};
-                GLMprm.chosen.(Epm_nm).(RP_nm).money_varOption = 3;
-                GLMprm.chosen.(Epm_nm).(RP_nm).E_varOption = 1;
-                GLMprm.chosen.(Epm_nm).(RP_nm).trialN = 3;
-                GLMprm.chosen.(Epm_nm).(RP_nm).RT = 1;
+                GLMprm.chosen.(Epm_nm).(RP_nm).E.money_varOption = 3;
+                GLMprm.chosen.(Epm_nm).(RP_nm).E.E_varOption = 1;
+                GLMprm.chosen.(Epm_nm).(RP_nm).E.trialN = 3;
+                GLMprm.chosen.(Epm_nm).(RP_nm).E.RT = 1;
             end
             % effort perf
             GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
@@ -823,8 +865,8 @@ switch GLM
             GLMprm.Eperf.(Epm_nm).RPpool = 0;
             for iRP = 1:length(RP_conds)
                 RP_nm = RP_conds{iRP};
-                GLMprm.Eperf.(Epm_nm).(RP_nm).NV_chosen = 1;
-                GLMprm.Eperf.(Epm_nm).(RP_nm).NV_mdl = 'mdl_4';
+                GLMprm.Eperf.(Epm_nm).(RP_nm).E.NV_chosen = 1;
+                GLMprm.Eperf.(Epm_nm).(RP_nm).E.NV_mdl = 'mdl_4';
             end % R/P
             % feedback
             GLMprm.model_onset.(Epm_nm).fbk = 'stick';
@@ -840,10 +882,10 @@ switch GLM
             GLMprm.choice.(Epm_nm).RPpool = 0;
             for iRP = 1:length(RP_conds)
                 RP_nm = RP_conds{iRP};
-                GLMprm.choice.(Epm_nm).(RP_nm).money_chosen = 1;
-                GLMprm.choice.(Epm_nm).(RP_nm).E_chosen = 1;
-                GLMprm.choice.(Epm_nm).(RP_nm).trialN = 1;
-                GLMprm.choice.(Epm_nm).(RP_nm).RT = 1;
+                GLMprm.choice.(Epm_nm).(RP_nm).E.money_chosen = 1;
+                GLMprm.choice.(Epm_nm).(RP_nm).E.E_chosen = 1;
+                GLMprm.choice.(Epm_nm).(RP_nm).E.trialN = 1;
+                GLMprm.choice.(Epm_nm).(RP_nm).E.RT = 1;
             end % R/P
             % chosen
             GLMprm.model_onset.(Epm_nm).chosen = 'stick';
@@ -865,10 +907,10 @@ switch GLM
             GLMprm.chosen.(Epm_nm).RPpool = 0;
             for iRP = 1:length(RP_conds)
                 RP_nm = RP_conds{iRP};
-                GLMprm.chosen.(Epm_nm).(RP_nm).money_chosen = 1;
-                GLMprm.chosen.(Epm_nm).(RP_nm).E_chosen = 1;
-                GLMprm.chosen.(Epm_nm).(RP_nm).trialN = 1;
-                GLMprm.chosen.(Epm_nm).(RP_nm).RT = 1;
+                GLMprm.chosen.(Epm_nm).(RP_nm).E.money_chosen = 1;
+                GLMprm.chosen.(Epm_nm).(RP_nm).E.E_chosen = 1;
+                GLMprm.chosen.(Epm_nm).(RP_nm).E.trialN = 1;
+                GLMprm.chosen.(Epm_nm).(RP_nm).E.RT = 1;
             end % R/P
             % effort perf
             GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
@@ -890,9 +932,9 @@ switch GLM
             GLMprm.Eperf.(Epm_nm).RPpool = 0;
             for iRP = 1:length(RP_conds)
                 RP_nm = RP_conds{iRP};
-                GLMprm.Eperf.(Epm_nm).(RP_nm).money_chosen = 1;
-                GLMprm.Eperf.(Epm_nm).(RP_nm).E_chosen = 1;
-                GLMprm.Eperf.(Epm_nm).(RP_nm).trialN = 1;
+                GLMprm.Eperf.(Epm_nm).(RP_nm).E.money_chosen = 1;
+                GLMprm.Eperf.(Epm_nm).(RP_nm).E.E_chosen = 1;
+                GLMprm.Eperf.(Epm_nm).(RP_nm).E.trialN = 1;
             end % R/P
             % feedback
             GLMprm.model_onset.(Epm_nm).fbk = 'stick';
@@ -908,9 +950,9 @@ switch GLM
             GLMprm.choice.(Epm_nm).RPpool = 0;
             for iRP = 1:length(RP_conds)
                 RP_nm = RP_conds{iRP};
-                GLMprm.choice.(Epm_nm).(RP_nm).NV_chosen = 1;
-                GLMprm.choice.(Epm_nm).(RP_nm).NV_mdl = 'mdl_4';
-                GLMprm.choice.(Epm_nm).(RP_nm).RT = 1;
+                GLMprm.choice.(Epm_nm).(RP_nm).E.NV_chosen = 1;
+                GLMprm.choice.(Epm_nm).(RP_nm).E.NV_mdl = 'mdl_4';
+                GLMprm.choice.(Epm_nm).(RP_nm).E.RT = 1;
             end
             % chosen
             GLMprm.model_onset.(Epm_nm).chosen = 'stick';
@@ -932,9 +974,9 @@ switch GLM
             GLMprm.chosen.(Epm_nm).RPpool = 0;
             for iRP = 1:length(RP_conds)
                 RP_nm = RP_conds{iRP};
-                GLMprm.chosen.(Epm_nm).(RP_nm).NV_chosen = 1;
-                GLMprm.chosen.(Epm_nm).(RP_nm).NV_mdl = 'mdl_4';
-                GLMprm.chosen.(Epm_nm).(RP_nm).RT = 1;
+                GLMprm.chosen.(Epm_nm).(RP_nm).E.NV_chosen = 1;
+                GLMprm.chosen.(Epm_nm).(RP_nm).E.NV_mdl = 'mdl_4';
+                GLMprm.chosen.(Epm_nm).(RP_nm).E.RT = 1;
             end
             % effort perf
             GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
@@ -956,8 +998,8 @@ switch GLM
             GLMprm.Eperf.(Epm_nm).RPpool = 0;
             for iRP = 1:length(RP_conds)
                 RP_nm = RP_conds{iRP};
-                GLMprm.Eperf.(Epm_nm).(RP_nm).NV_chosen = 1;
-                GLMprm.Eperf.(Epm_nm).(RP_nm).NV_mdl = 'mdl_4';
+                GLMprm.Eperf.(Epm_nm).(RP_nm).E.NV_chosen = 1;
+                GLMprm.Eperf.(Epm_nm).(RP_nm).E.NV_mdl = 'mdl_4';
             end
             % feedback
             GLMprm.model_onset.(Epm_nm).fbk = 'stick';
@@ -973,10 +1015,10 @@ switch GLM
             GLMprm.choice.(Epm_nm).RPpool = 0;
             for iRP = 1:length(RP_conds)
                 RP_nm = RP_conds{iRP};
-                GLMprm.choice.(Epm_nm).(RP_nm).money_varOption = 1;
-                GLMprm.choice.(Epm_nm).(RP_nm).E_varOption = 1;
-                GLMprm.choice.(Epm_nm).(RP_nm).trialN = 1;
-                GLMprm.choice.(Epm_nm).(RP_nm).RT = 1;
+                GLMprm.choice.(Epm_nm).(RP_nm).E.money_varOption = 1;
+                GLMprm.choice.(Epm_nm).(RP_nm).E.E_varOption = 1;
+                GLMprm.choice.(Epm_nm).(RP_nm).E.trialN = 1;
+                GLMprm.choice.(Epm_nm).(RP_nm).E.RT = 1;
             end
             % chosen
             GLMprm.model_onset.(Epm_nm).chosen = 'stick';
@@ -998,10 +1040,10 @@ switch GLM
             GLMprm.chosen.(Epm_nm).RPpool = 0;
             for iRP = 1:length(RP_conds)
                 RP_nm = RP_conds{iRP};
-                GLMprm.chosen.(Epm_nm).(RP_nm).money_varOption = 1;
-                GLMprm.chosen.(Epm_nm).(RP_nm).E_varOption = 1;
-                GLMprm.chosen.(Epm_nm).(RP_nm).trialN = 1;
-                GLMprm.chosen.(Epm_nm).(RP_nm).RT = 1;
+                GLMprm.chosen.(Epm_nm).(RP_nm).E.money_varOption = 1;
+                GLMprm.chosen.(Epm_nm).(RP_nm).E.E_varOption = 1;
+                GLMprm.chosen.(Epm_nm).(RP_nm).E.trialN = 1;
+                GLMprm.chosen.(Epm_nm).(RP_nm).E.RT = 1;
             end
             % effort perf
             GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
@@ -1023,9 +1065,9 @@ switch GLM
             GLMprm.Eperf.(Epm_nm).RPpool = 0;
             for iRP = 1:length(RP_conds)
                 RP_nm = RP_conds{iRP};
-                GLMprm.Eperf.(Epm_nm).(RP_nm).money_varOption = 1;
-                GLMprm.Eperf.(Epm_nm).(RP_nm).E_varOption = 1;
-                GLMprm.Eperf.(Epm_nm).(RP_nm).trialN = 1;
+                GLMprm.Eperf.(Epm_nm).(RP_nm).E.money_varOption = 1;
+                GLMprm.Eperf.(Epm_nm).(RP_nm).E.E_varOption = 1;
+                GLMprm.Eperf.(Epm_nm).(RP_nm).E.trialN = 1;
             end
             % feedback
             GLMprm.model_onset.(Epm_nm).fbk = 'stick';
@@ -1041,9 +1083,9 @@ switch GLM
             GLMprm.choice.(Epm_nm).RPpool = 0;
             for iRP = 1:length(RP_conds)
                 RP_nm = RP_conds{iRP};
-                GLMprm.choice.(Epm_nm).(RP_nm).NV_varOption = 1;
-                GLMprm.choice.(Epm_nm).(RP_nm).NV_mdl = 'mdl_4';
-                GLMprm.choice.(Epm_nm).(RP_nm).RT = 1;
+                GLMprm.choice.(Epm_nm).(RP_nm).E.NV_varOption = 1;
+                GLMprm.choice.(Epm_nm).(RP_nm).E.NV_mdl = 'mdl_4';
+                GLMprm.choice.(Epm_nm).(RP_nm).E.RT = 1;
             end
             % chosen
             GLMprm.model_onset.(Epm_nm).chosen = 'stick';
@@ -1065,9 +1107,9 @@ switch GLM
             GLMprm.chosen.(Epm_nm).RPpool = 0;
             for iRP = 1:length(RP_conds)
                 RP_nm = RP_conds{iRP};
-                GLMprm.chosen.(Epm_nm).(RP_nm).NV_varOption = 1;
-                GLMprm.chosen.(Epm_nm).(RP_nm).NV_mdl = 'mdl_4';
-                GLMprm.chosen.(Epm_nm).(RP_nm).RT = 1;
+                GLMprm.chosen.(Epm_nm).(RP_nm).E.NV_varOption = 1;
+                GLMprm.chosen.(Epm_nm).(RP_nm).E.NV_mdl = 'mdl_4';
+                GLMprm.chosen.(Epm_nm).(RP_nm).E.RT = 1;
             end
             % effort perf
             GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
@@ -1089,8 +1131,8 @@ switch GLM
             GLMprm.Eperf.(Epm_nm).RPpool = 0;
             for iRP = 1:length(RP_conds)
                 RP_nm = RP_conds{iRP};
-                GLMprm.Eperf.(Epm_nm).(RP_nm).NV_varOption = 1;
-                GLMprm.Eperf.(Epm_nm).(RP_nm).NV_mdl = 'mdl_4';
+                GLMprm.Eperf.(Epm_nm).(RP_nm).E.NV_varOption = 1;
+                GLMprm.Eperf.(Epm_nm).(RP_nm).E.NV_mdl = 'mdl_4';
             end
             % feedback
             GLMprm.model_onset.(Epm_nm).fbk = 'stick';
@@ -1104,13 +1146,13 @@ switch GLM
             % choice
             GLMprm.model_onset.(Epm_nm).choice = 'stick';
             GLMprm.choice.(Epm_nm).RPpool = 1;
-            GLMprm.choice.(Epm_nm).RP.RT = 1;
+            GLMprm.choice.(Epm_nm).RP.E.RT = 1;
             % chosen
             GLMprm.model_onset.(Epm_nm).chosen = 'stick';
             GLMprm.chosen.(Epm_nm).RPpool = 1;
-            GLMprm.chosen.(Epm_nm).RP.money_chosen = 1;
-            GLMprm.chosen.(Epm_nm).RP.E_chosen = 1;
-            GLMprm.chosen.(Epm_nm).RP.trialN = 1;
+            GLMprm.chosen.(Epm_nm).RP.E.money_chosen = 1;
+            GLMprm.chosen.(Epm_nm).RP.E.E_chosen = 1;
+            GLMprm.chosen.(Epm_nm).RP.E.trialN = 1;
             % effort perf
             GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
             % feedback
@@ -1125,10 +1167,10 @@ switch GLM
             % choice
             GLMprm.model_onset.(Epm_nm).choice = 'stick';
             GLMprm.choice.(Epm_nm).RPpool = 1;
-            GLMprm.choice.(Epm_nm).RP.money_chosen = 1;
-            GLMprm.choice.(Epm_nm).RP.E_chosen = 1;
-            GLMprm.choice.(Epm_nm).RP.trialN = 1;
-            GLMprm.choice.(Epm_nm).RP.RT = 1;
+            GLMprm.choice.(Epm_nm).RP.E.money_chosen = 1;
+            GLMprm.choice.(Epm_nm).RP.E.E_chosen = 1;
+            GLMprm.choice.(Epm_nm).RP.E.trialN = 1;
+            GLMprm.choice.(Epm_nm).RP.E.RT = 1;
             % chosen
             GLMprm.model_onset.(Epm_nm).chosen = 'stick';
             % effort perf
@@ -1145,12 +1187,12 @@ switch GLM
             % choice
             GLMprm.model_onset.(Epm_nm).choice = 'stick';
             GLMprm.choice.(Epm_nm).RPpool = 1;
-            GLMprm.choice.(Epm_nm).RP.RT = 1;
+            GLMprm.choice.(Epm_nm).RP.E.RT = 1;
             % chosen
             GLMprm.model_onset.(Epm_nm).chosen = 'stick';
             GLMprm.chosen.(Epm_nm).RPpool = 1;
-            GLMprm.chosen.(Epm_nm).RP.NV_chosen = 1;
-            GLMprm.chosen.(Epm_nm).RP.NV_mdl = 'mdl_4';
+            GLMprm.chosen.(Epm_nm).RP.E.NV_chosen = 1;
+            GLMprm.chosen.(Epm_nm).RP.E.NV_mdl = 'mdl_4';
             % effort perf
             GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
             % feedback
@@ -1165,16 +1207,16 @@ switch GLM
             % choice
             GLMprm.model_onset.(Epm_nm).choice = 'stick';
             GLMprm.choice.(Epm_nm).RPpool = 1;
-            GLMprm.choice.(Epm_nm).RP.NV_varOption = 1;
-            GLMprm.choice.(Epm_nm).RP.NV_mdl = 'mdl_4';
-            GLMprm.choice.(Epm_nm).RP.confidence = 2;
-            GLMprm.choice.(Epm_nm).RP.conf_mdl = 'mdl_4';
-            GLMprm.choice.(Epm_nm).RP.RT = 1;
+            GLMprm.choice.(Epm_nm).RP.E.NV_varOption = 1;
+            GLMprm.choice.(Epm_nm).RP.E.NV_mdl = 'mdl_4';
+            GLMprm.choice.(Epm_nm).RP.E.confidence = 2;
+            GLMprm.choice.(Epm_nm).RP.E.conf_mdl = 'mdl_4';
+            GLMprm.choice.(Epm_nm).RP.E.RT = 1;
             % chosen
             GLMprm.model_onset.(Epm_nm).chosen = 'stick';
             GLMprm.chosen.(Epm_nm).RPpool = 1;
-            GLMprm.chosen.(Epm_nm).RP.NV_chosen = 1;
-            GLMprm.chosen.(Epm_nm).RP.NV_mdl = 'mdl_4';
+            GLMprm.chosen.(Epm_nm).RP.E.NV_chosen = 1;
+            GLMprm.chosen.(Epm_nm).RP.E.NV_mdl = 'mdl_4';
             % effort perf
             GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
             % feedback
@@ -1190,14 +1232,14 @@ switch GLM
             % choice
             GLMprm.model_onset.(Epm_nm).choice = 'stick';
             GLMprm.choice.(Epm_nm).RPpool = 1;
-            GLMprm.choice.(Epm_nm).RP.confidence = 2;
-            GLMprm.choice.(Epm_nm).RP.conf_mdl = 'mdl_4';
-            GLMprm.choice.(Epm_nm).RP.RT = 1;
+            GLMprm.choice.(Epm_nm).RP.E.confidence = 2;
+            GLMprm.choice.(Epm_nm).RP.E.conf_mdl = 'mdl_4';
+            GLMprm.choice.(Epm_nm).RP.E.RT = 1;
             % chosen
             GLMprm.model_onset.(Epm_nm).chosen = 'boxcar_bis';
             GLMprm.chosen.(Epm_nm).RPpool = 1;
-            GLMprm.chosen.(Epm_nm).RP.money_chosen = 3;
-            GLMprm.chosen.(Epm_nm).RP.E_chosen = 1;
+            GLMprm.chosen.(Epm_nm).RP.E.money_chosen = 3;
+            GLMprm.chosen.(Epm_nm).RP.E.E_chosen = 1;
             % feedback
             GLMprm.model_onset.(Epm_nm).fbk = 'stick';
         end % physical/mental loop
@@ -1212,16 +1254,16 @@ switch GLM
             % choice
             GLMprm.model_onset.(Epm_nm).choice = 'stick';
             GLMprm.choice.(Epm_nm).RPpool = 1;
-            GLMprm.choice.(Epm_nm).RP.confidence = 2;
-            GLMprm.choice.(Epm_nm).RP.conf_mdl = 'mdl_4';
-            GLMprm.choice.(Epm_nm).RP.RT = 1;
+            GLMprm.choice.(Epm_nm).RP.E.confidence = 2;
+            GLMprm.choice.(Epm_nm).RP.E.conf_mdl = 'mdl_4';
+            GLMprm.choice.(Epm_nm).RP.E.RT = 1;
             % chosen
             GLMprm.model_onset.(Epm_nm).chosen = 'stick';
             % pre-effort cross (effort preparation)
             GLMprm.model_onset.(Epm_nm).preEffortCross = 'boxcar_bis';
             GLMprm.preEffortCross.(Epm_nm).RPpool = 1;
-            GLMprm.preEffortCross.(Epm_nm).RP.money_chosen = 3;
-            GLMprm.preEffortCross.(Epm_nm).RP.E_chosen = 1;
+            GLMprm.preEffortCross.(Epm_nm).RP.E.money_chosen = 3;
+            GLMprm.preEffortCross.(Epm_nm).RP.E.E_chosen = 1;
             % feedback
             GLMprm.model_onset.(Epm_nm).fbk = 'stick';
         end % physical/mental loop
@@ -1236,21 +1278,21 @@ switch GLM
             % choice
             GLMprm.model_onset.(Epm_nm).choice = 'stick';
             GLMprm.choice.(Epm_nm).RPpool = 1;
-            GLMprm.choice.(Epm_nm).RP.confidence = 2;
-            GLMprm.choice.(Epm_nm).RP.conf_mdl = 'mdl_4';
-            GLMprm.choice.(Epm_nm).RP.RT = 1;
+            GLMprm.choice.(Epm_nm).RP.E.confidence = 2;
+            GLMprm.choice.(Epm_nm).RP.E.conf_mdl = 'mdl_4';
+            GLMprm.choice.(Epm_nm).RP.E.RT = 1;
             % chosen
             GLMprm.model_onset.(Epm_nm).chosen = 'stick';
             % pre-effort cross (effort preparation)
             GLMprm.model_onset.(Epm_nm).preEffortCross = 'stick';
             GLMprm.preEffortCross.(Epm_nm).RPpool = 1;
-            GLMprm.preEffortCross.(Epm_nm).RP.money_chosen = 3;
-            GLMprm.preEffortCross.(Epm_nm).RP.E_chosen = 1;
+            GLMprm.preEffortCross.(Epm_nm).RP.E.money_chosen = 3;
+            GLMprm.preEffortCross.(Epm_nm).RP.E.E_chosen = 1;
             % effort perf (effort execution)
             GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
             GLMprm.Eperf.(Epm_nm).RPpool = 1;
-            GLMprm.Eperf.(Epm_nm).RP.money_chosen = 3;
-            GLMprm.Eperf.(Epm_nm).RP.E_chosen = 1;
+            GLMprm.Eperf.(Epm_nm).RP.E.money_chosen = 3;
+            GLMprm.Eperf.(Epm_nm).RP.E.E_chosen = 1;
             % feedback
             GLMprm.model_onset.(Epm_nm).fbk = 'stick';
         end % physical/mental loop
@@ -1265,21 +1307,21 @@ switch GLM
             % choice
             GLMprm.model_onset.(Epm_nm).choice = 'stick';
             GLMprm.choice.(Epm_nm).RPpool = 1;
-            GLMprm.choice.(Epm_nm).RP.confidence = 2;
-            GLMprm.choice.(Epm_nm).RP.conf_mdl = 'mdl_4';
-            GLMprm.choice.(Epm_nm).RP.RT = 1;
+            GLMprm.choice.(Epm_nm).RP.E.confidence = 2;
+            GLMprm.choice.(Epm_nm).RP.E.conf_mdl = 'mdl_4';
+            GLMprm.choice.(Epm_nm).RP.E.RT = 1;
             % chosen
             GLMprm.model_onset.(Epm_nm).chosen = 'stick';
             GLMprm.chosen.(Epm_nm).RPpool = 1;
-            GLMprm.chosen.(Epm_nm).RP.money_chosen = 3;
-            GLMprm.chosen.(Epm_nm).RP.E_chosen = 1;
+            GLMprm.chosen.(Epm_nm).RP.E.money_chosen = 3;
+            GLMprm.chosen.(Epm_nm).RP.E.E_chosen = 1;
             % pre-effort cross (effort preparation)
             GLMprm.model_onset.(Epm_nm).preEffortCross = 'stick';
             % effort perf (effort execution)
             GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
             GLMprm.Eperf.(Epm_nm).RPpool = 1;
-            GLMprm.Eperf.(Epm_nm).RP.money_chosen = 3;
-            GLMprm.Eperf.(Epm_nm).RP.E_chosen = 1;
+            GLMprm.Eperf.(Epm_nm).RP.E.money_chosen = 3;
+            GLMprm.Eperf.(Epm_nm).RP.E.E_chosen = 1;
             % feedback
             GLMprm.model_onset.(Epm_nm).fbk = 'stick';
         end % physical/mental loop
@@ -1294,11 +1336,11 @@ switch GLM
             GLMprm.model_onset.(Epm_nm).preChoiceCross = 'boxcar';
             % choice
             GLMprm.model_onset.(Epm_nm).choice = 'boxcar';
-            GLMprm.choice.(Epm_nm).RP.RT = 1;
+            GLMprm.choice.(Epm_nm).RP.E.RT = 1;
             % chosen
             GLMprm.model_onset.(Epm_nm).chosen = 'boxcar';
-            GLMprm.chosen.(Epm_nm).RP.confidence = 2;
-            GLMprm.chosen.(Epm_nm).RP.conf_mdl = 'mdl_4';
+            GLMprm.chosen.(Epm_nm).RP.E.confidence = 2;
+            GLMprm.chosen.(Epm_nm).RP.E.conf_mdl = 'mdl_4';
             % pre-effort cross
             GLMprm.model_onset.(Epm_nm).preEffortCross = 'boxcar';
             % effort perf (effort execution)
@@ -1306,12 +1348,12 @@ switch GLM
             GLMprm.Eperf.(Epm_nm).RPpool = 0;
             for iRP = 1:length(RP_conds)
                 RP_nm = RP_conds{iRP};
-                GLMprm.Eperf.(Epm_nm).(RP_nm).money_chosen = 1;
-                GLMprm.Eperf.(Epm_nm).(RP_nm).E_chosen = 1;
+                GLMprm.Eperf.(Epm_nm).(RP_nm).E.money_chosen = 1;
+                GLMprm.Eperf.(Epm_nm).(RP_nm).E.E_chosen = 1;
             end
             % feedback
             GLMprm.model_onset.(Epm_nm).fbk = 'boxcar';
-            GLMprm.fbk.(Epm_nm).RP.win_vs_loss = 1;
+            GLMprm.fbk.(Epm_nm).RP.E.win_vs_loss = 1;
         end % physical/mental  loop
     case 43 % modulation of effort execution by effort level to see if dmPFC
         % general parameters
@@ -1324,17 +1366,17 @@ switch GLM
             GLMprm.model_onset.(Epm_nm).preChoiceCross = 'stick';
             % choice
             GLMprm.model_onset.(Epm_nm).choice = 'stick';
-            GLMprm.choice.(Epm_nm).RP.RT = 1;
+            GLMprm.choice.(Epm_nm).RP.E.RT = 1;
             % chosen
             GLMprm.model_onset.(Epm_nm).chosen = 'stick';
-            GLMprm.chosen.(Epm_nm).RP.confidence = 2;
-            GLMprm.chosen.(Epm_nm).RP.conf_mdl = 'mdl_4';
+            GLMprm.chosen.(Epm_nm).RP.E.confidence = 2;
+            GLMprm.chosen.(Epm_nm).RP.E.conf_mdl = 'mdl_4';
             % pre-effort cross
             GLMprm.model_onset.(Epm_nm).preEffortCross = 'stick';
             % effort perf (effort execution)
             GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
-            GLMprm.Eperf.(Epm_nm).RP.money_chosen = 1;
-            GLMprm.Eperf.(Epm_nm).RP.E_chosen = 1;
+            GLMprm.Eperf.(Epm_nm).RP.E.money_chosen = 1;
+            GLMprm.Eperf.(Epm_nm).RP.E.E_chosen = 1;
             % feedback
             GLMprm.model_onset.(Epm_nm).fbk = 'stick';
         end % physical/mental  loop
@@ -1349,13 +1391,13 @@ switch GLM
             GLMprm.model_onset.(Epm_nm).preChoiceCross = 'stick';
             % choice
             GLMprm.model_onset.(Epm_nm).choice = 'stick';
-            GLMprm.choice.(Epm_nm).RP.confidence = 2;
-            GLMprm.choice.(Epm_nm).RP.conf_mdl = 'mdl_4';
-            GLMprm.choice.(Epm_nm).RP.RT = 1;
+            GLMprm.choice.(Epm_nm).RP.E.confidence = 2;
+            GLMprm.choice.(Epm_nm).RP.E.conf_mdl = 'mdl_4';
+            GLMprm.choice.(Epm_nm).RP.E.RT = 1;
             % chosen
             GLMprm.model_onset.(Epm_nm).chosen = 'stick';
-            GLMprm.chosen.(Epm_nm).RP.money_chosen = 1;
-            GLMprm.chosen.(Epm_nm).RP.E_chosen = 1;
+            GLMprm.chosen.(Epm_nm).RP.E.money_chosen = 1;
+            GLMprm.chosen.(Epm_nm).RP.E.E_chosen = 1;
             % pre-effort cross
             GLMprm.model_onset.(Epm_nm).preEffortCross = 'stick';
             % effort perf (effort execution)
@@ -1374,11 +1416,11 @@ switch GLM
             GLMprm.model_onset.(Epm_nm).preChoiceCross = 'stick';
             % choice
             GLMprm.model_onset.(Epm_nm).choice = 'stick';
-            GLMprm.choice.(Epm_nm).RP.money_ch_min_fixOption = 1;
-            GLMprm.choice.(Epm_nm).RP.E_ch_min_fixOption = 1;
-            GLMprm.choice.(Epm_nm).RP.confidence = 2;
-            GLMprm.choice.(Epm_nm).RP.conf_mdl = 'mdl_4';
-            GLMprm.choice.(Epm_nm).RP.RT = 1;
+            GLMprm.choice.(Epm_nm).RP.E.money_ch_min_fixOption = 1;
+            GLMprm.choice.(Epm_nm).RP.E.E_ch_min_fixOption = 1;
+            GLMprm.choice.(Epm_nm).RP.E.confidence = 2;
+            GLMprm.choice.(Epm_nm).RP.E.conf_mdl = 'mdl_4';
+            GLMprm.choice.(Epm_nm).RP.E.RT = 1;
             % chosen
             GLMprm.model_onset.(Epm_nm).chosen = 'stick';
             % pre-effort cross
@@ -1402,11 +1444,11 @@ switch GLM
             GLMprm.choice.(Epm_nm).RPpool = 0;
             for iRP = 1:length(RP_conds)
                 RP_nm = RP_conds{iRP};
-                GLMprm.choice.(Epm_nm).(RP_nm).money_varOption = 1;
-                GLMprm.choice.(Epm_nm).(RP_nm).E_varOption = 1;
-                GLMprm.choice.(Epm_nm).(RP_nm).confidence = 2;
-                GLMprm.choice.(Epm_nm).(RP_nm).conf_mdl = 'mdl_4';
-                GLMprm.choice.(Epm_nm).(RP_nm).RT = 1;
+                GLMprm.choice.(Epm_nm).(RP_nm).E.money_varOption = 1;
+                GLMprm.choice.(Epm_nm).(RP_nm).E.E_varOption = 1;
+                GLMprm.choice.(Epm_nm).(RP_nm).E.confidence = 2;
+                GLMprm.choice.(Epm_nm).(RP_nm).E.conf_mdl = 'mdl_4';
+                GLMprm.choice.(Epm_nm).(RP_nm).E.RT = 1;
             end
             % chosen
             GLMprm.model_onset.(Epm_nm).chosen = 'stick';
@@ -1429,11 +1471,11 @@ switch GLM
             GLMprm.model_onset.(Epm_nm).preChoiceCross = 'stick';
             % choice
             GLMprm.model_onset.(Epm_nm).choice = 'stick';
-            GLMprm.choice.(Epm_nm).RP.money_varOption = 1;
-            GLMprm.choice.(Epm_nm).RP.E_varOption = 1;
-            GLMprm.choice.(Epm_nm).RP.confidence = 2;
-            GLMprm.choice.(Epm_nm).RP.conf_mdl = 'mdl_4';
-            GLMprm.choice.(Epm_nm).RP.RT = 1;
+            GLMprm.choice.(Epm_nm).RP.E.money_varOption = 1;
+            GLMprm.choice.(Epm_nm).RP.E.E_varOption = 1;
+            GLMprm.choice.(Epm_nm).RP.E.confidence = 2;
+            GLMprm.choice.(Epm_nm).RP.E.conf_mdl = 'mdl_4';
+            GLMprm.choice.(Epm_nm).RP.E.RT = 1;
             % chosen
             GLMprm.model_onset.(Epm_nm).chosen = 'stick';
             % pre-effort cross
@@ -1454,11 +1496,11 @@ switch GLM
             GLMprm.model_onset.(Epm_nm).preChoiceCross = 'stick';
             % choice
             GLMprm.model_onset.(Epm_nm).choice = 'stick';
-            GLMprm.choice.(Epm_nm).RP.money_varOption = 1;
-            GLMprm.choice.(Epm_nm).RP.E_varOption = 1;
-            GLMprm.choice.(Epm_nm).RP.confidence = 2;
-            GLMprm.choice.(Epm_nm).RP.conf_mdl = 'mdl_4';
-            GLMprm.choice.(Epm_nm).RP.RT = 1;
+            GLMprm.choice.(Epm_nm).RP.E.money_varOption = 1;
+            GLMprm.choice.(Epm_nm).RP.E.E_varOption = 1;
+            GLMprm.choice.(Epm_nm).RP.E.confidence = 2;
+            GLMprm.choice.(Epm_nm).RP.E.conf_mdl = 'mdl_4';
+            GLMprm.choice.(Epm_nm).RP.E.RT = 1;
             % chosen
             GLMprm.model_onset.(Epm_nm).chosen = 'stick';
             % pre-effort cross
@@ -1479,11 +1521,11 @@ switch GLM
             GLMprm.model_onset.(Epm_nm).preChoiceCross = 'stick';
             % choice
             GLMprm.model_onset.(Epm_nm).choice = 'stick';
-            GLMprm.choice.(Epm_nm).RP.money_varOption = 1;
-            GLMprm.choice.(Epm_nm).RP.E_varOption = 1;
-            GLMprm.choice.(Epm_nm).RP.confidence = 2;
-            GLMprm.choice.(Epm_nm).RP.conf_mdl = 'mdl_4';
-            GLMprm.choice.(Epm_nm).RP.RT = 1;
+            GLMprm.choice.(Epm_nm).RP.E.money_varOption = 1;
+            GLMprm.choice.(Epm_nm).RP.E.E_varOption = 1;
+            GLMprm.choice.(Epm_nm).RP.E.confidence = 2;
+            GLMprm.choice.(Epm_nm).RP.E.conf_mdl = 'mdl_4';
+            GLMprm.choice.(Epm_nm).RP.E.RT = 1;
             % chosen
             GLMprm.model_onset.(Epm_nm).chosen = 'stick';
             % pre-effort cross
@@ -1504,21 +1546,21 @@ switch GLM
             GLMprm.model_onset.(Epm_nm).preChoiceCross = 'stick';
             % choice
             GLMprm.model_onset.(Epm_nm).choice = 'stick';
-            GLMprm.choice.(Epm_nm).RP.NV_varOption = 1;
-            GLMprm.choice.(Epm_nm).RP.NV_mdl = 'mdl_4';
-            GLMprm.choice.(Epm_nm).RP.confidence = 2;
-            GLMprm.choice.(Epm_nm).RP.conf_mdl = 'mdl_4';
-            GLMprm.choice.(Epm_nm).RP.RT = 1;
+            GLMprm.choice.(Epm_nm).RP.E.NV_varOption = 1;
+            GLMprm.choice.(Epm_nm).RP.E.NV_mdl = 'mdl_4';
+            GLMprm.choice.(Epm_nm).RP.E.confidence = 2;
+            GLMprm.choice.(Epm_nm).RP.E.conf_mdl = 'mdl_4';
+            GLMprm.choice.(Epm_nm).RP.E.RT = 1;
             % chosen
             GLMprm.model_onset.(Epm_nm).chosen = 'stick';
-            GLMprm.chosen.(Epm_nm).RP.E_chosen = 1;
+            GLMprm.chosen.(Epm_nm).RP.E.E_chosen = 1;
             % pre-effort cross
             GLMprm.model_onset.(Epm_nm).preEffortCross = 'stick';
             % effort perf (effort execution)
             GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
             % feedback
             GLMprm.model_onset.(Epm_nm).fbk = 'stick';
-            GLMprm.fbk.(Epm_nm).RP.money_obtained = 1;
+            GLMprm.fbk.(Epm_nm).RP.E.money_obtained = 1;
         end % physical/mental  loop
     case 51 % same as GLM 50 but decomposing net value in Rnd/End/trialN*End
         % general parameters
@@ -1531,20 +1573,20 @@ switch GLM
             GLMprm.model_onset.(Epm_nm).preChoiceCross = 'stick';
             % choice
             GLMprm.model_onset.(Epm_nm).choice = 'stick';
-            GLMprm.choice.(Epm_nm).RP.money_varOption = 1;
-            GLMprm.choice.(Epm_nm).RP.E_varOption = 1;
-            GLMprm.choice.(Epm_nm).RP.trialN = 4;
-            GLMprm.choice.(Epm_nm).RP.RT = 1;
+            GLMprm.choice.(Epm_nm).RP.E.money_varOption = 1;
+            GLMprm.choice.(Epm_nm).RP.E.E_varOption = 1;
+            GLMprm.choice.(Epm_nm).RP.E.trialN = 4;
+            GLMprm.choice.(Epm_nm).RP.E.RT = 1;
             % chosen
             GLMprm.model_onset.(Epm_nm).chosen = 'stick';
-            GLMprm.chosen.(Epm_nm).RP.E_chosen = 1;
+            GLMprm.chosen.(Epm_nm).RP.E.E_chosen = 1;
             % pre-effort cross
             GLMprm.model_onset.(Epm_nm).preEffortCross = 'stick';
             % effort perf (effort execution)
             GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
             % feedback
             GLMprm.model_onset.(Epm_nm).fbk = 'stick';
-            GLMprm.fbk.(Epm_nm).RP.money_obtained = 1;
+            GLMprm.fbk.(Epm_nm).RP.E.money_obtained = 1;
         end % physical/mental  loop
     case 52 % same as GLM 50 but with behavioral model 3 instead of model 4
         % general parameters
@@ -1557,21 +1599,21 @@ switch GLM
             GLMprm.model_onset.(Epm_nm).preChoiceCross = 'stick';
             % choice
             GLMprm.model_onset.(Epm_nm).choice = 'stick';
-            GLMprm.choice.(Epm_nm).RP.NV_varOption = 1;
-            GLMprm.choice.(Epm_nm).RP.NV_mdl = 'mdl_3';
-            GLMprm.choice.(Epm_nm).RP.confidence = 2;
-            GLMprm.choice.(Epm_nm).RP.conf_mdl = 'mdl_3';
-            GLMprm.choice.(Epm_nm).RP.RT = 1;
+            GLMprm.choice.(Epm_nm).RP.E.NV_varOption = 1;
+            GLMprm.choice.(Epm_nm).RP.E.NV_mdl = 'mdl_3';
+            GLMprm.choice.(Epm_nm).RP.E.confidence = 2;
+            GLMprm.choice.(Epm_nm).RP.E.conf_mdl = 'mdl_3';
+            GLMprm.choice.(Epm_nm).RP.E.RT = 1;
             % chosen
             GLMprm.model_onset.(Epm_nm).chosen = 'stick';
-            GLMprm.chosen.(Epm_nm).RP.E_chosen = 1;
+            GLMprm.chosen.(Epm_nm).RP.E.E_chosen = 1;
             % pre-effort cross
             GLMprm.model_onset.(Epm_nm).preEffortCross = 'stick';
             % effort perf (effort execution)
             GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
             % feedback
             GLMprm.model_onset.(Epm_nm).fbk = 'stick';
-            GLMprm.fbk.(Epm_nm).RP.money_obtained = 1;
+            GLMprm.fbk.(Epm_nm).RP.E.money_obtained = 1;
         end % physical/mental  loop
     case 53 % chosen option during choice
         % general parameters
@@ -1584,11 +1626,11 @@ switch GLM
             GLMprm.model_onset.(Epm_nm).preChoiceCross = 'stick';
             % choice
             GLMprm.model_onset.(Epm_nm).choice = 'stick';
-            GLMprm.choice.(Epm_nm).RP.money_chosen = 1;
-            GLMprm.choice.(Epm_nm).RP.E_chosen = 1;
-            GLMprm.choice.(Epm_nm).RP.confidence = 2;
-            GLMprm.choice.(Epm_nm).RP.conf_mdl = 'mdl_3';
-            GLMprm.choice.(Epm_nm).RP.RT = 1;
+            GLMprm.choice.(Epm_nm).RP.E.money_chosen = 1;
+            GLMprm.choice.(Epm_nm).RP.E.E_chosen = 1;
+            GLMprm.choice.(Epm_nm).RP.E.confidence = 2;
+            GLMprm.choice.(Epm_nm).RP.E.conf_mdl = 'mdl_3';
+            GLMprm.choice.(Epm_nm).RP.E.RT = 1;
             % chosen
             GLMprm.model_onset.(Epm_nm).chosen = 'stick';
             % pre-effort cross
@@ -1609,11 +1651,11 @@ switch GLM
             GLMprm.model_onset.(Epm_nm).preChoiceCross = 'stick';
             % choice
             GLMprm.model_onset.(Epm_nm).choice = 'stick';
-            GLMprm.choice.(Epm_nm).RP.RT = 4;
-            GLMprm.choice.(Epm_nm).RP.money_ch_min_fixOption = 1;
-            GLMprm.choice.(Epm_nm).RP.E_ch_min_fixOption = 1;
-            GLMprm.choice.(Epm_nm).RP.confidence = 2;
-            GLMprm.choice.(Epm_nm).RP.conf_mdl = 'mdl_4';
+            GLMprm.choice.(Epm_nm).RP.E.RT = 4;
+            GLMprm.choice.(Epm_nm).RP.E.money_ch_min_fixOption = 1;
+            GLMprm.choice.(Epm_nm).RP.E.E_ch_min_fixOption = 1;
+            GLMprm.choice.(Epm_nm).RP.E.confidence = 2;
+            GLMprm.choice.(Epm_nm).RP.E.conf_mdl = 'mdl_4';
             % chosen
             GLMprm.model_onset.(Epm_nm).chosen = 'stick';
             % pre-effort cross
@@ -1634,11 +1676,11 @@ switch GLM
             GLMprm.model_onset.(Epm_nm).preChoiceCross = 'stick';
             % choice
             GLMprm.model_onset.(Epm_nm).choice = 'stick';
-            GLMprm.choice.(Epm_nm).RP.money_ch_min_fixOption = 1;
-            GLMprm.choice.(Epm_nm).RP.E_ch_min_fixOption = 1;
-            GLMprm.choice.(Epm_nm).RP.confidence = 2;
-            GLMprm.choice.(Epm_nm).RP.conf_mdl = 'mdl_3';
-            GLMprm.choice.(Epm_nm).RP.RT = 1;
+            GLMprm.choice.(Epm_nm).RP.E.money_ch_min_fixOption = 1;
+            GLMprm.choice.(Epm_nm).RP.E.E_ch_min_fixOption = 1;
+            GLMprm.choice.(Epm_nm).RP.E.confidence = 2;
+            GLMprm.choice.(Epm_nm).RP.E.conf_mdl = 'mdl_3';
+            GLMprm.choice.(Epm_nm).RP.E.RT = 1;
             % chosen
             GLMprm.model_onset.(Epm_nm).chosen = 'stick';
             % pre-effort cross
@@ -1660,11 +1702,11 @@ switch GLM
             GLMprm.model_onset.(Epm_nm).preChoiceCross = 'stick';
             % choice
             GLMprm.model_onset.(Epm_nm).choice = 'stick';
-            GLMprm.choice.(Epm_nm).RP.RT = 4;
-            GLMprm.choice.(Epm_nm).RP.money_ch_min_fixOption = 1;
-            GLMprm.choice.(Epm_nm).RP.E_ch_min_fixOption = 1;
-            GLMprm.choice.(Epm_nm).RP.confidence = 2;
-            GLMprm.choice.(Epm_nm).RP.conf_mdl = 'mdl_3';
+            GLMprm.choice.(Epm_nm).RP.E.RT = 4;
+            GLMprm.choice.(Epm_nm).RP.E.money_ch_min_fixOption = 1;
+            GLMprm.choice.(Epm_nm).RP.E.E_ch_min_fixOption = 1;
+            GLMprm.choice.(Epm_nm).RP.E.confidence = 2;
+            GLMprm.choice.(Epm_nm).RP.E.conf_mdl = 'mdl_3';
             % chosen
             GLMprm.model_onset.(Epm_nm).chosen = 'stick';
             % pre-effort cross
@@ -1685,11 +1727,11 @@ switch GLM
             GLMprm.model_onset.(Epm_nm).preChoiceCross = 'stick';
             % choice
             GLMprm.model_onset.(Epm_nm).choice = 'stick';
-            GLMprm.choice.(Epm_nm).RP.money_ch_min_fixOption = 1;
-            GLMprm.choice.(Epm_nm).RP.E_ch_min_fixOption = 1;
-            GLMprm.choice.(Epm_nm).RP.confidence = 2;
-            GLMprm.choice.(Epm_nm).RP.conf_mdl = 'mdl_3';
-            GLMprm.choice.(Epm_nm).RP.RT = 1;
+            GLMprm.choice.(Epm_nm).RP.E.money_ch_min_fixOption = 1;
+            GLMprm.choice.(Epm_nm).RP.E.E_ch_min_fixOption = 1;
+            GLMprm.choice.(Epm_nm).RP.E.confidence = 2;
+            GLMprm.choice.(Epm_nm).RP.E.conf_mdl = 'mdl_3';
+            GLMprm.choice.(Epm_nm).RP.E.RT = 1;
             % chosen
             GLMprm.model_onset.(Epm_nm).chosen = 'stick';
             % pre-effort cross
@@ -1710,14 +1752,14 @@ switch GLM
             GLMprm.model_onset.(Epm_nm).preChoiceCross = 'stick';
             % choice
             GLMprm.model_onset.(Epm_nm).choice = 'stick';
-            GLMprm.choice.(Epm_nm).RP.choiceHighE = 1;
+            GLMprm.choice.(Epm_nm).RP.E.choiceHighE = 1;
             % chosen
             GLMprm.model_onset.(Epm_nm).chosen = 'stick';
             % pre-effort cross
             GLMprm.model_onset.(Epm_nm).preEffortCross = 'stick';
             % effort perf (effort execution)
             GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
-            GLMprm.Eperf.(Epm_nm).RP.E_chosen = 1;
+            GLMprm.Eperf.(Epm_nm).RP.E.E_chosen = 1;
             % feedback
             GLMprm.model_onset.(Epm_nm).fbk = 'stick';
         end % physical/mental  loop
