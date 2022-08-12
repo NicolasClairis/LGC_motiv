@@ -93,28 +93,24 @@ for iEpm = 1:length(Epm)
         % check if trials are split or not according to Reward and
         % Punishment
         if GLMprm.choice.(task_id_nm).RPpool == 1 % pool reward and punishment trials
-            n_RP_dispChoice = 1;
             RP_dispChoice = {'RP'};
         elseif GLMprm.choice.(task_id_nm).RPpool == 0 % split reward and punishment
-            n_RP_dispChoice = 2;
             RP_dispChoice = {'R','P'};
         end % RP pool
+        n_RP_dispChoice = length(RP_dispChoice);
         
         % check if trials are split or not according to Effort levels
         switch GLMprm.choice.(task_id_nm).splitPerE
             case 0 % pool trials
-                n_splitE_dispChoice = 1;
                 splitE_dispChoice = {'E'};
             case 1 % split according to effort proposed
-                n_splitE_dispChoice = 3;
                 splitE_dispChoice = {'E1','E2','E3'};
             case 2 % split according to effort chosen
-                n_splitE_dispChoice = 4;
                 splitE_dispChoice = {'Ech0','Ech1','Ech2','Ech3'};
             case 3 % split according to option chosen (low/high effort)
-                n_splitE_dispChoice = 2;
                 splitE_dispChoice = {'lEch','hEch'};
         end % Effort level pool
+        n_splitE_dispChoice = length(splitE_dispChoice);
         
         % loop through conditions for choice period
         for iRP_dispChoice = 1:n_RP_dispChoice
@@ -567,28 +563,24 @@ for iEpm = 1:length(Epm)
     if ~strcmp(GLMprm.model_onset.(task_id_nm).chosen,'none')
         % check if trials are split or not
         if GLMprm.chosen.(task_id_nm).RPpool == 1 % pool reward and punishment trials
-            n_RP_chosen = 1;
             RP_chosen = {'RP'};
         elseif GLMprm.chosen.(task_id_nm).RPpool == 0 % split reward and punishment
-            n_RP_chosen = 2;
             RP_chosen = {'R','P'};
         end % RP pool
+        n_RP_chosen = length(RP_chosen);
         
         % check if trials are split or not according to Effort levels
         switch GLMprm.chosen.(task_id_nm).splitPerE
             case 0 % pool trials
-                n_splitE_chosen = 1;
                 splitE_chosen = {'E'};
             case 1 % split according to effort proposed
-                n_splitE_chosen = 3;
                 splitE_chosen = {'E1','E2','E3'};
             case 2 % split according to effort chosen
-                n_splitE_chosen = 4;
                 splitE_chosen = {'Ech0','Ech1','Ech2','Ech3'};
             case 3 % split according to option chosen (low/high effort)
-                n_splitE_chosen = 2;
                 splitE_chosen = {'lEch','hEch'};
         end % Effort level pool
+        n_splitE_chosen = length(splitE_chosen);
         
         % loop through conditions for chosen period
         for iRP_chosen = 1:n_RP_chosen
@@ -946,28 +938,24 @@ for iEpm = 1:length(Epm)
         
         % check if trials are split or not
         if GLMprm.preEffortCross.(task_id_nm).RPpool == 1 % pool reward and punishment trials
-            n_RP_preEcross = 1;
             RP_preEcross = {'RP'};
         elseif GLMprm.preEffortCross.(task_id_nm).RPpool == 0 % split reward and punishment
-            n_RP_preEcross = 2;
             RP_preEcross = {'R','P'};
         end % RP pool
+        n_RP_preEcross = length(RP_preEcross);
         
         % check if trials are split or not according to Effort levels
         switch GLMprm.preEffortCross.(task_id_nm).splitPerE
             case 0 % pool trials
-                n_splitE_preEcross = 1;
                 splitE_preEcross = {'E'};
             case 1 % split according to effort proposed
-                n_splitE_preEcross = 3;
                 splitE_preEcross = {'E1','E2','E3'};
             case 2 % split according to effort chosen
-                n_splitE_preEcross = 4;
                 splitE_preEcross = {'Ech0','Ech1','Ech2','Ech3'};
             case 3 % split according to option chosen (low/high effort)
-                n_splitE_preEcross = 2;
                 splitE_preEcross = {'lEch','hEch'};
         end % Effort level pool
+        n_splitE_preEcross = length(splitE_preEcross);
         
         % loop through conditions for choice period
         for iRP_preEcross = 1:n_RP_preEcross
@@ -1156,28 +1144,24 @@ for iEpm = 1:length(Epm)
     if ~strcmp(GLMprm.model_onset.(task_id_nm).Eperf,'none')
         % check if trials are split or not
         if GLMprm.Eperf.(task_id_nm).RPpool == 1 % pool reward and punishment trials
-            n_RP_Eperf = 1;
             RP_Eperf = {'RP'};
         elseif GLMprm.Eperf.(task_id_nm).RPpool == 0 % split reward and punishment
-            n_RP_Eperf = 2;
             RP_Eperf = {'R','P'};
         end % RP pool
+        n_RP_Eperf = length(RP_Eperf);
         
         % check if trials are split or not according to Effort levels
         switch GLMprm.Eperf.(task_id_nm).splitPerE
             case 0 % pool trials
-                n_splitE_Eperf = 1;
                 splitE_Eperf = {'E'};
             case 1 % split according to effort proposed
-                n_splitE_Eperf = 3;
                 splitE_Eperf = {'E1','E2','E3'};
             case 2 % split according to effort chosen
-                n_splitE_Eperf = 4;
                 splitE_Eperf = {'Ech0','Ech1','Ech2','Ech3'};
             case 3 % split according to option chosen (low/high effort)
-                n_splitE_Eperf = 2;
                 splitE_Eperf = {'lEch','hEch'};
         end % Effort level pool
+        n_splitE_Eperf = length(splitE_Eperf);
         
         % loop through conditions for choice period
         for iRP_Eperf = 1:n_RP_Eperf
@@ -1366,28 +1350,24 @@ for iEpm = 1:length(Epm)
     if ~strcmp(GLMprm.model_onset.(task_id_nm).fbk,'none')
         % check if trials are split or not
         if GLMprm.fbk.(task_id_nm).RPpool == 1 % pool reward and punishment trials
-            n_RP_fbk = 1;
             RP_fbk = {'RP'};
         elseif GLMprm.fbk.(task_id_nm).RPpool == 0 % split reward and punishment
-            n_RP_fbk = 2;
             RP_fbk = {'R','P'};
         end % RP pool
+        n_RP_fbk = length(RP_fbk);
         
         % check if trials are split or not according to Effort levels
         switch GLMprm.fbk.(task_id_nm).splitPerE
             case 0 % pool trials
-                n_splitE_fbk = 1;
                 splitE_fbk = {'E'};
             case 1 % split according to effort proposed
-                n_splitE_fbk = 3;
                 splitE_fbk = {'E1','E2','E3'};
             case 2 % split according to effort chosen
-                n_splitE_fbk = 4;
                 splitE_fbk = {'Ech0','Ech1','Ech2','Ech3'};
             case 3 % split according to option chosen (low/high effort)
-                n_splitE_fbk = 2;
                 splitE_fbk = {'lEch','hEch'};
         end % Effort level pool
+        n_splitE_fbk = length(splitE_fbk);
         
         % loop through conditions for feedback period
         for iRP_fbk = 1:n_RP_fbk

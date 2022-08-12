@@ -43,7 +43,7 @@ end
 subj_folder             = [root, filesep, 'CID',sub_nm];
 subj_analysis_folder    = [subj_folder, filesep, 'fMRI_analysis' filesep];
 switch condition
-    case {'fMRI','fMRI_no_move_bis','fMRI_noSatTask','fMRI_noSatRun'}
+    case {'fMRI','fMRI_no_move_bis','fMRI_noSatTask','fMRI_noSatRun','fMRI_GLM59'}
         resultsFolderName = [subj_analysis_folder 'functional', filesep,...
             'preproc_sm_',num2str(preproc_sm_kernel),'mm', filesep,...
             'GLM',num2str(GLM),filesep];
@@ -51,6 +51,8 @@ switch condition
         resultsFolderName = [subj_analysis_folder 'functional', filesep,...
             'preproc_sm_',num2str(preproc_sm_kernel),'mm', filesep,...
             'GLM',num2str(GLM),'_no_movementRun',filesep];
+    otherwise
+        error(['condition ',condition,' not planned. Please add it']);
 end
 
 %% extract GLM informations

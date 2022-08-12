@@ -58,7 +58,7 @@ GLMprm = which_GLM(GLM);
 
 %% create results folder
 switch condition
-    case 'fMRI'
+    case {'fMRI','fMRI_GLM59'}
         results_folder = [studyRoot,filesep,'Second_level',filesep,...
             'GLM',GLM_str,'_',NS_str,'subs_',...
             'preprocSm',num2str(preproc_sm_kernel),'mm',filesep];
@@ -86,7 +86,7 @@ end
 if ~exist(results_folder,'dir')
     mkdir(results_folder);
 else
-    error(['run folder with the name ',c,' already exists.']);
+    error(['run folder with the name ',results_folder,' already exists.']);
 end
 
 %% 1) take mean anatomy across participants
@@ -148,7 +148,7 @@ for iCon = 1:n_con
         checkGLM_and_subjectIncompatibility(study_nm, sub_nm, GLMprm);
         
         switch condition
-            case {'fMRI','fMRI_no_move_bis','fMRI_noSatTask','fMRI_noSatRun'}
+            case {'fMRI','fMRI_no_move_bis','fMRI_noSatTask','fMRI_noSatRun','fMRI_GLM59'}
                 subject_folder = [studyRoot,filesep,'CID',sub_nm, filesep, 'fMRI_analysis' filesep,...
                     'functional' filesep, 'preproc_sm_',num2str(preproc_sm_kernel),'mm',filesep...
                     'GLM',GLM_str, filesep];
@@ -156,6 +156,8 @@ for iCon = 1:n_con
                 subject_folder = [studyRoot,filesep,'CID',sub_nm, filesep, 'fMRI_analysis' filesep,...
                     'functional' filesep, 'preproc_sm_',num2str(preproc_sm_kernel),'mm',filesep...
                     'GLM',GLM_str,'_no_movementRun' filesep];
+            otherwise
+                error(['condition ',condition,' not planned yet. Please add it.']);
         end
         
         %% adapt contrast index since some conditions and contrasts are missing for some subjects
