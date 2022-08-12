@@ -140,6 +140,19 @@ for iS = 1:NS
         % average the RT within each subject
         meanRT.(task_id)(iS) = mean(RT_perTrial_tmp.(task_id),1,'omitnan');
         medianRT.(task_id)(iS) = median(RT_perTrial_tmp.(task_id),1,'omitnan');
+        
+        % extract RT according to incentives and efforts
+        for iEff = 1:nEff
+            RT_f_E.(task_id)(iEff,iS) = RT_perTrial_tmp.(task_id)(eff_perTrial_tmp.(task_id) == iEff);
+        end
+        for iEffch = 1:nEff_chosen
+            if iEffch == 1
+                RT_f_E_ch.(task_id)(iEffch,iS) = RT_perTrial_tmp.(task_id)(choice_hE_perTrial_tmp.(task_id) == 0);
+            else
+                trial_idx = ((eff_perTrial_tmp.(task_id) == iEff).*(choice_hE_perTrial_tmp.(task_id) == 1)) == 1;
+                RT_f_E_ch.(task_id)(iEffch,iS) = RT_perTrial_tmp.(task_id)(trial_idx);
+            end
+        end
     end % physical/mental loop
 end % subject loop
 
