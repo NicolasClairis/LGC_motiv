@@ -1398,7 +1398,7 @@ for iEpm = 1:length(Epm)
                 
                 %% feedback onset
                 n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
-                reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['ONSET feedback ',RP_fbk_nm,' ',splitE_fbk_nm,' ',splitE_fbk_nm];
+                reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['ONSET feedback ',RP_fbk_nm,' ',splitE_fbk_nm];
                 disp([num2str(n_regs.(task_id_nm)),') ONSET feedback: ',GLMprm.model_onset.(task_id_nm).fbk,' ']);
                 % if derivative added => add derivatives
                 n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
