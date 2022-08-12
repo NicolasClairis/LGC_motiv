@@ -12,7 +12,7 @@ Epm = {'Ep','Em'};
 RPconditions = {'R','P','RP'};
 EsplitConditions = {'E','E1','E2','E3',...
     'Ech0','Ech1','Ech2','Ech3',...
-    'lowEch','highEch'};
+    'lEch','hEch'};
 
 %% if you pool reward and punishments and look at money levels instead of
 % money amounts, then the distance between baseline reward and baseline

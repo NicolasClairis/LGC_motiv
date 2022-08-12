@@ -235,7 +235,7 @@ end
 RPconds = {'R','P','RP'};
 EsplitConditions = {'E','E1','E2','E3',...
     'Ech0','Ech1','Ech2','Ech3',...
-    'lowEch','highEch'};
+    'lEch','hEch'};
 for iRP = 1:length(RPconds)
     RP_nm = RPconds{iRP};
     
@@ -460,7 +460,7 @@ switch choice_splitPerE
     case 2
         EsplitchoiceCond = {'Ech0','Ech1','Ech2','Ech3'};
     case 3
-        EsplitchoiceCond = {'lowEch','highEch'};
+        EsplitchoiceCond = {'lEch','hEch'};
 end
 chosen_splitPerE = GLMprm.chosen.(task_id).splitPerE;
 switch chosen_splitPerE
@@ -471,7 +471,7 @@ switch chosen_splitPerE
     case 2
         EsplitchosenCond = {'Ech0','Ech1','Ech2','Ech3'};
     case 3
-        EsplitchosenCond = {'lowEch','highEch'};
+        EsplitchosenCond = {'lEch','hEch'};
 end
 preEcross_splitPerE = GLMprm.preEffortCross.(task_id).splitPerE;
 switch preEcross_splitPerE
@@ -482,7 +482,7 @@ switch preEcross_splitPerE
     case 2
         EsplitpreEcrossCond = {'Ech0','Ech1','Ech2','Ech3'};
     case 3
-        EsplitpreEcrossCond = {'lowEch','highEch'};
+        EsplitpreEcrossCond = {'lEch','hEch'};
 end
 Eperf_splitPerE = GLMprm.Eperf.(task_id).splitPerE;
 switch Eperf_splitPerE
@@ -493,7 +493,7 @@ switch Eperf_splitPerE
     case 2
         EsplitEperfCond = {'Ech0','Ech1','Ech2','Ech3'};
     case 3
-        EsplitEperfCond = {'lowEch','highEch'};
+        EsplitEperfCond = {'lEch','hEch'};
 end
 fbk_splitPerE = GLMprm.fbk.(task_id).splitPerE;
 switch fbk_splitPerE
@@ -504,7 +504,7 @@ switch fbk_splitPerE
     case 2
         EsplitFbkCond = {'Ech0','Ech1','Ech2','Ech3'};
     case 3
-        EsplitFbkCond = {'lowEch','highEch'};
+        EsplitFbkCond = {'lEch','hEch'};
 end
 
 %% initialize conditions
@@ -583,9 +583,9 @@ if ismember(choiceModel,{'stick','boxcar'})
                     Efilter_dispChoice = (E_chosen == 2);
                 case 'Ech3'
                     Efilter_dispChoice = (E_chosen == 3);
-                case 'lowEch'
+                case 'lEch'
                     Efilter_dispChoice = (choice_hE == 0);
-                case 'highEch'
+                case 'hEch'
                     Efilter_dispChoice = (choice_hE == 1);
             end
             choice_trial_idx = (RPfilter_dispChoice.*Efilter_dispChoice) == 1; % NEED to transform it into logical or will just focus on the first trial
@@ -950,9 +950,9 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis'})
                     Efilter_dispChosen = (E_chosen == 2);
                 case 'Ech3'
                     Efilter_dispChosen = (E_chosen == 3);
-                case 'lowEch'
+                case 'lEch'
                     Efilter_dispChosen = (choice_hE == 0);
-                case 'highEch'
+                case 'hEch'
                     Efilter_dispChosen = (choice_hE == 1);
             end
             chosen_trial_idx = (RPfilter_dispChosen.*Efilter_dispChosen) == 1; % NEED to transform it into logical or will just focus on the first trial
@@ -1304,9 +1304,9 @@ if ismember(preEffortCrossModel,{'stick','boxcar','boxcar_bis'})
                     Efilter_preEcross = (E_chosen == 2);
                 case 'Ech3'
                     Efilter_preEcross = (E_chosen == 3);
-                case 'lowEch'
+                case 'lEch'
                     Efilter_preEcross = (choice_hE == 0);
-                case 'highEch'
+                case 'hEch'
                     Efilter_preEcross = (choice_hE == 1);
             end
             preEcross_trial_idx = (RPfilter_preEcross.*Efilter_preEcross) == 1; % NEED to transform it into logical or will just focus on the first trial
@@ -1506,9 +1506,9 @@ if ismember(EperfModel,{'stick','boxcar'})
                     Efilter_Eperf = (E_chosen == 2);
                 case 'Ech3'
                     Efilter_Eperf = (E_chosen == 3);
-                case 'lowEch'
+                case 'lEch'
                     Efilter_Eperf = (choice_hE == 0);
-                case 'highEch'
+                case 'hEch'
                     Efilter_Eperf = (choice_hE == 1);
             end
             Eperf_trial_idx = (RPfilter_Eperf.*Efilter_Eperf) == 1; % NEED to transform it into logical or will just focus on the first trial
@@ -1691,9 +1691,9 @@ if ismember(fbkModel,{'stick','boxcar'})
                     Efilter_fbk = (E_chosen == 2);
                 case 'Ech3'
                     Efilter_fbk = (E_chosen == 3);
-                case 'lowEch'
+                case 'lEch'
                     Efilter_fbk = (choice_hE == 0);
-                case 'highEch'
+                case 'hEch'
                     Efilter_fbk = (choice_hE == 1);
             end
             fbk_trial_idx = (RPfilter_fbk.*Efilter_fbk) == 1; % NEED to transform it into logical or will just focus on the first trial

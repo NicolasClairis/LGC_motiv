@@ -113,7 +113,7 @@ for iEpm = 1:length(Epm)
                 splitE_dispChoice = {'Ech0','Ech1','Ech2','Ech3'};
             case 3 % split according to option chosen (low/high effort)
                 n_splitE_dispChoice = 2;
-                splitE_dispChoice = {'lowEch','highEch'};
+                splitE_dispChoice = {'lEch','hEch'};
         end % Effort level pool
         
         % loop through conditions for choice period
@@ -587,7 +587,7 @@ for iEpm = 1:length(Epm)
                 splitE_chosen = {'Ech0','Ech1','Ech2','Ech3'};
             case 3 % split according to option chosen (low/high effort)
                 n_splitE_chosen = 2;
-                splitE_chosen = {'lowEch','highEch'};
+                splitE_chosen = {'lEch','hEch'};
         end % Effort level pool
         
         % loop through conditions for chosen period
@@ -966,7 +966,7 @@ for iEpm = 1:length(Epm)
                 splitE_preEcross = {'Ech0','Ech1','Ech2','Ech3'};
             case 3 % split according to option chosen (low/high effort)
                 n_splitE_preEcross = 2;
-                splitE_preEcross = {'lowEch','highEch'};
+                splitE_preEcross = {'lEch','hEch'};
         end % Effort level pool
         
         % loop through conditions for choice period
@@ -1176,7 +1176,7 @@ for iEpm = 1:length(Epm)
                 splitE_Eperf = {'Ech0','Ech1','Ech2','Ech3'};
             case 3 % split according to option chosen (low/high effort)
                 n_splitE_Eperf = 2;
-                splitE_Eperf = {'lowEch','highEch'};
+                splitE_Eperf = {'lEch','hEch'};
         end % Effort level pool
         
         % loop through conditions for choice period
@@ -1386,7 +1386,7 @@ for iEpm = 1:length(Epm)
                 splitE_fbk = {'Ech0','Ech1','Ech2','Ech3'};
             case 3 % split according to option chosen (low/high effort)
                 n_splitE_fbk = 2;
-                splitE_fbk = {'lowEch','highEch'};
+                splitE_fbk = {'lEch','hEch'};
         end % Effort level pool
         
         % loop through conditions for feedback period

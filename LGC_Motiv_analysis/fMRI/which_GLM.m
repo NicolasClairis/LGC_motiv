@@ -301,7 +301,7 @@ for iEpm = 1:length(Ep_Em)
     Econditions = {'E','E1','E2','E3',...
         'E1','E2','E3',...
         'Ech0','Ech1','Ech2','Ech3',...
-        'lowEch','highEch'};
+        'lEch','hEch'};
     % loop through conditions
     for iRP = 1:length(RPconditions)
         RP_nm = RPconditions{iRP};
@@ -1775,10 +1775,10 @@ switch GLM
             % choice
             GLMprm.model_onset.(Epm_nm).choice = 'stick';
             GLMprm.choice.(Epm_nm).splitPerE = 3;
-            GLMprm.choice.(Epm_nm).RP.lowEch.money_varOption = 1;
-            GLMprm.choice.(Epm_nm).RP.lowEch.E_varOption = 1;
-            GLMprm.choice.(Epm_nm).RP.highEch.money_varOption = 1;
-            GLMprm.choice.(Epm_nm).RP.highEch.E_varOption = 1;
+            GLMprm.choice.(Epm_nm).RP.lEch.money_varOption = 1;
+            GLMprm.choice.(Epm_nm).RP.lEch.E_varOption = 1;
+            GLMprm.choice.(Epm_nm).RP.hEch.money_varOption = 1;
+            GLMprm.choice.(Epm_nm).RP.hEch.E_varOption = 1;
             % chosen
             GLMprm.model_onset.(Epm_nm).chosen = 'boxcar';
             % pre-effort cross
