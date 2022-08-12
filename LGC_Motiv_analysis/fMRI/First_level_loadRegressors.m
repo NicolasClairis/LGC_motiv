@@ -233,78 +233,85 @@ switch iRun
 end
 % load net value and confidence
 RPconds = {'R','P','RP'};
-for iRP = 1:3
+EsplitConditions = {'E','E1','E2','E3',...
+    'Ech0','Ech1','Ech2','Ech3',...
+    'lowEch','highEch'};
+for iRP = 1:length(RPconds)
     RP_nm = RPconds{iRP};
     
-    % load net value
-    if GLMprm.choice.(task_id).(RP_nm).NV_chosen > 0 ||...
-            GLMprm.choice.(task_id).(RP_nm).NV_varOption > 0 ||...
-            GLMprm.chosen.(task_id).(RP_nm).NV_chosen > 0 ||...
-            GLMprm.chosen.(task_id).(RP_nm).NV_varOption > 0 ||...
-            GLMprm.Eperf.(task_id).(RP_nm).NV_chosen > 0 ||...
-            GLMprm.Eperf.(task_id).(RP_nm).NV_varOption > 0
+    for iE = 1:length(EsplitConditions)
+        Esplit_nm = EsplitConditions{iE};
+        
         % load net value
-        [~, modelledDataStruct] = logitfit_choices(computerRoot, study_nm, sub_nm,...
-            0, 'levels', 6, 6);
-        
-        % extract NV model name
-        if GLMprm.choice.(task_id).(RP_nm).NV_chosen > 0 ||...
-                GLMprm.choice.(task_id).(RP_nm).NV_varOption > 0
-            NV_mdl_nm = GLMprm.choice.(task_id).(RP_nm).NV_mdl;
-        elseif GLMprm.chosen.(task_id).(RP_nm).NV_chosen > 0 ||...
-                GLMprm.chosen.(task_id).(RP_nm).NV_varOption > 0
-            NV_mdl_nm = GLMprm.chosen.(task_id).(RP_nm).NV_mdl;
-        elseif GLMprm.Eperf.(task_id).(RP_nm).NV_chosen > 0 ||...
-                GLMprm.Eperf.(task_id).(RP_nm).NV_varOption > 0
-            NV_mdl_nm = GLMprm.Eperf.(task_id).(RP_nm).NV_mdl;
-        end
-        % extract net value
-        if strcmp(NV_mdl_nm(1:4),'mdl_') % classic model
-            NV_chosen = modelledDataStruct.NV_chosen.(task_id).(NV_mdl_nm).(run_nm);
-            NV_varOption = modelledDataStruct.NV_varOption.(task_id).(NV_mdl_nm).(run_nm);
-        elseif strcmp(NV_mdl_nm(1:14),'bayesianModel_') % bayesian model
-            error('bayesian net value input not ready yet.');
-        else
-            error(['model with ',NV_mdl_nm,' not ready yet']);
-        end
-    end % net value
-    
-    % load confidence
-    if GLMprm.choice.(task_id).(RP_nm).confidence > 0 ||...
-            GLMprm.chosen.(task_id).(RP_nm).confidence > 0 ||...
-            GLMprm.Eperf.(task_id).(RP_nm).confidence > 0 ||...
-            GLMprm.fbk.(task_id).(RP_nm).confidence > 0
-        
-        % use confidence based on ratings
-        if GLMprm.choice.(task_id).(RP_nm).confidence == 1 ||...
-                GLMprm.chosen.(task_id).(RP_nm).confidence == 1 ||...
-                GLMprm.Eperf.(task_id).(RP_nm).confidence == 1 ||...
-                GLMprm.fbk.(task_id).(RP_nm).confidence == 1
-            confidence = abs(choice_LRandConf) == 2; % 0 when low confidence and 1 when high confidence
-        else
-            % load inferred confidence
+        if GLMprm.choice.(task_id).(RP_nm).(Esplit_nm).NV_chosen > 0 ||...
+                GLMprm.choice.(task_id).(RP_nm).(Esplit_nm).NV_varOption > 0 ||...
+                GLMprm.chosen.(task_id).(RP_nm).(Esplit_nm).NV_chosen > 0 ||...
+                GLMprm.chosen.(task_id).(RP_nm).(Esplit_nm).NV_varOption > 0 ||...
+                GLMprm.Eperf.(task_id).(RP_nm).(Esplit_nm).NV_chosen > 0 ||...
+                GLMprm.Eperf.(task_id).(RP_nm).(Esplit_nm).NV_varOption > 0
+            % load net value
             [~, modelledDataStruct] = logitfit_choices(computerRoot, study_nm, sub_nm,...
                 0, 'levels', 6, 6);
+            
             % extract NV model name
-            if GLMprm.choice.(task_id).(RP_nm).confidence > 1
-                conf_mdl_nm = GLMprm.choice.(task_id).(RP_nm).conf_mdl;
-            elseif GLMprm.chosen.(task_id).(RP_nm).confidence > 1
-                conf_mdl_nm = GLMprm.chosen.(task_id).(RP_nm).conf_mdl;
-            elseif GLMprm.Eperf.(task_id).(RP_nm).confidence > 1
-                conf_mdl_nm = GLMprm.Eperf.(task_id).(RP_nm).conf_mdl;
-            elseif GLMprm.fbk.(task_id).(RP_nm).confidence > 1
-                conf_mdl_nm = GLMprm.fbk.(task_id).(RP_nm).conf_mdl;
+            if GLMprm.choice.(task_id).(RP_nm).(Esplit_nm).NV_chosen > 0 ||...
+                    GLMprm.choice.(task_id).(RP_nm).(Esplit_nm).NV_varOption > 0
+                NV_mdl_nm = GLMprm.choice.(task_id).(RP_nm).(Esplit_nm).NV_mdl;
+            elseif GLMprm.chosen.(task_id).(RP_nm).(Esplit_nm).NV_chosen > 0 ||...
+                    GLMprm.chosen.(task_id).(RP_nm).(Esplit_nm).NV_varOption > 0
+                NV_mdl_nm = GLMprm.chosen.(task_id).(RP_nm).(Esplit_nm).NV_mdl;
+            elseif GLMprm.Eperf.(task_id).(RP_nm).(Esplit_nm).NV_chosen > 0 ||...
+                    GLMprm.Eperf.(task_id).(RP_nm).(Esplit_nm).NV_varOption > 0
+                NV_mdl_nm = GLMprm.Eperf.(task_id).(RP_nm).(Esplit_nm).NV_mdl;
             end
-            % extract confidence
-            if strcmp(conf_mdl_nm(1:4),'mdl_') % classic model
-                confidence = modelledDataStruct.confidenceFitted.(conf_mdl_nm).(task_id).(run_nm);
-            elseif strcmp(conf_mdl_nm(1:14),'bayesianModel_') % bayesian model
+            % extract net value
+            if strcmp(NV_mdl_nm(1:4),'mdl_') % classic model
+                NV_chosen = modelledDataStruct.NV_chosen.(task_id).(NV_mdl_nm).(run_nm);
+                NV_varOption = modelledDataStruct.NV_varOption.(task_id).(NV_mdl_nm).(run_nm);
+            elseif strcmp(NV_mdl_nm(1:14),'bayesianModel_') % bayesian model
                 error('bayesian net value input not ready yet.');
             else
-                error(['model with ',conf_mdl_nm,' not ready yet']);
+                error(['model with ',NV_mdl_nm,' not ready yet']);
             end
-        end % which confidence to use
-    end % confidence
+        end % net value
+        
+        % load confidence
+        if GLMprm.choice.(task_id).(RP_nm).(Esplit_nm).confidence > 0 ||...
+                GLMprm.chosen.(task_id).(RP_nm).(Esplit_nm).confidence > 0 ||...
+                GLMprm.Eperf.(task_id).(RP_nm).(Esplit_nm).confidence > 0 ||...
+                GLMprm.fbk.(task_id).(RP_nm).(Esplit_nm).confidence > 0
+            
+            % use confidence based on ratings
+            if GLMprm.choice.(task_id).(RP_nm).(Esplit_nm).confidence == 1 ||...
+                    GLMprm.chosen.(task_id).(RP_nm).(Esplit_nm).confidence == 1 ||...
+                    GLMprm.Eperf.(task_id).(RP_nm).(Esplit_nm).confidence == 1 ||...
+                    GLMprm.fbk.(task_id).(RP_nm).(Esplit_nm).confidence == 1
+                confidence = abs(choice_LRandConf) == 2; % 0 when low confidence and 1 when high confidence
+            else
+                % load inferred confidence
+                [~, modelledDataStruct] = logitfit_choices(computerRoot, study_nm, sub_nm,...
+                    0, 'levels', 6, 6);
+                % extract NV model name
+                if GLMprm.choice.(task_id).(RP_nm).(Esplit_nm).confidence > 1
+                    conf_mdl_nm = GLMprm.choice.(task_id).(RP_nm).(Esplit_nm).conf_mdl;
+                elseif GLMprm.chosen.(task_id).(RP_nm).(Esplit_nm).confidence > 1
+                    conf_mdl_nm = GLMprm.chosen.(task_id).(RP_nm).(Esplit_nm).conf_mdl;
+                elseif GLMprm.Eperf.(task_id).(RP_nm).(Esplit_nm).confidence > 1
+                    conf_mdl_nm = GLMprm.Eperf.(task_id).(RP_nm).(Esplit_nm).conf_mdl;
+                elseif GLMprm.fbk.(task_id).(RP_nm).(Esplit_nm).confidence > 1
+                    conf_mdl_nm = GLMprm.fbk.(task_id).(RP_nm).(Esplit_nm).conf_mdl;
+                end
+                % extract confidence
+                if strcmp(conf_mdl_nm(1:4),'mdl_') % classic model
+                    confidence = modelledDataStruct.confidenceFitted.(conf_mdl_nm).(task_id).(run_nm);
+                elseif strcmp(conf_mdl_nm(1:14),'bayesianModel_') % bayesian model
+                    error('bayesian net value input not ready yet.');
+                else
+                    error(['model with ',conf_mdl_nm,' not ready yet']);
+                end
+            end % which confidence to use
+        end % confidence
+    end % Effort conditions
 end % R/P/RP loop
 
 % extract fatigue
@@ -480,9 +487,13 @@ end
 Eperf_splitPerE = GLMprm.Eperf.(task_id).splitPerE;
 switch Eperf_splitPerE
     case 0
-        EsplitEperfCond = {'R','P'};
+        EsplitEperfCond = {'E'};
     case 1
-        EsplitEperfCond = {'RP'};
+        EsplitEperfCond = {'E1','E1','E2','E3'};
+    case 2
+        EsplitEperfCond = {'Ech0','Ech1','Ech2','Ech3'};
+    case 3
+        EsplitEperfCond = {'lowEch','highEch'};
 end
 fbk_splitPerE = GLMprm.fbk.(task_id).splitPerE;
 switch fbk_splitPerE
@@ -549,7 +560,7 @@ if ismember(choiceModel,{'stick','boxcar'})
             % extract trial index for the current loop
             switch RP_dispChoice_nm
                 case 'RP'
-                    RPfilter_dispChoice = true(1,1:length(RP_var_binary));
+                    RPfilter_dispChoice = true(1,length(double(RP_var_binary)));
                 case 'R'
                     RPfilter_dispChoice = (RP_var_binary == 1);
                 case 'P'
@@ -557,7 +568,7 @@ if ismember(choiceModel,{'stick','boxcar'})
             end
             switch splitE_dispChoice_nm
                 case 'E'
-                    Efilter_dispChoice = true(1,1:length(RP_var_binary));
+                    Efilter_dispChoice = true(1,length(double(RP_var_binary)));
                 case 'E1'
                     Efilter_dispChoice = (E_varOption == 1);
                 case 'E2'
@@ -577,7 +588,7 @@ if ismember(choiceModel,{'stick','boxcar'})
                 case 'highEch'
                     Efilter_dispChoice = (choice_hE == 1);
             end
-            choice_trial_idx = RPfilter_dispChoice.*Efilter_dispChoice;
+            choice_trial_idx = (RPfilter_dispChoice.*Efilter_dispChoice) == 1; % NEED to transform it into logical or will just focus on the first trial
             
             %% choice onset
             iCond = iCond + 1;
@@ -916,7 +927,7 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis'})
             % extract trial index for the current loop
             switch RP_dispChosen_nm
                 case 'RP'
-                    RPfilter_dispChosen = true(1,1:length(RP_var_binary));
+                    RPfilter_dispChosen = true(1,length(double(RP_var_binary)));
                 case 'R'
                     RPfilter_dispChosen = (RP_var_binary == 1);
                 case 'P'
@@ -924,7 +935,7 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis'})
             end
             switch splitE_dispChosen_nm
                 case 'E'
-                    Efilter_dispChosen = true(1,1:length(RP_var_binary));
+                    Efilter_dispChosen = true(1,length(double(RP_var_binary)));
                 case 'E1'
                     Efilter_dispChosen = (E_varOption == 1);
                 case 'E2'
@@ -944,7 +955,7 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis'})
                 case 'highEch'
                     Efilter_dispChosen = (choice_hE == 1);
             end
-            chosen_trial_idx = RPfilter_dispChosen.*Efilter_dispChosen;
+            chosen_trial_idx = (RPfilter_dispChosen.*Efilter_dispChosen) == 1; % NEED to transform it into logical or will just focus on the first trial
             
             %% chosen onset
             iCond = iCond + 1;
@@ -1270,7 +1281,7 @@ if ismember(preEffortCrossModel,{'stick','boxcar','boxcar_bis'})
             % extract trial index for the current loop
             switch RP_preEcross_nm
                 case 'RP'
-                    RPfilter_preEcross = true(1,1:length(RP_var_binary));
+                    RPfilter_preEcross = true(1,length(double(RP_var_binary)));
                 case 'R'
                     RPfilter_preEcross = (RP_var_binary == 1);
                 case 'P'
@@ -1278,7 +1289,7 @@ if ismember(preEffortCrossModel,{'stick','boxcar','boxcar_bis'})
             end
             switch splitE_preEcross_nm
                 case 'E'
-                    Efilter_preEcross = true(1,1:length(RP_var_binary));
+                    Efilter_preEcross = true(1,length(double(RP_var_binary)));
                 case 'E1'
                     Efilter_preEcross = (E_varOption == 1);
                 case 'E2'
@@ -1298,7 +1309,7 @@ if ismember(preEffortCrossModel,{'stick','boxcar','boxcar_bis'})
                 case 'highEch'
                     Efilter_preEcross = (choice_hE == 1);
             end
-            preEcross_trial_idx = RPfilter_preEcross.*Efilter_preEcross;
+            preEcross_trial_idx = (RPfilter_preEcross.*Efilter_preEcross) == 1; % NEED to transform it into logical or will just focus on the first trial
             
             %% pre-effort cross onset
             iCond = iCond + 1;
@@ -1472,7 +1483,7 @@ if ismember(EperfModel,{'stick','boxcar'})
             % extract trial index for the current loop
             switch RP_Eperf_nm
                 case 'RP'
-                    RPfilter_Eperf = true(1,1:length(RP_var_binary));
+                    RPfilter_Eperf = true(1,length(double(RP_var_binary)));
                 case 'R'
                     RPfilter_Eperf = (RP_var_binary == 1);
                 case 'P'
@@ -1480,7 +1491,7 @@ if ismember(EperfModel,{'stick','boxcar'})
             end
             switch splitE_Eperf_nm
                 case 'E'
-                    Efilter_Eperf = true(1,1:length(RP_var_binary));
+                    Efilter_Eperf = true(1,length(double(RP_var_binary)));
                 case 'E1'
                     Efilter_Eperf = (E_varOption == 1);
                 case 'E2'
@@ -1500,7 +1511,7 @@ if ismember(EperfModel,{'stick','boxcar'})
                 case 'highEch'
                     Efilter_Eperf = (choice_hE == 1);
             end
-            Eperf_trial_idx = RPfilter_Eperf.*Efilter_Eperf;
+            Eperf_trial_idx = (RPfilter_Eperf.*Efilter_Eperf) == 1; % NEED to transform it into logical or will just focus on the first trial
             
             %% Effort performance onset
             iCond = iCond + 1;
@@ -1657,7 +1668,7 @@ if ismember(fbkModel,{'stick','boxcar'})
             % extract trial index for the current loop
             switch RP_fbk_nm
                 case 'RP'
-                    RPfilter_fbk = true(1,1:length(RP_var_binary));
+                    RPfilter_fbk = true(1,length(double(RP_var_binary)));
                 case 'R'
                     RPfilter_fbk = (RP_var_binary == 1);
                 case 'P'
@@ -1665,7 +1676,7 @@ if ismember(fbkModel,{'stick','boxcar'})
             end
             switch splitE_fbk_nm
                 case 'E'
-                    Efilter_fbk = true(1,1:length(RP_var_binary));
+                    Efilter_fbk = true(1,length(double(RP_var_binary)));
                 case 'E1'
                     Efilter_fbk = (E_varOption == 1);
                 case 'E2'
@@ -1685,7 +1696,7 @@ if ismember(fbkModel,{'stick','boxcar'})
                 case 'highEch'
                     Efilter_fbk = (choice_hE == 1);
             end
-            fbk_trial_idx = RPfilter_fbk.*Efilter_fbk;
+            fbk_trial_idx = (RPfilter_fbk.*Efilter_fbk) == 1; % NEED to transform it into logical or will just focus on the first trial
             
             %% feedback onset
             iCond = iCond + 1;
