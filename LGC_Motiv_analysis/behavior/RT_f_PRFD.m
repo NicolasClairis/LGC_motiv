@@ -22,7 +22,7 @@ end
 study_nm = 'study1';
 condition = subject_condition();
 gender = 'all';
-[subject_id, NS] = LGCM_subject_selection('study1',condition,'all');
+[subject_id, NS] = LGCM_subject_selection('study1',condition,gender);
 
 %% define main variables
 nTrialsPerRun = 54;
@@ -122,7 +122,13 @@ for iS = 1:NS
                 choice_hE_perTrial_tmp.(task_id)(runTrials_idx) = choice_hE_tmp;
                 % extract level of monetary incentive proposed for high
                 % effort option for each trial
-%                 error('extraction of incentive value missing');
+                RP_var = strcmp(choiceOptions.R_or_P, 'R');
+                RP_var = double(RP_var);
+                RP_var(strcmp(choiceOptions.R_or_P, 'P')) = -1;
+                money_level_left_tmp    = choiceOptions_tmp.monetary_amount.left.*RP_var;
+                money_level_right_tmp   = choiceOptions_tmp.monetary_amount.right.*RP_var;
+                inc_perTrial_tmp.(task_id)(runTrials_idx) = money_level_left_tmp.*(defaultSide_tmp == 1) +...
+                    money_level_right_tmp.*(defaultSide_tmp == -1);
                 % extract level of high effort option for each trial
                 hE_eff_proposed_tmp = choiceOptions_tmp.E.left.*(defaultSide_tmp == 1) +...
                     choiceOptions_tmp.E.right.*(defaultSide_tmp == -1);
