@@ -110,23 +110,28 @@ switch study_nm
                 bad_subs = ismember(fullSubList,{'008',...
                     '021','022','029',...
                     '044','047',...
-                    '054','058',...
+                    '053','054','058',...
+                    '062',...
                     '071','076','078',...
-                    '080','083','087'});
+                    '080','083','087',...
+                    '099'});
                 % too much movement for 008 (all runs)
                 % 021 (run 2, 3 and 4)
                 % 022 (all runs)
                 % 029 (run 4 physical),
                 % 044 (run 2 and 4 physical)
                 % 047 (run 3 mostly, physical run),
+                % 053 (run3 mostly, physical run),
                 % 054 (run 2 and run 4 mostly, ie physical runs),
                 % 058 (run 2 and run 4, ie physical runs)
+                % 062 (run 2 + 3 + 4, but mostly 4 physical run)
                 % 071 (run 2 and run 4 ie physical runs)
                 % 076 (run 1)
                 % 078 (run 1, run 4 and also a bit run 2)
                 % 080 (run 3 physical and a bit run 4 mental)
                 % 083 (run 3 physical)
                 % 087(runs 2-4)
+                % 099 (runs 2 and 4, physical runs)
                 
                 % borderline movement:
                 % 005(run 1, 3 and 4 a little bit of movement)
@@ -177,7 +182,7 @@ switch study_nm
         % remove irrelevant subjects from the current analysis
         all_subs(bad_subs) = [];
         % reminder to check the last acquired subjects:
-        warning(['check 027, 038, 058, 059, 078, 080,'...
+        warning(['check ',...
             '091, 097, 099... and other last subjects for movement']);
         
         %% restrict to subjects of interest
