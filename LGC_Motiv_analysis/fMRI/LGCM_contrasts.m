@@ -528,9 +528,9 @@ for iTimePeriod = 1:n_timePeriods
                                     jReg = jReg + 1;
                                     switch regType
                                         case 'ONSET'
-                                            con_names{jReg} = regEch0xpression(1:(end-1));
+                                            con_names{jReg} = regEch0Expression(1:(end-1));
                                         case 'REG'
-                                            con_names{jReg} = [regEch0xpression(1:(end-1)),':',conEch0_nm];
+                                            con_names{jReg} = [regEch0Expression(1:(end-1)),':',conEch0_nm];
                                     end
                                     con_vector(jReg, 1:n_totalRegs) = con_vec_E_tmp;
                                     
@@ -598,9 +598,9 @@ for iTimePeriod = 1:n_timePeriods
                                     jReg = jReg + 1;
                                     switch regType
                                         case 'ONSET'
-                                            con_names{jReg} = regLowEchxpression(1:(end-1));
+                                            con_names{jReg} = [regLowEchxpression(1:(end-4)),'E'];
                                         case 'REG'
-                                            con_names{jReg} = [regLowEchxpression(1:(end-1)),':',conLowEch_nm];
+                                            con_names{jReg} = [regLowEchxpression(1:(end-5)),'E:',conLowEch_nm];
                                     end
                                     con_vector(jReg, 1:n_totalRegs) = con_vec_E_tmp;
                                     
