@@ -14,7 +14,7 @@ if ~exist('figDisp','var') || isempty(figDisp) || ~islogical(figDisp)
 end
 
 %% define default number of bins
-if ~exist(n_bins,'var') || isempty(n_bins) || ~isnumeric(n_bins)
+if ~exist('n_bins','var') || isempty(n_bins) || ~isnumeric(n_bins)
     n_bins = 6;
 end
 
@@ -26,18 +26,25 @@ gender = 'all';
 
 %% define main variables
 nTrialsPerRun = 54;
-[PRFDscore, mRT.Ep, mRT.Em] = deal(NaN(1,NS));
+tasks = {'Ep','Em'};
+nTasks = length(tasks);
+[PRFDscore,...
+    meanRT.Ep, meanRT.Em,...
+    medianRT.Ep, medianRT.Em] = deal(NaN(1,NS));
 nInc = 6;
 nInc_chosen = 8;
 nEff = 3;
 nEff_chosen = 4;
-[RT_f_inc.Ep, RT_f_inc.Em] = deal(NaN(nInc, NS));
-[RT_f_inc_ch.Ep, RT_f_inc_ch.Em] = deal(NaN(nInc_chosen, NS));
-[RT_f_E.Ep, RT_f_E.Em] = deal(NaN(nEff, NS));
-[RT_f_E_ch.Ep, RT_f_E_ch.Em] = NaN(nEff_chosen, NS);
-[RT_f_R_E.Ep, RT_f_R_E.Em,...
-    RT_f_R_E_hE_chosen.Ep, RT_f_R_E_hE_chosen.Em,...
-    RT_f_R_E_lE_chosen.Ep, RT_f_R_E_lE_chosen.Em] = deal(NaN(nInc, nEff, NS));
+for iTask = 1:nTasks
+    task_id = tasks{iTask};
+    [RT_f_inc.(task_id)] = deal(NaN(nInc, NS));
+    [RT_f_inc_ch.(task_id)] = deal(NaN(nInc_chosen, NS));
+    [RT_f_E.(task_id)] = deal(NaN(nEff, NS));
+    [RT_f_E_ch.(task_id)] = NaN(nEff_chosen, NS);
+    [RT_f_R_E.(task_id),...
+        RT_f_R_E_hE_chosen.(task_id),...
+        RT_f_R_E_lE_chosen.(task_id)] = deal(NaN(nInc, nEff, NS));
+end
 
 %% load questionnaire results
 [excelReadQuestionnairesFile] = load_questionnaires_data();
@@ -58,13 +65,12 @@ for iS = 1:NS
     % extract information of runs
     [runsStruct] = runs_definition(study_nm, sub_nm, 'behavior');
     nTotalRuns = length(runsStruct.tasks);
-    for iPM = 1:2
-        switch iPM
-            case 1
-                task_id = 'Ep';
+    for iTask = 1:nTasks
+        task_id = tasks{iTask};
+        switch task_id
+            case 'Ep'
                 task_fullName = 'physical';
-            case 2
-                task_id = 'Em';
+            case 'Em'
                 task_fullName = 'mental';
         end
         runs.(task_id) = strcmp(runsStruct.tasks,task_id);
@@ -74,7 +80,7 @@ for iS = 1:NS
         [RT_perTrial_tmp.(task_id),...
             inc_perTrial_tmp.(task_id),...
             eff_perTrial_tmp.(task_id),...
-            choice_hE_perTrial_tmp.(task_id)] = NaN(nSubjectTotalTrials.(task_id), 1);
+            choice_hE_perTrial_tmp.(task_id)] = deal(NaN(nSubjectTotalTrials.(task_id), 1));
         
         jRun = 0;
         for iRun = 1:nTotalRuns
@@ -111,11 +117,12 @@ for iS = 1:NS
                 % extract choice made
                 defaultSide_tmp = choiceOptions_tmp.default_LR;
                 choice_hE_tmp = choice_LR_tmp == -defaultSide_tmp; % high effort chosen = non-default chosen
-                choice_hE_tmp(choice_LR_tmp == 0) = NaN;% place NaN when no choice was made
+                choice_hE_tmp = double(choice_hE_tmp);
+                choice_hE_tmp(choice_LR_tmp == 0) = NaN; % place NaN when no choice was made
                 choice_hE_perTrial_tmp.(task_id)(runTrials_idx) = choice_hE_tmp;
                 % extract level of monetary incentive proposed for high
                 % effort option for each trial
-                error('extraction of incentive value missing');
+%                 error('extraction of incentive value missing');
                 % extract level of high effort option for each trial
                 hE_eff_proposed_tmp = choiceOptions_tmp.E.left.*(defaultSide_tmp == 1) +...
                     choiceOptions_tmp.E.right.*(defaultSide_tmp == -1);
@@ -124,17 +131,55 @@ for iS = 1:NS
             end % run to include?
         end % run loop
         
-        % average the subject within each subject
-        error('average RT per subject per task, per money and per effort');
+        % average the RT within each subject
+        meanRT.(task_id)(iS) = mean(RT_perTrial_tmp.(task_id),1,'omitnan');
+        medianRT.(task_id)(iS) = median(RT_perTrial_tmp.(task_id),1,'omitnan');
     end % physical/mental loop
 end % subject loop
 
 %% average across subjects
-mean_sem_sd
+% mean_sem_sd()
 
+%% test link between PRFD and RT
+for iTask = 1:nTasks
+    task_id = tasks{iTask};
+    goodSubs = ~isnan(PRFDscore);
+    [beta_meanRT.(task_id), ~,stats_meanRT.(task_id)] = glmfit(PRFDscore(goodSubs), meanRT.(task_id)(goodSubs), 'normal');
+    meanRT_f_PRFD.(task_id) = glmval(beta_meanRT.(task_id), PRFDscore(goodSubs), 'identity');
+    [beta_medianRT.(task_id), ~,stats_medianRT.(task_id)] = glmfit(PRFDscore(goodSubs), medianRT.(task_id)(goodSubs), 'normal');
+    medianRT_f_PRFD.(task_id) = glmval(beta_medianRT.(task_id), PRFDscore(goodSubs), 'identity');
+end
 %% figure display
 if figDisp == true
-
+    pSize = 50;
+    lWidth = 3;
+    
+    % look at mean and median RT = f(PRFD)
+    fig;
+    jPlot = 0;
+    for iTask = 1:nTasks
+        task_id = tasks{iTask};
+        
+        jPlot = jPlot + 1;
+        subplot(1,4,jPlot);
+        hold on;
+        scatter(PRFDscore(goodSubs), meanRT.(task_id)(goodSubs));
+        plot(PRFDscore(goodSubs), meanRT_f_PRFD.(task_id),...
+            'LineWidth',lWidth);
+        xlabel('PRF-D score');
+        ylabel([task_id,' - mean RT (s)']);
+        legend_size(pSize);
+        
+        jPlot = jPlot + 1;
+        subplot(1,4,jPlot);
+        hold on;
+        scatter(PRFDscore(goodSubs), medianRT.(task_id)(goodSubs));
+        plot(PRFDscore(goodSubs), medianRT_f_PRFD.(task_id),...
+            'LineWidth',lWidth);
+        xlabel('PRF-D score');
+        ylabel([task_id,' - mean RT (s)']);
+        legend_size(pSize);
+    end % task loop
 end % figure display
 
 end % function
