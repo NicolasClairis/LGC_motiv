@@ -41,6 +41,17 @@ function [GLMprm] = which_GLM(GLM)
 %       .Eperf: physical/mental effort performance period
 %       .fbk: feedback period
 %
+%   .preChoiceCross regressors:
+%       .preChoiceCross.(Ep/Em).RT
+%       (1) raw reaction time
+%       (2) reaction time zscored per run
+%       (3) reaction time zscored per subject across all runs
+%       (4-6) same as (1-3) but with RT as first regressor instead of last
+%
+%       .preChoiceCross.(Ep/Em).choiceHighE
+%       (1) 0 when low effort/default option is selected and 1 when high
+%       effort/non-default option is selected
+%
 %   .choice/chosen/preEffortCross/Eperf/fbk: for each event, for each task (Ep/Em) and 
 %   for each condition (R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3) indicate if a given regressor should be 
 %   included or not.
@@ -61,6 +72,10 @@ function [GLMprm] = which_GLM(GLM)
 %
 %       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).R_vs_P:
 %       (1) 0 when punishment trial, 1 when reward trial
+%
+%       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).choiceHighE
+%       (1) 0 when low effort/default option is selected and 1 when high
+%       effort/non-default option is selected
 %
 %       .choice.(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).money_left
 %       (1) money amount associated to left option
@@ -166,6 +181,10 @@ function [GLMprm] = which_GLM(GLM)
 %       (2) split per level of effort chosen (Ech0/Ech1/Ech2/Ech3)
 %       (3) split per option chosen (low/default vs high/non-default effort chosen)
 %
+%       .Eperf.(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).choiceHighE
+%       (1) 0 when low effort/default option is selected and 1 when high
+%       effort/non-default option is selected
+%
 %       .Eperf.(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).money_chosen
 %       (1) money chosen amount
 %       (2) |money chosen amount|
@@ -228,6 +247,10 @@ function [GLMprm] = which_GLM(GLM)
 %       .fbk.(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).win_vs_loss
 %       (1) win (1) - loss (0) trials
 %
+%       .fbk.(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).choiceHighE
+%       (1) 0 when low effort/default option is selected and 1 when high
+%       effort/non-default option is selected
+%
 %       .fbk.(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).money_obtained
 %       (1) money amount obtained at the end of the trial
 %       (1) |money amount| obtained at the end of the trial (~saliency)
@@ -283,7 +306,11 @@ Ep_Em = {'Ep','Em'}; % apply same or different conditions to physical and mental
 for iEpm = 1:length(Ep_Em)
     EpEm_nm = Ep_Em{iEpm};
     
-    % pool reward and punishment together (default)
+    % no regressor during pre-choice cross (by default)
+    GLMprm.preChoiceCross.(EpEm_nm).RT = 0;
+    GLMprm.preChoiceCross.(EpEm_nm).choiceHighE = 0;
+    
+    % pool reward and punishment together (by default)
     GLMprm.choice.(EpEm_nm).RPpool = 1;
     GLMprm.chosen.(EpEm_nm).RPpool = 1;
     GLMprm.preEffortCross.(EpEm_nm).RPpool = 1;
@@ -1779,6 +1806,30 @@ switch GLM
             GLMprm.choice.(Epm_nm).RP.lEch.E_varOption = 1;
             GLMprm.choice.(Epm_nm).RP.hEch.money_varOption = 1;
             GLMprm.choice.(Epm_nm).RP.hEch.E_varOption = 1;
+            % chosen
+            GLMprm.model_onset.(Epm_nm).chosen = 'boxcar';
+            % pre-effort cross
+            GLMprm.model_onset.(Epm_nm).preEffortCross = 'stick';
+            % effort perf (effort execution)
+            GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
+            GLMprm.Eperf.(Epm_nm).RP.E.E_chosen = 1;
+            % feedback
+            GLMprm.model_onset.(Epm_nm).fbk = 'boxcar';
+        end % physical/mental  loop
+    case 60 % model high effort choice during fixation cross and during choice
+        % general parameters
+        GLMprm.gal.orth_vars = 0;
+        GLMprm.gal.zPerRun = 1;
+        % loop per task
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % initial cross
+            GLMprm.model_onset.(Epm_nm).preChoiceCross = 'stick';
+            GLMprm.preChoiceCross.(Epm_nm).choiceHighE = 1;
+            GLMprm.preChoiceCross.(Epm_nm).RT = 1;
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'stick';
+            GLMprm.choice.(Epm_nm).RP.E.choiceHighE = 1;
             % chosen
             GLMprm.model_onset.(Epm_nm).chosen = 'boxcar';
             % pre-effort cross

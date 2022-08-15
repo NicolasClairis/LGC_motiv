@@ -324,26 +324,34 @@ trialN_dEnonDef = trialN.*E_varOption;
 %% remove trials where no choice was performed
 if sum(choiceMissedTrials) > 0
     % extract onsets and durations of missed trials
+    preChoiceCrossOnsets_missedOnsets = preChoiceCrossOnsets(choiceMissedTrials);
     dispChoiceOption_missedOnsets = dispChoiceOptionOnsets(choiceMissedTrials);
     choice_missedOnsets = choiceOnsets(choiceMissedTrials);
     dispChosen_missedOnsets = dispChosenOnsets(choiceMissedTrials);
+    preEffortCross_missedOnsets = preEffortCrossOnsets(choiceMissedTrials);
     Eperf_missedOnsets = EperfOnsets(choiceMissedTrials);
     fbk_missedOnsets = fbkOnsets(choiceMissedTrials);
     % durations
+    preChoiceCross_missedDur = preChoiceCrossDur(choiceMissedTrials);
     dispChoiceOptions_missedDur = dispChoiceOptionsDur(choiceMissedTrials);
     dispChosen_missedDur = dispChosenDur(choiceMissedTrials);
+    preEffortCross_missedDur = preEffortCrossDur(choiceMissedTrials);
     Eperf_missedDur = EperfDur(choiceMissedTrials);
     fbk_missedDur = fbkDur(choiceMissedTrials);
     
     % onsets
+    preChoiceCrossOnsets(choiceMissedTrials) = [];
     dispChoiceOptionOnsets(choiceMissedTrials) = [];
     choiceOnsets(choiceMissedTrials) = [];
     dispChosenOnsets(choiceMissedTrials) = [];
+    preEffortCrossOnsets(choiceMissedTrials) = [];
     EperfOnsets(choiceMissedTrials) = [];
     fbkOnsets(choiceMissedTrials) = [];
     % durations
+    preChoiceCrossDur(choiceMissedTrials) = [];
     dispChoiceOptionsDur(choiceMissedTrials) = [];
     dispChosenDur(choiceMissedTrials) = [];
+    preEffortCrossDur(choiceMissedTrials) = [];
     EperfDur(choiceMissedTrials) = [];
     fbkDur(choiceMissedTrials) = [];
     % regressors
@@ -512,6 +520,8 @@ iCond = 0;
 
 %% fixation cross before choice
 preChoiceCrossModel = GLMprm.model_onset.(task_id).preChoiceCross;
+preChoiceCrossModel_RT = GLMprm.preChoiceCross.(task_id).RT;
+preChoiceCrossModel_choiceHighE = GLMprm.preChoiceCross.(task_id).choiceHighE;
 if ismember(preChoiceCrossModel,{'stick','boxcar'})
     iCond = iCond + 1;
     switch preChoiceCrossModel
@@ -520,8 +530,48 @@ if ismember(preChoiceCrossModel,{'stick','boxcar'})
         case 'boxcar'
             modelPreChoiceCrossdur = preChoiceCrossDur;
     end
+    
+    %% pre-choice cross modulators
+    n_preChoiceCrossMods = 0;
+    preChoiceCross_modNames = cell(1,1);
+    preChoiceCross_modVals = [];
+    
+    % RT (first regressor)
+    if preChoiceCrossModel_RT > 0 && ismember(preChoiceCrossModel_RT,[4,5,6])
+        n_preChoiceCrossMods = n_preChoiceCrossMods + 1;
+        preChoiceCross_modNames{n_preChoiceCrossMods} = 'choice RT';
+        switch preChoiceCrossModel_RT
+            case 4
+                preChoiceCross_modVals(n_preChoiceCrossMods,:) = raw_or_z(choice_RT);
+            otherwise
+                error('not ready yet');
+        end
+    end
+    
+    % choice = high effort
+    if preChoiceCrossModel_choiceHighE == 1
+        n_preChoiceCrossMods = n_preChoiceCrossMods + 1;
+        preChoiceCross_modNames{n_preChoiceCrossMods} = 'choice = high effort';
+        preChoiceCross_modVals(n_preChoiceCrossMods,:) = choice_hE; % binary variable => no zscore
+    end
+    
+    % RT (last regressor)
+    if preChoiceCrossModel_RT > 0 && ismember(preChoiceCrossModel_RT,[1,2,3])
+        n_preChoiceCrossMods = n_preChoiceCrossMods + 1;
+        preChoiceCross_modNames{n_preChoiceCrossMods} = 'choice RT';
+        switch preChoiceCrossModel_RT
+            case 1
+                preChoiceCross_modVals(n_preChoiceCrossMods,:) = raw_or_z(choice_RT);
+            otherwise
+                error('not ready yet');
+        end
+    end
+    
+    %% load all
     [matlabbatch] = First_level_loadEachCondition(matlabbatch, sub_idx, iRun, iCond,...
-        'preChoice fixation cross', preChoiceCrossOnsets, modelPreChoiceCrossdur, 0, '', [], orth_vars);
+        'preChoice fixation cross', preChoiceCrossOnsets, modelPreChoiceCrossdur,...
+        n_preChoiceCrossMods, preChoiceCross_modNames, preChoiceCross_modVals,...
+        orth_vars);
 end
 
 

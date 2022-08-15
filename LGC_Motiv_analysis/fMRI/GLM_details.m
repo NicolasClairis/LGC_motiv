@@ -86,6 +86,59 @@ for iEpm = 1:length(Epm)
         disp([num2str(n_regs.(task_id_nm)),') ONSET preChoice white cross: ',GLMprm.model_onset.(task_id_nm).preChoiceCross,' ']);
         % if derivative added => add derivatives
         n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+        
+        % RT (first regressor)
+        switch GLMprm.preChoiceCross.(task_id_nm).RT
+            case 4
+                n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG preChoice Cross RP E: RT';
+                disp([num2str(n_regs.(task_id_nm)),') preChoice Cross: RT (raw) ']);
+                % if derivative added => add derivatives
+                n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+            case 5
+                n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG preChoice Cross RP E: RT';
+                disp([num2str(n_regs.(task_id_nm)),') preChoice Cross: RT (zscored per run) ']);
+                % if derivative added => add derivatives
+                n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+            case 6
+                n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG preChoice Cross RP E: RT';
+                disp([num2str(n_regs.(task_id_nm)),') preChoice Cross: RT (zscored per subject ie across all runs) ']);
+                % if derivative added => add derivatives
+                n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+        end
+        
+        % binary variable indicating when choice = high effort option
+        if GLMprm.preChoiceCross.(task_id_nm).choiceHighE == 1
+            n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+            reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG preChoice Cross RP E: choice = highE';
+            disp([num2str(n_regs.(task_id_nm)),') preChoice Cross: choice hE ']);
+            % if derivative added => add derivatives
+            n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+        end
+        
+        % RT (last regressor)
+        switch GLMprm.preChoiceCross.(task_id_nm).RT
+            case 1
+                n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG preChoice Cross RP E: RT';
+                disp([num2str(n_regs.(task_id_nm)),') preChoice Cross: RT (raw) ']);
+                % if derivative added => add derivatives
+                n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+            case 2
+                n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG preChoice Cross RP E: RT';
+                disp([num2str(n_regs.(task_id_nm)),') preChoice Cross: RT (zscored per run) ']);
+                % if derivative added => add derivatives
+                n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+            case 3
+                n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG preChoice Cross RP E: RT';
+                disp([num2str(n_regs.(task_id_nm)),') preChoice Cross: RT (zscored per subject ie across all runs) ']);
+                % if derivative added => add derivatives
+                n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+        end
     end % pre-choice cross
     
     %% choice period
