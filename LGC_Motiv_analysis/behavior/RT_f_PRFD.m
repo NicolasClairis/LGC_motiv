@@ -196,7 +196,7 @@ if figDisp == true
         plot(PRFDscore(goodSubs), medianRT_f_PRFD.(task_id),...
             'LineWidth',lWidth);
         xlabel('PRF-D score');
-        ylabel([task_id,' - mean RT (s)']);
+        ylabel([task_id,' - median RT (s)']);
         legend_size(pSize);
     end % task loop
 end % figure display
