@@ -1,5 +1,5 @@
-function[prm] = prm_extraction(subject_id)
-% [prm] = prm_extraction(subject_id)
+function[prm] = prm_extraction(subject_id, mdlType, mdlN)
+% [prm] = prm_extraction(subject_id, mdlType, mdlN)
 % prm_extraction will extract the behavioural parameters for the list of
 % subjects entered in input. You will need to select whether you want to
 % use a bayesian or a more simple model approach and which model number you
@@ -8,57 +8,79 @@ function[prm] = prm_extraction(subject_id)
 % INPUTS
 % subject_id: list of subject identification numbers
 %
+% mdlType: 'bayesian' or 'simple' model (will be asked if not defined in
+% the inputs)
+%
+% mdlN: string with model number to be used (will be asked if not defined in
+% the inputs)
+%
 % OUTPUTS
 % prm: structure with parameters extracted for each participant
+
+%% working directories
+whichPc = 'lab'; % 'lab'/'home'
+switch whichPc
+    case 'lab'
+        bayesian_root = fullfile('C:','Users','clairis','Desktop','GitHub',...
+            'LGC_motiv','LGC_Motiv_analysis','behavior');
+        computerRoot = [fullfile('E:'),filesep];
+    case 'home'
+        error('paths to be updated');
+    otherwise
+        error(['paths not ready yet for ',whichPc, 'pc']);
+end
 
 %% main parameters
 NS = length(subject_id);
 
 %% bayesian across tasks or simple model each task separately?
-listPossibleConditions = {'bayesian','simple'};
-mdlType_idx = listdlg('promptstring','Which model type?',...
-    'ListString',listPossibleConditions);
-mdlType = listPossibleConditions{mdlType_idx};
+if ~exist('mdlType','var') || isempty(mdlType)
+    listPossibleModels = {'bayesian','simple'};
+    mdlType_idx = listdlg('promptstring','Which model type?',...
+        'ListString',listPossibleModels);
+    mdlType = listPossibleModels{mdlType_idx};
+end
 
 %% which model number to use?
-switch mdlType
-    case 'bayesian'
-        listPossibleConditions = {'3'};
-    case 'simple'
-        listPossibleConditions = {'1','2','3','4'};
+if ~exist('mdlN','var') || isempty(mdlN)
+    switch mdlType
+        case 'bayesian'
+            listPossibleModelNumbers = {'3'};
+        case 'simple'
+            listPossibleModelNumbers = {'1','2','3','4'};
+    end
+    mdlN_idx = listdlg('promptstring','Which model number?',...
+        'ListString',listPossibleModelNumbers);
+    mdlN = listPossibleModelNumbers{mdlN_idx};
 end
-mdlN_idx = listdlg('promptstring','Which model number?',...
-    'ListString',listPossibleConditions);
-mdlN = listPossibleConditions{mdlN_idx};
 
 %% extract parameters of the selected model
 switch mdlType
     case 'bayesian'
-        error('go in correct path');
-        bayesian_mdl = getfield(load('behavioral_prm_tmp.mat',...
+        bayesian_mdl = getfield(load([bayesian_root,filesep,...
+            'behavioral_prm_tmp.mat'],...
             ['bayesian_mdl',mdlN]),...
             ['bayesian_mdl',mdlN]);
         [prm.kR, prm.kP,...
             prm.kEp, prm.kFp,...
             prm.kEm, prm.kFm] = deal(NaN(1,NS));
+        parameter_names = fieldnames(prm);
         for iS = 1:NS
             sub_nm = subject_id{iS};
             % extract parameters
             sub_idx = strcmp(bayesian_mdl.subject_id, sub_nm);
             if sum(sub_idx == 1)
-                prm.kR(iS) = bayesian_mdl.kR(sub_idx);
-                prm.kP(iS) = bayesian_mdl.kP(sub_idx);
-                prm.kEp(iS) = bayesian_mdl.kEp(sub_idx);
-                prm.kFp(iS) = bayesian_mdl.kFp(sub_idx);
-                prm.kEm(iS) = bayesian_mdl.kEm(sub_idx);
-                prm.kFm(iS) = bayesian_mdl.kFm(sub_idx);
+                for iBPrm = 1:length(parameter_names)
+                    bayesian_prm_nm = parameter_names{iBPrm};
+                    prm.(bayesian_prm_nm)(iS) = bayesian_mdl.(bayesian_prm_nm)(sub_idx);
+                end
             end % filter if subject extracted by Arthur
         end % subject list
     case 'simple'
         %% perform behavioral model
         figDispGroup = 0;
         dispMoneyOrLevels = 'levels';
-        [betas_fullList, pvalues_fullList] = logitfit_choices_group(figDispGroup, dispMoneyOrLevels);
+        [betas_fullList, pvalues_fullList] = logitfit_choices_group(subject_id, computerRoot, figDispGroup, dispMoneyOrLevels);
         
         mdl_nm = ['mdl_',mdlN];
         % tasks
@@ -83,6 +105,8 @@ switch mdlType
                     [prm.(['kR',task_id]), prm.(['kP',task_id]),...
                         prm.(['kE',task_id]),...
                         prm.(['kF',task_id])] = deal(NaN(1,NS));
+                otherwise
+                    error(['model ',mdlN,' not ready']);
             end % model
         end % task loop
         for iS = 1:NS

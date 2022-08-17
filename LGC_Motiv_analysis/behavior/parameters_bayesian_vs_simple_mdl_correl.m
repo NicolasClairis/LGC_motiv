@@ -12,67 +12,52 @@ bayesian_root = fullfile('C:','Users','clairis','Desktop','GitHub',...
 
 %% extract behavioral parameters
 %% extract bayesian model
-bayesian_mdl = getfield(load([bayesian_root,filesep,...
-    'behavioral_prm_tmp.mat'],'bayesian_mdl3'),...
-    'bayesian_mdl3');
-[bayesian_prm.kR, bayesian_prm.kP,...
-    bayesian_prm.kEp, bayesian_prm.kFp,...
-    bayesian_prm.kEm, bayesian_prm.kFm] = deal(NaN(1,NS));
+bayesian_mdlN = '3';
+[bayesian_prm] = prm_extraction(subject_id, 'bayesian', bayesian_mdlN);
 bayesian_parameters = fieldnames(bayesian_prm);
-for iS = 1:NS
-    sub_nm = subject_id{iS};
-    % extract parameters
-    sub_idx = strcmp(bayesian_mdl.subject_id, sub_nm);
-    if sum(sub_idx == 1)
-        for iBPrm = 1:length(bayesian_parameters)
-            bayesian_prm_nm = bayesian_parameters{iBPrm};
-            bayesian_prm.(bayesian_prm_nm)(iS) = bayesian_mdl.(bayesian_prm_nm)(sub_idx);
-        end
-    end % filter if subject extracted by Arthur
-end % subject list
 
-%% perform behavioral model
-figDispGroup = 0;
-dispMoneyOrLevels = 'levels';
-[betas_fullList, pvalues_fullList] = logitfit_choices_group(figDispGroup, dispMoneyOrLevels);
-
-mdl_nm = 'mdl_3';
-switch mdl_nm
-    case 'mdl_3'
-        [simpleMdl_prm.kMp, simpleMdl_prm.kEp, simpleMdl_prm.kFp,...
-            simpleMdl_prm.kMm, simpleMdl_prm.kEm, simpleMdl_prm.kFm] = deal(NaN(1,NS));
-    case 'mdl_4'
-        [simpleMdl_prm.kRp, simpleMdl_prm.kPp, simpleMdl_prm.kEp, simpleMdl_prm.kFp,...
-            simpleMdl_prm.kRm, simpleMdl_prm.kPm, simpleMdl_prm.kEm, simpleMdl_prm.kFm] = deal(NaN(1,NS));
-end
+%% perform simple behavioral model
+simple_mdlN = '3';
+[simpleMdl_prm] = prm_extraction(subject_id, 'simple', simple_mdlN);
 simple_parameters = fieldnames(simpleMdl_prm);
-for iS = 1:NS
-    sub_nm = subject_id{iS};
-    % extract physical task parameters
-    sub_idx = strcmp(betas_fullList.subList,sub_nm);
-    switch mdl_nm
-        case 'mdl_3'
-            simpleMdl_prm.kMp(iS) = betas_fullList.Ep.(mdl_nm).kMoney(sub_idx);
-            simpleMdl_prm.kMm(iS) = betas_fullList.Em.(mdl_nm).kMoney(sub_idx);
-        case 'mdl_4'
-            simpleMdl_prm.kRp(iS) = betas_fullList.Ep.(mdl_nm).kR(sub_idx);
-            simpleMdl_prm.kPp(iS) = betas_fullList.Ep.(mdl_nm).kP(sub_idx);
-            simpleMdl_prm.kRm(iS) = betas_fullList.Em.(mdl_nm).kR(sub_idx);
-            simpleMdl_prm.kPm(iS) = betas_fullList.Em.(mdl_nm).kP(sub_idx);
-        otherwise
-            error('case not ready yet');
-    end
-    simpleMdl_prm.kEp(iS) = betas_fullList.Ep.(mdl_nm).kEffort(sub_idx);
-    simpleMdl_prm.kEm(iS) = betas_fullList.Em.(mdl_nm).kEffort(sub_idx);
-    simpleMdl_prm.kFp(iS) = betas_fullList.Ep.(mdl_nm).kFatigue(sub_idx);
-    simpleMdl_prm.kFm(iS) = betas_fullList.Em.(mdl_nm).kFatigue(sub_idx);
-end % subject list
 
 %% perform correlation tests
 goodSubs = ~isnan(bayesian_prm.kEp);
-R_Rp = corrcoef(simpleMdl_prm.kMp(goodSubs), bayesian_prm.kR(goodSubs));
-R_Rm = corrcoef(simpleMdl_prm.kMm(goodSubs), bayesian_prm.kR(goodSubs));
-R_Ep = corrcoef(simpleMdl_prm.kEp(goodSubs), bayesian_prm.kEp(goodSubs));
-R_Em = corrcoef(simpleMdl_prm.kEm(goodSubs), bayesian_prm.kEm(goodSubs));
-R_Fp = corrcoef(simpleMdl_prm.kFp(goodSubs), bayesian_prm.kFp(goodSubs));
-R_Fm = corrcoef(simpleMdl_prm.kFm(goodSubs), bayesian_prm.kFm(goodSubs));
+switch simple_mdlN
+    case {'1','3'} % money/R-P
+        R_sMp_bR = corrcoef(simpleMdl_prm.kMp(goodSubs), bayesian_prm.kR(goodSubs));
+        R_sMm_bR = corrcoef(simpleMdl_prm.kMm(goodSubs), bayesian_prm.kR(goodSubs));
+        R_sMp_bP = corrcoef(simpleMdl_prm.kMp(goodSubs), bayesian_prm.kR(goodSubs));
+        R_sMm_bP = corrcoef(simpleMdl_prm.kMm(goodSubs), bayesian_prm.kR(goodSubs));
+        % store into output
+        corr.sMp_bR = R_sMp_bR(2,1);
+        corr.sMm_bR = R_sMm_bR(2,1);
+        corr.sMp_bP = R_sMp_bP(2,1);
+        corr.sMm_bP = R_sMm_bP(2,1);
+    case {'2','4'} % R/P
+        R_sRp_bR = corrcoef(simpleMdl_prm.kRp(goodSubs), bayesian_prm.kR(goodSubs));
+        R_sPp_bP = corrcoef(simpleMdl_prm.kPp(goodSubs), bayesian_prm.kP(goodSubs));
+        R_sRm_bR = corrcoef(simpleMdl_prm.kRm(goodSubs), bayesian_prm.kR(goodSubs));
+        R_sPm_bR = corrcoef(simpleMdl_prm.kPm(goodSubs), bayesian_prm.kP(goodSubs));
+        % store into output
+        corr.sRp_bR = R_sRp_bR(2,1);
+        corr.sPp_bP = R_sPp_bP(2,1);
+        corr.sRm_bR = R_sRm_bR(2,1);
+        corr.sPm_bR = R_sPm_bR(2,1);
+end
+% effort
+R_sEp_bEp = corrcoef(simpleMdl_prm.kEp(goodSubs), bayesian_prm.kEp(goodSubs));
+R_sEm_bEm = corrcoef(simpleMdl_prm.kEm(goodSubs), bayesian_prm.kEm(goodSubs));
+% store into output
+corr.sEp_bEp = R_sEp_bEp(2,1);
+corr.sEm_bEm = R_sEm_bEm(2,1);
+
+% fatigue
+switch simple_mdlN
+    case {'3','4'}
+        R_sFp_bFp = corrcoef(simpleMdl_prm.kFp(goodSubs), bayesian_prm.kFp(goodSubs));
+        R_sFm_bFm = corrcoef(simpleMdl_prm.kFm(goodSubs), bayesian_prm.kFm(goodSubs));
+        % store into output
+        corr.sFp_bFp = R_sFp_bFp(2,1);
+        corr.sFm_bFm = R_sFm_bFm(2,1);
+end

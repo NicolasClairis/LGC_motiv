@@ -53,63 +53,12 @@ mdlType = listPossibleConditions{mdlType_idx};
 
 switch mdlType
     case 'bayesian'
-        bayesian_mdl = getfield(load('behavioral_prm_tmp.mat','bayesian_mdl3'),...
-            'bayesian_mdl3');
-        [prm.kR, prm.kP,...
-            prm.kEp, prm.kFp,...
-            prm.kEm, prm.kFm] = deal(NaN(1,NS));
-        parameters = fieldnames(prm);
-        for iS = 1:NS
-            sub_nm = subject_id{iS};
-            % extract parameters
-            sub_idx = strcmp(bayesian_mdl.subject_id, sub_nm);
-            if sum(sub_idx == 1)
-                prm.kR(iS) = bayesian_mdl.kR(sub_idx);
-                prm.kP(iS) = bayesian_mdl.kP(sub_idx);
-                prm.kEp(iS) = bayesian_mdl.kEp(sub_idx);
-                prm.kFp(iS) = bayesian_mdl.kFp(sub_idx);
-                prm.kEm(iS) = bayesian_mdl.kEm(sub_idx);
-                prm.kFm(iS) = bayesian_mdl.kFm(sub_idx);
-            end % filter if subject extracted by Arthur
-        end % subject list
+        mdlN = '3';
     case 'simple'
-        %% perform behavioral model
-        figDispGroup = 0;
-        dispMoneyOrLevels = 'levels';
-        [betas_fullList, pvalues_fullList] = logitfit_choices_group(figDispGroup, dispMoneyOrLevels);
-
-        mdl_nm = 'mdl_3';
-        switch mdl_nm
-            case 'mdl_3'
-                [prm.kMp, prm.kEp, prm.kFp,...
-                    prm.kMm, prm.kEm, prm.kFm] = deal(NaN(1,NS));
-            case 'mdl_4'
-                [prm.kRp, prm.kPp, prm.kEp, prm.kFp,...
-                    prm.kRm, prm.kPm, prm.kEm, prm.kFm] = deal(NaN(1,NS));
-        end
-        parameters = fieldnames(prm);
-        for iS = 1:NS
-            sub_nm = subject_id{iS};
-            % extract physical task parameters
-            sub_idx = strcmp(betas_fullList.subList,sub_nm);
-            switch mdl_nm
-                case 'mdl_3'
-                    prm.kMp(iS) = betas_fullList.Ep.(mdl_nm).kMoney(sub_idx);
-                    prm.kMm(iS) = betas_fullList.Em.(mdl_nm).kMoney(sub_idx);
-                case 'mdl_4'
-                    prm.kRp(iS) = betas_fullList.Ep.(mdl_nm).kR(sub_idx);
-                    prm.kPp(iS) = betas_fullList.Ep.(mdl_nm).kP(sub_idx);
-                    prm.kRm(iS) = betas_fullList.Em.(mdl_nm).kR(sub_idx);
-                    prm.kPm(iS) = betas_fullList.Em.(mdl_nm).kP(sub_idx);
-                otherwise
-                    error('case not ready yet');
-            end
-            prm.kEp(iS) = betas_fullList.Ep.(mdl_nm).kEffort(sub_idx);
-            prm.kEm(iS) = betas_fullList.Em.(mdl_nm).kEffort(sub_idx);
-            prm.kFp(iS) = betas_fullList.Ep.(mdl_nm).kFatigue(sub_idx);
-            prm.kFm(iS) = betas_fullList.Em.(mdl_nm).kFatigue(sub_idx);
-        end % subject list
+        mdlN = []; % leave empty so that you can choose which to use
 end % bayesian/behavioral
+[prm] = prm_extraction(subject_id, mdlType, mdlN);
+parameters = fieldnames(prm);
 nPrm = length(parameters);
 
 %% loop through subjects
