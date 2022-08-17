@@ -58,9 +58,7 @@ switch mdlType
         [prm.kR, prm.kP,...
             prm.kEp, prm.kFp,...
             prm.kEm, prm.kFm] = deal(NaN(1,NS));
-        parameters = {'kR','kP',...
-            'kEp','kFp',...
-            'kEm','kFm'};
+        parameters = fieldnames(prm);
         for iS = 1:NS
             sub_nm = subject_id{iS};
             % extract parameters
@@ -85,14 +83,11 @@ switch mdlType
             case 'mdl_3'
                 [prm.kMp, prm.kEp, prm.kFp,...
                     prm.kMm, prm.kEm, prm.kFm] = deal(NaN(1,NS));
-                parameters = {'kMp','kEp','kFp',...
-                    'kMm','kEm','kFm'};
             case 'mdl_4'
                 [prm.kRp, prm.kPp, prm.kEp, prm.kFp,...
                     prm.kRm, prm.kPm, prm.kEm, prm.kFm] = deal(NaN(1,NS));
-                parameters = {'kRp','kPp','kEp','kFp',...
-                    'kRm','kPm','kEm','kFm'};
         end
+        parameters = fieldnames(prm);
         for iS = 1:NS
             sub_nm = subject_id{iS};
             % extract physical task parameters

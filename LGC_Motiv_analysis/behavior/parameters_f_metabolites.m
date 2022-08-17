@@ -45,9 +45,7 @@ switch mdlType
         [prm.kR, prm.kP,...
             prm.kEp, prm.kFp,...
             prm.kEm, prm.kFm] = deal(NaN(1,NS));
-        parameters = {'kR','kP',...
-            'kEp','kFp',...
-            'kEm','kFm'};
+        parameters = fieldnames(prm);
         for iS = 1:NS
             sub_nm = subject_id{iS};
             % extract parameters
@@ -67,23 +65,35 @@ switch mdlType
         dispMoneyOrLevels = 'levels';
         [betas_fullList, pvalues_fullList] = logitfit_choices_group(figDispGroup, dispMoneyOrLevels);
 
-        [prm.kRp, prm.kPp, prm.kEp, prm.kFp,...
-            prm.kRm, prm.kPm, prm.kEm, prm.kFm] = deal(NaN(1,NS));
-        parameters = {'kRp','kPp','kEp','kFp',...
-            'kRm','kPm','kEm','kFm'};
         mdl_nm = 'mdl_3';
+        switch mdl_nm
+            case 'mdl_3'
+                [prm.kMp, prm.kEp, prm.kFp,...
+                    prm.kMm, prm.kEm, prm.kFm] = deal(NaN(1,NS));
+            case 'mdl_4'
+                [prm.kRp, prm.kPp, prm.kEp, prm.kFp,...
+                    prm.kRm, prm.kPm, prm.kEm, prm.kFm] = deal(NaN(1,NS));
+        end
+        parameters = fieldnames(prm);
         for iS = 1:NS
             sub_nm = subject_id{iS};
             % extract physical task parameters
             sub_idx = strcmp(betas_fullList.subList,sub_nm);
-            prm.kRp(iS) = betas_fullList.Ep.(mdl_nm).kR(sub_idx);
-            prm.kPp(iS) = betas_fullList.Ep.(mdl_nm).kP(sub_idx);
+            switch mdl_nm
+                case 'mdl_3'
+                    prm.kMp(iS) = betas_fullList.Ep.(mdl_nm).kMoney(sub_idx);
+                    prm.kMm(iS) = betas_fullList.Em.(mdl_nm).kMoney(sub_idx);
+                case 'mdl_4'
+                    prm.kRp(iS) = betas_fullList.Ep.(mdl_nm).kR(sub_idx);
+                    prm.kPp(iS) = betas_fullList.Ep.(mdl_nm).kP(sub_idx);
+                    prm.kRm(iS) = betas_fullList.Em.(mdl_nm).kR(sub_idx);
+                    prm.kPm(iS) = betas_fullList.Em.(mdl_nm).kP(sub_idx);
+                otherwise
+                    error('case not ready yet');
+            end
             prm.kEp(iS) = betas_fullList.Ep.(mdl_nm).kEffort(sub_idx);
-            prm.kFp(iS) = betas_fullList.Ep.(mdl_nm).kFatigue(sub_idx);
-            % extract mental task parameters
-            prm.kRm(iS) = betas_fullList.Em.(mdl_nm).kR(sub_idx);
-            prm.kPm(iS) = betas_fullList.Em.(mdl_nm).kP(sub_idx);
             prm.kEm(iS) = betas_fullList.Em.(mdl_nm).kEffort(sub_idx);
+            prm.kFp(iS) = betas_fullList.Ep.(mdl_nm).kFatigue(sub_idx);
             prm.kFm(iS) = betas_fullList.Em.(mdl_nm).kFatigue(sub_idx);
         end % subject list
 end % bayesian/behavioral
