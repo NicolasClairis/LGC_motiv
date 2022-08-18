@@ -9,23 +9,33 @@ function[GLMprm] = which_RT_GLM(GLM)
 % OUTPUTS
 % GLMprm: structure with GLM parameters
 %   .main: main parameters
-%       .RT_format: 'raw'/'zscore'/'log'
-%   .regs: which regressors to include
+%       .RT_format: 'raw'/'zscorePerRun'/'zscoreARuns'/'zscorePerRunARuns'/'log'
+%       .orth_vars: orthogonalize the regressors or not? ('on'/'off'), by
+%       default no orthogonalization will be applied
+%       .confMdlType: use 'bayesian' or 'simple' model for extracting
+%       confidence
+%       .confMdlN: string indicating which model number to consider
+%
+%   .regs: which regressors to include ('on'/'off')
 %       .run_cstt: one constant per run
 %       .task_cstt: one constant per task (pooling runs of each task)
-%       .uncertainty: uncertainty derived from the model
-%       .uncertaintyRtg: binary uncertainty rating based on button pressed
+%       .conf: confidence derived from the model
+%       .confRtg: binary confidence rating based on button pressed
 %       .deltaMoney: difference in terms of money between highE and default
 %       option
 %       .deltaEffort: level of effort proposed
 %       .trialN: trial number
-%       .RT_prevTrial: RT at previous trial
+%       .RT_raw_prevTrial: RT (raw in seconds) at previous trial
 
 %% by default all vars are off
 % general parameters
 GLMprm.main.RT_format = 'raw';
-potentialRegressors = {'run_cstt','task_cstt','uncertainty','uncertaintyRtg',...
-    'deltaMoney','deltaEffort','trialN','RT_prevTrial'};
+GLMprm.main.orth_vars = 'off';
+GLMprm.main.confMdlType = 'simple';
+GLMprm.main.confMdlN = '3';
+potentialRegressors = {'run_cstt','task_cstt',...
+    'conf','confRtg',...
+    'deltaMoney','deltaEffort','trialN','RT_raw_prevTrial'};
 for iReg = 1:length(potentialRegressors)
     GLMprm.regs.(potentialRegressors{iReg}) = 'off';
 end % regressor loop
@@ -35,15 +45,20 @@ switch GLM
     case 1
         % general
         GLMprm.main.RT_format = 'raw';
+        GLMprm.main.orth_vars = 'off';
+        GLMprm.main.confMdlType = 'simple';
+        GLMprm.main.confMdlN = '3';
         % which regressors to include
         GLMprm.regs.run_cstt = 'off';
         GLMprm.regs.task_cstt = 'on';
-        GLMprm.regs.uncertainty = 'on';
-        GLMprm.regs.uncertaintyRtg = 'off';
+        GLMprm.regs.conf = 'on';
+        GLMprm.regs.confRtg = 'off';
         GLMprm.regs.deltaMoney = 'on';
         GLMprm.regs.deltaEffort = 'on';
         GLMprm.regs.trialN = 'on';
-        GLMprm.regs.RT_prevTrial = 'on';
+        GLMprm.regs.RT_raw_prevTrial = 'on';
+    otherwise
+        error(['RT GLM number ',num2str(GLM),' does not exist yet.']);
 end % GLM
 
 %% check that all regressors exist by default
