@@ -59,7 +59,15 @@ for iReg = 1:length(potentialRegressors)
     curr_reg_nm = potentialRegressors{iReg};
     isRegON = strcmp(GLMprm.regs.(curr_reg_nm), 'on');
     if isRegON == true
-        betas.(curr_reg_nm) = NaN(1,NS);
+        switch curr_reg_nm
+            case 'run_cstt'
+                [betas.run1_cstt, betas.run2_cstt,...
+                    betas.run3_cstt, betas.run4_cstt] = deal(NaN(1,NS));
+            case 'task_cstt'
+                [betas.Em_cstt, betas.Ep_cstt] = deal(NaN(1,NS));
+            otherwise
+                betas.(curr_reg_nm) = NaN(1,NS);
+        end
     end
 end % regressor loop
 beta_names = fieldnames(betas);
