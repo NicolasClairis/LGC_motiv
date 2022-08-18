@@ -32,6 +32,9 @@ function[matlabbatch] = First_level_loadRegressors(matlabbatch, GLMprm, study_nm
 % matlabbatch: structure updated with the regressors of interest depending
 % on GLMprm values
 
+%% is it a GLM for onsets-only?
+onsets_only_GLM = GLMprm.gal.onsets_only;
+
 %% determine task to work on
 switch task_nm
     case 'physical'
@@ -321,8 +324,9 @@ trialN_dEch = trialN.*E_chosen_min_E_unchosen;
 trialN_dEnonDef_min_Edef = trialN.*(E_varOption - E_fixedOption);
 trialN_dEnonDef = trialN.*E_varOption;
 
-%% remove trials where no choice was performed
-if sum(choiceMissedTrials) > 0
+%% remove trials where no choice was performed (except if it is the onsets_only_GLM
+% in which case you want to include all trials)
+if sum(choiceMissedTrials) > 0 && onsets_only_GLM == 0
     % extract onsets and durations of missed trials
     preChoiceCrossOnsets_missedOnsets = preChoiceCrossOnsets(choiceMissedTrials);
     dispChoiceOption_missedOnsets = dispChoiceOptionOnsets(choiceMissedTrials);
@@ -571,7 +575,7 @@ if ismember(preChoiceCrossModel,{'stick','boxcar'})
     [matlabbatch] = First_level_loadEachCondition(matlabbatch, sub_idx, iRun, iCond,...
         'preChoice fixation cross', preChoiceCrossOnsets, modelPreChoiceCrossdur,...
         n_preChoiceCrossMods, preChoiceCross_modNames, preChoiceCross_modVals,...
-        orth_vars);
+        orth_vars, onsets_only_GLM);
 end
 
 
@@ -941,7 +945,7 @@ if ismember(choiceModel,{'stick','boxcar'})
             [matlabbatch] = First_level_loadEachCondition(matlabbatch, sub_idx, iRun, iCond,...
                 ['choice_',RP_dispChoice_nm,'_',splitE_dispChoice_nm], modelChoiceOnset, modelChoiceDur,...
                 n_choiceMods, choice_modNames, choice_modVals,...
-                orth_vars);
+                orth_vars, onsets_only_GLM);
         end % E condition
     end % RP
 end % model choice
@@ -1294,7 +1298,7 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis'})
             [matlabbatch] = First_level_loadEachCondition(matlabbatch, sub_idx, iRun, iCond,...
                 ['dispChosen_',RP_dispChosen_nm,'_',splitE_dispChosen_nm], modelChosenOnset, modelChosenDur,...
                 n_chosenMods, chosen_modNames, chosen_modVals,...
-                orth_vars);
+                orth_vars, onsets_only_GLM);
         end % E condition
     end % RP
 end % model chosen period
@@ -1496,7 +1500,7 @@ if ismember(preEffortCrossModel,{'stick','boxcar','boxcar_bis'})
             [matlabbatch] = First_level_loadEachCondition(matlabbatch, sub_idx, iRun, iCond,...
                 ['preEffort fixation cross',RP_preEcross_nm,'_',splitE_preEcross_nm], modelpreEcrossOnset, modelPreEffortCrossdur,...
                 n_preEcrossMods, preEcross_modNames, preEcross_modVals,...
-                orth_vars);
+                orth_vars, onsets_only_GLM);
         end % E condition
     end % RP
 end % model pre-effort cross
@@ -1694,7 +1698,7 @@ if ismember(EperfModel,{'stick','boxcar'})
             [matlabbatch] = First_level_loadEachCondition(matlabbatch, sub_idx, iRun, iCond,...
                 ['Eperf_',RP_Eperf_nm,'_',splitE_Eperf_nm], modelEperfOnset, modelEperfDur,...
                 n_EperfMods, Eperf_modNames, Eperf_modVals,...
-                orth_vars);
+                orth_vars, onsets_only_GLM);
         end % E condition
     end % RP
 end % model effort performance period
@@ -1848,9 +1852,9 @@ if ismember(fbkModel,{'stick','boxcar'})
             [matlabbatch] = First_level_loadEachCondition(matlabbatch, sub_idx, iRun, iCond,...
                 ['fbk_',RP_fbk_nm,'_',splitE_fbk_nm], modelFbkOnset, modelFbkDur,...
                 n_fbkMods, fbk_modNames, fbk_modVals,...
-                orth_vars);
+                orth_vars, onsets_only_GLM);
         end % E condition
     end % RP
-end % model chosen period
+end % model fbk period
 
 end % function

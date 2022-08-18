@@ -18,7 +18,7 @@ function[] = First_level_batch(GLM, checking, condition)
 % 'fMRI': all fMRI compatible data
 % 'fMRI_no_move': remove runs with too much movement
 %
-% See also which_GLM.m, GLM_details.m, LGCM_contrasts_spm.m,
+% See also which_GLM.m, 
 % First_level_loadEachCondition.m, First_level_loadRegressors.m,
 % First_level_subRunFilter.m, LGCM_contrasts.m and Second_level_batch.m
 

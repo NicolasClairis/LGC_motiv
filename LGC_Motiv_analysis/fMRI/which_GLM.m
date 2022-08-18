@@ -29,6 +29,10 @@ function [GLMprm] = which_GLM(GLM)
 %       (0) raw values (or whatever is defined for each regressor)
 %       (1) values zscored per run
 %
+%       .onsets_only:
+%       (0) regular GLM (by default)
+%       (1) extract 1 beta/trial/condition
+%
 %   .model_onset: indicate for each task (Ep/Em: physical/mental) for each
 %   event (preChoiceCross/choice/chosen/preEffortCross/Eperf/fbk) if it should be modelled as a
 %   stick ('stick') as a boxcar ('boxcar') or not included in the GLM
@@ -280,7 +284,8 @@ function [GLMprm] = which_GLM(GLM)
 [GLMprm.gal.add_drv,...
     GLMprm.gal.grey_mask,...
     GLMprm.gal.zPerRun,...
-    GLMprm.gal.orth_vars] = deal(0);
+    GLMprm.gal.orth_vars,...
+    GLMprm.gal.onsets_only] = deal(0);
 
 % onsets: not modelled (none), modelled as stick function (stick) or as
 % boxcar function (boxcar)

@@ -16,6 +16,10 @@ function [reg_names, n_regs] = GLM_details(GLM)
 
 %% load GLM parameters
 GLMprm = which_GLM(GLM);
+% check if onsets only GLM do not perform this
+if GLMprm.gal.onsets_only == 1
+    error('GLM_details.m is not ready for onsets_only ON');
+end
 % disp GLM number
 disp(['GLM ',num2str(GLM)]);
 
