@@ -65,8 +65,8 @@ var_to_bin_ascOrder = var_to_bin(bin_var_ascOrder_idx);
 %% extract values for each bin
 for iBin = 1:nb_bins
     current_interval    = (1:n_samples_pBin) + n_samples_pBin*(iBin - 1);
-    Bin_val(iBin)       = nanmean(bin_var_ascOrder(current_interval));
-    var_binned(iBin)    = nanmean(var_to_bin_ascOrder(current_interval));
+    Bin_val(iBin)       = mean(bin_var_ascOrder(current_interval),'omitnan');
+    var_binned(iBin)    = mean(var_to_bin_ascOrder(current_interval),'omitnan');
 end
 
 end
