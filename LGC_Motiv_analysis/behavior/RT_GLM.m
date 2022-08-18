@@ -1,9 +1,15 @@
-function[betas, pval, betas_grp, pval_grp] = RT_GLM(figDisp)
+function[betas, pval, betas_grp, pval_grp] = RT_GLM(figDisp, computerRoot, study_nm, subject_id)
 % [betas, pval, betas_grp, pval_grp] = RT_GLM()
 %RT_GLM will perform a GLM on the reaction times
 % 
 % INPUTS
-% figDisp: display figure
+% figDisp: display figure (yes by default if left empty)
+%
+% computerRoot: path to computer root (will be asked by default if left empty)
+%
+% study_nm: study name 'study1' or 'study2' ? (study1 by default if left empty)
+%
+% subject_id: list of subjects (will be asked by default if left empty)
 %
 % OUTPUTS
 % betas: structure with betas corresponding to each regressor for each
@@ -47,11 +53,15 @@ if ~exist(resultFolder,'dir')
 end
 
 %% subject selection
-condition = subject_condition;
-[subject_id, NS] = LGCM_subject_selection(study_nm, condition);
+if ~exist('subject_id','var') || isempty(subject_id)
+    condition = subject_condition;
+    [subject_id, NS] = LGCM_subject_selection(study_nm, condition);
+else
+    NS = length(subject_id);
+end
 
 %% initialize variables of interest
-GLM_str = inputdlg('Which GLM?');
+GLM_str = inputdlg('Which RT GLM?');
 GLM = str2double(GLM_str);
 [GLMprm] = which_RT_GLM(GLM);
 potentialRegressors = fieldnames(GLMprm.regs);

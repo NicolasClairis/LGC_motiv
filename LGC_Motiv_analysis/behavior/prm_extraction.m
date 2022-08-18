@@ -1,5 +1,5 @@
-function[prm] = prm_extraction(subject_id, mdlType, mdlN)
-% [prm] = prm_extraction(subject_id, mdlType, mdlN)
+function[prm, mdlType, mdlN] = prm_extraction(subject_id, mdlType, mdlN)
+% [prm, mdlType, mdlN] = prm_extraction(subject_id, mdlType, mdlN)
 % prm_extraction will extract the behavioural parameters for the list of
 % subjects entered in input. You will need to select whether you want to
 % use a bayesian or a more simple model approach and which model number you
@@ -16,6 +16,12 @@ function[prm] = prm_extraction(subject_id, mdlType, mdlN)
 %
 % OUTPUTS
 % prm: structure with parameters extracted for each participant
+%
+% mdlType: 'bayesian' or 'simple' model (in case was asked by the script
+% allows to remember which one was selected)
+%
+% mdlN: string with model number to be used (in case was asked by the script
+% allows to remember which one was selected)
 
 %% working directories
 whichPc = 'lab'; % 'lab'/'home'
