@@ -70,7 +70,9 @@ end
 ROI_path = [dataRoot,filesep,'results',filesep,'ROI',filesep];
 
 %% define subject list
-condition = 'fMRI';
+if ~exist('condition','var') || isempty(condition)
+    condition = subject_condition;
+end
 if ~exist('subject_id','var') || isempty(subject_id)
     [subject_id, NS] = LGCM_subject_selection(study_nm, condition);
 else
@@ -175,7 +177,7 @@ for iROI = 1:n_ROIs
             end
         end % contrast
         
-        %% indicator subjectdone
+        %% indicator subject done
         disp(['Subject ',num2str(iS),'/',num2str(NS),' extracted']);
     end % subject loop
     
