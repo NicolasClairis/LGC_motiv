@@ -100,7 +100,7 @@ switch study_nm
             case 'fMRI_no_move'
                 % ignore subjects with too much movement in ALL runs (runs
                 % with too much movement will be filtered for each subject)
-                bad_subs = ismember(fullSubList,{'008','022'});
+                bad_subs = ismember(fullSubList,{'008','022','024'});
                 % 008 and 022 completely removed (because all runs are bad
                 % in terms of movement)
             case 'fMRI_no_move_bis'
@@ -108,16 +108,17 @@ switch study_nm
                 % filtering of bad runs, but only of bad subjects who had
                 % only bad runs)
                 bad_subs = ismember(fullSubList,{'008',...
-                    '021','022','029',...
+                    '021','022','024','029',...
                     '044','047',...
                     '053','054','058',...
                     '062',...
                     '071','076','078',...
                     '080','083','087',...
-                    '099'});
+                    '097','099'});
                 % too much movement for 008 (all runs)
                 % 021 (run 2, 3 and 4)
                 % 022 (all runs)
+                % 024 (all runs with at least some movement)
                 % 029 (run 4 physical),
                 % 044 (run 2 and 4 physical)
                 % 047 (run 3 mostly, physical run),
@@ -131,6 +132,7 @@ switch study_nm
                 % 080 (run 3 physical and a bit run 4 mental)
                 % 083 (run 3 physical)
                 % 087(runs 2-4)
+                % 097 (runs 2, 3 and 4 mostly)
                 % 099 (runs 2 and 4, physical runs)
                 
                 % borderline movement:
