@@ -51,7 +51,7 @@ end
 if ~exist('mdlN','var') || isempty(mdlN)
     switch mdlType
         case 'bayesian'
-            listPossibleModelNumbers = {'3'};
+            listPossibleModelNumbers = {'1','3'};
         case 'simple'
             listPossibleModelNumbers = {'1','2','3','4'};
     end
@@ -67,10 +67,15 @@ switch mdlType
             'behavioral_prm_tmp.mat'],...
             ['bayesian_mdl',mdlN]),...
             ['bayesian_mdl',mdlN]);
-        [prm.kR, prm.kP,...
-            prm.kEp, prm.kFp,...
-            prm.kEm, prm.kFm] = deal(NaN(1,NS));
-        parameter_names = fieldnames(prm);
+        parameter_names = fieldnames(bayesian_mdl);
+        % remove subject name from the list
+        parameter_names(strcmp(parameter_names,'subject_id')) = [];
+        nPrm = length(parameter_names);
+        % initialize all parameters
+        for iPrm = 1:nPrm
+            prm_nm = parameter_names{iPrm};
+            prm.(prm_nm) = NaN(1,NS);
+        end
         for iS = 1:NS
             sub_nm = subject_id{iS};
             % extract parameters
