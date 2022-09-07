@@ -1,5 +1,5 @@
-function[ROI_BOLDperTrial] = extract_ROI_betas_onsets_only(computerRoot, study_nm, subject_id, condition, GLM)
-% [ROI_BOLDperTrial] = extract_ROI_betas_onsets_only(computerRoot, study_nm, subject_id, condition, GLM)
+function[ROI_trial_b_trial] = extract_ROI_betas_onsets_only(computerRoot, study_nm, subject_id, condition, GLM)
+% [ROI_trial_b_trial] = extract_ROI_betas_onsets_only(computerRoot, study_nm, subject_id, condition, GLM)
 % extract_ROI_betas_onsets_only will extract the activity of the ROI
 % defined trial/trial and for each time point of the GLM that has been
 % used.
@@ -14,7 +14,7 @@ function[ROI_BOLDperTrial] = extract_ROI_betas_onsets_only(computerRoot, study_n
 % condition: define which subjects to include (will be asked if left empty)
 %
 % OUTPUTS
-% ROI_BOLDperTrial: structure with ROI BOLD deconvoluted trial/trial and
+% ROI_trial_b_trial: structure with ROI BOLD deconvoluted trial/trial and
 % for each phase of the GLM.
 
 %% extract working directories
@@ -22,7 +22,7 @@ if ~exist('computerRoot','var') || isempty(computerRoot)
     [computerRoot] = LGCM_root_paths();
 end
 
-if ~strcmp(study_nm,'study1')
+if ~exist('study_nm','var') || isempty(study_nm)
     study_nm = 'study1';
 end
 dataRoot = [computerRoot,filesep,study_nm,filesep];
@@ -50,15 +50,16 @@ end
 %% which GLM
 if ~exist('GLM','var') || isempty(GLM)
     listOfAllOnsetsOnlyGLM = [64];
-    nPossibleGLM = size(listOfAllOnsetsOnlyGLM, 2);
+    nPossibleGLMs = size(listOfAllOnsetsOnlyGLM, 2);
     listGLM = ['GLM',num2str(listOfAllOnsetsOnlyGLM(1))];
-    if nPossibleGLM > 1
-        for iGLM = 2:nPossibleGLM
+    if nPossibleGLMs > 1
+        for iGLM = 2:nPossibleGLMs
             listGLM = [listGLM,' | GLM',num2str(listOfAllOnsetsOnlyGLM(iGLM))];
         end
     end
-    GLM = spm_input('GLM number?',1,'m',...
+    GLM_idx = spm_input('GLM number?',1,'m',...
         listGLM,1:nPossibleGLMs,0);
+    GLM = listOfAllOnsetsOnlyGLM(GLM_idx);
 end
 GLMstr = num2str(GLM);
 GLMprm = which_GLM(GLM);
@@ -68,7 +69,7 @@ if add_drv > 0
     error('add_drv > 0 not ready yet for onsets_only extraction');
 end
 % is the GLM an onsets-only GLM?
-if ~GLMprm.onsets_only == 0
+if GLMprm.gal.onsets_only == 0
     error(['You selected GLM ',num2str(GLM),' where onsets_only = 0.'])
 end
 n_mvmt = 6;
@@ -110,7 +111,9 @@ for iTperiod = 1:nPotentialTimePeriods
     timePeriod_nm = potentialTimePeriods{iTperiod};
     curr_onset_nm_Ep = GLMprm.model_onset.Ep.(timePeriod_nm);
     curr_onset_nm_Em = GLMprm.model_onset.Em.(timePeriod_nm);
-    if strcmp(curr_onset_nm_Ep, curr_onset_nm_Em)
+    if strcmp(curr_onset_nm_Ep, curr_onset_nm_Em) &&...
+            ismember(curr_onset_nm_Ep,{'stick','boxcar'}) &&...
+            ismember(curr_onset_nm_Em,{'stick','boxcar'})
         nTimePeriods = nTimePeriods + 1;
         timePeriods = [timePeriods, timePeriod_nm];
     end
@@ -118,7 +121,7 @@ end % time period
 
 %% extract the ROI for each event
 for iROI = 1:n_ROIs
-    disp(['Region ',num2str(iROI),'/',num2str(nb_ROIs)]);
+    disp(['Region ',num2str(iROI),'/',num2str(n_ROIs)]);
     ROI_nb_nm = ['ROI_',num2str(iROI)];
     ROI_nm = ROI_names.(ROI_nb_nm);
     sxyz_ROI = ROI_xyz.(ROI_nb_nm);
@@ -144,14 +147,17 @@ for iROI = 1:n_ROIs
             if strcmp(currRunBehaviorFileName(16:23),'physical') ||...
                     strcmp(currRunBehaviorFileName(17:24),'physical')
                 task_behavioral_id = 'physical';
+                task_behavioral_id_bis = 'physicalPerf';
             elseif strcmp(currRunBehaviorFileName(16:21),'mental') ||...
                     strcmp(currRunBehaviorFileName(17:22),'mental')
                 task_behavioral_id = 'mental';
+                task_behavioral_id_bis = 'mentalE_perf';
             else
                 error('problem in identifying task type because file name doesn''t match');
             end
             behavioralDataStruct = load([subj_behavior_folder, currRunBehaviorFileName]);
-            choiceOnsets = behavioralDataStruct.(task_behavioral_id).onsets.choice - T0;
+            T0 = behavioralDataStruct.onsets.T0;
+            choiceOnsets = behavioralDataStruct.(task_behavioral_id_bis).onsets.choice - T0;
             choiceMissedTrials = isnan(choiceOnsets);
 
             % trialN: index of the trials
