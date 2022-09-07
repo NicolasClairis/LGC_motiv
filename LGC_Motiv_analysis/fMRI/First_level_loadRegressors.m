@@ -324,9 +324,8 @@ trialN_dEch = trialN.*E_chosen_min_E_unchosen;
 trialN_dEnonDef_min_Edef = trialN.*(E_varOption - E_fixedOption);
 trialN_dEnonDef = trialN.*E_varOption;
 
-%% remove trials where no choice was performed (except if it is the onsets_only_GLM
-% in which case you want to include all trials)
-if sum(choiceMissedTrials) > 0 && onsets_only_GLM == 0
+%% remove trials where no choice was performed
+if sum(choiceMissedTrials) > 0
     % extract onsets and durations of missed trials
     preChoiceCrossOnsets_missedOnsets = preChoiceCrossOnsets(choiceMissedTrials);
     dispChoiceOption_missedOnsets = dispChoiceOptionOnsets(choiceMissedTrials);
