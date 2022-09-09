@@ -91,12 +91,12 @@ for iROI = 1:n_ROIs
     for iTask = 1:nTasks
         task_nm = tasks{iTask};
         for iRun = 1:nRunsPerTask
-            run_nm = ['run',num2str(iRun)];
+            run_str = ['run',num2str(iRun)];
             for iTperiod = 1:nPotentialTimePeriods
                 timePeriod_nm = potentialTimePeriods{iTperiod};
                 curr_onset_nm = GLMprm.model_onset.(task_nm).(timePeriod_nm);
                 if ~strcmp(curr_onset_nm,'none') && ismember(curr_onset_nm,{'stick','boxcar'})
-                    ROI_trial_b_trial.(ROI_nm).(task_nm).(run_nm).(timePeriod_nm) = NaN(nTrialsPerRun, NS);
+                    ROI_trial_b_trial.(ROI_nm).(task_nm).(run_str).(timePeriod_nm) = NaN(nTrialsPerRun, NS);
                 else
                     error(['problem with ',curr_onset_nm])
                 end
@@ -121,7 +121,7 @@ end % time period
 
 %% extract the ROI for each event
 for iROI = 1:n_ROIs
-    disp(['Region ',num2str(iROI),'/',num2str(n_ROIs)]);
+    disp(['starting ROI ',num2str(iROI),'/',num2str(n_ROIs)]);
     ROI_nb_nm = ['ROI_',num2str(iROI)];
     ROI_nm = ROI_names.(ROI_nb_nm);
     sxyz_ROI = ROI_xyz.(ROI_nb_nm);
@@ -138,11 +138,12 @@ for iROI = 1:n_ROIs
         totalTrials_idx = []; % index of trials kept
 
         for iRun = subRuns.runsToKeep
-            run_nm = num2str(iRun);
+            run_str = num2str(iRun);
+            run_nm = ['run',run_str];
             % extract trials where no choice was made
-            currRunBehaviorFileName = ls([subj_behavior_folder,'*_session',run_nm,'_*_task.mat']);
+            currRunBehaviorFileName = ls([subj_behavior_folder,'*_session',run_str,'_*_task.mat']);
             if size(currRunBehaviorFileName,1) > 1
-                error(['problem file identification: too many files popping out with run number',run_nm]);
+                error(['problem file identification: too many files popping out with run number ',run_str]);
             end
             if strcmp(currRunBehaviorFileName(16:23),'physical') ||...
                     strcmp(currRunBehaviorFileName(17:24),'physical')
@@ -192,7 +193,8 @@ for iROI = 1:n_ROIs
         jRun = 0;
         jTimePhase = 0;
         for iTrial = 1:n_totalTrialsForFirstLevel
-            if ~isnan(totalTrials_idx(iTrial)) % ignore movement and run constant regressors
+            jRunTrial = totalTrials_idx(iTrial);
+            if ~isnan(jRunTrial) % ignore movement and run constant regressors
                 beta_idx = beta_idx + 1;
                 % identify which run and time period we are at now
                 if iTrial == 1
@@ -205,7 +207,7 @@ for iROI = 1:n_ROIs
                     jRun = jRun + 1;
                     jTimePhase = 1;
                 end
-                task_nm = runs.task{jRun};
+                task_nm = subRuns.tasks{jRun};
                 timePeriod_nm = timePeriods{jTimePhase};
 
                 % extract con/scon files
@@ -229,7 +231,7 @@ for iROI = 1:n_ROIs
                 vxyz        = unique(floor((inv(betaVol.mat) * sxyz_ROI')'), 'rows'); % converts from MNI (mm) to voxel-space
                 vi          = sub2ind(betaVol.dim, vxyz(:, 1), vxyz(:, 2), vxyz(:, 3)); % extracts coordinates of the sphere in the con (voxel-space)
                 beta_value  = mean(betadata(vi),'omitnan'); % extracts mean beta for the selected ROI sphere/mask
-                ROI_trial_b_trial.(ROI_nm).(task_nm).(run_nm).(timePeriod_nm)(jTrial, iS) = beta_value; % save mean beta for the selected ROI inside the big resulting matrix
+                ROI_trial_b_trial.(ROI_nm).(task_nm).(run_nm).(timePeriod_nm)(jRunTrial, iS) = beta_value; % save mean beta for the selected ROI inside the big resulting matrix
             else % skip movement regressors from beta extraction
                 beta_idx = beta_idx + 1;
 
@@ -238,6 +240,7 @@ for iROI = 1:n_ROIs
         %% indicator subject done
         disp(['Subject ',num2str(iS),'/',num2str(NS),' extracted']);
     end % subject loop
+    disp(['ROI ',num2str(iROI),'/',num2str(n_ROIs),' done']);
 end % ROI loop
 
 save(['ROI_BOLDperTrial_GLM',GLM_str,'.mat'],...
