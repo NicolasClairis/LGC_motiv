@@ -1,7 +1,8 @@
 function[betas, pval] = mRT_f_parameters()
 % [betas, pval] = mRT_f_parameters()
-% mRT_f_parameters will look whether mean (or median) reaction times
-% correlate with sensitivity to effort across participants.
+% mRT_f_parameters will look whether mean (or median or standard deviation)
+% of the reaction times correlate with sensitivity to effort across 
+% participants.
 %
 % OUTPUTS
 % betas: structure with betas for the slope between each parameter and
@@ -43,21 +44,12 @@ end
 nTrialsPerRun = 54;
 tasks = {'Ep','Em'};
 nTasks = length(tasks);
-[meanRT.Ep, meanRT.Em,...
-    medianRT.Ep, medianRT.Em] = deal(NaN(1,NS));
+[mean_RT.Ep, mean_RT.Em,...
+    median_RT.Ep, median_RT.Em,...
+     sd_RT.Ep, sd_RT.Em] = deal(NaN(1,NS));
 
 %% extract behavioral parameters
-listPossibleConditions = {'bayesian','simple'};
-mdlType_idx = listdlg('promptstring','Which model type?','ListString',listPossibleConditions);
-mdlType = listPossibleConditions{mdlType_idx};
-
-switch mdlType
-    case 'bayesian'
-        mdlN = '3';
-    case 'simple'
-        mdlN = []; % leave empty so that you can choose which to use
-end % bayesian/behavioral
-[prm] = prm_extraction(subject_id, mdlType, mdlN);
+[prm] = prm_extraction(subject_id, [], []);
 parameters = fieldnames(prm);
 nPrm = length(parameters);
 
@@ -144,8 +136,9 @@ for iS = 1:NS
         end % run loop
         
         % average the RT within each subject
-        meanRT.(task_id)(iS) = mean(raw_z_log(RT_perTrial_tmp.(task_id)),1,'omitnan');
-        medianRT.(task_id)(iS) = median(raw_z_log(RT_perTrial_tmp.(task_id)),1,'omitnan');
+        mean_RT.(task_id)(iS) = mean(raw_z_log(RT_perTrial_tmp.(task_id)),1,'omitnan');
+        median_RT.(task_id)(iS) = median(raw_z_log(RT_perTrial_tmp.(task_id)),1,'omitnan');
+        sd_RT.(task_id)(iS) = std(raw_z_log(RT_perTrial_tmp.(task_id)),1,'omitnan');
     end % physical/mental loop
 end % subject loop
 
@@ -156,30 +149,37 @@ for iPrm = 1:nPrm
         task_id = tasks{iTask};
         
         % MEAN RT test
-        [beta_meanRT.(task_id).(prm_nm), ~,stats_meanRT.(task_id).(prm_nm)] = glmfit(prm.(prm_nm), meanRT.(task_id), 'normal');
+        [beta_meanRT.(task_id).(prm_nm), ~,stats_meanRT.(task_id).(prm_nm)] = glmfit(prm.(prm_nm), mean_RT.(task_id), 'normal');
         meanRT_f_prm.(task_id).(prm_nm) = glmval(beta_meanRT.(task_id).(prm_nm), prm.(prm_nm), 'identity');
         pval.mean.(task_id).(prm_nm) = stats_meanRT.(task_id).(prm_nm).p(2);
         betas.mean.(task_id).(prm_nm) = beta_meanRT.(task_id).(prm_nm)(2);
         
         % MEDIAN RT test
-        [beta_medianRT.(task_id).(prm_nm), ~,stats_medianRT.(task_id).(prm_nm)] = glmfit(prm.(prm_nm), medianRT.(task_id), 'normal');
+        [beta_medianRT.(task_id).(prm_nm), ~,stats_medianRT.(task_id).(prm_nm)] = glmfit(prm.(prm_nm), median_RT.(task_id), 'normal');
         medianRT_f_prm.(task_id).(prm_nm) = glmval(beta_medianRT.(task_id).(prm_nm), prm.(prm_nm), 'identity');
         pval.median.(task_id).(prm_nm) = stats_medianRT.(task_id).(prm_nm).p(2);
         betas.median.(task_id).(prm_nm) = beta_medianRT.(task_id).(prm_nm)(2);
-        
+
+        % SD RT test
+        [beta_sd_RT.(task_id).(prm_nm), ~,stats_sd_RT.(task_id).(prm_nm)] = glmfit(prm.(prm_nm), sd_RT.(task_id), 'normal');
+        sd_RT_f_prm.(task_id).(prm_nm) = glmval(beta_sd_RT.(task_id).(prm_nm), prm.(prm_nm), 'identity');
+        pval.sd.(task_id).(prm_nm) = stats_sd_RT.(task_id).(prm_nm).p(2);
+        betas.sd.(task_id).(prm_nm) = beta_sd_RT.(task_id).(prm_nm)(2);
+
         %% figure display
         if figDisp == true
             pSize = 50;
             lWidth = 3;
             
-            % look at mean and median RT = f(parameter)
+            % look at mean, median and std RT = f(parameter)
             fig;
             jPlot = 0;
             
+            % mean RT
             jPlot = jPlot + 1;
-            subplot(1,2,jPlot);
+            subplot(1,3,jPlot);
             hold on;
-            scatter(prm.(prm_nm), meanRT.(task_id));
+            scatter(prm.(prm_nm), mean_RT.(task_id));
             plot(prm.(prm_nm), meanRT_f_prm.(task_id).(prm_nm),...
                 'LineWidth',lWidth);
             xlabel(prm_nm);
@@ -193,10 +193,11 @@ for iPrm = 1:nPrm
             end
             legend_size(pSize);
             
+            % median RT
             jPlot = jPlot + 1;
-            subplot(1,2,jPlot);
+            subplot(1,3,jPlot);
             hold on;
-            scatter(prm.(prm_nm), medianRT.(task_id));
+            scatter(prm.(prm_nm), median_RT.(task_id));
             plot(prm.(prm_nm), medianRT_f_prm.(task_id).(prm_nm),...
                 'LineWidth',lWidth);
             xlabel(prm_nm);
@@ -205,6 +206,24 @@ for iPrm = 1:nPrm
                     ylabel([task_id,' - median RT (s)']);
                 case 'log'
                     ylabel([task_id,' - median(log(RT))']);
+                otherwise
+                    error(['legend not ready yet for ',RT_type,' RT']);
+            end
+            legend_size(pSize);
+
+            % SD RT
+            jPlot = jPlot + 1;
+            subplot(1,3,jPlot);
+            hold on;
+            scatter(prm.(prm_nm), sd_RT.(task_id));
+            plot(prm.(prm_nm), sd_RT_f_prm.(task_id).(prm_nm),...
+                'LineWidth',lWidth);
+            xlabel(prm_nm);
+            switch RT_type
+                case 'raw'
+                    ylabel([task_id,' - sd RT (s)']);
+                case 'log'
+                    ylabel([task_id,' - sd(log(RT))']);
                 otherwise
                     error(['legend not ready yet for ',RT_type,' RT']);
             end

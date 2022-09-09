@@ -31,7 +31,10 @@ switch whichPc
             'LGC_motiv','LGC_Motiv_analysis','behavior');
         computerRoot = [fullfile('E:'),filesep];
     case 'home'
-        error('paths to be updated');
+        bayesian_root = fullfile('C:','Users','Loco','Documents','GitHub',...
+            'LGC_motiv','LGC_Motiv_analysis','behavior');
+        computerRoot = [fullfile('L:','human_data_private',...
+            'raw_data_subject'),filesep];
     otherwise
         error(['paths not ready yet for ',whichPc, 'pc']);
 end
