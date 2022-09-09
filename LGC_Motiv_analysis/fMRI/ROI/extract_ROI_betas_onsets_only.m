@@ -128,7 +128,7 @@ for iROI = 1:n_ROIs
     ROI_nm = ROI_names.(ROI_nb_nm);
     sxyz_ROI = ROI_xyz.(ROI_nb_nm);
     
-    for iS = 1:2%:NS
+    for iS = 1:NS
         sub_nm = subject_id{iS};
         if ~strcmp(sub_nm,'036')
             subj_folder = [fullfile(dataRoot, ['CID',sub_nm]),filesep];
