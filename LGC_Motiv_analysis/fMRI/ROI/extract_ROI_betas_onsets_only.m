@@ -43,6 +43,8 @@ if ~exist('subject_id','var') || isempty(subject_id)
 else
     NS = length(subject_id);
 end
+% store list of subjects
+ROI_trial_b_trial.subject_id = subject_id;
 
 %% select the ROI to use
 [ ROI_xyz, ~, ROI_names, n_ROIs ] = ROI_selection(gitFolder);
@@ -125,124 +127,140 @@ for iROI = 1:n_ROIs
     ROI_nb_nm = ['ROI_',num2str(iROI)];
     ROI_nm = ROI_names.(ROI_nb_nm);
     sxyz_ROI = ROI_xyz.(ROI_nb_nm);
-
-    for iS = 1:NS
+    
+    for iS = 1:2%:NS
         sub_nm = subject_id{iS};
-        subj_folder = [fullfile(dataRoot, ['CID',sub_nm]),filesep];
-        sub_fMRI_path = [fullfile(subj_folder, 'fMRI_analysis','functional',...
-            ['preproc_sm_',num2str(preproc_sm_kernel),'mm'],['GLM',GLMstr]),filesep];
-        subj_behavior_folder = [subj_folder, 'behavior' filesep];
-        [subRuns, n_subRuns] = runs_definition(study_nm, sub_nm, condition);
-
-        %% extract index of runs and trials that were included in the GLM
-        totalTrials_idx = []; % index of trials kept
-
-        for iRun = subRuns.runsToKeep
-            run_str = num2str(iRun);
-            run_nm = ['run',run_str];
-            % extract trials where no choice was made
-            currRunBehaviorFileName = ls([subj_behavior_folder,'*_session',run_str,'_*_task.mat']);
-            if size(currRunBehaviorFileName,1) > 1
-                error(['problem file identification: too many files popping out with run number ',run_str]);
-            end
-            if strcmp(currRunBehaviorFileName(16:23),'physical') ||...
-                    strcmp(currRunBehaviorFileName(17:24),'physical')
-                task_behavioral_id = 'physical';
-                task_behavioral_id_bis = 'physicalPerf';
-            elseif strcmp(currRunBehaviorFileName(16:21),'mental') ||...
-                    strcmp(currRunBehaviorFileName(17:22),'mental')
-                task_behavioral_id = 'mental';
-                task_behavioral_id_bis = 'mentalE_perf';
-            else
-                error('problem in identifying task type because file name doesn''t match');
-            end
-            behavioralDataStruct = load([subj_behavior_folder, currRunBehaviorFileName]);
-            T0 = behavioralDataStruct.onsets.T0;
-            choiceOnsets = behavioralDataStruct.(task_behavioral_id_bis).onsets.choice - T0;
-            choiceMissedTrials = isnan(choiceOnsets);
-
-            % trialN: index of the trials
-            trialN = 1:nTrialsPerRun;
-            trialN(choiceMissedTrials) = [];
-            totalTrials_idx = [totalTrials_idx; repmat(trialN,1,nTimePeriods)']; % multiply vector by as many conditions
-            % ignore movement
-            totalTrials_idx = [totalTrials_idx; NaN(n_mvmt,1)];
-        end % run loop
-
-        totalTrials_idx = [totalTrials_idx; NaN(n_subRuns,1)]; % ignore run constant regressors
-        n_totalTrialsForFirstLevel = length(totalTrials_idx); % number of trials kept for the 1st level
-
-        %% check whether the number of trials corresponds to the
-        % number of betas extracted by the GLM
-        betas_nm = ls([sub_fMRI_path,'beta_*.nii']); % extract name of all betas
-        % extract number of betas
-        n_betas = size(betas_nm,1);
-        % there should be as many betas as there are trials + movement
-        % betas + run constant betas
-        if n_betas ~= n_totalTrialsForFirstLevel
-            error(['Number of betas extracted by the GLM (',num2str(n_betas),')',...
-                ' and number of trials extracted through onsets (',num2str(n_totalTrialsForFirstLevel),')',...
-                ' are not consistent for subject ',sub_nm,'. Please check what happened and come back.']);
-        end
-
-        %% extract beta values for each trial
-        cd(sub_fMRI_path);
-        beta_idx    = 0;
-
-        %% loop through trials
-        jRun = 0;
-        jTimePhase = 0;
-        for iTrial = 1:n_totalTrialsForFirstLevel
-            jRunTrial = totalTrials_idx(iTrial);
-            if ~isnan(jRunTrial) % ignore movement and run constant regressors
-                beta_idx = beta_idx + 1;
-                % identify which run and time period we are at now
-                if iTrial == 1
-                    jRun = 1;
-                    jTimePhase = 1;
-                elseif ~isnan(totalTrials_idx(iTrial-1)) && ~isnan(totalTrials_idx(iTrial)) &&...
-                        (totalTrials_idx(iTrial) - totalTrials_idx(iTrial-1)) < 0 % start of new task phase (trial number gets re-initialized)
-                    jTimePhase = jTimePhase + 1;
-                elseif isnan(totalTrials_idx(iTrial-1)) && ~isnan(totalTrials_idx(iTrial)) % start of new run
-                    jRun = jRun + 1;
-                    jTimePhase = 1;
+        if ~strcmp(sub_nm,'036')
+            subj_folder = [fullfile(dataRoot, ['CID',sub_nm]),filesep];
+            sub_fMRI_path = [fullfile(subj_folder, 'fMRI_analysis','functional',...
+                ['preproc_sm_',num2str(preproc_sm_kernel),'mm'],['GLM',GLMstr]),filesep];
+            subj_behavior_folder = [subj_folder, 'behavior' filesep];
+            [subRuns, n_subRuns] = runs_definition(study_nm, sub_nm, condition);
+            
+            %% extract index of runs and trials that were included in the GLM
+            totalTrials_idx = []; % index of trials kept
+            runPerTrial = [];
+            
+            for iRun = 1:n_subRuns
+                jRun = subRuns.runsToKeep(iRun);
+                run_str = num2str(jRun);
+                run_nm = ['run',run_str];
+                % extract trials where no choice was made
+                currRunBehaviorFileName = ls([subj_behavior_folder,...
+                    '*_session',run_str,'_*_task.mat']);
+                if size(currRunBehaviorFileName,1) > 1
+                    error(['problem file identification: too many files popping out with run number ',run_str]);
                 end
-                task_nm = subRuns.tasks{jRun};
-                timePeriod_nm = timePeriods{jTimePhase};
-
-                % extract con/scon files
-                if beta_idx < 10
-                    betaZeros = '000';
-                elseif beta_idx >= 10 && beta_idx < 100
-                    betaZeros = '00';
-                elseif beta_idx >= 100 && beta_idx < 1000
-                    betaZeros = '0';
-                elseif beta_idx >= 1000
-                    betaZeros = '';
+                if strcmp(currRunBehaviorFileName(16:23),'physical') ||...
+                        strcmp(currRunBehaviorFileName(17:24),'physical')
+                    task_behavioral_id = 'Ep';
+                    task_behavioral_id_bis = 'physicalPerf';
+                elseif strcmp(currRunBehaviorFileName(16:21),'mental') ||...
+                        strcmp(currRunBehaviorFileName(17:22),'mental')
+                    task_behavioral_id = 'Em';
+                    task_behavioral_id_bis = 'mentalE_perf';
+                else
+                    error('problem in identifying task type because file name doesn''t match');
                 end
-
-                betaNum     = strcat(['beta_', betaZeros, num2str(beta_idx), '.nii']);
-                betaVol     = spm_vol(betaNum); % extracts header to read con file
-                betadata    = spm_read_vols(betaVol); % reads the con file
-
-                % extract indices inside the con file based on the
-                % MNI coordinates entered previously for the
-                % sphere/mask
-                vxyz        = unique(floor((inv(betaVol.mat) * sxyz_ROI')'), 'rows'); % converts from MNI (mm) to voxel-space
-                vi          = sub2ind(betaVol.dim, vxyz(:, 1), vxyz(:, 2), vxyz(:, 3)); % extracts coordinates of the sphere in the con (voxel-space)
-                beta_value  = mean(betadata(vi),'omitnan'); % extracts mean beta for the selected ROI sphere/mask
-                ROI_trial_b_trial.(ROI_nm).(task_nm).(run_nm).(timePeriod_nm)(jRunTrial, iS) = beta_value; % save mean beta for the selected ROI inside the big resulting matrix
-            else % skip movement regressors from beta extraction
-                beta_idx = beta_idx + 1;
-
-            end % ignore mvmt and run cstt
-        end % trial number loop
+                behavioralDataStruct = load([subj_behavior_folder, currRunBehaviorFileName]);
+                T0 = behavioralDataStruct.onsets.T0;
+                choiceOnsets = behavioralDataStruct.(task_behavioral_id_bis).onsets.choice - T0;
+                choiceMissedTrials = isnan(choiceOnsets);
+                
+                % trialN: index of the trials
+                trialN = 1:nTrialsPerRun;
+                trialN(choiceMissedTrials) = [];
+                totalTrials_idx = [totalTrials_idx; repmat(trialN,1,nTimePeriods)']; % multiply vector by as many conditions
+                runPerTrial = [runPerTrial; repmat(jRun, 1, nTimePeriods*length(trialN))'];
+                % ignore movement
+                totalTrials_idx = [totalTrials_idx; NaN(n_mvmt,1)];
+                runPerTrial = [runPerTrial; NaN(n_mvmt,1)];
+            end % run loop
+            
+            totalTrials_idx = [totalTrials_idx; NaN(n_subRuns,1)]; % ignore run constant regressors
+            runPerTrial = [runPerTrial; NaN(n_subRuns,1)]; % ignore run constant regressors
+            n_totalTrialsForFirstLevel = length(totalTrials_idx); % number of trials kept for the 1st level
+            
+            %% check whether the number of trials corresponds to the
+            % number of betas extracted by the GLM
+            betas_nm = ls([sub_fMRI_path,'beta_*.nii']); % extract name of all betas
+            % extract number of betas
+            n_betas = size(betas_nm,1);
+            % there should be as many betas as there are trials + movement
+            % betas + run constant betas
+            if n_betas ~= n_totalTrialsForFirstLevel
+                error(['Number of betas extracted by the GLM (',num2str(n_betas),')',...
+                    ' and number of trials extracted through onsets (',num2str(n_totalTrialsForFirstLevel),')',...
+                    ' are not consistent for subject ',sub_nm,'. Please check what happened and come back.']);
+            end
+            
+            %% extract beta values for each trial
+            cd(sub_fMRI_path);
+            beta_idx    = 0;
+            
+            %% loop through trials
+            kRun = 0;
+            jTimePhase = 0;
+            for iTrial = 1:n_totalTrialsForFirstLevel
+                jRunTrial = totalTrials_idx(iTrial);
+                % convert run number
+                switch runPerTrial(iTrial)
+                    case {1,2}
+                        run_nm = 'run1';
+                    case {3,4}
+                        run_nm = 'run2';
+                end
+                if ~isnan(jRunTrial) % ignore movement and run constant regressors
+                    beta_idx = beta_idx + 1;
+                    % identify which run and time period we are at now
+                    if iTrial == 1
+                        kRun = 1;
+                        jTimePhase = 1;
+                    elseif ~isnan(totalTrials_idx(iTrial-1)) && ~isnan(totalTrials_idx(iTrial)) &&...
+                            (totalTrials_idx(iTrial) - totalTrials_idx(iTrial-1)) < 0 % start of new task phase (trial number gets re-initialized)
+                        jTimePhase = jTimePhase + 1;
+                    elseif isnan(totalTrials_idx(iTrial-1)) && ~isnan(totalTrials_idx(iTrial)) % start of new run
+                        kRun = kRun + 1;
+                        jTimePhase = 1;
+                    end
+                    task_nm = subRuns.tasks{kRun};
+                    timePeriod_nm = timePeriods{jTimePhase};
+                    
+                    % extract con/scon files
+                    if beta_idx < 10
+                        betaZeros = '000';
+                    elseif beta_idx >= 10 && beta_idx < 100
+                        betaZeros = '00';
+                    elseif beta_idx >= 100 && beta_idx < 1000
+                        betaZeros = '0';
+                    elseif beta_idx >= 1000
+                        betaZeros = '';
+                    end
+                    
+                    betaNum     = strcat(['beta_', betaZeros, num2str(beta_idx), '.nii']);
+                    betaVol     = spm_vol(betaNum); % extracts header to read con file
+                    betadata    = spm_read_vols(betaVol); % reads the con file
+                    
+                    % extract indices inside the con file based on the
+                    % MNI coordinates entered previously for the
+                    % sphere/mask
+                    vxyz        = unique(floor((inv(betaVol.mat) * sxyz_ROI')'), 'rows'); % converts from MNI (mm) to voxel-space
+                    vi          = sub2ind(betaVol.dim, vxyz(:, 1), vxyz(:, 2), vxyz(:, 3)); % extracts coordinates of the sphere in the con (voxel-space)
+                    beta_value  = mean(betadata(vi),'omitnan'); % extracts mean beta for the selected ROI sphere/mask
+                    ROI_trial_b_trial.(ROI_nm).(task_nm).(run_nm).(timePeriod_nm)(jRunTrial, iS) = beta_value; % save mean beta for the selected ROI inside the big resulting matrix
+                else % skip movement regressors from beta extraction
+                    beta_idx = beta_idx + 1;
+                    
+                end % ignore mvmt and run cstt
+            end % trial number loop
+        end % filter subject 036 who for some reason doesn't work
         %% indicator subject done
         disp(['Subject ',num2str(iS),'/',num2str(NS),' extracted']);
     end % subject loop
     disp(['ROI ',num2str(iROI),'/',num2str(n_ROIs),' done']);
 end % ROI loop
 
-save(['ROI_BOLDperTrial_GLM',GLM_str,'.mat'],...
-    'ROI_trial_b_trial','ROI_names','ROI_xyz')
-% end % function
+save([dataRoot,'results',filesep,'ROI',filesep,...
+    'ROI_BOLDperTrial_GLM',GLMstr,'_',num2str(NS),'subs.mat'],...
+    'ROI_trial_b_trial','ROI_names','ROI_xyz');
+end % function
