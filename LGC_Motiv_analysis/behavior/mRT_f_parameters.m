@@ -51,6 +51,7 @@ nTasks = length(tasks);
 %% extract behavioral parameters
 [prm] = prm_extraction(subject_id, [], []);
 parameters = fieldnames(prm);
+parameters(strcmp(parameters,'CID')) = [];
 nPrm = length(parameters);
 
 %% loop through subjects
@@ -145,24 +146,26 @@ end % subject loop
 %% test link between parameters and RT
 for iPrm = 1:nPrm
     prm_nm = parameters{iPrm};
+    % filter subjects for which Arthur's model hasn't been performed yet
+    good_subs = ~isnan(prm.(prm_nm));
     for iTask = 1:nTasks
         task_id = tasks{iTask};
         
         % MEAN RT test
-        [beta_meanRT.(task_id).(prm_nm), ~,stats_meanRT.(task_id).(prm_nm)] = glmfit(prm.(prm_nm), mean_RT.(task_id), 'normal');
-        meanRT_f_prm.(task_id).(prm_nm) = glmval(beta_meanRT.(task_id).(prm_nm), prm.(prm_nm), 'identity');
+        [beta_meanRT.(task_id).(prm_nm), ~,stats_meanRT.(task_id).(prm_nm)] = glmfit(prm.(prm_nm)(good_subs), mean_RT.(task_id)(good_subs), 'normal');
+        meanRT_f_prm.(task_id).(prm_nm) = glmval(beta_meanRT.(task_id).(prm_nm), prm.(prm_nm)(good_subs), 'identity');
         pval.mean.(task_id).(prm_nm) = stats_meanRT.(task_id).(prm_nm).p(2);
         betas.mean.(task_id).(prm_nm) = beta_meanRT.(task_id).(prm_nm)(2);
         
         % MEDIAN RT test
-        [beta_medianRT.(task_id).(prm_nm), ~,stats_medianRT.(task_id).(prm_nm)] = glmfit(prm.(prm_nm), median_RT.(task_id), 'normal');
-        medianRT_f_prm.(task_id).(prm_nm) = glmval(beta_medianRT.(task_id).(prm_nm), prm.(prm_nm), 'identity');
+        [beta_medianRT.(task_id).(prm_nm), ~,stats_medianRT.(task_id).(prm_nm)] = glmfit(prm.(prm_nm)(good_subs), median_RT.(task_id)(good_subs), 'normal');
+        medianRT_f_prm.(task_id).(prm_nm) = glmval(beta_medianRT.(task_id).(prm_nm), prm.(prm_nm)(good_subs), 'identity');
         pval.median.(task_id).(prm_nm) = stats_medianRT.(task_id).(prm_nm).p(2);
         betas.median.(task_id).(prm_nm) = beta_medianRT.(task_id).(prm_nm)(2);
 
         % SD RT test
-        [beta_sd_RT.(task_id).(prm_nm), ~,stats_sd_RT.(task_id).(prm_nm)] = glmfit(prm.(prm_nm), sd_RT.(task_id), 'normal');
-        sd_RT_f_prm.(task_id).(prm_nm) = glmval(beta_sd_RT.(task_id).(prm_nm), prm.(prm_nm), 'identity');
+        [beta_sd_RT.(task_id).(prm_nm), ~,stats_sd_RT.(task_id).(prm_nm)] = glmfit(prm.(prm_nm)(good_subs), sd_RT.(task_id)(good_subs), 'normal');
+        sd_RT_f_prm.(task_id).(prm_nm) = glmval(beta_sd_RT.(task_id).(prm_nm), prm.(prm_nm)(good_subs), 'identity');
         pval.sd.(task_id).(prm_nm) = stats_sd_RT.(task_id).(prm_nm).p(2);
         betas.sd.(task_id).(prm_nm) = beta_sd_RT.(task_id).(prm_nm)(2);
 
@@ -179,8 +182,8 @@ for iPrm = 1:nPrm
             jPlot = jPlot + 1;
             subplot(1,3,jPlot);
             hold on;
-            scatter(prm.(prm_nm), mean_RT.(task_id));
-            plot(prm.(prm_nm), meanRT_f_prm.(task_id).(prm_nm),...
+            scatter(prm.(prm_nm)(good_subs), mean_RT.(task_id)(good_subs));
+            plot(prm.(prm_nm)(good_subs), meanRT_f_prm.(task_id).(prm_nm),...
                 'LineWidth',lWidth);
             xlabel(prm_nm);
             switch RT_type
@@ -197,8 +200,8 @@ for iPrm = 1:nPrm
             jPlot = jPlot + 1;
             subplot(1,3,jPlot);
             hold on;
-            scatter(prm.(prm_nm), median_RT.(task_id));
-            plot(prm.(prm_nm), medianRT_f_prm.(task_id).(prm_nm),...
+            scatter(prm.(prm_nm)(good_subs), median_RT.(task_id)(good_subs));
+            plot(prm.(prm_nm)(good_subs), medianRT_f_prm.(task_id).(prm_nm),...
                 'LineWidth',lWidth);
             xlabel(prm_nm);
             switch RT_type
@@ -215,8 +218,8 @@ for iPrm = 1:nPrm
             jPlot = jPlot + 1;
             subplot(1,3,jPlot);
             hold on;
-            scatter(prm.(prm_nm), sd_RT.(task_id));
-            plot(prm.(prm_nm), sd_RT_f_prm.(task_id).(prm_nm),...
+            scatter(prm.(prm_nm)(good_subs), sd_RT.(task_id)(good_subs));
+            plot(prm.(prm_nm)(good_subs), sd_RT_f_prm.(task_id).(prm_nm),...
                 'LineWidth',lWidth);
             xlabel(prm_nm);
             switch RT_type
