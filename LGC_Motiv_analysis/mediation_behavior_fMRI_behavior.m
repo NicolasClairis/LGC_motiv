@@ -23,18 +23,22 @@ condition = subject_condition;
 % define which ROI, and which time period is of interest to you
 % define ROI
 ROI_names = fieldnames(ROI_trial_b_trial);
+ROI_subList = ROI_trial_b_trial.subject_id;
+ROI_names(strcmp(ROI_names,'subject_id')) = [];
 if length(ROI_names) > 1
     which_ROI = listdlg('PromptString','Which ROI?','ListString',ROI_names);
     ROI_nm = ROI_names{which_ROI};
 else
     ROI_nm = ROI_names;
 end
+ROI_short_nm = inputdlg('ROI short name?');
+ROI_short_nm = ROI_short_nm{1};
 % define task
 task_names = {'Ep','Em','EpEmPool'};
 which_task = listdlg('PromptString','Which task?','ListString',task_names);
 task_to_look = task_names{which_task};
 % define time period
-timePeriods = fieldnames(ROI_trial_b_trial.(ROI_nm).Ep.run1);
+timePeriods = fieldnames(ROI_trial_b_trial.(ROI_nm{1}).Ep.run1);
 which_timePeriod = listdlg('PromptString','Which time phase of the trial?',...
     'listString',timePeriods);
 timePeriod_nm = timePeriods{which_timePeriod};
@@ -86,7 +90,7 @@ nRuns = 4;
 nTrialsPerRun = 54;
 nTrials = nTrialsPerRun*nRuns;
 % input/mediator/output
-[input_prm, ROI_mediator, output_prm] = deal(NaN(nTrial, NS));
+[input_prm, ROI_mediator, output_prm] = deal(NaN(nTrials, NS));
 % bin variables
 nBins = 6;
 [input_f_input_bin, ROI_f_input_bin, output_f_input_bin,...
@@ -126,9 +130,9 @@ for iS = 1:NS
         % define which task session it is
         switch kRun
             case {1,2}
-                run_nm_bis = 1;
+                run_nm_bis = ['run',num2str(1)];
             case {3,4}
-                run_nm_bis = 2;
+                run_nm_bis = ['run',num2str(2)];
         end
         
         %% load the data
@@ -182,7 +186,7 @@ for iS = 1:NS
         if needModeling == 1 
             switch mdlType
                 case 'simple'
-                    uncertainty_tmp = - dataInferred.confidenceFitted.(mdlN).(['run',run_nm_bis]); % revert sign to transform confidence into uncertainty
+                    uncertainty_tmp = - dataInferred.confidenceFitted.(['mdl_',mdlN]).(run_nm_bis); % revert sign to transform confidence into uncertainty
                 otherwise
                     error('not ready yet');
             end
@@ -211,7 +215,7 @@ for iS = 1:NS
         %% extract fMRI ROI mediator
         if strcmp(task_to_look,'EpEmPool') ||...
                 (strcmp(task_to_look, task_nm))
-            ROI_mediator(runTrials_idx, iS) = ROI_trial_b_trial.(ROI_nm).(task_nm).(run_nm).(timePeriod_nm)(:, iS);
+            ROI_mediator(runTrials_idx, iS) = ROI_trial_b_trial.(ROI_nm{1}).(task_nm_tmp).(run_nm_bis).(timePeriod_nm)(:, iS);
         end
         %% extract output behavioral variable
         switch output_prm_nm
@@ -227,8 +231,9 @@ for iS = 1:NS
     end % run loop
     
     %% do the mediation between input, fMRI and output per subject
+    dispIndivData = 0;
     [a_path(iS), b_path(iS), c_path(iS), c_prime_path(iS)] = mediation(input_prm(:,iS), ROI_mediator(:,iS), output_prm(:,iS),...
-        input_prm_nm, ROI_nm, output_prm_nm);
+        input_prm_nm, ROI_short_nm, output_prm_nm, dispIndivData);
     
     %% do the bins per subject
     [ROI_f_input_bin(:,iS), input_f_input_bin(:,iS)] = do_bin2(...
@@ -275,7 +280,7 @@ hdl = errorbar(m_input_f_input_bin,...
     sem_ROI_f_input_bin);
 hdl.LineWidth = lWidth;
 xlabel(input_prm_nm);
-ylabel(ROI_nm);
+ylabel(ROI_short_nm);
 legend_size(pSize);
 
 % output = f(ROI)
@@ -285,7 +290,7 @@ hdl = errorbar(m_ROI_f_ROI_bin,...
     sem_output_f_ROI_bin);
 hdl.LineWidth = lWidth;
 legend_size(pSize);
-xlabel(ROI_nm);
+xlabel(ROI_short_nm);
 ylabel(output_prm_nm);
 
 % output = f(input)

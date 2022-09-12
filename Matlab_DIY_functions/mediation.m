@@ -1,5 +1,5 @@
-function[a,b,c,c_prime, pval] = mediation(X, M, Y, X_nm, M_nm, Y_nm)
-% [a,b,c,c_prime pval] = mediation(X, M, Y, X_nm, M_nm, Y_nm)
+function[a,b,c,c_prime, pval] = mediation(X, M, Y, X_nm, M_nm, Y_nm, dispResults)
+% [a,b,c,c_prime pval] = mediation(X, M, Y, X_nm, M_nm, Y_nm, dispResults)
 % mediation will perform a mediation going from X to Y through M as a
 % mediator and will display the corresponding betas (rounded at 3 values
 % after the coma) and p.values.
@@ -21,6 +21,10 @@ function[a,b,c,c_prime, pval] = mediation(X, M, Y, X_nm, M_nm, Y_nm)
 %
 % Y_nm: name of X for text output (='Y' if left empty)
 %
+% dispResults: display results of betas and p.value?
+% by default, it will display the results (1) but set to 0 if you don't
+% want it to avoid spamming output in command window
+%
 % OUTPUTS
 % a: beta of X=>M path
 %
@@ -34,6 +38,10 @@ function[a,b,c,c_prime, pval] = mediation(X, M, Y, X_nm, M_nm, Y_nm)
 %
 % Developped by Nicolas Clairis - 17/08/2022 under Jules Brochard advice
 
+%% by default display the results
+if ~exist('dispResults','var') || isempty(dispResults)
+    dispResults = 1;
+end
 
 %% check names for each member of the mediation
 if ~exist('X_nm','var') || isempty(X_nm)
@@ -95,27 +103,29 @@ pval.c = stats_3.p(2);
 
 %% display relevant p.values in the command window to summarize the 
 % results of the mediation
-roundingVal = 3;
-
-% path a
-disp([X_nm,' -> ',M_nm,' (path a): ',...
-    M_nm,' = ',num2str(round(betas_1(1),roundingVal)),...
-    ' + (',num2str(round(a, roundingVal)),')*',X_nm,';']);
-disp(['p(a=',X_nm,') = ',num2str(pval.a)]);
-disp(' ');
-% path b
-disp([M_nm,' -> ',Y_nm,' (path b): ',...
-    Y_nm,' = ',num2str(round(betas_2(1), roundingVal)),...
-    ' + (',num2str(round(b, roundingVal)),')*',M_nm,...
-    ' + (',num2str(round(c_prime,roundingVal)),')*',X_nm,';']);
-disp(['p(b=',M_nm,') = ',num2str(pval.b),';']);
-disp(['p(c''=',X_nm,') = ',num2str(pval.c_prime)]);
-disp(' ');
-% path c
-disp([X_nm,' -> ',Y_nm,' (path c): ',...
-    Y_nm,' = ',num2str(round(betas_3(1), roundingVal)),...
-    ' + (',num2str(round(c, roundingVal)),')*',X_nm,';']);
-disp(['p(c=',X_nm,') = ',num2str(pval.c)]);
-disp(' ');
+if dispResults == 1
+    roundingVal = 3;
+    
+    % path a
+    disp([X_nm,' -> ',M_nm,' (path a): ',...
+        M_nm,' = ',num2str(round(betas_1(1),roundingVal)),...
+        ' + (',num2str(round(a, roundingVal)),')*',X_nm,';']);
+    disp(['p(a=',X_nm,') = ',num2str(pval.a)]);
+    disp(' ');
+    % path b
+    disp([M_nm,' -> ',Y_nm,' (path b): ',...
+        Y_nm,' = ',num2str(round(betas_2(1), roundingVal)),...
+        ' + (',num2str(round(b, roundingVal)),')*',M_nm,...
+        ' + (',num2str(round(c_prime,roundingVal)),')*',X_nm,';']);
+    disp(['p(b=',M_nm,') = ',num2str(pval.b),';']);
+    disp(['p(c''=',X_nm,') = ',num2str(pval.c_prime)]);
+    disp(' ');
+    % path c
+    disp([X_nm,' -> ',Y_nm,' (path c): ',...
+        Y_nm,' = ',num2str(round(betas_3(1), roundingVal)),...
+        ' + (',num2str(round(c, roundingVal)),')*',X_nm,';']);
+    disp(['p(c=',X_nm,') = ',num2str(pval.c)]);
+    disp(' ');
+end
 
 end % function
