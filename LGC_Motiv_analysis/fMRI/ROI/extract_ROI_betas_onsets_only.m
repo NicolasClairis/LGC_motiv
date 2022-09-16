@@ -53,7 +53,7 @@ ROI_trial_b_trial.subject_id = subject_id;
 
 %% which GLM
 if ~exist('GLM','var') || isempty(GLM)
-    listOfAllOnsetsOnlyGLM = [64];
+    listOfAllOnsetsOnlyGLM = [64, 65];
     nPossibleGLMs = size(listOfAllOnsetsOnlyGLM, 2);
     listGLM = ['GLM',num2str(listOfAllOnsetsOnlyGLM(1))];
     if nPossibleGLMs > 1
@@ -66,6 +66,10 @@ if ~exist('GLM','var') || isempty(GLM)
     GLM = listOfAllOnsetsOnlyGLM(GLM_idx);
 end
 GLMstr = num2str(GLM);
+if GLM == 64
+    error(['GLM ',GLMstr,' seems to be badly defined as regressors are not ',...
+        'orthogonal (probably you can''t model all events in the same GLM']);
+end
 GLMprm = which_GLM(GLM);
 % check GLM parameters
 add_drv = GLMprm.gal.add_drv; % if derivative has been added, need to double the number of regressors
