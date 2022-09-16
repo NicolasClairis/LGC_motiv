@@ -105,8 +105,8 @@ for iROI = 1:n_ROIs
                 curr_onset_nm = GLMprm.model_onset.(task_nm).(timePeriod_nm);
                 if ~strcmp(curr_onset_nm,'none') && ismember(curr_onset_nm,{'stick','boxcar'})
                     ROI_trial_b_trial.(ROI_nm).(task_nm).(run_str).(timePeriod_nm) = NaN(nTrialsPerRun, NS);
-                else
-                    error(['problem with ',curr_onset_nm])
+                elseif ~ismember(curr_onset_nm,{'none','stick','boxcar'})
+                    error(['problem with time modulation = ',curr_onset_nm])
                 end
             end % time period
         end % run loop
