@@ -13,6 +13,8 @@ function[ROI_trial_b_trial] = extract_ROI_betas_onsets_only(computerRoot, study_
 %
 % condition: define which subjects to include (will be asked if left empty)
 %
+% GLM: GLM number to use for the trial/trial ROI activity extraction
+%
 % OUTPUTS
 % ROI_trial_b_trial: structure with ROI BOLD deconvoluted trial/trial and
 % for each phase of the GLM.
