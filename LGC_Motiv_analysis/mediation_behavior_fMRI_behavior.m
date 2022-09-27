@@ -58,28 +58,10 @@ output_prm_nm = potential_output_prm{which_output};
 % bayesian across tasks or simple model each task separately?
 if ismember(input_prm_nm,{'uncertainty'})
     needModeling = 1;
-    if ~exist('mdlType','var') || isempty(mdlType)
-        listPossibleModels = {'bayesian','simple'};
-        mdlType_idx = listdlg('promptstring','Which model type?',...
-            'ListString',listPossibleModels);
-        mdlType = listPossibleModels{mdlType_idx};
-    end
+    [mdlType, mdlN] = behavioral_model_selection;
     % warning until this gets fixed
     if strcmp(mdlType,'bayesian')
         error('uncertainty extraction from bayesian model not ready yet.');
-    end
-    
-    % which model number to use?
-    if ~exist('mdlN','var') || isempty(mdlN)
-        switch mdlType
-            case 'bayesian'
-                listPossibleModelNumbers = {'1','3'};
-            case 'simple'
-                listPossibleModelNumbers = {'1','2','3','4'};
-        end
-        mdlN_idx = listdlg('promptstring','Which model number?',...
-            'ListString',listPossibleModelNumbers);
-        mdlN = listPossibleModelNumbers{mdlN_idx};
     end
 else
     needModeling = 0;
