@@ -2,8 +2,11 @@
 % determines which choices should be made.
 %
 
-%% number of bins
+%% general parameters
+% number of bins
 nBins = 6;
+% display figures?
+dispFig = true;
 
 %% study by default
 if ~exist('study_nm','var') || isempty(study_nm)
@@ -66,12 +69,13 @@ nTrials = nTrialsPerRun*nRuns;
 [input_prm, ROI_mediator, choice_hE] = deal(NaN(nTrials, NS));
 
 % bin variables
-[input_f_input_low_ROI, choice_f_input_low_ROI,...
-    input_f_input_high_ROI, choice_f_input_high_ROI] = deal(NaN(nBins, NS));
+[input_f_input, ROI_f_input, choice_f_input_bin,...
+    input_f_input_low_ROI, ROI_f_input_low_ROI, choice_f_input_low_ROI,...
+    input_f_input_high_ROI, ROI_f_input_high_ROI, choice_f_input_high_ROI] = deal(NaN(nBins, NS));
 
 %% loop through subjects
 for iS = 1:NS
-sub_nm = subject_id{iS};
+    sub_nm = subject_id{iS};
     subBehaviorFolder = [studyBehaviorFolder, 'CID',sub_nm, filesep, 'behavior',filesep];
 
     % extract confidence based on the model
@@ -198,5 +202,116 @@ sub_nm = subject_id{iS};
     
 
     %% extract the bins
+    % 1) split the data according to input parameter bins
+    [ROI_f_input(:,iS), input_f_input(:,iS), bin_idx_tmp] = do_bin2(ROI_mediator(:, iS), input_prm(:,iS), nBins, 0);
+    choice_f_input_bin(:,iS) = do_bin2(choice_hE(:, iS), input_prm(:,iS), nBins, 0);
+
+    % 2) perform a median split according to the ROI activity for each bin
+    for iBin = 1:nBins
+        curr_bin_idx_tmp = bin_idx_tmp == iBin;
+        med_tmp = median(ROI_mediator(curr_bin_idx_tmp, iS), 1,'omitnan');
+        % extract data for the current bin of interest
+        input_bin_tmp   = input_prm(curr_bin_idx_tmp, iS);
+        ROI_bin_tmp     = ROI_mediator(curr_bin_idx_tmp, iS);
+        choice_bin_tmp  = choice_hE(curr_bin_idx_tmp, iS);
+        % extract data for low ROI activity
+        curr_bin_low_ROI_idx = ROI_bin_tmp < med_tmp;
+        input_f_input_low_ROI(iBin, iS) = mean(input_bin_tmp(curr_bin_low_ROI_idx),1,'omitnan');
+        ROI_f_input_low_ROI(iBin, iS) = mean(ROI_bin_tmp(curr_bin_low_ROI_idx),1,'omitnan');
+        choice_f_input_low_ROI(iBin, iS) =  mean(choice_bin_tmp(curr_bin_low_ROI_idx),1,'omitnan');
+        % extract data for high ROI activity
+        curr_bin_high_ROI_idx = ROI_bin_tmp > med_tmp;
+        input_f_input_high_ROI(iBin, iS) = mean(input_bin_tmp(curr_bin_high_ROI_idx),1,'omitnan');
+        ROI_f_input_high_ROI(iBin, iS) = mean(ROI_bin_tmp(curr_bin_high_ROI_idx),1,'omitnan');
+        choice_f_input_high_ROI(iBin, iS) =  mean(choice_bin_tmp(curr_bin_high_ROI_idx),1,'omitnan');
+    end
     
 end % subject loop
+
+%% average data
+% basic data
+[m_input_f_input,...
+    sem_input_f_input] = mean_sem_sd(input_f_input, 2);
+[m_ROI_f_input,...
+    sem_ROI_f_input] = mean_sem_sd(ROI_f_input, 2);
+[m_choice_f_input,...
+    sem_choice_f_input] = mean_sem_sd(choice_f_input, 2);
+% low ROI median split
+[m_input_f_input_low_ROI,...
+    sem_input_f_input_low_ROI] = mean_sem_sd(input_f_input_low_ROI, 2);
+[m_ROI_f_input_low_ROI,...
+    sem_ROI_f_input_low_ROI] = mean_sem_sd(ROI_f_input_low_ROI, 2);
+[m_choice_f_input_low_ROI,...
+    sem_choice_f_input_low_ROI] = mean_sem_sd(choice_f_input_low_ROI, 2);
+% high ROI median split
+[m_input_f_input_high_ROI,...
+    sem_input_f_input_high_ROI] = mean_sem_sd(input_f_input_high_ROI, 2);
+[m_ROI_f_input_high_ROI,...
+    sem_ROI_f_input_high_ROI] = mean_sem_sd(ROI_f_input_high_ROI, 2);
+[m_choice_f_input_high_ROI,...
+    sem_choice_f_input_high_ROI] = mean_sem_sd(choice_f_input_high_ROI, 2);
+
+%% figures
+if dispFig == true
+    lWidth = 3;
+    black = [0 0 0];
+    purple = [153 142 195]./255;
+    orange = [241 163 64]./255;
+    pSize = 50;
+
+    % look at the general figure (choice = f(inputs), ROI=f(inputs)
+    fig;
+    % choices = f(inputs)
+    subplot(1,2,1);
+    hold on;
+    gal_data_hdl = scatter(m_input_f_input, m_choice_f_input);
+    gal_data_hdl.LineWidth = lWidth;
+    gal_data_hdl.MarkerEdgeColor = black;
+    xlabel(input_prm_nm);
+    ylabel('Choice = high effort (%)');
+    legend_size(pSize);
+
+    subplot(1,2,2);
+    % ROI = f(inputs)
+    hold on;
+    ROI_f_input_hdl = scatter(m_input_f_input, m_ROI_f_input);
+    ROI_f_input_hdl.LineWidth = lWidth;
+    ROI_f_input_hdl.MarkerEdgeColor = black;
+    xlabel(input_prm_nm);
+    ylabel([ROI_short_nm,' BOLD']);
+    legend_size(pSize);
+
+    %% sanity check: ROI = f(inputs) + ROI median split (did it work?)
+    fig;
+    hold on;
+    ROI_f_input_low_ROI_hdl = scatter(m_input_f_input_low_ROI, m_ROI_f_input_low_ROI);
+    ROI_f_input_high_ROI_hdl = scatter(m_input_f_input_high_ROI, m_ROI_f_input_high_ROI);
+    ROI_f_input_low_ROI_hdl.LineWidth = lWidth;
+    ROI_f_input_low_ROI_hdl.MarkerEdgeColor = purple;
+    ROI_f_input_high_ROI_hdl.LineWidth = lWidth;
+    ROI_f_input_high_ROI_hdl.MarkerEdgeColor = orange;
+    xlabel(input_prm_nm);
+    ylabel([ROI_short_nm,' BOLD']);
+    legend([ROI_f_input_high_ROI_hdl, ROI_f_input_low_ROI_hdl],...
+        {['low ',ROI_short_nm],['high ',ROI_short_nm]});
+    legend('boxoff');
+    legend_size(pSize);
+
+    %% main figure: choices = f(inputs) + ROI median split
+    fig;
+    hold on;
+    choices_f_inputs_low_ROI_data_hdl = scatter(m_input_f_input_low_ROI, m_choice_f_input_low_ROI);
+    choices_f_inputs_high_ROI_data_hdl = scatter(m_input_f_input_high_ROI, m_choice_f_input_high_ROI);
+    choices_f_inputs_low_ROI_data_hdl.LineWidth = lWidth;
+    choices_f_inputs_low_ROI_data_hdl.MarkerEdgeColor = purple;
+    choices_f_inputs_high_ROI_data_hdl.LineWidth = lWidth;
+    choices_f_inputs_high_ROI_data_hdl.MarkerEdgeColor = orange;
+    xlabel(input_prm_nm);
+    ylabel('Choice = high effort (%)');
+    legend([ROI_f_input_high_ROI_hdl, ROI_f_input_low_ROI_hdl],...
+        {['low ',ROI_short_nm],['high ',ROI_short_nm]});
+    legend('boxoff');
+    legend_size(pSize);
+
+    
+end
