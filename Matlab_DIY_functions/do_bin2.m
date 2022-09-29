@@ -1,5 +1,5 @@
-function [var_binned, Bin_val] = do_bin2(var_to_bin, bin_var, nb_bins, same_n_samples_per_bin)
-%[var_binned, Bin_val] = do_bin2(var_to_bin, bin_var, nb_bins, same_n_samples_per_bin)
+function [var_binned, Bin_val, bin_idx] = do_bin2(var_to_bin, bin_var, nb_bins, same_n_samples_per_bin)
+%[var_binned, Bin_val, bin_idx] = do_bin2(var_to_bin, bin_var, nb_bins, same_n_samples_per_bin)
 % function to create 'nb_bins' bins of equal size (same number of samples in each bin) according to 'bin_var' values
 % used to bin 'var_to_bin' and 'bin_var'.
 %
@@ -21,11 +21,7 @@ function [var_binned, Bin_val] = do_bin2(var_to_bin, bin_var, nb_bins, same_n_sa
 %
 % Bin_val: 'bin_var' binned in 'nb_bins' bins in ascending order
 %
-% same_n_samples_per_bin
-% (0) adapt the bins even if number of bins asked does not comply with
-% having the same number of samples in each bin
-% (1) or empty: try to keep same number of samples per bin, otherwise error
-% message and refuse to apply the script
+% bin_idx: vector with the index corresponding to each bin for all trials
 %
 % Created by Nicolas Clairis (based on Alizee do_bin.m function) -
 % 04/01/2018
@@ -62,11 +58,19 @@ end
 [bin_var_ascOrder, bin_var_ascOrder_idx] = sort(bin_var);
 var_to_bin_ascOrder = var_to_bin(bin_var_ascOrder_idx);
 
+%% extract index corresponding to each bin
+bin_idx = NaN(1,length(bin_var));
+for iBin = 1:nb_bins
+    current_interval = (1:n_samples_pBin) + n_samples_pBin*(iBin - 1);
+    curr_bin_idx_tmp = bin_var_ascOrder_idx(current_interval);
+    bin_idx(curr_bin_idx_tmp) = iBin;
+end % bin loop
+
 %% extract values for each bin
 for iBin = 1:nb_bins
     current_interval    = (1:n_samples_pBin) + n_samples_pBin*(iBin - 1);
     Bin_val(iBin)       = mean(bin_var_ascOrder(current_interval),'omitnan');
     var_binned(iBin)    = mean(var_to_bin_ascOrder(current_interval),'omitnan');
-end
+end % bin loop
 
 end
