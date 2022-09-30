@@ -44,7 +44,8 @@ which_timePeriod = listdlg('PromptString','Which time phase of the trial?',...
 timePeriod_nm = timePeriods{which_timePeriod};
 
 %% select parameters of interest
-potential_input_prm = {'NV','uncertainty','E_level','money_level','deltaMoney_level'};
+potential_input_prm = {'NV_hE','NV_ch','uncertainty',...
+    'E_level','money_level','deltaMoney_level'};
 potential_output_prm = {'RT','uncertainty_rtg','choice_hE'};
 
 which_input = listdlg('PromptString','please select input parameter',...
@@ -168,8 +169,8 @@ for iS = 1:NS
         if needModeling == 1 
             switch mdlType
                 case 'simple'
-                    NV_hE_tmp = dataInferred.NV_varOption.(task_nm_tmp).(['mdl_',mdlN]).(['run',run_nm]);
-                    NV_ch_tmp = dataInferred.NV_chosen.(task_nm_tmp).(['mdl_',mdlN]).(['run',run_nm]);
+                    NV_hE_tmp = dataInferred.NV_varOption.(task_nm_tmp).(['mdl_',mdlN]).(run_nm_bis);
+                    NV_ch_tmp = dataInferred.NV_chosen.(task_nm_tmp).(['mdl_',mdlN]).(run_nm_bis);
                     uncertainty_tmp = - dataInferred.confidenceFitted.(['mdl_',mdlN]).(run_nm_bis); % revert sign to transform confidence into uncertainty
                 otherwise
                     error('not ready yet');
