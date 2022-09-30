@@ -44,7 +44,7 @@ which_timePeriod = listdlg('PromptString','Which time phase of the trial?',...
 timePeriod_nm = timePeriods{which_timePeriod};
 
 %% select parameters of interest
-potential_input_prm = {'uncertainty','E_level','money_level','deltaMoney_level'};
+potential_input_prm = {'NV','uncertainty','E_level','money_level','deltaMoney_level'};
 potential_output_prm = {'RT','uncertainty_rtg','choice_hE'};
 
 which_input = listdlg('PromptString','please select input parameter',...
@@ -56,12 +56,12 @@ output_prm_nm = potential_output_prm{which_output};
 
 %% if a parameter is based on modeling, you need to decide which model to use
 % bayesian across tasks or simple model each task separately?
-if ismember(input_prm_nm,{'uncertainty'})
+if ismember(input_prm_nm,{'NV_hE','NV_ch','uncertainty'})
     needModeling = 1;
     [mdlType, mdlN] = behavioral_model_selection;
     % warning until this gets fixed
     if strcmp(mdlType,'bayesian')
-        error('uncertainty extraction from bayesian model not ready yet.');
+        error('uncertainty/NV extraction from bayesian model not ready yet.');
     end
 else
     needModeling = 0;
@@ -168,6 +168,8 @@ for iS = 1:NS
         if needModeling == 1 
             switch mdlType
                 case 'simple'
+                    NV_hE_tmp = dataInferred.NV_varOption.(task_nm_tmp).(['mdl_',mdlN]).(['run',run_nm]);
+                    NV_ch_tmp = dataInferred.NV_chosen.(task_nm_tmp).(['mdl_',mdlN]).(['run',run_nm]);
                     uncertainty_tmp = - dataInferred.confidenceFitted.(['mdl_',mdlN]).(run_nm_bis); % revert sign to transform confidence into uncertainty
                 otherwise
                     error('not ready yet');
@@ -182,6 +184,10 @@ for iS = 1:NS
         
         %% extract input behavioral variable
         switch input_prm_nm
+            case 'NV_hE'
+                input_prm(runTrials_idx, iS) = NV_hE_tmp;
+            case 'NV_ch'
+                input_prm(runTrials_idx, iS) = NV_ch_tmp;
             case 'uncertainty'
                 input_prm(runTrials_idx, iS) = uncertainty_tmp;
             case 'E_level'
