@@ -313,7 +313,7 @@ end % subject loop
 [m_betas.ROI2_vs_ROI1_bis,~,stats_tmp] = glmfit(betas_ROI1(2,:),...
     betas_ROI2(2,:),...
     'normal');
-pval.([ROI_short_nm2,'_f_',ROI_short_nm1]) = stats.p;
+pval.([ROI_short_nm2,'_f_',ROI_short_nm1]) = stats_tmp.p;
 betas_ROI2_vs_ROI1_bis_fit = glmval(m_betas.ROI2_vs_ROI1_bis, betas_ROI1(2,:), 'identity');
 
 %% figure showing different bins
