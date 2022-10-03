@@ -31,11 +31,20 @@ else
 end
 
 %% list metabolites
-all_metabolites = {'Mac','Ala','Asp','PCho','Cr','PCr','GABA',...
-    'Gln','Glu','GSH','Gly','Ins','Lac','NAA','Scyllo','Tau',...
-    'Asc','Glc','NAAG','GPC','PE','Ser',...
-    'NAA_NAAG','Glu_Gln','GPC_PCho','Cr_PCr','Gly_Ins'};
+all_metabolites = {'Asp','GABA',...
+    'Gln','Glu','GSH','Gly','Ins','Lac','Scyllo','Tau',...
+    'NAA','NAAG','PE',...
+    'Glu_Gln','GPC_PCho','Cr_PCr'};
+% metabolites with bad signal have been removed but you can find the full
+% list of theoretically measurable metabolites below:
+% all_metabolites = {'Mac','Ala','Asp','PCho','Cr','PCr','GABA',...
+%     'Gln','Glu','GSH','Gly','Ins','Lac','NAA','Scyllo','Tau',...
+%     'Asc','Glc','NAAG','GPC','PE','Ser',...
+%     'NAA_NAAG','Glu_Gln','GPC_PCho','Cr_PCr','Gly_Ins'};
 n_metabolites = length(all_metabolites);
+
+%% Cramer-Rao Lower Bound threshold (in percentage)
+CRLB_threshold = 0.5;
 
 %% loop dmPFC and aIns
 ROIs = {'dmPFC','aIns'};
@@ -53,19 +62,28 @@ for iROI = 1:nROIs
     switch ROI_nm
         case 'dmPFC'
             sheet_nm = 'AdaptedDMPFCMetabolites';
+            CRLB_sheet_nm = 'DMPFC_CRLB';
         case 'aIns'
             sheet_nm = 'AdaptedAIMetabolites';
+            CRLB_sheet_nm = 'AI_CRLB';
     end
     excelRead_tmp = readtable([metaboliteFolder,filesep,'Metabolites.xlsx'],...
         'Sheet',sheet_nm);
+    CRLB_excelRead_tmp = readtable([metaboliteFolder,filesep,'Metabolites.xlsx'],...
+        'Sheet',CRLB_sheet_nm);
     
     %% extract the data for each subject
     for iS = 1:NS
         sub_nm = subject_id{iS};
         subj_line = strcmp(excelRead_tmp.CID, sub_nm);
+        subj_CRLB_line = strcmp(CRLB_excelRead_tmp.CID, sub_nm);
         for iMet = 1:n_metabolites
             met_nm = all_metabolites{iMet};
-            if excelRead_tmp.(met_nm)(subj_line) > 0 % ignore subjects where data not extracted
+            CRLB_tmp = CRLB_excelRead_tmp.(met_nm)(subj_CRLB_line);
+            if excelRead_tmp.(met_nm)(subj_line) > 0 && CRLB_tmp <= CRLB_threshold
+                % ignore subjects where data has not been extracted (=0 when not extracted) 
+                % and subjects for which the Cramer Lower Bound is too bad
+                % (>50%)
                 metabolites.(ROI_nm).(met_nm)(iS) = excelRead_tmp.(met_nm)(subj_line);
             end
         end % metabolites
