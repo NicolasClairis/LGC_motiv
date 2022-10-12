@@ -28,7 +28,7 @@ whichPc = 'lab'; % 'lab'/'home'
 switch whichPc
     case 'lab'
         bayesian_root = fullfile('C:','Users','clairis','Desktop','GitHub',...
-            'LGC_motiv','LGC_Motiv_analysis','behavior');
+            'LGC_motiv','LGC_Motiv_results','bayesian_modeling');
         computerRoot = [fullfile('E:'),filesep];
     case 'home'
         bayesian_root = fullfile('C:','Users','Loco','Documents','GitHub',...
