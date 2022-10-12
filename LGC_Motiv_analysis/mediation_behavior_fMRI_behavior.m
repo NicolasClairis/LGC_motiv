@@ -1,8 +1,55 @@
+function[pval, a_path, b_path, c_path, c_prime_path, subject_id,...
+    input_f_input_bin, ROI_f_input_bin, output_f_input_bin,...
+    ROI_f_ROI_bin, output_f_ROI_bin,...
+    input_prm_nm, ROI_short_nm, output_prm_nm] = mediation_behavior_fMRI_behavior(study_nm, condition, subject_id)
+%[pval, a_path, b_path, c_path, c_prime_path, subject_id,...
+%     input_f_input_bin, ROI_f_input_bin, output_f_input_bin,...
+%     ROI_f_ROI_bin, output_f_ROI_bin,...
+%     input_prm_nm, ROI_short_nm, output_prm_nm] = mediation_behavior_fMRI_behavior(study_nm, condition, subject_id)
 % script aiming at checking whether fMRI activity deconvoluted and 
 % extracted trial/trial mediates the impact of task variables to behavior.
 % In particular, we are interested in looking whether the degree of
 % uncertainty related to the task variables trial/trial has an impact on
 % RT mediated by dmPFC.
+%
+% INPUTS
+% study_nm: study name ('study1'/'study2')
+%
+% condition: condition to use for the subjects (important to know which
+% runs to include or not) (will be asked if left empty)
+%
+% subject_id: list of subjects to include (will be asked if left empty)
+%
+% OUTPUTS
+% pval: p.value for each path of the mediation
+%
+% a_path: beta for path going from behavior to fMRI for each subject
+% 
+% b_path: beta for path going from fMRI to behavior for each subject
+%
+% c_path: beta for direct path from behavior input to behavior output for
+% each subject
+%
+% c_prime_path: beta for direct path from behavior input to behavior output
+% for each subject after taking into account the mediator
+%
+% subject_id: list of subjects included
+%
+% input_f_input_bin: bin of behavioral input as of function of itself
+% 
+% ROI_f_input_bin: bin of ROI activity as of function of behavioral input
+% 
+% output_f_input_bin: bin of behavioral output as of function of behavioral input
+% 
+% ROI_f_ROI_bin: bin of ROI activity as of function of itself
+%     
+% output_f_ROI_bin: bin of behavioral output as of function of ROI activity
+%
+% input_prm_nm: input parameter name
+%
+% ROI_short_nm: ROI short name
+%
+% output_prm_nm: output parameter name
 
 %% study by default
 if ~exist('study_nm','var') || isempty(study_nm)
@@ -14,8 +61,14 @@ computerRoot = LGCM_root_paths;
 studyBehaviorFolder = [computerRoot, filesep, study_nm, filesep];
 
 %% selection of participants
-condition = subject_condition;
-[subject_id, NS] = LGCM_subject_selection(study_nm, condition);
+if ~exist('condition','var') || isempty(condition)
+    condition = subject_condition;
+end
+if ~exist('subject_id','var') || isempty(subject_id)
+    [subject_id, NS] = LGCM_subject_selection(study_nm, condition);
+else
+    NS = length(subject_id);
+end
 
 %% extract ROI activity for all subjects
 [ROI_trial_b_trial] = extract_ROI_betas_onsets_only(computerRoot,...
@@ -291,3 +344,4 @@ hdl.LineWidth = lWidth;
 legend_size(pSize);
 xlabel(input_prm_nm);
 ylabel(output_prm_nm);
+end % function

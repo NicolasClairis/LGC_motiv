@@ -37,12 +37,13 @@ switch computerRoot
         error(['computer root ',computerRoot,' not ready yet.'])
 end
 %% define subject list
-if ~exist('condition','var') || isempty(condition)
-    condition = subject_condition;
-end
 if ~exist('subject_id','var') || isempty(subject_id)
+    if ~exist('condition','var') || isempty(condition)
+        condition = subject_condition;
+    end
     [subject_id, NS] = LGCM_subject_selection(study_nm, condition);
 else
+    condition = 'fMRI_noSatTask'; % important for selection of the runs
     NS = length(subject_id);
 end
 % store list of subjects
