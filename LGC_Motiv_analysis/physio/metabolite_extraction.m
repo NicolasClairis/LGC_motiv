@@ -18,30 +18,26 @@ function[metabolite_allSubs, ROI_nm, metabolite_nm] = metabolite_extraction(stud
 %
 % metabolite_nm: name of the metabolite that you extracted
 
+%% extract all metabolites for the subjects selected
+[metabolites] = metabolite_load(subject_id);
+
 %% extract 
 switch study_nm
     case 'study1'
         %% which ROI?
         ROIs = {'dmPFC','aIns'};
-        nROIs = length(ROIs);
-        ROI_idx = spm_input('Metabolites in which brain area?',1,'m',...
-            ROIs,1:nROIs,0);
+        ROI_idx = listdlg('PromptString','Metabolites in which brain area?',...
+            'ListString',ROIs,'SelectionMode','single');
         ROI_nm = ROIs{ROI_idx};
         %% select metabolite of interest
-        metabolites = {'Mac','Ala','Asp','PCho','Cr','PCr','GABA',...
-            'Gln','Glu','GSH','Gly','Ins','Lac','NAA','Scyllo','Tau',...
-            'Asc','Glc','NAAG','GPC','PE','Ser',...
-            'NAA_NAAG','Glu_Gln','GPC_PCho','Cr_PCr','Gly_Ins','Gln_div_Glu'};
+        metabolite_names = fieldnames(metabolites.(ROI_nm));
     otherwise
         error(['not ready yet for ',study_nm]);
 end
-n_met = length(metabolites);
-metabolite_idx = spm_input('Which metabolite to focus on?',1,'m',...
-    metabolites,1:n_met,0);
-metabolite_nm = metabolites{metabolite_idx};
+which_metab_idx = listdlg('PromptString','Which metabolite to focus on?',...
+    'ListString',metabolite_names,'SelectionMode','single');
+metabolite_nm = metabolite_names{which_metab_idx};
 
-%% extract all metabolites for the subjects selected
-[metabolites] = metabolite_load(subject_id);
 %% focus on metabolite and brain area selected
 metabolite_allSubs = metabolites.(ROI_nm).(metabolite_nm);
 
