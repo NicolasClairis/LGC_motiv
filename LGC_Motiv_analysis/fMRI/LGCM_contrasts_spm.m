@@ -65,7 +65,6 @@ if ~exist('condition','var') ||...
 condition = 'fMRI';
 end
 [subject_id, NS] = LGCM_subject_selection(study_nm, condition);
-
 %% loop through subjects to extract all the regressors
 matlabbatch = cell(NS,1);
 
