@@ -148,8 +148,10 @@ switch study_nm
                 % 065 (run 3)
                 % 069 (run 3 and 4)
                 % 079 (run 3)
+                % 086 (run 3)
                 % 090 (run 3)
                 % 093 (run 1 + 3)
+                % 094 (run 3)
                 % 095 (run 1)
             case 'fMRI_GLM59'
                 bad_subs = ismember(fullSubList,{'002','005',...
@@ -198,7 +200,7 @@ switch study_nm
         all_subs(bad_subs) = [];
         % reminder to check the last acquired subjects:
         warning(['check ',...
-            '019, 073, 086, 094, ... and other last subjects for movement']);
+            '019,... and other last subjects for movement']);
         
         %% restrict to subjects of interest
         subject_id = all_subs;
