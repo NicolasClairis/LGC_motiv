@@ -232,6 +232,10 @@ for iS = 1:NS
         
         %% choice
         choice_LR_tmp = choiceAndPerf_tmp.choice;
+        % remove confidence info from choice:
+        choice_LR_tmp(choice_LR_tmp == 2) = 1;
+        choice_LR_tmp(choice_LR_tmp == -2) = -1;
+        % extract high effort choice
         choice_highE_tmp = NaN(1,length(choice_LR_tmp));
         choice_highE_tmp(choice_LR_tmp == -defaultSide_tmp) = 1;
         choice_highE_tmp(choice_LR_tmp == defaultSide_tmp) = 0;
