@@ -3,8 +3,6 @@
 %
 
 %% general parameters
-% number of bins
-nBins = 6;
 % display figures?
 dispFig = true;
 
@@ -47,14 +45,24 @@ which_timePeriod = listdlg('PromptString','Which time phase of the trial?',...
 timePeriod_nm = timePeriods{which_timePeriod};
 
 %% select parameters of interest
-potential_input_prm = {'NV','uncertainty','E_level','money_level',...
+potential_input_prm = {'NV_hE','deltaNV','uncertainty','E_level','money_level',...
     'deltaMoney_level'};
 which_input = listdlg('PromptString','please select input parameter',...
     'ListString',potential_input_prm);
 input_prm_nm = potential_input_prm{which_input};
 
+%% number of bins
+switch input_prm_nm
+    case {'E_level','money_level','deltaMoney_level'}
+        nBins = 3;
+    case {'NV_hE','deltaNV','uncertainty'}
+        nBins = 6;
+    otherwise
+        nBins = 6;
+end
+
 %% select which model to use (if relevant)
-if ismember(input_prm_nm,{'NV','uncertainty'})
+if ismember(input_prm_nm,{'NV_hE','deltaNV','uncertainty'})
     needModeling = true;
     [mdlType, mdlN] = behavioral_model_selection;
 else
@@ -69,7 +77,7 @@ nTrials = nTrialsPerRun*nRuns;
 [input_prm, ROI_mediator, choice_hE] = deal(NaN(nTrials, NS));
 
 % bin variables
-[input_f_input, ROI_f_input, choice_f_input_bin,...
+[input_f_input_bin, ROI_f_input_bin, choice_f_input_bin,...
     input_f_input_low_ROI, ROI_f_input_low_ROI, choice_f_input_low_ROI,...
     input_f_input_high_ROI, ROI_f_input_high_ROI, choice_f_input_high_ROI] = deal(NaN(nBins, NS));
 
@@ -161,10 +169,13 @@ for iS = 1:NS
         uncertaintyRtg_tmp(abs(choice_LR_tmp) == 2) = 0; % high confidence = low uncertainty
         uncertaintyRtg_tmp(abs(choice_LR_tmp) == 1) = 1; % low confidence = high uncertainty
         
-        %% confidence inferred by the model
+        %% net value and confidence inferred by the model
         if needModeling == 1 
             switch mdlType
                 case 'simple'
+                    NV_hE_tmp = dataInferred.NV_varOption.(task_nm_tmp).(['mdl_',mdlN]).(run_nm_bis);
+                    trial_idx = (1:nTrialsPerRun) + nTrialsPerRun*(kRun >= 3);
+                    deltaNV_tmp = dataInferred.deltaNV.(['mdl_',mdlN]).(task_nm_tmp)(trial_idx);
                     uncertainty_tmp = - dataInferred.confidenceFitted.(['mdl_',mdlN]).(run_nm_bis); % revert sign to transform confidence into uncertainty
                 otherwise
                     error('not ready yet');
@@ -191,6 +202,10 @@ for iS = 1:NS
                 input_prm(runTrials_idx, iS) = money_hE_tmp;
             case 'deltaMoney_level'
                 input_prm(runTrials_idx, iS) = deltaMoney_tmp;
+            case 'deltaNV'
+                input_prm(runTrials_idx, iS) = deltaNV_tmp;
+            case 'NV_hE'
+                input_prm(runTrials_idx, iS) = NV_hE_tmp;
             otherwise
                 error(['input = ',input_prm_nm,' not ready yet']);
         end
@@ -207,7 +222,7 @@ for iS = 1:NS
 
     %% extract the bins
     % 1) split the data according to input parameter bins
-    [ROI_f_input(:,iS), input_f_input(:,iS), bin_idx_tmp] = do_bin2(ROI_mediator(:, iS), input_prm(:,iS), nBins, 0);
+    [ROI_f_input_bin(:,iS), input_f_input_bin(:,iS), bin_idx_tmp] = do_bin2(ROI_mediator(:, iS), input_prm(:,iS), nBins, 0);
     choice_f_input_bin(:,iS) = do_bin2(choice_hE(:, iS), input_prm(:,iS), nBins, 0);
 
     % 2) perform a median split according to the ROI activity for each bin
@@ -235,11 +250,11 @@ end % subject loop
 %% average data
 % basic data
 [m_input_f_input,...
-    sem_input_f_input] = mean_sem_sd(input_f_input, 2);
+    sem_input_f_input] = mean_sem_sd(input_f_input_bin, 2);
 [m_ROI_f_input,...
-    sem_ROI_f_input] = mean_sem_sd(ROI_f_input, 2);
+    sem_ROI_f_input] = mean_sem_sd(ROI_f_input_bin, 2);
 [m_choice_f_input,...
-    sem_choice_f_input] = mean_sem_sd(choice_f_input, 2);
+    sem_choice_f_input] = mean_sem_sd(choice_f_input_bin, 2);
 % low ROI median split
 [m_input_f_input_low_ROI,...
     sem_input_f_input_low_ROI] = mean_sem_sd(input_f_input_low_ROI, 2);
@@ -262,13 +277,17 @@ if dispFig == true
     purple = [153 142 195]./255;
     orange = [241 163 64]./255;
     pSize = 50;
+    input_prm_nm = strrep(input_prm_nm,'_',' ');
 
     % look at the general figure (choice = f(inputs), ROI=f(inputs)
     fig;
     % choices = f(inputs)
     subplot(1,2,1);
     hold on;
-    gal_data_hdl = scatter(m_input_f_input, m_choice_f_input);
+    gal_data_hdl = errorbar(m_input_f_input,...
+        m_choice_f_input,...
+        sem_choice_f_input);
+    gal_data_hdl.LineStyle = 'none';
     gal_data_hdl.LineWidth = lWidth;
     gal_data_hdl.MarkerEdgeColor = black;
     xlabel(input_prm_nm);
@@ -278,7 +297,10 @@ if dispFig == true
     subplot(1,2,2);
     % ROI = f(inputs)
     hold on;
-    ROI_f_input_hdl = scatter(m_input_f_input, m_ROI_f_input);
+    ROI_f_input_hdl = errorbar(m_input_f_input,...
+        m_ROI_f_input,...
+        sem_ROI_f_input);
+    ROI_f_input_hdl.LineStyle = 'none';
     ROI_f_input_hdl.LineWidth = lWidth;
     ROI_f_input_hdl.MarkerEdgeColor = black;
     xlabel(input_prm_nm);
@@ -288,15 +310,21 @@ if dispFig == true
     %% sanity check: ROI = f(inputs) + ROI median split (did it work?)
     fig;
     hold on;
-    ROI_f_input_low_ROI_hdl = scatter(m_input_f_input_low_ROI, m_ROI_f_input_low_ROI);
-    ROI_f_input_high_ROI_hdl = scatter(m_input_f_input_high_ROI, m_ROI_f_input_high_ROI);
+    ROI_f_input_low_ROI_hdl = errorbar(m_input_f_input_low_ROI,...
+        m_ROI_f_input_low_ROI,...
+        sem_ROI_f_input_low_ROI);
+    ROI_f_input_high_ROI_hdl = errorbar(m_input_f_input_high_ROI,...
+        m_ROI_f_input_high_ROI,...
+        sem_ROI_f_input_high_ROI);
+    ROI_f_input_low_ROI_hdl.LineStyle = 'none';
     ROI_f_input_low_ROI_hdl.LineWidth = lWidth;
     ROI_f_input_low_ROI_hdl.MarkerEdgeColor = purple;
+    ROI_f_input_high_ROI_hdl.LineStyle = 'none';
     ROI_f_input_high_ROI_hdl.LineWidth = lWidth;
     ROI_f_input_high_ROI_hdl.MarkerEdgeColor = orange;
     xlabel(input_prm_nm);
     ylabel([ROI_short_nm,' BOLD']);
-    legend([ROI_f_input_high_ROI_hdl, ROI_f_input_low_ROI_hdl],...
+    legend([ROI_f_input_low_ROI_hdl, ROI_f_input_high_ROI_hdl],...
         {['low ',ROI_short_nm],['high ',ROI_short_nm]});
     legend('boxoff');
     legend_size(pSize);
@@ -304,15 +332,19 @@ if dispFig == true
     %% main figure: choices = f(inputs) + ROI median split
     fig;
     hold on;
-    choices_f_inputs_low_ROI_data_hdl = scatter(m_input_f_input_low_ROI, m_choice_f_input_low_ROI);
-    choices_f_inputs_high_ROI_data_hdl = scatter(m_input_f_input_high_ROI, m_choice_f_input_high_ROI);
+    choices_f_inputs_low_ROI_data_hdl = errorbar(m_input_f_input_low_ROI,...
+        m_choice_f_input_low_ROI,...
+        sem_choice_f_input_low_ROI);
+    choices_f_inputs_high_ROI_data_hdl = errorbar(m_input_f_input_high_ROI,...
+        m_choice_f_input_high_ROI,...
+        sem_choice_f_input_high_ROI);
     choices_f_inputs_low_ROI_data_hdl.LineWidth = lWidth;
     choices_f_inputs_low_ROI_data_hdl.MarkerEdgeColor = purple;
     choices_f_inputs_high_ROI_data_hdl.LineWidth = lWidth;
     choices_f_inputs_high_ROI_data_hdl.MarkerEdgeColor = orange;
     xlabel(input_prm_nm);
     ylabel('Choice = high effort (%)');
-    legend([ROI_f_input_high_ROI_hdl, ROI_f_input_low_ROI_hdl],...
+    legend([choices_f_inputs_low_ROI_data_hdl, choices_f_inputs_high_ROI_data_hdl],...
         {['low ',ROI_short_nm],['high ',ROI_short_nm]});
     legend('boxoff');
     legend_size(pSize);
