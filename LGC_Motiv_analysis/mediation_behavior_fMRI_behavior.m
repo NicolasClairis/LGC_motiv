@@ -104,7 +104,7 @@ potential_output_prm = {'RT','uncertainty_rtg','choice_hE'};
 which_input = listdlg('PromptString','please select input parameter',...
     'ListString',potential_input_prm);
 input_prm_nm = potential_input_prm{which_input};
-which_output = listdlg('PromptString','please select input parameter',...
+which_output = listdlg('PromptString','please select output parameter',...
     'ListString',potential_output_prm);
 output_prm_nm = potential_output_prm{which_output};
 
@@ -128,7 +128,7 @@ nTrials = nTrialsPerRun*nRuns;
 % input/mediator/output
 [input_prm, ROI_mediator, output_prm] = deal(NaN(nTrials, NS));
 % bin variables
-nBins = 6;
+nBins = 3;
 [input_f_input_bin, ROI_f_input_bin, output_f_input_bin,...
     ROI_f_ROI_bin, output_f_ROI_bin] = deal(NaN(nBins, NS));
 % paths
