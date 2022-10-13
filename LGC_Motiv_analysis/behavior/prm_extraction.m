@@ -32,7 +32,7 @@ switch whichPc
         computerRoot = [fullfile('E:'),filesep];
     case 'home'
         bayesian_root = fullfile('C:','Users','Loco','Documents','GitHub',...
-            'LGC_motiv','LGC_Motiv_analysis','behavior');
+            'LGC_motiv','LGC_Motiv_results','bayesian_modeling');
         computerRoot = [fullfile('L:','human_data_private',...
             'raw_data_subject'),filesep];
     otherwise
@@ -54,7 +54,7 @@ end
 if ~exist('mdlN','var') || isempty(mdlN)
     switch mdlType
         case 'bayesian'
-            listPossibleModelNumbers = {'1','3'};
+            listPossibleModelNumbers = {'1','2'};
         case 'simple'
             listPossibleModelNumbers = {'1','2','3','4'};
     end
@@ -66,10 +66,9 @@ end
 %% extract parameters of the selected model
 switch mdlType
     case 'bayesian'
-        bayesian_mdl = getfield(load([bayesian_root,filesep,...
-            'behavioral_prm_tmp.mat'],...
-            ['bayesian_mdl',mdlN]),...
-            ['bayesian_mdl',mdlN]);
+        bayesian_models = getfield(load([bayesian_root,filesep,...
+            'behavioral_prm_tmp.mat'],'bayesian_mdl'),'bayesian_mdl');
+        bayesian_mdl = bayesian_models.(['mdl',mdlN]);
         parameter_names = fieldnames(bayesian_mdl);
         % remove subject name from the list
         parameter_names(strcmp(parameter_names,'subject_id')) = [];
