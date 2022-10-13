@@ -30,9 +30,11 @@ function [var_binned, Bin_val, bin_idx] = do_bin2(var_to_bin, bin_var, nb_bins, 
 
 %% Remove NaN samples from the variable before binning
 NaN_trials  = isnan(var_to_bin) | isnan(bin_var);
+var_to_bin_noNaN = var_to_bin;
+bin_var_noNaN = bin_var;
 if sum(NaN_trials) > 0
-    var_to_bin(NaN_trials)  = [];
-    bin_var(NaN_trials)     = [];
+    var_to_bin_noNaN(NaN_trials)  = [];
+    bin_var_noNaN(NaN_trials)     = [];
 end
 
 %% initialize the variables to fill
@@ -43,7 +45,7 @@ end
 % use the best approximation possible
 
 if ~exist('same_n_samples_per_bin','var') || isempty(same_n_samples_per_bin) || same_n_samples_per_bin == 1
-    n_samples_pBin = length(bin_var)/nb_bins; % get number of samples per bin
+    n_samples_pBin = length(bin_var_noNaN)/nb_bins; % get number of samples per bin
     % check that n_sample_pBin is an integer
     if floor(n_samples_pBin) ~= n_samples_pBin
         error(['Please enter another value for nb_bins ',...
@@ -51,20 +53,28 @@ if ~exist('same_n_samples_per_bin','var') || isempty(same_n_samples_per_bin) || 
     end
     
 else
-    n_samples_pBin = floor(length(bin_var)/nb_bins); % get number of samples per bin
+    n_samples_pBin = floor(length(bin_var_noNaN)/nb_bins); % get number of samples per bin
 end
 
-%% bin according to ascending order bin_var values
-[bin_var_ascOrder, bin_var_ascOrder_idx] = sort(bin_var);
-var_to_bin_ascOrder = var_to_bin(bin_var_ascOrder_idx);
+%% bin according to ascending order based on bin_var_noNaN values
+[bin_var_ascOrder, bin_var_ascOrder_noNaN_idx] = sort(bin_var_noNaN);
+var_to_bin_ascOrder = var_to_bin_noNaN(bin_var_ascOrder_noNaN_idx);
 
-%% extract index corresponding to each bin
-bin_idx = NaN(1,length(bin_var));
+%% extract index corresponding to each bin (but careful to keep track of NaN values)
+bin_idx = NaN(1,length(bin_var_noNaN));
 for iBin = 1:nb_bins
     current_interval = (1:n_samples_pBin) + n_samples_pBin*(iBin - 1);
-    curr_bin_idx_tmp = bin_var_ascOrder_idx(current_interval);
+    curr_bin_idx_tmp = bin_var_ascOrder_noNaN_idx(current_interval);
     bin_idx(curr_bin_idx_tmp) = iBin;
 end % bin loop
+% if there were NaN values, you need to correct the index
+if sum(NaN_trials) > 0
+    for iTrial = 1:length(NaN_trials)
+        if NaN_trials(iTrial) == true
+            bin_idx = [bin_idx(1:(iTrial - 1)), NaN, bin_idx(iTrial:end)];
+        end
+    end % trial loop
+end
 
 %% extract values for each bin
 for iBin = 1:nb_bins
