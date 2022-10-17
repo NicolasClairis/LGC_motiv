@@ -92,15 +92,15 @@ for iROI = 1:2
     for iNutri = 1:length(nutri_vars)
         nutri_nm = nutri_vars{iNutri};
         % filter bad subjects
-        subs_ok = (~isnan(nutri.Glu).*~isnan(dmPFC_GSH)) == 1;
+        subs_ok = (~isnan(nutri.(nutri_nm)).*~isnan(ROI_var)) == 1;
         if sum(subs_ok) > 0
             % perform glm brain GSH = b0 + b1*nutrition variable
             [betas.(ROI_nm).(['f_',nutri_nm]),~,stats_tmp] = glmfit(nutri.(nutri_nm)(subs_ok), ROI_var(subs_ok),'normal');
             % extract p.value
             pval.(ROI_nm).(['f_',nutri_nm]) = stats_tmp.p;
             % extract the fit
-            nutri_bis.(nutri_nm) = sort(nutri.(nutri_nm)(subs_ok));
-            fittedData.(ROI_nm).(['f_',nutri_nm]) = glmval(betas.(ROI_nm).(['f_',nutri_nm]), nutri_bis.(nutri_nm), 'identity');
+            nutri_bis.(ROI_nm).(nutri_nm) = sort(nutri.(nutri_nm)(subs_ok));
+            fittedData.(ROI_nm).(['f_',nutri_nm]) = glmval(betas.(ROI_nm).(['f_',nutri_nm]), nutri_bis.(ROI_nm).(nutri_nm), 'identity');
         end
     end % loop through nutritional intake variables
 end % loop through ROIs
@@ -139,14 +139,16 @@ if figDisp == 1
         dmPFC_hdl.MarkerEdgeColor = dmPFC_col;
         aINS_hdl.MarkerEdgeColor = aINS_col;
         % add the fit
-        dmPFC_fit_hdl = plot(nutri_bis.(nutri_nm), fittedData.dmPFC_GSH.(['f_',(nutri_nm)]));
-        aINS_fit_hdl = plot(nutri_bis.(nutri_nm), fittedData.aINS_GSH.(['f_',(nutri_nm)]));
+        dmPFC_fit_hdl = plot(nutri_bis.dmPFC_GSH.(nutri_nm),...
+            fittedData.dmPFC_GSH.(['f_',(nutri_nm)]));
+        aINS_fit_hdl = plot(nutri_bis.aINS_GSH.(nutri_nm),...
+            fittedData.aINS_GSH.(['f_',(nutri_nm)]));
         dmPFC_fit_hdl.LineStyle = '--';
         dmPFC_fit_hdl.LineWidth = lWidth;
         dmPFC_fit_hdl.Color = dmPFC_col;
         aINS_fit_hdl.LineStyle = '--';
         aINS_fit_hdl.LineWidth = lWidth;
-        aINS_fit_hdl.Color = dmPFC_col;
+        aINS_fit_hdl.Color = aINS_col;
         % add legend
         legend([dmPFC_hdl, aINS_hdl],{'dmPFC','aINS'});
         legend('boxoff');
@@ -176,14 +178,16 @@ if figDisp == 1
     dmPFC_hdl.MarkerEdgeColor = dmPFC_col;
     aINS_hdl.MarkerEdgeColor = aINS_col;
     % add the fit
-    dmPFC_fit_hdl = plot(nutri_bis.GlyCysGlu_sum, fittedData.dmPFC_GSH.f_GlyCysGlu_sum);
-    aINS_fit_hdl = plot(nutri_bis.GlyCysGlu_sum, fittedData.aINS_GSH.f_GlyCysGlu_sum);
+    dmPFC_fit_hdl = plot(nutri_bis.dmPFC_GSH.GlyCysGlu_sum,...
+        fittedData.dmPFC_GSH.f_GlyCysGlu_sum);
+    aINS_fit_hdl = plot(nutri_bis.aINS_GSH.GlyCysGlu_sum,...
+        fittedData.aINS_GSH.f_GlyCysGlu_sum);
     dmPFC_fit_hdl.LineStyle = '--';
     dmPFC_fit_hdl.LineWidth = lWidth;
     dmPFC_fit_hdl.Color = dmPFC_col;
     aINS_fit_hdl.LineStyle = '--';
     aINS_fit_hdl.LineWidth = lWidth;
-    aINS_fit_hdl.Color = dmPFC_col;
+    aINS_fit_hdl.Color = aINS_col;
     % add legend
     legend([dmPFC_hdl, aINS_hdl],{'dmPFC','aINS'});
     legend('boxoff');
