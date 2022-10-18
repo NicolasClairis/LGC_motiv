@@ -351,3 +351,14 @@ if dispFig == true
 
     
 end
+
+%% compare slopes
+
+[slope_low, slope_high] = deal(NaN(1,NS));
+for iS = 1:NS
+    b1 = glmfit(1:3, choice_f_input_low_ROI(:,iS),'normal');
+    slope_low(iS) = b1(2);
+    b2 = glmfit(1:3, choice_f_input_high_ROI(:,iS),'normal');
+    slope_high(iS) = b2(2);
+end
+[~,p]=ttest(slope_low,slope_high);
