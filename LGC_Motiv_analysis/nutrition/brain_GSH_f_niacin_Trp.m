@@ -1,19 +1,6 @@
-function[betas, pval] = brain_GSH_f_nutrition_precursors(figDisp)
-% [betas, pval] = brain_GSH_f_nutrition_precursors(figDisp)
-%% brain_GSH_f_nutrition_precursors will test whether there is any 
-% correlation between nutrition precursors of GSH (namely Gly, Cys and Glu)
-% and brain levels of GSH in the dmPFC or aINS (for study 1)
-%
-% INPUTS
-% figDisp: display figure (1) or not (0) ? Will be equal to 1 by default
-% if not enterrd
-%
-% OUTPUTS
-% betas: structure with betas for each test
-%
-% pval: structure with p.value for each test
+%% test correlation between brain GSH and niacin
 
-%% main parameters
+
 if ~exist('figDisp','var') || isempty(figDisp)
     figDisp = 1;
 end
@@ -34,28 +21,28 @@ switch root
 end
 nutritionPath = [fullfile(gitPath,'GitHub','LGC_motiv',...
     'LGC_Motiv_results','nutrition'),filesep];
-
 % condition
 condition = subject_condition;
 [subject_id, NS] = LGCM_subject_selection(study_nm, condition);
-
 %% initialize variables of interest
 [dmPFC_GSH, aINS_GSH,...
-    nutri.Gly, nutri.Cys, nutri.Glu,...
+    nutri.niacin, nutri.Trp, nutri.niacinPlusTrp,...
     nutri.calories,...
-    nutri.GlyCysGlu_sum,...
-    nutri.Gly_div_totalCal,  nutri.Cys_div_totalCal, nutri.Glu_div_totalCal,...
-    nutri.GlyCysGlu_sum_div_totalCal] = deal(NaN(1,NS));
+    nutri.niacin_div_totalCal,  nutri.Trp_div_totalCal,...
+    nutri.niacinPlusTrp_div_totalCal] = deal(NaN(1,NS));
 nutri_vars = fieldnames(nutri);
-% load 
-Gly_table = readtable([nutritionPath, 'Gly_scoring.xlsx'],...
-    'Sheet','Sheet1');
-Cys_table = readtable([nutritionPath, 'cystein_scoring.xlsx'],...
-    'Sheet','Sheet1');
-Glu_table = readtable([nutritionPath, 'Glutamate_scoring.xlsx'],...
-    'Sheet','Sheet1');
+%% extract all calories data
 calories_table = readtable([nutritionPath, 'calories_scoring.xlsx'],...
     'Sheet','Sheet1');
+%% extract all niacin data
+niacineFilePath = [nutritionPath,'niacine_scoring.xlsx'];
+niacin_table = readtable(niacineFilePath,...
+    'Sheet','Sheet1');
+%% extract all Tryptophane data
+TrpFilePath = [nutritionPath,'Tryptophan_scoring.xlsx'];
+Trp_table = readtable(TrpFilePath,...
+    'Sheet','Sheet1');
+
 %% loop through subjects
 for iS = 1:NS
     sub_nm = subject_id{iS};
@@ -66,31 +53,29 @@ for iS = 1:NS
     aINS_GSH(iS) = metabolite_tmp.aIns.GSH;
     
     %% load nutrition score
-    sub_Gly_idx = find(strcmp(Gly_table.CID, sub_nm));
-    sub_Cys_idx = find(strcmp(Cys_table.CID, sub_nm));
-    sub_Glu_idx = find(strcmp(Glu_table.CID, sub_nm));
+    sub_niacin_idx = find(strcmp(niacin_table.CID, sub_nm));
+    sub_Trp_idx = find(strcmp(Trp_table.CID, sub_nm));
     sub_calories_idx = find(strcmp(calories_table.CID, sub_nm));
     % extract nutrition intake values
-    if ~isempty(sub_Gly_idx) && size(sub_Gly_idx,1) == 1
-        nutri.Gly(iS) = Gly_table.GlyParSemaine_ug_(sub_Gly_idx);
+    % extract niacin values
+    if ~isempty(sub_niacin_idx) && size(sub_niacin_idx,1) == 1
+        nutri.niacin(iS) = niacin_table.NiacineParSemaine_ug_(sub_niacin_idx);
     end
-    if ~isempty(sub_Cys_idx) && size(sub_Cys_idx,1) == 1
-        nutri.Cys(iS) = Cys_table.CysteineParSemaine_ug_(sub_Cys_idx);
+    % extract Tryptophan values
+    if ~isempty(sub_Trp_idx) && size(sub_Trp_idx,1) == 1
+        nutri.Trp(iS) = Trp_table.TryptophaneParSemaine_ug_(sub_Trp_idx);
     end
-    if ~isempty(sub_Glu_idx) && size(sub_Glu_idx,1) == 1
-        nutri.Glu(iS) = Glu_table.GlutamateParSemaine_ug_(sub_Glu_idx);
-    end
+    % extract calories values
     if ~isempty(sub_calories_idx) && size(sub_calories_idx,1) == 1
         nutri.calories(iS) = calories_table.CaloriesParSemaine_kcal_(sub_calories_idx);
     end
-    nutri.GlyCysGlu_sum(iS) = nutri.Gly(iS) + nutri.Cys(iS) + nutri.Glu(iS);
+    nutri.niacinPlusTrp(iS) = nutri.niacin(iS) + nutri.Trp(iS);
     
     % divide by calories
     if ~isnan(nutri.calories(iS))
-        nutri.Gly_div_totalCal(iS) = nutri.Gly(iS)/nutri.calories(iS);
-        nutri.Cys_div_totalCal(iS) = nutri.Cys(iS)/nutri.calories(iS);
-        nutri.Glu_div_totalCal(iS) = nutri.Gly(iS)/nutri.calories(iS);
-        nutri.GlyCysGlu_sum_div_totalCal(iS) = nutri.GlyCysGlu_sum(iS)/nutri.calories(iS);
+        nutri.niacin_div_totalCal(iS) = nutri.niacin(iS)/nutri.calories(iS);
+        nutri.Trp_div_totalCal(iS) = nutri.Trp(iS)/nutri.calories(iS);
+        nutri.niacinPlusTrp_div_totalCal(iS) = nutri.niacinPlusTrp(iS)/nutri.calories(iS);
     end
 end % subject loop
 
@@ -128,19 +113,19 @@ if figDisp == 1
     lWidth = 3;
     pSize = 25;
     
-    %% show result Glu/Cys/Gly alone
+    %% show results
     fig;
     for iNutri = 1:3
         switch iNutri
             case 1
-                nutri_nm = 'Glu';
-                nutri_nm_bis = 'Glu_div_totalCal';
+                nutri_nm = 'niacin';
+                nutri_nm_bis = 'niacin_div_totalCal';
             case 2
-                nutri_nm = 'Cys';
-                nutri_nm_bis = 'Cys_div_totalCal';
+                nutri_nm = 'Trp';
+                nutri_nm_bis = 'Trp_div_totalCal';
             case 3
-                nutri_nm = 'Gly';
-                nutri_nm_bis = 'Gly_div_totalCal';
+                nutri_nm = 'niacinPlusTrp';
+                nutri_nm_bis = 'niacinPlusTrp_div_totalCal';
         end
         
         % raw metabolite
@@ -167,7 +152,11 @@ if figDisp == 1
         % add legend
         legend([dmPFC_hdl, aINS_hdl],{'dmPFC','aINS'});
         legend('boxoff');
-        xlabel([nutri_nm,' (μg/week)']);
+        if ismember(nutri_nm,{'niacin','Trp'})
+            xlabel([nutri_nm,' (μg/week)']);
+        elseif strcmp(nutri_nm,'niacinPlusTrp')
+            xlabel('niacin + Trp (μg/week)');
+        end
         ylabel('GSH (μmol/g)');
         legend_size(pSize);
         
@@ -195,65 +184,14 @@ if figDisp == 1
         % add legend
         legend([dmPFC_hdl, aINS_hdl],{'dmPFC','aINS'});
         legend('boxoff');
-        xlabel([nutri_nm,'/calories']);
+        
+        if ismember(nutri_nm,{'niacin','Trp'})
+            xlabel([nutri_nm,'/calories']);
+        elseif strcmp(nutri_nm,'niacinPlusTrp')
+            xlabel('(niacin + Trp)/calories');
+        end
         ylabel('GSH (μmol/g)');
         legend_size(pSize);
     end % nutrition metabolite
     
-    %% show sum
-    fig;
-    % Gly + Cys + Glu
-    subplot(2,1,1);
-    hold on;
-    dmPFC_hdl = scatter(nutri.GlyCysGlu_sum, dmPFC_GSH);
-    aINS_hdl = scatter(nutri.GlyCysGlu_sum, aINS_GSH);
-    dmPFC_hdl.LineWidth = lWidth;
-    aINS_hdl.LineWidth = lWidth;
-    dmPFC_hdl.MarkerEdgeColor = dmPFC_col;
-    aINS_hdl.MarkerEdgeColor = aINS_col;
-    % add the fit
-    dmPFC_fit_hdl = plot(nutri_bis.dmPFC_GSH.GlyCysGlu_sum,...
-        fittedData.dmPFC_GSH.f_GlyCysGlu_sum);
-    aINS_fit_hdl = plot(nutri_bis.aINS_GSH.GlyCysGlu_sum,...
-        fittedData.aINS_GSH.f_GlyCysGlu_sum);
-    dmPFC_fit_hdl.LineStyle = '--';
-    dmPFC_fit_hdl.LineWidth = lWidth;
-    dmPFC_fit_hdl.Color = dmPFC_col;
-    aINS_fit_hdl.LineStyle = '--';
-    aINS_fit_hdl.LineWidth = lWidth;
-    aINS_fit_hdl.Color = aINS_col;
-    % add legend
-    legend([dmPFC_hdl, aINS_hdl],{'dmPFC','aINS'});
-    legend('boxoff');
-    xlabel('Glu + Cys + Gly (μg/week)');
-    ylabel('GSH (μmol/g)');
-    legend_size(pSize);
-    
-    % (Gly + Cys + Glu)/(total calories)
-    subplot(2,1,2);
-    hold on;
-    dmPFC_hdl = scatter(nutri.GlyCysGlu_sum_div_totalCal, dmPFC_GSH);
-    aINS_hdl = scatter(nutri.GlyCysGlu_sum_div_totalCal, aINS_GSH);
-    dmPFC_hdl.LineWidth = lWidth;
-    aINS_hdl.LineWidth = lWidth;
-    dmPFC_hdl.MarkerEdgeColor = dmPFC_col;
-    aINS_hdl.MarkerEdgeColor = aINS_col;
-    % add the fit
-    dmPFC_fit_hdl = plot(nutri_bis.dmPFC_GSH.GlyCysGlu_sum_div_totalCal,...
-        fittedData.dmPFC_GSH.f_GlyCysGlu_sum_div_totalCal);
-    aINS_fit_hdl = plot(nutri_bis.aINS_GSH.GlyCysGlu_sum_div_totalCal,...
-        fittedData.aINS_GSH.f_GlyCysGlu_sum_div_totalCal);
-    dmPFC_fit_hdl.LineStyle = '--';
-    dmPFC_fit_hdl.LineWidth = lWidth;
-    dmPFC_fit_hdl.Color = dmPFC_col;
-    aINS_fit_hdl.LineStyle = '--';
-    aINS_fit_hdl.LineWidth = lWidth;
-    aINS_fit_hdl.Color = aINS_col;
-    % add legend
-    legend([dmPFC_hdl, aINS_hdl],{'dmPFC','aINS'});
-    legend('boxoff');
-    xlabel('(Glu + Cys + Gly)/calories');
-    ylabel('GSH (μmol/g)');
-    legend_size(pSize);
 end % figure display
-end % function
