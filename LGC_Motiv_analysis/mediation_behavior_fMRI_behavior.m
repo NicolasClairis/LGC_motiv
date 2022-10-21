@@ -98,7 +98,7 @@ timePeriod_nm = timePeriods{which_timePeriod};
 
 %% select parameters of interest
 potential_input_prm = {'NV_hE','NV_ch','uncertainty',...
-    'E_level','money_level','deltaMoney_level'};
+    'E_level','money_level','deltaMoney_level','E_x_uncertainty'};
 potential_output_prm = {'RT','uncertainty_rtg','choice_hE'};
 
 which_input = listdlg('PromptString','please select input parameter',...
@@ -110,7 +110,7 @@ output_prm_nm = potential_output_prm{which_output};
 
 %% if a parameter is based on modeling, you need to decide which model to use
 % bayesian across tasks or simple model each task separately?
-if ismember(input_prm_nm,{'NV_hE','NV_ch','uncertainty'})
+if ismember(input_prm_nm,{'NV_hE','NV_ch','uncertainty','E_x_uncertainty'})
     needModeling = 1;
     [mdlType, mdlN] = behavioral_model_selection;
     % warning until this gets fixed
@@ -254,6 +254,8 @@ for iS = 1:NS
                 input_prm(runTrials_idx, iS) = money_hE_tmp;
             case 'deltaMoney_level'
                 input_prm(runTrials_idx, iS) = deltaMoney_tmp;
+            case 'E_x_uncertainty'
+                input_prm(runTrials_idx, iS) = E_highE_tmp.*uncertainty_tmp;
             otherwise
                 error(['input = ',input_prm_nm,' not ready yet']);
         end
