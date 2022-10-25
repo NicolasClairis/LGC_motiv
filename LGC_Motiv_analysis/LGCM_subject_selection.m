@@ -24,8 +24,8 @@ function[subject_id, NS] = LGCM_subject_selection(study_nm, condition, genderFil
 %
 % genderFilter:
 % 'all': by default, include all subjects
-% 'malesOnly': remove females
-% 'femalesOnly': remove males
+% 'males': remove females
+% 'females': remove males
 %
 % OUTPUTS
 % subject_id: list of subject names
@@ -89,7 +89,6 @@ switch study_nm
                 % 048: run 2 ND for Em task
                 % 076: run 4 ND for Em task
                 % 100: run 3 (Em) and run 4 (Ep) ND
-                 warning('don''t forget to check last subjects');
             case {'behavior_noSatTask','fMRI_noSatTask'}
                 % remove subjects for which either mental (Em) or physical
                 % (Ep) task was fully saturated during choices
@@ -98,7 +97,6 @@ switch study_nm
                 % 047: all ND for Em task (runs 2 and 4) and for Ep run 1
                 % 052: all ND for Em task (runs 1 and 3)
                 % 095: all ND for Ep task (runs 2 and 4)
-                warning('don''t forget to check last subjects');
             case 'fMRI_no_move'
                 % ignore subjects with too much movement in ALL runs (runs
                 % with too much movement will be filtered for each subject)
@@ -139,6 +137,7 @@ switch study_nm
                 
                 % borderline movement:
                 % 005(run 1, 3 and 4 a little bit of movement)
+                % 012 (run 2)
                 % 022 (all)
                 % 040 (run 4)
                 % 043 (run 2 and run 4)
@@ -156,8 +155,8 @@ switch study_nm
                 % 095 (run 1)
                 
                 % no movement:
-                % 001, 002, 003, 004, 009, 013, 015, 017, 019, 020, 032,
-                % 035, 036, 038, 039, 042, 045, 046, 048, 055, 059, 060,
+                % 001, 002, 003, 004, 009, 011, 013, 015, 017, 019, 020, 
+                % 032, 035, 036, 038, 039, 042, 045, 046, 048, 055, 059, 060,
                 % 061, 062, 068, 072, 073, 074, 075, 081, 082, 100
             case 'fMRI_GLM59'
                 bad_subs = ismember(fullSubList,{'002','005',...
@@ -193,9 +192,9 @@ switch study_nm
             '080','081','082','083','088',...
             '093','095','099','100'};
         switch genderFilter
-            case 'malesOnly'
+            case 'males'
                 bad_subs(ismember(fullSubList, females)) = true;
-            case 'femalesOnly'
+            case 'females'
                 bad_subs(ismember(fullSubList, males)) = true;
         end
         % remove subjects who did behavior but not fMRI
@@ -204,10 +203,7 @@ switch study_nm
         end
         % remove irrelevant subjects from the current analysis
         all_subs(bad_subs) = [];
-        % reminder to check the last acquired subjects:
-        warning(['check ',...
-            '011, 012... and other last subjects for movement']);
-        
+
         %% restrict to subjects of interest
         subject_id = all_subs;
         %% Notes:
@@ -217,7 +213,7 @@ switch study_nm
         % '054': very weird behavior, could be considered as outlier
     case 'study2'
         %         subject_id = {}; % 'XXX'
-        error('experiment hasn''started yet...');
+        error('experiment hasn''t started yet...');
     otherwise
         error('error in study definition');
 end
