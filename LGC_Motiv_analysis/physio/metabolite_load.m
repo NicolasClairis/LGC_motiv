@@ -81,7 +81,8 @@ for iROI = 1:nROIs
         mean_met_aSubs = mean(all_met_data, 2, 'omitnan');
         sd_met_aSubs = std(all_met_data, 0, 2, 'omitnan');
         % identify subjects with metabolite values too far from the SD
-        bad_met_subs = (all_met_data > mean_met_aSubs + sd_met_aSubs.*3) | (all_met_data < mean_met_aSubs + sd_met_aSubs.*3);
+        bad_met_subs = (all_met_data > mean_met_aSubs + sd_met_aSubs.*3) |...
+            (all_met_data < mean_met_aSubs + sd_met_aSubs.*3);
         for iS = 1:NS
             sub_nm = subject_id{iS};
             subj_line = strcmp(excelRead_tmp.CID, sub_nm);
@@ -101,10 +102,10 @@ for iROI = 1:nROIs
                 metabolites.(ROI_nm).(met_nm)(iS) = all_met_data(subj_line);
             end
         end % subject loop
-        
-        % perform also division Glu/Gln
-        metabolites.(ROI_nm).Gln_div_Glu(iS) = metabolites.(ROI_nm).Gln(iS)./metabolites.(ROI_nm).Glu(iS);
     end % metabolites
+    
+    % perform also division Glu/Gln
+    metabolites.(ROI_nm).Gln_div_Glu = metabolites.(ROI_nm).Gln./metabolites.(ROI_nm).Glu;
 end % ROI loop
 
 %% go back to root
