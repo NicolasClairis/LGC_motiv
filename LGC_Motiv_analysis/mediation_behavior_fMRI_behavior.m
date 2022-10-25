@@ -255,7 +255,7 @@ for iS = 1:NS
             case 'deltaMoney_level'
                 input_prm(runTrials_idx, iS) = deltaMoney_tmp;
             case 'E_x_uncertainty'
-                input_prm(runTrials_idx, iS) = E_highE_tmp.*uncertainty_tmp;
+                input_prm(runTrials_idx, iS) = E_highE_tmp'.*uncertainty_tmp;
             otherwise
                 error(['input = ',input_prm_nm,' not ready yet']);
         end
