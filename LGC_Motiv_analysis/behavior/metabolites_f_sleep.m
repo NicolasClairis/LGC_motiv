@@ -18,37 +18,18 @@ study_nm = 'study1';
 [subject_id, NS] = LGCM_subject_selection(study_nm,condition,'all');
 
 %% define metabolite of interest
-switch study_nm
-    case 'study1'
-        %% which ROI?
-        ROIs = {'dmPFC','aIns'};
-        nROIs = length(ROIs);
-        ROI_idx = spm_input('Metabolites in which brain area?',1,'m',...
-            ROIs,1:nROIs,0);
-        ROI_nm = ROIs{ROI_idx};
-        %% select metabolite of interest
-        metabolites = {'Mac','Ala','Asp','PCho','Cr','PCr','GABA',...
-            'Gln','Glu','GSH','Gly','Ins','Lac','NAA','Scyllo','Tau',...
-            'Asc','Glc','NAAG','GPC','PE','Ser',...
-            'NAA_NAAG','Glu_Gln','GPC_PCho','Cr_PCr','Gly_Ins','Gln_div_Glu'};
-    otherwise
-        error(['not ready yet for ',study_nm]);
-end
-n_met = length(metabolites);
-metabolite_idx = spm_input('Which metabolite to focus on?',1,'m',...
-    metabolites,1:n_met,0);
-metabolite_nm = metabolites{metabolite_idx};
+[metabolite_allSubs, MRS_ROI_nm, metabolite_nm] = metabolite_extraction(study_nm, subject_id);
 
 %% load sleep
-[excelReadGeneralFile] = load_gal_data();
-prevDaySleepTable = excelReadGeneralFile.HeureDeSommeilLaVeilleDeL_exp_rience;
+[excelReadGeneralFile] = load_gal_data_bis();
+prevDaySleepTable = excelReadGeneralFile.HeuresDeSommeilLaVeilleDeL_exp_rience;
 avgSleepTable = excelReadGeneralFile.HeuresDeSommeil_enMoyenne_;
-sleepCID = excelReadGeneralFile.IDParticipant;
+sleepCID = excelReadGeneralFile.CID;
 % replace 'h' of hours by ':'
 prevDaySleepTable = strrep(prevDaySleepTable, 'h',':');
 avgSleepTable = strrep(avgSleepTable, 'h',':');
 % extract the data
-[avgSleep, prevDaySleep, metabolite] = deal(NaN(1,NS));
+[avgSleep, prevDaySleep] = deal(NaN(1,NS));
 for iS = 1:NS
     sub_nm = subject_id{iS};
 
@@ -60,21 +41,8 @@ for iS = 1:NS
             sub_idx = iLine;
         end
     end
-    if ~strcmp(avgSleepTable{sub_idx},'NaN') && ~strcmp(avgSleepTable{sub_idx},'8:30 (visit 1) 8:30 (visit 2)')
-        avgSleep(iS) = minutes(duration(avgSleepTable{sub_idx},'InputFormat','hh:mm'));
-    elseif strcmp(avgSleepTable{sub_idx},'8:30 (visit 1) 8:30 (visit 2)') % both equal
-        avgSleep(iS) = minutes(duration('8:30','InputFormat','hh:mm'));
-    end
-    if ~strcmp(prevDaySleepTable{sub_idx},'NaN') && ~strcmp(prevDaySleepTable{sub_idx},'9:00 (visit 1) 8:00 (visit 2)')
-        prevDaySleep(iS) = minutes(duration(prevDaySleepTable{sub_idx},'InputFormat','hh:mm'));
-    elseif strcmp(prevDaySleepTable{sub_idx},'9:00 (visit 1) 8:00 (visit 2)') % focus on 2nd visit
-        prevDaySleep(iS) = minutes(duration('8:00','InputFormat','hh:mm'));
-    end
-
-    %% load metabolite
-    [metabolites] = metabolite_load({sub_nm});
-    % focus on metabolite and brain area selected
-    metabolite(iS) = metabolites.(ROI_nm).(metabolite_nm);
+    avgSleep(iS) = minutes(duration(avgSleepTable{sub_idx},'InputFormat','hh:mm'));
+    prevDaySleep(iS) = minutes(duration(prevDaySleepTable{sub_idx},'InputFormat','hh:mm'));
 end % subject loop
 
 % look also at the difference between previous day and average
@@ -82,23 +50,23 @@ delta_PrevDay_AvgSleep = prevDaySleep - avgSleep;
 
 %% perform correlations
 % metabolites = b0+b1*average sleep
-goodSubjects = (~isnan(avgSleep).*~isnan(metabolite)) == true;
+goodSubjects = (~isnan(avgSleep).*~isnan(metabolite_allSubs)) == true;
 [betas.met_f_avgSleep, ~, stats_met_f_avgSleep] =...
-    glmfit(avgSleep(goodSubjects), metabolite(goodSubjects), 'normal');
+    glmfit(avgSleep(goodSubjects), metabolite_allSubs(goodSubjects), 'normal');
 pval.met_f_avgSleep = stats_met_f_avgSleep.p(2);
 metabolite_fit_avgSleep = glmval(betas.met_f_avgSleep,...
     avgSleep(goodSubjects), 'identity');
 % metabolites = b0+b1*previous day sleep
-goodSubjects = (~isnan(prevDaySleep).*~isnan(metabolite)) == true;
+goodSubjects = (~isnan(prevDaySleep).*~isnan(metabolite_allSubs)) == true;
 [betas.met_f_prevDaySleep, ~, stats_met_f_prevDaySleep] =...
-    glmfit(prevDaySleep(goodSubjects), metabolite(goodSubjects), 'normal');
+    glmfit(prevDaySleep(goodSubjects), metabolite_allSubs(goodSubjects), 'normal');
 pval.met_f_prevDaySleep = stats_met_f_prevDaySleep.p(2);
 metabolite_fit_prevDaySleep = glmval(betas.met_f_prevDaySleep,...
     prevDaySleep(goodSubjects), 'identity');
 % metabolites = b0+b1*(previous day sleep - average sleep)
-goodSubjects = (~isnan(delta_PrevDay_AvgSleep).*~isnan(metabolite)) == true;
+goodSubjects = (~isnan(delta_PrevDay_AvgSleep).*~isnan(metabolite_allSubs)) == true;
 [betas.met_f_delta_PrevDay_AvgSleep, ~, stats_met_f_delta_PrevDay_AvgSleep] =...
-    glmfit(delta_PrevDay_AvgSleep(goodSubjects), metabolite(goodSubjects), 'normal');
+    glmfit(delta_PrevDay_AvgSleep(goodSubjects), metabolite_allSubs(goodSubjects), 'normal');
 pval.met_f_delta_PrevDay_AvgSleep = stats_met_f_delta_PrevDay_AvgSleep.p(2);
 metabolite_fit_delta_PrevDay_AvgSleep = glmval(betas.met_f_delta_PrevDay_AvgSleep,...
     delta_PrevDay_AvgSleep(goodSubjects), 'identity');
@@ -111,42 +79,43 @@ lWidthScatter = 1.5;
 blackCol = [0 0 0];
 greyCol = [143 143 143]./255;
 pSize = 30;
+yLabeling = [MRS_ROI_nm,' - ',metabolite_nm];
 
 % metabolite = f(avg sleep)
 fig;
 hold on;
-hdl = scatter(hours(minutes(avgSleep)), metabolite,...
+hdl = scatter(hours(minutes(avgSleep)), metabolite_allSubs,...
     'SizeData',mSize,'LineWidth',lWidthScatter,...
     'MarkerEdgeColor',blackCol,'MarkerFaceColor',greyCol);
 plot(hours(minutes(avgSleep(goodSubjects))), metabolite_fit_avgSleep,...
     'LineWidth',lWidth,'LineStyle','-','Color',blackCol);
-ylabel(metabolite_nm);
+ylabel(yLabeling);
 xlabel('average sleep (h)');
 legend_size(pSize);
 
 % metabolite = f(previous day sleep)
 fig;
 hold on;
-scatter(hours(minutes(prevDaySleep)), metabolite,...
+scatter(hours(minutes(prevDaySleep)), metabolite_allSubs,...
     'SizeData',mSize,'LineWidth',lWidthScatter,...
     'MarkerEdgeColor',blackCol,'MarkerFaceColor',greyCol);
 plot(hours(minutes(prevDaySleep(goodSubjects))),...
     metabolite_fit_prevDaySleep,...
     'LineWidth',lWidth,'LineStyle','-','Color',blackCol);
-ylabel(metabolite_nm);
+ylabel(yLabeling);
 xlabel('previous day sleep (h)');
 legend_size(pSize);
 
 % metabolite = f(avg sleep)
 fig;
 hold on;
-scatter(hours(minutes(delta_PrevDay_AvgSleep)), metabolite,...
+scatter(hours(minutes(delta_PrevDay_AvgSleep)), metabolite_allSubs,...
     'SizeData',mSize,'LineWidth',lWidthScatter,...
     'MarkerEdgeColor',blackCol,'MarkerFaceColor',greyCol);
 plot(hours(minutes(delta_PrevDay_AvgSleep(goodSubjects))),...
     metabolite_fit_delta_PrevDay_AvgSleep,...
     'LineWidth',lWidth,'LineStyle','-','Color',blackCol);
-ylabel(metabolite_nm);
+ylabel(yLabeling);
 xlabel('previous day - avg sleep (h)');
 legend_size(pSize);
 
