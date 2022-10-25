@@ -91,7 +91,8 @@ switch study_nm
                 % 100: run 3 (Em) and run 4 (Ep) ND
             case {'behavior_noSatTask','fMRI_noSatTask'}
                 % remove subjects for which either mental (Em) or physical
-                % (Ep) task was fully saturated during choices
+                % (Ep) task was fully saturated during choices and remove
+                % runs that were saturating if only one saturated
                 bad_subs = ismember(fullSubList,{'027','047','052','095'});
                 % 027: all ND for Em task (runs 2 and 4)
                 % 047: all ND for Em task (runs 2 and 4) and for Ep run 1
@@ -101,8 +102,10 @@ switch study_nm
                 % ignore subjects with too much movement in ALL runs (runs
                 % with too much movement will be filtered for each subject)
                 bad_subs = ismember(fullSubList,{'008','022','024'});
-                % 008 and 022 completely removed (because all runs are bad
+                % 008, 022 and 024 completely removed (because all runs are bad
                 % in terms of movement)
+                % for the other subjects, the bad runs will be removed by
+                % First_level_subRunFilter.m
             case 'fMRI_no_move_bis'
                 % ignore subjects with too much movement in ANY RUN (ie no
                 % filtering of bad runs, but only of bad subjects who had
@@ -156,8 +159,8 @@ switch study_nm
                 
                 % no movement:
                 % 001, 002, 003, 004, 009, 011, 013, 015, 017, 019, 020, 
-                % 032, 035, 036, 038, 039, 042, 045, 046, 048, 055, 059, 060,
-                % 061, 062, 068, 072, 073, 074, 075, 081, 082, 100
+                % 032, 035, 036, 038, 039, 042, 045, 046, 048, 055, 059,
+                % 060, 061, 062, 068, 072, 073, 074, 075, 081, 082, 100
             case 'fMRI_GLM59'
                 bad_subs = ismember(fullSubList,{'002','005',...
                     '013','017',...
