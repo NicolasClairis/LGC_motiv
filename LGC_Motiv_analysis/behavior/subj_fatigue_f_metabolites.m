@@ -1,5 +1,5 @@
 %% script to check whether subjective fatigue levels depends on the level of metabolites
-
+error('needs to be updated to load summary_participants_infos.xlsx');
 %% working directory
 [computerRoot] = LGCM_root_paths();
 study_nm = 'study1';

@@ -1,10 +1,15 @@
 %% script to check whether subjective stress levels depends on the level of metabolites
-
+error('needs to be updated to load summary_participants_infos.xlsx');
 %% working directory
 [computerRoot] = LGCM_root_paths();
 study_nm = 'study1';
 studyFolder = fullfile(computerRoot, study_nm);
-
+switch computerRoot
+    case 'E:'
+        gitPath = fullfile('C:','Users','clairis','Desktop');
+    otherwise
+        gitPath = fullfile('C:','Users','Loco','Documents');
+end
 %% define all subjects
 condition = subject_condition();
 [subject_id, NS] = LGCM_subject_selection('study1', condition);
@@ -14,7 +19,7 @@ condition = subject_condition();
     preIRMf_stress, postIRMf_stress,...
     deltaStressPrePostExp] = deal(NaN(1,NS));
 % load stress
-stressPath = fullfile('C:','Users','Loco','Documents','GitHub',...
+stressPath = fullfile(gitPath,'GitHub',...
     'LGC_motiv','LGC_Motiv_analysis','behavior');
 stress = getfield(load([stressPath, filesep, 'stress_tmp.mat'],'stress'),'stress');
 for iS = 1:NS
