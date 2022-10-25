@@ -75,22 +75,28 @@ for iROI = 1:nROIs
     %% extract the data for each subject
     for iMet = 1:n_metabolites
         met_nm = all_metabolites{iMet};
-        % extract data for everybody for the current metabolite
+        %% extract data for everybody for the current metabolite
         all_met_data = excelRead_tmp.(met_nm);
+        
+        %% remove subjects too far (3*SD) from the mean
         % compute the mean and SD across participants
         mean_met_aSubs = mean(all_met_data, 2, 'omitnan');
         sd_met_aSubs = std(all_met_data, 0, 2, 'omitnan');
         % identify subjects with metabolite values too far from the SD
-        bad_met_subs = (all_met_data > mean_met_aSubs + sd_met_aSubs.*3) |...
-            (all_met_data < mean_met_aSubs + sd_met_aSubs.*3);
+        bad_met_subs = (all_met_data > (mean_met_aSubs + (sd_met_aSubs.*3))) |...
+            (all_met_data < (mean_met_aSubs - (sd_met_aSubs.*3)));
+        
+        %% extract data, removing bad CRLB and far from the mean
         for iS = 1:NS
             sub_nm = subject_id{iS};
             subj_line = strcmp(excelRead_tmp.CID, sub_nm);
-            % check Cramer Lower Bound for the subject, ROI and metabolite
+            
+            %% check Cramer Lower Bound for the subject, ROI and metabolite
             % currently assessed
             subj_CRLB_line = strcmp(CRLB_excelRead_tmp.CID, sub_nm);
             CRLB_tmp = CRLB_excelRead_tmp.(met_nm)(subj_CRLB_line);
-            % check if the subject is not an outlier
+            
+            %% check if the subject is not an outlier compared to mean and SD of the group
             is_sub_sd_outlier_tmp  = bad_met_subs(subj_line);
             if excelRead_tmp.(met_nm)(subj_line) > 0 &&...
                     CRLB_tmp <= CRLB_threshold &&...
