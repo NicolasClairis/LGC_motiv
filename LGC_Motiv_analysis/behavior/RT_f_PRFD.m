@@ -1,5 +1,5 @@
-function[] = RT_f_PRFD(figDisp, n_bins)
-% RT_f_PRFD(figDisp, n_bins)
+function[stats_meanRT, stats_medianRT] = RT_f_PRFD(figDisp, n_bins)
+% [stats_meanRT, stats_medianRT] = RT_f_PRFD(figDisp, n_bins)
 % RT_f_PRFD tests whether there is a link between the score in the social
 % dominance questionnaire (PRF-D) and reaction times across subjects
 
@@ -50,6 +50,16 @@ end
 [excelReadQuestionnairesFile] = load_questionnaires_data();
 % extract CID
 quest_CID_Table = excelReadQuestionnairesFile.CID;
+CID_table = cell(1,length(quest_CID_Table));
+for iS = 1:length(quest_CID_Table)
+    if quest_CID_Table(iS) < 10
+        CID_table{iS} = ['00',num2str(quest_CID_Table(iS))];
+    elseif quest_CID_Table(iS) >= 10 && quest_CID_Table(iS) < 100
+        CID_table{iS} = ['0',num2str(quest_CID_Table(iS))];
+    elseif quest_CID_Table(iS) >= 100
+        CID_table{iS} = num2str(quest_CID_Table(iS));
+    end
+end
 PRFD_scoreTable = excelReadQuestionnairesFile.PRF_DScore;
 %% loop through subjects
 for iS = 1:NS
@@ -58,7 +68,7 @@ for iS = 1:NS
         'CID',sub_nm, filesep, 'behavior', filesep];
     
     %% extract PRFD score
-    sub_quest_idx = strcmp(quest_CID_Table, sub_nm);
+    sub_quest_idx = strcmp(CID_table, sub_nm);
     PRFDscore(iS) = PRFD_scoreTable(sub_quest_idx);
     
     %% extract average choice RT across all tasks
@@ -122,9 +132,9 @@ for iS = 1:NS
                 choice_hE_perTrial_tmp.(task_id)(runTrials_idx) = choice_hE_tmp;
                 % extract level of monetary incentive proposed for high
                 % effort option for each trial
-                RP_var = strcmp(choiceOptions.R_or_P, 'R');
+                RP_var = strcmp(choiceOptions_tmp.R_or_P, 'R');
                 RP_var = double(RP_var);
-                RP_var(strcmp(choiceOptions.R_or_P, 'P')) = -1;
+                RP_var(strcmp(choiceOptions_tmp.R_or_P, 'P')) = -1;
                 money_level_left_tmp    = choiceOptions_tmp.monetary_amount.left.*RP_var;
                 money_level_right_tmp   = choiceOptions_tmp.monetary_amount.right.*RP_var;
                 inc_perTrial_tmp.(task_id)(runTrials_idx) = money_level_left_tmp.*(defaultSide_tmp == 1) +...
@@ -143,14 +153,14 @@ for iS = 1:NS
         
         % extract RT according to incentives and efforts
         for iEff = 1:nEff
-            RT_f_E.(task_id)(iEff,iS) = RT_perTrial_tmp.(task_id)(eff_perTrial_tmp.(task_id) == iEff);
+            RT_f_E.(task_id)(iEff,iS) = mean(RT_perTrial_tmp.(task_id)(eff_perTrial_tmp.(task_id) == iEff),'omitnan');
         end
         for iEffch = 1:nEff_chosen
             if iEffch == 1
-                RT_f_E_ch.(task_id)(iEffch,iS) = RT_perTrial_tmp.(task_id)(choice_hE_perTrial_tmp.(task_id) == 0);
+                RT_f_E_ch.(task_id)(iEffch,iS) = mean(RT_perTrial_tmp.(task_id)(choice_hE_perTrial_tmp.(task_id) == 0),'omitnan');
             else
                 trial_idx = ((eff_perTrial_tmp.(task_id) == iEff).*(choice_hE_perTrial_tmp.(task_id) == 1)) == 1;
-                RT_f_E_ch.(task_id)(iEffch,iS) = RT_perTrial_tmp.(task_id)(trial_idx);
+                RT_f_E_ch.(task_id)(iEffch,iS) = mean(RT_perTrial_tmp.(task_id)(trial_idx),'omitnan');
             end
         end
     end % physical/mental loop
