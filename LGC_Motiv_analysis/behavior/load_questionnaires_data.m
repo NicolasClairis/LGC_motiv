@@ -16,7 +16,7 @@ pcPath = fullfile(hardDisk,'human_data_private','raw_data_subject','study1');
 cd(pcPath);
 
 %% extract the data
-excelReadQuestionnairesFile = readtable([pcPath,filesep,'Questionnaire-scores3.xlsx'],...
+excelReadQuestionnairesFile = readtable([pcPath,filesep,'Questionnaire-scores-final.xlsx'],...
         'Sheet','Sheet1');
 
 end % function
