@@ -354,11 +354,15 @@ end
 
 %% compare slopes
 
-[slope_low, slope_high] = deal(NaN(1,NS));
+[slope_low, slope_high,...
+    intercept_low, intercept_high] = deal(NaN(1,NS));
 for iS = 1:NS
     b1 = glmfit(1:nBins, choice_f_input_low_ROI(:,iS),'normal');
+    intercept_low(iS) = b1(1);
     slope_low(iS) = b1(2);
     b2 = glmfit(1:nBins, choice_f_input_high_ROI(:,iS),'normal');
+    intercept_high(iS) = b2(1);
     slope_high(iS) = b2(2);
 end
-[~,p]=ttest(slope_low,slope_high);
+[~,pval.intercept]=ttest(intercept_low,intercept_high);
+[~,pval.slope]=ttest(slope_low,slope_high);
