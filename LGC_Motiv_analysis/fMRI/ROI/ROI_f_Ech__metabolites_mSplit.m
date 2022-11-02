@@ -225,13 +225,14 @@ if dispFig == true
     fMRI_Ech_low.LineStyle = '--';
     fMRI_Ech_low.LineWidth = lWidth;
     fMRI_Ech_low.MarkerEdgeColor = blue;
-    fMRI_Ech_high.LineStyle = '--';
+    fMRI_Ech_high.LineStyle = '-';
     fMRI_Ech_high.LineWidth = lWidth;
     fMRI_Ech_high.MarkerEdgeColor = purple;
     legend([fMRI_Ech_high, fMRI_Ech_low],...
         {['high ',metabolite_nm],['low ', metabolite_nm]});
     legend('Location','NorthWest');
     legend('boxoff');
+    xticks(Echosen_possible);
     xlabel('Echosen');
     ylabel([ROI_short_nm,' BOLD']);
     legend_size(pSize);
@@ -251,7 +252,7 @@ if dispFig == true
     fMRI_hE_low.LineStyle = '--';
     fMRI_hE_low.LineWidth = lWidth;
     fMRI_hE_low.MarkerEdgeColor = blue;
-    fMRI_hE_high.LineStyle = '--';
+    fMRI_hE_high.LineStyle = '-';
     fMRI_hE_high.LineWidth = lWidth;
     fMRI_hE_high.MarkerEdgeColor = purple;
     legend([fMRI_hE_high, fMRI_hE_low],...
@@ -275,7 +276,7 @@ if dispFig == true
     choice_hE_low.LineStyle = '--';
     choice_hE_low.LineWidth = lWidth;
     choice_hE_low.MarkerEdgeColor = blue;
-    choice_hE_high.LineStyle = '--';
+    choice_hE_high.LineStyle = '-';
     choice_hE_high.LineWidth = lWidth;
     choice_hE_high.MarkerEdgeColor = purple;
     legend([choice_hE_high, choice_hE_low],...
