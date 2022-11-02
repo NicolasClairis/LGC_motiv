@@ -104,7 +104,7 @@ switch study_nm
                 bad_subs = ismember(fullSubList,{'008','022','024'});
                 % 008, 022 and 024 completely removed (because all runs are bad
                 % in terms of movement)
-                % for the other subjects, the bad runs will be removed by
+                % for the other subjects, the bad runs should be removed by
                 % First_level_subRunFilter.m
             case 'fMRI_no_move_bis'
                 % ignore subjects with too much movement in ANY RUN (ie no
