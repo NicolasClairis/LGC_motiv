@@ -61,9 +61,13 @@ n_hE_levels = length(hE_levels);
 fMRI_ROI.Ech = NaN(n_Ech,NS);
 % data split by level of effort proposed for the high effort option
 [fMRI_ROI.hE_level, choice_hE.hE_level] = deal(NaN(n_hE_levels, NS));
+[fMRI_ROI.choice_low.hE_level,...
+    fMRI_ROI.choice_high.hE_level] = deal(NaN(n_hE_levels, NS));
 
 % slopes
-b_fMRI_f_Ech.allSubs = NaN(2,NS);
+[b_fMRI_f_Ech.allSubs,...
+    b_fMRI_f_E.lE_chosen.allSubs,...
+    b_fMRI_f_E.hE_chosen.allSubs] = deal(NaN(2,NS));
 
 %% loop through subjects
 for iS = 1:NS
@@ -170,8 +174,16 @@ for iS = 1:NS
     % high effort level
     for iEff_level = 1:n_hE_levels
         jEff_idx = hE_level.allTrials(:, iS) == iEff_level;
+        % fMRI ROI depending on effort level
         fMRI_ROI.hE_level(iEff_level,iS) = mean(fMRI_ROI.allTrials(jEff_idx, iS),1,'omitnan');
         choice_hE.hE_level(iEff_level,iS) = mean(choice_hE.allTrials(jEff_idx, iS),1,'omitnan');
+
+        % fMRI ROI depending on effort level AND choice (like in Kurniawan
+        % et al, 2021)
+        jEff_highEchosen_idx = (hE_level.allTrials(:, iS) == iEff_level).*(choice_hE.allTrials(:, iS) == 1) == 1;
+        jEff_lowEchosen_idx = (hE_level.allTrials(:, iS) == iEff_level).*(choice_hE.allTrials(:, iS) == 0) == 1;
+        fMRI_ROI.choice_high.hE_level(iEff_level,iS) = mean(fMRI_ROI.allTrials(jEff_highEchosen_idx, iS),1,'omitnan');
+        fMRI_ROI.choice_low.hE_level(iEff_level,iS) = mean(fMRI_ROI.allTrials(jEff_lowEchosen_idx, iS),1,'omitnan');
     end % high effort level
     % effort chosen
     for iEff_ch = 1:n_Ech
@@ -180,11 +192,23 @@ for iS = 1:NS
     end % effort chosen
     
     %% test whether slopes are different (similar to what the mediation tests)
-    b_fMRI_f_Ech.allSubs(:,iS) = glmfit(Echosen_possible, fMRI_ROI.Ech(:,iS), 'normal');
+    b_fMRI_f_Ech.allTrials.allSubs(:,iS) = glmfit(Echosen_possible, fMRI_ROI.Ech(:,iS), 'normal');
+    b_fMRI_f_E.lE_chosen.allSubs(:,iS) = glmfit(hE_levels, fMRI_ROI.choice_low.hE_level(:,iS), 'normal');
+    b_fMRI_f_E.hE_chosen.allSubs(:,iS) = glmfit(hE_levels, fMRI_ROI.choice_high.hE_level(:,iS), 'normal');
 end % subject loop
 
+%% average data independent of metabolites
+[fMRI_ROI.allSubs.choice_low.hE_level.mean,...
+    fMRI_ROI.allSubs.choice_low.hE_level.sem] = mean_sem_sd(fMRI_ROI.choice_low.hE_level,2);
+[fMRI_ROI.allSubs.choice_high.hE_level.mean,...
+    fMRI_ROI.allSubs.choice_high.hE_level.sem] = mean_sem_sd(fMRI_ROI.choice_high.hE_level,2);
+
 %% median split based on metabolites
+% extract of subjects based on the median split
 [low_met_subs, high_met_subs, metabolite_nm, ROI_nm] = medSplit_metabolites(study_nm, subject_id);
+
+% perform the median split
+% median split on choices and fMRI for high effort level
 [fMRI_ROI.(['l',metabolite_nm]).hE_level.mean,...
     fMRI_ROI.(['l',metabolite_nm]).hE_level.sem] = mean_sem_sd(fMRI_ROI.hE_level(:,low_met_subs),2);
 [fMRI_ROI.(['h',metabolite_nm]).hE_level.mean,...
@@ -193,23 +217,39 @@ end % subject loop
     choice_hE.(['l',metabolite_nm]).hE_level.sem] = mean_sem_sd(choice_hE.hE_level(:,low_met_subs),2);
 [choice_hE.(['h',metabolite_nm]).hE_level.mean,...
     choice_hE.(['h',metabolite_nm]).hE_level.sem] = mean_sem_sd(choice_hE.hE_level(:,high_met_subs),2);
+% median split on choices and fMRI for effort chosen
 [fMRI_ROI.(['l',metabolite_nm]).Ech.mean,...
     fMRI_ROI.(['l',metabolite_nm]).Ech.sem] = mean_sem_sd(fMRI_ROI.Ech(:,low_met_subs),2);
 [fMRI_ROI.(['h',metabolite_nm]).Ech.mean,...
     fMRI_ROI.(['h',metabolite_nm]).Ech.sem] = mean_sem_sd(fMRI_ROI.Ech(:,high_met_subs),2);
+% median split on fMRI for effort level and choice made
+[fMRI_ROI.(['l',metabolite_nm]).choice_low.hE_level.mean,...
+    fMRI_ROI.(['l',metabolite_nm]).choice_low.hE_level.sem] = mean_sem_sd(fMRI_ROI.choice_low.hE_level(:,low_met_subs),2);
+[fMRI_ROI.(['l',metabolite_nm]).choice_high.hE_level.mean,...
+    fMRI_ROI.(['l',metabolite_nm]).choice_high.hE_level.sem] = mean_sem_sd(fMRI_ROI.choice_high.hE_level(:,low_met_subs),2);
+[fMRI_ROI.(['h',metabolite_nm]).choice_low.hE_level.mean,...
+    fMRI_ROI.(['h',metabolite_nm]).choice_low.hE_level.sem] = mean_sem_sd(fMRI_ROI.choice_low.hE_level(:,high_met_subs),2);
+[fMRI_ROI.(['h',metabolite_nm]).choice_high.hE_level.mean,...
+    fMRI_ROI.(['h',metabolite_nm]).choice_high.hE_level.sem] = mean_sem_sd(fMRI_ROI.choice_high.hE_level(:,high_met_subs),2);
+
 % betas
+% global betas with effort chosen
 b_fMRI_f_Ech.(['low_',metabolite_nm]) = b_fMRI_f_Ech.allSubs(:,low_met_subs);
 b_fMRI_f_Ech.(['high_',metabolite_nm]) = b_fMRI_f_Ech.allSubs(:,high_met_subs);
-
+% betas split by effort level and choice
+b_fMRI_f_E.lE_chosen.(['low_',metabolite_nm]) = b_fMRI_f_E.lE_chosen.allSubs(:,low_met_subs);
+b_fMRI_f_E.lE_chosen.(['high_',metabolite_nm]) = b_fMRI_f_E.lE_chosen.allSubs(:,high_met_subs);
+b_fMRI_f_E.hE_chosen.(['low_',metabolite_nm]) = b_fMRI_f_E.hE_chosen.allSubs(:,low_met_subs);
+b_fMRI_f_E.hE_chosen.(['high_',metabolite_nm]) = b_fMRI_f_E.hE_chosen.allSubs(:,high_met_subs);
 
 %% figure
 if dispFig == true
     % general parameters
     lWidth = 3;
     black = [0 0 0];
-    purple = [153 142 195]./255;
+    purple = [148 0 211]./255;
     orange = [241 163 64]./255;
-    blue = [0 255 0]./255;
+    blue = [51 153 255]./255;
     pSize = 50;
     
     %% fMRI = f(E chosen) and metabolites
@@ -285,5 +325,69 @@ if dispFig == true
     legend('boxoff');
     xlabel('high Effort level');
     ylabel('Choice = high effort (%)');
+    legend_size(pSize);
+
+    %% fMRI = f(E level) according to choice made independent of metabolites
+    fig;
+    hold on;
+    fMRI_lowEch = errorbar(hE_levels-0.01,...
+        fMRI_ROI.allSubs.choice_low.hE_level.mean,...
+        fMRI_ROI.allSubs.choice_low.hE_level.sem);
+    fMRI_highEch = errorbar(hE_levels+0.01,...
+        fMRI_ROI.allSubs.choice_high.hE_level.mean,...
+        fMRI_ROI.allSubs.choice_high.hE_level.sem);
+    % curve parameters
+    fMRI_lowEch.LineStyle = '--';
+    fMRI_lowEch.LineWidth = lWidth;
+    fMRI_lowEch.Color = blue;
+    fMRI_highEch.LineStyle = '-';
+    fMRI_highEch.LineWidth = lWidth;
+    fMRI_highEch.Color = purple;
+    legend([fMRI_highEch, fMRI_lowEch],...
+        {'high E chosen','low E chosen'});
+    legend('Location','NorthWest');
+    legend('boxoff');
+    xticks(hE_levels);
+    xlabel('high Effort level');
+    ylabel([ROI_short_nm,' BOLD']);
+    legend_size(pSize);
+
+    %% fMRI = f(E level) according to choice made
+    fig;
+    hold on;
+    fMRI_lowEch_lowMet = errorbar(hE_levels-0.01,...
+        fMRI_ROI.(['l',metabolite_nm]).choice_low.hE_level.mean,...
+        fMRI_ROI.(['l',metabolite_nm]).choice_low.hE_level.sem);
+    fMRI_lowEch_highMet = errorbar(hE_levels+0.01,...
+        fMRI_ROI.(['h',metabolite_nm]).choice_low.hE_level.mean,...
+        fMRI_ROI.(['h',metabolite_nm]).choice_low.hE_level.sem);
+    fMRI_highEch_lowMet = errorbar(hE_levels-0.01,...
+        fMRI_ROI.(['l',metabolite_nm]).choice_high.hE_level.mean,...
+        fMRI_ROI.(['l',metabolite_nm]).choice_high.hE_level.sem);
+    fMRI_highEch_highMet = errorbar(hE_levels+0.01,...
+        fMRI_ROI.(['h',metabolite_nm]).choice_high.hE_level.mean,...
+        fMRI_ROI.(['h',metabolite_nm]).choice_high.hE_level.sem);
+    % curve parameters
+    fMRI_lowEch_lowMet.LineStyle = '--';
+    fMRI_lowEch_lowMet.LineWidth = lWidth;
+    fMRI_lowEch_lowMet.Color = blue;
+    fMRI_lowEch_highMet.LineStyle = '-';
+    fMRI_lowEch_highMet.LineWidth = lWidth;
+    fMRI_lowEch_highMet.Color = blue;
+    fMRI_highEch_lowMet.LineStyle = '--';
+    fMRI_highEch_lowMet.LineWidth = lWidth;
+    fMRI_highEch_lowMet.Color = purple;
+    fMRI_highEch_highMet.LineStyle = '-';
+    fMRI_highEch_highMet.LineWidth = lWidth;
+    fMRI_highEch_highMet.Color = purple;
+    legend([fMRI_highEch_highMet, fMRI_highEch_lowMet,...
+        fMRI_lowEch_highMet, fMRI_lowEch_lowMet],...
+        {['high ',metabolite_nm, '- high E chosen'],['low ', metabolite_nm, '- high E chosen'],...
+        ['high ',metabolite_nm, '- low E chosen'],['low ', metabolite_nm, '- low E chosen']});
+    legend('Location','NorthWest');
+    legend('boxoff');
+    xticks(hE_levels);
+    xlabel('high Effort level');
+    ylabel([ROI_short_nm,' BOLD']);
     legend_size(pSize);
 end % figure display
