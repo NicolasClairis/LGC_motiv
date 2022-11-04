@@ -11,8 +11,9 @@ fig_disp = 1;
 GLM = spm_input('GLM number',1,'e');
 
 %% define all subjects
+study_nm = 'study1';
 condition = subject_condition();
-[subject_id, NS] = LGCM_subject_selection('study1', condition);
+[subject_id, NS] = LGCM_subject_selection(study_nm, condition);
 
 %% define metabolite and ROI you want to focus on
 [metabolite_allSubs, ROI_nm, metabolite_nm] = metabolite_extraction(study_nm, subject_id);
