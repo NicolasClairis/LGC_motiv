@@ -337,9 +337,9 @@ hdl = errorbar(m_ROI_f_ROI_bin,...
     m_output_f_ROI_bin,...
     sem_output_f_ROI_bin);
 hdl.LineWidth = lWidth;
-legend_size(pSize);
 xlabel(ROI_short_nm);
 ylabel(output_prm_nm);
+legend_size(pSize);
 
 % output = f(input)
 subplot(1,3,3);
@@ -347,7 +347,7 @@ hdl = errorbar(m_input_f_input_bin,...
     m_output_f_input_bin,...
     sem_output_f_input_bin);
 hdl.LineWidth = lWidth;
-legend_size(pSize);
 xlabel(input_prm_nm);
 ylabel(output_prm_nm);
+legend_size(pSize);
 end % function
