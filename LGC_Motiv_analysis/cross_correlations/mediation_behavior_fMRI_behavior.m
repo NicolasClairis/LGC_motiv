@@ -71,30 +71,10 @@ else
 end
 
 %% extract ROI activity for all subjects
-[ROI_trial_b_trial] = extract_ROI_betas_onsets_only(computerRoot,...
+[ROI_trial_b_trial, ~,...
+    ROI_nm, ROI_short_nm,...
+    task_to_look, timePeriod_nm] = extract_ROI_betas_onsets_only_bis(computerRoot,...
     study_nm, subject_id, condition);
-% define which ROI, and which time period is of interest to you
-% define ROI
-ROI_names = fieldnames(ROI_trial_b_trial);
-ROI_subList = ROI_trial_b_trial.subject_id;
-ROI_names(strcmp(ROI_names,'subject_id')) = [];
-if length(ROI_names) > 1
-    which_ROI = listdlg('PromptString','Which ROI?','ListString',ROI_names);
-    ROI_nm = ROI_names{which_ROI};
-else
-    ROI_nm = ROI_names;
-end
-ROI_short_nm = inputdlg('ROI short name?');
-ROI_short_nm = ROI_short_nm{1};
-% define task
-task_names = {'Ep','Em','EpEmPool'};
-which_task = listdlg('PromptString','Which task?','ListString',task_names);
-task_to_look = task_names{which_task};
-% define time period
-timePeriods = fieldnames(ROI_trial_b_trial.(ROI_nm{1}).Ep.run1);
-which_timePeriod = listdlg('PromptString','Which time phase of the trial?',...
-    'listString',timePeriods);
-timePeriod_nm = timePeriods{which_timePeriod};
 
 %% select parameters of interest
 potential_input_prm = {'NV_hE','NV_ch','uncertainty',...
