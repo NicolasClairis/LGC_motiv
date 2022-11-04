@@ -54,7 +54,10 @@ for iTrial = 1:nTrialsPerRun
     %% extract peak force
     forcePeak.allTrials(iTrial) = max(trialForceLevels,[],2,'omitnan');
     %% now get the latency
-    latency.allTrials(iTrial) = find(diff(trialForceLevels) > diffFStartThreshold, 1, 'first');
+    latency_squeeze_idx = find(diff(trialForceLevels) > diffFStartThreshold, 1, 'first');
+    if ~isempty(latency_squeeze_idx)
+        latency.allTrials(iTrial) = timeForce(latency_squeeze_idx);
+    end
     
     %% extract AUC
     AUC.allTrials(iTrial) = trapz(timeForce, trialForceLevels);
