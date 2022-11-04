@@ -7,9 +7,8 @@ computerRoot = LGCM_root_paths;
 study_nm = 'study1';
 
 %% load MADRS-S scores
-MADRS_S_fullList = getfield(load([computerRoot,filesep,...
-    study_nm,filesep,...
-    'MADRS_S_temporary.mat'],'MADRS_S'),'MADRS_S');
+[excelReadQuestionnairesFile, MADRS_S_sub_CID_list] = load_questionnaires_data();
+MADRS_S_fullList = excelReadQuestionnairesFile.MADRS_SCorrected;
 
 %% define metabolite and ROI you want to focus on
 % ROI
@@ -40,7 +39,7 @@ metabolite_allSubs = metabolites.(ROI_nm).(metabolite_nm);
 [MADRS_S_score] = deal(NaN(1,NS));
 for iS = 1:NS
     sub_nm = subject_id{iS};
-    MADRS_S_score(iS) = MADRS_S_fullList.MADRS_S_score(strcmp(MADRS_S_fullList.subject,sub_nm));
+    MADRS_S_score(iS) = MADRS_S_fullList(strcmp(MADRS_S_sub_CID_list, sub_nm));
 end % subject list
 %% perform GLM and correlation between metabolites and MADRS-S
 var_nm = [metabolite_nm,'_f_MADRS'];
