@@ -19,7 +19,7 @@ for iS = 1:NS
        deltaIP.Em(iS) = IPdata_tmp.mentalDeltaIP;
 end
 %% define metabolite and ROI you want to focus on and extract subjects accordingly
-[low_met_subs, high_met_subs, metabolite_nm] = medSplit_metabolites(subject_id);
+[low_met_subs, high_met_subs, metabolite_nm] = medSplit_metabolites(study_nm, subject_id);
 
 %% extract the data
 tasks = {'Ep','Em'};
