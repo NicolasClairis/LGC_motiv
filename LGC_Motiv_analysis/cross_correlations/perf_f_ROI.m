@@ -20,6 +20,12 @@ else
     NS = length(subject_id);
 end
 
+%% load ROI
+[ROI_trial_b_trial, ROI_subList,...
+    ROI_nm, ROI_short_nm,...
+    task_to_look, timePeriod_nm] = extract_ROI_betas_onsets_only_bis(computerRoot,...
+    study_nm, subject_id, condition);
+
 %% general parameters
 nRuns = 4;
 nTrialsPerRun = 54;
@@ -76,11 +82,6 @@ for iTask = 1:nTasks
         perf.(task_nm).n_errors.choice_lowE.perHighElevel.(['high_',ROI_short_nm]),...
         perf.(task_nm).successSpeed.choice_lowE.perHighElevel.(['high_',ROI_short_nm])] = deal(NaN(n_hE_levels,NS));
 end % task loop
-%% load ROI
-[ROI_trial_b_trial, ROI_subList,...
-    ROI_nm, ROI_short_nm,...
-    task_to_look, timePeriod_nm] = extract_ROI_betas_onsets_only_bis(computerRoot,...
-    study_nm, subject_id, condition);
 
 %% load performance and extract corresponding ROI activity
 %% loop through subjects
