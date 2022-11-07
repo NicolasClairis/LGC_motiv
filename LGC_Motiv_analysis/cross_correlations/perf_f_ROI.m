@@ -128,9 +128,10 @@ for iS = 1:NS
                 perf.forcePeak.allTrials(runTrials_idx,iS) = forcePeak.allTrials;
                 
             case 'Em'
-                % need to extract mental data
-                %                 perf.mental.n_errors.allTrials(runTrials_idx,iS) = .allTrials;
-                %                 perf.mental.successSpeed.allTrials(runTrials_idx,iS) = .allTrials;
+                [successSpeed, n_errors, RT_avg] = extract_mental_perf(subBehaviorFolder, sub_nm, run_nm);
+                perf.successSpeed.allTrials(runTrials_idx,iS) = successSpeed.allTrials;
+                perf.n_errors.allTrials(runTrials_idx,iS) = n_errors.allTrials;
+                perf.RT_avg.allTrials(runTrials_idx,iS) = RT_avg.allTrials;
         end
         
         %% extract fMRI ROI mediator
@@ -161,12 +162,14 @@ for iS = 1:NS
                     perf.(task_nm).AUC.perEch.(['high_',ROI_short_nm])(iEch, iS)           = mean(perf.AUC.allTrials(high_ROI_Ech,iS),1,'omitnan');
                     perf.(task_nm).forcePeak.perEch.(['high_',ROI_short_nm])(iEch, iS)     = mean(perf.forcePeak.allTrials(high_ROI_Ech,iS),1,'omitnan');
                 case 'mental'
-%                     % low ROI level
-%                     perf.(task_nm).n_errors.perEch.(['low_',ROI_short_nm])(iEch, iS)      = mean(perf.n_errors.allTrials(low_ROI_Ech,iS),1,'omitnan');
-%                     perf.(task_nm).successSpeed.perEch.(['low_',ROI_short_nm])(iEch, iS)  = mean(perf.successSpeed.allTrials(low_ROI_Ech,iS),1,'omitnan');
-%                     % high ROI level
-%                     perf.(task_nm).n_errors.perEch.(['high_',ROI_short_nm])(iEch, iS)      = mean(perf.n_errors.allTrials(high_ROI_Ech,iS),1,'omitnan');
-%                     perf.(task_nm).successSpeed.perEch.(['high_',ROI_short_nm])(iEch, iS)  = mean(perf.successSpeed.allTrials(high_ROI_Ech,iS),1,'omitnan');
+                    % low ROI level
+                    perf.(task_nm).n_errors.perEch.(['low_',ROI_short_nm])(iEch, iS)        = mean(perf.n_errors.allTrials(low_ROI_Ech,iS),1,'omitnan');
+                    perf.(task_nm).successSpeed.perEch.(['low_',ROI_short_nm])(iEch, iS)    = mean(perf.successSpeed.allTrials(low_ROI_Ech,iS),1,'omitnan');
+                    perf.(task_nm).RT_avg.perEch.(['low_',ROI_short_nm])(iEch, iS)          = mean(perf.RT_avg.allTrials(low_ROI_Ech,iS),1,'omitnan');
+                    % high ROI level
+                    perf.(task_nm).n_errors.perEch.(['high_',ROI_short_nm])(iEch, iS)       = mean(perf.n_errors.allTrials(high_ROI_Ech,iS),1,'omitnan');
+                    perf.(task_nm).successSpeed.perEch.(['high_',ROI_short_nm])(iEch, iS)   = mean(perf.successSpeed.allTrials(high_ROI_Ech,iS),1,'omitnan');
+                    perf.(task_nm).RT_avg.perEch.(['high_',ROI_short_nm])(iEch, iS)         = mean(perf.RT_avg.allTrials(high_ROI_Ech,iS),1,'omitnan');
             end
         end % effort chosen
         
@@ -202,18 +205,22 @@ for iS = 1:NS
                     perf.(task_nm).AUC.choice_highE.perHighElevel.(['high_',ROI_short_nm])(iEff, iS)          = mean(perf.AUC.allTrials(high_ROI_hE_highCh,iS),1,'omitnan');
                     perf.(task_nm).forcePeak.choice_highE.perHighElevel.(['high_',ROI_short_nm])(iEff, iS)    = mean(perf.forcePeak.allTrials(high_ROI_hE_highCh,iS),1,'omitnan');
                 case 'mental'
-%                     % low ROI - low effort chosen
-%                     perf.(task_nm).n_errors.choice_lowE.perHighElevel.(['low_',ROI_short_nm])(iEff, iS)      = mean(perf.n_errors.allTrials(low_ROI_hE_lowCh,iS),1,'omitnan');
-%                     perf.(task_nm).successSpeed.choice_lowE.perHighElevel.(['low_',ROI_short_nm])(iEff, iS)  = mean(perf.successSpeed.allTrials(low_ROI_hE_lowCh,iS),1,'omitnan');
-%                     % high ROI - low effort chosen
-%                     perf.(task_nm).n_errors.choice_lowE.perHighElevel.(['high_',ROI_short_nm])(iEff, iS)      = mean(perf.n_errors.allTrials(high_ROI_hE_lowCh,iS),1,'omitnan');
-%                     perf.(task_nm).successSpeed.choice_lowE.perHighElevel.(['high_',ROI_short_nm])(iEff, iS)  = mean(perf.successSpeed.allTrials(high_ROI_hE_lowCh,iS),1,'omitnan');
-%                     % low ROI - high effort chosen
-%                     perf.(task_nm).n_errors.choice_highE.perHighElevel.(['low_',ROI_short_nm])(iEff, iS)     = mean(perf.n_errors.allTrials(low_ROI_hE_highCh,iS),1,'omitnan');
-%                     perf.(task_nm).successSpeed.choice_highE.perHighElevel.(['low_',ROI_short_nm])(iEff, iS) = mean(perf.successSpeed.allTrials(low_ROI_hE_highCh,iS),1,'omitnan');
-%                     % high ROI - high effort chosen
-%                     perf.(task_nm).n_errors.choice_highE.perHighElevel.(['high_',ROI_short_nm])(iEff, iS)     = mean(perf.n_errors.allTrials(high_ROI_hE_highCh,iS),1,'omitnan');
-%                     perf.(task_nm).successSpeed.choice_highE.perHighElevel.(['high_',ROI_short_nm])(iEff, iS) = mean(perf.successSpeed.allTrials(high_ROI_hE_highCh,iS),1,'omitnan');
+                    % low ROI - low effort chosen
+                    perf.(task_nm).n_errors.choice_lowE.perHighElevel.(['low_',ROI_short_nm])(iEff, iS)         = mean(perf.n_errors.allTrials(low_ROI_hE_lowCh,iS),1,'omitnan');
+                    perf.(task_nm).successSpeed.choice_lowE.perHighElevel.(['low_',ROI_short_nm])(iEff, iS)     = mean(perf.successSpeed.allTrials(low_ROI_hE_lowCh,iS),1,'omitnan');
+                    perf.(task_nm).RT_avg.choice_lowE.perHighElevel.(['low_',ROI_short_nm])(iEff, iS)           = mean(perf.RT_avg.allTrials(low_ROI_hE_lowCh,iS),1,'omitnan');
+                    % high ROI - low effort chosen
+                    perf.(task_nm).n_errors.choice_lowE.perHighElevel.(['high_',ROI_short_nm])(iEff, iS)        = mean(perf.n_errors.allTrials(high_ROI_hE_lowCh,iS),1,'omitnan');
+                    perf.(task_nm).successSpeed.choice_lowE.perHighElevel.(['high_',ROI_short_nm])(iEff, iS)    = mean(perf.successSpeed.allTrials(high_ROI_hE_lowCh,iS),1,'omitnan');
+                    perf.(task_nm).RT_avg.choice_lowE.perHighElevel.(['high_',ROI_short_nm])(iEff, iS)          = mean(perf.RT_avg.allTrials(high_ROI_hE_lowCh,iS),1,'omitnan');
+                    % low ROI - high effort chosen
+                    perf.(task_nm).n_errors.choice_highE.perHighElevel.(['low_',ROI_short_nm])(iEff, iS)        = mean(perf.n_errors.allTrials(low_ROI_hE_highCh,iS),1,'omitnan');
+                    perf.(task_nm).successSpeed.choice_highE.perHighElevel.(['low_',ROI_short_nm])(iEff, iS)    = mean(perf.successSpeed.allTrials(low_ROI_hE_highCh,iS),1,'omitnan');
+                    perf.(task_nm).RT_avg.choice_highE.perHighElevel.(['low_',ROI_short_nm])(iEff, iS)          = mean(perf.RT_avg.allTrials(low_ROI_hE_highCh,iS),1,'omitnan');
+                    % high ROI - high effort chosen
+                    perf.(task_nm).n_errors.choice_highE.perHighElevel.(['high_',ROI_short_nm])(iEff, iS)       = mean(perf.n_errors.allTrials(high_ROI_hE_highCh,iS),1,'omitnan');
+                    perf.(task_nm).successSpeed.choice_highE.perHighElevel.(['high_',ROI_short_nm])(iEff, iS)   = mean(perf.successSpeed.allTrials(high_ROI_hE_highCh,iS),1,'omitnan');
+                    perf.(task_nm).RT_avg.choice_highE.perHighElevel.(['high_',ROI_short_nm])(iEff, iS)         = mean(perf.RT_avg.allTrials(high_ROI_hE_highCh,iS),1,'omitnan');
             end
         end % effort level
         
@@ -250,6 +257,8 @@ for iROI_lvl = 1:length(ROI_level)
         sem_perf.mental.n_errors.perEch.(ROI_info_nm)] = mean_sem_sd(perf.mental.n_errors.perEch.(ROI_info_nm), 2);
     [m_perf.mental.successSpeed.perEch.(ROI_info_nm),...
         sem_perf.mental.successSpeed.perEch.(ROI_info_nm)] = mean_sem_sd(perf.mental.successSpeed.perEch.(ROI_info_nm), 2);
+    [m_perf.mental.RT_avg.perEch.(ROI_info_nm),...
+        sem_perf.mental.RT_avg.perEch.(ROI_info_nm)] = mean_sem_sd(perf.mental.RT_avg.perEch.(ROI_info_nm), 2);
     
     % low effort chosen
     [m_perf.physical.latency.choice_lowE.perHighElevel.(ROI_info_nm),...
@@ -262,6 +271,8 @@ for iROI_lvl = 1:length(ROI_level)
         sem_perf.mental.n_errors.choice_lowE.perHighElevel.(ROI_info_nm)] = mean_sem_sd(perf.mental.n_errors.choice_lowE.perHighElevel.(ROI_info_nm), 2);
     [m_perf.mental.successSpeed.choice_lowE.perHighElevel.(ROI_info_nm),...
         sem_perf.mental.successSpeed.choice_lowE.perHighElevel.(ROI_info_nm)] = mean_sem_sd(perf.mental.successSpeed.choice_lowE.perHighElevel.(ROI_info_nm), 2);
+    [m_perf.mental.RT_avg.choice_lowE.perHighElevel.(ROI_info_nm),...
+        sem_perf.mental.RT_avg.choice_lowE.perHighElevel.(ROI_info_nm)] = mean_sem_sd(perf.mental.RT_avg.choice_lowE.perHighElevel.(ROI_info_nm), 2);
     % high effort chosen
     [m_perf.physical.latency.choice_highE.perHighElevel.(ROI_info_nm),...
         sem_perf.physical.latency.choice_highE.perHighElevel.(ROI_info_nm)] = mean_sem_sd(perf.physical.latency.choice_highE.perHighElevel.(ROI_info_nm), 2);
@@ -273,6 +284,8 @@ for iROI_lvl = 1:length(ROI_level)
         sem_perf.mental.n_errors.choice_highE.perHighElevel.(ROI_info_nm)] = mean_sem_sd(perf.mental.n_errors.choice_highE.perHighElevel.(ROI_info_nm), 2);
     [m_perf.mental.successSpeed.choice_highE.perHighElevel.(ROI_info_nm),...
         sem_perf.mental.successSpeed.choice_highE.perHighElevel.(ROI_info_nm)] = mean_sem_sd(perf.mental.successSpeed.choice_highE.perHighElevel.(ROI_info_nm), 2);
+    [m_perf.mental.RT_avg.choice_highE.perHighElevel.(ROI_info_nm),...
+        sem_perf.mental.RT_avg.choice_highE.perHighElevel.(ROI_info_nm)] = mean_sem_sd(perf.mental.RT_avg.choice_highE.perHighElevel.(ROI_info_nm), 2);
 end % ROI activity
 
 %% display figures
@@ -356,6 +369,79 @@ ylabel('AUC force');
 legend_size(pSize);
 
 %% E chosen - 2-back (not ready yet)
+fig;
+
+% success speed = f(ROI)
+subplot(1,3,1);
+hold on;
+Ech_successSpeed_low_ROI_hdl = errorbar(Ech_levels,...
+    m_perf.mental.successSpeed.perEch.(['low_',ROI_short_nm]),...
+    sem_perf.mental.successSpeed.perEch.(['low_',ROI_short_nm]));
+Ech_successSpeed_high_ROI_hdl = errorbar(Ech_levels,...
+    m_perf.mental.successSpeed.perEch.(['high_',ROI_short_nm]),...
+    sem_perf.mental.successSpeed.perEch.(['high_',ROI_short_nm]));
+% modify curve properties
+Ech_successSpeed_low_ROI_hdl.LineStyle = '--';
+Ech_successSpeed_low_ROI_hdl.LineWidth = lWidth;
+Ech_successSpeed_low_ROI_hdl.Color = blue;
+Ech_successSpeed_high_ROI_hdl.LineStyle = '-';
+Ech_successSpeed_high_ROI_hdl.LineWidth = lWidth;
+Ech_successSpeed_high_ROI_hdl.Color = purple;
+legend([Ech_successSpeed_high_ROI_hdl, Ech_successSpeed_low_ROI_hdl],...
+    {['high ',ROI_short_nm],['low ',ROI_short_nm]});
+legend('boxoff');
+xticks(Ech_levels);
+xlabel('E chosen');
+ylabel('success speed (s)');
+legend_size(pSize);
+
+% number of errors made = f(ROI)
+subplot(1,3,2);
+hold on;
+Ech_nErrors_low_ROI_hdl = errorbar(Ech_levels,...
+    m_perf.mental.n_errors.perEch.(['low_',ROI_short_nm]),...
+    sem_perf.mental.n_errors.perEch.(['low_',ROI_short_nm]));
+Ech_nErrors_high_ROI_hdl = errorbar(Ech_levels,...
+    m_perf.mental.n_errors.perEch.(['high_',ROI_short_nm]),...
+    sem_perf.mental.n_errors.perEch.(['high_',ROI_short_nm]));
+% modify curve properties
+Ech_nErrors_low_ROI_hdl.LineStyle = '--';
+Ech_nErrors_low_ROI_hdl.LineWidth = lWidth;
+Ech_nErrors_low_ROI_hdl.Color = blue;
+Ech_nErrors_high_ROI_hdl.LineStyle = '-';
+Ech_nErrors_high_ROI_hdl.LineWidth = lWidth;
+Ech_nErrors_high_ROI_hdl.Color = purple;
+legend([Ech_nErrors_high_ROI_hdl, Ech_nErrors_low_ROI_hdl],...
+    {['high ',ROI_short_nm],['low ',ROI_short_nm]});
+legend('boxoff');
+xticks(Ech_levels);
+xlabel('E chosen');
+ylabel('Number of errors');
+legend_size(pSize);
+
+% average(RT) = f(ROI)
+subplot(1,3,3);
+hold on;
+Ech_RT_avg_low_ROI_hdl = errorbar(Ech_levels,...
+    m_perf.mental.RT_avg.perEch.(['low_',ROI_short_nm]),...
+    sem_perf.mental.RT_avg.perEch.(['low_',ROI_short_nm]));
+Ech_RT_avg_high_ROI_hdl = errorbar(Ech_levels,...
+    m_perf.mental.RT_avg.perEch.(['high_',ROI_short_nm]),...
+    sem_perf.mental.RT_avg.perEch.(['high_',ROI_short_nm]));
+% modify curve properties
+Ech_RT_avg_low_ROI_hdl.LineStyle = '--';
+Ech_RT_avg_low_ROI_hdl.LineWidth = lWidth;
+Ech_RT_avg_low_ROI_hdl.Color = blue;
+Ech_RT_avg_high_ROI_hdl.LineStyle = '-';
+Ech_RT_avg_high_ROI_hdl.LineWidth = lWidth;
+Ech_RT_avg_high_ROI_hdl.Color = purple;
+legend([Ech_RT_avg_high_ROI_hdl, Ech_RT_avg_low_ROI_hdl],...
+    {['high ',ROI_short_nm],['low ',ROI_short_nm]});
+legend('boxoff');
+xticks(Ech_levels);
+xlabel('E chosen');
+ylabel('avg(RT) (s)');
+legend_size(pSize);
 
 %% effort level and choice - grip
 fig;
@@ -487,3 +573,130 @@ ylabel('AUC force');
 legend_size(pSize);
 
 %% effort level and choice - 2-back
+fig;
+
+% success speed = f(ROI)
+subplot(1,3,1);
+hold on;
+hE_lowEchoice_successSpeed_lowROI_hdl = errorbar(hE_levels,...
+    m_perf.mental.successSpeed.choice_lowE.perHighElevel.(['low_',ROI_short_nm]),...
+    sem_perf.mental.successSpeed.choice_lowE.perHighElevel.(['low_',ROI_short_nm]));
+hE_lowEchoice_successSpeed_highROI_hdl = errorbar(hE_levels,...
+    m_perf.mental.successSpeed.choice_lowE.perHighElevel.(['high_',ROI_short_nm]),...
+    sem_perf.mental.successSpeed.choice_lowE.perHighElevel.(['high_',ROI_short_nm]));
+hE_highEchoice_successSpeed_lowROI_hdl = errorbar(hE_levels,...
+    m_perf.mental.successSpeed.choice_highE.perHighElevel.(['low_',ROI_short_nm]),...
+    sem_perf.mental.successSpeed.choice_highE.perHighElevel.(['low_',ROI_short_nm]));
+hE_highEchoice_successSpeed_highROI_hdl = errorbar(hE_levels,...
+    m_perf.mental.successSpeed.choice_highE.perHighElevel.(['high_',ROI_short_nm]),...
+    sem_perf.mental.successSpeed.choice_highE.perHighElevel.(['high_',ROI_short_nm]));
+% modify curve properties
+hE_lowEchoice_successSpeed_lowROI_hdl.LineStyle = '--';
+hE_lowEchoice_successSpeed_lowROI_hdl.LineWidth = lWidth;
+hE_lowEchoice_successSpeed_lowROI_hdl.Color = blue;
+hE_lowEchoice_successSpeed_highROI_hdl.LineStyle = '--';
+hE_lowEchoice_successSpeed_highROI_hdl.LineWidth = lWidth;
+hE_lowEchoice_successSpeed_highROI_hdl.Color = purple;
+hE_highEchoice_successSpeed_lowROI_hdl.LineStyle = '-';
+hE_highEchoice_successSpeed_lowROI_hdl.LineWidth = lWidth;
+hE_highEchoice_successSpeed_lowROI_hdl.Color = blue;
+hE_highEchoice_successSpeed_highROI_hdl.LineStyle = '-';
+hE_highEchoice_successSpeed_highROI_hdl.LineWidth = lWidth;
+hE_highEchoice_successSpeed_highROI_hdl.Color = purple;
+legend([hE_highEchoice_successSpeed_highROI_hdl,...
+    hE_highEchoice_successSpeed_lowROI_hdl,...
+    hE_lowEchoice_successSpeed_highROI_hdl,...
+    hE_lowEchoice_successSpeed_lowROI_hdl],...
+    {['hEch - high ',ROI_short_nm],...
+    ['hEch - low ',ROI_short_nm],...
+    ['lowEch - high ',ROI_short_nm],...
+    ['lowEch - low ',ROI_short_nm]});
+legend('boxoff');
+xticks(hE_levels);
+xlabel('high effort level');
+ylabel('successSpeed to squeeze (s)');
+legend_size(pSize);
+
+% number of errors = f(ROI)
+subplot(1,3,2);
+hold on;
+hE_lowEchoice_nErrors_lowROI_hdl = errorbar(hE_levels,...
+    m_perf.mental.n_errors.choice_lowE.perHighElevel.(['low_',ROI_short_nm]),...
+    sem_perf.mental.n_errors.choice_lowE.perHighElevel.(['low_',ROI_short_nm]));
+hE_lowEchoice_nErrors_highROI_hdl = errorbar(hE_levels,...
+    m_perf.mental.n_errors.choice_lowE.perHighElevel.(['high_',ROI_short_nm]),...
+    sem_perf.mental.n_errors.choice_lowE.perHighElevel.(['high_',ROI_short_nm]));
+hE_highEchoice_nErrors_lowROI_hdl = errorbar(hE_levels,...
+    m_perf.mental.n_errors.choice_highE.perHighElevel.(['low_',ROI_short_nm]),...
+    sem_perf.mental.n_errors.choice_highE.perHighElevel.(['low_',ROI_short_nm]));
+hE_highEchoice_nErrors_highROI_hdl = errorbar(hE_levels,...
+    m_perf.mental.n_errors.choice_highE.perHighElevel.(['high_',ROI_short_nm]),...
+    sem_perf.mental.n_errors.choice_highE.perHighElevel.(['high_',ROI_short_nm]));
+% modify curve properties
+hE_lowEchoice_nErrors_lowROI_hdl.LineStyle = '--';
+hE_lowEchoice_nErrors_lowROI_hdl.LineWidth = lWidth;
+hE_lowEchoice_nErrors_lowROI_hdl.Color = blue;
+hE_lowEchoice_nErrors_highROI_hdl.LineStyle = '--';
+hE_lowEchoice_nErrors_highROI_hdl.LineWidth = lWidth;
+hE_lowEchoice_nErrors_highROI_hdl.Color = purple;
+hE_highEchoice_nErrors_lowROI_hdl.LineStyle = '-';
+hE_highEchoice_nErrors_lowROI_hdl.LineWidth = lWidth;
+hE_highEchoice_nErrors_lowROI_hdl.Color = blue;
+hE_highEchoice_nErrors_highROI_hdl.LineStyle = '-';
+hE_highEchoice_nErrors_highROI_hdl.LineWidth = lWidth;
+hE_highEchoice_nErrors_highROI_hdl.Color = purple;
+legend([hE_highEchoice_nErrors_highROI_hdl,...
+    hE_highEchoice_nErrors_lowROI_hdl,...
+    hE_lowEchoice_nErrors_highROI_hdl,...
+    hE_lowEchoice_nErrors_lowROI_hdl],...
+    {['hEch - high ',ROI_short_nm],...
+    ['hEch - low ',ROI_short_nm],...
+    ['lowEch - high ',ROI_short_nm],...
+    ['lowEch - low ',ROI_short_nm]});
+legend('boxoff');
+xticks(hE_levels);
+xlabel('high effort level');
+ylabel('Peak force (%)');
+legend_size(pSize);
+
+% RT_avg force = f(ROI)
+subplot(1,3,3);
+hold on;
+hE_lowEchoice_RT_avg_lowROI_hdl = errorbar(hE_levels,...
+    m_perf.mental.RT_avg.choice_lowE.perHighElevel.(['low_',ROI_short_nm]),...
+    sem_perf.mental.RT_avg.choice_lowE.perHighElevel.(['low_',ROI_short_nm]));
+hE_lowEchoice_RT_avg_highROI_hdl = errorbar(hE_levels,...
+    m_perf.mental.RT_avg.choice_lowE.perHighElevel.(['high_',ROI_short_nm]),...
+    sem_perf.mental.RT_avg.choice_lowE.perHighElevel.(['high_',ROI_short_nm]));
+hE_highEchoice_RT_avg_lowROI_hdl = errorbar(hE_levels,...
+    m_perf.mental.RT_avg.choice_highE.perHighElevel.(['low_',ROI_short_nm]),...
+    sem_perf.mental.RT_avg.choice_highE.perHighElevel.(['low_',ROI_short_nm]));
+hE_highEchoice_RT_avg_highROI_hdl = errorbar(hE_levels,...
+    m_perf.mental.RT_avg.choice_highE.perHighElevel.(['high_',ROI_short_nm]),...
+    sem_perf.mental.RT_avg.choice_highE.perHighElevel.(['high_',ROI_short_nm]));
+% modify curve properties
+hE_lowEchoice_RT_avg_lowROI_hdl.LineStyle = '--';
+hE_lowEchoice_RT_avg_lowROI_hdl.LineWidth = lWidth;
+hE_lowEchoice_RT_avg_lowROI_hdl.Color = blue;
+hE_lowEchoice_RT_avg_highROI_hdl.LineStyle = '--';
+hE_lowEchoice_RT_avg_highROI_hdl.LineWidth = lWidth;
+hE_lowEchoice_RT_avg_highROI_hdl.Color = purple;
+hE_highEchoice_RT_avg_lowROI_hdl.LineStyle = '-';
+hE_highEchoice_RT_avg_lowROI_hdl.LineWidth = lWidth;
+hE_highEchoice_RT_avg_lowROI_hdl.Color = blue;
+hE_highEchoice_RT_avg_highROI_hdl.LineStyle = '-';
+hE_highEchoice_RT_avg_highROI_hdl.LineWidth = lWidth;
+hE_highEchoice_RT_avg_highROI_hdl.Color = purple;
+legend([hE_highEchoice_RT_avg_highROI_hdl,...
+    hE_highEchoice_RT_avg_lowROI_hdl,...
+    hE_lowEchoice_RT_avg_highROI_hdl,...
+    hE_lowEchoice_RT_avg_lowROI_hdl],...
+    {['hEch - high ',ROI_short_nm],...
+    ['hEch - low ',ROI_short_nm],...
+    ['lowEch - high ',ROI_short_nm],...
+    ['lowEch - low ',ROI_short_nm]});
+legend('boxoff');
+xticks(hE_levels);
+xlabel('high effort level');
+ylabel('RT_avg force');
+legend_size(pSize);
