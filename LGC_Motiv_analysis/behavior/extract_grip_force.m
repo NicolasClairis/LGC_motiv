@@ -1,6 +1,9 @@
 function[latency, AUC, forcePeak] = extract_grip_force(subBehaviorFolder, sub_nm, run_nm)
 % [latency, AUC, forcePeak] = extract_grip_force(subBehaviorFolder, sub_nm, run_nm)
-%
+% extract_grip_force will extract several parameters related to performance
+% in the phyical effort task, such as latency to squeeze, the area under
+% the curve (AUC) of effort performed and the peak of force reached during
+% the performance.
 %
 % INPUTS
 % subBehaviorFolder: folder where data is stored
