@@ -13,7 +13,7 @@ condition = subject_condition();
 [subject_id, NS] = LGCM_subject_selection('study1', condition);
 
 %% define metabolite and ROI you want to focus on and extract subjects accordingly
-[low_met_subs, high_met_subs, metabolite_nm] = medSplit_metabolites(subject_id);
+[low_met_subs, high_met_subs, metabolite_nm] = medSplit_metabolites(study_nm, subject_id);
 
 %% define behavioral model to use
 mdl_idx = listdlg('PromptString','Which model to use?','ListString',...
