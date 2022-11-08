@@ -8,6 +8,8 @@ function[IL_data] = load_IL()
 %   .IL1b: interleukin IL1-b
 %   .IL6: interleukin IL6
 %   .IL18: interleukin IL18
+%
+% N. Clairis - november 2022
 
 %% working directories
 which_pc = 'Lab';

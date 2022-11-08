@@ -18,6 +18,8 @@ function[successSpeed, n_errors, RT_avg] = extract_mental_perf(subBehaviorFolder
 %
 % RT_avg: average reaction time for solving the N-back (ignoring the 2
 % first presses which are only to initiate the sequence)
+%
+% N. Clairis - november 2022
 
 %% general parameters
 nTrialsPerRun = 54;
