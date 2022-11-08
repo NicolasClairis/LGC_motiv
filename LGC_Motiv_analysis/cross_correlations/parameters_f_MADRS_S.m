@@ -15,9 +15,8 @@ n_trialN_bins = 6;
     figDispGroup, figDispIndiv, dispMoneyOrLevels, n_NV_bins, n_trialN_bins);
 
 %% load MADRS-S scores
-MADRS_S_fullList = getfield(load([computerRoot,filesep,...
-    study_nm,filesep,...
-    'MADRS_S_temporary.mat'],'MADRS_S'),'MADRS_S');
+[excelReadQuestionnairesFile, MADRS_S_sub_CID_list] = load_questionnaires_data;
+MADRS_S_fullList = excelReadQuestionnairesFile.MADRS_SCorrected;
 
 %% extract relevant subjects
 condition = subject_condition();
@@ -29,7 +28,7 @@ condition = subject_condition();
 mdl_nm = 'mdl_4';
 for iS = 1:NS
     sub_nm = subject_id{iS};
-    MADRS_S_score(iS) = MADRS_S_fullList.MADRS_S_score(strcmp(MADRS_S_fullList.subject,sub_nm));
+    MADRS_S_score(iS) = MADRS_S_fullList(strcmp(MADRS_S_sub_CID_list,sub_nm));
     % extract physical task parameters
     sub_idx = strcmp(betas_fullList.subList,sub_nm);
     prm.kRp(iS) = betas_fullList.Ep.(mdl_nm).kR(sub_idx);
