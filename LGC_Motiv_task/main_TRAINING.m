@@ -717,7 +717,7 @@ if strcmp(taskToPerform.physical.calib,'on')
     all.physical.MVC = MVC;
 end
 if strcmp(taskToPerform.mental.calib,'on')
-    all.physical.NMP = NMP;
+    all.mental.NMP = NMP;
 end
 % learning performance
 if strcmp(taskToPerform.mental.learning_1,'on')
