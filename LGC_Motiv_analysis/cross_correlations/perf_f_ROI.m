@@ -700,7 +700,7 @@ legend([hE_highEchoice_successSpeed_highROI_hdl,...
 legend('boxoff');
 xticks(hE_levels);
 xlabel('high effort level');
-ylabel('successSpeed to squeeze (s)');
+ylabel('success speed (s)');
 legend_size(pSize);
 
 % number of errors = f(ROI)
@@ -742,7 +742,7 @@ legend([hE_highEchoice_nErrors_highROI_hdl,...
 legend('boxoff');
 xticks(hE_levels);
 xlabel('high effort level');
-ylabel('Peak force (%)');
+ylabel('Number of errors');
 legend_size(pSize);
 
 % RT_avg force = f(ROI)
@@ -784,5 +784,5 @@ legend([hE_highEchoice_RT_avg_highROI_hdl,...
 legend('boxoff');
 xticks(hE_levels);
 xlabel('high effort level');
-ylabel('RT_avg force');
+ylabel('avg(RT) (s)');
 legend_size(pSize);
