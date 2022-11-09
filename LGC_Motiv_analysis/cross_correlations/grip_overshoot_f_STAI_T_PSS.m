@@ -12,10 +12,10 @@ computerRoot = LGCM_root_paths;
 studyBehaviorFolder = [computerRoot, filesep, study_nm, filesep];
 
 %% load STAI-T questionnaire data
-[excelReadQuestionnairesFile, sub_STAI_CID_list] = load_questionnaires_data;
+[excelReadQuestionnairesFile, sub_questionnaire_CID_list] = load_questionnaires_data;
 
 %% extract grip overshoot and STAI-T
-[STAI_T,...
+[STAI_T, PSS14,...
     grip_avg_AUC_overshoot.allTrials] = deal(NaN(1,NS));
 n_Ech = 4;
 grip_avg_AUC_overshoot.per_Ech = NaN(n_Ech, NS);
@@ -26,9 +26,9 @@ for iS = 1:NS
     sub_nm = subject_id{iS};
     subBehaviorFolder = [studyBehaviorFolder, 'CID',sub_nm, filesep, 'behavior',filesep];
     %% extract STAI-T data
-    STAI_ixd = strcmp(sub_STAI_CID_list, sub_nm);
-    STAI_T(iS) = excelReadQuestionnairesFile.STAITraitScore(STAI_ixd);
-
+    questionnaire_idx = strcmp(sub_questionnaire_CID_list, sub_nm);
+    STAI_T(iS) = excelReadQuestionnairesFile.STAITraitScore(questionnaire_idx);
+    PSS14(iS) = excelReadQuestionnairesFile.PSS_14Score(questionnaire_idx);
     %% extract grip overshoot
     AUC_overshoot_perSub.allTrials = NaN(nGripTrials, 1);
     AUC_overshoot_perSub.per_Ech = NaN(n_Ech, nGripRuns);
@@ -71,19 +71,26 @@ for iS = 1:NS
 end % subject loop
 
 %% test correlation
+% STAI-T
 [b_STAI_avg_AUC_overshoot, ~,stats_STAI_avg_overshoot] = glmfit(STAI_T, grip_avg_AUC_overshoot.allTrials, 'normal');
 STAI_T_fit = sort(STAI_T);
-avg_AUC_overshoot_fit = glmval(b_STAI_avg_AUC_overshoot, STAI_T_fit, 'identity');
+avg_AUC_overshoot_STAI_T_fit = glmval(b_STAI_avg_AUC_overshoot, STAI_T_fit, 'identity');
+
+% PSS-14
+[b_PSS14_avg_AUC_overshoot, ~,stats_PSS14_avg_overshoot] = glmfit(PSS14, grip_avg_AUC_overshoot.allTrials, 'normal');
+PSS14_fit = sort(PSS14);
+avg_AUC_overshoot_PSS14_fit = glmval(b_PSS14_avg_AUC_overshoot, PSS14_fit, 'identity');
 
 %% figure display
 pSize = 30;
 lWidth = 3;
 black = [0 0 0];
 
+%% STAI-T
 fig;
 hold on;
 scat_hdl = scatter(STAI_T, grip_avg_AUC_overshoot.allTrials);
-fit_hdl = plot(STAI_T_fit, avg_AUC_overshoot_fit);
+fit_hdl = plot(STAI_T_fit, avg_AUC_overshoot_STAI_T_fit);
 scat_hdl.LineWidth = lWidth;
 scat_hdl.MarkerEdgeColor = black;
 fit_hdl.LineWidth = lWidth;
@@ -97,3 +104,16 @@ legend_size(pSize);
 % xlabel('STAI-T');
 % ylabel('average AUC overshoot');
 % legend_size(pSize);
+
+%% PSS-14
+fig;
+hold on;
+scat_hdl = scatter(PSS14, grip_avg_AUC_overshoot.allTrials);
+fit_hdl = plot(PSS14_fit, avg_AUC_overshoot_PSS14_fit);
+scat_hdl.LineWidth = lWidth;
+scat_hdl.MarkerEdgeColor = black;
+fit_hdl.LineWidth = lWidth;
+fit_hdl.LineStyle = '--';
+xlabel('PSS14');
+ylabel('average AUC overshoot');
+legend_size(pSize);
