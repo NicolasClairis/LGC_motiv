@@ -58,45 +58,44 @@ parameters = fieldnames(prm);
 behavPrm_CID = prm.CID;
 parameter_names = parameters;
 parameter_names(strcmp(parameter_names,'CID'))=[]; % remove indication of subject ID
-
-%% define behavioural parameters to check
-behavPrm_idx = listdlg('promptstring','Which behavioural parameter?',...
-    'ListString',parameter_names);
-prm_nm = parameter_names{behavPrm_idx};
-behavPrm = prm.(prm_nm);
+nPrm = length(parameter_names);
 
 %% perform the mediation
 pval.signif = struct;
-for iROI = 1:nROIs
-    MRS_ROI_nm = ROIs{iROI};
-    for iMb = 1:n_metabolites.(MRS_ROI_nm)
-        metabolite_nm = metabolite_names.(MRS_ROI_nm){iMb};
-        switch metabolite_nm
-            case 'Glu_Gln'
-                metabolite_nm_bis = 'Glx';
-            otherwise
-                metabolite_nm_bis = metabolite_nm;
-        end
-        metabolite_allSubs = metabolites.(MRS_ROI_nm).(metabolite_nm);
-        goodSubs = ~isnan(metabolite_allSubs);
-        
-        X_nm = [MRS_ROI_nm,'-',metabolite_nm_bis];
-        M_nm = ['fMRI-',ROI_coords.ROI_nm.ROI_1_shortName,'-',con_nm{1}];
-        Y_nm = prm_nm;
-        [a.(MRS_ROI_nm).(metabolite_nm),...
-            b.(MRS_ROI_nm).(metabolite_nm),...
-            c.(MRS_ROI_nm).(metabolite_nm),...
-            c_prime.(MRS_ROI_nm).(metabolite_nm),...
-            pval.(MRS_ROI_nm).(metabolite_nm)] = mediation(metabolite_allSubs(goodSubs),...
-            con_data(goodSubs),...
-            behavPrm(goodSubs),...
-            X_nm, M_nm, Y_nm);
-        
-        % store when significant
-        if pval.(MRS_ROI_nm).(metabolite_nm).a < 0.05 &&...
-            pval.(MRS_ROI_nm).(metabolite_nm).b < 0.05
-            pval.signif.([MRS_ROI_nm,'_',metabolite_nm]) = max(pval.(MRS_ROI_nm).(metabolite_nm).a,...
-                pval.(MRS_ROI_nm).(metabolite_nm).b);
-        end
-    end % metabolites loop
-end % ROI loop
+for iPrm = 1:nPrm
+    prm_nm = parameter_names{iPrm};
+    behavPrm = prm.(prm_nm);
+    for iROI = 1:nROIs
+        MRS_ROI_nm = ROIs{iROI};
+        for iMb = 1:n_metabolites.(MRS_ROI_nm)
+            metabolite_nm = metabolite_names.(MRS_ROI_nm){iMb};
+            switch metabolite_nm
+                case 'Glu_Gln'
+                    metabolite_nm_bis = 'Glx';
+                otherwise
+                    metabolite_nm_bis = metabolite_nm;
+            end
+            metabolite_allSubs = metabolites.(MRS_ROI_nm).(metabolite_nm);
+            goodSubs = ~isnan(metabolite_allSubs);
+            
+            X_nm = [MRS_ROI_nm,'-',metabolite_nm_bis];
+            M_nm = ['fMRI-',ROI_coords.ROI_nm.ROI_1_shortName,'-',con_nm{1}];
+            Y_nm = prm_nm;
+            [a.(MRS_ROI_nm).(metabolite_nm).(prm_nm),...
+                b.(MRS_ROI_nm).(metabolite_nm).(prm_nm),...
+                c.(MRS_ROI_nm).(metabolite_nm).(prm_nm),...
+                c_prime.(MRS_ROI_nm).(metabolite_nm).(prm_nm),...
+                pval.(MRS_ROI_nm).(metabolite_nm).(prm_nm)] = mediation(metabolite_allSubs(goodSubs),...
+                con_data(goodSubs),...
+                behavPrm(goodSubs),...
+                X_nm, M_nm, Y_nm);
+            
+            % store when significant
+            if pval.(MRS_ROI_nm).(metabolite_nm).(prm_nm).a < 0.05 &&...
+                    pval.(MRS_ROI_nm).(metabolite_nm).(prm_nm).b < 0.05
+                pval.signif.([MRS_ROI_nm,'_',metabolite_nm]).(prm_nm) = max(pval.(MRS_ROI_nm).(metabolite_nm).(prm_nm).a,...
+                    pval.(MRS_ROI_nm).(metabolite_nm).(prm_nm).b);
+            end
+        end % metabolites loop
+    end % ROI loop
+end % parameter loop
