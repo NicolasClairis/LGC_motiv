@@ -12,7 +12,7 @@ function[IL_data] = load_IL()
 % N. Clairis - november 2022
 
 %% working directories
-which_pc = 'Lab';
+which_pc = 'home';
 switch which_pc
     case 'Lab'
         gitPath = 'C:\Users\clairis\Desktop\';
