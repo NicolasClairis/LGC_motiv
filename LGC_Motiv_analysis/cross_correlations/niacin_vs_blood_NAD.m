@@ -7,11 +7,9 @@
 pcRoot = LGCM_root_paths;
 switch pcRoot
     case 'E:\'
-        dataStoragePath = 'M:\human_data_private\analyzed_data\study1';
         gitPath = fullfile('C:','Users','clairis','Desktop','GitHub',...
             'LGC_motiv');
     case 'L:\human_data_private\raw_data_subject\'
-        dataStoragePath = 'L:\human_data_private\analyzed_data\study1';
         gitPath = fullfile('C:','Users','Loco','Documents','GitHub',...
             'LGC_motiv');
 end
@@ -20,15 +18,15 @@ end
 study_nm = 'study1';
 condition = subject_condition;
 [subject_id, NS] = LGCM_subject_selection(study_nm,condition);
+dataResultsPath = fullfile(gitPath, 'LGC_Motiv_results',study_nm);
 
 %% extract all blood data
-bloodFilePath = [dataStoragePath,filesep,'blood',filesep,...
-    '20220915_preliminary_blood_NAD_report.xlsx'];
+bloodFilePath = fullfile(dataResultsPath,...
+    'blood_NAD','20221114_CS_NAD_whole_blood_data.xlsx');
 NAD_blood_table = readtable(bloodFilePath,...
-    'Sheet','Final');
+    'Sheet','clean');
 %% nutrition path
-nutritionPath = [gitPath, filesep, 'LGC_Motiv_results' filesep,...
-    'nutrition', filesep];
+nutritionPath = [dataResultsPath, filesep,'nutrition', filesep];
 %% extract all niacin data
 niacineFilePath = [nutritionPath,'niacine_scoring.xlsx'];
 niacin_table = readtable(niacineFilePath,...
@@ -42,10 +40,10 @@ calFilePath = [nutritionPath,'calories_scoring.xlsx'];
 calories_table = readtable(calFilePath,...
     'Sheet','Sheet1');
 %% extract general infos of subjects
-galFilePath = [gitPath, filesep, 'LGC_Motiv_results', filesep,...
+galFilePath = [dataResultsPath, filesep,...
     'summary_participants_infos.xlsx'];
 sub_infos = readtable(galFilePath,...
-    'Sheet','Sheet1');
+    'Sheet','Feuil1');
 %% loop through subjects to perform the correlation
 blood_metabolites = {'Nam','MeXPY','NAD','NADP','NMN','MeNam','NR',...
     'NADH','NADPH','NAD_div_NADH','NADP_div_NADPH'};
