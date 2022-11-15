@@ -21,7 +21,7 @@ study_nm = 'study1';
 [metabolite_allSubs, MRS_ROI_nm, metabolite_nm] = metabolite_extraction(study_nm, subject_id);
 
 %% load sleep
-[excelReadGeneralFile] = load_gal_data_bis();
+[excelReadGeneralFile] = load_gal_data_bis(study_nm);
 prevDaySleepTable = excelReadGeneralFile.HeuresDeSommeilLaVeilleDeL_exp_rience;
 avgSleepTable = excelReadGeneralFile.HeuresDeSommeil_enMoyenne_;
 sleepCID = excelReadGeneralFile.CID;

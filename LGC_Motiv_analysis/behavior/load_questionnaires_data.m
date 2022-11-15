@@ -17,7 +17,8 @@ switch list_pcs{which_pc_idx}
     case 'Home'
         hardDisk = 'L:';
 end
-pcPath = fullfile(hardDisk,'human_data_private','raw_data_subject','study1');
+pcPath = fullfile(hardDisk,'human_data_private',...
+    'raw_data_subject','study1');
 cd(pcPath);
 
 %% extract the data

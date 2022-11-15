@@ -1,8 +1,14 @@
-function[excelReadGeneralFile] = load_gal_data_bis()
-% [excelReadGeneralFile] = load_gal_data_bis()
+function[excelReadGeneralFile] = load_gal_data_bis(study_nm)
+% [excelReadGeneralFile] = load_gal_data_bis(study_nm)
 %load_gal_data_bis will load summary_participants_infos.xlsx data in 
 % matlab as a big table allowing you to then extract the data that you want
 % from it.
+%
+% INPUTS
+% study_nm: study name
+%
+% OUTPUTS
+% excelReadGeneralFile: table with subject main informations
 
 %% define path
 list_pcs = {'Lab','Home'};
@@ -14,7 +20,8 @@ switch list_pcs{which_pc_idx}
     case 'Home'
         gitPath = fullfile('C:','Users','Loco','Documents');
 end
-pcPath = fullfile(gitPath,'Github','LGC_motiv','LGC_Motiv_results');
+pcPath = fullfile(gitPath,'Github',...
+    'LGC_motiv','LGC_Motiv_results',study_nm);
 
 %% extract the data
 excelReadGeneralFile = readtable([pcPath,filesep,...

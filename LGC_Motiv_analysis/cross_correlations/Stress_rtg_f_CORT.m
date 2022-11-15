@@ -16,7 +16,7 @@ condition = subject_condition;
 [subject_id, NS] = LGCM_subject_selection(study_nm, condition);
 
 %% load stress questionnaires
-[excelReadGeneralFile] = load_gal_data_bis;
+[excelReadGeneralFile] = load_gal_data_bis(study_nm);
 
 %% load cortisol
 [CORT_data] = load_CORT;
