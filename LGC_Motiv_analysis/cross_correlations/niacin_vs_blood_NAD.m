@@ -323,6 +323,7 @@ correl_names = fieldnames(corr_vals.p);
 for iCorr = 1:length(correl_names)
     correl_nm = correl_names{iCorr};
     if corr_vals.p.(correl_nm) < 0.05
-        signif_correl.p005.(correl_nm) = corr_vals.p.(correl_nm);
+        signif_correl.p005.p.(correl_nm) = corr_vals.p.(correl_nm);
+        signif_correl.p005.b.(correl_nm) = corr_vals.b.(correl_nm);
     end
 end % loop through tests

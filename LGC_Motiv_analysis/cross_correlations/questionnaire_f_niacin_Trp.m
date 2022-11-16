@@ -5,6 +5,11 @@
 %% by default display the figures but can be set to 0 if you only want the p.value
 figDisp = 1;
 
+%% define subjects
+study_nm = 'study1';
+condition = subject_condition;
+[subject_id, NS] = LGCM_subject_selection(study_nm, condition);
+
 %% working directories
 root = LGCM_root_paths;
 % study
@@ -21,12 +26,7 @@ switch root
         error('case not ready yet');
 end
 nutritionPath = [fullfile(gitPath,'GitHub','LGC_motiv',...
-    'LGC_Motiv_results','nutrition'),filesep];
-
-%% define subjects
-study_nm = 'study1';
-condition = subject_condition;
-[subject_id, NS] = LGCM_subject_selection(study_nm, condition);
+    'LGC_Motiv_results',study_nm,'nutrition'),filesep];
 
 %% load nutrition
 [nutri.niacin, nutri.Trp, nutri.niacinPlusTrp,...
@@ -79,11 +79,11 @@ for iS = 1:NS
     % extract nutrition intake values
     % extract niacin values
     if ~isempty(sub_niacin_idx) && size(sub_niacin_idx,1) == 1
-        nutri.niacin(iS) = niacin_table.NiacineParSemaine_ug_(sub_niacin_idx);
+        nutri.niacin(iS) = niacin_table.NiacineParSemaine__g_(sub_niacin_idx)./1000;
     end
     % extract Tryptophan values
     if ~isempty(sub_Trp_idx) && size(sub_Trp_idx,1) == 1
-        nutri.Trp(iS) = Trp_table.TryptophaneParSemaine_ug_(sub_Trp_idx);
+        nutri.Trp(iS) = Trp_table.TryptophaneParSemaine_mg_(sub_Trp_idx);
     end
     % extract calories values
     if ~isempty(sub_calories_idx) && size(sub_calories_idx,1) == 1
@@ -180,9 +180,9 @@ if figDisp == 1
             curve_fit_hdl.Color = fitCol;
             switch nutri_nm
                 case {'niacin','Trp'}
-                    xlabel([nutri_nm,' (μg/week)']);
+                    xlabel([nutri_nm,' (mg/week)']);
                 case 'niacinPlusTrp'
-                    xlabel('niacin + Trp (μg/week)');
+                    xlabel('niacin + Trp (mg/week)');
             end
             ylabel(quest_nm_bis);
             legend_size(pSize);
