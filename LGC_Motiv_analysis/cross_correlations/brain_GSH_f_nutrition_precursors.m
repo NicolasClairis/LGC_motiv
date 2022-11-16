@@ -33,7 +33,7 @@ switch root
         error('case not ready yet');
 end
 nutritionPath = [fullfile(gitPath,'GitHub','LGC_motiv',...
-    'LGC_Motiv_results','nutrition'),filesep];
+    'LGC_Motiv_results',study_nm,'nutrition'),filesep];
 
 % condition
 condition = subject_condition;
@@ -48,7 +48,7 @@ condition = subject_condition;
     nutri.GlyCysGlu_sum_div_totalCal] = deal(NaN(1,NS));
 nutri_vars = fieldnames(nutri);
 % load 
-Gly_table = readtable([nutritionPath, 'Gly_scoring.xlsx'],...
+Gly_table = readtable([nutritionPath, 'Glycine_scoring.xlsx'],...
     'Sheet','Sheet1');
 Cys_table = readtable([nutritionPath, 'cystein_scoring.xlsx'],...
     'Sheet','Sheet1');
@@ -72,13 +72,13 @@ for iS = 1:NS
     sub_calories_idx = find(strcmp(calories_table.CID, sub_nm));
     % extract nutrition intake values
     if ~isempty(sub_Gly_idx) && size(sub_Gly_idx,1) == 1
-        nutri.Gly(iS) = Gly_table.GlyParSemaine_ug_(sub_Gly_idx);
+        nutri.Gly(iS) = Gly_table.GlyParSemaine_mg_(sub_Gly_idx);
     end
     if ~isempty(sub_Cys_idx) && size(sub_Cys_idx,1) == 1
-        nutri.Cys(iS) = Cys_table.CysteineParSemaine_ug_(sub_Cys_idx);
+        nutri.Cys(iS) = Cys_table.CysteineParSemaine_mg_(sub_Cys_idx);
     end
     if ~isempty(sub_Glu_idx) && size(sub_Glu_idx,1) == 1
-        nutri.Glu(iS) = Glu_table.GlutamateParSemaine_ug_(sub_Glu_idx);
+        nutri.Glu(iS) = Glu_table.GlutamateParSemaine_mg_(sub_Glu_idx);
     end
     if ~isempty(sub_calories_idx) && size(sub_calories_idx,1) == 1
         nutri.calories(iS) = calories_table.CaloriesParSemaine_kcal_(sub_calories_idx);
@@ -167,7 +167,7 @@ if figDisp == 1
         % add legend
         legend([dmPFC_hdl, aINS_hdl],{'dmPFC','aINS'});
         legend('boxoff');
-        xlabel([nutri_nm,' (μg/week)']);
+        xlabel([nutri_nm,' (mg/week)']);
         ylabel('GSH (μmol/g)');
         legend_size(pSize);
         
@@ -225,7 +225,7 @@ if figDisp == 1
     % add legend
     legend([dmPFC_hdl, aINS_hdl],{'dmPFC','aINS'});
     legend('boxoff');
-    xlabel('Glu + Cys + Gly (μg/week)');
+    xlabel('Glu + Cys + Gly (mg/week)');
     ylabel('GSH (μmol/g)');
     legend_size(pSize);
     

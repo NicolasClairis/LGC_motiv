@@ -20,7 +20,7 @@ switch root
         error('case not ready yet');
 end
 nutritionPath = [fullfile(gitPath,'GitHub','LGC_motiv',...
-    'LGC_Motiv_results','nutrition'),filesep];
+    'LGC_Motiv_results',study_nm,'nutrition'),filesep];
 % condition
 condition = subject_condition;
 [subject_id, NS] = LGCM_subject_selection(study_nm, condition);
@@ -59,17 +59,17 @@ for iS = 1:NS
     % extract nutrition intake values
     % extract niacin values
     if ~isempty(sub_niacin_idx) && size(sub_niacin_idx,1) == 1
-        nutri.niacin(iS) = niacin_table.NiacineParSemaine_ug_(sub_niacin_idx);
+        nutri.niacin(iS) = niacin_table.NiacineParSemaine__g_(sub_niacin_idx);
     end
     % extract Tryptophan values
     if ~isempty(sub_Trp_idx) && size(sub_Trp_idx,1) == 1
-        nutri.Trp(iS) = Trp_table.TryptophaneParSemaine_ug_(sub_Trp_idx);
+        nutri.Trp(iS) = Trp_table.TryptophaneParSemaine_mg_(sub_Trp_idx);
     end
     % extract calories values
     if ~isempty(sub_calories_idx) && size(sub_calories_idx,1) == 1
         nutri.calories(iS) = calories_table.CaloriesParSemaine_kcal_(sub_calories_idx);
     end
-    nutri.niacinPlusTrp(iS) = nutri.niacin(iS) + nutri.Trp(iS);
+    nutri.niacinPlusTrp(iS) = nutri.niacin(iS)/1000 + nutri.Trp(iS);
     
     % divide by calories
     if ~isnan(nutri.calories(iS))
@@ -152,10 +152,13 @@ if figDisp == 1
         % add legend
         legend([dmPFC_hdl, aINS_hdl],{'dmPFC','aINS'});
         legend('boxoff');
-        if ismember(nutri_nm,{'niacin','Trp'})
-            xlabel([nutri_nm,' (μg/week)']);
-        elseif strcmp(nutri_nm,'niacinPlusTrp')
-            xlabel('niacin + Trp (μg/week)');
+        switch nutri_nm
+            case 'niacin'
+                xlabel([nutri_nm,' (μg/week)']);
+            case 'Trp'
+                xlabel([nutri_nm,' (mg/week)']);
+            case 'niacinPlusTrp'
+                xlabel('niacin + Trp (mg/week)');
         end
         ylabel('GSH (μmol/g)');
         legend_size(pSize);
