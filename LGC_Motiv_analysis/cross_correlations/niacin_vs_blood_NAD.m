@@ -327,3 +327,18 @@ for iCorr = 1:length(correl_names)
         signif_correl.p005.b.(correl_nm) = corr_vals.b.(correl_nm);
     end
 end % loop through tests
+
+%% check min/max subjects missing for each blood measure
+n_maxNaN = 0;
+for iB = 1:nNADHmetab
+    blood_nm = blood_metabolites{iB};
+    n_maxNaN = max(n_maxNaN, sum(isnan(blood.(blood_nm))));
+end
+disp(['maximum ',num2str(n_maxNaN),'/',num2str(NS),' subjects with NaN blood values.']);
+
+n_minNaN = NS;
+for iB = 1:nNADHmetab
+    blood_nm = blood_metabolites{iB};
+    n_minNaN = min(n_minNaN, sum(isnan(blood.(blood_nm))));
+end
+disp(['minimum ',num2str(NS-n_minNaN),'/',num2str(NS),' subjects with good blood values.']);
