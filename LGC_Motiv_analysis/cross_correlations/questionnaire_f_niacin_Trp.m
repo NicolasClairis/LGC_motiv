@@ -21,7 +21,7 @@ switch root
         gitPath = fullfile('C:','Users','clairis','Desktop');
     case {[fullfile('C:','Users','Loco','Downloads'),filesep],...
             [fullfile('L:','human_data_private','raw_data_subject'),filesep]}
-        gitPath = fullfile('C:','Users','Loco','Downloads');
+        gitPath = fullfile('C:','Users','Loco','Documents');
     otherwise
         error('case not ready yet');
 end
@@ -29,10 +29,10 @@ nutritionPath = [fullfile(gitPath,'GitHub','LGC_motiv',...
     'LGC_Motiv_results',study_nm,'nutrition'),filesep];
 
 %% load nutrition
-[nutri.niacin, nutri.Trp, nutri.niacinPlusTrp,...
+[nutri.niacin, nutri.Trp, nutri.niacinEquiv,...
     nutri.calories,...
     nutri.niacin_div_totalCal,  nutri.Trp_div_totalCal,...
-    nutri.niacinPlusTrp_div_totalCal] = deal(NaN(1,NS));
+    nutri.niacinEquiv_div_totalCal] = deal(NaN(1,NS));
 nutri_vars = fieldnames(nutri);
 % extract all calories data
 calories_table = readtable([nutritionPath, 'calories_scoring.xlsx'],...
@@ -45,7 +45,10 @@ niacin_table = readtable(niacineFilePath,...
 TrpFilePath = [nutritionPath,'Tryptophan_scoring.xlsx'];
 Trp_table = readtable(TrpFilePath,...
     'Sheet','Sheet1');
-
+% extract all niacin equivalents data
+niacineEquivFilePath = [nutritionPath,'niacine_equivalents_scoring.xlsx'];
+niacinEquiv_table = readtable(niacineEquivFilePath,...
+    'Sheet','Sheet1');
 %% load questionnaire
 potentialQuestionnaires = {'JPI_RScore', 'MADRS_SCorrected',...
     'MPSTEFSPhysicalTraitScore','MPSTEFSMentalTraitScore',...
@@ -75,6 +78,7 @@ for iS = 1:NS
     %% load nutrition score
     sub_niacin_idx = find(strcmp(niacin_table.CID, sub_nm));
     sub_Trp_idx = find(strcmp(Trp_table.CID, sub_nm));
+    sub_niacinEquiv_idx = find(strcmp(niacinEquiv_table.CID, sub_nm));
     sub_calories_idx = find(strcmp(calories_table.CID, sub_nm));
     % extract nutrition intake values
     % extract niacin values
@@ -85,17 +89,20 @@ for iS = 1:NS
     if ~isempty(sub_Trp_idx) && size(sub_Trp_idx,1) == 1
         nutri.Trp(iS) = Trp_table.TryptophaneParSemaine_mg_(sub_Trp_idx);
     end
+    % extract niacin equivalents values
+    if ~isempty(sub_niacinEquiv_idx) && size(sub_niacinEquiv_idx,1) == 1
+        nutri.niacinEquiv(iS) = niacinEquiv_table.x_quivalentsDeNiacineParSemaine__g_(sub_niacinEquiv_idx)./1000;
+    end
     % extract calories values
     if ~isempty(sub_calories_idx) && size(sub_calories_idx,1) == 1
         nutri.calories(iS) = calories_table.CaloriesParSemaine_kcal_(sub_calories_idx);
     end
-    nutri.niacinPlusTrp(iS) = nutri.niacin(iS) + nutri.Trp(iS);
     
     % divide by calories
     if ~isnan(nutri.calories(iS))
         nutri.niacin_div_totalCal(iS) = nutri.niacin(iS)/nutri.calories(iS);
         nutri.Trp_div_totalCal(iS) = nutri.Trp(iS)/nutri.calories(iS);
-        nutri.niacinPlusTrp_div_totalCal(iS) = nutri.niacinPlusTrp(iS)/nutri.calories(iS);
+        nutri.niacinEquiv_div_totalCal(iS) = nutri.niacinEquiv(iS)/nutri.calories(iS);
     end
 end % subject loop
 
@@ -160,8 +167,8 @@ if figDisp == 1
                     nutri_nm = 'Trp';
                     nutri_nm_bis = 'Trp_div_totalCal';
                 case 3
-                    nutri_nm = 'niacinPlusTrp';
-                    nutri_nm_bis = 'niacinPlusTrp_div_totalCal';
+                    nutri_nm = 'niacinEquiv';
+                    nutri_nm_bis = 'niacinEquiv_div_totalCal';
             end
             
             %% raw metabolite
@@ -181,8 +188,8 @@ if figDisp == 1
             switch nutri_nm
                 case {'niacin','Trp'}
                     xlabel([nutri_nm,' (mg/week)']);
-                case 'niacinPlusTrp'
-                    xlabel('niacin + Trp (mg/week)');
+                case 'niacinEquiv'
+                    xlabel('niacin eq. (mg/week)');
             end
             ylabel(quest_nm_bis);
             legend_size(pSize);
@@ -203,8 +210,8 @@ if figDisp == 1
             curve_fit_hdl.Color = fitCol;
             if ismember(nutri_nm,{'niacin','Trp'})
                 xlabel([nutri_nm,'/calories']);
-            elseif strcmp(nutri_nm,'niacinPlusTrp')
-                xlabel('(niacin + Trp)/calories');
+            elseif strcmp(nutri_nm,'niacinEquiv')
+                xlabel('niacin eq./calories');
             end
             ylabel(quest_nm_bis);
             legend_size(pSize);
