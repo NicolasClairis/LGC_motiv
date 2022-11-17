@@ -9,7 +9,7 @@ condition = subject_condition;
 [excelReadQuestionnairesFile, MADRS_sub_CID_list] = load_questionnaires_data;
 
 %% load interleukins
-[IL_data] = load_IL;
+[IL_data] = load_IL(study_nm);
 
 %% extract the data for the selected subjects
 [IL1b, IL6, IL18, ILsum, MADRS_S_score] = deal(NaN(1, NS));

@@ -1,6 +1,9 @@
-function[IL_data] = load_IL()
-% [IL_data] = load_IL()
-% load_IL will load the interleukins data.
+function[IL_data] = load_IL(study_nm)
+% [IL_data] = load_IL(study_nm)
+% load_IL will load the interleukins data for the study defined in input.
+%
+% INPUTS
+% study_nm: study name
 %
 % OUTPUTS
 % IL_data: structure with  interleukines data with the following subfields:
@@ -20,7 +23,7 @@ switch which_pc
         gitPath = 'C:\Users\Loco\Documents\';
 end 
 ILpath = fullfile(gitPath,'GitHub','LGC_motiv',...
-    'LGC_Motiv_results','Interleukins');
+    'LGC_Motiv_results',study_nm,'Interleukins');
 %% load data
 % excelReadTable = readtable([ILpath,filesep,'saliva_IL_samples - results elisa031122.xlsx'],...
 %     'Sheet','sample C.1');
