@@ -15,7 +15,7 @@ function[CORT_data] = load_CORT(study_nm)
 % N. Clairis - november 2022
 
 %% working directories
-which_pc = 'home';
+which_pc = 'Lab';
 switch which_pc
     case 'Lab'
         gitPath = 'C:\Users\clairis\Desktop\';
