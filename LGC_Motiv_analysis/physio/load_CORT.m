@@ -1,6 +1,9 @@
-function[CORT_data] = load_CORT()
-% [CORT_data] = load_CORT()
+function[CORT_data] = load_CORT(study_nm)
+% [CORT_data] = load_CORT(study_nm)
 % load_CORT will load the cortisol data.
+%
+% INPUTS
+% study_nm: string with study name
 %
 % OUTPUTS
 % CORT_data: structure with cortisol data with the following subfields:
@@ -20,7 +23,7 @@ switch which_pc
         gitPath = 'C:\Users\Loco\Documents\';
 end 
 CORTpath = fullfile(gitPath,'GitHub','LGC_motiv',...
-    'LGC_Motiv_results','CORT');
+    'LGC_Motiv_results',study_nm,'CORT');
 %% load data
 excelReadTable = readtable([CORTpath,filesep,'saliva_CORT_samples_study1.xlsx'],...
     'Sheet','Sheet1');
