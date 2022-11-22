@@ -21,10 +21,7 @@ condition = subject_condition;
 dataResultsPath = fullfile(gitPath, 'LGC_Motiv_results',study_nm);
 
 %% extract all blood data
-bloodFilePath = fullfile(dataResultsPath,...
-    'blood_NAD','20221114_CS_NAD_whole_blood_data.xlsx');
-NAD_blood_table = readtable(bloodFilePath,...
-    'Sheet','clean');
+[bloodTable, blood_NAD_sub_List] = load_blood_NAD(study_nm);
 %% nutrition path
 nutritionPath = [dataResultsPath, filesep,'nutrition', filesep];
 %% extract all niacin data
@@ -49,8 +46,7 @@ galFilePath = [dataResultsPath, filesep,...
 sub_infos = readtable(galFilePath,...
     'Sheet','Feuil1');
 %% loop through subjects to perform the correlation
-blood_metabolites = {'Nam','MeXPY','NAD','NADP','NMN','MeNam','NR',...
-    'NADH','NADPH','NAD_div_NADH','NADP_div_NADPH'};
+blood_metabolites = fieldnames(bloodTable);
 nNADHmetab = length(blood_metabolites);
 [niacin,...
     niacin_equivalents,...
@@ -69,7 +65,7 @@ for iS = 1:NS
     sub_nm = subject_id{iS};
     sub_nm_bis = ['CID',sub_nm];
     % identify index for the current subject on the different files
-    sub_blood_idx = find(strcmp(NAD_blood_table.ID, sub_nm_bis));
+    sub_blood_idx = find(strcmp(blood_NAD_sub_List, sub_nm_bis));
     sub_niacin_idx = find(strcmp(niacin_table.CID, sub_nm));
     sub_niacinEquiv_idx = find(strcmp(niacin_equivalents_table.CID, sub_nm));
     sub_Trp_idx = find(strcmp(Trp_table.CID, sub_nm));
@@ -95,7 +91,7 @@ for iS = 1:NS
     for iBloodM = 1:nNADHmetab
         blood_m_nm = blood_metabolites{iBloodM};
         if ~isempty(sub_blood_idx)
-            blood.(blood_m_nm)(iS) = NAD_blood_table.(blood_m_nm)(sub_blood_idx);
+            blood.(blood_m_nm)(iS) = bloodTable.(blood_m_nm)(sub_blood_idx);
         end
     end % metabolite loop
     % extract subject infos
@@ -114,11 +110,6 @@ Trp_div_weight = Trp./weight;
 Trp_div_BMI = Trp./BMI;
 Trp_div_calories = Trp./calories;
 Trp_div_calories_per_BMI = (Trp./calories)./BMI;
-niacinPlusTrp = niacin + Trp;
-niacinPlusTrp_div_weight = niacinPlusTrp./weight;
-niacinPlusTrp_div_BMI = niacinPlusTrp./BMI;
-niacinPlusTrp_div_calories = niacinPlusTrp./calories;
-niacinPlusTrp_div_calories_per_BMI = (niacinPlusTrp./calories)./BMI;
 niacinEquiv_div_weight = niacin_equivalents./weight;
 niacinEquiv_div_BMI = niacin_equivalents./BMI;
 niacinEquiv_div_calories = niacin_equivalents./calories;
@@ -129,9 +120,6 @@ normTypes = {'niacin',...
     'Trp',...
     'Trp_div_weight','Trp_div_BMI',...
     'Trp_div_calories','Trp_div_calories_per_BMI',...
-    'niacin_plus_Trp',...
-    'niacin_plus_Trp_div_weight','niacin_plus_Trp_div_BMI',...
-    'niacin_plus_Trp_div_calories','niacin_plus_Trp_div_calories_per_BMI',...
     'niacinEquiv',...
     'niacinEquiv_div_weight','niacinEquiv_div_BMI',...
     'niacinEquiv_div_calories','niacinEquiv_div_calories_per_BMI'};
@@ -161,16 +149,6 @@ for iNormType = 1:nNormTypes
             nutrition_var = Trp_div_calories;
         case 'Trp_div_calories_per_BMI'
             nutrition_var = Trp_div_calories_per_BMI;
-        case 'niacin_plus_Trp'
-            nutrition_var = niacinPlusTrp;
-        case 'niacin_plus_Trp_div_weight'
-            nutrition_var = niacinPlusTrp_div_weight;
-        case 'niacin_plus_Trp_div_BMI'
-            nutrition_var = niacinPlusTrp_div_BMI;
-        case 'niacin_plus_Trp_div_calories'
-            nutrition_var = niacinPlusTrp_div_calories;
-        case 'niacin_plus_Trp_div_calories_per_BMI'
-            nutrition_var = niacinPlusTrp_div_calories_per_BMI;
         case 'niacinEquiv'
             nutrition_var = niacin_equivalents;
         case 'niacinEquiv_div_weight'
@@ -223,16 +201,6 @@ for iNormType = 1:nNormTypes
             nutrition_var = Trp_div_calories;
         case 'Trp_div_calories_per_BMI'
             nutrition_var = Trp_div_calories_per_BMI;
-        case 'niacin_plus_Trp'
-            nutrition_var = niacinPlusTrp;
-        case 'niacin_plus_Trp_div_weight'
-            nutrition_var = niacinPlusTrp_div_weight;
-        case 'niacin_plus_Trp_div_BMI'
-            nutrition_var = niacinPlusTrp_div_BMI;
-        case 'niacin_plus_Trp_div_calories'
-            nutrition_var = niacinPlusTrp_div_calories;
-        case 'niacin_plus_Trp_div_calories_per_BMI'
-            nutrition_var = niacinPlusTrp_div_calories_per_BMI;
         case 'niacinEquiv'
             nutrition_var = niacin_equivalents;
         case 'niacinEquiv_div_weight'
@@ -244,13 +212,29 @@ for iNormType = 1:nNormTypes
         case 'niacinEquiv_div_calories_per_BMI'
             nutrition_var = niacinEquiv_div_calories_per_BMI;
     end
-    fig;
+    
+    % one figure for all measures and one for integrated measures
+    fig1 = fig; j_fig1 = 0;
+    fig2 = fig; j_fig2 = 0;
+    
     for iBloodM = 1:nNADHmetab
         blood_m_nm = blood_metabolites{iBloodM};
         % check good subjects for each measurement
         goodSubs = (~isnan(blood.(blood_m_nm)).*(~isnan(nutrition_var))) == 1;
         
-        subplot(3,4,iBloodM);
+        switch blood_m_nm
+            case {'Nam','NMN','NR','NAD','NADH','NADP','NADPH','MeNam','MeXPY'}
+                figure(fig1);
+                j_fig1 = j_fig1 + 1;
+                subplot(3,4,j_fig1);
+            case {'NAD_div_NADH','NADP_div_NADPH',...
+                    'total_NAD_precursors','total_NAD',...
+                    'total_NAD_with_precursors',...
+                    'total_NAD_with_byproducts','total_NAD_byproducts'}
+                figure(fig2);
+                j_fig2 = j_fig2 + 1;
+                subplot(3,3,j_fig2);
+        end
         hold on;
         hdl = scatter(nutrition_var, blood.(blood_m_nm));
         [nutrition_sorted, nutrition_sort_idx] = sort(nutrition_var(goodSubs));
@@ -278,16 +262,6 @@ for iNormType = 1:nNormTypes
                 xlabel('Trp/calories');
             case 'Trp_div_calories_per_BMI'
                 xlabel('Trp/calories/BMI');
-            case 'niacin_plus_Trp'
-                xlabel('niacin+Trp (mg/week)');
-            case 'niacin_plus_Trp_div_weight'
-                xlabel('(niacin+Trp)/weight');
-            case 'niacin_plus_Trp_div_BMI'
-                xlabel('(niacin+Trp)/BMI');
-            case 'niacin_plus_Trp_div_calories'
-                xlabel('(niacin+Trp)/calories');
-            case 'niacin_plus_Trp_div_calories_per_BMI'
-                xlabel('(niacin+Trp)/calories/BMI');
             case 'niacinEquiv'
                 xlabel('niacin eq. (mg/week)');
             case 'niacinEquiv_div_weight'
@@ -300,14 +274,8 @@ for iNormType = 1:nNormTypes
                 xlabel('niacin eq./calories/BMI');
         end
         
-        switch blood_m_nm
-            case 'NAD_div_NADH'
-                ylabel('NAD/NADH (μM)');
-            case 'NADP_div_NADPH'
-                ylabel('NADP/NADPH (μM)');
-            otherwise
-                ylabel([blood_m_nm,' (μM)']);
-        end
+        [blood_labelname] = blood_label(blood_m_nm);
+        ylabel(blood_labelname);
         % esthetic improvements
         hdl.LineWidth = lWidth;
         hdl.MarkerEdgeColor = [0 0 0];
@@ -325,6 +293,9 @@ for iCorr = 1:length(correl_names)
     if corr_vals.p.(correl_nm) < 0.05
         signif_correl.p005.p.(correl_nm) = corr_vals.p.(correl_nm);
         signif_correl.p005.b.(correl_nm) = corr_vals.b.(correl_nm);
+    elseif corr_vals.p.(correl_nm) > 0.05 && corr_vals.p.(correl_nm) < 0.1
+        signif_correl.p01.p.(correl_nm) = corr_vals.p.(correl_nm);
+        signif_correl.p01.b.(correl_nm) = corr_vals.b.(correl_nm);
     end
 end % loop through tests
 

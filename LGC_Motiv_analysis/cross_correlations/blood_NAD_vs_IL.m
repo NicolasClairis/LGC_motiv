@@ -48,9 +48,29 @@ for iIL = 1:3
         case 3
             IL_nm = 'IL18';
     end
-    figIL.(IL_nm) = fig;
+    figIL1.(IL_nm) = fig; j_fig1 = 0;
+    figIL2.(IL_nm) = fig; j_fig2 = 0;
     for iMb = 1:n_Mb
         bloodMb_nm = bloodMb_names{iMb};
+        switch bloodMb_nm
+            case {'Nam','NMN','NR','NAD',...
+                    'NADH','NADP','NADPH','MeNam',...
+                    'MeXPY'}
+                figure(figIL1.(IL_nm));
+                j_fig1 = j_fig1 + 1;
+                subplot(3,4,j_fig1);
+            case {'NAD_div_NADH',...
+                    'NADP_div_NADPH',...
+                    'total_NAD_precursors',...
+                    'total_NAD',...
+                    'total_NAD_with_precursors',...
+                    'total_NAD_with_byproducts',...
+                    'total_NAD_byproducts'}
+                figure(figIL2.(IL_nm));
+                j_fig2 = j_fig2 + 1;
+                subplot(3,3,j_fig2);
+        end
+    
         %% test correlations
         goodSubs.(IL_nm) = (~isnan(IL.(IL_nm))).*(~isnan(bloodMb.(bloodMb_nm))) == 1;
         corr_nm.(IL_nm) = [IL_nm,'_f_',bloodMb_nm];
@@ -61,12 +81,12 @@ for iIL = 1:3
         % store significant p.values for slope
         if stats_tmp.p(2) < 0.05
             pval.signif.(corr_nm.(IL_nm)) = stats_tmp.p(2);
+        elseif stats_tmp.p(2) > 0.05 && stats_tmp.p(2) < 0.1
+            pval.almostSignif.(corr_nm.(IL_nm)) = stats_tmp.p(2);
         end
         bloodMb_sort = sort(bloodMb.(bloodMb_nm)(goodSubs.(IL_nm)));
         IL_fit = glmval(beta.(corr_nm.(IL_nm)), bloodMb_sort, 'identity');
         %% figure
-        figure(figIL.(IL_nm));
-        subplot(4,3,iMb);
         hold on;
         scat_hdl = scatter(bloodMb.(bloodMb_nm)(goodSubs.(IL_nm)),...
             IL.(IL_nm)(goodSubs.(IL_nm)));
@@ -75,13 +95,8 @@ for iIL = 1:3
         scat_hdl.MarkerEdgeColor = black;
         plot_hdl.Color = orange;
         plot_hdl.LineStyle = '--';
-        if ~ismember(bloodMb_nm,{'NAD_div_NADH','NADP_div_NADPH'})
-            xlabel([bloodMb_nm,' (μM)']);
-        elseif strcmp(bloodMb_nm,'NAD_div_NADH')
-            xlabel('NAD/NADH (μM)');
-        elseif strcmp(bloodMb_nm,'NADP_div_NADPH')
-            xlabel('NADP/NADPH (μM)');
-        end
+        [blood_labelname] = blood_label(bloodMb_nm);
+        xlabel(blood_labelname);
         ylabel([(IL_nm),' (pg/mL)']);
         legend_size(pSize);
     end % metabolite loop

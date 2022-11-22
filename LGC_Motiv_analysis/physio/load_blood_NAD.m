@@ -32,19 +32,31 @@ switch study_nm
 end
 NAD_blood_table = readtable(bloodFilePath,...
     'Sheet','clean');
-blood_metabolites = {'Nam','NMN','NR','MeNam',...
+blood_metabolites = {'Nam','NMN','NR',...
     'NAD','NADH','NADP','NADPH',...
-    'MeXPY'};
+    'MeNam','MeXPY'};
 nNADHmetab = length(blood_metabolites);
 
 for iBloodM = 1:nNADHmetab
     blood_m_nm = blood_metabolites{iBloodM};
-        blood.(blood_m_nm) = NAD_blood_table.(blood_m_nm);
+    blood.(blood_m_nm) = NAD_blood_table.(blood_m_nm);
 end % metabolite loop
 
-% add ratios
+%% add ratios
 blood.NAD_div_NADH = blood.NAD./blood.NADH;
 blood.NADP_div_NADPH = blood.NADP./blood.NADPH;
+
+%% add pools of different metabolites
+blood.total_NAD_precursors = blood.Nam + blood.NMN + blood.NR;
+blood.total_NAD = blood.NAD + blood.NADH;
+blood.total_NAD_with_precursors = blood.Nam + blood.NMN + blood.NR +...
+    blood.NAD + blood.NADH +...
+    blood.NADP + blood.NADPH;
+blood.total_NAD_with_byproducts = blood.Nam + blood.NMN + blood.NR +...
+    blood.NAD + blood.NADH +...
+    blood.NADP + blood.NADPH +...
+    blood.MeNam + blood.MeXPY;
+blood.total_NAD_byproducts = blood.MeNam + blood.MeXPY;
 
 %% extract list of subjects
 sub_List = NAD_blood_table.ID;
