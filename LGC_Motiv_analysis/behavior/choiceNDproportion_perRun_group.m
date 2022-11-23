@@ -18,25 +18,17 @@ function [choiceND_perRun, saturationSubs] = choiceNDproportion_perRun_group(fig
 %
 % See also choiceNDproportion_perRun
 
-%% define study name
-if ~exist('study_nm','var') || isempty(study_nm)
-    %     study_names = {'study1','study2','fMRI_pilots'};
-    %     study_nm_idx = listdlg('ListString',study_names);
-    %     study_nm = study_names{study_nm_idx};
-    study_nm = 'study1'; % by default
-end
+%% subject identification
+[study_nm, ~,~,subject_id, NS] = sub_id;
 
 %% display group figure
 if ~exist('figGrpDisp','var') || isempty(figGrpDisp)
     figGrpDisp = 1; % by default
 end
 
-%% subject list
-[subject_id, NS] = LGCM_subject_selection(study_nm, 'behavior');
-
 %% working directories
-% computer_root = LGCM_root_paths();
-computerRoot = ['E:',filesep];
+computerRoot = LGCM_root_paths();
+% computerRoot = ['E:',filesep];
 switch study_nm
     case 'fMRI_pilots'
         studyRoot = fullfile(computerRoot,'fMRI_pilots');

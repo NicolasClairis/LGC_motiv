@@ -2,6 +2,16 @@ function[stats_meanRT, stats_medianRT] = RT_f_PRFD(figDisp, n_bins)
 % [stats_meanRT, stats_medianRT] = RT_f_PRFD(figDisp, n_bins)
 % RT_f_PRFD tests whether there is a link between the score in the social
 % dominance questionnaire (PRF-D) and reaction times across subjects
+%
+% INPUTS
+% figDisp: display output figure (1) or not (0)
+%
+% n_bins: number of bins?
+%
+% OUTPUTS
+% stats_meanRT: statistics with p.value for mean RT
+%
+% stats_medianRT: statistics with p.value for median RT
 
 %% if root not defined => ask for it
 if ~exist('computerRoot','var') || isempty(computerRoot)
@@ -19,10 +29,7 @@ if ~exist('n_bins','var') || isempty(n_bins) || ~isnumeric(n_bins)
 end
 
 %% subject selection
-study_nm = 'study1';
-condition = subject_condition();
-gender = 'all';
-[subject_id, NS] = LGCM_subject_selection('study1',condition,gender);
+[study_nm, ~, ~, subject_id, NS] = sub_id;
 
 %% define main variables
 nTrialsPerRun = 54;
