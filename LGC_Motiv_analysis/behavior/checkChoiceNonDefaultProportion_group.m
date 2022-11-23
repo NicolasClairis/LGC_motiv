@@ -37,13 +37,7 @@ function[avg_nonDefaultChoice, sem_nonDefaultChoice,...
 % See also checkChoiceNonDefaultProportion.m (same but for individual subject)
 
 %% list of subjects
-if ~exist('study_nm','var') || isempty(study_nm)
-    study_names = {'fMRI_pilots','study1','study2'};
-    study_nm_idx = listdlg('ListString',study_names);
-    study_nm = study_names{study_nm_idx};
-end
-condition = subject_condition();
-[subs, NS] = LGCM_subject_selection(study_nm, condition);
+[study_nm,~,~,subject_id,NS] = sub_id;
 
 %% working directories
 switch study_nm
@@ -114,7 +108,7 @@ for iTask = 1:nTaskTypes
     
     %% extract individual data
     for iS = 1:NS
-        sub_nm = subs{iS};
+        sub_nm = subject_id{iS};
         subFolder = [root,filesep,'CID',sub_nm,filesep,'behavior'];
         cd(subFolder);
         [avg_nonDefaultChoice_data_perSub{iS},...
@@ -250,10 +244,10 @@ plot(1:n_bins, 50*ones(1,n_bins),...
     'LineWidth',lWidth_50percentTrait,'Color','k','LineStyle',':');
 hold on;
 for iS = 1:NS
-    plot(1:n_bins, nonDefaultChoice_perSub.Em_f_time(:,iS),...
-        'Color',Em_col, 'LineWidth',1)
-    plot(1:n_bins, nonDefaultChoice_perSub.Ep_f_time(:,iS),...
-        'Color',Ep_col, 'LineWidth',1)
+    plot(1:n_bins, nonDefaultChoice_perSub.Em_f_time(:,iS).*100,...
+        'Color',[0 1-0.01*iS 0], 'LineWidth',1)
+    plot(1:n_bins, nonDefaultChoice_perSub.Ep_f_time(:,iS).*100,...
+        'Color',[0 153/255 1-0.01*iS], 'LineWidth',1)
 end
 % ylim([0 100]);
 ylim([40 100]);
@@ -267,8 +261,6 @@ end
 xticklabels(xLabelNames);
 xlabel('trial number');
 ylabel('Choice high effort (%)');
-legend('boxoff');
-legend('Location','NorthWest');
 legend_size(pSize);
 %% check choices = f(fatigue)
 fig;
