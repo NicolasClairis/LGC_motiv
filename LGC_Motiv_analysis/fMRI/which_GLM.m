@@ -180,7 +180,7 @@ function [GLMprm] = which_GLM(GLM)
 %       (1) pool reward and punishment trials
 %
 %       .Eperf.(Ep/Em).splitPerE:
-%       (0) pool all effort together
+%       (0) pool all effort together (by default)
 %       (1) split per level of effort proposed (E1/E2/E3)
 %       (2) split per level of effort chosen (Ech0/Ech1/Ech2/Ech3)
 %       (3) split per option chosen (low/default vs high/non-default effort chosen)
@@ -2058,6 +2058,30 @@ switch GLM
             % effort perf (effort execution)
             GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
             GLMprm.Eperf.(Epm_nm).RP.E.E_chosen = 1;
+            % feedback
+            GLMprm.model_onset.(Epm_nm).fbk = 'boxcar';
+        end % physical/mental  loop
+    case 72 % GLM to test activation of VS during effort performance
+        % general parameters
+        GLMprm.gal.orth_vars = 0;
+        GLMprm.gal.zPerRun = 1;
+        % loop per task
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'stick';
+            GLMprm.choice.(Epm_nm).RP.E.E_chosen = 1;
+            GLMprm.choice.(Epm_nm).RP.E.RT = 1;
+            % chosen option
+            GLMprm.model_onset.(Epm_nm).chosen = 'boxcar';
+            % effort performance (effort execution)
+            GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
+            GLMprm.Eperf.(Epm_nm).RPpool = 0; % split R and P events
+            for iRP = 1:length(RP_conds) % loop through R/P conditions
+                RP_nm = RP_conds{iRP};
+                GLMprm.Eperf.(Epm_nm).(RP_nm).E.money_chosen = 4;
+                GLMprm.Eperf.(Epm_nm).(RP_nm).E.E_chosen = 1;
+            end
             % feedback
             GLMprm.model_onset.(Epm_nm).fbk = 'boxcar';
         end % physical/mental  loop
