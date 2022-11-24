@@ -23,6 +23,7 @@ n_Em_runs = 2;
 nTotalEmTrials = nTrialsPerRun*n_Em_runs;
 n_bins = 9;
 [choice_f_prevAUC, prevAUC_f_prevAUC,...
+    choice_f_sumPrevAUC, sumPrevAUC_f_sumPrevAUC,...
     choice_f_prevPeakF, prevPeakF_f_prevPeakF,...
     choice_f_trialN,...
     AUC_f_trialN, peakF_f_trialN,...
@@ -40,6 +41,7 @@ for iS = 1:NS
     runs = strcmp(runsStruct.tasks, task_id);
     [AUC_avg_run_tmp,...
         prevAUC_avg_run_tmp,...
+        sumPrevAUC_avg_run_tmp,...
         peakF_avg_run_tmp,...
         prevPeakF_avg_run_tmp,...
         choice_hE_run_tmp,...
@@ -66,13 +68,7 @@ for iS = 1:NS
                 '_task.mat']);
             physicalPerf = behaviorStruct_tmp.physicalPerf;
             % choices
-            default_LR = physicalPerf.choiceOptions.default_LR;
-            choice_LR = physicalPerf.choice;
-            choice_LR(choice_LR == 2) = 1;
-            choice_LR(choice_LR == -2) = -1;
-            choice_hE = NaN(1,nTrialsPerRun);
-            choice_hE(choice_LR == default_LR) = 0;
-            choice_hE(choice_LR == -default_LR) = 1;
+            [choice_hE] = extract_choice_hE(subBehaviorFolder, sub_nm, run_nm, task_fullName);
 
             for iTrial = 1:nTrialsPerRun
                 jTrial = iTrial + nTrialsPerRun*(jRun - 1);
@@ -87,15 +83,18 @@ for iS = 1:NS
                 if iTrial == 1
                     prevAUC_avg_run_tmp(jTrial) = NaN;
                     prevPeakF_avg_run_tmp(jTrial) = NaN;
+                    sumPrevAUC_avg_run_tmp(jTrial) = 0;
                 else
                     prevAUC_avg_run_tmp(jTrial) = AUC_avg_run_tmp(jTrial - 1);
                     prevPeakF_avg_run_tmp(jTrial) = peakF_avg_run_tmp(jTrial - 1);
+                    sumPrevAUC_avg_run_tmp(jTrial) = sumPrevAUC_avg_run_tmp(jTrial-1) + AUC_avg_run_tmp(jTrial - 1);
                 end
             end % trial loop
         end % run to include?
     end % run loop
     %% average data per subject
     [choice_f_prevAUC(:,iS), prevAUC_f_prevAUC(:,iS)] = do_bin2(choice_hE_run_tmp, prevAUC_avg_run_tmp, n_bins,0);
+    [choice_f_sumPrevAUC(:,iS), sumPrevAUC_f_sumPrevAUC(:,iS)] = do_bin2(choice_hE_run_tmp, sumPrevAUC_avg_run_tmp, n_bins,0);
     [choice_f_prevPeakF(:,iS), prevPeakF_f_prevPeakF(:,iS)] = do_bin2(choice_hE_run_tmp, prevPeakF_avg_run_tmp, n_bins,0);
     [choice_f_trialN(:,iS), trialN_f_trialN(:,iS)] = do_bin2(choice_hE_run_tmp, trialN_run_tmp, n_bins,0);
     [AUC_f_trialN(:,iS)] = do_bin2(AUC_avg_run_tmp, trialN_run_tmp, n_bins,0);
@@ -108,6 +107,10 @@ end % subject loop
     choice_f_prevAUC_sem] = mean_sem_sd(choice_f_prevAUC,2);
 [prevAUC_f_prevAUC_avg,...
     prevAUC_f_prevAUC_sem] = mean_sem_sd(prevAUC_f_prevAUC,2);
+[choice_f_sumPrevAUC_avg,...
+    choice_f_sumPrevAUC_sem] = mean_sem_sd(choice_f_sumPrevAUC,2);
+[sumPrevAUC_f_sumPrevAUC_avg,...
+    sumPrevAUC_f_sumPrevAUC_sem] = mean_sem_sd(sumPrevAUC_f_sumPrevAUC,2);
 [choice_f_prevPeakF_avg,...
     choice_f_prevPeakF_sem] = mean_sem_sd(choice_f_prevPeakF,2);
 [prevPeakF_f_prevPeakF_avg,...
@@ -126,7 +129,7 @@ end % subject loop
 lWidth = 3;
 pSize = 40;
 
-%% choice = f(AUC)
+%% choice = f(previous AUC)
 fig;
 hold on;
 hdl = errorbar(prevAUC_f_prevAUC_avg,...
@@ -137,7 +140,18 @@ xlabel('previous AUC');
 ylabel('Choice hE (%)');
 legend_size(pSize);
 
-%% choice = f(peak force)
+%% choice = f(sum previous AUC)
+fig;
+hold on;
+hdl = errorbar(sumPrevAUC_f_sumPrevAUC_avg,...
+    choice_f_sumPrevAUC_avg,...
+    choice_f_sumPrevAUC_sem);
+hdl.LineWidth = lWidth;
+xlabel('sum previous AUC');
+ylabel('Choice hE (%)');
+legend_size(pSize);
+
+%% choice = f(previous peak force)
 fig;
 hold on;
 hdl = errorbar(prevPeakF_f_prevPeakF_avg,...
