@@ -12,8 +12,6 @@ function[latency, AUC, forcePeak, AUC_overshoot] = extract_grip_force(subBehavio
 %
 % run_nm: string with run name
 %
-% task_fullName: task full name 'mental'/'physical'
-%
 % OUTPUTS
 % latency: estimated time it took for the participant to start squeezing
 % the handgrip (careful as this might be very noisy)
