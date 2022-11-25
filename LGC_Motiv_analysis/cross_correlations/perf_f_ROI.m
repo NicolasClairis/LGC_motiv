@@ -136,7 +136,7 @@ for iS = 1:NS
                 perf.AUC_overshoot.allTrials(runTrials_idx,iS) = AUC_overshoot.allTrials;
                 
             case 'Em'
-                [successSpeed, n_errors, RT_avg] = extract_mental_perf(subBehaviorFolder, sub_nm, run_nm);
+                [successSpeed, ~, n_errors, RT_avg] = extract_mental_perf(subBehaviorFolder, sub_nm, run_nm);
                 perf.successSpeed.allTrials(runTrials_idx,iS) = successSpeed.allTrials;
                 perf.n_errors.allTrials(runTrials_idx,iS) = n_errors.allTrials;
                 perf.RT_avg.allTrials(runTrials_idx,iS) = RT_avg.allTrials;
