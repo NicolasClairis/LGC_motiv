@@ -19,8 +19,8 @@ end
 task_id = 'Ep';
 task_fullName = 'physical';
 nTrialsPerRun = 54;
-n_Em_runs = 2;
-nTotalEmTrials = nTrialsPerRun*n_Em_runs;
+n_Ep_runs = 2;
+nTotalEpTrials = nTrialsPerRun*n_Ep_runs;
 n_bins = 9;
 [choice_f_prevAUC, prevAUC_f_prevAUC,...
     choice_f_sumPrevAUC, sumPrevAUC_f_sumPrevAUC,...
@@ -45,7 +45,7 @@ for iS = 1:NS
         peakF_avg_run_tmp,...
         prevPeakF_avg_run_tmp,...
         choice_hE_run_tmp,...
-        trialN_run_tmp] = deal(NaN(nTotalEmTrials,1));
+        trialN_run_tmp] = deal(NaN(nTotalEpTrials,1));
 
     jRun = 0;
     for iRun = 1:nTotalRuns
