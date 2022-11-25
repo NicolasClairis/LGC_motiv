@@ -1,7 +1,7 @@
 function[matlabbatch] = First_level_loadRegressors(matlabbatch, GLMprm, study_nm, sub_nm, sub_idx, iRun,...
-    subj_behavior_folder, currRunBehaviorFileName, task_nm, computerRoot)
+    subBehaviorFolder, currRunBehaviorFileName, task_fullName, computerRoot)
 % [matlabbatch] = First_level_loadRegressors(matlabbatch, GLMprm, study_nm, sub_nm, sub_idx, iRun,...
-%     subj_behavior_folder, currRunBehaviorFileName, task_nm, computer_root)
+%     subBehaviorFolder, currRunBehaviorFileName, task_nm, computer_root)
 %
 % First_level_loadRegressors will load the regressors of interest for each
 % task
@@ -19,11 +19,11 @@ function[matlabbatch] = First_level_loadRegressors(matlabbatch, GLMprm, study_nm
 %
 % iRun: run number
 %
-% subj_behavior_folder: subject behavioral folder name
+% subBehaviorFolder: subject behavioral folder name
 %
 % currRunBehaviorFilename: name of the file containing the behavioral data
 %
-% task_nm: task name 'mental' or 'physical'
+% task_fullName: task name 'mental' or 'physical'
 %
 % computerRoot: root of where the data is (required to be able to load net
 % value if the GLM asks for it)
@@ -36,7 +36,7 @@ function[matlabbatch] = First_level_loadRegressors(matlabbatch, GLMprm, study_nm
 onsets_only_GLM = GLMprm.gal.onsets_only;
 
 %% determine task to work on
-switch task_nm
+switch task_fullName
     case 'physical'
         task_id = 'Ep';
         task_behavioral_id = 'physicalPerf';
@@ -47,11 +47,11 @@ end
 
 %% load data
 % warning('script needs to be updated to be able to model failed trials (choice or perf) separately');
-behavioralDataStruct = load([subj_behavior_folder, currRunBehaviorFileName]);
+behavioralDataStruct = load([subBehaviorFolder, currRunBehaviorFileName]);
 
 %% extract all onsets of interest
 T0 = behavioralDataStruct.onsets.T0;
-if strcmp(study_nm,'fMRI_pilots') && ismember(subj_behavior_folder((end-30):end),...
+if strcmp(study_nm,'fMRI_pilots') && ismember(subBehaviorFolder((end-30):end),...
         {[filesep,'fMRI_pilots',filesep,'pilot_s1',filesep,'behavior',filesep],...
         [filesep,'fMRI_pilots',filesep,'pilot_s2',filesep,'behavior',filesep]})
     % for pilots s1 & s2 where there was only 1 fixation cross before
@@ -73,7 +73,7 @@ choiceMissedTrials = isnan(choiceOnsets);
 % extract onsets when the effort was performed
 EperfOnsets = NaN(1,n_trials);
 for iTrial = 1:n_trials
-    switch task_nm
+    switch task_fullName
         case 'physical'
             EperfOnsets(iTrial) = behavioralDataStruct.(task_behavioral_id).onsets.effortPeriod{1,iTrial}.effort_phase - T0;
         case 'mental'
@@ -85,7 +85,7 @@ fbkOnsets = behavioralDataStruct.(task_behavioral_id).onsets.fbk - T0;
 
 %% durations of each event
 if strcmp(study_nm,'fMRI_pilots') &&...
-        ismember(subj_behavior_folder((end-30):end),...
+        ismember(subBehaviorFolder((end-30):end),...
         {[filesep,'fMRI_pilots',filesep,'pilot_s1',filesep,'behavior',filesep],...
         [filesep,'fMRI_pilots',filesep,'pilot_s2',filesep,'behavior',filesep],...
         [filesep,'fMRI_pilots',filesep,'pilot_s3',filesep,'behavior',filesep]})
@@ -93,7 +93,7 @@ if strcmp(study_nm,'fMRI_pilots') &&...
     preChoiceCrossDur = dispChoiceOptionOnsets - preChoiceCrossOnsets;
     dispChoiceOptionsDur = dispChosenOnsets - dispChoiceOptionOnsets;
     if strcmp(study_nm,'fMRI_pilots') &&...
-            ismember(subj_behavior_folder((end-30):end),...
+            ismember(subBehaviorFolder((end-30):end),...
             {[filesep,'fMRI_pilots',filesep,'pilot_s1',filesep,'behavior',filesep],...
             [filesep,'fMRI_pilots',filesep,'pilot_s2',filesep,'behavior',filesep]})
         % pilot s1 & s2 no fixation cross before effort
@@ -140,7 +140,7 @@ money_level_right(money_level_right == 0 & RP_var == -1) = -4;
 % fix data for subjects where IP had a bug and two options were based on
 % the same amount
 if strcmp(study_nm,'study1')
-    if strcmp(sub_nm,'064') && strcmp(task_nm,'mental')
+    if strcmp(sub_nm,'064') && strcmp(task_fullName,'mental')
         money_level_left(money_level_left == 3) = 2;
         money_level_left(money_level_left == -2) = -1;
         money_level_right(money_level_right == 3) = 2;
@@ -151,7 +151,7 @@ if strcmp(study_nm,'study1')
         money_level_right(money_level_right == -3) = -2;
         money_level_left(money_level_left == -4) = -3;
         money_level_right(money_level_right == -4) = -3;
-    elseif strcmp(sub_nm,'090') && strcmp(task_nm,'physical')
+    elseif strcmp(sub_nm,'090') && strcmp(task_fullName,'physical')
         money_level_left(money_level_left == 3) = 2;
         money_level_left(money_level_left == -2) = -1;
         money_level_right(money_level_right == 3) = 2;
@@ -177,8 +177,10 @@ money_level_right(money_level_right == 1 & RP_var == 1) = 2;
 money_level_right(money_level_right == 0 & RP_var == 1) = 1;
 
 % extract other relevant variables
-money_level_varOption = money_level_left.*(defaultSide == 1) + money_level_right.*(defaultSide == -1);
-money_level_fixedOption = money_level_left.*(defaultSide == -1) + money_level_right.*(defaultSide == 1);
+money_level_varOption = money_level_left.*(defaultSide == 1) +...
+    money_level_right.*(defaultSide == -1);
+money_level_fixedOption = money_level_left.*(defaultSide == -1) +...
+    money_level_right.*(defaultSide == 1);
 abs_money_level_varOption = abs(money_level_varOption);
 % loading effort choice
 E_left = behavioralDataStruct.(task_behavioral_id).choiceOptions.E.left.*RP_var;
@@ -194,8 +196,8 @@ choice_LR = choice_LRandConf;
 choice_LR(choice_LRandConf == -2) = -1;
 choice_LR(choice_LRandConf == 2) = 1;
 % choice = high effort
-choice_hE = double(choice_LR ~= defaultSide);
-choice_hE(choice_LR == 0) = NaN;
+run_nm = num2str(iRun);
+[choice_hE] = extract_choice_hE(subBehaviorFolder, sub_nm, run_nm, task_fullName);
 % loading chosen variables
 E_chosen = behavioralDataStruct.(task_behavioral_id).E_chosen;
 E_unchosen = E_left.*(choice_LR == 1) + E_right.*(choice_LR == -1);
@@ -206,6 +208,36 @@ money_level_unchosen = money_level_left.*(choice_LR == 1) + money_level_right.*(
 abs_money_amount_chosen = abs(money_amount_chosen);
 money_amount_unchosen = money_amount_left.*(choice_LR == 1) + money_amount_right.*(choice_LR == -1);
 abs_money_amount_unchosen = abs(money_amount_unchosen);
+
+switch task_fullName
+    case 'physical'
+        [latency, AUC, forcePeak, AUC_overshoot] = extract_grip_force(subBehaviorFolder, sub_nm, run_nm);
+        fatigue = NaN(1,n_trials);
+        for iTrial = 1:n_trials
+            if iTrial == 1
+                fatigue(iTrial) = 0;
+            else
+                fatigue(iTrial) = fatigue(iTrial-1) + AUC(iTrial-1);
+            end
+        end
+    case 'mental'
+        [~, ~, n_errors, RT_avg,...
+            ~,...
+            ~,...
+            efficacy_with2first,...
+            efficacy_pureNback] = extract_mental_perf(subBehaviorFolder, sub_nm, run_nm);
+        [prevEfficacy_with2first,...
+            prevEfficacy_pureNback] = deal(NaN(1,n_trials));
+        for iTrial = 1:n_trials
+            if iTrial == 1
+                prevEfficacy_with2first(iTrial) = 0;
+                prevEfficacy_pureNback(iTrial) = 0;
+            else
+                prevEfficacy_with2first(iTrial) = efficacy_with2first(iTrial-1);
+                prevEfficacy_pureNback(iTrial) = efficacy_pureNback(iTrial-1);
+            end
+        end
+end
 
 % reward levels = 0/1/2/3 and punishment levels = 1/2/3/4 in money_level
 % therefore you need to remove 1 to punishments for absolute levels to
@@ -228,9 +260,9 @@ win_vs_loss_fbk = money_amount_obtained > 0;
 % load run name
 switch iRun
     case {1,2}
-        run_nm = 'run1';
+        run_nm_bis = 'run1';
     case {3,4}
-        run_nm = 'run2';
+        run_nm_bis = 'run2';
     otherwise
         error('case not ready yet: net value in the model and more than 4 runs.');
 end
@@ -269,8 +301,8 @@ for iRP = 1:length(RPconds)
             end
             % extract net value
             if strcmp(NV_mdl_nm(1:4),'mdl_') % classic model
-                NV_chosen = modelledDataStruct.NV_chosen.(task_id).(NV_mdl_nm).(run_nm);
-                NV_varOption = modelledDataStruct.NV_varOption.(task_id).(NV_mdl_nm).(run_nm);
+                NV_chosen = modelledDataStruct.NV_chosen.(task_id).(NV_mdl_nm).(run_nm_bis);
+                NV_varOption = modelledDataStruct.NV_varOption.(task_id).(NV_mdl_nm).(run_nm_bis);
             elseif strcmp(NV_mdl_nm(1:14),'bayesianModel_') % bayesian model
                 error('bayesian net value input not ready yet.');
             else
@@ -306,7 +338,7 @@ for iRP = 1:length(RPconds)
                 end
                 % extract confidence
                 if strcmp(conf_mdl_nm(1:4),'mdl_') % classic model
-                    confidence = modelledDataStruct.confidenceFitted.(conf_mdl_nm).(task_id).(run_nm);
+                    confidence = modelledDataStruct.confidenceFitted.(conf_mdl_nm).(task_id).(run_nm_bis);
                 elseif strcmp(conf_mdl_nm(1:14),'bayesianModel_') % bayesian model
                     error('bayesian net value input not ready yet.');
                 else
@@ -411,6 +443,21 @@ if sum(choiceMissedTrials) > 0
     trialN_dEch(choiceMissedTrials) = [];
     trialN_dEnonDef_min_Edef(choiceMissedTrials) = [];
     trialN_dEnonDef(choiceMissedTrials) = [];
+    switch task_fullName
+        case 'physical'
+            latency(choiceMissedTrials) = [];
+            AUC(choiceMissedTrials) = [];
+            forcePeak(choiceMissedTrials) = [];
+            AUC_overshoot(choiceMissedTrials) = [];
+            fatigue(choiceMissedTrials) = [];
+        case 'mental'
+            n_errors(choiceMissedTrials) = [];
+            RT_avg(choiceMissedTrials) = [];
+            efficacy_with2first(choiceMissedTrials) = [];
+            efficacy_pureNback(choiceMissedTrials) = [];
+            prevEfficacy_with2first(choiceMissedTrials) = [];
+            prevEfficacy_pureNback(choiceMissedTrials) = [];
+    end
 end
 
 %% load the batch according to GLMprm variables
@@ -606,6 +653,14 @@ if ismember(choiceModel,{'stick','boxcar'})
             choiceModel_E_sum                           = GLMprm.choice.(task_id).(RP_dispChoice_nm).(splitE_dispChoice_nm).E_sum;
             choiceModel_NV_chosen                       = GLMprm.choice.(task_id).(RP_dispChoice_nm).(splitE_dispChoice_nm).NV_chosen;
             choiceModel_NV_varOption                    = GLMprm.choice.(task_id).(RP_dispChoice_nm).(splitE_dispChoice_nm).NV_varOption;
+            switch task_id
+                case 'Ep'
+                    choiceModel_F_integral = GLMprm.choice.(task_id).(RP_dispChoice_nm).(splitE_dispChoice_nm).F_integral;
+                    choiceModel_fatigue = GLMprm.choice.(task_id).(RP_dispChoice_nm).(splitE_dispChoice_nm).fatigue;
+                case 'Em'
+                    choiceModel_efficacy = GLMprm.choice.(task_id).(RP_dispChoice_nm).(splitE_dispChoice_nm).efficacy;
+                    choiceModel_prevEfficacy = GLMprm.choice.(task_id).(RP_dispChoice_nm).(splitE_dispChoice_nm).prevEfficacy;
+            end
             choiceModel_conf                            = GLMprm.choice.(task_id).(RP_dispChoice_nm).(splitE_dispChoice_nm).confidence;
             choiceModel_RT                              = GLMprm.choice.(task_id).(RP_dispChoice_nm).(splitE_dispChoice_nm).RT;
             choiceModel_trialN                          = GLMprm.choice.(task_id).(RP_dispChoice_nm).(splitE_dispChoice_nm).trialN;
@@ -896,6 +951,64 @@ if ismember(choiceModel,{'stick','boxcar'})
                         error('not ready yet');
                 end
             end
+
+            if strcmp(task_id,'Ep')
+                % force integral
+                if choiceModel_F_integral > 0
+                    n_choiceMods = n_choiceMods + 1;
+                    choice_modNames{n_choiceMods} = 'F integral';
+                    switch choiceModel_F_integral
+                        case 1
+                            choice_modVals(n_choiceMods,:) = raw_or_z(AUC(choice_trial_idx));
+                        case 2
+                            choice_modVals(n_choiceMods,:) = raw_or_z(AUC_overshoot(choice_trial_idx));
+                        otherwise
+                            error('not ready yet');
+                    end
+                end
+
+                % fatigue
+                if choiceModel_fatigue > 0
+                    n_choiceMods = n_choiceMods + 1;
+                    choice_modNames{n_choiceMods} = 'fatigue';
+                    switch choiceModel_fatigue
+                        case 1
+                            choice_modVals(n_choiceMods,:) = raw_or_z(fatigue(choice_trial_idx));
+                        otherwise
+                            error('not ready yet');
+                    end
+                end
+            end % physical effort filter
+
+            if strcmp(task_id,'Em')
+                % efficacy
+                if choiceModel_efficacy > 0
+                    n_choiceMods = n_choiceMods + 1;
+                    choice_modNames{n_choiceMods} = 'efficacy';
+                    switch choiceModel_efficacy
+                        case 1
+                            choice_modVals(n_choiceMods,:) = raw_or_z(efficacy_with2first(choice_trial_idx));
+                        case 2
+                            choice_modVals(n_choiceMods,:) = raw_or_z(efficacy_pureNback(choice_trial_idx));
+                        otherwise
+                            error('not ready yet');
+                    end
+                end
+
+                % previous trial efficacy
+                if choiceModel_prevEfficacy > 0
+                    n_choiceMods = n_choiceMods + 1;
+                    choice_modNames{n_choiceMods} = 'previous trial efficacy';
+                    switch choiceModel_prevEfficacy
+                        case 1
+                            choice_modVals(n_choiceMods,:) = raw_or_z(prevEfficacy_with2first(choice_trial_idx));
+                        case 2
+                            choice_modVals(n_choiceMods,:) = raw_or_z(prevEfficacy_pureNback(choice_trial_idx));
+                        otherwise
+                            error('not ready yet');
+                    end
+                end
+            end % mental effort filter
             
             % trial number
             if choiceModel_trialN > 0
@@ -973,6 +1086,14 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis'})
             chosenModel_E_sum           = GLMprm.chosen.(task_id).(RP_dispChosen_nm).(splitE_dispChosen_nm).E_sum;
             chosenModel_NV_chosen       = GLMprm.chosen.(task_id).(RP_dispChosen_nm).(splitE_dispChosen_nm).NV_chosen;
             chosenModel_NV_varOption    = GLMprm.chosen.(task_id).(RP_dispChosen_nm).(splitE_dispChosen_nm).NV_varOption;
+            switch task_id
+                case 'Ep'
+                    chosenModel_F_integral = GLMprm.chosen.(task_id).(RP_dispChoice_nm).(splitE_dispChosen_nm).F_integral;
+                    chosenModel_fatigue = GLMprm.chosen.(task_id).(RP_dispChosen_nm).(splitE_dispChosen_nm).fatigue;
+                case 'Em'
+                    chosenModel_efficacy = GLMprm.chosen.(task_id).(RP_dispChosen_nm).(splitE_dispChosen_nm).efficacy;
+                    chosenModel_prevEfficacy = GLMprm.chosen.(task_id).(RP_dispChosen_nm).(splitE_dispChosen_nm).prevEfficacy;
+            end
             chosenModel_confidence      = GLMprm.chosen.(task_id).(RP_dispChosen_nm).(splitE_dispChosen_nm).confidence;
             chosenModel_RT              = GLMprm.chosen.(task_id).(RP_dispChosen_nm).(splitE_dispChosen_nm).RT;
             chosenModel_trialN          = GLMprm.chosen.(task_id).(RP_dispChosen_nm).(splitE_dispChosen_nm).trialN;
@@ -1249,6 +1370,64 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis'})
                         error('not ready yet');
                 end
             end
+
+            if strcmp(task_id,'Ep')
+                % force integral
+                if chosenModel_F_integral > 0
+                    n_chosenMods = n_chosenMods + 1;
+                    chosen_modNames{n_chosenMods} = 'F integral';
+                    switch chosenModel_F_integral
+                        case 1
+                            chosen_modVals(n_chosenMods,:) = raw_or_z(AUC(chosen_trial_idx));
+                        case 2
+                            chosen_modVals(n_chosenMods,:) = raw_or_z(AUC_overshoot(chosen_trial_idx));
+                        otherwise
+                            error('not ready yet');
+                    end
+                end
+
+                % fatigue
+                if chosenModel_fatigue > 0
+                    n_chosenMods = n_chosenMods + 1;
+                    chosen_modNames{n_chosenMods} = 'fatigue';
+                    switch chosenModel_fatigue
+                        case 1
+                            chosen_modVals(n_chosenMods,:) = raw_or_z(fatigue(chosen_trial_idx));
+                        otherwise
+                            error('not ready yet');
+                    end
+                end
+            end % physical effort filter
+
+            if strcmp(task_id,'Em')
+                % efficacy
+                if chosenModel_efficacy > 0
+                    n_chosenMods = n_chosenMods + 1;
+                    chosen_modNames{n_chosenMods} = 'efficacy';
+                    switch chosenModel_efficacy
+                        case 1
+                            chosen_modVals(n_chosenMods,:) = raw_or_z(efficacy_with2first(chosen_trial_idx));
+                        case 2
+                            chosen_modVals(n_chosenMods,:) = raw_or_z(efficacy_pureNback(chosen_trial_idx));
+                        otherwise
+                            error('not ready yet');
+                    end
+                end
+
+                % previous trial efficacy
+                if chosenModel_prevEfficacy > 0
+                    n_chosenMods = n_chosenMods + 1;
+                    chosen_modNames{n_chosenMods} = 'previous trial efficacy';
+                    switch chosenModel_prevEfficacy
+                        case 1
+                            chosen_modVals(n_chosenMods,:) = raw_or_z(prevEfficacy_with2first(chosen_trial_idx));
+                        case 2
+                            chosen_modVals(n_chosenMods,:) = raw_or_z(prevEfficacy_pureNback(chosen_trial_idx));
+                        otherwise
+                            error('not ready yet');
+                    end
+                end
+            end % mental effort filter
             
             % trial number
             if chosenModel_trialN > 0
@@ -1520,11 +1699,9 @@ if ismember(EperfModel,{'stick','boxcar'})
                 case 'Ep'
                     EperfModel_F_peak           = GLMprm.Eperf.(task_id).(RP_Eperf_nm).(splitE_Eperf_nm).F_peak;
                     EperfModel_F_integral       = GLMprm.Eperf.(task_id).(RP_Eperf_nm).(splitE_Eperf_nm).F_integral;
-                    EperfModel_RT_avg = 0;
-                    EperfModel_n_errors = 0;
+                    EperfModel_fatigue          = GLMprm.Eperf.(task_id).(RP_Eperf_nm).(splitE_Eperf_nm).fatigue;
                 case 'Em'
-                    EperfModel_F_peak = 0;
-                    EperfModel_F_integral = 0;
+                    EperfModel_efficacy         = GLMprm.Eperf.(task_id).(RP_Eperf_nm).(splitE_Eperf_nm).efficacy;
                     EperfModel_RT_avg           = GLMprm.Eperf.(task_id).(RP_Eperf_nm).(splitE_Eperf_nm).RT_avg;
                     EperfModel_n_errors         = GLMprm.Eperf.(task_id).(RP_Eperf_nm).(splitE_Eperf_nm).n_errors;
             end
@@ -1618,26 +1795,74 @@ if ismember(EperfModel,{'stick','boxcar'})
                         error('not ready yet');
                 end
             end
-            
-            % force peak
-            if EperfModel_F_peak> 0
-                error('case not ready yet.');
-            end
-            
-            % force integral
-            if EperfModel_F_integral > 0
-                error('case not ready yet.');
-            end
-            
-            % RT average
-            if EperfModel_RT_avg > 0
-                error('case not ready yet.');
-            end
-            
-            % number of errors
-            if EperfModel_n_errors > 0
-                error('case not ready yet.');
-            end
+
+            if strcmp(task_id,'Ep')
+                % force peak
+                if EperfModel_F_peak> 0
+                    n_EperfMods = n_EperfMods + 1;
+                    Eperf_modNames{n_EperfMods} = 'force peak';
+                    switch EperfModel_F_peak
+                        case 1
+                            Eperf_modVals(n_EperfMods,:) = raw_or_z(forcePeak(Eperf_trial_idx));
+                        otherwise
+                            error('not ready yet');
+                    end
+                end
+
+                % force integral
+                if EperfModel_F_integral > 0
+                    n_EperfMods = n_EperfMods + 1;
+                    Eperf_modNames{n_EperfMods} = 'force integral';
+                    switch EperfModel_F_integral
+                        case 1
+                            Eperf_modVals(n_EperfMods,:) = raw_or_z(AUC(Eperf_trial_idx));
+                        case 2
+                            Eperf_modVals(n_EperfMods,:) = raw_or_z(AUC_overshoot(Eperf_trial_idx));
+                        otherwise
+                            error('not ready yet');
+                    end
+                end
+            end % physical effort filter
+
+            if strcmp(task_id,'Em')
+                % efficacy
+                if EperfModel_efficacy > 0
+                    n_EperfMods = n_EperfMods + 1;
+                    Eperf_modNames{n_EperfMods} = 'Em efficacy';
+                    switch EperfModel_efficacy
+                        case 1
+                            Eperf_modVals(n_EperfMods,:) = raw_or_z(efficacy_with2first(Eperf_trial_idx));
+                        case 2
+                            Eperf_modVals(n_EperfMods,:) = raw_or_z(efficacy_pureNback(Eperf_trial_idx));
+                        otherwise
+                            error('not ready yet');
+                    end
+                end
+
+                % RT average
+                if EperfModel_RT_avg > 0
+                    n_EperfMods = n_EperfMods + 1;
+                    Eperf_modNames{n_EperfMods} = 'avg RT N-back perf';
+                    switch EperfModel_RT_avg
+                        case 1
+                            Eperf_modVals(n_EperfMods,:) = raw_or_z(RT_avg(Eperf_trial_idx));
+                        otherwise
+                            error('not ready yet');
+                    end
+                end
+
+                % number of errors
+                if EperfModel_n_errors > 0
+                    n_EperfMods = n_EperfMods + 1;
+                    Eperf_modNames{n_EperfMods} = 'nb errors';
+                    switch EperfModel_n_errors
+                        case 1
+                            Eperf_modVals(n_EperfMods,:) = raw_or_z(n_errors(Eperf_trial_idx));
+                        otherwise
+                            error('not ready yet');
+                    end
+                end
+            end % mental effort filter
             
             % net value chosen
             if EperfModel_NV_chosen > 0
@@ -1675,6 +1900,20 @@ if ismember(EperfModel,{'stick','boxcar'})
                         error('not ready yet');
                 end
             end
+
+            % fatigue
+            if strcmp(task_id,'Ep')
+                if EperfModel_fatigue > 0
+                    n_EperfMods = n_EperfMods + 1;
+                    Eperf_modNames{n_EperfMods} = 'fatigue';
+                    switch EperfModel_fatigue
+                        case 1
+                            Eperf_modVals(n_EperfMods,:) = raw_or_z(fatigue(Eperf_trial_idx));
+                        otherwise
+                            error('not ready yet');
+                    end
+                end
+            end % physical effort filter
             
             % trial number
             if EperfModel_trialN > 0

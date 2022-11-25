@@ -157,6 +157,30 @@ function [GLMprm] = which_GLM(GLM)
 %       (1) net value of the chosen option based on the model defined in
 %       .(choice/chosen).(Ep.Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).NV_mdl (='mdl_X' or 'bayesianModel_X')
 %
+%       .(choice/chosen).Ep.(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).F_integral: physical effort only: 
+%       force integral for the performance of the current trial
+%       (=anticipated force produced)
+%       (1) integral of effort performed during the effort period
+%       (2) integral of effort performed during the effort period
+%       considering only the overshoot (force produced above the red
+%       threshold)
+%
+%       .(choice/chosen).Em.(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).efficacy:
+%       mental effort only: efficacy for the performance of the current trial
+%       (=anticipated effort produced) defined as:
+%       (1) (nb correct answers - nb errors made)/total time of effort
+%       period
+%       (2) (nb correct answers - nb errors made)/time spent between answer
+%       of second useless number and end of the trial
+%
+%       .(choice/chosen).Ep.(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).fatigue:
+%       physical effort only:
+%       (1) sum of previous AUC of force produced
+%
+%       .(choice/chosen).Em.(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).prevEfficacy:
+%       mental effort only:
+%       (1) efficacy of previous trial
+%
 %       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).trialN
 %       (1) trial number
 %       (2) (trial number)*(E chosen - E non-chosen option)
@@ -203,8 +227,17 @@ function [GLMprm] = which_GLM(GLM)
 %       (1) force peak in newtons
 %
 %       .Eperf.Ep.(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).F_integral: physical effort only: force integral
-%       (1) integral of effort performed during the effort period (sum of 
-%       efforts in newtons)
+%       (1) integral of effort performed during the effort period
+%       (2) integral of effort performed during the effort period
+%       considering only the overshoot (force produced above the red
+%       threshold)
+%
+%       .Eperf.Em.(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).efficacy:
+%       mental effort only: efficacy defined as:
+%       (1) (nb correct answers - nb errors made)/total time of effort
+%       period
+%       (2) (nb correct answers - nb errors made)/time spent between answer
+%       of second useless number and end of the trial
 %
 %       .Eperf.Em.(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).RT_avg: mental effort only: average reaction
 %       time for answering N-back task
@@ -225,6 +258,14 @@ function [GLMprm] = which_GLM(GLM)
 %       .Eperf.(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).RT_1stAnswer
 %       (1) raw reaction time for first answer (force above threshold for Ep 
 %       and first answer to first digit for Em)
+%
+%       .Eperf.Ep.(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).fatigue:
+%       physical effort only:
+%       (1) sum of previous AUC of force produced
+%
+%       .Eperf.Em.(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).prevEfficacy:
+%       mental effort only:
+%       (1) efficacy of previous trial
 %
 %       .Eperf.(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).trialN
 %       (1) trial number
