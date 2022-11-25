@@ -106,16 +106,16 @@ for iS = 1:NS
                 jRun = jRun + 1;
                 runToInclude = 1;
             end
+            run_nm = num2str(runs.runsToKeep(iRun));
             
             if runToInclude == 1
                 runTrials_idx = (1:nTrialsPerRun) + nTrialsPerRun*(jRun-1);
                 
                 %% load data
                 behaviorStruct_tmp = load([subBehaviorFolder,...
-                    'CID',sub_nm,'_session',num2str(iRun),'_',task_fullName,...
+                    'CID',sub_nm,'_session',run_nm,'_',task_fullName,...
                     '_task.mat']);
                 % load relevant data
-                onsets_tmp = behaviorStruct_tmp.onsets;
                 choiceOptions_tmp = behaviorStruct_tmp.choice_opt;
                 switch task_id
                     case 'Ep'
@@ -130,6 +130,8 @@ for iS = 1:NS
                 choice_LR_tmp(choice_LR_tmp == -2) = -1;
                 % extract RT
                 RT_tmp = onsets_tmp.choice - onsets_tmp.dispChoiceOptions;
+                % replace by NaN when no choice was performed
+                RT_tmp(choice_LR_tmp == 0) = NaN;
                 RT_perTrial_tmp.(task_id)(runTrials_idx) = RT_tmp;
                 % extract choice made
                 defaultSide_tmp = choiceOptions_tmp.default_LR;
