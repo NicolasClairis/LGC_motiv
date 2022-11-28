@@ -78,100 +78,138 @@ switch study_nm
         runs.runsToKeep = 1:4;
         runs.runsToIgnore = [];
         
-        % define subject/subject the details
+        %% remove subjects where behavior and fMRI could not be performed => remove runs independently of the condition
         switch sub_nm
-            case {'030','049'} % behavior and fMRI could not be performed for those
+            case {'030','049'}
                 runs.runsToKeep = [];
                 runs.runsToIgnore = 1:4;
-            case {'034','091'} % behavior was performed but not fMRI for those
-                switch condition
-                    case {'fMRI',...
-                            'fMRI_no_move','fMRI_no_move_bis',...
-                            'fMRI_noSatTask','fMRI_noSatRun'}
-                        runs.runsToKeep = [];
-                        runs.runsToIgnore = 1:4;
-                end
-            case {'017','043','074'}
-                % first run of these subjects: the fMRI crashed so you
-                % should remove it from the fMRI analysis
-                switch condition
-                    case {'fMRI',...
-                            'fMRI_no_move','fMRI_no_move_bis',...
-                            'fMRI_noSatTask','fMRI_noSatRun'}
-                        runs.runsToKeep = 2:4;
-                        runs.runsToIgnore = 1;
-                end % condition
-            case {'018'}
-                switch condition
-                    case {'fMRI_no_move'}
-                        runs.runsToKeep = [1,2,4];
-                        runs.runsToIgnore = 3;
-                end
-            case {'021'}
-                switch condition
-                    case {'fMRI_no_move'}
-                        runs.runsToKeep = [1];
-                        runs.runsToIgnore = 2:4;
-                end
-            case {'029'}
-                switch condition
-                    case {'fMRI_no_move'}
-                        runs.runsToKeep = [1,2,3];
-                        runs.runsToIgnore = 4;
-                end
             case '040' % fMRI crashed during run 3 and subject was already stressing a lot
                 % => avoid including this run
                 runs.runsToKeep = [1,2];
                 runs.runsToIgnore = 3:4;
-            case {'044','054','071'}
-                switch condition
-                    case {'fMRI_no_move'}
-                        runs.runsToKeep = [1,3];
-                        runs.runsToIgnore = [2,4];
-                end % condition
-            case {'047'}
-                switch condition
-                    case {'fMRI_no_move'}
-                        runs.runsToKeep = [1,2,4];
-                        runs.runsToIgnore = 3;
-                end % condition
-            case {'065'}
-                switch condition
-                    case {'fMRI_no_move'}
-                        runs.runsToKeep = [1,2,4];
-                        runs.runsToIgnore = 3;
-                end
-            case {'076'}
-                switch condition
-                    case {'fMRI_no_move'}
+        end
+        
+        %% define subject runs to keep depending on condition
+        switch condition
+            %% removing runs with saturation
+            case 'fMRI_noSatTask'
+                switch sub_nm
+                    case '002'
+                        runs.runsToKeep = 3;
+                        runs.runsToIgnore = [1,2,4];
+                    case '005'
+                        runs.runsToKeep = 1:3;
+                        runs.runsToIgnore = 4;
+                    case '012'
+                        runs.runsToKeep = 1:3;
+                        runs.runsToIgnore = 4;
+                    case '017' % first run: fMRI crashed => we have the behavior but not enough trials for fMRI
                         runs.runsToKeep = 2:4;
                         runs.runsToIgnore = 1;
-                end
-            case {'083'}
-                switch condition
-                    case {'fMRI_no_move'}
+                    case '027'
+                        runs.runsToKeep = [1,3];
+                        runs.runsToIgnore = [2,4];
+                    case '032'
                         runs.runsToKeep = [1,2,4];
                         runs.runsToIgnore = 3;
-                end
-            case {'087'}
-                switch condition
-                    case {'fMRI_no_move'}
-                        runs.runsToKeep = 1;
-                        runs.runsToIgnore = [2,3,4];
-                end % condition
-            case {'093'}
-                switch condition
-                    case {'fMRI_no_move'}
-                        runs.runsToKeep = [2,3,4];
+                    case '043' % first run: fMRI crashed => we have the behavior but not enough trials for fMRI
+                        runs.runsToKeep = 2:4;
                         runs.runsToIgnore = 1;
-                end % condition
-            case {'008','022'} % ignore all runs
-                switch condition
-                    case {'fMRI_no_move'}
+                    case '047'
+                        runs.runsToKeep = 3;
+                        runs.runsToIgnore = [1,2,4];
+                    case '048'
+                        runs.runsToKeep = [1,3,4];
+                        runs.runsToIgnore = 2;
+                    case '052'
+                        runs.runsToKeep = [2,4];
+                        runs.runsToIgnore = [1,3];
+                    case '074' % first run: fMRI crashed => we have the behavior but not enough trials for fMRI
+                        runs.runsToKeep = 2:4;
+                        runs.runsToIgnore = 1;
+                    case '076'
+                        runs.runsToKeep = 1:3;
+                        runs.runsToIgnore = 4;
+                    case '095'
+                        runs.runsToKeep = [1,3];
+                        runs.runsToIgnore = [2,4];
+                    case '100'
+                        runs.runsToKeep = [1,2];
+                        runs.runsToIgnore = [3,4];
+                end
+            %% too much movement cleaning
+            case 'fMRI_no_move'
+                switch sub_nm
+                    %% subjects with too much movement in ALL runs
+                    case {'008','022','024'}
                         runs.runsToKeep = [];
                         runs.runsToIgnore = 1:4;
-                end
-        end % subject
+                    %% subjects with some runs with too much movement
+                    case '017' % first run: fMRI crashed => we have the behavior but not enough trials for fMRI
+                        runs.runsToKeep = 2:4;
+                        runs.runsToIgnore = 1;
+                    case '021'
+                        runs.runsToKeep = 1;
+                        runs.runsToIgnore = 2:4;
+                    case '029'
+                        runs.runsToKeep = 1:3;
+                        runs.runsToIgnore = 4;
+                    case '043' % first run: fMRI crashed => we have the behavior but not enough trials for fMRI
+                        runs.runsToKeep = 2:4;
+                        runs.runsToIgnore = 1;
+                    case '044'
+                        runs.runsToKeep = [1,3];
+                        runs.runsToIgnore = [2,4];
+                    case '047'
+                        runs.runsToKeep = [1,2,4];
+                        runs.runsToIgnore = 3;
+                    case '053'
+                        runs.runsToKeep = [1,2,4];
+                        runs.runsToIgnore = 3;
+                    case '054'
+                        runs.runsToKeep = [1,3];
+                        runs.runsToIgnore = [2,4];
+                    case '058'
+                        runs.runsToKeep = [1,3];
+                        runs.runsToIgnore = [2,4];
+                    case '062'
+                        runs.runsToKeep = 1;
+                        runs.runsToIgnore = 2:4;
+                    case '071'
+                        runs.runsToKeep = [1,3];
+                        runs.runsToIgnore = [2,4];
+                    case '074' % first run: fMRI crashed => we have the behavior but not enough trials for fMRI
+                        runs.runsToKeep = 2:4;
+                        runs.runsToIgnore = 1;
+                    case '076'
+                        runs.runsToKeep = 2:4;
+                        runs.runsToIgnore = 1;
+                    case '078'
+                        runs.runsToKeep = [2,3];
+                        runs.runsToIgnore = [1,4];
+                    case '080'
+                        runs.runsToKeep = [1,2,4];
+                        runs.runsToIgnore = 3;
+                    case '083'
+                        runs.runsToKeep = [1,2,4];
+                        runs.runsToIgnore = 3;
+                    case '087'
+                        runs.runsToKeep = 1;
+                        runs.runsToIgnore = [2,3,4];
+                    case '097'
+                        runs.runsToKeep = 1;
+                        runs.runsToIgnore = [2,3,4];
+                    case '099'
+                        runs.runsToKeep = [1,3];
+                        runs.runsToIgnore = [2,4];
+                end % subject
+            case {'fMRI','fMRI_no_move_bis','fMRI_noSatRun'} % all other fMRI cases
+                switch sub_nm
+                    case {'017','043','074'} % first run: fMRI crashed => we have the behavior but not enough trials for fMRI
+                        runs.runsToKeep = 2:4;
+                        runs.runsToIgnore = 1;
+                end % subject 
+        end
     otherwise
         error('case not ready yet');
 end % study
