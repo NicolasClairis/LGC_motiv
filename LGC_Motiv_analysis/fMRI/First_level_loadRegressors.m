@@ -211,7 +211,12 @@ abs_money_amount_unchosen = abs(money_amount_unchosen);
 
 switch task_fullName
     case 'physical'
-        [latency, AUC, forcePeak, AUC_overshoot] = extract_grip_force(subBehaviorFolder, sub_nm, run_nm);
+        [latency_tmp, AUC_tmp, forcePeak_tmp, AUC_overshoot_tmp] = extract_grip_force(subBehaviorFolder, sub_nm, run_nm);
+        latency = latency_tmp.allTrials;
+        AUC = AUC_tmp.allTrials;
+        forcePeak = forcePeak_tmp.allTrials;
+        AUC_overshoot = AUC_overshoot_tmp.allTrials;
+        % extract fatigue
         fatigue = NaN(1,n_trials);
         for iTrial = 1:n_trials
             if iTrial == 1
@@ -221,11 +226,15 @@ switch task_fullName
             end
         end
     case 'mental'
-        [~, ~, n_errors, RT_avg,...
+        [~, ~, n_errors_tmp, RT_avg_tmp,...
             ~,...
             ~,...
-            efficacy_with2first,...
-            efficacy_pureNback] = extract_mental_perf(subBehaviorFolder, sub_nm, run_nm);
+            efficacy_with2first_tmp,...
+            efficacy_pureNback_tmp] = extract_mental_perf(subBehaviorFolder, sub_nm, run_nm);
+        n_errors = n_errors_tmp.allTrials;
+        RT_avg = RT_avg_tmp.allTrials;
+        efficacy_with2first = efficacy_with2first_tmp.allTrials;
+        efficacy_pureNback = efficacy_pureNback_tmp.allTrials;
         [prevEfficacy_with2first,...
             prevEfficacy_pureNback] = deal(NaN(1,n_trials));
         for iTrial = 1:n_trials
