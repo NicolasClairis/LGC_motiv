@@ -67,206 +67,159 @@ if exist('subj_scan_folders_names','var') && ~isempty(subj_scan_folders_names)
                     [subj_scan_folders_names] = clear_topup_fromFileList(subj_scan_folders_names);
             end
         case 'study1'
+            %% remove runs with acquisition problem
             % in any case, you should remove run 1 from subject 017 and 074
             % and run 3 from subject 040 because fMRI crashed and/or
             % subject crashed the fMRI
             switch sub_nm
-                case {'017'} % remove run 1 (not enough trials because fMRI crashed)
-                    sub017_run1_toRemove = '2_007_run1_20220104';
-                    if strcmp(subj_scan_folders_names(1,:),sub017_run1_toRemove)
-                        subj_scan_folders_names(1,:) = [];
-                        disp(['run 1 named ',sub017_run1_toRemove,' got removed for CID',sub_nm]);
-                    else
-                        error(['file corresponding to run 1 could not be identified for CID',sub_nm,...
-                            '. please fix it and remove it before going further in the analysis.']);
-                    end
-                case {'040'} % remove runs 3 and 4 (run3 crashed in the middle and run 4 never executed)
-                    sub040_run3_toRemove = '2_009_run3_20220304';
-                    if strcmp(subj_scan_folders_names(3,:),sub040_run3_toRemove)
-                        subj_scan_folders_names(3,:) = [];
-                        disp(['run 3 named ',sub040_run3_toRemove,' got removed for CID',sub_nm]);
-                    else
-                        error(['file corresponding to run 3 could not be identified for CID',sub_nm,...
-                            '. please fix it and remove it before going further in the analysis.']);
-                    end
-                case {'043'}
-                    sub043_run1_toRemove = '2_007_run1_20220531';
-                    if strcmp(subj_scan_folders_names(1,:),sub043_run1_toRemove)
-                        subj_scan_folders_names(1,:) = [];
-                        disp(['run 1 named ',sub043_run1_toRemove,' got removed for CID',sub_nm]);
-                    else
-                        error(['file corresponding to run 1 could not be identified for CID',sub_nm,...
-                            '. please fix it and remove it before going further in the analysis.']);
-                    end
-                case {'074'} % remove run 1 (not enough trials because fMRI crashed)
-                    sub074_run1_toRemove = '3_007_run1_20211102';
-                    if strcmp(subj_scan_folders_names(1,:),sub074_run1_toRemove)
-                        subj_scan_folders_names(1,:) = [];
-                        disp(['run 1 named ',sub074_run1_toRemove,' got removed for CID',sub_nm]);
-                    else
-                        error(['file corresponding to run 1 could not be identified for CID',sub_nm,...
-                            '. please fix it and remove it before going further in the analysis.']);
-                    end
-            end % subject
+                case {'017','040','043','074'}
+                    removalReason = 'problem during the fMRI acquisition';
+                    switch sub_nm
+                        case {'017'} % remove run 1 (not enough trials because fMRI crashed)
+                            nRunToRemove = 1;
+                            run_nm_toRemove = {'2_007_run1_20220104'};
+                        case {'040'} % remove runs 3 and 4 (run3 crashed in the middle and run 4 never executed)
+                            nRunToRemove = 3;
+                            run_nm_toRemove = {'2_009_run3_20220304'};
+                        case {'043'}
+                            nRunToRemove = 1;
+                            run_nm_toRemove = {'2_007_run1_20220531'};
+                        case {'074'} % remove run 1 (not enough trials because fMRI crashed)
+                            nRunToRemove = 1;
+                            run_nm_toRemove = {'3_007_run1_20211102'};
+                    end % subject
+                    [subj_scan_folders_names] = badRunsClearing(nRunToRemove, run_nm_toRemove,...
+                        subj_scan_folders_names, sub_nm, removalReason);
+            end
+            %% filter runs with behavioral saturation
+            if strcmp(condition,'fMRI_noSatTask')
+                removalReason = 'saturation';
+                switch sub_nm
+                    case {'002','005','012','027','032','047','048','052',...
+                            '076','095','100'}
+                        switch sub_nm
+                            case '002'
+                                nRunToRemove = 3;
+                                run_nm_toRemove = {'2_009_run3_20220222'};
+                            case '005'
+                                nRunToRemove = 4;
+                                run_nm_toRemove = {'2_010_run4_2022_0506'};
+                            case '012'
+                                nRunToRemove = 4;
+                                run_nm_toRemove = {'2_010_run4_20221021'};
+                            case '027'
+                                nRunToRemove = [4,2];
+                                run_nm_toRemove = {'2_010_run4_20220624',...
+                                    '2_008_run2_20220624'};
+                            case '032'
+                                nRunToRemove = 3;
+                                run_nm_toRemove = {'1_009_run3_20220428'};
+                            case '047'
+                                nRunToRemove = [4,2,1];
+                                run_nm_toRemove = {'2_010_run4_20220311',...
+                                    '2_008_run2_20220311',...
+                                    '2_007_run1_20220311'};
+                            case '048'
+                                nRunToRemove = 2;
+                                run_nm_toRemove = {'3_008_run2_20220518'};
+                            case '052'
+                                nRunToRemove = [3,1];
+                                run_nm_toRemove = {'2_010_run3_20220216'};
+                            case '076'
+                                nRunToRemove = 4;
+                                run_nm_toRemove = {'2_010_run4_20220420'};
+                            case '095'
+                                nRunToRemove = [4,2];
+                                run_nm_toRemove = {'2_010_run4_20211119',...
+                                    '2_008_run2_20211119'};
+                            case '100'
+                                nRunToRemove = [4,3];
+                                run_nm_toRemove = {'2_010_run4_20220324',...
+                                    '2_009_run3_20220324'};
+                        end % subject filter
+                        [subj_scan_folders_names] = badRunsClearing(nRunToRemove, run_nm_toRemove,...
+                            subj_scan_folders_names, sub_nm, removalReason);
+                end % subject filter
+            end % filter for saturation
             
             %% filter runs with too much movement
             if strcmp(condition,'fMRI_no_move')
+                removalReason = 'too much movement';
                 switch sub_nm
-                    case '018'
-                        sub018_run3_toRemove = '2_009_run3_20220426';
-                        if strcmp(subj_scan_folders_names(3,:),sub018_run3_toRemove)
-                            subj_scan_folders_names(3,:) = [];
-                            disp(['run3 named ',sub018_run3_toRemove,' got removed for CID',sub_nm,...
-                                ' because of too much movement.']);
-                        else
-                            error(['file corresponding to run 3 could not be identified for CID',sub_nm,...
-                                '. please fix it and remove it before going further in the analysis.']);
-                        end
-                    case '029'
-                        sub029_run4_toRemove = '2_010_run4_20220310';
-                        if strcmp(subj_scan_folders_names(4,:),sub029_run4_toRemove)
-                            subj_scan_folders_names(4,:) = [];
-                            disp(['run4 named ',sub029_run4_toRemove,' got removed for CID',sub_nm,...
-                                ' because of too much movement.']);
-                        else
-                            error(['file corresponding to run 4 could not be identified for CID',sub_nm,...
-                                '. please fix it and remove it before going further in the analysis.']);
-                        end
-                    case '044'
-                        sub044_run2_toRemove = '3_008_run2_20220408';
-                        sub044_run4_toRemove = '3_010_run4_20220408';
-                        % remove run 4 first
-                        if strcmp(subj_scan_folders_names(4,:),sub044_run4_toRemove)
-                            subj_scan_folders_names(4,:) = [];
-                            disp(['run4 named ',sub044_run4_toRemove,' got removed for CID',sub_nm,...
-                                ' because of too much movement.']);
-                        else
-                            error(['file corresponding to run 4 could not be identified for CID',sub_nm,...
-                                '. please fix it and remove it before going further in the analysis.']);
-                        end
-                        % remove run 2 secondly
-                        if strcmp(subj_scan_folders_names(2,:),sub044_run2_toRemove)
-                            subj_scan_folders_names(2,:) = [];
-                            disp(['run2 named ',sub044_run2_toRemove,' got removed for CID',sub_nm,...
-                                ' because of too much movement.']);
-                        else
-                            error(['file corresponding to run 2 could not be identified for CID',sub_nm,...
-                                '. please fix it and remove it before going further in the analysis.']);
-                        end
-                    case '047'
-                        sub047_run3_toRemove = '2_009_run3_20220311';
-                        if strcmp(subj_scan_folders_names(3,:),sub047_run3_toRemove)
-                            subj_scan_folders_names(3,:) = [];
-                            disp(['run3 named ',sub047_run3_toRemove,' got removed for CID',sub_nm,...
-                                ' because of too much movement.']);
-                        else
-                            error(['file corresponding to run 3 could not be identified for CID',sub_nm,...
-                                '. please fix it and remove it before going further in the analysis.']);
-                        end
-                    case '054'
-                        sub054_run2_toRemove = '2_008_run2_20220208';
-                        sub054_run4_toRemove = '2_010_run4_20220208';
-                        % remove run 4 first
-                        if strcmp(subj_scan_folders_names(4,:),sub054_run4_toRemove)
-                            subj_scan_folders_names(4,:) = [];
-                            disp(['run4 named ',sub054_run4_toRemove,' got removed for CID',sub_nm,...
-                                ' because of too much movement.']);
-                        else
-                            error(['file corresponding to run 4 could not be identified for CID',sub_nm,...
-                                '. please fix it and remove it before going further in the analysis.']);
-                        end
-                        % remove run 2 secondly
-                        if strcmp(subj_scan_folders_names(2,:),sub054_run2_toRemove)
-                            subj_scan_folders_names(2,:) = [];
-                            disp(['run2 named ',sub054_run2_toRemove,' got removed for CID',sub_nm,...
-                                ' because of too much movement.']);
-                        else
-                            error(['file corresponding to run 2 could not be identified for CID',sub_nm,...
-                                '. please fix it and remove it before going further in the analysis.']);
-                        end
-                    case '065'
-                        sub065_run3_toRemove = '2_009_run3_20220119';
-                        if strcmp(subj_scan_folders_names(3,:),sub065_run3_toRemove)
-                            subj_scan_folders_names(3,:) = [];
-                            disp(['run3 named ',sub065_run3_toRemove,' got removed for CID',sub_nm,...
-                                ' because of too much movement.']);
-                        else
-                            error(['file corresponding to run 3 could not be identified for CID',sub_nm,...
-                                '. please fix it and remove it before going further in the analysis.']);
-                        end
-                    case '071'
-                        sub071_run2_toRemove = '2_008_run2_20220405';
-                        sub071_run4_toRemove = '2_010_run4_20220405';
-                        % remove run 4 first
-                        if strcmp(subj_scan_folders_names(4,:),sub071_run4_toRemove)
-                            subj_scan_folders_names(4,:) = [];
-                            disp(['run4 named ',sub071_run4_toRemove,' got removed for CID',sub_nm,...
-                                ' because of too much movement.']);
-                        else
-                            error(['file corresponding to run 4 could not be identified for CID',sub_nm,...
-                                '. please fix it and remove it before going further in the analysis.']);
-                        end
-                        % remove run 2 secondly
-                        if strcmp(subj_scan_folders_names(2,:),sub071_run2_toRemove)
-                            subj_scan_folders_names(2,:) = [];
-                            disp(['run2 named ',sub071_run2_toRemove,' got removed for CID',sub_nm,...
-                                ' because of too much movement.']);
-                        else
-                            error(['file corresponding to run 2 could not be identified for CID',sub_nm,...
-                                '. please fix it and remove it before going further in the analysis.']);
-                        end
-                    case '076'
-                        sub076_run1_toRemove = '2_007_run1_20220420';
-                        if strcmp(subj_scan_folders_names(1,:),sub076_run1_toRemove)
-                            subj_scan_folders_names(1,:) = [];
-                            disp(['run1 named ',sub076_run1_toRemove,' got removed for CID',sub_nm,...
-                                ' because of too much movement.']);
-                        else
-                            error(['file corresponding to run 1 could not be identified for CID',sub_nm,...
-                                '. please fix it and remove it before going further in the analysis.']);
-                        end
-                    case '087'
-                        sub087_run2_toRemove = '2_008_run2_20211215';
-                        sub087_run3_toRemove = '2_009_run3_20211215';
-                        sub087_run4_toRemove = '2_010_run4_20211215';
-                        % remove run 4 first
-                        if strcmp(subj_scan_folders_names(4,:),sub087_run4_toRemove)
-                            subj_scan_folders_names(4,:) = [];
-                            disp(['run4 named ',sub087_run4_toRemove,' got removed for CID',sub_nm,...
-                                ' because of too much movement.']);
-                        else
-                            error(['file corresponding to run 4 could not be identified for CID',sub_nm,...
-                                '. please fix it and remove it before going further in the analysis.']);
-                        end
-                        % remove run 3 first
-                        if strcmp(subj_scan_folders_names(3,:),sub087_run3_toRemove)
-                            subj_scan_folders_names(3,:) = [];
-                            disp(['run3 named ',sub087_run3_toRemove,' got removed for CID',sub_nm,...
-                                ' because of too much movement.']);
-                        else
-                            error(['file corresponding to run 3 could not be identified for CID',sub_nm,...
-                                '. please fix it and remove it before going further in the analysis.']);
-                        end
-                        % remove run 2 secondly
-                        if strcmp(subj_scan_folders_names(2,:),sub087_run2_toRemove)
-                            subj_scan_folders_names(2,:) = [];
-                            disp(['run2 named ',sub087_run2_toRemove,' got removed for CID',sub_nm,...
-                                ' because of too much movement.']);
-                        else
-                            error(['file corresponding to run 2 could not be identified for CID',sub_nm,...
-                                '. please fix it and remove it before going further in the analysis.']);
-                        end
-                    case '093'
-                        sub093_run1_toRemove = '2_007_run1_20220309';
-                        if strcmp(subj_scan_folders_names(1,:),sub093_run1_toRemove)
-                            subj_scan_folders_names(1,:) = [];
-                            disp(['run1 named ',sub093_run1_toRemove,' got removed for CID',sub_nm,...
-                                ' because of too much movement.']);
-                        else
-                            error(['file corresponding to run 1 could not be identified for CID',sub_nm,...
-                                '. please fix it and remove it before going further in the analysis.']);
-                        end
-                end % subject
+                    case {'008','021','022','024','029',...
+                            '044','047',...
+                            '053','054','058','062',...
+                            '071','076','078','080','083','087',...
+                            '097','099'}
+                        switch sub_nm
+                            case {'008','022','024'} % too much movement ALL runs
+                                error(['subject ',sub_nm,'should not be included at all']);
+                            case '021'
+                                nRunToRemove = [4,3,2];
+                                run_nm_toRemove = {'2_010_run4_20220519',...
+                                    '2_009_run3_20220519',...
+                                    '2_008_run2_20220519'};
+                            case '029'
+                                nRunToRemove = 4;
+                                run_nm_toRemove = {'2_010_run4_20220310'};
+                            case '044'
+                                nRunToRemove = [4,2];
+                                run_nm_toRemove = {'3_010_run4_20220408',...
+                                    '3_008_run2_20220408'};
+                            case '047'
+                                nRunToRemove = 3;
+                                run_nm_toRemove = {'2_009_run3_20220311'};
+                            case '053'
+                                nRunToRemove = 3;
+                                run_nm_toRemove = {'2_009_run3_20220727'};
+                            case '054'
+                                nRunToRemove = [4,2];
+                                run_nm_toRemove = {'2_010_run4_20220208',...
+                                    '2_008_run2_20220208'};
+                            case '058'
+                                nRunToRemove = [4,2];
+                                run_nm_toRemove = {'3_010_run4_20220621',...
+                                    '3_008_run2_20220621'};
+                            case '062'
+                                nRunToRemove = [4,3,2];
+                                run_nm_toRemove = {'2_010_run4_20220722',...
+                                    '2_009_run3_20220722',...
+                                    '2_008_run2_20220722'};
+                            case '071'
+                                nRunToRemove = [4,2];
+                                run_nm_toRemove = {'2_010_run4_20220405',...
+                                    '2_008_run2_20220405'};
+                            case '076'
+                                nRunToRemove = 1;
+                                run_nm_toRemove = {'2_007_run1_20220420'};
+                            case '078'
+                                nRunToRemove = [4,1];
+                                run_nm_toRemove = {'2_010_run4_20220630',...
+                                    '2_007_run1_20220630'};
+                            case '080'
+                                nRunToRemove = 3;
+                                run_nm_toRemove = {'2_009_run3_20220629'};
+                            case '083'
+                                nRunToRemove = 3;
+                                run_nm_toRemove = {'2_009_run3_20220520'};
+                            case '087'
+                                nRunToRemove = [4,3,2];
+                                run_nm_toRemove = {'2_010_run4_20211215',...
+                                    '2_009_run3_20211215',...
+                                    '2_008_run2_20211215'};
+                            case '097'
+                                nRunToRemove = [4,3,2];
+                                run_nm_toRemove = {'2_010_run4_20220721',...
+                                    '2_009_run3_20220721',...
+                                    '2_008_run2_20220721'};
+                            case '099'
+                                nRunToRemove = [4,2];
+                                run_nm_toRemove = {'1_010_run4_20220705',...
+                                    '1_008_run2_20220705'};
+                        end % subject
+                        [subj_scan_folders_names] = badRunsClearing(nRunToRemove, run_nm_toRemove,...
+                            subj_scan_folders_names, sub_nm, removalReason);
+                end
             end % filter runs with too much movement
     end
 

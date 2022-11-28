@@ -141,6 +141,7 @@ switch study_nm
                 % borderline movement:
                 % 005(run 1, 3 and 4 a little bit of movement)
                 % 012 (run 2)
+                % 018 (run 3)
                 % 022 (all)
                 % 040 (run 4)
                 % 043 (run 2 and run 4)
