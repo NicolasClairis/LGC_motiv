@@ -1,6 +1,6 @@
-function[matlabbatch] = First_level_loadRegressors(matlabbatch, GLMprm, study_nm, sub_nm, sub_idx, iRun,...
+function[matlabbatch] = First_level_loadRegressors(matlabbatch, GLMprm, study_nm, sub_nm, sub_idx, iRun, jRun,...
     subBehaviorFolder, currRunBehaviorFileName, task_fullName, computerRoot)
-% [matlabbatch] = First_level_loadRegressors(matlabbatch, GLMprm, study_nm, sub_nm, sub_idx, iRun,...
+% [matlabbatch] = First_level_loadRegressors(matlabbatch, GLMprm, study_nm, sub_nm, sub_idx, iRun, jRun,...
 %     subBehaviorFolder, currRunBehaviorFileName, task_nm, computer_root)
 %
 % First_level_loadRegressors will load the regressors of interest for each
@@ -17,7 +17,11 @@ function[matlabbatch] = First_level_loadRegressors(matlabbatch, GLMprm, study_nm
 %
 % sub_idx: index for matlabbatch
 %
-% iRun: run number
+% iRun: run number for the batch
+%
+% jRun: actual run number (for the subject) (will be equal to iRun if no
+% bugs, but may be different if some runs are ignored for the current
+% subject)
 %
 % subBehaviorFolder: subject behavioral folder name
 %
@@ -196,7 +200,7 @@ choice_LR = choice_LRandConf;
 choice_LR(choice_LRandConf == -2) = -1;
 choice_LR(choice_LRandConf == 2) = 1;
 % choice = high effort
-run_nm = num2str(iRun);
+run_nm = num2str(jRun); % careful: use jRun for the run name
 [choice_hE] = extract_choice_hE(subBehaviorFolder, sub_nm, run_nm, task_fullName);
 % loading chosen variables
 E_chosen = behavioralDataStruct.(task_behavioral_id).E_chosen;
@@ -267,7 +271,7 @@ Ech_min_Efixed = E_chosen - E_fixedOption;
 money_amount_obtained = behavioralDataStruct.(task_behavioral_id).gain; % could be different from reward chosen (in case of failure) but mostly similar
 win_vs_loss_fbk = money_amount_obtained > 0;
 % load run name
-switch iRun
+switch jRun
     case {1,2}
         run_nm_bis = 'run1';
     case {3,4}

@@ -184,12 +184,12 @@ for iS = 1:NS
         end
         % check that task type matches the one predicted by
         % runs_definition.m script to be sure that all works ok
-        if (strcmp(task_nm,'physical') && ~strcmp(runs.tasks(iRun),'Ep')) ||...
-            (strcmp(task_nm,'mental') && ~strcmp(runs.tasks(iRun),'Em'))
+        if (strcmp(task_nm,'physical') && ~strcmp(runs.tasks(jRun),'Ep')) ||...
+            (strcmp(task_nm,'mental') && ~strcmp(runs.tasks(jRun),'Em'))
             error(['problem with run task type for subject ',sub_nm,' and run ',num2str(jRun)]);
         end
         % perform 1st level
-        matlabbatch = First_level_loadRegressors(matlabbatch, GLMprm, study_nm, sub_nm, sub_idx, iRun,...
+        matlabbatch = First_level_loadRegressors(matlabbatch, GLMprm, study_nm, sub_nm, sub_idx, iRun, jRun,...
             subj_behavior_folder, currRunBehaviorFileNames, task_nm, computerRoot);
         
         %% global run parameters (rp movement file, etc.)
