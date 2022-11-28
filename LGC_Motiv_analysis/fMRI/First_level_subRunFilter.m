@@ -78,7 +78,7 @@ if exist('subj_scan_folders_names','var') && ~isempty(subj_scan_folders_names)
                         case {'017'} % remove run 1 (not enough trials because fMRI crashed)
                             nRunToRemove = 1;
                             run_nm_toRemove = {'2_007_run1_20220104'};
-                        case {'040'} % remove runs 3 and 4 (run3 crashed in the middle and run 4 never executed)
+                        case {'040'} % remove runs 3 (and 4) (run3 crashed in the middle and run 4 never executed)
                             nRunToRemove = 3;
                             run_nm_toRemove = {'2_009_run3_20220304'};
                         case {'043'}
