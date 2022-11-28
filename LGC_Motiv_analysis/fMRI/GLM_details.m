@@ -1474,13 +1474,16 @@ for iEpm = 1:length(Epm)
                 end
 
                 % fatigue
-                switch GLMprm.Eperf.(task_id_nm).(RP_Eperf_nm).(splitE_Eperf_nm).fatigue
-                    case 1
-                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
-                        reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG effort ',RP_Eperf_nm,' ',splitE_Eperf_nm,': fatigue'];
-                        disp([num2str(n_regs.(task_id_nm)),') effort period: fatigue ']);
-                        % if derivative added => add derivatives
-                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                switch task_id_nm
+                    case 'Ep'
+                        switch GLMprm.Eperf.(task_id_nm).(RP_Eperf_nm).(splitE_Eperf_nm).fatigue
+                            case 1
+                                n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                                reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG effort ',RP_Eperf_nm,' ',splitE_Eperf_nm,': fatigue'];
+                                disp([num2str(n_regs.(task_id_nm)),') effort period: fatigue ']);
+                                % if derivative added => add derivatives
+                                n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                        end
                 end
                 
                 % trial number
