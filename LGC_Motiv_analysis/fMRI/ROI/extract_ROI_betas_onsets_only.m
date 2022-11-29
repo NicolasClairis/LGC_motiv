@@ -43,7 +43,7 @@ if ~exist('subject_id','var') || isempty(subject_id)
     end
     [subject_id, NS] = LGCM_subject_selection(study_nm, condition);
 else
-    condition = 'fMRI_noSatTask'; % important for selection of the runs
+    condition = 'fMRI_noSatTaskSub'; % important for selection of the runs
     NS = length(subject_id);
 end
 % store list of subjects
@@ -139,8 +139,15 @@ for iROI = 1:n_ROIs
         sub_nm = subject_id{iS};
         if ~strcmp(sub_nm,'036')
             subj_folder = [fullfile(dataRoot, ['CID',sub_nm]),filesep];
-            sub_fMRI_path = [fullfile(subj_folder, 'fMRI_analysis','functional',...
-                ['preproc_sm_',num2str(preproc_sm_kernel),'mm'],['GLM',GLMstr]),filesep];
+            switch condition
+                case {'fMRI','fMRI_noSatRunSub','fMRI_noSatTaskSub',...
+                        'fMRI_noMoveSub','fMRI_noMoveSub_bis','fMRI_noMoveSub_ter',...
+                        'fMRI_noSatTaskSub_noMove_bis_Sub'}
+                    sub_fMRI_path = [fullfile(subj_folder, 'fMRI_analysis','functional',...
+                        ['preproc_sm_',num2str(preproc_sm_kernel),'mm'],['GLM',GLMstr]),filesep];
+                otherwise
+                    error(['ROI extraction not ready for ',condition,' yet.']);
+            end
             subj_behavior_folder = [subj_folder, 'behavior' filesep];
             [subRuns, n_subRuns] = runs_definition(study_nm, sub_nm, condition);
             

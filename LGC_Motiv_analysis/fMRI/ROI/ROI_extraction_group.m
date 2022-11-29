@@ -160,9 +160,31 @@ for iROI = 1:n_ROIs
     %% loop through subjects for each study
     for iS = 1:NS
         sub_nm = subject_id{iS};
-        sub_fMRI_path = [fullfile(dataRoot,...
-            ['CID',sub_nm], 'fMRI_analysis','functional',...
-            ['preproc_sm_',num2str(preproc_sm_kernel),'mm'],['GLM',GLMstr]),filesep];
+        subPath = fullfile(dataRoot,['CID',sub_nm],...
+            'fMRI_analysis','functional',...
+            ['preproc_sm_',num2str(preproc_sm_kernel),'mm']);
+        switch condition
+                case {'fMRI','fMRI_noSatRunSub','fMRI_noSatTaskSub',...
+                        'fMRI_noMoveSub','fMRI_noMoveSub_bis','fMRI_noMoveSub_ter',...
+                        'fMRI_noSatTaskSub_noMove_bis_Sub'}
+                    sub_fMRI_path = [subPath, filesep,...
+                        ['GLM',GLMstr],filesep];
+            case 'fMRI_noSatTask'
+                sub_fMRI_path = [subPath, filesep,...
+                        ['GLM',GLMstr,'_no_satTask'],filesep];
+            case 'fMRI_noSatRun'
+                sub_fMRI_path = [subPath, filesep,...
+                        ['GLM',GLMstr,'_no_satRun'],filesep];
+            case 'fMRI_noMove_bis'
+                sub_fMRI_path = [subPath, filesep,...
+                        ['GLM',GLMstr,'_noMvmtRun_lenient'],filesep];
+            case 'fMRI_noMove_ter'
+                sub_fMRI_path = [subPath, filesep,...
+                        ['GLM',GLMstr,'_noMmvmtRun_stringent'],filesep];
+            case 'fMRI_noSatTask_noMove_bis'
+                sub_fMRI_path = [subPath, filesep,...
+                        ['GLM',GLMstr,'_no_satTask_noMmvmtRun'],filesep];
+        end
         % extract contrasts for the current subject
         [con_names_currSub] = LGCM_contrasts(study_nm, sub_nm, GLM,...
             computerRoot, preproc_sm_kernel, condition);
@@ -191,9 +213,9 @@ end % roi loop
 [con_avg, con_sem, con_sd] = deal(NaN(n_max_con, n_ROIs));
 for iCon = 1:n_max_con
     for iROI = 1:n_ROIs
-        con_avg(iCon, iROI) = mean(con_vec_all(iCon,:,iROI), 2,'omitnan');
-        con_sem(iCon, iROI) = sem(con_vec_all(iCon, :, iROI), 2);
-        con_sd(iCon, iROI) = std(con_vec_all(iCon, :, iROI), 0, 2,'omitnan');
+        [con_avg(iCon, iROI),...
+            con_sem(iCon, iROI),...
+            con_sd(iCon, iROI)] = mean_sem_sd(con_vec_all(iCon,:,iROI), 2);
     end
 end
 
@@ -210,7 +232,8 @@ for iROI = 1:n_ROIs
 end % ROI loop
 
 %% save all the data
-filename = [ROI_path,beta_or_t_value,'_GLM',GLMstr,'_',num2str(n_ROIs),'ROI_',num2str(NS),'subs'];
+filename = [ROI_path,beta_or_t_value,...
+    '_GLM',GLMstr,'_',num2str(n_ROIs),'ROIs_',num2str(NS),'subs_',condition];
 if ~exist([filename,'.mat'],'file')
         save([filename,'.mat'])
     else
@@ -231,7 +254,8 @@ if fig_disp == 1
             con_avg, con_sem, figConNames.(['fig',num2str(iFig)]), ttest_pval);
         % save image
         cd(ROI_path);
-        img_name = ['GLM',num2str(GLM),'_',beta_or_t_value,'_',conName{iFig},'_',num2str(n_ROIs),'ROIs_',num2str(NS),'_subs.png'];
+        img_name = ['GLM',num2str(GLM),'_',beta_or_t_value,...
+            '_',conName{iFig},'_',num2str(n_ROIs),'ROIs_',num2str(NS),'_subs.png'];
         if exist(img_name,'file') ~= 2
             set(gcf,'PaperPosition',[0 0 1 1]);
             set(gcf,'PaperPositionMode','auto');
