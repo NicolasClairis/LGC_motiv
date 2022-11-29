@@ -67,7 +67,9 @@ con_names = {};
 con_vector = [];
 % define total number of regressors
 % get number of regressors/task*number of runs/task + 1 constant/run
-n_totalRegs = n_regsPerTask.Ep*(runs.nb_runs.Ep) + n_regsPerTask.Em*(runs.nb_runs.Em) + runs.nb_runs.Ep + runs.nb_runs.Em;
+n_totalRegs = n_regsPerTask.Ep*(runs.nb_runs.Ep) +...
+    n_regsPerTask.Em*(runs.nb_runs.Em) +...
+    runs.nb_runs.Ep + runs.nb_runs.Em;
 
 % then compare that n_regs is equal to the total number of betas output
 betaFiles = ls([resultsFolderName,'beta_*.nii']);

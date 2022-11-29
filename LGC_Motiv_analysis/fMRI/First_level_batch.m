@@ -87,8 +87,8 @@ end
 matlabbatch = cell(nb_batch_per_subj*NS,1);
 for iS = 1:NS
     sub_nm = subject_id{iS};
-    % check incompatibility between some GLM and some subjects
-    checkGLM_and_subjectIncompatibility(study_nm, sub_nm, GLMprm);
+    % check incompatibility between some GLM parameters and subject
+    checkGLM_and_subjectIncompatibility(study_nm, sub_nm, condition, GLMprm);
     
     % define working folders
     subj_folder             = [root, filesep, 'CID',sub_nm];
@@ -98,26 +98,12 @@ for iS = 1:NS
     subj_behavior_folder    = [subj_folder, filesep, 'behavior' filesep];
     
     % create folder to store the results for the current subject
-    sm_folderName = [subj_analysis_folder 'functional', filesep,'preproc_sm_',num2str(preproc_sm_kernel),'mm',filesep];
+    sm_folderName = [subj_analysis_folder 'functional', filesep,...
+        'preproc_sm_',num2str(preproc_sm_kernel),'mm',filesep];
     if ~exist(sm_folderName,'dir')
         mkdir(sm_folderName);
     end
-    switch condition
-        case {'fMRI','fMRI_noSatRunSub','fMRI_noSatTaskSub',...
-                'fMRI_noMoveSub','fMRI_noMoveSub_bis','fMRI_noMoveSub_ter',...
-                'fMRI_noSatTaskSub_noMove_bis_Sub'}
-            resultsFolderName = [sm_folderName, 'GLM',num2str(GLM)];
-        case 'fMRI_noSatTask' % saturation runs removed for the full saturated tasks
-            resultsFolderName = [sm_folderName, 'GLM',num2str(GLM),'_no_satTask'];
-        case 'fMRI_noSatRun' % saturation runs removed
-            resultsFolderName = [sm_folderName, 'GLM',num2str(GLM),'_no_satRun'];
-        case 'fMRI_noMove_bis' % any run with movement removed (with some tolerance)
-            resultsFolderName = [sm_folderName, 'GLM',num2str(GLM),'_noMvmtRun_lenient'];
-        case 'fMRI_noMove_ter' % any run with movement removed (even slightest movement removed)
-            resultsFolderName = [sm_folderName, 'GLM',num2str(GLM),'_noMmvmtRun_stringent'];
-        case 'fMRI_noSatTask_noMove_bis' % saturation runs removed for the full saturated tasks
-            resultsFolderName = [sm_folderName, 'GLM',num2str(GLM),'_no_satTask_noMmvmtRun'];
-    end
+    [resultsFolderName] = fMRI_subFolder(sm_folderName, GLM, condition);
     if ~exist(resultsFolderName,'dir')
         mkdir(resultsFolderName);
     else
