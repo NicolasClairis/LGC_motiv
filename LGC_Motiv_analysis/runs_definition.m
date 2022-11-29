@@ -80,8 +80,8 @@ switch study_nm
         %% remove subjects where behavior and fMRI could not be performed => remove runs independently of the condition
         switch sub_nm
             case {'030','049'}
-                error([sub_nm,' should not be included under the condition ',condition,...
-                            ' (tasks not performed).']);
+                error([sub_nm,' should not be included under the condition ''',condition,...
+                            ''' (tasks not performed).']);
             case '040' % fMRI crashed during run 3 and subject was already stressing a lot
                 % => avoid including this run
                 runs.runsToKeep = [1,2];
@@ -174,8 +174,8 @@ switch study_nm
                         runs.runsToKeep = 2:4;
                         runs.runsToIgnore = 1;
                     case '002'
-                        runs.runsToKeep = 3;
-                        runs.runsToIgnore = [1,2,4];
+                        runs.runsToKeep = [1,2,4];
+                        runs.runsToIgnore = 3;
                     case '005'
                         runs.runsToKeep = 1:3;
                         runs.runsToIgnore = 4;

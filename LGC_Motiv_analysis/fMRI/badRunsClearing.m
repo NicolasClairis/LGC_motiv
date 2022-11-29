@@ -1,11 +1,9 @@
-function[subj_scan_folders_names_fixed] = badRunsClearing(nRunToRemove, run_nm_toRemove, subj_scan_folders_names, sub_nm, reason)
-% [subj_scan_folders_names] = badRunsClearing(nRunToRemove, run_nm_toRemove, subj_scan_folders_names, sub_nm, reason)
+function[subj_scan_folders_names_fixed] = badRunsClearing(run_nm_toRemove, subj_scan_folders_names, sub_nm, reason)
+% [subj_scan_folders_names] = badRunsClearing(run_nm_toRemove, subj_scan_folders_names, sub_nm, reason)
 % badRunsClearing will remove the runs that have to be removed from the
 % list
 %
 % INPUTS
-% nRunsToRemove: 1*n vector with index of the runs to remove
-%
 % run_nm_toRemove: cell with list of full names of runs to remove
 %
 % subj_scan_folders_names: cell with list of subject scan folder names for
@@ -19,29 +17,27 @@ function[subj_scan_folders_names_fixed] = badRunsClearing(nRunToRemove, run_nm_t
 % subj_scan_folders_names_fixed: cell with list of subject scan folder
 % names for each run that has to be included after removing the bad ones
 
-
-subj_scan_folders_names_fixed = subj_scan_folders_names;
-
-n_badRuns = size(nRunToRemove,2); % if more than 1 bad run: procede in descending order
-% check first if order is ok
-if n_badRuns > 1
-    isOrderOk = sum(nRunToRemove == sort(nRunToRemove,'descend')) == n_badRuns;
-    if isOrderOk == false
-        error(['Please order runs in descending order for subject ',sub_nm]);
-    end
-end
 %% remove bad runs
+subj_scan_folders_names_fixed = subj_scan_folders_names;
+n_badRuns = size(run_nm_toRemove,2); % if more than 1 bad run: procede in descending order
+j_runs_removed = 0;
 for iRunToRmv = 1:n_badRuns
-    runToRmvNb = nRunToRemove(iRunToRmv);
-    runToRmvNb_nm = num2str(runToRmvNb);
     runToRmv_fullName = run_nm_toRemove{iRunToRmv};
-    if strcmp(subj_scan_folders_names(runToRmvNb,:), runToRmv_fullName)
-        subj_scan_folders_names_fixed(runToRmvNb,:) = [];
-        disp(['run ',runToRmvNb_nm,' named ',runToRmv_fullName,' got removed for CID',sub_nm,...
-            ' because of ',reason,'.']);
-    else
-        error(['file corresponding to run ',runToRmvNb_nm,' could not be identified for CID',sub_nm,...
-            '. please fix it and remove it before going further in the analysis.']);
-    end
+    nRuns = size(subj_scan_folders_names_fixed,1);
+
+    for iRun = 1:nRuns
+        if strcmp(subj_scan_folders_names_fixed(iRun,:), runToRmv_fullName)
+            subj_scan_folders_names_fixed(iRun,:) = [];
+            disp(['run named ',runToRmv_fullName,' got removed for CID',sub_nm,...
+                ' because of ',reason,'.']);
+            j_runs_removed = j_runs_removed + 1;
+        end % remove bad runs
+    end % run loop on all runs to find the one to remove
 end % loop on runs to remove
+
+%% check if all went well
+if j_runs_removed ~= n_badRuns
+    error(['Some runs should have been removed but could not be found for CID',sub_nm,...
+        '. Please check what happened.']); 
+end
 end % function

@@ -77,9 +77,12 @@ switch study_nm
             '080','081','082','083','085','086','087','088',...
             '090','091','093','094','095','097','099','100'};
         %% firstly remove subjects where behavior and fMRI could not be performed:
-        if ~ismember(condition,'fullList')
-            bad_subs1 = ismember(fullSubList,{'030','049'});
-            fullSubList(bad_subs1) = [];
+        switch condition
+            case 'fullList'
+                bad_subs = false(1,length(fullSubList));
+            otherwise
+                bad_subs1 = ismember(fullSubList,{'030','049'});
+                fullSubList(bad_subs1) = [];
         end
         %% initialize the list of subjects to consider
         all_subs = fullSubList;
