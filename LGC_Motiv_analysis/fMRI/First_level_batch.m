@@ -103,10 +103,20 @@ for iS = 1:NS
         mkdir(sm_folderName);
     end
     switch condition
-        case {'fMRI','fMRI_no_move_bis','fMRI_noSatTask'}
+        case {'fMRI','fMRI_noSatRunSub','fMRI_noSatTaskSub',...
+                'fMRI_noMoveSub','fMRI_noMoveSub_bis','fMRI_noMoveSub_ter',...
+                'fMRI_noSatTaskSub_noMove_bis_Sub'}
             resultsFolderName = [sm_folderName, 'GLM',num2str(GLM)];
-        case 'fMRI_no_move'
-            resultsFolderName = [sm_folderName, 'GLM',num2str(GLM),'_no_movementRun'];
+        case 'fMRI_noSatTask' % saturation runs removed for the full saturated tasks
+            resultsFolderName = [sm_folderName, 'GLM',num2str(GLM),'_no_satTask'];
+        case 'fMRI_noSatRun' % saturation runs removed
+            resultsFolderName = [sm_folderName, 'GLM',num2str(GLM),'_no_satRun'];
+        case 'fMRI_noMove_bis' % any run with movement removed (with some tolerance)
+            resultsFolderName = [sm_folderName, 'GLM',num2str(GLM),'_noMvmtRun_lenient'];
+        case 'fMRI_noMove_ter' % any run with movement removed (even slightest movement removed)
+            resultsFolderName = [sm_folderName, 'GLM',num2str(GLM),'_noMmvmtRun_stringent'];
+        case 'fMRI_noSatTask_noMove_bis' % saturation runs removed for the full saturated tasks
+            resultsFolderName = [sm_folderName, 'GLM',num2str(GLM),'_no_satTask_noMmvmtRun'];
     end
     if ~exist(resultsFolderName,'dir')
         mkdir(resultsFolderName);

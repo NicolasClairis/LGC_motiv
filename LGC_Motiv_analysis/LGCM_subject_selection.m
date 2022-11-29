@@ -10,17 +10,39 @@ function[subject_id, NS] = LGCM_subject_selection(study_nm, condition, genderFil
 % 'study2': second study (clinical trial)
 %
 % condition:
-% 'behavior': behavioral files
-% 'behavior_noSatRun': behavior but removing all subjects who saturated 
+% 'fullList': full list of subjects, including those who did not perform
+% the behavioral task and fMRI
+% 'behavior': all subjects (who did perform the behavioral task)
+% 'behavior_noSatRunSub': all subjects but removing all subjects who saturated 
 % completely any of the runs
-% 'behavior_noSatTask': remove subjects who saturated completely one of the
+% 'behavior_noSatTaskSub': all subjects but removing all subjects who saturated 
+% completely any of the tasks (ie the two runs of a given task)
+% 'behavior_noSatRun': like 'behavior' list but saturation runs will be
+% removed from the subjects concerned
+% 'behavior_noSatTask': like 'behavior' list but saturation tasks will be
+% removed from the subjects concerned
+% 'fMRI': all subjects who performed the behavioral task in the fMRI
+% (removing only the runs where fMRI crashed)
+% 'fMRI_noMoveSub': remove subjects with too much movement in ALL runs
+% 'fMRI_noMoveSub_bis': remove subjects with too much movement in ANY run
+% 'fMRI_noMoveSub_ter': remove subjects with too much movement in ANY run,
+% even including borderline movement
+% 'fMRI_noSatTaskSub': remove subjects who saturated completely one of the
 % tasks
-% 'fMRI': all fMRI compatible data
-% 'fMRI_no_move': remove subjects with too much movement in ALL runs
-% 'fMRI_no_move_bis': remove subjects with too much movement in ANY run
-% 'fMRI_noSatTask': remove subjects who saturated completely one of the
-% tasks
-% 'fMRI_noSatRun': remove subjects who saturated completely any of the runs
+% 'fMRI_noSatRunSub': remove subjects who saturated completely any of the
+% runs
+% 'fMRI_noSatTaskSub_noMove_bis_Sub': remove subjects who saturated 
+% completely any of the runs or who moved too much in any run
+% 'fMRI_noSatRun': like 'fMRI' list but saturation runs will be
+% removed from the subjects concerned
+% 'fMRI_noSatTask': like 'fMRI' list but saturation tasks will be
+% removed from the subjects concerned
+% 'fMRI_noMove_bis': like 'fMRI' but runs with too much movement will be
+% removed
+% 'fMRI_noMove_ter': like 'fMRI' but runs with too much movement will be
+% removed (even including borderline movement)
+% 'fMRI_noSatTask_noMove_bis': like 'fMRI' but any run with saturation or
+% too much movement will be removed
 %
 % genderFilter:
 % 'all': by default, include all subjects
@@ -43,7 +65,7 @@ switch study_nm
         subject_id = {'pilot_s1','pilot_s2','pilot_s3'};
         %         subject_id = {'pilot_s1','pilot_s2','pilot_s3'};
     case 'study1'
-        % full list of all subjects included in the study
+        %% full list of all subjects included in the study
         fullSubList = {'001','002','003','004','005','008','009',...
             '011','012','013','015','017','018','019',...
             '020','021','022','024','027','029',...
@@ -54,22 +76,28 @@ switch study_nm
             '071','072','073','074','075','076','078','079',...
             '080','081','082','083','085','086','087','088',...
             '090','091','093','094','095','097','099','100'};
-        % firstly remove subjects where behavior and fMRI could not be performed:
-        bad_subs1 = ismember(fullSubList,{'030','049'});
-        fullSubList(bad_subs1) = [];
-        % initialize the list of subjects to consider
+        %% firstly remove subjects where behavior and fMRI could not be performed:
+        if ~ismember(condition,'fullList')
+            bad_subs1 = ismember(fullSubList,{'030','049'});
+            fullSubList(bad_subs1) = [];
+        end
+        %% initialize the list of subjects to consider
         all_subs = fullSubList;
         
-        % remove some subjects depending on the condition entered as input
+        %% remove some subjects depending on the condition entered as input
         switch condition
-            case {'behavior','fMRI'} % all subjects
-                % for confidence, you should remove saturated subjects
+            case {'behavior','fMRI',...
+                    'behavior_noSatRun','fMRI_noSatRun',...
+                    'behavior_noSatTask','fMRI_noSatTask',...
+                    'fMRI_noMove_bis','fMRI_noMove_ter',...
+                    'fMRI_noSatTask_noMove_bis'} % all subjects
+                % (but removing the bad runs according to condition)
                 bad_subs = false(1,length(fullSubList));
-                warning(['if you want to look at confidence in your GLM, ',...
-                    'you should remove the subjects saturating behavior using ',...
-                    'behavior_noSatRun/fMRI_noSatRun/behavior_noSatTask/fMRI_noSatTask',...
-                    ' conditions to filter.']);
-            case {'behavior_noSatRun','fMRI_noSatRun'}
+            case 'fMRI_noSatRun_noMove_bis'
+                % removing subjects where no run survives after removing
+                % runs with too much movement or saturation
+                bad_subs = ismember(fullSubList,{'047'});
+            case {'behavior_noSatRunSub','fMRI_noSatRunSub'}
                 % remove subjects who saturated the behavioral task in any
                 % run
                 bad_subs = ismember(fullSubList,{'002','005','012',...
@@ -77,6 +105,7 @@ switch study_nm
                     '047','048','052',...
                     '076','095','100'});
                 % subjects with a full task saturated
+                % 027: all ND for Em task (runs 2 and 4)
                 % 047: all ND for Em task (runs 2 and 4) and for Ep run 1
                 % 052: all ND for Em task (runs 1 and 3)
                 % 095: all ND for Ep task (runs 2 and 4)
@@ -89,7 +118,7 @@ switch study_nm
                 % 048: run 2 ND for Em task
                 % 076: run 4 ND for Em task
                 % 100: run 3 (Em) and run 4 (Ep) ND
-            case {'behavior_noSatTask','fMRI_noSatTask'}
+            case {'behavior_noSatTaskSub','fMRI_noSatTaskSub'}
                 % remove subjects for which either mental (Em) or physical
                 % (Ep) task was fully saturated during choices and remove
                 % runs that were saturating if only one saturated
@@ -98,7 +127,7 @@ switch study_nm
                 % 047: all ND for Em task (runs 2 and 4) and for Ep run 1
                 % 052: all ND for Em task (runs 1 and 3)
                 % 095: all ND for Ep task (runs 2 and 4)
-            case 'fMRI_no_move'
+            case 'fMRI_noMoveSub'
                 % ignore subjects with too much movement in ALL runs (runs
                 % with too much movement will be filtered for each subject)
                 bad_subs = ismember(fullSubList,{'008','022','024'});
@@ -106,7 +135,7 @@ switch study_nm
                 % in terms of movement)
                 % for the other subjects, the bad runs should be removed by
                 % First_level_subRunFilter.m
-            case 'fMRI_no_move_bis'
+            case 'fMRI_noMoveSub_bis'
                 % ignore subjects with too much movement in ANY RUN (ie no
                 % filtering of bad runs, but only of bad subjects who had
                 % only bad runs)
@@ -142,8 +171,7 @@ switch study_nm
                 % 005(run 1, 3 and 4 a little bit of movement)
                 % 012 (run 2)
                 % 018 (run 3)
-                % 022 (all)
-                % 040 (run 4)
+                % 040 (run 4 but runs 3 and 4 should be ignored anyway)
                 % 043 (run 2 and run 4)
                 % 050 (run 4)
                 % 052 (run 2),
@@ -162,19 +190,26 @@ switch study_nm
                 % 001, 002, 003, 004, 009, 011, 013, 015, 017, 019, 020, 
                 % 032, 035, 036, 038, 039, 042, 045, 046, 048, 055, 059,
                 % 060, 061, 062, 068, 072, 073, 074, 075, 081, 082, 100
-            case 'fMRI_GLM59'
-                bad_subs = ismember(fullSubList,{'002','005',...
-                    '013','017',...
-                    '022','027',...
-                    '032','038',...
-                    '043','044','047','048',...
-                    '052','054','055','058',...
-                    '062','069',...
-                    '072','074','076','078',...
-                    '081','082','083','088',...
-                    '095','097','100'});
+            case 'fMRI_noMoveSub_ter'
+                % ignore subjects with too much movement in ANY RUN even if
+                % the movement was really scarce
+                bad_subs = ismember(fullSubList,{'005','008',...
+                    '012','018',...
+                    '021','022','024','029',...
+                    '040','043','044','047',...
+                    '050','052','053','054','056','058',...
+                    '062','064','065','069',...
+                    '071','076','078','079',...
+                    '080','083','086','087',...
+                    '090','093','094','095','097','099'});
+            case 'fMRI_noSatTaskSub_noMove_bis_Sub' % remove subjects who 
+                % either saturated a full task or moved too much
+                bad_subs = ismember(fullSubList,{'027','047','052','095',...
+                    '008','022','024'});
+                % '027','047','052','095': one task fully saturated
+                % '008','022','024': too much movement in all runs
         end
-        % remove also based on gender
+        %% split subjects based on gender
         males = {'002','004',...
             '013','017',...
             '020','021','022',...
@@ -203,11 +238,11 @@ switch study_nm
             case 'females'
                 bad_subs(ismember(fullSubList, males)) = true;
         end
-        % remove subjects who did behavior but not fMRI
+        %% remove subjects who did behavior but not fMRI
         if strcmp(condition(1:4),'fMRI')
             bad_subs(ismember(fullSubList,{'034','091'})) = true;
         end
-        % remove irrelevant subjects from the current analysis
+        %% remove irrelevant subjects from the current analysis
         all_subs(bad_subs) = [];
 
         %% restrict to subjects of interest
