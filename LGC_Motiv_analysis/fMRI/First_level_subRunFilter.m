@@ -88,6 +88,12 @@ if exist('subj_scan_folders_names','var') && ~isempty(subj_scan_folders_names)
                                 case '052'
                                     run_nm_toRemove = {'2_010_run3_20220216',...
                                         '2_008_run1_20220216'};
+                                case '069'
+                                    run_nm_toRemove = {'2_010_run4_20220414',...
+                                        '2_008_run2_20220414'};
+                                case '076'
+                                    run_nm_toRemove = {'2_010_run4_20220420',...
+                                        '2_008_run2_20220420'};
                                 case '095'
                                     run_nm_toRemove = {'2_010_run4_20211119',...
                                         '2_008_run2_20211119'};
@@ -99,11 +105,17 @@ if exist('subj_scan_folders_names','var') && ~isempty(subj_scan_folders_names)
                 case 'fMRI_noSatRun'
                     removalReason = 'saturation';
                     switch sub_nm
-                        case {'002','005','012','027','032','047','048','052',...
-                                '076','095','100'}
+                        case {'002','004','005','012','027',...
+                                '032','038','044','047','048',...
+                                '052','054','055','058',...
+                                '062','069',...
+                                '076','081','083','088',...
+                                '095','097','100'}
                             switch sub_nm
                                 case '002'
                                     run_nm_toRemove = {'2_009_run3_20220222'};
+                                case '004'
+                                    run_nm_toRemove = {'2_009_run3_20220902'};
                                 case '005'
                                     run_nm_toRemove = {'2_010_run4_20220506'};
                                 case '012'
@@ -113,6 +125,10 @@ if exist('subj_scan_folders_names','var') && ~isempty(subj_scan_folders_names)
                                         '2_008_run2_20220624'};
                                 case '032'
                                     run_nm_toRemove = {'1_009_run3_20220428'};
+                                case '038'
+                                    run_nm_toRemove = {'3_008_run2_20220701'};
+                                case '044'
+                                    run_nm_toRemove = {'3_009_run3_20220408'};
                                 case '047'
                                     run_nm_toRemove = {'2_010_run4_20220311',...
                                         '2_008_run2_20220311',...
@@ -122,11 +138,31 @@ if exist('subj_scan_folders_names','var') && ~isempty(subj_scan_folders_names)
                                 case '052'
                                     run_nm_toRemove = {'2_010_run3_20220216',...
                                         '2_008_run1_20220216'};
+                                case '054'
+                                    run_nm_toRemove = {'2_007_run1_20220208'};
+                                case '055'
+                                    run_nm_toRemove = {'2_010_run4_20220202'};
+                                case '058'
+                                    run_nm_toRemove = {'3_010_run4_20220621'};
+                                case '062'
+                                    run_nm_toRemove = {'2_009_run3_20220722'};
+                                case '069'
+                                    run_nm_toRemove = {'2_010_run4_20220414',...
+                                        '2_008_run2_20220414'};
                                 case '076'
-                                    run_nm_toRemove = {'2_010_run4_20220420'};
+                                    run_nm_toRemove = {'2_010_run4_20220420',...
+                                        '2_008_run2_20220420'};
+                                case '081'
+                                    run_nm_toRemove = {'2_009_run3_20220107'};
+                                case '083'
+                                    run_nm_toRemove = {'2_010_run4_20220520'};
+                                case '088'
+                                    run_nm_toRemove = {'2_010_run4_20220512'};
                                 case '095'
                                     run_nm_toRemove = {'2_010_run4_20211119',...
                                         '2_008_run2_20211119'};
+                                case '097'
+                                    run_nm_toRemove = {'2_007_run1_20220721'};
                                 case '100'
                                     run_nm_toRemove = {'2_010_run4_20220324',...
                                         '2_009_run3_20220324'};
@@ -309,7 +345,7 @@ if exist('subj_scan_folders_names','var') && ~isempty(subj_scan_folders_names)
                     switch sub_nm
                         case {'008','021','022','024','029',...
                                 '044','047',...
-                                '053','054','058','062',...
+                                '053','054','058','062','069',...
                                 '071','076','078','080','083','087',...
                                 '097','099'}
                             switch sub_nm
@@ -346,11 +382,15 @@ if exist('subj_scan_folders_names','var') && ~isempty(subj_scan_folders_names)
                                     run_nm_toRemove = {'2_010_run4_20220722',...
                                         '2_009_run3_20220722',...
                                         '2_008_run2_20220722'};
+                                case '069'
+                                    run_nm_toRemove = {'2_010_run4_20220414',...
+                                        '2_008_run2_20220414'};
                                 case '071'
                                     run_nm_toRemove = {'2_010_run4_20220405',...
                                         '2_008_run2_20220405'};
                                 case '076'
-                                    run_nm_toRemove = {'2_007_run1_20220420'};
+                                    run_nm_toRemove = {'2_010_run4_20220420',...
+                                        '2_008_run2_20220420'};
                                 case '078'
                                     run_nm_toRemove = {'2_010_run4_20220630',...
                                         '2_007_run1_20220630'};
@@ -380,19 +420,23 @@ if exist('subj_scan_folders_names','var') && ~isempty(subj_scan_folders_names)
                 case 'fMRI_noSatRun_noMove_bis'
                     removalReason = 'too much movement or saturated run';
                     switch sub_nm
-                        case {'002','005','008',...
+                        case {'002','004','005','008',...
                                 '012',...
                                 '021','022','024','027','029',...
-                                '032',...
+                                '032','038',...
                                 '044','047','048',...
-                                '052','053','054','058','062',...
-                                '071','076','078','080','083','087',...
+                                '052','053','054','055','058',...
+                                '062','069',...
+                                '071','076','078',...
+                                '080','081','083','087','088',...
                                 '095','097','099','100'}
                             switch sub_nm
-                                case {'008','022','024','047'} % bad in ALL runs
+                                case {'008','022','024','047','097'} % bad in ALL runs
                                     error(['subject ',sub_nm,'should not be included at all']);
                                 case '002'
                                     run_nm_toRemove = {'2_009_run3_20220222'};
+                                case '004'
+                                    run_nm_toRemove = {'2_009_run3_20220902'};
                                 case '005'
                                     run_nm_toRemove = {'2_010_run4_20220506'};
                                 case '012'
@@ -408,8 +452,11 @@ if exist('subj_scan_folders_names','var') && ~isempty(subj_scan_folders_names)
                                     run_nm_toRemove = {'2_010_run4_20220310'};
                                 case '032'
                                     run_nm_toRemove = {'1_009_run3_20220428'};
+                                case '038'
+                                    run_nm_toRemove = {'3_002_run2_20220701'};
                                 case '044'
                                     run_nm_toRemove = {'3_010_run4_20220408',...
+                                        '3_009_run3_20220408',...
                                         '3_008_run2_20220408'};
                                 case '048'
                                     run_nm_toRemove = {'3_008_run2_20220518'};
@@ -420,7 +467,10 @@ if exist('subj_scan_folders_names','var') && ~isempty(subj_scan_folders_names)
                                     run_nm_toRemove = {'2_009_run3_20220727'};
                                 case '054'
                                     run_nm_toRemove = {'2_010_run4_20220208',...
-                                        '2_008_run2_20220208'};
+                                        '2_008_run2_20220208'
+                                        '2_007_run1_20220208'};
+                                case '055'
+                                    run_nm_toRemove = {'2_010_run4_20220202'};
                                 case '058'
                                     run_nm_toRemove = {'3_010_run4_20220621',...
                                         '3_008_run2_20220621'};
@@ -428,30 +478,35 @@ if exist('subj_scan_folders_names','var') && ~isempty(subj_scan_folders_names)
                                     run_nm_toRemove = {'2_010_run4_20220722',...
                                         '2_009_run3_20220722',...
                                         '2_008_run2_20220722'};
+                                case '069'
+                                    run_nm_toRemove = {'2_010_run4_20220414',...
+                                        '2_008_run2_20220414'};
                                 case '071'
                                     run_nm_toRemove = {'2_010_run4_20220405',...
                                         '2_008_run2_20220405'};
                                 case '076'
                                     run_nm_toRemove = {'2_010_run4_20220420',...
+                                        '2_008_run2_20220420',...
                                         '2_007_run1_20220420'};
                                 case '078'
                                     run_nm_toRemove = {'2_010_run4_20220630',...
                                         '2_007_run1_20220630'};
                                 case '080'
                                     run_nm_toRemove = {'2_009_run3_20220629'};
+                                case '081'
+                                    run_nm_toRemove = {'2_009_run3_20220107'};
                                 case '083'
-                                    run_nm_toRemove = {'2_009_run3_20220520'};
+                                    run_nm_toRemove = {'2_010_run4_20220520',...
+                                        '2_009_run3_20220520'};
                                 case '087'
                                     run_nm_toRemove = {'2_010_run4_20211215',...
                                         '2_009_run3_20211215',...
                                         '2_008_run2_20211215'};
+                                case '088'
+                                    run_nm_toRemove = {'2_010_run4_20220512'};
                                 case '095'
                                     run_nm_toRemove = {'2_010_run4_20211119',...
                                         '2_008_run2_20211119'};
-                                case '097'
-                                    run_nm_toRemove = {'2_010_run4_20220721',...
-                                        '2_009_run3_20220721',...
-                                        '2_008_run2_20220721'};
                                 case '099'
                                     run_nm_toRemove = {'1_010_run4_20220705',...
                                         '1_008_run2_20220705'};
