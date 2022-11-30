@@ -77,19 +77,24 @@ if exist('subj_scan_folders_names','var') && ~isempty(subj_scan_folders_names)
                 case 'fMRI_noSatTask'
                     removalReason = 'task saturation';
                     switch sub_nm
-                        case '027'
-                            run_nm_toRemove = {'2_010_run4_20220624',...
-                                '2_008_run2_20220624'};
-                        case '047'
-                            run_nm_toRemove = {'2_010_run4_20220311',...
-                                '2_008_run2_20220311'};
-                        case '052'
-                            run_nm_toRemove = {'2_010_run3_20220216',...
-                                '2_008_run1_20220216'};
-                        case '095'
-                            run_nm_toRemove = {'2_010_run4_20211119',...
-                                '2_008_run2_20211119'};
-                    end
+                        case {'027','047','052','095'}
+                            switch sub_nm
+                                case '027'
+                                    run_nm_toRemove = {'2_010_run4_20220624',...
+                                        '2_008_run2_20220624'};
+                                case '047'
+                                    run_nm_toRemove = {'2_010_run4_20220311',...
+                                        '2_008_run2_20220311'};
+                                case '052'
+                                    run_nm_toRemove = {'2_010_run3_20220216',...
+                                        '2_008_run1_20220216'};
+                                case '095'
+                                    run_nm_toRemove = {'2_010_run4_20211119',...
+                                        '2_008_run2_20211119'};
+                            end % subject individual
+                            [subj_scan_folders_names] = badRunsClearing(run_nm_toRemove,...
+                                subj_scan_folders_names, sub_nm, removalReason);
+                    end % subject group
                     %% remove any run with saturation
                 case 'fMRI_noSatRun'
                     removalReason = 'saturation';
@@ -128,7 +133,9 @@ if exist('subj_scan_folders_names','var') && ~isempty(subj_scan_folders_names)
                                 otherwise
                                     error([sub_nm,' is missing.'])
                             end % subject filter
-                    end % subject filter
+                            [subj_scan_folders_names] = badRunsClearing(run_nm_toRemove,...
+                                subj_scan_folders_names, sub_nm, removalReason);
+                    end % subject group
 
                     %% filter runs with too much movement (lenient)
                 case 'fMRI_noMove_bis'
@@ -189,7 +196,9 @@ if exist('subj_scan_folders_names','var') && ~isempty(subj_scan_folders_names)
                                     run_nm_toRemove = {'1_010_run4_20220705',...
                                         '1_008_run2_20220705'};
                             end % subject
-                    end % subject
+                            [subj_scan_folders_names] = badRunsClearing(run_nm_toRemove,...
+                                subj_scan_folders_names, sub_nm, removalReason);
+                    end % subject group
                     %% filter too much movement (stringent)
                 case 'fMRI_noMove_ter'
                     removalReason = 'too much movement';
@@ -291,6 +300,8 @@ if exist('subj_scan_folders_names','var') && ~isempty(subj_scan_folders_names)
                                     run_nm_toRemove = {'1_010_run4_20220705',...
                                         '1_008_run2_20220705'};
                             end % individual subject
+                            [subj_scan_folders_names] = badRunsClearing(run_nm_toRemove,...
+                                subj_scan_folders_names, sub_nm, removalReason);
                     end % subject group
                     %% remove saturated tasks AND movement
                 case 'fMRI_noSatTask_noMove_bis'
@@ -362,6 +373,8 @@ if exist('subj_scan_folders_names','var') && ~isempty(subj_scan_folders_names)
                                     run_nm_toRemove = {'1_010_run4_20220705',...
                                         '1_008_run2_20220705'};
                             end % subject
+                            [subj_scan_folders_names] = badRunsClearing(run_nm_toRemove,...
+                                subj_scan_folders_names, sub_nm, removalReason);
                     end % subject group
                     %% remove saturated runs AND movement
                 case 'fMRI_noSatRun_noMove_bis'
@@ -446,10 +459,10 @@ if exist('subj_scan_folders_names','var') && ~isempty(subj_scan_folders_names)
                                     run_nm_toRemove = {'2_010_run4_20220324',...
                                         '2_009_run3_20220324'};
                             end % subject
+                            [subj_scan_folders_names] = badRunsClearing(run_nm_toRemove,...
+                                subj_scan_folders_names, sub_nm, removalReason);
                     end % subject group
             end % condition
-            [subj_scan_folders_names] = badRunsClearing(run_nm_toRemove,...
-                subj_scan_folders_names, sub_nm, removalReason);
     end % study
 else
     %     subj_scan_folders_names = [];
