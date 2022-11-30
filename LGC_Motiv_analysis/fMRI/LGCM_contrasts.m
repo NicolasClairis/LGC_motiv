@@ -41,19 +41,9 @@ switch study_nm
         root = fullfile(computer_root,'study2');
 end
 subj_folder             = [root, filesep, 'CID',sub_nm];
-subj_analysis_folder    = [subj_folder, filesep, 'fMRI_analysis' filesep];
-switch condition
-    case {'fMRI','fMRI_no_move_bis','fMRI_noSatTask','fMRI_noSatRun','fMRI_GLM59'}
-        resultsFolderName = [subj_analysis_folder 'functional', filesep,...
-            'preproc_sm_',num2str(preproc_sm_kernel),'mm', filesep,...
-            'GLM',num2str(GLM),filesep];
-    case 'fMRI_no_move'
-        resultsFolderName = [subj_analysis_folder 'functional', filesep,...
-            'preproc_sm_',num2str(preproc_sm_kernel),'mm', filesep,...
-            'GLM',num2str(GLM),'_no_movementRun',filesep];
-    otherwise
-        error(['condition ',condition,' not planned. Please add it']);
-end
+subj_analysis_folder    = [subj_folder, filesep, 'fMRI_analysis' filesep,...
+    'functional',filesep,'preproc_sm_',num2str(preproc_sm_kernel),'mm',filesep];
+[resultsFolderName] = fMRI_subFolder(subj_analysis_folder, GLM, condition);
 
 %% extract GLM informations
 [reg_names, n_regsPerTask] = GLM_details(GLM);
