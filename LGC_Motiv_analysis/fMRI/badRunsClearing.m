@@ -25,7 +25,7 @@ for iRunToRmv = 1:n_badRuns
     runToRmv_fullName = run_nm_toRemove{iRunToRmv};
     nRuns = size(subj_scan_folders_names_fixed,1);
 
-    for iRun = 1:nRuns
+    for iRun = nRuns:(-1):1
         if strcmp(subj_scan_folders_names_fixed(iRun,:), runToRmv_fullName)
             subj_scan_folders_names_fixed(iRun,:) = [];
             disp(['run named ',runToRmv_fullName,' got removed for CID',sub_nm,...
