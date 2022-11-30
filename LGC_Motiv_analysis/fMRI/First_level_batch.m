@@ -124,6 +124,12 @@ for iS = 1:NS
     
     %% load fMRI data
     subj_scan_folders_names = ls([subj_scans_folder, filesep, '*run*']); % takes all functional runs folders
+    % check if extraction worked
+    if ~exist('subj_scan_folders_names','var') ||...
+            isempty(subj_scan_folders_names)
+        error(['The fMRI files could not be extracted. ',...
+            'Check the name of the files maybe there is something wrong there.']);
+    end
     % clear files that should not be taken into account in the first level
     % analysis
     [subj_scan_folders_names] = First_level_subRunFilter(study_nm, sub_nm,...

@@ -465,9 +465,7 @@ if exist('subj_scan_folders_names','var') && ~isempty(subj_scan_folders_names)
             end % condition
     end % study
 else
-    %     subj_scan_folders_names = [];
-    %% check if extraction worked
-    error('The fMRI files could not be extracted. Check the name of the files maybe there is something wrong there.');
+    subj_scan_folders_names = [];
 end % subj_scan_folders_names correction
 
 %% fix index of the run
