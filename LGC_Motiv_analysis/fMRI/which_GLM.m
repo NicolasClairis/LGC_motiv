@@ -2136,7 +2136,8 @@ switch GLM
             for iRP = 1:length(RP_conds) % loop through R/P conditions
                 RP_nm = RP_conds{iRP};
                 GLMprm.Eperf.(Epm_nm).(RP_nm).E.money_chosen = 4;
-                GLMprm.Eperf.(Epm_nm).(RP_nm).E.E_chosen = 1;
+                GLMprm.Eperf.Ep.(RP_nm).E.F_integral = 1;
+                GLMprm.Eperf.Em.(RP_nm).E.efficacy = 2;
             end
             % feedback
             GLMprm.model_onset.(Epm_nm).fbk = 'boxcar';
