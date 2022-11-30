@@ -59,19 +59,19 @@ for iS = 1:NS
     sub_nm = subject_id{iS};
     sub_nm_bis = ['CID',sub_nm];
     cd([studyRoot, filesep, sub_nm_bis, filesep,'behavior']);
-    [choiceND_perRun_tmp] = choiceNDproportion_perRun(sub_nm, figIndivDisp);
+    [choiceND_percentage_perRun_tmp] = choiceNDproportion_perRun(sub_nm, figIndivDisp);
     for iRun = 1:nRuns
         run_nm = ['run',num2str(iRun)];
-        choiceND_perRun.(run_nm)(iS) = choiceND_perRun_tmp.(run_nm);
+        choiceND_perRun.(run_nm)(iS) = choiceND_percentage_perRun_tmp.(run_nm);
         
         % extract name of subject if subject saturated
-        if choiceND_perRun_tmp.(run_nm) == 100 % always took non-default option
+        if choiceND_percentage_perRun_tmp.(run_nm) >= 95 % always took non-default option
             if sum(strcmp(saturationSubs.allSat.subList, sub_nm)) == 0 % add subject to the list
                 saturationSubs.allSat.subList{iS} = sub_nm;
                 saturationSubs.fullNonDef.subList{iS} = sub_nm;
             end
             saturationSubs.satRunsPerSub.(sub_nm_bis).(run_nm) = 'all_ND';
-        elseif choiceND_perRun_tmp.(run_nm) == 0 % always took the default option
+        elseif choiceND_percentage_perRun_tmp.(run_nm) <= 5 % always took the default option
             if sum(strcmp(saturationSubs.allSat.subList, sub_nm)) == 0 % add subject to the list
                 saturationSubs.allSat.subList{iS} = sub_nm;
                 saturationSubs.fullDef.subList{iS} = sub_nm;
@@ -84,7 +84,7 @@ for iS = 1:NS
         task_nm = task_names{iPM};
         for iRun = 1:nRunPerTask
             runPerTask_nm = ['run',num2str(iRun)];
-            choiceND_perRun.(task_nm).(runPerTask_nm)(iS) = choiceND_perRun_tmp.(task_nm).(runPerTask_nm);
+            choiceND_perRun.(task_nm).(runPerTask_nm)(iS) = choiceND_percentage_perRun_tmp.(task_nm).(runPerTask_nm);
         end % run/task loop
     end % physical/mental loop
 end % subject loop
