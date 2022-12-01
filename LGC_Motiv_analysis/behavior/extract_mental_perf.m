@@ -109,8 +109,14 @@ for iTrial = 1:nTrialsPerRun
         RTtotal_pureNback.allTrials(iTrial) = trialEnd_tmp - trialNbackStart_tmp;
     end
     %% extract efficacy
-    efficacy_with2first.allTrials(iTrial) = (n_correct.allTrials(iTrial) - n_errors.allTrials(iTrial))./RTtotal_with2firstUseless.allTrials(iTrial);
-    efficacy_pureNback.allTrials(iTrial) = (n_correct.allTrials(iTrial) - n_errors.allTrials(iTrial))./RTtotal_pureNback.allTrials(iTrial);
+    if (length(onset_names_tmp) < 3) || (n_correct.allTrials(iTrial) < 0) % shitty performance
+        n_correct.allTrials(iTrial) = 0;
+        efficacy_with2first.allTrials(iTrial) = 0;
+        efficacy_pureNback.allTrials(iTrial) = 0;
+    else
+        efficacy_with2first.allTrials(iTrial) = (n_correct.allTrials(iTrial) - n_errors.allTrials(iTrial))./RTtotal_with2firstUseless.allTrials(iTrial);
+        efficacy_pureNback.allTrials(iTrial) = (n_correct.allTrials(iTrial) - n_errors.allTrials(iTrial))./RTtotal_pureNback.allTrials(iTrial);
+    end
 end % trial loop
 
 %% split by effort level and effort chosen
