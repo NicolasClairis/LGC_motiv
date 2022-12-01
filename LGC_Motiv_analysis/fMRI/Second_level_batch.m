@@ -187,7 +187,7 @@ for iCon = 1:n_con
         % check incompatibility between some GLM and some subjects to see
         % if you need to redefine the list of subjects included in the
         % analysis
-        checkGLM_and_subjectIncompatibility(study_nm, sub_nm, GLMprm);
+        checkGLM_and_subjectIncompatibility(study_nm, sub_nm, condition, GLMprm);
         
         switch condition
             case {'fMRI','fMRI_noSatRunSub','fMRI_noSatTaskSub',...
