@@ -99,13 +99,14 @@ for iTrial = 1:nTrialsPerRun
     %% extract average RT for all answers after the 2 first aimed at initializing the trial
     RT_avg.allTrials(iTrial) = mean(behaviorStruct.summary.perfSummary{1,iTrial}.rt(1,3:end),2,'omitnan');
     %% extract time spent to do the effort
-    RTtotal_with2firstUseless.allTrials(iTrial) = behaviorStruct.summary.perfSummary{1,iTrial}.totalTime_success;
     onset_names_tmp = fieldnames(behaviorStruct.summary.perfSummary{1,iTrial}.onsets);
     if ~isempty(onset_names_tmp) && sum(strcmp(onset_names_tmp,'nb_3')) == 1
-        trialStart_tmp = behaviorStruct.summary.perfSummary{1,iTrial}.onsets.nb_3;
+        trialStart_tmp = behaviorStruct.summary.perfSummary{1,iTrial}.onsets.nb_1;
+        trialNbackStart_tmp = behaviorStruct.summary.perfSummary{1,iTrial}.onsets.nb_3; % ignore 2 first useless answers
         trialEnd_tmp = behaviorStruct.summary.perfSummary{1,iTrial}.onsets.(['nb_',num2str(length(onset_names_tmp))]) +...
             behaviorStruct.summary.perfSummary{1,iTrial}.rt(end);
-        RTtotal_pureNback.allTrials(iTrial) = trialEnd_tmp - trialStart_tmp;
+        RTtotal_with2firstUseless.allTrials(iTrial) = trialEnd_tmp - trialStart_tmp;
+        RTtotal_pureNback.allTrials(iTrial) = trialEnd_tmp - trialNbackStart_tmp;
     end
     %% extract efficacy
     efficacy_with2first.allTrials(iTrial) = (n_correct.allTrials(iTrial) - n_errors.allTrials(iTrial))./RTtotal_with2firstUseless.allTrials(iTrial);
