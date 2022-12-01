@@ -55,6 +55,7 @@ task_names = {'Ep','Em'};
 [saturationSubs.allSat.subList,...
     saturationSubs.fullNonDef.subList,...
     saturationSubs.fullDef.subList] = deal(cell(1,NS));
+percSaturationThreshold = 95;
 for iS = 1:NS
     sub_nm = subject_id{iS};
     sub_nm_bis = ['CID',sub_nm];
@@ -65,15 +66,19 @@ for iS = 1:NS
         choiceND_perRun.(run_nm)(iS) = choiceND_percentage_perRun_tmp.(run_nm);
         
         % extract name of subject if subject saturated
-        if choiceND_percentage_perRun_tmp.(run_nm) >= 95 % always took non-default option
+        if choiceND_percentage_perRun_tmp.(run_nm) >= percSaturationThreshold % always took non-default option
             if sum(strcmp(saturationSubs.allSat.subList, sub_nm)) == 0 % add subject to the list
                 saturationSubs.allSat.subList{iS} = sub_nm;
+            end
+            if sum(strcmp(saturationSubs.fullNonDef.subList, sub_nm)) == 0 % add subject to the list
                 saturationSubs.fullNonDef.subList{iS} = sub_nm;
             end
             saturationSubs.satRunsPerSub.(sub_nm_bis).(run_nm) = 'all_ND';
-        elseif choiceND_percentage_perRun_tmp.(run_nm) <= 5 % always took the default option
+        elseif choiceND_percentage_perRun_tmp.(run_nm) <= (100-percSaturationThreshold) % always took the default option
             if sum(strcmp(saturationSubs.allSat.subList, sub_nm)) == 0 % add subject to the list
                 saturationSubs.allSat.subList{iS} = sub_nm;
+            end
+            if sum(strcmp(saturationSubs.fullDef.subList, sub_nm)) == 0 % add subject to the list
                 saturationSubs.fullDef.subList{iS} = sub_nm;
             end
             saturationSubs.satRunsPerSub.(sub_nm_bis).(run_nm) = 'all_Def';
