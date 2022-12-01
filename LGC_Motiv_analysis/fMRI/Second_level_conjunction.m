@@ -1,4 +1,4 @@
-%% conjunction betwnneen two contrasts defined by the user
+% conjunction between two contrasts defined by the user
 
 %% clear
 clear all; close all; clc;
@@ -68,7 +68,8 @@ conResultsFolder = [resultsFolder,filesep,conj_name];
 if ~exist(conResultsFolder,'dir')
     mkdir(conResultsFolder);
 else
-    error([conResultsFolder,' already exists. Please rename folders to avoid confusion.']);
+    error([conResultsFolder,' already exists. ',...
+        'Please rename folders to avoid confusion.']);
 end
 %% initialize
 batch_idx = 0;
@@ -115,14 +116,14 @@ for iCon = 1:nConsForConj
         sub_nm = subject_id{iS};
         subfMRIPath = [studyRoot,filesep,'CID',sub_nm, filesep,...
             'fMRI_analysis',filesep,'functional',filesep,...
-            'preproc_sm_',num2str(preproc_sm_kernel),'mm',filesep,...
-            'GLM',GLM_str, filesep];
+            'preproc_sm_',num2str(preproc_sm_kernel),'mm',filesep];
+        resultsFolderName = fMRI_subFolder(subfMRIPath, GLM, condition);
         if con_idx < 10
-            conlist(iS,iCon) = {[subfMRIPath,'con_000',con_str,'.nii,1']};
+            conlist(iS,iCon) = {[resultsFolderName,'con_000',con_str,'.nii,1']};
         elseif con_idx >= 10 && con_idx < 100
-            conlist(iS,iCon) = {[subfMRIPath,'con_00',con_str,'.nii,1']};
+            conlist(iS,iCon) = {[resultsFolderName,'con_00',con_str,'.nii,1']};
         elseif con_idx >= 100 && con_idx < 1000
-            conlist(iS,iCon) = {[subfMRIPath,'con_0',con_str,'.nii,1']};
+            conlist(iS,iCon) = {[resultsFolderName,'con_0',con_str,'.nii,1']};
         end
     end
 end
