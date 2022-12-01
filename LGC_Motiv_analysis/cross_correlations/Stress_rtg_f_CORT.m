@@ -19,7 +19,7 @@ condition = subject_condition;
 [excelReadGeneralFile] = load_gal_data_bis(study_nm);
 
 %% load cortisol
-[CORT_data] = load_CORT;
+[CORT_data] = load_CORT(study_nm);
 
 %% extract the data for the selected subjects
 nTimePoints = 4;
@@ -46,13 +46,42 @@ for iS = 1:NS
     end
 end % subject loop
 
+%% try to perform a correlation with fixed effects 
+%(ignoring inter-individual differences)
+[megaCORT, megaStressRtg] = deal(NaN(4*NS,1));
+for iS = 1:NS
+    sub_idx = (1:4) + 4*(iS - 1);
+    megaCORT(sub_idx) = CORT(:,iS);
+    megaStressRtg(sub_idx) = stressRtg(:,iS);
+end % subject loop
+okTrials = (~isnan(megaCORT)).*(~isnan(megaStressRtg)) == 1;
+[betas.stressRtg_f_CORT_allTogether,~,stats_tmp] = glmfit(megaCORT(okTrials),...
+            megaStressRtg(okTrials),...
+            'normal');
+pval.stressRtg_f_CORT_allTogether = stats_tmp.p;
+megaCort_ascending = sort(megaCORT(okTrials));
+fitStressRtg_f_megaCort = glmval(betas.stressRtg_f_CORT_allTogether,...
+    megaCort_ascending, 'identity');
+        
+%% correlation across individuals averaging data per subject
+mCort_perSub = mean(CORT,1,'omitnan');
+mStressRtg_perSub = mean(stressRtg,1,'omitnan');
+okSubs = (~isnan(mCort_perSub)).*(~isnan(mStressRtg_perSub)) == 1;
+[betas.avg_stressRtg_f_avg_CORT,~,stats_tmp] = glmfit(mCort_perSub(okSubs),...
+            mStressRtg_perSub(okSubs),...
+            'normal');
+pval.avg_stressRtg_f_avg_CORT = stats_tmp.p;
+mCort_perSub_ascending = sort(mCort_perSub(okSubs));
+fitStressRtg_f_mCort_perSub = glmval(betas.avg_stressRtg_f_avg_CORT,...
+    mCort_perSub_ascending, 'identity');
+
 %% average
 mCORT = mean(CORT,2,'omitnan');
 [mStressRtg,...
     semStressRtg] = mean_sem_sd(stressRtg,2);
 mStressRtg_fit = mean(stressRtg_f_CORT_fit,2,'omitnan');
 
-%% are the betas significant?
+%% are the betas significantly different from zero?
 [~,pval.stressRtg_f_CORT] = ttest(betas.stressRtg_f_CORT(2,:));
 
 %% figures
@@ -61,7 +90,7 @@ lWidth = 3;
 black = [0 0 0];
 grey = [143 143 143]./255;
 
-%% test linear regression
+%% test linear regression per subject averaged (random effects)
 fig;
 
 % STAI-T = f(CORT)
@@ -75,6 +104,40 @@ plot_hdl.Color = black;
 fit_hdl.LineStyle = '--';
 fit_hdl.Color = grey;
 xlabel('Cortisol');
+ylabel('Stress rating');
+legend_size(pSize);
+
+%% test linear regression across all subjects (fixed effects)
+fig;
+
+% STAI-T = f(CORT)
+hold on;
+scatter_hdl = scatter(megaCORT, megaStressRtg);
+fit_hdl = plot(megaCort_ascending, fitStressRtg_f_megaCort);
+
+scatter_hdl.LineWidth = lWidth;
+scatter_hdl.MarkerEdgeColor = black;
+fit_hdl.LineStyle = '--';
+fit_hdl.LineWidth = lWidth;
+fit_hdl.Color = grey;
+xlabel('Cortisol (µg/dL)');
+ylabel('Stress rating');
+legend_size(pSize);
+
+%% test linear regression across all subjects (fixed effects) bis
+fig;
+
+% STAI-T = f(CORT)
+hold on;
+scatter_hdl = scatter(mCort_perSub, mStressRtg_perSub);
+fit_hdl = plot(mCort_perSub_ascending, fitStressRtg_f_mCort_perSub);
+
+scatter_hdl.LineWidth = lWidth;
+scatter_hdl.MarkerEdgeColor = black;
+fit_hdl.LineStyle = '--';
+fit_hdl.LineWidth = lWidth;
+fit_hdl.Color = grey;
+xlabel('Cortisol (µg/dL)');
 ylabel('Stress rating');
 legend_size(pSize);
 
