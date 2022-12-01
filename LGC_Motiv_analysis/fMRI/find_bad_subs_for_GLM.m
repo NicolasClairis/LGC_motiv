@@ -38,7 +38,7 @@ end
 preproc_sm_kernel = 8;
 if ~exist('preproc_sm_kernel','var') || isempty(preproc_sm_kernel)
    preproc_sm_kernel_cell = inputdlg('What smoothing kernel to use for preprocessing?');
-   preproc_sm_kernel = str2num(preproc_sm_kernel_cell{1});
+   preproc_sm_kernel = str2double(preproc_sm_kernel_cell{1});
 end
 
 %% extract GLM if not defined yet
@@ -46,8 +46,9 @@ if ~exist('GLM','var') || isempty(GLM)
    GLM_cell = inputdlg('GLM number?');
    GLM = str2num(GLM_cell{1});
 end
-GLM_path = [filesep, 'fMRI_analysis',filesep,'functional',filesep,...
-    'preproc_sm_',num2str(preproc_sm_kernel),'mm',filesep,'GLM',num2str(GLM),filesep];
+GLM_folder = [filesep, 'fMRI_analysis',filesep,'functional',filesep,...
+    'preproc_sm_',num2str(preproc_sm_kernel),'mm',filesep];
+GLM_path = fMRI_subFolder(GLM_folder,GLM,condition);
 % extract regressors
 [~, n_regsPerTask] = GLM_details(GLM);
 
