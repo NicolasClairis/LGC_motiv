@@ -19,6 +19,16 @@ bayesian_mdl.mdl2.kFp = model_raw.mdl2(5,:);
 bayesian_mdl.mdl2.kFm = model_raw.mdl2(6,:);
 lSub = 7;
 
+% model 3 (bias)
+bayesian_mdl.mdl3.kR = model_raw.mdl3(1,:);
+bayesian_mdl.mdl3.kP = model_raw.mdl3(2,:);
+bayesian_mdl.mdl3.kEp = model_raw.mdl3(3,:);
+bayesian_mdl.mdl3.kEm = model_raw.mdl3(4,:);
+bayesian_mdl.mdl3.kBiasM = model_raw.mdl3(5,:);
+bayesian_mdl.mdl3.kFp = model_raw.mdl3(6,:);
+bayesian_mdl.mdl3.kFm = model_raw.mdl3(7,:);
+lSub = 8;
+
 lSub = input('Which line for subject_id?');
 % define the model data
 model_n = input('Which model number?');

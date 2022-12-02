@@ -1,22 +1,24 @@
 %% extract net value based on bayesian models for each subject, each run 
 % and each trial to be able to perform other analysis later on
 
-%% working directories
-whichPc = 'Lab';
-switch whichPc
-    case 'Lab'
-        gitRoot = fullfile('C:','Users','clairis','Desktop');
-    case 'Home'
-        gitRoot = fullfile('C:','Users','Loco','Documents');
-end
-gitPath = [gitRoot, filesep, 'GitHub',filesep,...
-    'LGC_motiv',filesep,'LGC_Motiv_results',...
-    filesep,'bayesian_modeling', filesep];
-
+clear;
 %% general parameters
 study_nm = 'study1';
 nTrialsPerRun = 54;
 nRuns = 4;
+
+%% working directories
+whichPc = 'home';
+switch whichPc
+    case 'Lab'
+        gitRoot = fullfile('C:','Users','clairis','Desktop');
+    case 'home'
+        gitRoot = fullfile('C:','Users','Loco','Documents');
+end
+gitPath = [gitRoot, filesep, 'GitHub',filesep,...
+    'LGC_motiv',filesep,'LGC_Motiv_results',filesep,...
+    study_nm, filesep,...
+    'bayesian_modeling', filesep];
 
 %% extraction model 1
 model_NV_raw.mdl1 = load([gitPath,'net_values_biais.txt']);
@@ -44,7 +46,7 @@ for iS = 1:NS
     for iRun = 1:nRuns
         run_nm = ['run',num2str(iRun)];
         trial_idx = (1:nTrialsPerRun) + nTrialsPerRun*(iRun - 1);
-        bayesian_deltaNV.mdl2.(run_nm) = NV_data_mdl2(trial_idx);
+        bayesian_deltaNV.mdl2.(['CID',sub_nm]).(run_nm) = NV_data_mdl2(trial_idx);
     end % run loop
 end % subject loop
 

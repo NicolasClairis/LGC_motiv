@@ -297,9 +297,6 @@ for iRP = 1:length(RPconds)
                 GLMprm.chosen.(task_id).(RP_nm).(Esplit_nm).NV_varOption > 0 ||...
                 GLMprm.Eperf.(task_id).(RP_nm).(Esplit_nm).NV_chosen > 0 ||...
                 GLMprm.Eperf.(task_id).(RP_nm).(Esplit_nm).NV_varOption > 0
-            % load net value
-            [~, modelledDataStruct] = logitfit_choices(computerRoot, study_nm, sub_nm,...
-                0, 'levels', 6, 6);
             
             % extract NV model name
             if GLMprm.choice.(task_id).(RP_nm).(Esplit_nm).NV_chosen > 0 ||...
@@ -314,10 +311,17 @@ for iRP = 1:length(RPconds)
             end
             % extract net value
             if strcmp(NV_mdl_nm(1:4),'mdl_') % classic model
+                % load net value
+                [~, modelledDataStruct] = logitfit_choices(computerRoot, study_nm, sub_nm,...
+                    0, 'levels', 6, 6);
                 NV_chosen = modelledDataStruct.NV_chosen.(task_id).(NV_mdl_nm).(run_nm_bis);
                 NV_varOption = modelledDataStruct.NV_varOption.(task_id).(NV_mdl_nm).(run_nm_bis);
             elseif strcmp(NV_mdl_nm(1:14),'bayesianModel_') % bayesian model
-                error('bayesian net value input not ready yet.');
+                bayesianMdl_nm = strrep(NV_mdl_nm,'bayesianModel','mdl');
+                gitResultsFolder = fullfile('C:','Users','clairis','Desktop',...
+                    'GitHub','LGC_motiv','LGC_Motiv_results',study_nm,'bayesian_modeling');
+                [NV_chosen, NV_varOption] = extract_bayesian_mdl(gitResultsFolder, subBehaviorFolder,...
+                    sub_nm, run_nm, task_fullName, bayesianMdl_nm);
             else
                 error(['model with ',NV_mdl_nm,' not ready yet']);
             end
@@ -336,9 +340,6 @@ for iRP = 1:length(RPconds)
                     GLMprm.fbk.(task_id).(RP_nm).(Esplit_nm).confidence == 1
                 confidence = abs(choice_LRandConf) == 2; % 0 when low confidence and 1 when high confidence
             else
-                % load inferred confidence
-                [~, modelledDataStruct] = logitfit_choices(computerRoot, study_nm, sub_nm,...
-                    0, 'levels', 6, 6);
                 % extract NV model name
                 if GLMprm.choice.(task_id).(RP_nm).(Esplit_nm).confidence > 1
                     conf_mdl_nm = GLMprm.choice.(task_id).(RP_nm).(Esplit_nm).conf_mdl;
@@ -351,9 +352,16 @@ for iRP = 1:length(RPconds)
                 end
                 % extract confidence
                 if strcmp(conf_mdl_nm(1:4),'mdl_') % classic model
+                    % load inferred confidence
+                    [~, modelledDataStruct] = logitfit_choices(computerRoot, study_nm, sub_nm,...
+                        0, 'levels', 6, 6);
                     confidence = modelledDataStruct.confidenceFitted.(conf_mdl_nm).(task_id).(run_nm_bis);
                 elseif strcmp(conf_mdl_nm(1:14),'bayesianModel_') % bayesian model
-                    error('bayesian net value input not ready yet.');
+                    bayesianMdl_nm = strrep(NV_mdl_nm,'bayesianModel','mdl');
+                    gitResultsFolder = fullfile('C:','Users','clairis','Desktop',...
+                        'GitHub','LGC_motiv','LGC_Motiv_results',study_nm,'bayesian_modeling');
+                    [~, ~, confidence] = extract_bayesian_mdl(gitResultsFolder, subBehaviorFolder,...
+                        sub_nm, run_nm, task_fullName, bayesianMdl_nm);
                 else
                     error(['model with ',conf_mdl_nm,' not ready yet']);
                 end
