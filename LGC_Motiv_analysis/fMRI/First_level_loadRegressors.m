@@ -357,7 +357,7 @@ for iRP = 1:length(RPconds)
                         0, 'levels', 6, 6);
                     confidence = modelledDataStruct.confidenceFitted.(conf_mdl_nm).(task_id).(run_nm_bis);
                 elseif strcmp(conf_mdl_nm(1:14),'bayesianModel_') % bayesian model
-                    bayesianMdl_nm = strrep(NV_mdl_nm,'bayesianModel','mdl');
+                    bayesianMdl_nm = strrep(conf_mdl_nm,'bayesianModel','mdl');
                     gitResultsFolder = [fullfile('C:','Users','clairis','Desktop',...
                         'GitHub','LGC_motiv','LGC_Motiv_results',study_nm,'bayesian_modeling'),filesep];
                     [~, ~, confidence] = extract_bayesian_mdl(gitResultsFolder, subBehaviorFolder,...
