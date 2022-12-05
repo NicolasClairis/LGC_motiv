@@ -49,7 +49,7 @@ nTasks = length(tasks);
      sd_RT.Ep, sd_RT.Em] = deal(NaN(1,NS));
 
 %% extract behavioral parameters
-[prm] = prm_extraction(subject_id, [], []);
+[prm] = prm_extraction(study_nm, subject_id, [], []);
 parameters = fieldnames(prm);
 parameters(strcmp(parameters,'CID')) = [];
 nPrm = length(parameters);

@@ -13,12 +13,12 @@ bayesian_root = fullfile('C:','Users','clairis','Desktop','GitHub',...
 %% extract behavioral parameters
 %% extract bayesian model
 bayesian_mdlN = '3';
-[bayesian_prm] = prm_extraction(subject_id, 'bayesian', bayesian_mdlN);
+[bayesian_prm] = prm_extraction(study_nm, subject_id, 'bayesian', bayesian_mdlN);
 bayesian_parameters = fieldnames(bayesian_prm);
 
 %% perform simple behavioral model
 simple_mdlN = '3';
-[simpleMdl_prm] = prm_extraction(subject_id, 'simple', simple_mdlN);
+[simpleMdl_prm] = prm_extraction(study_nm, subject_id, 'simple', simple_mdlN);
 simple_parameters = fieldnames(simpleMdl_prm);
 
 %% perform correlation tests
@@ -56,7 +56,7 @@ corr.sEm_bEm = R_sEm_bEm(2,1);
 switch simple_mdlN
     case {'3','4'}
         R_sFp_bFp = corrcoef(simpleMdl_prm.kFp(goodSubs), bayesian_prm.kFp(goodSubs));
-        R_sFm_bFm = corrcoef(simpleMdl_prm.kFm(goodSubs), bayesian_prm.kFm(goodSubs));
+        R_sFm_bFm = corrcoef(simpleMdl_prm.kFm(goodSubs), bayesian_prm.kLm(goodSubs));
         % store into output
         corr.sFp_bFp = R_sFp_bFp(2,1);
         corr.sFm_bFm = R_sFm_bFm(2,1);
