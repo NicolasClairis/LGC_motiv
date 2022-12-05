@@ -8,7 +8,7 @@ nTrialsPerRun = 54;
 nRuns = 4;
 
 %% working directories
-whichPc = 'home';
+whichPc = 'Lab';
 switch whichPc
     case 'Lab'
         gitRoot = fullfile('C:','Users','clairis','Desktop');
@@ -26,19 +26,11 @@ if exist([gitPath, 'bayesian_pChoice_data.mat'],'file')
         'bayesian_pChoice'),'bayesian_pChoice');
 end
 %% extraction model 3
-NVmodel3_data = getfield(load('CID_NV_Proba.mat'),'CID_NV_Proba');
+NVmodel3_data = getfield(load('CID_NV_Proba.mat'),'CID_NV_PROBA');
 NS = size(NVmodel3_data, 2);
-bayesian_pChoice.mdl_3.subject_id = deal(cell(1,NS));
+bayesian_pChoice.mdl_3.subject_id = convert_sub_id_from_num_to_cell(NVmodel3_data(1,:));
 for iS = 1:NS
-    sub_n = NVmodel3_data(1,iS);
-    if sub_n < 10
-        sub_nm = ['00',num2str(sub_n)];
-    elseif sub_n >= 10 && sub_n < 100
-        sub_nm = ['0',num2str(sub_n)];
-    elseif sub_n >= 100
-        sub_nm = num2str(sub_n);
-    end
-    bayesian_pChoice.mdl_3.subject_id{iS} = sub_nm;
+    sub_nm = bayesian_pChoice.mdl_3.subject_id{iS};
     for iRun = 1:nRuns
         run_nm = ['run',num2str(iRun)];
         trial_idx = (1:nTrialsPerRun) + nTrialsPerRun*(iRun - 1) +...
