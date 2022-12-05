@@ -2168,6 +2168,32 @@ switch GLM
             % feedback
             GLMprm.model_onset.(Epm_nm).fbk = 'boxcar';
         end % physical/mental  loop
+    case 74 % look at fatigue during performance + net value high effort option during choice
+        % general parameters
+        GLMprm.gal.orth_vars = 0;
+        GLMprm.gal.zPerRun = 1;
+        % loop per task
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'stick';
+            GLMprm.choice.(Epm_nm).RP.E.NV_mdl = 'bayesianModel_3';
+            GLMprm.choice.(Epm_nm).RP.E.NV_varOption = 1;
+            % chosen option
+            GLMprm.model_onset.(Epm_nm).chosen = 'boxcar';
+            % effort performance (effort execution)
+            GLMprm.model_onset.(Epm_nm).Eperf = 'boxcar';
+            GLMprm.Eperf.(Epm_nm).RPpool = 0; % split R and P events
+            for iRP = 1:length(RP_conds) % loop through R/P conditions
+                RP_nm = RP_conds{iRP};
+                GLMprm.Eperf.Ep.(RP_nm).E.F_integral = 1;
+                GLMprm.Eperf.Em.(RP_nm).E.efficacy = 1;
+                GLMprm.Eperf.Ep.(RP_nm).E.fatigue = 1;
+                GLMprm.Eperf.Em.(RP_nm).E.prevEfficacy = 1;
+            end
+            % feedback
+            GLMprm.model_onset.(Epm_nm).fbk = 'boxcar';
+        end % physical/mental  loop
 end % GLM number
 %% warnings: check compatibility of the GLM parameters entered
 isGLMokCheck(GLMprm);
