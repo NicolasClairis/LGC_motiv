@@ -86,29 +86,49 @@ if runs.nb_runs.Ep > 0
         if ~strcmp(reg_nm,'movement') && ~isempty(reg_nm) % ignore movement regressors (labelled as 'movement') and temporal derivative regressors (empty name)
             
             % run 1
-            run1_Ep_vec = (strcmp(reg_names.Ep, reg_nm).*(Ep_runs(1) == 1)) +...
-                (zeros(1,n_regsPerTask.Em).*(Em_runs(1) == 1));
+            if Ep_runs(1) == 1 && Em_runs(1) == 0
+                run1_Ep_vec = strcmp(reg_names.Ep, reg_nm);
+            elseif Em_runs(1) == 1 && Ep_runs(1) == 0
+                run1_Ep_vec = zeros(1,n_regsPerTask.Em);
+            else
+                error('problem with run 1');
+            end
             
             % run 2
             if runs.nb_runs.Ep + runs.nb_runs.Em >= 2
-                run2_Ep_vec = (strcmp(reg_names.Ep, reg_nm).*(Ep_runs(2) == 1)) +...
-                    (zeros(1,n_regsPerTask.Em).*(Em_runs(2) == 1));
+                if Ep_runs(2) == 1 && Em_runs(2) == 0
+                    run2_Ep_vec = strcmp(reg_names.Ep, reg_nm);
+                elseif Em_runs(2) == 1 && Ep_runs(2) == 0
+                    run2_Ep_vec = zeros(1,n_regsPerTask.Em);
+                else
+                    error('problem with run 2');
+                end
             else
                 run2_Ep_vec = [];
             end
             
             % run 3
             if runs.nb_runs.Ep + runs.nb_runs.Em >= 3
-                run3_Ep_vec =  (strcmp(reg_names.Ep, reg_nm).*(Ep_runs(3) == 1)) +...
-                    (zeros(1,n_regsPerTask.Em).*(Em_runs(3) == 1));
+                if Ep_runs(3) == 1 && Em_runs(3) == 0
+                    run3_Ep_vec =  strcmp(reg_names.Ep, reg_nm);
+                elseif Em_runs(3) == 1 && Ep_runs(3) == 0
+                    run3_Ep_vec = zeros(1,n_regsPerTask.Em);
+                else
+                    error('problem with run 3');
+                end
             else
                 run3_Ep_vec = [];
             end
             
             % run 4
             if runs.nb_runs.Ep + runs.nb_runs.Em == 4
-                run4_Ep_vec =  (strcmp(reg_names.Ep, reg_nm).*(Ep_runs(4) == 1)) +...
-                    (zeros(1,n_regsPerTask.Em).*(Em_runs(4) == 1));
+                if Ep_runs(4) == 1 && Em_runs(4) == 0
+                    run4_Ep_vec =  strcmp(reg_names.Ep, reg_nm);
+                elseif Em_runs(4) == 1 && Ep_runs(4) == 0
+                    run4_Ep_vec = zeros(1,n_regsPerTask.Em);
+                else
+                    error('problem with run 4');
+                end
             else
                 run4_Ep_vec = [];
             end
@@ -141,29 +161,49 @@ if runs.nb_runs.Em > 0
         if ~strcmp(reg_nm,'movement') && ~isempty(reg_nm) % ignore movement regressors (labelled as 'movement') and temporal derivative regressors (empty name)
             
             % run 1
-            run1_Em_vec = (strcmp(reg_names.Em, reg_nm).*(Em_runs(1) == 1)) +...
-                (zeros(1,n_regsPerTask.Ep).*(Ep_runs(1) == 1));
+            if Em_runs(1) == 1 && Ep_runs(1) == 0
+                run1_Em_vec = strcmp(reg_names.Em, reg_nm);
+            elseif Ep_runs(1) == 1 && Em_runs(1) == 0
+                run1_Em_vec = zeros(1,n_regsPerTask.Ep);
+            else
+                error('problem with run 1');
+            end
             
             % run 2
             if runs.nb_runs.Ep + runs.nb_runs.Em >= 2
-                run2_Em_vec = (strcmp(reg_names.Em, reg_nm).*(Em_runs(2) == 1)) +...
-                    (zeros(1,n_regsPerTask.Ep).*(Ep_runs(2) == 1));
+                if Em_runs(2) == 1 && Ep_runs(2) == 0
+                    run2_Em_vec = strcmp(reg_names.Em, reg_nm);
+                elseif Ep_runs(2) == 1 && Em_runs(2) == 0
+                    run2_Em_vec = zeros(1,n_regsPerTask.Ep);
+                else
+                    error('problem with run 2');
+                end
             else
                 run2_Em_vec = [];
             end
             
             % run 3
             if runs.nb_runs.Ep + runs.nb_runs.Em >= 3
-                run3_Em_vec =  (strcmp(reg_names.Em, reg_nm).*(Em_runs(3) == 1)) +...
-                    (zeros(1,n_regsPerTask.Ep).*(Ep_runs(3) == 1));
+                if Em_runs(3) == 1 && Ep_runs(3) == 0
+                    run3_Em_vec =  strcmp(reg_names.Em, reg_nm);
+                elseif Ep_runs(3) == 1 && Em_runs(3) == 0
+                    run3_Em_vec = zeros(1,n_regsPerTask.Ep);
+                else
+                    error('problem with run 3');
+                end
             else
                 run3_Em_vec = [];
             end
             
             % run 4
             if runs.nb_runs.Ep + runs.nb_runs.Em == 4
-                run4_Em_vec =  (strcmp(reg_names.Em, reg_nm).*(Em_runs(4) == 1)) +...
-                    (zeros(1,n_regsPerTask.Ep).*(Ep_runs(4) == 1));
+                if Em_runs(4) == 1 && Ep_runs(4) == 0
+                    run4_Em_vec =  strcmp(reg_names.Em, reg_nm);
+                elseif Ep_runs(4) == 1 && Em_runs(4) == 0
+                    run4_Em_vec = zeros(1,n_regsPerTask.Ep);
+                else
+                    error('problem with run 4');
+                end
             else
                 run4_Em_vec = [];
             end
