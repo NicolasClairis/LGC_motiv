@@ -1,11 +1,13 @@
-function[prm, mdlType, mdlN] = prm_extraction(subject_id, mdlType, mdlN)
-% [prm, mdlType, mdlN] = prm_extraction(subject_id, mdlType, mdlN)
+function[prm, mdlType, mdlN] = prm_extraction(study_nm, subject_id, mdlType, mdlN)
+% [prm, mdlType, mdlN] = prm_extraction(study_nm, subject_id, mdlType, mdlN)
 % prm_extraction will extract the behavioural parameters for the list of
 % subjects entered in input. You will need to select whether you want to
 % use a bayesian or a more simple model approach and which model number you
 % want to use.
 %
 % INPUTS
+% study_nm: study name 'study1'/'study2'
+%
 % subject_id: list of subject identification numbers
 %
 % mdlType: 'bayesian' or 'simple' model (will be asked if not defined in
@@ -28,7 +30,7 @@ whichPc = 'lab'; % 'lab'/'home'
 switch whichPc
     case 'lab'
         bayesian_root = fullfile('C:','Users','clairis','Desktop','GitHub',...
-            'LGC_motiv','LGC_Motiv_results','bayesian_modeling');
+            'LGC_motiv','LGC_Motiv_results',study_nm,'bayesian_modeling');
         computerRoot = [fullfile('E:'),filesep];
     case 'home'
         bayesian_root = fullfile('C:','Users','Loco','Documents','GitHub',...
@@ -54,7 +56,7 @@ end
 if ~exist('mdlN','var') || isempty(mdlN)
     switch mdlType
         case 'bayesian'
-            listPossibleModelNumbers = {'1','2'};
+            listPossibleModelNumbers = {'1','2','3'};
         case 'simple'
             listPossibleModelNumbers = {'1','2','3','4'};
     end
@@ -68,7 +70,7 @@ switch mdlType
     case 'bayesian'
         bayesian_models = getfield(load([bayesian_root,filesep,...
             'behavioral_prm_tmp.mat'],'bayesian_mdl'),'bayesian_mdl');
-        bayesian_mdl = bayesian_models.(['mdl',mdlN]);
+        bayesian_mdl = bayesian_models.(['mdl_',mdlN]);
         parameter_names = fieldnames(bayesian_mdl);
         % remove subject name from the list
         parameter_names(strcmp(parameter_names,'subject_id')) = [];

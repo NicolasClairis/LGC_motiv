@@ -11,7 +11,7 @@ condition = subject_condition();
 [metabolite_allSubs, ROI_nm, metabolite_nm] = metabolite_extraction(study_nm, subject_id);
 
 %% extract behavioral parameters
-prm = prm_extraction(subject_id);
+prm = prm_extraction(study_nm, subject_id);
 parameters = fieldnames(prm);
 
 %% perform GLM and correlation between behavioral parameters and spectroscopy
