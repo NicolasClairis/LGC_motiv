@@ -1448,7 +1448,7 @@ switch GLM
             % feedback
             GLMprm.model_onset.(Epm_nm).fbk = 'boxcar';
             GLMprm.fbk.(Epm_nm).RP.E.win_vs_loss = 1;
-        end % physical/mental  loop
+        end % physical/mental loop
     case 43 % modulation of effort execution by effort level to see if dmPFC
         % general parameters
         GLMprm.gal.orth_vars = 0;
@@ -1473,7 +1473,7 @@ switch GLM
             GLMprm.Eperf.(Epm_nm).RP.E.E_chosen = 1;
             % feedback
             GLMprm.model_onset.(Epm_nm).fbk = 'stick';
-        end % physical/mental  loop
+        end % physical/mental loop
     case 44 % same as GLM43 but to look for effort preparation during chosen option instead of effort execution
         % general parameters
         GLMprm.gal.orth_vars = 0;
@@ -1498,7 +1498,7 @@ switch GLM
             GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
             % feedback
             GLMprm.model_onset.(Epm_nm).fbk = 'stick';
-        end % physical/mental  loop
+        end % physical/mental loop
     case 45 % check chosen - default frame
         % general parameters
         GLMprm.gal.orth_vars = 1;
@@ -1523,7 +1523,7 @@ switch GLM
             GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
             % feedback
             GLMprm.model_onset.(Epm_nm).fbk = 'stick';
-        end % physical/mental  loop
+        end % physical/mental loop
     case 46 % check non-default option during choice
         % general parameters
         GLMprm.gal.orth_vars = 0;
@@ -1552,7 +1552,7 @@ switch GLM
             GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
             % feedback
             GLMprm.model_onset.(Epm_nm).fbk = 'stick';
-        end % physical/mental  loop
+        end % physical/mental loop
     case 47 % same as GLM 46 but pooling R and P trials now to increase power
         % also removed the zscoring of the variables
         % general parameters
@@ -1578,7 +1578,7 @@ switch GLM
             GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
             % feedback
             GLMprm.model_onset.(Epm_nm).fbk = 'stick';
-        end % physical/mental  loop
+        end % physical/mental loop
     case 48 % same as GLM 47 but orthogonalizing variables
         % general parameters
         GLMprm.gal.orth_vars = 1;
@@ -1603,7 +1603,7 @@ switch GLM
             GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
             % feedback
             GLMprm.model_onset.(Epm_nm).fbk = 'stick';
-        end % physical/mental  loop
+        end % physical/mental loop
     case 49 % same as GLM 48 but zscoring variables
         % general parameters
         GLMprm.gal.orth_vars = 1;
@@ -1628,7 +1628,7 @@ switch GLM
             GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
             % feedback
             GLMprm.model_onset.(Epm_nm).fbk = 'stick';
-        end % physical/mental  loop
+        end % physical/mental loop
     case 50 % NVnd/Conf/DT during choice/ Ech anticipation during chosen/Money obtained during feedback
         % general parameters
         GLMprm.gal.orth_vars = 0;
@@ -1655,7 +1655,7 @@ switch GLM
             % feedback
             GLMprm.model_onset.(Epm_nm).fbk = 'stick';
             GLMprm.fbk.(Epm_nm).RP.E.money_obtained = 1;
-        end % physical/mental  loop
+        end % physical/mental loop
     case 51 % same as GLM 50 but decomposing net value in Rnd/End/trialN*End
         % general parameters
         GLMprm.gal.orth_vars = 0;
@@ -1681,7 +1681,7 @@ switch GLM
             % feedback
             GLMprm.model_onset.(Epm_nm).fbk = 'stick';
             GLMprm.fbk.(Epm_nm).RP.E.money_obtained = 1;
-        end % physical/mental  loop
+        end % physical/mental loop
     case 52 % same as GLM 50 but with behavioral model 3 instead of model 4
         % general parameters
         GLMprm.gal.orth_vars = 0;
@@ -1708,7 +1708,7 @@ switch GLM
             % feedback
             GLMprm.model_onset.(Epm_nm).fbk = 'stick';
             GLMprm.fbk.(Epm_nm).RP.E.money_obtained = 1;
-        end % physical/mental  loop
+        end % physical/mental loop
     case 53 % chosen option during choice
         % general parameters
         GLMprm.gal.orth_vars = 0;
@@ -1733,7 +1733,7 @@ switch GLM
             GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
             % feedback
             GLMprm.model_onset.(Epm_nm).fbk = 'stick';
-        end % physical/mental  loop
+        end % physical/mental loop
     case 54 % like GLM45 but with DT as first regressor
         % general parameters
         GLMprm.gal.orth_vars = 1;
@@ -1758,7 +1758,7 @@ switch GLM
             GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
             % feedback
             GLMprm.model_onset.(Epm_nm).fbk = 'stick';
-        end % physical/mental  loop
+        end % physical/mental loop
     case 55 % like GLM45 but replacing confidence model4 by model3
         % general parameters
         GLMprm.gal.orth_vars = 1;
@@ -1783,7 +1783,7 @@ switch GLM
             GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
             % feedback
             GLMprm.model_onset.(Epm_nm).fbk = 'stick';
-        end % physical/mental  loop
+        end % physical/mental loop
     case 56 % like GLM54 but replacing confidence model4 by model3
         % (in other words, like GLM55 but with DT as first regressor)
         % general parameters
@@ -1809,7 +1809,7 @@ switch GLM
             GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
             % feedback
             GLMprm.model_onset.(Epm_nm).fbk = 'stick';
-        end % physical/mental  loop
+        end % physical/mental loop
     case 57 % like GLM55 but no orthogonalization
         % general parameters
         GLMprm.gal.orth_vars = 0;
@@ -1834,7 +1834,7 @@ switch GLM
             GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
             % feedback
             GLMprm.model_onset.(Epm_nm).fbk = 'stick';
-        end % physical/mental  loop
+        end % physical/mental loop
     case 58 % model both choice and E perf
         % general parameters
         GLMprm.gal.orth_vars = 0;
@@ -1856,7 +1856,7 @@ switch GLM
             GLMprm.Eperf.(Epm_nm).RP.E.E_chosen = 1;
             % feedback
             GLMprm.model_onset.(Epm_nm).fbk = 'stick';
-        end % physical/mental  loop
+        end % physical/mental loop
     case 59 % model low vs high effort chosen separately during choice
         % general parameters
         GLMprm.gal.orth_vars = 0;
@@ -1882,7 +1882,7 @@ switch GLM
             GLMprm.Eperf.(Epm_nm).RP.E.E_chosen = 1;
             % feedback
             GLMprm.model_onset.(Epm_nm).fbk = 'boxcar';
-        end % physical/mental  loop
+        end % physical/mental loop
     case 60 % model high effort choice during fixation cross and during choice
         % general parameters
         GLMprm.gal.orth_vars = 0;
@@ -1906,7 +1906,7 @@ switch GLM
             GLMprm.Eperf.(Epm_nm).RP.E.E_chosen = 1;
             % feedback
             GLMprm.model_onset.(Epm_nm).fbk = 'boxcar';
-        end % physical/mental  loop
+        end % physical/mental loop
     case 61 % same as GLM 60 but modeling choice high effort only during pre-choice cross and adding RT during choice
         % general parameters
         GLMprm.gal.orth_vars = 0;
@@ -1930,7 +1930,7 @@ switch GLM
             GLMprm.Eperf.(Epm_nm).RP.E.E_chosen = 1;
             % feedback
             GLMprm.model_onset.(Epm_nm).fbk = 'boxcar';
-        end % physical/mental  loop
+        end % physical/mental loop
     case 62 % model effort chosen during choice and during performance
         % general parameters
         GLMprm.gal.orth_vars = 0;
@@ -1952,7 +1952,7 @@ switch GLM
             GLMprm.Eperf.(Epm_nm).RP.E.E_chosen = 1;
             % feedback
             GLMprm.model_onset.(Epm_nm).fbk = 'stick';
-        end % physical/mental  loop
+        end % physical/mental loop
     case 63 % same as GLM 62 with slight differences (boxcar/stick)
         % general parameters
         GLMprm.gal.orth_vars = 0;
@@ -1974,7 +1974,7 @@ switch GLM
             GLMprm.Eperf.(Epm_nm).RP.E.E_chosen = 1;
             % feedback
             GLMprm.model_onset.(Epm_nm).fbk = 'boxcar';
-        end % physical/mental  loop
+        end % physical/mental loop
     case 64 % onsets-only GLM
         GLMprm.gal.onsets_only = 1;
         % loop per task
@@ -1992,7 +1992,7 @@ switch GLM
             GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
             % feedback
             GLMprm.model_onset.(Epm_nm).fbk = 'boxcar';
-        end % physical/mental  loop
+        end % physical/mental loop
     case 65 % onsets-only GLM but with less events modelled to avoid overlaps
         GLMprm.gal.onsets_only = 1;
         % loop per task
@@ -2004,7 +2004,7 @@ switch GLM
             GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
             % feedback
             GLMprm.model_onset.(Epm_nm).fbk = 'boxcar';
-        end % physical/mental  loop
+        end % physical/mental loop
     case 66 % GLM with Ech during choice and during Eperf
         % general parameters
         GLMprm.gal.orth_vars = 0;
@@ -2024,7 +2024,7 @@ switch GLM
             GLMprm.Eperf.(Epm_nm).RP.E.E_chosen = 1;
             % feedback
             GLMprm.model_onset.(Epm_nm).fbk = 'boxcar';
-        end % physical/mental  loop
+        end % physical/mental loop
     case 67 % same as GLM 66 but with varying effort instead of chosen effort
         % general parameters
         GLMprm.gal.orth_vars = 0;
@@ -2044,7 +2044,7 @@ switch GLM
             GLMprm.Eperf.(Epm_nm).RP.E.E_chosen = 1;
             % feedback
             GLMprm.model_onset.(Epm_nm).fbk = 'boxcar';
-        end % physical/mental  loop
+        end % physical/mental loop
     case 68 % choice = high effort during choice
         % general parameters
         GLMprm.gal.orth_vars = 0;
@@ -2063,7 +2063,7 @@ switch GLM
             GLMprm.Eperf.(Epm_nm).RP.E.E_chosen = 1;
             % feedback
             GLMprm.model_onset.(Epm_nm).fbk = 'boxcar';
-        end % physical/mental  loop
+        end % physical/mental loop
     case 69 % same as GLM 66 but orthogonalizaing variables
         % general parameters
         GLMprm.gal.orth_vars = 1;
@@ -2083,7 +2083,7 @@ switch GLM
             GLMprm.Eperf.(Epm_nm).RP.E.E_chosen = 1;
             % feedback
             GLMprm.model_onset.(Epm_nm).fbk = 'boxcar';
-        end % physical/mental  loop
+        end % physical/mental loop
     case 70 % onsets-only GLM (all events modeled but with a stick, while in GLM 64 some have a boxcar)
         GLMprm.gal.onsets_only = 1;
         % loop per task
@@ -2101,7 +2101,7 @@ switch GLM
             GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
             % feedback
             GLMprm.model_onset.(Epm_nm).fbk = 'stick';
-        end % physical/mental  loop
+        end % physical/mental loop
     case 71 % same as GLM 66 but adding R vs P split of trials
         % general parameters
         GLMprm.gal.orth_vars = 0;
@@ -2122,7 +2122,7 @@ switch GLM
             GLMprm.Eperf.(Epm_nm).RP.E.E_chosen = 1;
             % feedback
             GLMprm.model_onset.(Epm_nm).fbk = 'boxcar';
-        end % physical/mental  loop
+        end % physical/mental loop
     case 72 % GLM to test activation of VS during effort performance
         % general parameters
         GLMprm.gal.orth_vars = 0;
@@ -2147,7 +2147,7 @@ switch GLM
             end
             % feedback
             GLMprm.model_onset.(Epm_nm).fbk = 'boxcar';
-        end % physical/mental  loop
+        end % physical/mental loop
     case 73 % fatigue/learning impact on choice? + performance measure
         % general parameters
         GLMprm.gal.orth_vars = 0;
@@ -2173,7 +2173,7 @@ switch GLM
             end
             % feedback
             GLMprm.model_onset.(Epm_nm).fbk = 'boxcar';
-        end % physical/mental  loop
+        end % physical/mental loop
     case 74 % look at fatigue during performance + net value high effort option during choice
         % general parameters
         GLMprm.gal.orth_vars = 0;
@@ -2195,7 +2195,7 @@ switch GLM
             GLMprm.Eperf.Em.RP.E.prevEfficacy = 1;
             % feedback
             GLMprm.model_onset.(Epm_nm).fbk = 'boxcar';
-        end % physical/mental  loop
+        end % physical/mental loop
 end % GLM number
 %% warnings: check compatibility of the GLM parameters entered
 isGLMokCheck(GLMprm);
