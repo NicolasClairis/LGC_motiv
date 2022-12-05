@@ -179,7 +179,10 @@ function [GLMprm] = which_GLM(GLM)
 %
 %       .(choice/chosen).Em.(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).prevEfficacy:
 %       mental effort only:
-%       (1) efficacy of previous trial
+%       (1) efficacy of previous trial computed as (nb correct answers - nb errors made)/total time of effort
+%       period
+%       (2) efficacy of previous trial computed  as (nb correct answers - nb errors made)/time spent between answer
+%       of second useless number and end of the trial
 %
 %       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).trialN
 %       (1) trial number
@@ -265,7 +268,10 @@ function [GLMprm] = which_GLM(GLM)
 %
 %       .Eperf.Em.(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).prevEfficacy:
 %       mental effort only:
-%       (1) efficacy of previous trial
+%       (1) efficacy of previous trial computed as (nb correct answers - nb errors made)/total time of effort
+%       period
+%       (2) efficacy of previous trial computed  as (nb correct answers - nb errors made)/time spent between answer
+%       of second useless number and end of the trial
 %
 %       .Eperf.(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).trialN
 %       (1) trial number
@@ -2183,14 +2189,10 @@ switch GLM
             GLMprm.model_onset.(Epm_nm).chosen = 'boxcar';
             % effort performance (effort execution)
             GLMprm.model_onset.(Epm_nm).Eperf = 'boxcar';
-            GLMprm.Eperf.(Epm_nm).RPpool = 0; % split R and P events
-            for iRP = 1:length(RP_conds) % loop through R/P conditions
-                RP_nm = RP_conds{iRP};
-                GLMprm.Eperf.Ep.(RP_nm).E.F_integral = 1;
-                GLMprm.Eperf.Em.(RP_nm).E.efficacy = 1;
-                GLMprm.Eperf.Ep.(RP_nm).E.fatigue = 1;
-                GLMprm.Eperf.Em.(RP_nm).E.prevEfficacy = 1;
-            end
+            GLMprm.Eperf.Ep.RP.E.F_integral = 1;
+            GLMprm.Eperf.Em.RP.E.efficacy = 1;
+            GLMprm.Eperf.Ep.RP.E.fatigue = 1;
+            GLMprm.Eperf.Em.RP.E.prevEfficacy = 1;
             % feedback
             GLMprm.model_onset.(Epm_nm).fbk = 'boxcar';
         end % physical/mental  loop
