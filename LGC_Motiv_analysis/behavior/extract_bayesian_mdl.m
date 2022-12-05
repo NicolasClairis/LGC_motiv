@@ -44,4 +44,6 @@ NV_chosen = deltaNV_hE_min_lE.*(choice_highE == 1) -deltaNV_hE_min_lE.*(choice_h
 %% confidence
 pChoice = pChoiceStruct.(mdl_nm).(['CID',sub_nm]).(run_nm_bis);
 confidence = (pChoice - 0.5).^2;
+% normalize confidence to make it between 0 and 1
+confidence = confidence./0.25;
 end % function
