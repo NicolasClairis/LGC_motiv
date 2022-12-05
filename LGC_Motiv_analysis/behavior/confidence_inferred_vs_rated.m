@@ -1,9 +1,9 @@
 function [betas, conf_bins, pval] = confidence_inferred_vs_rated(study_nm, sub_nm,...
-    iModel, n_conf_bins, figDisp)
+    n_conf_bins, figDisp, mdlType, mdl_nm)
 % [betas, conf_bins, pval] = confidence_inferred_vs_rated(study_nm, sub_nm,...
-%     iModel, n_conf_bins, figDisp)
+%     n_conf_bins, figDisp, mdlType, mdl_nm)
 % confidence_inferred_vs_rated will compare confidence inferred by the
-% model 'iModel' for the subject sub_nm in the study study_nm and will
+% model for the subject sub_nm in the study study_nm and will
 % eventually display the corresponding result (if figDisp = 1) 
 %
 % INPUTS
@@ -12,13 +12,16 @@ function [betas, conf_bins, pval] = confidence_inferred_vs_rated(study_nm, sub_n
 %
 % sub_nm: subject name
 %
-% iModel: number of the model to check
-%
 % n_conf_bins: number of bins for confidence
 %
 % figDisp:
 % (0) don't display anything
 % (1) display corresponding figure
+%
+% mdlType: indication about which model type to use 'bayesian'/'simple'
+%
+% mdl_nm: string in the form of 'mdl_X' containing the indication of the
+% model number used
 %
 % OUTPUTS
 % betas: betas for the test confidence rated = f(confidence rated)
@@ -53,8 +56,14 @@ nTrialsPerRun = 54;
 nTotalTrials = nRuns*nTrialsPerRun;
 
 %% extract confidence inferred
-[~, dataInferred] = logitfit_choices(computerRoot, study_nm, sub_nm,...
-    0, 'levels', 6, 6);
+switch mdlType
+    case 'simple'
+        [~, dataInferred] = logitfit_choices(computerRoot, study_nm, sub_nm,...
+            0, 'levels', 6, 6);
+    case 'bayesian'
+        gitResultsFolder = [fullfile('C:','Users','clairis','Desktop',...
+                'GitHub','LGC_motiv','LGC_Motiv_results',study_nm,'bayesian_modeling'),filesep];
+end
 
 %% extract rated and inferred confidence
 [confRatedAllTrials, confInferredAllTrials] = deal(NaN(1,nTotalTrials));
@@ -69,8 +78,14 @@ for iRun = 1:nRuns
     end
     run_trials_idx = (1:nTrialsPerRun) + nTrialsPerRun*(iRun - 1);
     
-    confInferredAllTrials(run_trials_idx) = dataInferred.confidenceFitted.(['mdl_',num2str(iModel)]).(run_nm);
-    
+    switch mdlType
+        case 'simple'
+            confInferredAllTrials(run_trials_idx) = dataInferred.confidenceFitted.(mdl_nm).(run_nm);
+        case 'bayesian'
+            [~, ~, confMdl_tmp] = extract_bayesian_mdl(gitResultsFolder, subBehaviorFolder,...
+                sub_nm, num2str(iRun), task_fullName, mdl_nm);
+            confInferredAllTrials(run_trials_idx) = confMdl_tmp;
+    end
     % load rated confidence
     behaviorStruct_tmp = load([subBehaviorFolder,...
         'CID',sub_nm,'_session',num2str(iRun),'_',task_fullName,...

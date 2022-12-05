@@ -1,8 +1,8 @@
-function[betas, pval] = confidence_inferred_vs_rated_group(study_nm, condition, iModel, n_conf_bins, figGroupDisp)
-% [betas, pval] = confidence_inferred_vs_rated_group(study_nm, condition, iModel, n_conf_bins, figGroupDisp)
+function[betas, pval] = confidence_inferred_vs_rated_group(study_nm, condition, n_conf_bins, figGroupDisp)
+% [betas, pval] = confidence_inferred_vs_rated_group(study_nm, condition, n_conf_bins, figGroupDisp)
 % confidence_inferred_vs_rated_group will compare confidence based on
 % ratings given by the subjects during the choice to the confidence
-% inferred by the model "iModel" according to the formula (pChoice-0.5)^2.
+% inferred by the model according to the formula (pChoice-0.5)^2.
 %
 % INPUTS
 % study_nm: name of the study to look at
@@ -15,8 +15,6 @@ function[betas, pval] = confidence_inferred_vs_rated_group(study_nm, condition, 
 % runs) with saturation
 % 'fMRI': all fMRI compatible data
 % 'fMRI_no_move': remove runs with too much movement
-%
-% iModel: number of the model to check
 %
 % n_conf_bins: number of confidence bins
 %
@@ -32,6 +30,9 @@ function[betas, pval] = confidence_inferred_vs_rated_group(study_nm, condition, 
 %% define subjects
 [subject_id, NS] = LGCM_subject_selection(study_nm, condition);
 
+%% define model to use
+[mdlType, mdlN] = behavioral_model_selection;
+mdl_nm = ['mdl_',mdlN];
 %% general parameters
 % avoid displaying individual figures
 figIndivDisp = 0;
@@ -46,7 +47,7 @@ figIndivDisp = 0;
 for iS = 1:NS
     sub_nm = subject_id{iS};
     [betas_tmp, conf_bins] = confidence_inferred_vs_rated(study_nm, sub_nm,...
-        iModel, n_conf_bins, figIndivDisp);
+        n_conf_bins, figIndivDisp, mdlType, mdl_nm);
     beta_zero(iS) = betas_tmp(1);
     beta_confInferred(iS) = betas_tmp(2);
     % extract bins
@@ -100,7 +101,7 @@ if figGroupDisp == 1
     plotHdl.LineWidth = lWidth;
     
     % define thresholds
-    xlim([0 0.25]);
+    xlim([0 1]);
     ylim([0.6 0.85]);
     
     xlabel('inferred confidence');

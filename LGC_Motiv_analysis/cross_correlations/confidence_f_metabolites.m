@@ -16,13 +16,8 @@ condition = subject_condition();
 [low_met_subs, high_met_subs, metabolite_nm] = medSplit_metabolites(study_nm, subject_id);
 
 %% define behavioral model to use
-mdl_idx = listdlg('PromptString','Which model to use?','ListString',...
-    {'Model 1: kM*Money - kE*Effort',...
-    'Model 2: kR*R + kP*P - kE*E',...
-    'Model 3: kM*Money - kE*E + kF*E*(trialN - 1)',...
-    'Model 4: kR*R + kP*P - kE*E + kF*E*(trialN -1 )'});
-mdl_nm = ['mdl_',num2str(mdl_idx)];
-
+[mdlType, mdlN] = behavioral_model_selection();
+mdl_nm = ['mdl_',mdlN];
 %% main parameters
 nTrialsPerRun = 54;
 nRuns = 4;
@@ -39,8 +34,14 @@ for iS = 1:NS
     [subjectRuns] = runs_definition(study_nm, sub_nm, 'behavior');
 
     % extract confidence inferred and confidence rated
-    [~, dataInferred] = logitfit_choices(computerRoot, study_nm, sub_nm,...
-        0, 'levels', 6, 6);
+    switch mdlType
+        case 'simple'
+            [~, dataInferred] = logitfit_choices(computerRoot, study_nm, sub_nm,...
+                0, 'levels', 6, 6);
+        case 'bayesian'
+            gitResultsFolder = [fullfile('C:','Users','clairis','Desktop',...
+                'GitHub','LGC_motiv','LGC_Motiv_results',study_nm,'bayesian_modeling'),filesep];
+    end
     for iRun = 1:nRuns
         run_nm = ['run',num2str(iRun)];
         if ismember(iRun, subjectRuns.runsToKeep)
@@ -54,7 +55,14 @@ for iS = 1:NS
             run_trial_idx = (1:nTrialsPerRun) + nTrialsPerRun*(nRuns - 1);
 
             % extract inferred confidence
-            conf_inferred(run_trial_idx,iS) = dataInferred.confidenceFitted.(mdl_nm).(run_nm);
+            switch mdlType
+                case 'simple'
+                    conf_inferred(run_trial_idx,iS) = dataInferred.confidenceFitted.(mdl_nm).(run_nm);
+                case 'bayesian'
+                    [~, ~, confidence_run] = extract_bayesian_mdl(gitResultsFolder, subBehaviorFolder,...
+                        sub_nm, num2str(iRun), task_fullName, mdl_nm);
+                    conf_inferred(run_trial_idx,iS) = confidence_run;
+            end
 
             % extract rated confidence
             behaviorStruct_tmp = load([subBehaviorFolder,...
