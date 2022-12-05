@@ -318,8 +318,8 @@ for iRP = 1:length(RPconds)
                 NV_varOption = modelledDataStruct.NV_varOption.(task_id).(NV_mdl_nm).(run_nm_bis);
             elseif strcmp(NV_mdl_nm(1:14),'bayesianModel_') % bayesian model
                 bayesianMdl_nm = strrep(NV_mdl_nm,'bayesianModel','mdl');
-                gitResultsFolder = fullfile('C:','Users','clairis','Desktop',...
-                    'GitHub','LGC_motiv','LGC_Motiv_results',study_nm,'bayesian_modeling');
+                gitResultsFolder = [fullfile('C:','Users','clairis','Desktop',...
+                    'GitHub','LGC_motiv','LGC_Motiv_results',study_nm,'bayesian_modeling'),filesep];
                 [NV_chosen, NV_varOption] = extract_bayesian_mdl(gitResultsFolder, subBehaviorFolder,...
                     sub_nm, run_nm, task_fullName, bayesianMdl_nm);
             else
@@ -358,8 +358,8 @@ for iRP = 1:length(RPconds)
                     confidence = modelledDataStruct.confidenceFitted.(conf_mdl_nm).(task_id).(run_nm_bis);
                 elseif strcmp(conf_mdl_nm(1:14),'bayesianModel_') % bayesian model
                     bayesianMdl_nm = strrep(NV_mdl_nm,'bayesianModel','mdl');
-                    gitResultsFolder = fullfile('C:','Users','clairis','Desktop',...
-                        'GitHub','LGC_motiv','LGC_Motiv_results',study_nm,'bayesian_modeling');
+                    gitResultsFolder = [fullfile('C:','Users','clairis','Desktop',...
+                        'GitHub','LGC_motiv','LGC_Motiv_results',study_nm,'bayesian_modeling'),filesep];
                     [~, ~, confidence] = extract_bayesian_mdl(gitResultsFolder, subBehaviorFolder,...
                         sub_nm, run_nm, task_fullName, bayesianMdl_nm);
                 else

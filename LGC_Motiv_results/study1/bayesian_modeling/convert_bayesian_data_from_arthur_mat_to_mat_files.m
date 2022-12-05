@@ -28,7 +28,7 @@ end
 %% extraction model 3
 NVmodel3_data = getfield(load('CID_NV_Proba.mat'),'CID_NV_Proba');
 NS = size(NVmodel3_data, 2);
-bayesian_deltaNV.mdl3.subject_id = deal(cell(1,NS));
+bayesian_deltaNV.mdl_3.subject_id = deal(cell(1,NS));
 for iS = 1:NS
     sub_n = NVmodel3_data(1,iS);
     if sub_n < 10
@@ -38,11 +38,11 @@ for iS = 1:NS
     elseif sub_n >= 100
         sub_nm = num2str(sub_n);
     end
-    bayesian_deltaNV.mdl3.subject_id{iS} = sub_nm;
+    bayesian_deltaNV.mdl_3.subject_id{iS} = sub_nm;
     for iRun = 1:nRuns
         run_nm = ['run',num2str(iRun)];
         trial_idx = (1:nTrialsPerRun) + nTrialsPerRun*(iRun - 1) + 1; % first line is subject_id
-        bayesian_deltaNV.mdl3.(['CID',sub_nm]).(run_nm) = NVmodel3_data(trial_idx,iS);
+        bayesian_deltaNV.mdl_3.(['CID',sub_nm]).(run_nm) = NVmodel3_data(trial_idx,iS);
     end % run loop
 end % subject loop
 

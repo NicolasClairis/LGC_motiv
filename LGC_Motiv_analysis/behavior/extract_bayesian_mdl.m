@@ -34,14 +34,14 @@ function[NV_chosen, deltaNV_hE_min_lE, confidence, pChoice] = extract_bayesian_m
 %% load data
 deltaNVstruct = getfield(load([resultsFolder,'bayesian_deltaNV_data.mat']),'bayesian_deltaNV');
 pChoiceStruct = getfield(load([resultsFolder,'bayesian_pChoice_data.mat']),'bayesian_pChoice');
-
+run_nm_bis = ['run',run_nm];
 %% choice of low or high effort option?
 [choice_highE] = extract_choice_hE(subBehaviorFolder, sub_nm, run_nm, task_fullName);
 %% extract high effort level
-deltaNV_hE_min_lE = deltaNVstruct.(mdl_nm).(['CID',sub_nm]).(run_nm);
+deltaNV_hE_min_lE = deltaNVstruct.(mdl_nm).(['CID',sub_nm]).(run_nm_bis);
 NV_chosen = deltaNV_hE_min_lE.*(choice_highE == 1) -deltaNV_hE_min_lE.*(choice_highE == 0);
 
 %% confidence
-pChoice = pChoiceStruct.(mdl_nm).(['CID',sub_nm]).(run_nm);
+pChoice = pChoiceStruct.(mdl_nm).(['CID',sub_nm]).(run_nm_bis);
 confidence = (pChoice - 0.5).^2;
 end % function
