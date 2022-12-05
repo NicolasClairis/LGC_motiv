@@ -80,8 +80,8 @@ for iROI = 1:nROIs
         
         %% remove subjects too far (3*SD) from the mean
         % compute the mean and SD across participants
-        mean_met_aSubs = mean(all_met_data, 2, 'omitnan');
-        sd_met_aSubs = std(all_met_data, 0, 2, 'omitnan');
+        mean_met_aSubs = mean(all_met_data, 1, 'omitnan');
+        sd_met_aSubs = std(all_met_data, 0, 1, 'omitnan');
         % identify subjects with metabolite values too far from the SD
         bad_met_subs = (all_met_data > (mean_met_aSubs + (sd_met_aSubs.*3))) |...
             (all_met_data < (mean_met_aSubs - (sd_met_aSubs.*3)));
