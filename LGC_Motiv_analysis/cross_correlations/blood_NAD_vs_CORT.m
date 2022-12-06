@@ -28,7 +28,7 @@ for iS = 1:NS
         bloodMb_nm = bloodMb_names{iMb};
         bloodMb.(bloodMb_nm)(iS) = blood.(bloodMb_nm)(sub_blood_idx);
     end
-    % extract IL data
+    % extract CORT data
     CORT.AUCg(iS) = CORT_data.AUCg(sub_CORT_idx);
 end % subject loop
 
