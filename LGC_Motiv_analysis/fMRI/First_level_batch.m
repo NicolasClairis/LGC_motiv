@@ -1,13 +1,8 @@
-function[] = First_level_batch(GLM, checking, condition)
-%[] = First_level_batch(GLM, checking, condition)
+function[] = First_level_batch(GLM, checking, condition, study_nm, subject_id, NS)
+%[] = First_level_batch(GLM, checking, condition, study_nm, subject_id, NS)
 % First_level_batch will perform 1st level for LGC motivation fMRI studies.
 %
 % INPUTS
-% study_nm: definition of the study on which you want to analyze the data
-% 'fMRI_pilots': pilots
-% 'study1': first study (dmPFC + AI)
-% 'study2': second study (clinical trial)
-%
 % GLM: GLM number
 %
 % checking:
@@ -17,6 +12,18 @@ function[] = First_level_batch(GLM, checking, condition)
 % condition:
 % 'fMRI': all fMRI compatible data
 % 'fMRI_no_move': remove runs with too much movement
+%
+% study_nm: definition of the study on which you want to analyze the data
+% 'fMRI_pilots': pilots
+% 'study1': first study (dmPFC + AI)
+% 'study2': second study (clinical trial)
+% will be asked if not entered in the inputs
+%
+% subject_id: list of subject (determined automatically if not defined in
+% the inputs)
+%
+% NS: number of subjects (determined automatically if not defined in
+% the inputs)
 %
 % See also which_GLM.m, 
 % First_level_loadEachCondition.m, First_level_loadRegressors.m,
@@ -82,7 +89,10 @@ if ~exist('condition','var') ||...
         ~strcmp(condition(1:4),'fMRI')
     condition = subject_condition;
 end
-[subject_id, NS] = LGCM_subject_selection(study_nm, condition);
+if ~exist('subject_id','var') || ~exist('NS','var') ||...
+        isempty(subject_id) || isempty(NS)
+    [subject_id, NS] = LGCM_subject_selection(study_nm, condition);
+end
 %% loop through subjects
 matlabbatch = cell(nb_batch_per_subj*NS,1);
 for iS = 1:NS
