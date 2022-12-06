@@ -1486,15 +1486,15 @@ for iEpm = 1:length(Epm)
                         end
                         
                     case 'Em'
-                    % efficacy during the previous trial (learning boost)
-                    switch GLMprm.Eperf.(task_id_nm).(RP_Eperf_nm).(splitE_Eperf_nm).prevEfficacy
-                        case {1,2}
-                            n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
-                            reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG effort ',RP_Eperf_nm,' ',splitE_Eperf_nm,': previous efficacy'];
-                            disp([num2str(n_regs.(task_id_nm)),') effort period: previous efficacy ']);
-                            % if derivative added => add derivatives
-                            n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
-                    end
+                        % efficacy during the previous trial (learning boost)
+                        switch GLMprm.Eperf.(task_id_nm).(RP_Eperf_nm).(splitE_Eperf_nm).prevEfficacy
+                            case {1,2}
+                                n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                                reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG effort ',RP_Eperf_nm,' ',splitE_Eperf_nm,': previous efficacy'];
+                                disp([num2str(n_regs.(task_id_nm)),') effort period: previous efficacy ']);
+                                % if derivative added => add derivatives
+                                n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                        end
                 end
                 
                 % trial number

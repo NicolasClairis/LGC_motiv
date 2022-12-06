@@ -2213,9 +2213,12 @@ switch GLM
             % effort performance (effort execution)
             GLMprm.model_onset.(Epm_nm).Eperf = 'boxcar';
             GLMprm.Eperf.(Epm_nm).RPpool = 0;
-            GLMprm.Eperf.(Epm_nm).RP.E.money_chosen = 2;
-            GLMprm.Eperf.Ep.RP.E.F_integral = 1;
-            GLMprm.Eperf.Em.RP.E.efficacy = 1;
+            for iRP = 1:length(RP_conds) % loop through R/P conditions
+                RP_nm = RP_conds{iRP};
+                GLMprm.Eperf.(Epm_nm).(RP_nm).E.money_chosen = 2;
+                GLMprm.Eperf.Ep.(RP_nm).E.F_integral = 1;
+                GLMprm.Eperf.Em.(RP_nm).E.efficacy = 1;
+            end
             % feedback
             GLMprm.model_onset.(Epm_nm).fbk = 'boxcar';
         end % physical/mental loop

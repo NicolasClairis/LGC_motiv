@@ -1723,6 +1723,7 @@ if ismember(EperfModel,{'stick','boxcar'})
                     EperfModel_fatigue          = GLMprm.Eperf.(task_id).(RP_Eperf_nm).(splitE_Eperf_nm).fatigue;
                 case 'Em'
                     EperfModel_efficacy         = GLMprm.Eperf.(task_id).(RP_Eperf_nm).(splitE_Eperf_nm).efficacy;
+                    EperfModel_prevEfficacy     = GLMprm.Eperf.(task_id).(RP_Eperf_nm).(splitE_Eperf_nm).prevEfficacy;
                     EperfModel_RT_avg           = GLMprm.Eperf.(task_id).(RP_Eperf_nm).(splitE_Eperf_nm).RT_avg;
                     EperfModel_n_errors         = GLMprm.Eperf.(task_id).(RP_Eperf_nm).(splitE_Eperf_nm).n_errors;
             end
@@ -1922,8 +1923,9 @@ if ismember(EperfModel,{'stick','boxcar'})
                 end
             end
 
-            % fatigue
-            if strcmp(task_id,'Ep')
+            switch task_id
+                case 'Ep'
+                    % physical fatigue
                 if EperfModel_fatigue > 0
                     n_EperfMods = n_EperfMods + 1;
                     Eperf_modNames{n_EperfMods} = 'fatigue';
@@ -1934,7 +1936,22 @@ if ismember(EperfModel,{'stick','boxcar'})
                             error('not ready yet');
                     end
                 end
-            end % physical effort filter
+                case 'Em'
+                    % mental facilitation based on previous trial
+                    % performance
+                    if EperfModel_prevEfficacy > 0
+                        n_EperfMods = n_EperfMods + 1;
+                        Eperf_modNames{n_EperfMods} = 'previous trial efficacy';
+                        switch EperfModel_prevEfficacy
+                            case 1
+                                Eperf_modVals(n_EperfMods,:) = raw_or_z(prevEfficacy_with2first(Eperf_trial_idx));
+                            case 2
+                                Eperf_modVals(n_EperfMods,:) = raw_or_z(prevEfficacy_pureNback(Eperf_trial_idx));
+                            otherwise
+                                error('not ready yet');
+                        end
+                    end
+            end % physical/mental effort filter
             
             % trial number
             if EperfModel_trialN > 0
