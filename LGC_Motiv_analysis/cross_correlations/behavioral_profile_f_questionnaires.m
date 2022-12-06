@@ -82,7 +82,7 @@ for iPrm = 1:n_prm
 end
 legend(bar_hdl_leg, behavioral_prm_names);
 legend('boxoff');
-xticks(x_JPI_R);
+xticks(x_MADRS_S);
 xticklabels({'MADRS-S low','MADRS-S mid','MADRS-S high'});
 xlim([0.4 3.6]);
 ylabel('Parameter');
