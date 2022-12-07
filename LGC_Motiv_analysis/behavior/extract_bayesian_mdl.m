@@ -39,7 +39,8 @@ run_nm_bis = ['run',run_nm];
 [choice_highE] = extract_choice_hE(subBehaviorFolder, sub_nm, run_nm, task_fullName);
 %% extract high effort level
 deltaNV_hE_min_lE = deltaNVstruct.(mdl_nm).(['CID',sub_nm]).(run_nm_bis);
-NV_chosen = deltaNV_hE_min_lE.*(choice_highE == 1) -deltaNV_hE_min_lE.*(choice_highE == 0);
+NV_chosen = deltaNV_hE_min_lE.*(choice_highE' == 1) +...
+    -deltaNV_hE_min_lE.*(choice_highE' == 0);
 
 %% confidence
 pChoice = pChoiceStruct.(mdl_nm).(['CID',sub_nm]).(run_nm_bis);
