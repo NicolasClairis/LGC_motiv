@@ -1,5 +1,5 @@
-function[] = LGCM_contrasts_spm(GLM, checking, condition)
-% [] = LGCM_contrasts_spm(GLM, checking, condition)
+function[] = LGCM_contrasts_spm(GLM, checking, condition, study_nm, subject_id, NS)
+% [] = LGCM_contrasts_spm(GLM, checking, condition, study_nm, subject_id, NS)
 % LGCM_contrasts_spm prepares the batch for SPM to perform the first level
 % contrasts in each individual of the study
 %
@@ -16,7 +16,13 @@ function[] = LGCM_contrasts_spm(GLM, checking, condition)
 % condition:
 % 'fMRI': all fMRI compatible data
 % 'fMRI_no_move': remove runs with too much movement
-
+%
+% subject_id: list of subject (determined automatically if not defined in
+% the inputs)
+%
+% NS: number of subjects (determined automatically if not defined in
+% the inputs)
+%
 close all; clc;
 
 %% working directories
@@ -62,7 +68,10 @@ if ~exist('condition','var') || ~strcmp(condition(1:4),'fMRI')
     condition = subject_condition;
 end
 gender = 'all';
-[subject_id, NS] = LGCM_subject_selection(study_nm, condition, gender);
+if ~exist('subject_id','var') || ~exist('NS','var') ||...
+        isempty(subject_id) || isempty(NS)
+    [subject_id, NS] = LGCM_subject_selection(study_nm, condition, gender);
+end
 %% loop through subjects to extract all the regressors
 matlabbatch = cell(NS,1);
 
