@@ -8,7 +8,7 @@ study_nm = 'study1';
 condition = subject_condition;
 [subject_id, NS] = LGCM_subject_selection(study_nm, condition);
 
-%% load MADRS-S scores
+%% load questionnaire scores
 [excelReadQuestionnairesFile, quest_S_sub_CID_list] = load_questionnaires_data();
 MADRS_S_fullList = excelReadQuestionnairesFile.MADRS_SCorrected;
 JPI_R_fullList = excelReadQuestionnairesFile.JPI_RScore;
