@@ -26,20 +26,20 @@ function[prm, mdlType, mdlN] = prm_extraction(study_nm, subject_id, mdlType, mdl
 % allows to remember which one was selected)
 
 %% working directories
-whichPc = 'lab'; % 'lab'/'home'
+whichPc = 'home'; % 'lab'/'home'
 switch whichPc
     case 'lab'
-        bayesian_root = fullfile('C:','Users','clairis','Desktop','GitHub',...
-            'LGC_motiv','LGC_Motiv_results',study_nm,'bayesian_modeling');
+        gitRoot = fullfile('C:','Users','clairis','Desktop');
         computerRoot = [fullfile('E:'),filesep];
     case 'home'
-        bayesian_root = fullfile('C:','Users','Loco','Documents','GitHub',...
-            'LGC_motiv','LGC_Motiv_results','bayesian_modeling');
+        gitRoot = fullfile('C:','Users','Loco','Documents');
         computerRoot = [fullfile('L:','human_data_private',...
             'raw_data_subject'),filesep];
     otherwise
         error(['paths not ready yet for ',whichPc, 'pc']);
 end
+bayesian_root = fullfile(gitRoot,'GitHub',...
+            'LGC_motiv','LGC_Motiv_results',study_nm,'bayesian_modeling');
 
 %% main parameters
 NS = length(subject_id);
