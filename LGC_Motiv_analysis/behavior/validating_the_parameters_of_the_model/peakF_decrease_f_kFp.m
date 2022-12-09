@@ -19,7 +19,7 @@ kFp = prm.kFp;
 
 %% load slope for peak force decrease with time
 figDisp = 0;
-[b_peakF_perEch_f_time] = peakF_f_time(study_nm, subject_id, figDisp);
+[b_peakF_perEch_f_time] = peakF_f_time(study_nm, subject_id, condition, figDisp);
 
 %% correlate kFp to peak force decrease with time slope
 Ech_levels = 0:3;
@@ -27,10 +27,11 @@ n_Ech_lvl = length(Ech_levels);
 for iEch = Ech_levels
     Ech_nm = ['Ech',num2str(iEch)];
     jEch = iEch + 1;
-    goodSubs.(Ech_nm) = ~isnan(kFp).*(isnan(b_peakF_perEch_f_time(jEch,:))) == 1;
+    goodSubs.(Ech_nm) = (~isnan(kFp)).*(~isnan(b_peakF_perEch_f_time(jEch,:))) == 1;
     [beta.(Ech_nm),~,stats.(Ech_nm)] = glmfit(kFp(goodSubs.(Ech_nm)), b_peakF_perEch_f_time(jEch,goodSubs.(Ech_nm)), 'normal');
-    kFp_sorted.(Ech_nm) = kFp(goodSubs.(Ech_nm));
+    kFp_sorted.(Ech_nm) = sort(kFp(goodSubs.(Ech_nm)));
     b_peakF_fit.(Ech_nm) = glmval(beta.(Ech_nm), kFp_sorted.(Ech_nm), 'identity');
+    pval.(Ech_nm) = stats.(Ech_nm).p;
 end % effort chosen loop
 
 %% figure
@@ -52,7 +53,7 @@ for iEch = Ech_levels
     fit_hdl.LineStyle = '--';
     fit_hdl.Color = grey;
     xlabel('kFp');
-    ylabel({'β peakF decrease with time';...
+    ylabel({'peakF decrease with time';...
         Ech_nm});
     legend_size(pSize);
 end
