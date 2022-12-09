@@ -37,13 +37,11 @@ switch study_nm
         end
     case 'study1'
         switch sub_nm
-            case {'040'} % only performed 1 run of each task
-                runs.tasks = {'Ep','Em'};
             case {'001','002','003','004','005','008','009',...
                     '012','013','015','018','019',...
                     '027',...
                     '030','036','038','039',...
-                    '042','046','047','048',...
+                    '040','042','046','047','048',...
                     '050','053',...
                     '060','064','065','069',...
                     '072','076',...
@@ -724,7 +722,13 @@ switch study_nm
         error('case not ready yet');
 end % study
 
-% update task types depending on the runs to keep
+%% extract index for each task of run kept
+Ep_runsToKeep = strcmp(runs.tasks,'Ep').*ismember(1:4,runs.runsToKeep) == 1;
+Em_runsToKeep = strcmp(runs.tasks,'Em').*ismember(1:4,runs.runsToKeep) == 1;
+runs.Ep.runsToKeep = find(Ep_runsToKeep);
+runs.Em.runsToKeep = find(Em_runsToKeep);
+
+%% update task types depending on the runs to keep
 runs.tasks = runs.tasks(runs.runsToKeep);
 
 %% extract number of runs of each task type
