@@ -10,7 +10,7 @@ function[latency, AUC, forcePeak, AUC_overshoot] = extract_grip_force(subBehavio
 %
 % sub_nm: string with subject CID name
 %
-% run_nm: string with run name
+% run_nm: string with run name (only the number 'X')
 %
 % OUTPUTS
 % latency: estimated time it took for the participant to start squeezing
