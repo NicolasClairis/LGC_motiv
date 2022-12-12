@@ -2222,6 +2222,26 @@ switch GLM
             % feedback
             GLMprm.model_onset.(Epm_nm).fbk = 'boxcar';
         end % physical/mental loop
+    case 76 % look at net value chosen option during choice
+        % general parameters
+        GLMprm.gal.orth_vars = 0;
+        GLMprm.gal.zPerRun = 1;
+        % loop per task
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'stick';
+            GLMprm.choice.(Epm_nm).RP.E.NV_mdl = 'bayesianModel_3';
+            GLMprm.choice.(Epm_nm).RP.E.NV_chosen = 1;
+            % chosen option
+            GLMprm.model_onset.(Epm_nm).chosen = 'boxcar';
+            % effort performance (effort execution)
+            GLMprm.model_onset.(Epm_nm).Eperf = 'boxcar';
+            GLMprm.Eperf.Ep.RP.E.F_integral = 1;
+            GLMprm.Eperf.Em.RP.E.efficacy = 1;
+            % feedback
+            GLMprm.model_onset.(Epm_nm).fbk = 'boxcar';
+        end % physical/mental loop
 end % GLM number
 %% warnings: check compatibility of the GLM parameters entered
 isGLMokCheck(GLMprm);
