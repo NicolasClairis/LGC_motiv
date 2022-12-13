@@ -53,7 +53,7 @@ con_data = NaN(1,NS);
 con_data(:) = con_vec_all(con_idx, :, 1);
 
 %% extract behavioural parameters
-[prm] = prm_extraction(subject_id);
+[prm] = prm_extraction(study_nm, subject_id);
 parameters = fieldnames(prm);
 behavPrm_CID = prm.CID;
 parameter_names = parameters;
