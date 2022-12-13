@@ -16,6 +16,11 @@ function [resultsFolderName, resultsFolderShortName] = fMRI_subFolder(sm_folderN
 %
 % resultsFolderShortName: short path to results
 
+%% add a filesep at the end if not present already
+if ~strcmp(sm_folderName(end),filesep)
+    sm_folderName = [sm_folderName, filesep];
+end
+%% adapt name depending on condition
 GLM_nm = num2str(GLM);
 switch condition
     case {'fMRI','fMRI_noSatRunSub','fMRI_noSatTaskSub',...
