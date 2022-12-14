@@ -19,7 +19,7 @@ kFp = prm.kFp;
 
 %% load slope for peak force decrease with time
 figDisp = 0;
-[b_peakF_perEch_f_time] = peakF_f_time(study_nm, subject_id, condition, figDisp);
+[b_peakF_perEch_f_time,~,b_peakF_allE_f_time] = peakF_f_time(study_nm, subject_id, condition, figDisp);
 
 %% correlate kFp to peak force decrease with time slope
 Ech_levels = 0:3;
@@ -34,11 +34,19 @@ for iEch = Ech_levels
     pval.(Ech_nm) = stats.(Ech_nm).p;
 end % effort chosen loop
 
+% what about across all efforts?
+goodSubs.allE = (~isnan(kFp)).*(~isnan(b_peakF_allE_f_time)) == 1;
+[beta.allE,~,stats.allE] = glmfit(kFp(goodSubs.allE), b_peakF_allE_f_time(goodSubs.allE), 'normal');
+kFp_sorted.allE = sort(kFp(goodSubs.allE));
+b_peakF_fit.allE = glmval(beta.allE, kFp_sorted.allE, 'identity');
+pval.allE = stats.allE.p;
+
 %% figure
 pSize = 30;
 lWidth = 3;
 grey = [143 143 143]./255;
 
+% split per effort level
 fig;
 for iEch = Ech_levels
     Ech_nm = ['Ech',num2str(iEch)];
@@ -57,3 +65,17 @@ for iEch = Ech_levels
         Ech_nm});
     legend_size(pSize);
 end
+
+% average across effort levels
+fig;
+hold on;
+scat_hdl = scatter(kFp(goodSubs.allE), b_peakF_allE_f_time(jEch,goodSubs.allE));
+scat_hdl.LineWidth = lWidth;
+scat_hdl.MarkerEdgeColor = 'k';
+fit_hdl = plot(kFp_sorted.allE, b_peakF_fit.allE);
+fit_hdl.LineWidth = lWidth;
+fit_hdl.LineStyle = '--';
+fit_hdl.Color = grey;
+xlabel('kFp');
+ylabel('peakF decrease with time');
+legend_size(pSize);
