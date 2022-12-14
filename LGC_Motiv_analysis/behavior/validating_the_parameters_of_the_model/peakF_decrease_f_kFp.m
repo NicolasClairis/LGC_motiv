@@ -69,7 +69,7 @@ end
 % average across effort levels
 fig;
 hold on;
-scat_hdl = scatter(kFp(goodSubs.allE), b_peakF_allE_f_time(jEch,goodSubs.allE));
+scat_hdl = scatter(kFp(goodSubs.allE), b_peakF_allE_f_time(goodSubs.allE));
 scat_hdl.LineWidth = lWidth;
 scat_hdl.MarkerEdgeColor = 'k';
 fit_hdl = plot(kFp_sorted.allE, b_peakF_fit.allE);

@@ -76,7 +76,6 @@ for iS = 1:NS
         run_nm = num2str(jRun);
         run_nm_bis = ['run',num2str(iRun)];
         [~, ~, peakF_tmp, ~] = extract_grip_force(subBehaviorFolder, sub_nm, run_nm);
-        forcePeak_allE_tmp.(run_nm_bis) = peakF_tmp;
         [E_chosen_tmp] = extract_E_chosen(subBehaviorFolder, sub_nm, run_nm, task_fullName);
         % fit decrease of peak force per effort chosen across time
         for iEch = Ech_levels
@@ -91,15 +90,13 @@ for iS = 1:NS
             forcePeak_fit_tmp.(run_nm_bis)(1,:,jEch) = do_bin2(peakF_fit_tmp, trialN(Ech_idx), n_trialBins,0);
         end % effort level chosen loop
         % do it as well for pool across all efforts
-        trialN_allE_tmp.(run_nm_bis) = trialN;
-        betas_tmp = glmfit(trialN, forcePeak_allE_tmp.(run_nm_bis),'normal');
+        betas_tmp = glmfit(trialN, peakF_tmp.allTrials,'normal');
         b_peakF_allE_Sub(:,iRun) = betas_tmp;
         peakF_fit_tmp = glmval(betas_tmp, trialN, 'identity');
-        forcePeak_fit_allE_tmp.(run_nm_bis)
         % extract bins
-        [forcePeak_allE_tmp.(run_nm_bis)(1,:,jEch),...
-            trialN_tmp.(run_nm_bis)(1,:,jEch)] = do_bin2(forcePeak_allE_tmp.(run_nm_bis), trialN, n_trialBins,0);
-        forcePeak_fit_allE_tmp.(run_nm_bis)(1,:,jEch) = do_bin2(peakF_fit_tmp, trialN, n_trialBins,0);
+        [forcePeak_allE_tmp.(run_nm_bis)(1,:),...
+            trialN_allE_tmp.(run_nm_bis)(1,:)] = do_bin2(peakF_tmp.allTrials, trialN, n_trialBins,0);
+        forcePeak_fit_allE_tmp.(run_nm_bis)(1,:) = do_bin2(peakF_fit_tmp, trialN, n_trialBins,0);
     end % run loop
 
     %% average [decrease of peak force per effort chosen across time] slope
