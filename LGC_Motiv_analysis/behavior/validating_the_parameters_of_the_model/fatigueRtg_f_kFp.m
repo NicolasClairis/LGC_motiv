@@ -41,6 +41,11 @@ end
 
 %% correlate for each run and averaging across runs
 goodSubs = (~isnan(kFp)).*(~isnan(deltaFatiguePrePostExp)) == 1;
+% goodSubs = (~isnan(kFp)).*(~isnan(deltaFatiguePrePostExp).*...
+%     (kFp < mean(kFp,2,'omitnan') + 3*std(kFp,0,2,'omitnan')).*(kFp > mean(kFp,2,'omitnan') - 3*std(kFp,0,2,'omitnan'))) == 1;
+% zscore everybody
+kFp = kFp;
+deltaFatiguePrePostExp = nanzscore(deltaFatiguePrePostExp);
 [beta,~,stats] = glmfit(kFp(goodSubs), deltaFatiguePrePostExp(goodSubs),'normal');
 kFp_sorted = sort(kFp(goodSubs));
 deltaFrtg_fit = glmval(beta, kFp_sorted, 'identity');
