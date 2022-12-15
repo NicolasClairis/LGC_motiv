@@ -188,36 +188,11 @@ for iCon = 1:n_con
         % if you need to redefine the list of subjects included in the
         % analysis
         checkGLM_and_subjectIncompatibility(study_nm, sub_nm, condition, GLMprm);
-        
-        switch condition
-            case {'fMRI','fMRI_noSatRunSub','fMRI_noSatTaskSub',...
-                'fMRI_noMoveSub','fMRI_noMoveSub_bis','fMRI_noMoveSub_ter',...
-                'fMRI_noSatTaskSub_noMove_bis_Sub'}
-                subject_folder = [studyRoot,filesep,'CID',sub_nm, filesep, 'fMRI_analysis' filesep,...
-                    'functional' filesep, 'preproc_sm_',num2str(preproc_sm_kernel),'mm',filesep...
-                    'GLM',GLM_str, filesep];
-            case 'fMRI_noSatTask'
-                subject_folder = [studyRoot,filesep,'CID',sub_nm, filesep, 'fMRI_analysis' filesep,...
-                    'functional' filesep, 'preproc_sm_',num2str(preproc_sm_kernel),'mm',filesep...
-                    'GLM',GLM_str,'_no_satTask' filesep];
-            case 'fMRI_noSatRun'
-                subject_folder = [studyRoot,filesep,'CID',sub_nm, filesep, 'fMRI_analysis' filesep,...
-                    'functional' filesep, 'preproc_sm_',num2str(preproc_sm_kernel),'mm',filesep...
-                    'GLM',GLM_str,'_no_satRun' filesep];
-            case 'fMRI_noMove_bis'
-                subject_folder = [studyRoot,filesep,'CID',sub_nm, filesep, 'fMRI_analysis' filesep,...
-                    'functional' filesep, 'preproc_sm_',num2str(preproc_sm_kernel),'mm',filesep...
-                    'GLM',GLM_str,'_noMvmtRun_lenient' filesep];
-            case 'fMRI_noMove_ter'
-                subject_folder = [studyRoot,filesep,'CID',sub_nm, filesep, 'fMRI_analysis' filesep,...
-                    'functional' filesep, 'preproc_sm_',num2str(preproc_sm_kernel),'mm',filesep...
-                    'GLM',GLM_str,'_noMmvmtRun_stringent' filesep];
-            case 'fMRI_noSatTask_noMove_bis'
-                subject_folder = [studyRoot,filesep,'CID',sub_nm, filesep, 'fMRI_analysis' filesep,...
-                    'functional' filesep, 'preproc_sm_',num2str(preproc_sm_kernel),'mm',filesep...
-                    'GLM',GLM_str,'_no_satTask_noMmvmtRun' filesep];
-            otherwise
-                error(['condition ',condition,' not planned yet. Please add it.']);
+        subject_main_folder = [studyRoot,filesep,'CID',sub_nm, filesep, 'fMRI_analysis' filesep,...
+            'functional' filesep, 'preproc_sm_',num2str(preproc_sm_kernel),'mm',filesep];
+        subject_main_folder = fMRI_subFolder(subject_main_folder, GLM, condition);
+        if isempty(subject_main_folder)
+            error(['condition ',condition,' not planned yet. Please add it.']);
         end
         
         %% adapt contrast index since some conditions and contrasts are missing for some subjects
@@ -226,19 +201,11 @@ for iCon = 1:n_con
         if sum(strcmp(current_con_nm, con_names_perSub)) > 0
             % extract index (for this subject) of the current contrast
             jCon = find(strcmp(current_con_nm, con_names_perSub));
-            con_str = num2str(jCon);
             
             % extract name for this particular subject of the contrast of
             % interest
-            if jCon < 10
-                conlist(iS) = {[subject_folder,'con_000',con_str,'.nii,1']};
-            elseif jCon >= 10 && jCon < 100
-                conlist(iS) = {[subject_folder,'con_00',con_str,'.nii,1']};
-            elseif jCon >= 100 && jCon < 1000
-                conlist(iS) = {[subject_folder,'con_0',con_str,'.nii,1']};
-            elseif jCon >= 1000 && jCon < 10000
-                conlist(iS) = {[subject_folder,'con_',con_str,'.nii,1']};
-            end
+            [con_str] = conNumber2conName(jCon);
+            conlist(iS) = {[subject_folder,'con_',con_str,'.nii,1']};
         end % in case contrast exists for the current subject
     end % subject loop
     

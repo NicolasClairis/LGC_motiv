@@ -51,18 +51,10 @@ switch beta_or_t_value
 end
 
 %% add relevant zeros number to contrast name
-if iCon < 10
-    conZeros = '000';
-elseif iCon >= 10 && iCon < 100
-    conZeros = '00';
-elseif iCon >= 100 && iCon < 1000
-    conZeros = '0';
-else
-    conZeros = '';
-end
+[con_name] = conNumber2conName(iCon);
 
 %% extract the full whole-brain contrast matrix
-betaNum     = strcat([s_con_nm, conZeros, num2str(iCon), '.nii']);% extract name of the file
+betaNum     = strcat([s_con_nm, con_name, '.nii']);% extract name of the file
 betaVol     = spm_vol(betaNum); % extracts header to read con file
 betadata    = spm_read_vols(betaVol); % reads the con file
 
