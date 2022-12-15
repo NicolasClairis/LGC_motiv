@@ -32,18 +32,42 @@ end % subject loop
 
 %% perform the correlation
 % physical effort
-kRkEp_tradeoff = kR./kEp;
+kRkEp_tradeoff = nanzscore(kR)./nanzscore(kEp);
 goodSubsEp = ~isnan(kRkEp_tradeoff);
-[beta.Ep, ~,stats.Ep] = glmfit(kRkEp_tradeoff(goodSubsEp), IP.Ep(goodSubsEp),'normal');
+% goodSubsEp = ~isnan(kRkEp_tradeoff) &...
+%     (kRkEp_tradeoff <= mean(kRkEp_tradeoff,2,'omitnan') + 3*std(kRkEp_tradeoff,0,2,'omitnan')) &...
+%     (kRkEp_tradeoff >= mean(kRkEp_tradeoff,2,'omitnan') - 3*std(kRkEp_tradeoff,0,2,'omitnan'));
+[beta.Ep.kRkEtradeoff, ~,stats.Ep.kRkEtradeoff] = glmfit(kRkEp_tradeoff(goodSubsEp), IP.Ep(goodSubsEp),'normal');
 kRkEp_sorted = sort(kRkEp_tradeoff(goodSubsEp));
-IP_Ep_fit = glmval(beta.Ep, kRkEp_sorted, 'identity');
+IP_Ep_kRkE_fit = glmval(beta.Ep.kRkEtradeoff, kRkEp_sorted, 'identity');
+
+kR_min_kEp = nanzscore(kR)-nanzscore(kEp);
+goodSubsEp_bis = ~isnan(kR_min_kEp);
+% goodSubsEp_bis = ~isnan(kR_min_kEp) &...
+%     (kR_min_kEp <= mean(kR_min_kEp,2,'omitnan') + 3*std(kR_min_kEp,0,2,'omitnan')) &...
+%     (kR_min_kEp >= mean(kR_min_kEp,2,'omitnan') - 3*std(kR_min_kEp,0,2,'omitnan'));
+[beta.Ep.kR_min_kE, ~,stats.Ep.kR_min_kE] = glmfit(kR_min_kEp(goodSubsEp_bis), IP.Ep(goodSubsEp_bis),'normal');
+kR_min_kEp_sorted = sort(kR_min_kEp(goodSubsEp_bis));
+IP_Ep_kRminkE_fit = glmval(beta.Ep.kR_min_kE, kR_min_kEp_sorted, 'identity');
 
 % mental effort
-kRkEm_tradeoff = kR./kEm;
+kRkEm_tradeoff = nanzscore(kR)./nanzscore(kEm);
 goodSubsEm = ~isnan(kRkEm_tradeoff);
-[beta.Em, ~,stats.Em] = glmfit(kRkEm_tradeoff(goodSubsEm), IP.Em(goodSubsEm),'normal');
+% goodSubsEm = ~isnan(kRkEm_tradeoff) &...
+%     (kRkEm_tradeoff <= mean(kRkEm_tradeoff,2,'omitnan') + 3*std(kRkEm_tradeoff,0,2,'omitnan')) &...
+%     (kRkEm_tradeoff >= mean(kRkEm_tradeoff,2,'omitnan') - 3*std(kRkEm_tradeoff,0,2,'omitnan'));
+[beta.Em.kRkEtradeoff, ~,stats.Em.kRkEtradeoff] = glmfit(kRkEm_tradeoff(goodSubsEm), IP.Em(goodSubsEm),'normal');
 kRkEm_sorted = sort(kRkEm_tradeoff(goodSubsEm));
-IP_Em_fit = glmval(beta.Em, kRkEm_sorted, 'identity');
+IP_Em_fit = glmval(beta.Em.kRkEtradeoff, kRkEm_sorted, 'identity');
+
+kR_min_kEm = nanzscore(kR)-nanzscore(kEm);
+goodSubsEm_bis = ~isnan(kR_min_kEm);
+% goodSubsEm_bis = ~isnan(kR_min_kEm) &...
+%     (kR_min_kEm <= mean(kR_min_kEm,2,'omitnan') + 3*std(kR_min_kEm,0,2,'omitnan')) &...
+%     (kR_min_kEm >= mean(kR_min_kEm,2,'omitnan') - 3*std(kR_min_kEm,0,2,'omitnan'));
+[beta.Em.kR_min_kE, ~,stats.Em.kR_min_kE] = glmfit(kR_min_kEm(goodSubsEm_bis), IP.Em(goodSubsEm_bis),'normal');
+kR_min_kEm_sorted = sort(kR_min_kEm(goodSubsEm_bis));
+IP_Em_kRminkE_fit = glmval(beta.Em.kR_min_kE, kR_min_kEm_sorted, 'identity');
 
 %% figure
 % general figure infos
@@ -52,6 +76,7 @@ lSize = 2;
 lWidth = 3;
 grey = [143 143 143]./255;
 
+% kR/kE
 fig;
 % physical effort
 subplot(1,2,1);
@@ -60,7 +85,7 @@ data_hdl = scatter(kRkEp_tradeoff(goodSubsEp),...
     IP.Ep(goodSubsEp));
 data_hdl.LineWidth = lWidth;
 data_hdl.MarkerEdgeColor = 'k';
-fit_hdl = plot(kRkEp_sorted, IP_Ep_fit);
+fit_hdl = plot(kRkEp_sorted, IP_Ep_kRkE_fit);
 fit_hdl.LineWidth = lWidth;
 fit_hdl.Color = grey;
 fit_hdl.LineStyle = '--';
@@ -80,5 +105,37 @@ fit_hdl.LineWidth = lWidth;
 fit_hdl.Color = grey;
 fit_hdl.LineStyle = '--';
 xlabel('kR/kEm');
+ylabel('IP');
+legend_size(pSize);
+
+% kR - kE
+fig;
+% physical effort
+subplot(1,2,1);
+hold on;
+data_hdl = scatter(kR_min_kEp(goodSubsEp_bis),...
+    IP.Ep(goodSubsEp_bis));
+data_hdl.LineWidth = lWidth;
+data_hdl.MarkerEdgeColor = 'k';
+fit_hdl = plot(kR_min_kEp_sorted, IP_Ep_kRminkE_fit);
+fit_hdl.LineWidth = lWidth;
+fit_hdl.Color = grey;
+fit_hdl.LineStyle = '--';
+xlabel('kR-kEp');
+ylabel('IP');
+legend_size(pSize);
+
+% mental effort
+subplot(1,2,2);
+hold on;
+data_hdl = scatter(kR_min_kEm(goodSubsEm_bis),...
+    IP.Em(goodSubsEm_bis));
+data_hdl.LineWidth = lWidth;
+data_hdl.MarkerEdgeColor = 'k';
+fit_hdl = plot(kR_min_kEm_sorted, IP_Em_kRminkE_fit);
+fit_hdl.LineWidth = lWidth;
+fit_hdl.Color = grey;
+fit_hdl.LineStyle = '--';
+xlabel('kR-kEm');
 ylabel('IP');
 legend_size(pSize);
