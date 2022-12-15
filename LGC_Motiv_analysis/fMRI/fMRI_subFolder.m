@@ -40,6 +40,7 @@ switch condition
     otherwise
         resultsFolderShortName = [];
 end
-resultsFolderName = [sm_folderName, resultsFolderShortName,filesep];
+resultsFolderName = [sm_folderName,...
+    resultsFolderShortName,filesep];
 
 end % function
