@@ -242,6 +242,11 @@ b_fMRI_f_E.lE_chosen.(['high_',metabolite_nm]) = b_fMRI_f_E.lE_chosen.allSubs(:,
 b_fMRI_f_E.hE_chosen.(['low_',metabolite_nm]) = b_fMRI_f_E.hE_chosen.allSubs(:,low_met_subs);
 b_fMRI_f_E.hE_chosen.(['high_',metabolite_nm]) = b_fMRI_f_E.hE_chosen.allSubs(:,high_met_subs);
 
+%% ttest
+[~,pval.choice_hE_vs_lE.allSubs] = ttest(b_fMRI_f_E.lE_chosen.allSubs(2,:), b_fMRI_f_E.hE_chosen.allSubs(2,:));
+[~,pval.choice_hE_vs_choice_hE_slope.(['low_vs_high_',metabolite_nm])] = ttest2(b_fMRI_f_E.hE_chosen.(['low_',metabolite_nm])(2,:),...
+    b_fMRI_f_E.hE_chosen.(['high_',metabolite_nm])(2,:));
+
 %% figure
 if dispFig == true
     % general parameters
