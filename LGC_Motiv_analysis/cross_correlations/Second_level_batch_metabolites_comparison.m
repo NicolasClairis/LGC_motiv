@@ -1,5 +1,5 @@
-function[] = Second_level_batch_metabolites_comparison(GLM, condition, gender)
-% Second_level_batch_metabolites_comparison(GLM, condition, gender)
+function[] = Second_level_batch_metabolites_comparison(GLM, condition, gender, checking)
+% Second_level_batch_metabolites_comparison(GLM, condition, gender, checking)
 % script to launch second level on LGC Motivation studies
 %
 % INPUTS
@@ -12,6 +12,10 @@ function[] = Second_level_batch_metabolites_comparison(GLM, condition, gender)
 % 'all': all subjects by default
 % 'males': remove females from the list
 % 'females': remove males from the list
+%
+% checking:
+% (0) launch script directly
+% (1) show GUI and allow user to check before launching
 
 %% clear workspace
 close all; clc;
@@ -46,7 +50,11 @@ spm('defaults','fmri');
 spm_jobman('initcfg');
 
 %% check the batch before launching the script?
-checking = 0;
+if ~exist('checking','var') ||...
+        isempty(checking) ||...
+        ~ismember(checking,[0,1])
+    checking = 0;
+end
 
 %% value of the smoothing during preprocessing?
 preproc_sm_kernel = 8;
@@ -253,25 +261,31 @@ for iCon = 1:n_con
         substruct('.','val', '{}',{batch_model_rtg}, '.','val', '{}',{1}, '.','val', '{}',{1}), substruct('.','spmmat'));
     matlabbatch{batch_idx}.spm.stats.fmri_est.write_residuals = 0;
     matlabbatch{batch_idx}.spm.stats.fmri_est.method.Classical = 1;
-    % contrast
+    % contrasts
     batch_estm_rtg = batch_idx;
     batch_idx = batch_idx + 1;
     matlabbatch{batch_idx}.spm.stats.con.spmmat(1) = cfg_dep('Model estimation: SPM.mat File',...
         substruct('.','val', '{}',{batch_estm_rtg}, '.','val', '{}',{1}, '.','val', '{}',{1}), substruct('.','spmmat'));
-    matlabbatch{batch_idx}.spm.stats.con.consess{1}.tcon.name = current_con_nm;
-    matlabbatch{batch_idx}.spm.stats.con.consess{1}.tcon.weights = 1;
+    % contrast t.test high>low
+    matlabbatch{batch_idx}.spm.stats.con.consess{1}.tcon.name = [current_con_nm,'_H_min_l',metabolite_nm];
+    matlabbatch{batch_idx}.spm.stats.con.consess{1}.tcon.weights = [-1 1];
     matlabbatch{batch_idx}.spm.stats.con.consess{1}.tcon.sessrep = 'none';
+    % contrast t.test low>high
+    matlabbatch{batch_idx}.spm.stats.con.consess{2}.tcon.name = [current_con_nm,'_l_min_H',metabolite_nm];
+    matlabbatch{batch_idx}.spm.stats.con.consess{2}.tcon.weights = [1 -1];
+    matlabbatch{batch_idx}.spm.stats.con.consess{2}.tcon.sessrep = 'none';
+    % contrast: F.test
+    % TO BE ADDED
     matlabbatch{batch_idx}.spm.stats.con.delete = 0;
-
 end % loop over contrasts
 
 cd(results_folder);
 
 %% display spm batch before running it or run it directly
-if exist('checking','var') && checking == 1
+if checking == 1
     spm_jobman('interactive',matlabbatch);
     %     spm_jobman('run',matlabbatch);
-elseif ~exist('checking','var') || isempty(checking) || checking == 0
+elseif checking == 0
     spm_jobman('run',matlabbatch);
 end
 
