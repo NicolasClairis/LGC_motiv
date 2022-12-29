@@ -5,9 +5,8 @@ function[] = Second_level_batch_metabolites_comparison(GLM, condition, gender)
 % INPUTS
 % GLM: number of the GLM
 %
-% condition: define subjects and runs to include
-% 'fMRI': all subjects where fMRI ok
-% 'fMRI_no_move': remove runs with too much movement
+% condition: define subjects and runs to include (you can also use
+% subject_condition.mat to select the condition)
 %
 % gender:
 % 'all': all subjects by default
@@ -216,10 +215,10 @@ for iCon = 1:n_con
             [con_str] = conNumber2conName(jCon);
             if low_met_subs(iS) == 1 && high_met_subs(iS) == 0
                 jS_low = jS_low + 1;
-                conlist_low(jS_low) = {[subject_folder,'con_',con_str,'.nii,1']};
+                conlist_low(jS_low) = {[subject_main_folder,'con_',con_str,'.nii,1']};
             elseif low_met_subs(iS) == 0 && high_met_subs(iS) == 1
                 jS_high = jS_high + 1;
-                conlist_high(jS_high) = {[subject_folder,'con_',con_str,'.nii,1']};
+                conlist_high(jS_high) = {[subject_main_folder,'con_',con_str,'.nii,1']};
             else
                 error('Who''s that dude with weird metabolites?');
             end
