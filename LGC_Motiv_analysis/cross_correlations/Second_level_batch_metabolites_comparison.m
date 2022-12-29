@@ -39,12 +39,29 @@ if ~exist('gender','var') ||...
     gender = 'all';
 end
 [subject_id, NS] = LGCM_subject_selection(study_nm, condition, gender);
-NS_str = num2str(NS);
 
 %% ask which metabolite to focus on?
-[low_met_subs, high_met_subs, metabolite_nm, MRS_ROI_nm] = medSplit_metabolites(study_nm, subject_id);
+[low_met_subs, high_met_subs, metabolite_nm,...
+    MRS_ROI_nm, metabolite_allSubs] = medSplit_metabolites(study_nm, subject_id);
 NS_low = sum(low_met_subs);
 NS_high = sum(high_met_subs);
+%% remove subjects who may have NaN values for the metabolite selected
+badSubs = isnan(metabolite_allSubs);
+n_badSubs = sum(badSubs);
+if n_badSubs > 0
+    badSub_idx = find(badSubs ~= 0);
+    for iBS = 1:n_badSubs
+        badSub_nm = subject_id{badSub_idx(iBS)};
+        disp(['Subject ',badSub_nm,' had to be removed as ',...
+            MRS_ROI_nm,' ',metabolite_nm,' was NaN.']);
+    end
+    subject_id(badSub_idx) = [];
+    NS = NS - n_badSubs;
+    low_met_subs(badSub_idx) = [];
+    high_met_subs(badSub_idx) = [];
+end
+%% string with number of subjects
+NS_str = num2str(NS);
 %% initiate SPM
 spm('defaults','fmri');
 spm_jobman('initcfg');
