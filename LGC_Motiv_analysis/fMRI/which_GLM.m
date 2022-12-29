@@ -2242,6 +2242,27 @@ switch GLM
             % feedback
             GLMprm.model_onset.(Epm_nm).fbk = 'boxcar';
         end % physical/mental loop
+    case 77 % model low vs high effort chosen separately during choice (similar to GLM59)
+        % general parameters
+        GLMprm.gal.orth_vars = 0;
+        GLMprm.gal.zPerRun = 1;
+        % loop per task
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'stick';
+            GLMprm.choice.(Epm_nm).splitPerE = 3;
+            GLMprm.choice.(Epm_nm).RP.lEch.money_varOption = 1;
+            GLMprm.choice.(Epm_nm).RP.lEch.E_varOption = 1;
+            GLMprm.choice.(Epm_nm).RP.hEch.money_varOption = 1;
+            GLMprm.choice.(Epm_nm).RP.hEch.E_varOption = 1;
+            % chosen
+            GLMprm.model_onset.(Epm_nm).chosen = 'boxcar';
+            % effort perf (effort execution)
+            GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
+            % feedback
+            GLMprm.model_onset.(Epm_nm).fbk = 'boxcar';
+        end % physical/mental loop
 end % GLM number
 %% warnings: check compatibility of the GLM parameters entered
 isGLMokCheck(GLMprm);
