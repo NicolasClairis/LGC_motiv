@@ -2084,7 +2084,7 @@ switch GLM
             % feedback
             GLMprm.model_onset.(Epm_nm).fbk = 'boxcar';
         end % physical/mental loop
-    case 70 % onsets-only GLM (all events modeled but with a stick, while in GLM 64 some have a boxcar)
+    case 70 % onsets-only GLM (like GLM64 but all events are modeled but with a stick, while in GLM 64 some have a boxcar)
         GLMprm.gal.onsets_only = 1;
         % loop per task
         for iEpm = 1:length(Epm)
