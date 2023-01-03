@@ -262,7 +262,7 @@ n_timePeriods = length(timePeriod);
 timePeriod_names = {'choice','chosen','effort','feedback'};
 regTypes = {'ONSET','REG'};
 nRegTypes = length(regTypes);
-tasks = {'Ep','Em'};
+tasks = {'Ep','Em','Ep+Em'};
 nTasks = length(tasks);
 % loop through time periods
 for iTimePeriod = 1:n_timePeriods
@@ -294,7 +294,7 @@ for iTimePeriod = 1:n_timePeriods
         for iEcond = 1:length(Econd)
             Econd_nm = Econd{iEcond};
             
-            % check if R and P trials have been split, if not no need to pool
+            % check if R and P trials have been split in both tasks, if not no need to pool
             if (ismember(task_nm,{'Ep','Em'}) && GLMprm.(timePhase_nm).(task_nm).RPpool == 0) ||...
                     (GLMprm.(timePhase_nm).Ep.RPpool == 0 && GLMprm.(timePhase_nm).Em.RPpool == 0)
                 % pool through onsets and regressors
