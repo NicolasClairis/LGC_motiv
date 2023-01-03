@@ -20,7 +20,8 @@ function [choiceND_perRun, saturationSubs] = choiceNDproportion_perRun_group(fig
 
 %% subject identification
 [study_nm, ~,~,subject_id, NS] = sub_id;
-
+% store the list
+choiceND_perRun.subject_id = subject_id;
 %% display group figure
 if ~exist('figGrpDisp','var') || isempty(figGrpDisp)
     figGrpDisp = 1; % by default

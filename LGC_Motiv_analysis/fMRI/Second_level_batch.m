@@ -128,7 +128,7 @@ end
 if ~exist(results_folder,'dir')
     mkdir(results_folder);
 else
-    error(['run folder with the name ',results_folder,' already exists.']);
+    error(['Folder with the name ',results_folder,' already exists.']);
 end
 
 %% 1) take mean anatomy across participants
@@ -205,7 +205,7 @@ for iCon = 1:n_con
             % extract name for this particular subject of the contrast of
             % interest
             [con_str] = conNumber2conName(jCon);
-            conlist(iS) = {[subject_folder,'con_',con_str,'.nii,1']};
+            conlist(iS) = {[subject_main_folder,'con_',con_str,'.nii,1']};
         end % in case contrast exists for the current subject
     end % subject loop
     
