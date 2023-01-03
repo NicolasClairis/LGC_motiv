@@ -9,12 +9,12 @@ function [ hdl ] = fig()
 %
 % Written by Nicolas Clairis - august 2019 (in Matlab 2017a)
 
+%% change matlab font from ugly grey to white
+set(0,'defaultfigurecolor',[1 1 1]);
 %% create figure
 hdl = figure;
 %% force hold on to add multiple 
 hold on;
-%% change matlab font from ugly grey to white
-set(0,'defaultfigurecolor',[1 1 1]);
 %% maximize window size
 matlabVersion = version('-release'); % extract matlab version
 matlabYearVersion = str2double(matlabVersion(1:4)); % extract the year
