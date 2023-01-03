@@ -864,7 +864,7 @@ switch GLM
             Epm_nm = Epm{iEpm};
             % choice
             GLMprm.model_onset.(Epm_nm).choice = 'stick';
-                GLMprm.choice.(Epm_nm).RPpool = 0;
+            GLMprm.choice.(Epm_nm).RPpool = 0;
             for iRP = 1:length(RP_conds)
                 RP_nm = RP_conds{iRP};
                 GLMprm.choice.(Epm_nm).(RP_nm).E.NV_varOption = 1;
