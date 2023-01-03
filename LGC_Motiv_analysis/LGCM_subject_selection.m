@@ -93,7 +93,7 @@ switch study_nm
                     'fMRI_noMove_bis','fMRI_noMove_ter'} % all subjects
                 % (but removing the bad runs if the condition requires it)
                 bad_subs = false(1,length(fullSubList));
-            case {'behavior_noSatRun','fMRI_noSatRun',...
+            case {'behavior_noSatRun','fMRI_noSatRun', 'fMRI_noSatRun_choiceSplit_Elvl',...
                     'behavior_noSatTask','fMRI_noSatTask','fMRI_noSatTask_noMove_bis'}
                 % removing subjects where no run survives after removing
                 % runs with too much saturation
@@ -146,7 +146,8 @@ switch study_nm
                 % remove subjects for which either mental (Em) or physical
                 % (Ep) task was fully saturated during choices and remove
                 % runs that were saturating if only one saturated
-                bad_subs = ismember(fullSubList,{'027','047','052','069','076','095'});
+                bad_subs = ismember(fullSubList,{'027','047',...
+                    '052','069','076','095'});
                 % 027: all ND for Em task (runs 2 and 4)
                 % 047: all ND for all tasks
                 % 052: all ND for Em task (runs 1 and 3)

@@ -184,6 +184,97 @@ if exist('subj_scan_folders_names','var') && ~isempty(subj_scan_folders_names)
                             [subj_scan_folders_names] = badRunsClearing(run_nm_toRemove,...
                                 subj_scan_folders_names, sub_nm, removalReason);
                     end % subject group
+                    
+                    %% remove any run with saturation and if not enough variability when splitting depending on choice
+                case 'fMRI_noSatRun_choiceSplit_Elvl'
+                    removalReason = 'saturation';
+                    switch sub_nm
+                        case {'001','002','004','005','012','022','027',...
+                                '032','036','038','044','047','048',...
+                                '052','054','055','058',...
+                                '061','062','069',...
+                                '076','078',...
+                                '080','081','082','083','088',...
+                                '095','097','099','100'}
+                            switch sub_nm
+                                case '001'
+                                    run_nm_toRemove = {'2_008_run2_20220429'};
+                                case '002'
+                                    run_nm_toRemove = {'2_009_run3_20220222'};
+                                case '004'
+                                    run_nm_toRemove = {'2_009_run3_20220902'};
+                                case '005'
+                                    run_nm_toRemove = {'2_010_run4_20220506'};
+                                case '012'
+                                    run_nm_toRemove = {'2_010_run4_20221021'};
+                                case '022'
+                                    run_nm_toRemove = {'2_009_run3_20220303'};
+                                case '027'
+                                    run_nm_toRemove = {'2_010_run4_20220624',...
+                                        '2_009_run3_20220624',...
+                                        '2_008_run2_20220624'};
+                                case '032'
+                                    run_nm_toRemove = {'1_009_run3_20220428'};
+                                case '036'
+                                    run_nm_toRemove = {'2_010_run4_20211110'};
+                                case '038'
+                                    run_nm_toRemove = {'3_008_run2_20220701'};
+                                case '044'
+                                    run_nm_toRemove = {'3_009_run3_20220408'};
+                                case '047'
+                                    error(['subject ',sub_nm,' should not be included (saturated ALL tasks)']);
+                                case '048'
+                                    run_nm_toRemove = {'3_008_run2_20220518'};
+                                case '052'
+                                    run_nm_toRemove = {'2_010_run3_20220216',...
+                                        '2_008_run1_20220216'};
+                                case '054'
+                                    run_nm_toRemove = {'2_007_run1_20220208'};
+                                case '055'
+                                    run_nm_toRemove = {'2_010_run4_20220202'};
+                                case '058'
+                                    run_nm_toRemove = {'3_010_run4_20220621'};
+                                case '061'
+                                    run_nm_toRemove = {'2_007_run1_20211126'};
+                                case '062'
+                                    run_nm_toRemove = {'2_009_run3_20220722'};
+                                case '069'
+                                    run_nm_toRemove = {'2_010_run4_20220414',...
+                                        '2_008_run2_20220414'};
+                                case '076'
+                                    run_nm_toRemove = {'2_010_run4_20220420',...
+                                        '2_008_run2_20220420'};
+                                case '078'
+                                    run_nm_toRemove = {'2_009_run3_20220630'};
+                                case '080'
+                                    run_nm_toRemove = {'2_010_run4_20220629'};
+                                case '081'
+                                    run_nm_toRemove = {'2_009_run3_20220107',...
+                                        '2_008_run2_20220107'};
+                                case '082'
+                                    run_nm_toRemove = {'2_010_run4_20220308',...
+                                        '2_009_run3_20220308'};
+                                case '083'
+                                    run_nm_toRemove = {'2_010_run4_20220520'};
+                                case '088'
+                                    run_nm_toRemove = {'2_010_run4_20220512'};
+                                case '095'
+                                    run_nm_toRemove = {'2_010_run4_20211119',...
+                                        '2_009_run3_20211119',...
+                                        '2_008_run2_20211119'};
+                                case '097'
+                                    run_nm_toRemove = {'2_007_run1_20220721'};
+                                case '099'
+                                    run_nm_toRemove = {'1_009_run3_20220705'};
+                                case '100'
+                                    run_nm_toRemove = {'2_010_run4_20220324',...
+                                        '2_009_run3_20220324'};
+                                otherwise
+                                    error([sub_nm,' is missing.'])
+                            end % subject filter
+                            [subj_scan_folders_names] = badRunsClearing(run_nm_toRemove,...
+                                subj_scan_folders_names, sub_nm, removalReason);
+                    end % subject group
 
                     %% filter runs with too much movement (lenient)
                 case 'fMRI_noMove_bis'

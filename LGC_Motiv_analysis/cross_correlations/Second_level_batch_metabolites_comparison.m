@@ -137,6 +137,10 @@ switch condition
         results_folder = [mainPath,...
             'GLM',GLM_str,'_',NS_str,'subs_',...
             'preprocSm',num2str(preproc_sm_kernel),'mm_noSatRun_',MRS_split_nm,filesep];
+    case 'fMRI_noSatRun_choiceSplit_Elvl'
+        results_folder = [mainPath,...
+            'GLM',GLM_str,'_',NS_str,'subs_',...
+            'preprocSm',num2str(preproc_sm_kernel),'mm_noSatRun_bis_',MRS_split_nm,filesep];
     case 'fMRI_noMove_bis'
         results_folder = [mainPath,...
             'GLM',GLM_str,'_',NS_str,'subs_',...
@@ -157,7 +161,7 @@ end
 if ~exist(results_folder,'dir')
     mkdir(results_folder);
 else
-    error(['run folder with the name ',results_folder,' already exists.']);
+    error(['Folder ',results_folder,' already exists.']);
 end
 
 %% 1) take mean anatomy across participants

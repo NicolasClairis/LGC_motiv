@@ -309,6 +309,105 @@ switch study_nm
                         runs.runsToKeep = [1,2];
                         runs.runsToIgnore = [3,4];
                 end
+                case 'fMRI_noSatRun_choiceSplit_Elvl' % no saturation run + if trials are split according to choice made including a high effort regressor 
+                    % => need to remove runs where high or low effort choice always go with the same effort level
+                switch sub_nm
+                    case {'017','043','074'} % first run: fMRI crashed => we have the behavior but not enough trials for fMRI
+                        runs.runsToKeep = 2:4;
+                        runs.runsToIgnore = 1;
+                    case '001'
+                        runs.runsToKeep = [1,3,4];
+                        runs.runsToIgnore = 2;
+                    case '002'
+                        runs.runsToKeep = [1,2,4];
+                        runs.runsToIgnore = 3;
+                    case '004'
+                        runs.runsToKeep = [1,2,4];
+                        runs.runsToIgnore = 3;
+                    case '005'
+                        runs.runsToKeep = 1:3;
+                        runs.runsToIgnore = 4;
+                    case '012'
+                        runs.runsToKeep = 1:3;
+                        runs.runsToIgnore = 4;
+                    case '022'
+                        runs.runsToKeep = [1,2,4];
+                        runs.runsToIgnore = 3;
+                    case '027'
+                        runs.runsToKeep = 1;
+                        runs.runsToIgnore = [2,3,4];
+                    case '032'
+                        runs.runsToKeep = [1,2,4];
+                        runs.runsToIgnore = 3;
+                    case '036'
+                        runs.runsToKeep = [1,2,3];
+                        runs.runsToIgnore = 4;
+                    case '038'
+                        runs.runsToKeep = [1,3,4];
+                        runs.runsToIgnore = 2;
+                    case '044'
+                        runs.runsToKeep = [1,2,4];
+                        runs.runsToIgnore = 3;
+                    case '047'
+                        error(['subject ',sub_nm,' should not be included (saturated ALL tasks)']);
+                    case '048'
+                        runs.runsToKeep = [1,3,4];
+                        runs.runsToIgnore = 2;
+                    case '052'
+                        runs.runsToKeep = [2,4];
+                        runs.runsToIgnore = [1,3];
+                    case '054'
+                        runs.runsToKeep = 2:4;
+                        runs.runsToIgnore = 1;
+                    case '055'
+                        runs.runsToKeep = 1:3;
+                        runs.runsToIgnore = 4;
+                    case '058'
+                        runs.runsToKeep = 1:3;
+                        runs.runsToIgnore = 4;
+                    case '061'
+                        runs.runsToKeep = 2:4;
+                        runs.runsToIgnore = 1;
+                    case '062'
+                        runs.runsToKeep = [1,2,4];
+                        runs.runsToIgnore = 3;
+                    case '069'
+                        runs.runsToKeep = [1,3];
+                        runs.runsToIgnore = [2,4];
+                    case '076'
+                        runs.runsToKeep = [1,3];
+                        runs.runsToIgnore = [2,4];
+                    case '078'
+                        runs.runsToKeep = [1,2,4];
+                        runs.runsToIgnore = 3;
+                    case '080'
+                        runs.runsToKeep = [1,2,3];
+                        runs.runsToIgnore = 4;
+                    case '081'
+                        runs.runsToKeep = [1,4];
+                        runs.runsToIgnore = [2,3];
+                    case '082'
+                        runs.runsToKeep = [1,2];
+                        runs.runsToIgnore = [3,4];
+                    case '083'
+                        runs.runsToKeep = [1,2,3];
+                        runs.runsToIgnore = 4;
+                    case '088'
+                        runs.runsToKeep = [1,2,3];
+                        runs.runsToIgnore = 4;
+                    case '095'
+                        runs.runsToKeep = 1;
+                        runs.runsToIgnore = [2,3,4];
+                    case '097'
+                        runs.runsToKeep = 2:4;
+                        runs.runsToIgnore = 1;
+                    case '099'
+                        runs.runsToKeep = [1,2,4];
+                        runs.runsToIgnore = 3;
+                    case '100'
+                        runs.runsToKeep = [1,2];
+                        runs.runsToIgnore = [3,4];
+                end
                 %% too much movement cleaning
             case 'fMRI_noMove_bis'
                 switch sub_nm
