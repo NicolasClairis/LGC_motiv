@@ -45,6 +45,7 @@ if ~exist('subject_id','var') || isempty(subject_id)
 else
     condition = 'fMRI_noSatTaskSub'; % important for selection of the runs
     NS = length(subject_id);
+    warning('condition set by force to ''fMRI_noSatTaskSub''');
 end
 % store list of subjects
 ROI_trial_b_trial.subject_id = subject_id;
