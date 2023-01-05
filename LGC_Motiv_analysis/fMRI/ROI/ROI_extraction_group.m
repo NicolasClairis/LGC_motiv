@@ -22,14 +22,6 @@ function[con_vec_all,...
 % subjects
 %
 % condition: define subjects and runs to include
-% 'fMRI': all subjects where fMRI ok
-% 'fMRI_no_move': remove runs with too much movement
-%
-% condition:
-% 'fMRI': all fMRI compatible data
-% 'fMRI_no_move': remove runs with too much movement
-% 'fMRI_no_move_bis': remove subjects with any run bearing too much
-% movement
 %
 % fig_disp:
 %(0) no display
