@@ -56,7 +56,7 @@ end
 if ~exist('mdlN','var') || isempty(mdlN)
     switch mdlType
         case 'bayesian'
-            listPossibleModelNumbers = {'1','2','3'};
+            listPossibleModelNumbers = {'3'};
         case 'simple'
             listPossibleModelNumbers = {'1','2','3','4'};
     end
