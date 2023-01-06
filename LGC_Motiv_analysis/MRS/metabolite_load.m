@@ -54,7 +54,12 @@ for iROI = 1:nROIs
     
     %% prepare metabolites
     for iMet = 1:n_metabolites
-        metabolites.(ROI_nm).(all_metabolites{iMet}) = NaN(1,NS);
+        switch all_metabolites{iMet}
+            case 'Glu_Gln'
+                metabolites.(ROI_nm).Glx = NaN(1,NS);
+            otherwise
+                metabolites.(ROI_nm).(all_metabolites{iMet}) = NaN(1,NS);
+        end
     end % metabolite loop
     metabolites.(ROI_nm).Gln_div_Glu = NaN(1,NS);
     
@@ -75,6 +80,12 @@ for iROI = 1:nROIs
     %% extract the data for each subject
     for iMet = 1:n_metabolites
         met_nm = all_metabolites{iMet};
+        switch met_nm
+            case 'Glu_Gln'
+                met_nm_bis = 'Glx';
+            otherwise
+                met_nm_bis = met_nm;
+        end
         %% extract data for everybody for the current metabolite
         all_met_data = excelRead_tmp.(met_nm);
         
@@ -105,7 +116,7 @@ for iROI = 1:nROIs
                 % and subjects for which the Cramer Lower Bound is too bad
                 % (>50%) and subjects which are clearly outliers because
                 % their values are too far from the others (>/< mean+3*SD)
-                metabolites.(ROI_nm).(met_nm)(iS) = all_met_data(subj_line);
+                metabolites.(ROI_nm).(met_nm_bis)(iS) = all_met_data(subj_line);
             end
         end % subject loop
     end % metabolites
