@@ -90,10 +90,11 @@ for iS = 1:NS
     if needModeling == true
         switch mdlType
             case 'simple'
-            [~, dataInferred] = logitfit_choices(computerRoot, study_nm, sub_nm,...
-                0, 'levels', 6, 6);
-        case 'bayesian'
-            error('please update for bayesian model');
+                [~, dataInferred] = logitfit_choices(computerRoot, study_nm, sub_nm,...
+                    0, 'levels', 6, 6);
+            case 'bayesian'
+                gitResultsFolder = [fullfile('C:','Users','clairis','Desktop',...
+                    'GitHub','LGC_motiv','LGC_Motiv_results',study_nm,'bayesian_modeling'),filesep];
         end
     end
 
@@ -177,8 +178,9 @@ for iS = 1:NS
                     trial_idx = (1:nTrialsPerRun) + nTrialsPerRun*(kRun >= 3);
                     deltaNV_tmp = dataInferred.deltaNV.(['mdl_',mdlN]).(task_nm_tmp)(trial_idx);
                     uncertainty_tmp = - dataInferred.confidenceFitted.(['mdl_',mdlN]).(run_nm_bis); % revert sign to transform confidence into uncertainty
-                otherwise
-                    error('not ready yet');
+                case 'bayesian'
+                    [~, NV_hE_tmp] = extract_bayesian_mdl(gitResultsFolder, subBehaviorFolder,...
+                        sub_nm, run_nm, task_fullName, ['mdl_',mdlN]);
             end
         end
         
@@ -212,7 +214,7 @@ for iS = 1:NS
         
         %% extract fMRI ROI mediator
         if strcmp(task_to_look,'EpEmPool') ||...
-                (strcmp(task_to_look, task_nm))
+                (strcmp(task_to_look, task_nm_tmp))
             ROI_mediator(runTrials_idx, iS) = ROI_trial_b_trial.(ROI_nm{1}).(task_nm_tmp).(run_nm_bis).(timePeriod_nm)(:, iS);
         end
         %% extract output behavioral variable
