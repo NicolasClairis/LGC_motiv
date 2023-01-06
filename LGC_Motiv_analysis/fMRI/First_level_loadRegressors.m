@@ -187,8 +187,8 @@ money_level_fixedOption = money_level_left.*(defaultSide == -1) +...
     money_level_right.*(defaultSide == 1);
 abs_money_level_varOption = abs(money_level_varOption);
 % loading effort choice
-E_left = behavioralDataStruct.(task_behavioral_id).choiceOptions.E.left.*RP_var;
-E_right = behavioralDataStruct.(task_behavioral_id).choiceOptions.E.right.*RP_var;
+E_left = behavioralDataStruct.(task_behavioral_id).choiceOptions.E.left;
+E_right = behavioralDataStruct.(task_behavioral_id).choiceOptions.E.right;
 E_sum = E_left + E_right;
 E_varOption = E_left.*(defaultSide == 1) + E_right.*(defaultSide == -1);
 E_fixedOption = E_left.*(defaultSide == -1) + E_right.*(defaultSide == 1);
