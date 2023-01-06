@@ -69,16 +69,9 @@ for iPrm = 1:nPrm
         MRS_ROI_nm = ROIs{iROI};
         for iMb = 1:n_metabolites.(MRS_ROI_nm)
             metabolite_nm = metabolite_names.(MRS_ROI_nm){iMb};
-            switch metabolite_nm
-                case 'Glu_Gln'
-                    metabolite_nm_bis = 'Glx';
-                otherwise
-                    metabolite_nm_bis = metabolite_nm;
-            end
             metabolite_allSubs = metabolites.(MRS_ROI_nm).(metabolite_nm);
             goodSubs = ~isnan(metabolite_allSubs);
-            
-            X_nm = [MRS_ROI_nm,'-',metabolite_nm_bis];
+            X_nm = [MRS_ROI_nm,'-',metabolite_nm];
             M_nm = ['fMRI-',ROI_coords.ROI_nm.ROI_1_shortName,'-',con_nm{1}];
             Y_nm = prm_nm;
             [a.(MRS_ROI_nm).(metabolite_nm).(prm_nm),...
