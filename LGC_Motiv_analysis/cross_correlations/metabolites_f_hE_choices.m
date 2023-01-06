@@ -127,7 +127,7 @@ for iT = 1:nTasks
     end % MRS ROI
     
     %% figure
-    allMb_names = fieldnames(m_metabolites.mSplit);
+    allMb_names = fieldnames(m_metabolites.(task_nm).mSplit);
     nTotalMb = length(allMb_names);
     pSize = 20;
     lWidth = 3;
