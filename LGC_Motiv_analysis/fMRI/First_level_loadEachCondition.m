@@ -52,6 +52,12 @@ switch onsets_only_GLM
                 matlabbatch{sub_idx}.spm.stats.fmri_spec.sess(iRun).cond(iCond).pmod(iMod).name = mod_nm{iMod};
                 matlabbatch{sub_idx}.spm.stats.fmri_spec.sess(iRun).cond(iCond).pmod(iMod).param = mod_vals(iMod,:);
                 matlabbatch{sub_idx}.spm.stats.fmri_spec.sess(iRun).cond(iCond).pmod(iMod).poly = 1;
+                
+                % verify that the regressor has some variability (otherwise
+                % SPM may crash when performing the contrast)
+                if all(mod_vals(iMod,:) == mod_vals(iMod,1))
+                    error([mod_nm{iMod},' condition ',cond_nm,' all values are the same.']);
+                end
             end
         end
         
