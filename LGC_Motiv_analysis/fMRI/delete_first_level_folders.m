@@ -1,7 +1,7 @@
 function[] = delete_first_level_folders(study_nm)
 % function to order first level files coming from one main sequence in a
 % folder in order to make new analysis
-% function by NicoC june 2016
+% function by Nicolas Clairis - june 2016
 
 baseline_folder = pwd;
 
