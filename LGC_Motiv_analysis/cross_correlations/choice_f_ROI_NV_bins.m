@@ -36,8 +36,8 @@ ROI_short_nm = inputdlg('ROI short name?');
 ROI_short_nm = ROI_short_nm{1};
 % define task
 task_names = {'Ep','Em','EpEmPool'};
-which_task = listdlg('PromptString','Which task?','ListString',task_names);
-task_to_look = task_names{which_task};
+which_ROI_task = listdlg('PromptString','Which task for ROI?','ListString',task_names);
+ROI_task_to_look = task_names{which_ROI_task};
 % define time period
 timePeriods = fieldnames(ROI_trial_b_trial.(ROI_nm{1}).Ep.run1);
 which_timePeriod = listdlg('PromptString','Which time phase of the trial?',...
@@ -50,6 +50,8 @@ potential_input_prm = {'NV_hE','deltaNV','uncertainty','E_level','money_level',.
 which_input = listdlg('PromptString','please select input parameter',...
     'ListString',potential_input_prm);
 input_prm_nm = potential_input_prm{which_input};
+which_bhv_task = listdlg('PromptString','Which task for behavior?','ListString',task_names);
+behavioral_task_to_look = task_names{which_bhv_task};
 
 %% number of bins
 switch input_prm_nm
@@ -70,33 +72,24 @@ else
 end
 
 %% extract the parameters of interest
-nRuns = 4;
-nTrialsPerRun = 54;
-nTrials = nTrialsPerRun*nRuns;
-% input/mediator/output
-[input_prm, ROI_mediator, choice_hE] = deal(NaN(nTrials, NS));
-
+switch behavioral_task_to_look
+    case {'Ep','Em'}
+        nRunsPerTask = 2;
+        nTrialsPerRun = 54;
+        nTrialsPerTask = nTrialsPerRun*nRunsPerTask;
+        [input_prm, ROI_mediator, choice_hE] = deal(NaN(nTrialsPerTask, NS));
+    case 'EpEmPool'
+        nRuns = 4;
+        nTrialsPerRun = 54;
+        nTrials = nTrialsPerRun*nRuns;
+        % input/mediator/output
+        [input_prm, ROI_mediator, choice_hE] = deal(NaN(nTrials, NS));
+end
 % bin variables
 [input_f_input_bin, ROI_f_input_bin, choice_f_input_bin,...
     input_f_input_low_ROI, ROI_f_input_low_ROI, choice_f_input_low_ROI,...
     input_f_input_high_ROI, ROI_f_input_high_ROI, choice_f_input_high_ROI] = deal(NaN(nBins, NS));
 
-% extract also info separately for each task
-tasks = {'Ep','Em'};
-nTasks = length(tasks);
-nRunsPerTask = 2;
-nTrialsPerRun = 54;
-nTrialsPerTask = nTrialsPerRun*nRunsPerTask;
-for iTask = nTasks
-    task_nm = tasks{iTask};
-    % input/mediator/output
-    [input_prm_perTask.(task_nm), ROI_mediator_perTask.(task_nm), choice_hE_perTask.(task_nm)] = deal(NaN(nTrialsPerTask, NS));
-    
-    % bin variables
-    [input_f_input_bin_perTask.(task_nm), ROI_f_input_bin_perTask.(task_nm), choice_f_input_bin_perTask.(task_nm),...
-        input_f_input_low_ROI_perTask.(task_nm), ROI_f_input_low_ROI_perTask.(task_nm), choice_f_input_low_ROI_perTask.(task_nm),...
-        input_f_input_high_ROI_perTask.(task_nm), ROI_f_input_high_ROI_perTask.(task_nm), choice_f_input_high_ROI_perTask.(task_nm)] = deal(NaN(nBins, NS));
-end % task loop
 %% loop through subjects
 for iS = 1:NS
     sub_nm = subject_id{iS};
@@ -124,7 +117,6 @@ for iS = 1:NS
         run_nm = num2str(kRun);
         jRun = jRun + 1;
         task_nm_tmp = taskNames{jRun};
-        runTrials_idx = (1:nTrialsPerRun) + nTrialsPerRun*(kRun-1);
         switch task_nm_tmp
             case 'Em'
                 task_fullName = 'mental';
@@ -138,116 +130,118 @@ for iS = 1:NS
             case {3,4}
                 taskRun_idx = 2;
         end
-        runTrialsPerTask_idx = (1:nTrialsPerRun) + nTrialsPerRun*(taskRun_idx-1);
         run_nm_bis = ['run',num2str(taskRun_idx)];
-        
-        %% load the data
-        behaviorStruct_tmp = load([subBehaviorFolder,...
-            'CID',sub_nm,'_session',run_nm,'_',task_fullName,...
-            '_task.mat']);
-        choiceOptions_tmp = behaviorStruct_tmp.choice_opt;
-        switch task_nm_tmp
-            case 'Em'
-                choiceAndPerf_tmp = behaviorStruct_tmp.mentalE_perf;
-            case 'Ep'
-                choiceAndPerf_tmp = behaviorStruct_tmp.physicalPerf;
+        % define trial index for relevant variable to extract
+        switch behavioral_task_to_look
+            case {'Ep','Em'}
+                runTrials_idx = (1:nTrialsPerRun) + nTrialsPerRun*(taskRun_idx-1);
+            case 'EpEmPool'
+                runTrials_idx = (1:nTrialsPerRun) + nTrialsPerRun*(kRun-1);
         end
         
-        %% default side
-        defaultSide_tmp = choiceOptions_tmp.default_LR;
-        %% extract R or P
-        RP_var_tmp = strcmp(choiceOptions_tmp.R_or_P,'R');
-        
-        %% effort level
-        E_highE_tmp = (choiceOptions_tmp.E.left).*(defaultSide_tmp == 1) +...
-            (choiceOptions_tmp.E.right).*(defaultSide_tmp == -1);
-        
-        %% high-effort money amount
-        money_hE_tmp = ((choiceOptions_tmp.monetary_amount.left).*(defaultSide_tmp == 1) +...
-            (choiceOptions_tmp.monetary_amount.right).*(defaultSide_tmp == -1)).*((RP_var_tmp == 1) - (RP_var_tmp == 0));
-        money_lE_tmp = ((choiceOptions_tmp.monetary_amount.left).*(defaultSide_tmp == -1) +...
-            (choiceOptions_tmp.monetary_amount.right).*(defaultSide_tmp == 1)).*((RP_var_tmp == 1) - (RP_var_tmp == 0));
-        
-        %% delta between high and low effort options
-        deltaMoney_tmp = money_hE_tmp - money_lE_tmp;
-        
-        %% RT
-        onsets_tmp = behaviorStruct_tmp.onsets;
-        switch task_nm_tmp
-            case 'Ep'
-                onsets_tmp = behaviorStruct_tmp.physicalPerf.onsets;
-                choice_LR_tmp = behaviorStruct_tmp.physicalPerf.choice;
-            case 'Em'
-                onsets_tmp = behaviorStruct_tmp.mentalE_perf.onsets;
-                choice_LR_tmp = behaviorStruct_tmp.mentalE_perf.choice;
-        end
-        RT_tmp = onsets_tmp.choice - onsets_tmp.dispChoiceOptions;
-        
-        %% confidence rating
-        uncertaintyRtg_tmp = NaN(1,length(choice_LR_tmp));
-        uncertaintyRtg_tmp(abs(choice_LR_tmp) == 2) = 0; % high confidence = low uncertainty
-        uncertaintyRtg_tmp(abs(choice_LR_tmp) == 1) = 1; % low confidence = high uncertainty
-        
-        %% net value and confidence inferred by the model
-        if needModeling == 1 
-            switch mdlType
-                case 'simple'
-                    NV_hE_tmp = dataInferred.NV_varOption.(task_nm_tmp).(['mdl_',mdlN]).(run_nm_bis);
-                    trial_idx = (1:nTrialsPerRun) + nTrialsPerRun*(kRun >= 3);
-                    deltaNV_tmp = dataInferred.deltaNV.(['mdl_',mdlN]).(task_nm_tmp)(trial_idx);
-                    uncertainty_tmp = - dataInferred.confidenceFitted.(['mdl_',mdlN]).(run_nm_bis); % revert sign to transform confidence into uncertainty
-                case 'bayesian'
-                    [~, NV_hE_tmp] = extract_bayesian_mdl(gitResultsFolder, subBehaviorFolder,...
-                        sub_nm, run_nm, task_fullName, ['mdl_',mdlN]);
+        % filter task based on what was selected in the inputs
+        if strcmp(behavioral_task_to_look,'EpEmPool') ||...
+                strcmp(behavioral_task_to_look, task_nm_tmp)
+            %% load the data
+            behaviorStruct_tmp = load([subBehaviorFolder,...
+                'CID',sub_nm,'_session',run_nm,'_',task_fullName,...
+                '_task.mat']);
+            choiceOptions_tmp = behaviorStruct_tmp.choice_opt;
+            switch task_nm_tmp
+                case 'Em'
+                    choiceAndPerf_tmp = behaviorStruct_tmp.mentalE_perf;
+                case 'Ep'
+                    choiceAndPerf_tmp = behaviorStruct_tmp.physicalPerf;
             end
-        end
-        
-        %% choice
-        choice_LR_tmp = choiceAndPerf_tmp.choice;
-        % remove confidence info from choice:
-        choice_LR_tmp(choice_LR_tmp == 2) = 1;
-        choice_LR_tmp(choice_LR_tmp == -2) = -1;
-        % extract high effort choice
-        choice_highE_tmp = NaN(1,length(choice_LR_tmp));
-        choice_highE_tmp(choice_LR_tmp == -defaultSide_tmp) = 1;
-        choice_highE_tmp(choice_LR_tmp == defaultSide_tmp) = 0;
-        
-        %% extract input behavioral variable
-        switch input_prm_nm
-            case 'uncertainty'
-                input_prm(runTrials_idx, iS) = uncertainty_tmp;
-                input_prm_perTask.(task_nm_tmp)(runTrialsPerTask_idx, iS) = uncertainty_tmp;
-            case 'E_level'
-                input_prm(runTrials_idx, iS) = E_highE_tmp;
-                input_prm_perTask.(task_nm_tmp)(runTrialsPerTask_idx, iS) = E_highE_tmp;
-            case 'money_level'
-                input_prm(runTrials_idx, iS) = money_hE_tmp;
-                input_prm_perTask.(task_nm_tmp)(runTrialsPerTask_idx, iS) = money_hE_tmp;
-            case 'deltaMoney_level'
-                input_prm(runTrials_idx, iS) = deltaMoney_tmp;
-                input_prm_perTask.(task_nm_tmp)(runTrialsPerTask_idx, iS) = deltaMoney_tmp;
-            case 'deltaNV'
-                input_prm(runTrials_idx, iS) = deltaNV_tmp;
-                input_prm_perTask.(task_nm_tmp)(runTrialsPerTask_idx, iS) = deltaNV_tmp;
-            case 'NV_hE'
-                input_prm(runTrials_idx, iS) = NV_hE_tmp;
-                input_prm_perTask.(task_nm_tmp)(runTrialsPerTask_idx, iS) = NV_hE_tmp;
-            otherwise
-                error(['input = ',input_prm_nm,' not ready yet']);
-        end
-        
+            
+            %% default side
+            defaultSide_tmp = choiceOptions_tmp.default_LR;
+            %% extract R or P
+            RP_var_tmp = strcmp(choiceOptions_tmp.R_or_P,'R');
+            
+            %% effort level
+            E_highE_tmp = (choiceOptions_tmp.E.left).*(defaultSide_tmp == 1) +...
+                (choiceOptions_tmp.E.right).*(defaultSide_tmp == -1);
+            
+            %% high-effort money amount
+            money_hE_tmp = ((choiceOptions_tmp.monetary_amount.left).*(defaultSide_tmp == 1) +...
+                (choiceOptions_tmp.monetary_amount.right).*(defaultSide_tmp == -1)).*((RP_var_tmp == 1) - (RP_var_tmp == 0));
+            money_lE_tmp = ((choiceOptions_tmp.monetary_amount.left).*(defaultSide_tmp == -1) +...
+                (choiceOptions_tmp.monetary_amount.right).*(defaultSide_tmp == 1)).*((RP_var_tmp == 1) - (RP_var_tmp == 0));
+            
+            %% delta between high and low effort options
+            deltaMoney_tmp = money_hE_tmp - money_lE_tmp;
+            
+            %% RT
+            onsets_tmp = behaviorStruct_tmp.onsets;
+            switch task_nm_tmp
+                case 'Ep'
+                    onsets_tmp = behaviorStruct_tmp.physicalPerf.onsets;
+                    choice_LR_tmp = behaviorStruct_tmp.physicalPerf.choice;
+                case 'Em'
+                    onsets_tmp = behaviorStruct_tmp.mentalE_perf.onsets;
+                    choice_LR_tmp = behaviorStruct_tmp.mentalE_perf.choice;
+            end
+            RT_tmp = onsets_tmp.choice - onsets_tmp.dispChoiceOptions;
+            
+            %% confidence rating
+            uncertaintyRtg_tmp = NaN(1,length(choice_LR_tmp));
+            uncertaintyRtg_tmp(abs(choice_LR_tmp) == 2) = 0; % high confidence = low uncertainty
+            uncertaintyRtg_tmp(abs(choice_LR_tmp) == 1) = 1; % low confidence = high uncertainty
+            
+            %% net value and confidence inferred by the model
+            if needModeling == 1
+                switch mdlType
+                    case 'simple'
+                        NV_hE_tmp = dataInferred.NV_varOption.(task_nm_tmp).(['mdl_',mdlN]).(run_nm_bis);
+                        trial_idx = (1:nTrialsPerRun) + nTrialsPerRun*(kRun >= 3);
+                        deltaNV_tmp = dataInferred.deltaNV.(['mdl_',mdlN]).(task_nm_tmp)(trial_idx);
+                        uncertainty_tmp = - dataInferred.confidenceFitted.(['mdl_',mdlN]).(run_nm_bis); % revert sign to transform confidence into uncertainty
+                    case 'bayesian'
+                        [~, NV_hE_tmp] = extract_bayesian_mdl(gitResultsFolder, subBehaviorFolder,...
+                            sub_nm, run_nm, task_fullName, ['mdl_',mdlN]);
+                end
+            end
+            
+            %% choice
+            choice_LR_tmp = choiceAndPerf_tmp.choice;
+            % remove confidence info from choice:
+            choice_LR_tmp(choice_LR_tmp == 2) = 1;
+            choice_LR_tmp(choice_LR_tmp == -2) = -1;
+            % extract high effort choice
+            choice_highE_tmp = NaN(1,length(choice_LR_tmp));
+            choice_highE_tmp(choice_LR_tmp == -defaultSide_tmp) = 1;
+            choice_highE_tmp(choice_LR_tmp == defaultSide_tmp) = 0;
+            
+            %% extract input behavioral variable
+            switch input_prm_nm
+                case 'uncertainty'
+                    input_prm(runTrials_idx, iS) = uncertainty_tmp;
+                case 'E_level'
+                    input_prm(runTrials_idx, iS) = E_highE_tmp;
+                case 'money_level'
+                    input_prm(runTrials_idx, iS) = money_hE_tmp;
+                case 'deltaMoney_level'
+                    input_prm(runTrials_idx, iS) = deltaMoney_tmp;
+                case 'deltaNV'
+                    input_prm(runTrials_idx, iS) = deltaNV_tmp;
+                case 'NV_hE'
+                    input_prm(runTrials_idx, iS) = NV_hE_tmp;
+                otherwise
+                    error(['input = ',input_prm_nm,' not ready yet']);
+            end
+            %% extract output behavioral variable
+            choice_hE(runTrials_idx, iS) = choice_highE_tmp;
+            choice_hE_perTask.(task_nm_tmp)(runTrials_idx, iS) = choice_highE_tmp;
+            
+        end % task filter
         %% extract fMRI ROI mediator
-        if strcmp(task_to_look,'EpEmPool') ||...
-                (strcmp(task_to_look, task_nm_tmp))
+        if strcmp(ROI_task_to_look,'EpEmPool') ||...
+                (strcmp(ROI_task_to_look, task_nm_tmp))
             ROI_mediator(runTrials_idx, iS) = ROI_trial_b_trial.(ROI_nm{1}).(task_nm_tmp).(run_nm_bis).(timePeriod_nm)(:, iS);
         end
-        ROI_mediator_perTask.(task_nm_tmp)(runTrialsPerTask_idx, iS) = ROI_trial_b_trial.(ROI_nm{1}).(task_nm_tmp).(run_nm_bis).(timePeriod_nm)(:, iS);
-        %% extract output behavioral variable
-        choice_hE(runTrials_idx, iS) = choice_highE_tmp;
-        choice_hE_perTask.(task_nm_tmp)(runTrialsPerTask_idx, iS) = choice_highE_tmp;
     end % run loop
     
-
     %% extract the bins
     % 1) split the data according to input parameter bins
     [ROI_f_input_bin(:,iS), input_f_input_bin(:,iS), bin_idx_tmp] = do_bin2(ROI_mediator(:, iS), input_prm(:,iS), nBins, 0);
@@ -271,38 +265,7 @@ for iS = 1:NS
         input_f_input_high_ROI(iBin, iS) = mean(input_bin_tmp(curr_bin_high_ROI_idx),1,'omitnan');
         ROI_f_input_high_ROI(iBin, iS) = mean(ROI_bin_tmp(curr_bin_high_ROI_idx),1,'omitnan');
         choice_f_input_high_ROI(iBin, iS) =  mean(choice_bin_tmp(curr_bin_high_ROI_idx),1,'omitnan');
-    end
-    
-    % same but for data split according to task type
-    for iTask = 1:nTasks
-        task_nm = tasks{iTask};
-        % 1) split the data according to input parameter bins
-        [ROI_f_input_bin_perTask.(task_nm)(:,iS),...
-            input_f_input_bin_perTask.(task_nm)(:,iS),...
-            bin_idx_tmp] = do_bin2(ROI_mediator_perTask.(task_nm)(:, iS), input_prm_perTask.(task_nm)(:,iS), nBins, 0);
-        choice_f_input_bin_perTask.(task_nm)(:,iS) = do_bin2(choice_hE_perTask.(task_nm)(:, iS), input_prm_perTask.(task_nm)(:,iS), nBins, 0);
-        
-        % 2) perform a median split according to the ROI activity for each bin
-        for iBin = 1:nBins
-            curr_bin_idx_tmp = bin_idx_tmp == iBin;
-            med_tmp = median(ROI_mediator_perTask.(task_nm)(curr_bin_idx_tmp, iS), 1,'omitnan');
-            % extract data for the current bin of interest
-            input_bin_perTask_tmp   = input_prm_perTask.(task_nm)(curr_bin_idx_tmp, iS);
-            ROI_bin_perTask_tmp     = ROI_mediator_perTask.(task_nm)(curr_bin_idx_tmp, iS);
-            choice_bin_perTask_tmp  = choice_hE_perTask.(task_nm)(curr_bin_idx_tmp, iS);
-            % extract data for low ROI activity
-            curr_bin_low_ROI_idx = ROI_bin_perTask_tmp < med_tmp;
-            input_f_input_low_ROI_perTask.(task_nm)(iBin, iS) = mean(input_bin_perTask_tmp(curr_bin_low_ROI_idx),1,'omitnan');
-            ROI_f_input_low_ROI_perTask.(task_nm)(iBin, iS) = mean(ROI_bin_perTask_tmp(curr_bin_low_ROI_idx),1,'omitnan');
-            choice_f_input_low_ROI_perTask.(task_nm)(iBin, iS) =  mean(choice_bin_perTask_tmp(curr_bin_low_ROI_idx),1,'omitnan');
-            % extract data for high ROI activity
-            curr_bin_high_ROI_idx = ROI_bin_perTask_tmp > med_tmp;
-            input_f_input_high_ROI_perTask.(task_nm)(iBin, iS) = mean(input_bin_perTask_tmp(curr_bin_high_ROI_idx),1,'omitnan');
-            ROI_f_input_high_ROI_perTask.(task_nm)(iBin, iS) = mean(ROI_bin_perTask_tmp(curr_bin_high_ROI_idx),1,'omitnan');
-            choice_f_input_high_ROI_perTask.(task_nm)(iBin, iS) =  mean(choice_bin_perTask_tmp(curr_bin_high_ROI_idx),1,'omitnan');
-        end
-    end
-    
+    end % bin loop
 end % subject loop
 
 %% average data
@@ -327,30 +290,6 @@ end % subject loop
     sem_ROI_f_input_high_ROI] = mean_sem_sd(ROI_f_input_high_ROI, 2);
 [m_choice_f_input_high_ROI,...
     sem_choice_f_input_high_ROI] = mean_sem_sd(choice_f_input_high_ROI, 2);
-for iTask = 1:nTasks
-    task_nm = tasks{iTask};
-    % basic data
-    [m_input_f_input_perTask.(task_nm),...
-        sem_input_f_input_perTask.(task_nm)] = mean_sem_sd(input_f_input_bin_perTask.(task_nm), 2);
-    [m_ROI_f_input_perTask.(task_nm),...
-        sem_ROI_f_input_perTask.(task_nm)] = mean_sem_sd(ROI_f_input_bin_perTask.(task_nm), 2);
-    [m_choice_f_input_perTask.(task_nm),...
-        sem_choice_f_input_perTask.(task_nm)] = mean_sem_sd(choice_f_input_bin_perTask.(task_nm), 2);
-    % low ROI median split
-    [m_input_f_input_low_ROI_perTask.(task_nm),...
-        sem_input_f_input_low_ROI_perTask.(task_nm)] = mean_sem_sd(input_f_input_low_ROI_perTask.(task_nm), 2);
-    [m_ROI_f_input_low_ROI_perTask.(task_nm),...
-        sem_ROI_f_input_low_ROI_perTask.(task_nm)] = mean_sem_sd(ROI_f_input_low_ROI_perTask.(task_nm), 2);
-    [m_choice_f_input_low_ROI_perTask.(task_nm),...
-        sem_choice_f_input_low_ROI_perTask.(task_nm)] = mean_sem_sd(choice_f_input_low_ROI_perTask.(task_nm), 2);
-    % high ROI median split
-    [m_input_f_input_high_ROI_perTask.(task_nm),...
-        sem_input_f_input_high_ROI_perTask.(task_nm)] = mean_sem_sd(input_f_input_high_ROI_perTask.(task_nm), 2);
-    [m_ROI_f_input_high_ROI_perTask.(task_nm),...
-        sem_ROI_f_input_high_ROI_perTask.(task_nm)] = mean_sem_sd(ROI_f_input_high_ROI_perTask.(task_nm), 2);
-    [m_choice_f_input_high_ROI_perTask.(task_nm),...
-        sem_choice_f_input_high_ROI_perTask.(task_nm)] = mean_sem_sd(choice_f_input_high_ROI_perTask.(task_nm), 2);
-end % task loop
 
 %% figures
 if dispFig == true
@@ -360,6 +299,22 @@ if dispFig == true
     orange = [241 163 64]./255;
     pSize = 50;
     input_prm_nm = strrep(input_prm_nm,'_',' ');
+    switch behavioral_task_to_look
+        case 'Ep'
+            full_bhv_taskName = 'physical task';
+        case 'Em'
+            full_bhv_taskName = 'mental task';
+        case 'EpEmPool'
+            full_bhv_taskName = 'both tasks';
+    end
+    switch ROI_task_to_look
+        case 'Ep'
+            full_ROI_taskName = 'physical task';
+        case 'Em'
+            full_ROI_taskName = 'mental task';
+        case 'EpEmPool'
+            full_ROI_taskName = 'both tasks';
+    end
 
     %% look at the general figure (choice = f(inputs), ROI=f(inputs)
     fig;
@@ -372,8 +327,9 @@ if dispFig == true
     gal_data_hdl.LineStyle = 'none';
     gal_data_hdl.LineWidth = lWidth;
     gal_data_hdl.MarkerEdgeColor = black;
-    xlabel(input_prm_nm);
-    ylabel('Choice = high effort (%)');
+    xlabel({input_prm_nm; full_bhv_taskName});
+    ylabel({'Choice = high effort (%)';...
+        full_bhv_taskName});
     legend_size(pSize);
 
     subplot(1,2,2);
@@ -385,8 +341,8 @@ if dispFig == true
     ROI_f_input_hdl.LineStyle = 'none';
     ROI_f_input_hdl.LineWidth = lWidth;
     ROI_f_input_hdl.MarkerEdgeColor = black;
-    xlabel(input_prm_nm);
-    ylabel([ROI_short_nm,' BOLD']);
+    xlabel({input_prm_nm; full_bhv_taskName});
+    ylabel({[ROI_short_nm,' BOLD '];full_ROI_taskName});
     legend_size(pSize);
 
     %% sanity check: ROI = f(inputs) + ROI median split (did it work?)
@@ -404,8 +360,8 @@ if dispFig == true
     ROI_f_input_high_ROI_hdl.LineStyle = 'none';
     ROI_f_input_high_ROI_hdl.LineWidth = lWidth;
     ROI_f_input_high_ROI_hdl.MarkerEdgeColor = orange;
-    xlabel(input_prm_nm);
-    ylabel([ROI_short_nm,' BOLD']);
+    xlabel({input_prm_nm; full_bhv_taskName});
+    ylabel({[ROI_short_nm,' BOLD '];full_ROI_taskName});
     legend([ROI_f_input_low_ROI_hdl, ROI_f_input_high_ROI_hdl],...
         {['low ',ROI_short_nm],['high ',ROI_short_nm]});
     legend('boxoff');
@@ -424,93 +380,13 @@ if dispFig == true
     choices_f_inputs_low_ROI_data_hdl.MarkerEdgeColor = purple;
     choices_f_inputs_high_ROI_data_hdl.LineWidth = lWidth;
     choices_f_inputs_high_ROI_data_hdl.MarkerEdgeColor = orange;
-    xlabel(input_prm_nm);
-    ylabel('Choice = high effort (%)');
+    xlabel({input_prm_nm; full_bhv_taskName});
+    ylabel({'Choice = high effort (%)';...
+        full_bhv_taskName});
     legend([choices_f_inputs_low_ROI_data_hdl, choices_f_inputs_high_ROI_data_hdl],...
         {['low ',ROI_short_nm],['high ',ROI_short_nm]});
     legend('boxoff');
     legend_size(pSize);
-
-    %% same but split per task
-    for iTask = 1:nTasks
-        task_nm = tasks{iTask};
-        switch task_nm
-            case 'Ep'
-                full_taskName = 'physical';
-            case 'Em'
-                full_taskName = 'mental';
-        end
-        
-        %% look at the general figure (choice = f(inputs), ROI=f(inputs)
-        fig;
-        % choices = f(inputs)
-        subplot(1,2,1);
-        hold on;
-        gal_data_hdl = errorbar(m_input_f_input_perTask.(task_nm),...
-            m_choice_f_input_perTask.(task_nm),...
-            sem_choice_f_input_perTask.(task_nm));
-        gal_data_hdl.LineStyle = 'none';
-        gal_data_hdl.LineWidth = lWidth;
-        gal_data_hdl.MarkerEdgeColor = black;
-        xlabel(input_prm_nm);
-        ylabel(['Choice = high ',task_fullName,' effort (%)']);
-        legend_size(pSize);
-        
-        subplot(1,2,2);
-        % ROI = f(inputs)
-        hold on;
-        ROI_f_input_hdl = errorbar(m_input_f_input_perTask.(task_nm),...
-            m_ROI_f_input_perTask.(task_nm),...
-            sem_ROI_f_input_perTask.(task_nm));
-        ROI_f_input_hdl.LineStyle = 'none';
-        ROI_f_input_hdl.LineWidth = lWidth;
-        ROI_f_input_hdl.MarkerEdgeColor = black;
-        xlabel(input_prm_nm);
-        ylabel([ROI_short_nm,' BOLD']);
-        legend_size(pSize);
-        
-        %% sanity check: ROI = f(inputs) + ROI median split (did it work?)
-        fig;
-        hold on;
-        ROI_f_input_low_ROI_hdl = errorbar(m_input_f_input_low_ROI_perTask.(task_nm),...
-            m_ROI_f_input_low_ROI_perTask.(task_nm),...
-            sem_ROI_f_input_low_ROI_perTask.(task_nm));
-        ROI_f_input_high_ROI_hdl = errorbar(m_input_f_input_high_ROI_perTask.(task_nm),...
-            m_ROI_f_input_high_ROI_perTask.(task_nm),...
-            sem_ROI_f_input_high_ROI_perTask.(task_nm));
-        ROI_f_input_low_ROI_hdl.LineStyle = 'none';
-        ROI_f_input_low_ROI_hdl.LineWidth = lWidth;
-        ROI_f_input_low_ROI_hdl.MarkerEdgeColor = purple;
-        ROI_f_input_high_ROI_hdl.LineStyle = 'none';
-        ROI_f_input_high_ROI_hdl.LineWidth = lWidth;
-        ROI_f_input_high_ROI_hdl.MarkerEdgeColor = orange;
-        xlabel(input_prm_nm);
-        ylabel([ROI_short_nm,' BOLD - ',task_fullName]);
-        legend([ROI_f_input_low_ROI_hdl, ROI_f_input_high_ROI_hdl],...
-            {['low ',ROI_short_nm],['high ',ROI_short_nm]});
-        legend('boxoff');
-        legend_size(pSize);
-        
-        %% main figure: choices = f(inputs) + ROI median split
-        fig;
-        hold on;
-        choices_f_inputs_low_ROI_data_hdl = errorbar(m_input_f_input_low_ROI_perTask.(task_nm),...
-            m_choice_f_input_low_ROI_perTask.(task_nm),...
-            sem_choice_f_input_low_ROI_perTask.(task_nm));
-        choices_f_inputs_high_ROI_data_hdl = errorbar(m_input_f_input_high_ROI_perTask.(task_nm),...
-            m_choice_f_input_high_ROI_perTask.(task_nm),...
-            sem_choice_f_input_high_ROI_perTask.(task_nm));
-        choices_f_inputs_low_ROI_data_hdl.LineWidth = lWidth;
-        choices_f_inputs_low_ROI_data_hdl.MarkerEdgeColor = purple;
-        choices_f_inputs_high_ROI_data_hdl.LineWidth = lWidth;
-        choices_f_inputs_high_ROI_data_hdl.MarkerEdgeColor = orange;
-        xlabel(input_prm_nm);
-        ylabel(['Choice = high ',task_fullName,' effort (%)']);
-        legend([choices_f_inputs_low_ROI_data_hdl, choices_f_inputs_high_ROI_data_hdl],...
-            {['low ',ROI_short_nm],['high ',ROI_short_nm]});
-        legend('boxoff');
-        legend_size(pSize);
-    end % task loop
 end
 
 %% compare slopes
