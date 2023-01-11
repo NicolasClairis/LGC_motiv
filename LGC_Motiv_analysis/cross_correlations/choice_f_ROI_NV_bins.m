@@ -198,8 +198,9 @@ for iS = 1:NS
                         deltaNV_tmp = dataInferred.deltaNV.(['mdl_',mdlN]).(task_nm_tmp)(trial_idx);
                         uncertainty_tmp = - dataInferred.confidenceFitted.(['mdl_',mdlN]).(run_nm_bis); % revert sign to transform confidence into uncertainty
                     case 'bayesian'
-                        [~, NV_hE_tmp] = extract_bayesian_mdl(gitResultsFolder, subBehaviorFolder,...
+                        [~, NV_hE_tmp, confidence_tmp] = extract_bayesian_mdl(gitResultsFolder, subBehaviorFolder,...
                             sub_nm, run_nm, task_fullName, ['mdl_',mdlN]);
+                        uncertainty_tmp = -confidence_tmp;
                 end
             end
             

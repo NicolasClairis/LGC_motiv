@@ -1,8 +1,8 @@
 %% extract RT in function of ROI and input parameter
-RT_f_ROI_NV_bins;
+% RT_f_ROI_NV_bins;
 
 %% load group indexes depending on the level of metabolites
-[met_subs.low, met_subs.high, metabolite_nm, ROI_nm] = medSplit_metabolites(study_nm, subject_id);
+[met_subs.low, met_subs.high, metabolite_nm, MRS_ROI_nm] = medSplit_metabolites(study_nm, subject_id);
 met_groups = {'low','high'};
 n_met_grps = length(met_groups);
 %% average data according to which group (low/high metabolite)
@@ -46,6 +46,22 @@ if dispFig == true
     high_met_nm = ['high_',metabolite_nm];
     low_met_nm_bis = ['low ',metabolite_nm];
     high_met_nm_bis = ['high ',metabolite_nm];
+    switch behavioral_task_to_look
+        case 'Ep'
+            full_bhv_taskName = 'physical task';
+        case 'Em'
+            full_bhv_taskName = 'mental task';
+        case 'EpEmPool'
+            full_bhv_taskName = 'both tasks';
+    end
+    switch ROI_task_to_look
+        case 'Ep'
+            full_ROI_taskName = 'physical task';
+        case 'Em'
+            full_ROI_taskName = 'mental task';
+        case 'EpEmPool'
+            full_ROI_taskName = 'both tasks';
+    end
     
     % look at the general figure (RT = f(inputs), ROI=f(inputs)
     fig;

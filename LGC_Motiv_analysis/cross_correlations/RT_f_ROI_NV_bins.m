@@ -103,7 +103,8 @@ for iS = 1:NS
             [~, dataInferred] = logitfit_choices(computerRoot, study_nm, sub_nm,...
                 0, 'levels', 6, 6);
         case 'bayesian'
-            error('please update for bayesian model');
+            gitResultsFolder = [fullfile('C:','Users','clairis','Desktop',...
+                    'GitHub','LGC_motiv','LGC_Motiv_results',study_nm,'bayesian_modeling'),filesep];
         end
     end
 
@@ -142,90 +143,92 @@ for iS = 1:NS
         % filter task based on what was selected in the inputs
         if strcmp(behavioral_task_to_look,'EpEmPool') ||...
                 strcmp(behavioral_task_to_look, task_nm_tmp)
-        %% load the data
-        behaviorStruct_tmp = load([subBehaviorFolder,...
-            'CID',sub_nm,'_session',run_nm,'_',task_fullName,...
-            '_task.mat']);
-        choiceOptions_tmp = behaviorStruct_tmp.choice_opt;
-        switch task_nm_tmp
-            case 'Em'
-                choiceAndPerf_tmp = behaviorStruct_tmp.mentalE_perf;
-            case 'Ep'
-                choiceAndPerf_tmp = behaviorStruct_tmp.physicalPerf;
-        end
-        
-        %% default side
-        defaultSide_tmp = choiceOptions_tmp.default_LR;
-        %% extract R or P
-        RP_var_tmp = strcmp(choiceOptions_tmp.R_or_P,'R');
-        
-        %% effort level
-        E_highE_tmp = (choiceOptions_tmp.E.left).*(defaultSide_tmp == 1) +...
-            (choiceOptions_tmp.E.right).*(defaultSide_tmp == -1);
-        
-        %% high-effort money amount
-        money_hE_tmp = ((choiceOptions_tmp.monetary_amount.left).*(defaultSide_tmp == 1) +...
-            (choiceOptions_tmp.monetary_amount.right).*(defaultSide_tmp == -1)).*((RP_var_tmp == 1) - (RP_var_tmp == 0));
-        money_lE_tmp = ((choiceOptions_tmp.monetary_amount.left).*(defaultSide_tmp == -1) +...
-            (choiceOptions_tmp.monetary_amount.right).*(defaultSide_tmp == 1)).*((RP_var_tmp == 1) - (RP_var_tmp == 0));
-        
-        %% delta between high and low effort options
-        deltaMoney_tmp = money_hE_tmp - money_lE_tmp;
-        
-        %% RT
-        onsets_tmp = behaviorStruct_tmp.onsets;
-        switch task_nm_tmp
-            case 'Ep'
-                onsets_tmp = behaviorStruct_tmp.physicalPerf.onsets;
-                choice_LR_tmp = behaviorStruct_tmp.physicalPerf.choice;
-            case 'Em'
-                onsets_tmp = behaviorStruct_tmp.mentalE_perf.onsets;
-                choice_LR_tmp = behaviorStruct_tmp.mentalE_perf.choice;
-        end
-        RT_tmp = onsets_tmp.choice - onsets_tmp.dispChoiceOptions;
-        
-        %% confidence rating
-        uncertaintyRtg_tmp = NaN(1,length(choice_LR_tmp));
-        uncertaintyRtg_tmp(abs(choice_LR_tmp) == 2) = 0; % high confidence = low uncertainty
-        uncertaintyRtg_tmp(abs(choice_LR_tmp) == 1) = 1; % low confidence = high uncertainty
-        
-        %% net value and confidence inferred by the model
-        if needModeling == 1 
-            switch mdlType
-                case 'simple'
-                    NV_hE_tmp = dataInferred.NV_varOption.(task_nm_tmp).(['mdl_',mdlN]).(run_nm_bis);
-                    trial_idx = (1:nTrialsPerRun) + nTrialsPerRun*(kRun >= 3);
-                    deltaNV_tmp = dataInferred.deltaNV.(['mdl_',mdlN]).(task_nm_tmp)(trial_idx);
-                    uncertainty_tmp = - dataInferred.confidenceFitted.(['mdl_',mdlN]).(run_nm_bis); % revert sign to transform confidence into uncertainty
-                otherwise
-                    error('not ready yet');
+            %% load the data
+            behaviorStruct_tmp = load([subBehaviorFolder,...
+                'CID',sub_nm,'_session',run_nm,'_',task_fullName,...
+                '_task.mat']);
+            choiceOptions_tmp = behaviorStruct_tmp.choice_opt;
+            switch task_nm_tmp
+                case 'Em'
+                    choiceAndPerf_tmp = behaviorStruct_tmp.mentalE_perf;
+                case 'Ep'
+                    choiceAndPerf_tmp = behaviorStruct_tmp.physicalPerf;
             end
-        end
-        
-        %% extract input behavioral variable
-        switch input_prm_nm
-            case 'uncertainty'
-                input_prm(runTrials_idx, iS) = uncertainty_tmp;
-            case 'E_level'
-                input_prm(runTrials_idx, iS) = E_highE_tmp;
-            case 'money_level'
-                input_prm(runTrials_idx, iS) = money_hE_tmp;
-            case 'deltaMoney_level'
-                input_prm(runTrials_idx, iS) = deltaMoney_tmp;
-            case 'deltaNV'
-                input_prm(runTrials_idx, iS) = deltaNV_tmp;
-            case 'NV_hE'
-                input_prm(runTrials_idx, iS) = NV_hE_tmp;
-            otherwise
-                error(['input = ',input_prm_nm,' not ready yet']);
-        end
-        
-        %% extract RT = output behavioral variable
-        RT(runTrials_idx, iS) = RT_tmp;
+            
+            %% default side
+            defaultSide_tmp = choiceOptions_tmp.default_LR;
+            %% extract R or P
+            RP_var_tmp = strcmp(choiceOptions_tmp.R_or_P,'R');
+            
+            %% effort level
+            E_highE_tmp = (choiceOptions_tmp.E.left).*(defaultSide_tmp == 1) +...
+                (choiceOptions_tmp.E.right).*(defaultSide_tmp == -1);
+            
+            %% high-effort money amount
+            money_hE_tmp = ((choiceOptions_tmp.monetary_amount.left).*(defaultSide_tmp == 1) +...
+                (choiceOptions_tmp.monetary_amount.right).*(defaultSide_tmp == -1)).*((RP_var_tmp == 1) - (RP_var_tmp == 0));
+            money_lE_tmp = ((choiceOptions_tmp.monetary_amount.left).*(defaultSide_tmp == -1) +...
+                (choiceOptions_tmp.monetary_amount.right).*(defaultSide_tmp == 1)).*((RP_var_tmp == 1) - (RP_var_tmp == 0));
+            
+            %% delta between high and low effort options
+            deltaMoney_tmp = money_hE_tmp - money_lE_tmp;
+            
+            %% RT
+            onsets_tmp = behaviorStruct_tmp.onsets;
+            switch task_nm_tmp
+                case 'Ep'
+                    onsets_tmp = behaviorStruct_tmp.physicalPerf.onsets;
+                    choice_LR_tmp = behaviorStruct_tmp.physicalPerf.choice;
+                case 'Em'
+                    onsets_tmp = behaviorStruct_tmp.mentalE_perf.onsets;
+                    choice_LR_tmp = behaviorStruct_tmp.mentalE_perf.choice;
+            end
+            RT_tmp = onsets_tmp.choice - onsets_tmp.dispChoiceOptions;
+            
+            %% confidence rating
+            uncertaintyRtg_tmp = NaN(1,length(choice_LR_tmp));
+            uncertaintyRtg_tmp(abs(choice_LR_tmp) == 2) = 0; % high confidence = low uncertainty
+            uncertaintyRtg_tmp(abs(choice_LR_tmp) == 1) = 1; % low confidence = high uncertainty
+            
+            %% net value and confidence inferred by the model
+            if needModeling == 1
+                switch mdlType
+                    case 'simple'
+                        NV_hE_tmp = dataInferred.NV_varOption.(task_nm_tmp).(['mdl_',mdlN]).(run_nm_bis);
+                        trial_idx = (1:nTrialsPerRun) + nTrialsPerRun*(kRun >= 3);
+                        deltaNV_tmp = dataInferred.deltaNV.(['mdl_',mdlN]).(task_nm_tmp)(trial_idx);
+                        uncertainty_tmp = - dataInferred.confidenceFitted.(['mdl_',mdlN]).(run_nm_bis); % revert sign to transform confidence into uncertainty
+                    case 'bayesian'
+                        [~, NV_hE_tmp, confidence_tmp] = extract_bayesian_mdl(gitResultsFolder, subBehaviorFolder,...
+                            sub_nm, run_nm, task_fullName, ['mdl_',mdlN]);
+                        uncertainty_tmp = -confidence_tmp;
+                end
+            end
+            
+            %% extract input behavioral variable
+            switch input_prm_nm
+                case 'uncertainty'
+                    input_prm(runTrials_idx, iS) = uncertainty_tmp;
+                case 'E_level'
+                    input_prm(runTrials_idx, iS) = E_highE_tmp;
+                case 'money_level'
+                    input_prm(runTrials_idx, iS) = money_hE_tmp;
+                case 'deltaMoney_level'
+                    input_prm(runTrials_idx, iS) = deltaMoney_tmp;
+                case 'deltaNV'
+                    input_prm(runTrials_idx, iS) = deltaNV_tmp;
+                case 'NV_hE'
+                    input_prm(runTrials_idx, iS) = NV_hE_tmp;
+                otherwise
+                    error(['input = ',input_prm_nm,' not ready yet']);
+            end
+            
+            %% extract RT = output behavioral variable
+            RT(runTrials_idx, iS) = RT_tmp;
         end % task filter
         %% extract fMRI ROI mediator
         if strcmp(ROI_task_to_look,'EpEmPool') ||...
-                (strcmp(ROI_task_to_look, task_nm))
+                (strcmp(ROI_task_to_look, task_nm_tmp))
             ROI_mediator(runTrials_idx, iS) = ROI_trial_b_trial.(ROI_nm{1}).(task_nm_tmp).(run_nm_bis).(timePeriod_nm)(:, iS);
         end
         
@@ -378,8 +381,6 @@ if dispFig == true
         {['low ',ROI_short_nm],['high ',ROI_short_nm]});
     legend('boxoff');
     legend_size(pSize);
-
-    
 end
 
 %% compare slopes
