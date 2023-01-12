@@ -36,11 +36,16 @@ function [GLMprm] = which_GLM(GLM)
 %   .model_onset: indicate for each task (Ep/Em: physical/mental) for each
 %   event (preChoiceCross/choice/chosen/preEffortCross/Eperf/fbk) if it should be modelled as a
 %   stick ('stick') as a boxcar ('boxcar') or not included in the GLM
-%   ('none'), for some cases, 'boxcar_bis' corresponds to situation where
-%   the boxcar also entails following periods of the task
+%   ('none'), for some cases, 'boxcar_bis' and 'boxcar_ter' correspond to 
+%   situations where the boxcar also entails following periods of the task
 %       .preChoiceCross: (white) fixation cross before choice period
 %       .choice: choice period (when options are displayed on screen)
 %       .chosen: moment when the chosen option is displayed on screen
+%           - 'boxcar_bis': entails chosen option display until the end of
+%           the effort exertion period (effort preparation and execution period)
+%           - 'boxcar_ter': entails chosen option display until the end of
+%           the fixation cross related to effort preparation (effort
+%           preparation period)
 %       .preEffortCross: (black) fixation cross before effort period
 %       .Eperf: physical/mental effort performance period
 %       .fbk: feedback period
@@ -2308,6 +2313,28 @@ switch GLM
             GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
             % feedback
             GLMprm.model_onset.(Epm_nm).fbk = 'stick';
+        end % physical/mental loop
+    case 80 % add derivative and pool chosen + cross together for effort preparation
+        % general parameters
+        GLMprm.gal.orth_vars = 0;
+        GLMprm.gal.zPerRun = 0;
+        GLMprm.gal.add_drv = 1;
+        % loop per task
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'stick';
+            GLMprm.choice.(Epm_nm).RP.E.money_ch_min_fixOption = 1;
+            GLMprm.choice.(Epm_nm).RP.E.E_chosen = 1;
+            GLMprm.choice.(Epm_nm).RP.E.RT = 1;
+            % effort preparation
+            GLMprm.model_onset.(Epm_nm).chosen = 'boxcar_ter';
+            GLMprm.chosen.(Epm_nm).RP.E.E_chosen = 1;
+            % effort execution
+            GLMprm.model_onset.(Epm_nm).Eperf = 'boxcar';
+            GLMprm.Eperf.(Epm_nm).RP.E.E_chosen = 1;
+            % feedback
+            GLMprm.model_onset.(Epm_nm).Eperf = 'boxcar';
         end % physical/mental loop
 end % GLM number
 %% warnings: check compatibility of the GLM parameters entered
