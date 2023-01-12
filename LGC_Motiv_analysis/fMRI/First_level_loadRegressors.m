@@ -1166,6 +1166,11 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis'})
                     modelChosenDur = dispChosenDur(chosen_trial_idx) +...
                         preEffortCrossDur(chosen_trial_idx) +...
                         EperfDur(chosen_trial_idx);
+                case 'boxcar_ter' % duration going form display of chosen option
+                    % until the end of the effort preparation cross
+                    % (entailing the whole effort preparation period)
+                    modelChosenDur = dispChosenDur(chosen_trial_idx) +...
+                        preEffortCrossDur(chosen_trial_idx);
             end
             
             %% chosen modulators
