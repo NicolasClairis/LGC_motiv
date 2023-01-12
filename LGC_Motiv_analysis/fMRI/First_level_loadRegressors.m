@@ -1085,7 +1085,7 @@ end % model choice
 
 %% chosen period
 chosenModel = GLMprm.model_onset.(task_id).chosen;
-if ismember(chosenModel,{'stick','boxcar','boxcar_bis'})
+if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
     
     for iRP_chosen = 1:length(RPchosenCond)
         RP_dispChosen_nm = RPchosenCond{iRP_chosen};
