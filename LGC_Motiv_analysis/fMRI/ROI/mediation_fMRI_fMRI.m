@@ -53,7 +53,8 @@ timePeriod_nm2 = timePeriods{which_timePeriod2};
 %% select parameters of interest
 potential_ROI1_prm = {'uncertainty','E_level','money_level',...
     'deltaMoney_level','choice_hE','E_chosen'};
-potential_ROI2_prm = {'RT','uncertainty_rtg','choice_hE','E_chosen'};
+potential_ROI2_prm = {'RT','uncertainty_rtg','choice_hE','E_chosen',...
+    'E_level','money_level','deltaMoney_level'};
 
 which_prm_ROI1 = listdlg('PromptString',['select prm for ',ROI_short_nm1],...
     'ListString',potential_ROI1_prm);
@@ -250,6 +251,12 @@ for iS = 1:NS
                 ROI2_prm(runTrials_idx, iS) = choice_highE_tmp;
             case 'E_chosen'
                 ROI2_prm(runTrials_idx, iS) = E_chosen_tmp;
+            case 'E_level'
+                ROI2_prm(runTrials_idx, iS) = E_highE_tmp;
+            case 'money_level'
+                ROI2_prm(runTrials_idx, iS) = money_hE_tmp;
+            case 'deltaMoney_level'
+                ROI2_prm(runTrials_idx, iS) = deltaMoney_tmp;
             otherwise
                 error(['output = ',ROI2_prm_nm,' not ready yet']);
         end
@@ -375,4 +382,3 @@ hdl_fit.LineWidth = lWidth;
 xlabel([ROI_short_nm1,' b']);
 ylabel([ROI_short_nm2,' b']);
 legend_size(pSize);
-
