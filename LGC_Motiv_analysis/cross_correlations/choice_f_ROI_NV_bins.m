@@ -55,9 +55,9 @@ behavioral_task_to_look = task_names{which_bhv_task};
 
 %% number of bins
 switch input_prm_nm
-    case {'E_level','money_level','deltaMoney_level'}
+    case {'E_level'}
         nBins = 3;
-    case {'NV_hE','deltaNV','uncertainty'}
+    case {'NV_hE','deltaNV','uncertainty','money_level','deltaMoney_level'}
         nBins = 6;
     otherwise
         nBins = 6;
