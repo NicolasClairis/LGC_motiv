@@ -1,5 +1,5 @@
-function[badSubs]=find_bad_Ech_runs(study_nm, condition, subject_id, NS)
-% [badSubs]=find_bad_Ech_runs(study_nm, condition, subject_id, NS)
+function[badSubs, allSubs]=find_bad_Ech_runs(study_nm, condition, subject_id, NS)
+% [badSubs, allSubs]=find_bad_Ech_runs(study_nm, condition, subject_id, NS)
 % The goal of find_bad_Ech_runs is to identify the runs and subjects who
 % have not enough power in order to compare high E chosen vs low E chosen
 % slopes with high effort level as a reference.
@@ -17,6 +17,8 @@ function[badSubs]=find_bad_Ech_runs(study_nm, condition, subject_id, NS)
 % OUTPUTS
 % badSubs: structure with info about the bad subjects and which runs should
 % be removed for this analysis
+%
+% allSubs: structure with info about all subjects and runs
 
 %% study by default
 if ~exist('study_nm','var') || isempty(study_nm)
@@ -36,6 +38,9 @@ if ~exist('subject_id','var') || ~exist('NS','var') ||...
     [subject_id, NS] = LGCM_subject_selection(study_nm, condition);
 end
 %% loop through subjects
+n_hE_lvl = 3;
+n_runsPerTask = 2;
+[choice_hE_perhE, choice_lE_perhE] = deal(NaN(n_hE_lvl, n_runsPerTask, NS));
 for iS = 1:NS
     sub_nm = subject_id{iS};
     subBehaviorFolder = [studyBehaviorFolder, 'CID',sub_nm, filesep, 'behavior',filesep];
@@ -63,18 +68,28 @@ for iS = 1:NS
             case {3,4}
                 taskRun_idx = 2;
         end
-        run_nm_bis = ['run',num2str(taskRun_idx)];
-        % define trial index for relevant variable to extract
-        switch behavioral_task_to_look
-            case {'Ep','Em'}
-                runTrials_idx = (1:nTrialsPerRun) + nTrialsPerRun*(taskRun_idx-1);
-            case 'EpEmPool'
-                runTrials_idx = (1:nTrialsPerRun) + nTrialsPerRun*(kRun-1);
-        end
         %% load the data
-        behaviorStruct_tmp = load([subBehaviorFolder,...
+        behaviorStruct_tmp = getfield(load([subBehaviorFolder,...
             'CID',sub_nm,'_session',run_nm,'_',task_fullName,...
-            '_task.mat']);
-            
+            '_task_behavioral_tmp.mat']),'summary');
+        % extract relevant info
+        hE_lvl_tmp = max(behaviorStruct_tmp.choiceOptions.E.left, behaviorStruct_tmp.choiceOptions.E.right);
+        Ech_tmp = behaviorStruct_tmp.E_chosen;
+        for iE = 1:n_hE_lvl
+            curr_E_idx = hE_lvl_tmp == iE;
+            option_chosen_tmp = Ech_tmp(curr_E_idx);
+            choice_hE_perhE(iE, taskRun_idx, iS) = sum(option_chosen_tmp == iE);
+            choice_lE_perhE(iE, taskRun_idx, iS) = sum(option_chosen_tmp == 0);
+        end % effort level loop
+        
+        % store information
+        allSubs.(['CID',sub_nm]).(['run',run_nm]).choice_highE = choice_hE_perhE(:,taskRun_idx, iS);
+        allSubs.(['CID',sub_nm]).(['run',run_nm]).choice_lowE = choice_lE_perhE(:,taskRun_idx, iS);
+        if sum(choice_hE_perhE(:,taskRun_idx, iS)) < 2 || sum(choice_lE_perhE(:,taskRun_idx, iS)) < 2
+            badSubs.(['CID',sub_nm]).(['run',run_nm]).choice_highE = choice_hE_perhE(:,taskRun_idx, iS);
+            badSubs.(['CID',sub_nm]).(['run',run_nm]).choice_lowE = choice_lE_perhE(:,taskRun_idx, iS);
+        end
     end % run loop
 end % subject loop
+
+end % function
