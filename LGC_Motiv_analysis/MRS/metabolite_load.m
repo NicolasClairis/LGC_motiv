@@ -61,7 +61,9 @@ for iROI = 1:nROIs
                 metabolites.(ROI_nm).(all_metabolites{iMet}) = NaN(1,NS);
         end
     end % metabolite loop
-    metabolites.(ROI_nm).Gln_div_Glu = NaN(1,NS);
+    [metabolites.(ROI_nm).Gln_div_Glu,...
+        metabolites.(ROI_nm).z_antiox,...
+        metabolites.(ROI_nm).antiox] = deal(NaN(1,NS));
     
     %% load the data
     switch ROI_nm
@@ -123,6 +125,13 @@ for iROI = 1:nROIs
     
     % perform also division Glu/Gln
     metabolites.(ROI_nm).Gln_div_Glu = metabolites.(ROI_nm).Gln./metabolites.(ROI_nm).Glu;
+    % extract a pool of antioxidants
+    metabolites.(ROI_nm).antiox = metabolites.(ROI_nm).GSH +...
+        metabolites.(ROI_nm).Tau +...
+        metabolites.(ROI_nm).Gln_div_Glu;
+    metabolites.(ROI_nm).z_antiox = nanzscore(nanzscore(metabolites.(ROI_nm).GSH) +...
+        nanzscore(metabolites.(ROI_nm).Tau) +...
+        nanzscore(metabolites.(ROI_nm).Gln_div_Glu));
 end % ROI loop
 
 %% go back to root
