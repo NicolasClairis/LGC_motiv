@@ -40,7 +40,8 @@ end
 %% loop through subjects
 n_hE_lvl = 3;
 n_runsPerTask = 2;
-[choice_hE_perhE, choice_lE_perhE] = deal(NaN(n_hE_lvl, n_runsPerTask, NS));
+[choice_hE_perhE, choice_lE_perhE,...
+    choice_hE_perhE_yn, choice_lE_perhE_yn,] = deal(NaN(n_hE_lvl, n_runsPerTask, NS));
 for iS = 1:NS
     sub_nm = subject_id{iS};
     subBehaviorFolder = [studyBehaviorFolder, 'CID',sub_nm, filesep, 'behavior',filesep];
@@ -78,16 +79,43 @@ for iS = 1:NS
         for iE = 1:n_hE_lvl
             curr_E_idx = hE_lvl_tmp == iE;
             option_chosen_tmp = Ech_tmp(curr_E_idx);
+            % extract number of times that choice was high or low effort
+            % for the current effort level
             choice_hE_perhE(iE, taskRun_idx, iS) = sum(option_chosen_tmp == iE);
             choice_lE_perhE(iE, taskRun_idx, iS) = sum(option_chosen_tmp == 0);
+            
+            % extract binary variable indicating whether at least one
+            % choice of the high or low effort was made for the current
+            % effort level
+            if sum(option_chosen_tmp == iE) > 0
+                choice_hE_perhE_yn(iE, taskRun_idx, iS) = 1;
+            else
+                choice_hE_perhE_yn(iE, taskRun_idx, iS) = 0;
+            end
+            % same but for low effort option selection
+            if sum(option_chosen_tmp == 0) > 0
+                choice_lE_perhE_yn(iE, taskRun_idx, iS) = 1;
+            else
+                choice_lE_perhE_yn(iE, taskRun_idx, iS) = 0;
+            end
         end % effort level loop
         
         % store information
         allSubs.(['CID',sub_nm]).(['run',run_nm]).choice_highE = choice_hE_perhE(:,taskRun_idx, iS);
         allSubs.(['CID',sub_nm]).(['run',run_nm]).choice_lowE = choice_lE_perhE(:,taskRun_idx, iS);
-        if sum(choice_hE_perhE(:,taskRun_idx, iS)) < 2 || sum(choice_lE_perhE(:,taskRun_idx, iS)) < 2
+        % bad subjects = those who have not at least 2 elements for the
+        % curve of choice = f(E level) in both high effort and low effort
+        % choice
+        if sum(choice_hE_perhE_yn(:,taskRun_idx, iS)) < 2 || sum(choice_lE_perhE_yn(:,taskRun_idx, iS)) < 2
             badSubs.(['CID',sub_nm]).(['run',run_nm]).choice_highE = choice_hE_perhE(:,taskRun_idx, iS);
             badSubs.(['CID',sub_nm]).(['run',run_nm]).choice_lowE = choice_lE_perhE(:,taskRun_idx, iS);
+        end
+        % bad subjects bis = those who have not some element for all the
+        % points of the curve of choice = f(E level) in both high effort 
+        % and low effort choice
+        if sum(choice_hE_perhE_yn(:,taskRun_idx, iS)) < 3 || sum(choice_lE_perhE_yn(:,taskRun_idx, iS)) < 3
+            badSubs.bis.(['CID',sub_nm]).(['run',run_nm]).choice_highE = choice_hE_perhE(:,taskRun_idx, iS);
+            badSubs.bis.(['CID',sub_nm]).(['run',run_nm]).choice_lowE = choice_lE_perhE(:,taskRun_idx, iS);
         end
     end % run loop
 end % subject loop
