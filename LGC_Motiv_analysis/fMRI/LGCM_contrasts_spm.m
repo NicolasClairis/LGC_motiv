@@ -14,8 +14,6 @@ function[] = LGCM_contrasts_spm(GLM, checking, condition, study_nm, subject_id, 
 % checking: display batch before performing it or not? (1 by default)
 %
 % condition:
-% 'fMRI': all fMRI compatible data
-% 'fMRI_no_move': remove runs with too much movement
 %
 % subject_id: list of subject (determined automatically if not defined in
 % the inputs)

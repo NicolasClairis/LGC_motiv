@@ -32,7 +32,9 @@ switch condition
     case 'fMRI_noSatRun' % saturation runs removed
         resultsFolderShortName = ['GLM',GLM_nm,'_no_satRun'];
     case 'fMRI_noSatRun_choiceSplit_Elvl' % saturation runs removed, including those where choice is 100% correlated with effort level
-        resultsFolderShortName = ['GLM',GLM_nm,'_no_satRun_bis'];
+        resultsFolderShortName = ['GLM',GLM_nm,'_no_satRun_Elvl'];
+    case 'fMRI_noSatRun_choiceSplit_Elvl_bis' % saturation runs removed, including those where choice is 100% correlated with effort level
+        resultsFolderShortName = ['GLM',GLM_nm,'_no_satRun_Elvl_bis'];
     case 'fMRI_noMove_bis' % any run with movement removed (with some tolerance)
         resultsFolderShortName = ['GLM',GLM_nm,'_noMvmtRun_lenient'];
     case 'fMRI_noMove_ter' % any run with movement removed (even slightest movement removed)
