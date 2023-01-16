@@ -560,6 +560,9 @@ switch study_nm
                     case '086'
                         runs.runsToKeep = 1;
                         runs.runsToIgnore = [2,3,4];
+                    case '087'
+                        runs.runsToKeep = [1,2];
+                        runs.runsToIgnore = [3,4];
                     case '088'
                         runs.runsToKeep = [1,2,3];
                         runs.runsToIgnore = 4;

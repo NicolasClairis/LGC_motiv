@@ -454,6 +454,9 @@ if exist('subj_scan_folders_names','var') && ~isempty(subj_scan_folders_names)
                                     run_nm_toRemove = {'2_010_run4_20221006',...
                                         '2_009_run3_20221006',...
                                         '2_008_run2_20221006'};
+                                case '087'
+                                    run_nm_toRemove = {'2_010_run4_20211215',...
+                                        '2_009_run3_20211215'};
                                 case '088'
                                     run_nm_toRemove = {'2_010_run4_20220512'};
                                 case '094'
