@@ -1,5 +1,5 @@
 %% extract RT in function of ROI and input parameter
-% RT_f_ROI_NV_bins;
+RT_f_ROI_NV_bins;
 
 %% load group indexes depending on the level of metabolites
 [met_subs.low, met_subs.high, metabolite_nm, MRS_ROI_nm] = medSplit_metabolites(study_nm, subject_id);

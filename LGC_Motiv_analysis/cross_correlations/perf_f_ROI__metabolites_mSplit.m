@@ -322,6 +322,7 @@ if dispFig == true
     legend_size(pSize);
     
     % number of errors made = f(ROI)
+    error('from here and on, you need to finish updating the function');
     subplot(1,3,2);
     hold on;
     Ech_nErrors_low_ROI_low_met_hdl = errorbar(Ech_levels,...
