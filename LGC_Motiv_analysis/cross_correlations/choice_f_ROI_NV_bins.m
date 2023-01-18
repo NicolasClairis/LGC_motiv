@@ -45,8 +45,9 @@ which_timePeriod = listdlg('PromptString','Which time phase of the trial?',...
 timePeriod_nm = timePeriods{which_timePeriod};
 
 %% select parameters of interest
-potential_input_prm = {'NV_hE','deltaNV','uncertainty','E_level','money_level',...
-    'deltaMoney_level'};
+potential_input_prm = {'NV_hE','deltaNV','pChoice',...
+    'uncertainty',...
+    'E_level','money_level','deltaMoney_level'};
 which_input = listdlg('PromptString','please select input parameter',...
     'ListString',potential_input_prm);
 input_prm_nm = potential_input_prm{which_input};
@@ -57,14 +58,15 @@ behavioral_task_to_look = task_names{which_bhv_task};
 switch input_prm_nm
     case {'E_level'}
         nBins = 3;
-    case {'NV_hE','deltaNV','uncertainty','money_level','deltaMoney_level'}
+    case {'NV_hE','deltaNV','pChoice','uncertainty',...
+            'money_level','deltaMoney_level'}
         nBins = 6;
     otherwise
         nBins = 6;
 end
 
 %% select which model to use (if relevant)
-if ismember(input_prm_nm,{'NV_hE','deltaNV','uncertainty'})
+if ismember(input_prm_nm,{'NV_hE','deltaNV','pChoice','uncertainty'})
     needModeling = true;
     [mdlType, mdlN] = behavioral_model_selection;
 else
@@ -197,8 +199,9 @@ for iS = 1:NS
                         trial_idx = (1:nTrialsPerRun) + nTrialsPerRun*(kRun >= 3);
                         deltaNV_tmp = dataInferred.deltaNV.(['mdl_',mdlN]).(task_nm_tmp)(trial_idx);
                         uncertainty_tmp = - dataInferred.confidenceFitted.(['mdl_',mdlN]).(run_nm_bis); % revert sign to transform confidence into uncertainty
+                        pChoice_tmp = dataInferred.choicesFitted.(['mdl_',mdlN]).(task_nm_tmp)(trial_idx);
                     case 'bayesian'
-                        [~, NV_hE_tmp, confidence_tmp] = extract_bayesian_mdl(gitResultsFolder, subBehaviorFolder,...
+                        [~, NV_hE_tmp, confidence_tmp, pChoice_tmp] = extract_bayesian_mdl(gitResultsFolder, subBehaviorFolder,...
                             sub_nm, run_nm, task_fullName, ['mdl_',mdlN]);
                         uncertainty_tmp = -confidence_tmp;
                 end
@@ -228,6 +231,8 @@ for iS = 1:NS
                     input_prm(runTrials_idx, iS) = deltaNV_tmp;
                 case 'NV_hE'
                     input_prm(runTrials_idx, iS) = NV_hE_tmp;
+                case 'pChoice'
+                    input_prm(runTrials_idx, iS) = pChoice_tmp;
                 otherwise
                     error(['input = ',input_prm_nm,' not ready yet']);
             end
