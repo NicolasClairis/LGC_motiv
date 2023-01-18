@@ -74,15 +74,14 @@ else
 end
 
 %% extract the parameters of interest
+nTrialsPerRun = 54;
 switch behavioral_task_to_look
     case {'Ep','Em'}
         nRunsPerTask = 2;
-        nTrialsPerRun = 54;
         nTrialsPerTask = nTrialsPerRun*nRunsPerTask;
         [input_prm, ROI_mediator, choice_hE] = deal(NaN(nTrialsPerTask, NS));
     case 'EpEmPool'
         nRuns = 4;
-        nTrialsPerRun = 54;
         nTrials = nTrialsPerRun*nRuns;
         % input/mediator/output
         [input_prm, ROI_mediator, choice_hE] = deal(NaN(nTrials, NS));
