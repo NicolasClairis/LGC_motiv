@@ -37,26 +37,37 @@ ROI_short_nm = inputdlg('ROI short name?');
 ROI_short_nm = ROI_short_nm{1};
 % define task
 task_names = {'Ep','Em','EpEmPool'};
-which_task = listdlg('PromptString','Which task?','ListString',task_names);
-task_to_look = task_names{which_task};
+which_task = listdlg('PromptString','Which task for ROI?','ListString',task_names);
+ROI_task_to_look = task_names{which_task};
 % define time period
 timePeriods = fieldnames(ROI_trial_b_trial.(ROI_nm{1}).Ep.run1);
 which_timePeriod = listdlg('PromptString','Which time phase of the trial?',...
     'listString',timePeriods);
 timePeriod_nm = timePeriods{which_timePeriod};
 
-%% load behavior 
-nRuns = 4;
+%% load behavior
+which_bhv_task = listdlg('PromptString','Which task for behavior?','ListString',task_names);
+behavioral_task_to_look = task_names{which_bhv_task};
 nTrialsPerRun = 54;
-nTrials = nTrialsPerRun*nRuns;
+switch behavioral_task_to_look
+    case {'Ep','Em'}
+        nRunsPerTask = 2;
+        nTrialsPerTask = nTrialsPerRun*nRunsPerTask;
+        % data for all trials
+        [fMRI_ROI.allTrials, choice_hE.allTrials,...
+            hE_level.allTrials, Echosen.allTrials] = deal(NaN(nTrialsPerTask, NS));
+    case 'EpEmPool'
+        nRuns = 4;
+        nTrials = nTrialsPerRun*nRuns;
+        % data for all trials
+        [fMRI_ROI.allTrials, choice_hE.allTrials,...
+            hE_level.allTrials, Echosen.allTrials] = deal(NaN(nTrials, NS));
+end
 % main variables of interest
 Echosen_possible = 0:3;
 n_Ech = length(Echosen_possible);
 hE_levels = 1:3;
 n_hE_levels = length(hE_levels);
-% data for all trials
-[fMRI_ROI.allTrials, choice_hE.allTrials,...
-    hE_level.allTrials, Echosen.allTrials] = deal(NaN(nTrials, NS));
 % data split by effort chosen
 fMRI_ROI.Ech = NaN(n_Ech,NS);
 % data split by level of effort proposed for the high effort option
@@ -73,7 +84,7 @@ fMRI_ROI.Ech = NaN(n_Ech,NS);
 for iS = 1:NS
     sub_nm = subject_id{iS};
     subBehaviorFolder = [studyBehaviorFolder, 'CID',sub_nm, filesep, 'behavior',filesep];
-
+    
     % extract runs
     [runsStruct] = runs_definition(study_nm, sub_nm, 'behavior');
     okRuns = runsStruct.runsToKeep;
@@ -84,7 +95,6 @@ for iS = 1:NS
         run_nm = num2str(kRun);
         jRun = jRun + 1;
         task_nm_tmp = taskNames{jRun};
-        runTrials_idx = (1:nTrialsPerRun) + nTrialsPerRun*(kRun-1);
         switch task_nm_tmp
             case 'Em'
                 task_fullName = 'mental';
@@ -94,80 +104,93 @@ for iS = 1:NS
         % define which task session it is
         switch kRun
             case {1,2}
-                run_nm_bis = ['run',num2str(1)];
+                taskRun_idx = 1;
             case {3,4}
-                run_nm_bis = ['run',num2str(2)];
+                taskRun_idx = 2;
+        end
+        run_nm_bis = ['run',num2str(taskRun_idx)];
+        % define trial index for relevant variable to extract
+        switch behavioral_task_to_look
+            case {'Ep','Em'}
+                runTrials_idx = (1:nTrialsPerRun) + nTrialsPerRun*(taskRun_idx-1);
+            case 'EpEmPool'
+                runTrials_idx = (1:nTrialsPerRun) + nTrialsPerRun*(kRun-1);
         end
         
         %% load the data
-        behaviorStruct_tmp = load([subBehaviorFolder,...
-            'CID',sub_nm,'_session',run_nm,'_',task_fullName,...
-            '_task.mat']);
-        choiceOptions_tmp = behaviorStruct_tmp.choice_opt;
-        switch task_nm_tmp
-            case 'Em'
-                choiceAndPerf_tmp = behaviorStruct_tmp.mentalE_perf;
-            case 'Ep'
-                choiceAndPerf_tmp = behaviorStruct_tmp.physicalPerf;
-        end
-        
-        %% default side
-        defaultSide_tmp = choiceOptions_tmp.default_LR;
-        %% extract R or P
-        RP_var_tmp = strcmp(choiceOptions_tmp.R_or_P,'R');
-        %% choice
-        choice_LR_tmp = choiceAndPerf_tmp.choice;
-        % remove confidence info from choice:
-        choice_LR_tmp(choice_LR_tmp == 2) = 1;
-        choice_LR_tmp(choice_LR_tmp == -2) = -1;
-        % extract high effort choice
-        choice_highE_tmp = NaN(1,length(choice_LR_tmp));
-        choice_highE_tmp(choice_LR_tmp == -defaultSide_tmp) = 1;
-        choice_highE_tmp(choice_LR_tmp == defaultSide_tmp) = 0;
-        
-        %% effort level
-        E_highE_tmp = (choiceOptions_tmp.E.left).*(defaultSide_tmp == 1) +...
-            (choiceOptions_tmp.E.right).*(defaultSide_tmp == -1);
-        
-        %% effort chosen
-        E_chosen_tmp = (choiceOptions_tmp.E.left).*(choice_LR_tmp == -1) +...
-            (choiceOptions_tmp.E.right).*(choice_LR_tmp == 1);
-        
-        %% high-effort money amount
-        money_hE_tmp = ((choiceOptions_tmp.monetary_amount.left).*(defaultSide_tmp == 1) +...
-            (choiceOptions_tmp.monetary_amount.right).*(defaultSide_tmp == -1)).*((RP_var_tmp == 1) - (RP_var_tmp == 0));
-        money_lE_tmp = ((choiceOptions_tmp.monetary_amount.left).*(defaultSide_tmp == -1) +...
-            (choiceOptions_tmp.monetary_amount.right).*(defaultSide_tmp == 1)).*((RP_var_tmp == 1) - (RP_var_tmp == 0));
-        
-        %% delta between high and low effort options
-        deltaMoney_tmp = money_hE_tmp - money_lE_tmp;
-        
-        %% RT
-        onsets_tmp = behaviorStruct_tmp.onsets;
-        switch task_nm_tmp
-            case 'Ep'
-                onsets_tmp = behaviorStruct_tmp.physicalPerf.onsets;
-                choice_LR_tmp = behaviorStruct_tmp.physicalPerf.choice;
-            case 'Em'
-                onsets_tmp = behaviorStruct_tmp.mentalE_perf.onsets;
-                choice_LR_tmp = behaviorStruct_tmp.mentalE_perf.choice;
-        end
-        RT_tmp = onsets_tmp.choice - onsets_tmp.dispChoiceOptions;
-        
-        %% confidence rating
-        uncertaintyRtg_tmp = NaN(1,length(choice_LR_tmp));
-        uncertaintyRtg_tmp(abs(choice_LR_tmp) == 2) = 0; % high confidence = low uncertainty
-        uncertaintyRtg_tmp(abs(choice_LR_tmp) == 1) = 1; % low confidence = high uncertainty
-        
+        % filter task based on what was selected in the inputs
+        if strcmp(behavioral_task_to_look,'EpEmPool') ||...
+                strcmp(behavioral_task_to_look, task_nm_tmp)
+            behaviorStruct_tmp = load([subBehaviorFolder,...
+                'CID',sub_nm,'_session',run_nm,'_',task_fullName,...
+                '_task.mat']);
+            choiceOptions_tmp = behaviorStruct_tmp.choice_opt;
+            switch task_nm_tmp
+                case 'Em'
+                    choiceAndPerf_tmp = behaviorStruct_tmp.mentalE_perf;
+                case 'Ep'
+                    choiceAndPerf_tmp = behaviorStruct_tmp.physicalPerf;
+            end
+            
+            %% default side
+            defaultSide_tmp = choiceOptions_tmp.default_LR;
+            %% extract R or P
+            RP_var_tmp = strcmp(choiceOptions_tmp.R_or_P,'R');
+            %% choice
+            choice_LR_tmp = choiceAndPerf_tmp.choice;
+            % remove confidence info from choice:
+            choice_LR_tmp(choice_LR_tmp == 2) = 1;
+            choice_LR_tmp(choice_LR_tmp == -2) = -1;
+            % extract high effort choice
+            choice_highE_tmp = NaN(1,length(choice_LR_tmp));
+            choice_highE_tmp(choice_LR_tmp == -defaultSide_tmp) = 1;
+            choice_highE_tmp(choice_LR_tmp == defaultSide_tmp) = 0;
+            
+            %% effort level
+            E_highE_tmp = (choiceOptions_tmp.E.left).*(defaultSide_tmp == 1) +...
+                (choiceOptions_tmp.E.right).*(defaultSide_tmp == -1);
+            
+            %% effort chosen
+            E_chosen_tmp = (choiceOptions_tmp.E.left).*(choice_LR_tmp == -1) +...
+                (choiceOptions_tmp.E.right).*(choice_LR_tmp == 1);
+            
+            %% high-effort money amount
+            money_hE_tmp = ((choiceOptions_tmp.monetary_amount.left).*(defaultSide_tmp == 1) +...
+                (choiceOptions_tmp.monetary_amount.right).*(defaultSide_tmp == -1)).*((RP_var_tmp == 1) - (RP_var_tmp == 0));
+            money_lE_tmp = ((choiceOptions_tmp.monetary_amount.left).*(defaultSide_tmp == -1) +...
+                (choiceOptions_tmp.monetary_amount.right).*(defaultSide_tmp == 1)).*((RP_var_tmp == 1) - (RP_var_tmp == 0));
+            
+            %% delta between high and low effort options
+            deltaMoney_tmp = money_hE_tmp - money_lE_tmp;
+            
+            %% RT
+            onsets_tmp = behaviorStruct_tmp.onsets;
+            switch task_nm_tmp
+                case 'Ep'
+                    onsets_tmp = behaviorStruct_tmp.physicalPerf.onsets;
+                    choice_LR_tmp = behaviorStruct_tmp.physicalPerf.choice;
+                case 'Em'
+                    onsets_tmp = behaviorStruct_tmp.mentalE_perf.onsets;
+                    choice_LR_tmp = behaviorStruct_tmp.mentalE_perf.choice;
+            end
+            RT_tmp = onsets_tmp.choice - onsets_tmp.dispChoiceOptions;
+            
+            %% confidence rating
+            uncertaintyRtg_tmp = NaN(1,length(choice_LR_tmp));
+            uncertaintyRtg_tmp(abs(choice_LR_tmp) == 2) = 0; % high confidence = low uncertainty
+            uncertaintyRtg_tmp(abs(choice_LR_tmp) == 1) = 1; % low confidence = high uncertainty
+            
+            %% extract all relevant variables
+            choice_hE.allTrials(runTrials_idx, iS)  = choice_highE_tmp;
+            hE_level.allTrials(runTrials_idx, iS)   = E_highE_tmp;
+            Echosen.allTrials(runTrials_idx, iS)    = E_chosen_tmp;
+        end % behavioral task filter
         %% extract fMRI ROI mediator
-        if strcmp(task_to_look,'EpEmPool') ||...
-                (strcmp(task_to_look, task_nm))
+        if strcmp(ROI_task_to_look,'EpEmPool') ||...
+                (strcmp(ROI_task_to_look, task_nm_tmp))
             fMRI_ROI.allTrials(runTrials_idx, iS) = ROI_trial_b_trial.(ROI_nm{1}).(task_nm_tmp).(run_nm_bis).(timePeriod_nm)(:, iS);
         end
-        %% extract all relevant variables
-        choice_hE.allTrials(runTrials_idx, iS)  = choice_highE_tmp;
-        hE_level.allTrials(runTrials_idx, iS)   = E_highE_tmp;
-        Echosen.allTrials(runTrials_idx, iS)    = E_chosen_tmp;
+        
     end % run loop
     
     %% extract data per effort level and effort chosen
@@ -205,7 +228,7 @@ end % subject loop
 
 %% median split based on metabolites
 % extract of subjects based on the median split
-[low_met_subs, high_met_subs, metabolite_nm, ROI_nm] = medSplit_metabolites(study_nm, subject_id);
+[low_met_subs, high_met_subs, metabolite_nm, MRS_ROI_nm] = medSplit_metabolites(study_nm, subject_id);
 
 % perform the median split
 % median split on choices and fMRI for high effort level
@@ -256,6 +279,22 @@ if dispFig == true
     orange = [241 163 64]./255;
     blue = [51 153 255]./255;
     pSize = 50;
+    switch behavioral_task_to_look
+        case 'Ep'
+            full_bhv_taskName = 'physical task';
+        case 'Em'
+            full_bhv_taskName = 'mental task';
+        case 'EpEmPool'
+            full_bhv_taskName = 'both tasks';
+    end
+    switch ROI_task_to_look
+        case 'Ep'
+            full_ROI_taskName = 'physical task';
+        case 'Em'
+            full_ROI_taskName = 'mental task';
+        case 'EpEmPool'
+            full_ROI_taskName = 'both tasks';
+    end
     
     %% fMRI = f(E chosen) and metabolites
     fig;
@@ -278,8 +317,9 @@ if dispFig == true
     legend('Location','NorthWest');
     legend('boxoff');
     xticks(Echosen_possible);
-    xlabel('Echosen');
-    ylabel([ROI_short_nm,' BOLD']);
+    xlabel({'Echosen';full_bhv_taskName});
+    ylabel({[ROI_short_nm,' BOLD during ',timePeriod_nm];...
+        full_ROI_taskName});
     legend_size(pSize);
     
     %% fMRI and choice = f(high E proposed) and metabolites
@@ -304,8 +344,10 @@ if dispFig == true
         {['high ',metabolite_nm],['low ', metabolite_nm]});
     legend('Location','NorthWest');
     legend('boxoff');
-    xlabel('high Effort level');
-    ylabel([ROI_short_nm,' BOLD']);
+    xlabel({'high Effort level';...
+        full_bhv_taskName});
+    ylabel({[ROI_short_nm,' BOLD during ',timePeriod_nm],...
+        full_ROI_taskName});
     legend_size(pSize);
     
     % choice
@@ -328,8 +370,10 @@ if dispFig == true
         {['high ',metabolite_nm],['low ', metabolite_nm]});
     legend('Location','NorthWest');
     legend('boxoff');
-    xlabel('high Effort level');
-    ylabel('Choice = high effort (%)');
+    xlabel({'high Effort level';...
+        full_bhv_taskName});
+    ylabel({'Choice = high effort (%)';...
+        full_bhv_taskName});
     legend_size(pSize);
 
     %% fMRI = f(E level) according to choice made independent of metabolites
@@ -353,8 +397,10 @@ if dispFig == true
     legend('Location','NorthWest');
     legend('boxoff');
     xticks(hE_levels);
-    xlabel('high Effort level');
-    ylabel([ROI_short_nm,' BOLD']);
+    xlabel({'high Effort level';...
+        full_bhv_taskName});
+    ylabel({[ROI_short_nm,' BOLD during ',timePeriod_nm];...
+        full_ROI_taskName});
     legend_size(pSize);
 
     %% fMRI = f(E level) according to choice made
@@ -392,7 +438,8 @@ if dispFig == true
     legend('Location','NorthWest');
     legend('boxoff');
     xticks(hE_levels);
-    xlabel('high Effort level');
-    ylabel([ROI_short_nm,' BOLD']);
+    xlabel({'high Effort level';full_bhv_taskName});
+    ylabel({[ROI_short_nm,' BOLD during ',timePeriod_nm];...
+        full_ROI_taskName});
     legend_size(pSize);
 end % figure display
