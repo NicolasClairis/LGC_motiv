@@ -1,4 +1,4 @@
-% function[]=copy_physio_to_server()
+function[]=copy_physio_to_server()
 % script aimed at moving physiological data from pc to server to be used by
 % future interns.
 
@@ -41,4 +41,4 @@ for iS = 1:NS
         num2str(iS),'/',num2str(NS),' - done']);
 end % subject loop
 
-% end % function
+end % function
