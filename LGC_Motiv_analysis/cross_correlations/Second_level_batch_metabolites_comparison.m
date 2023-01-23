@@ -198,8 +198,14 @@ matlabbatch{batch_idx}.spm.util.imcalc.options.dtype = 4;
 %% perform the second level
 
 % load all contrasts of interest
-con_names = LGCM_contrasts(study_nm, subject_id{1}, GLM,...
-    computer_root, preproc_sm_kernel, condition);
+switch condition
+    case 'fMRI_noSatRun_choiceSplit_Elvl_bis' % in this case, subject_id{1} does not include Em => need to adapt to include Em
+        con_names = LGCM_contrasts(study_nm, subject_id{16}, GLM,...
+            computer_root, preproc_sm_kernel, condition);
+    otherwise
+        con_names = LGCM_contrasts(study_nm, subject_id{1}, GLM,...
+            computer_root, preproc_sm_kernel, condition);
+end
 n_con = length(con_names);
 
 % loop over contrasts
