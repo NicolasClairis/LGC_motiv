@@ -90,6 +90,8 @@ for iTrial = 1:nTrialsPerRun
         -behaviorStruct.physicalPerf.onsets.effortPeriod{1,iTrial}.effort_phase;
     trialForceLevels_N = grip_biopac_volts_to_newtons_conversion(behaviorStruct.physicalPerf.perfSummary{1,iTrial}.force_levels(:,3));
     trialForceLevels_corrected_N = trialForceLevels_N - trialForceLevels_N(1,1);
+    MVC_volts = behaviorStruct.physicalPerf.MVC;
+    threshold_newtons = grip_biopac_volts_to_newtons_conversion(MVC_volts)*(F_upper_threshold/100);
     
     %% extract peak force
     forcePeak.allTrials(iTrial) = max(trialForceLevels_corrected,[],2,'omitnan');
@@ -128,8 +130,8 @@ for iTrial = 1:nTrialsPerRun
                 AUC_overshoot.allTrials(iTrial) = AUC_overshoot.allTrials(iTrial) +...
                     trapz(timeForce(samples_idx), trialForceLevels(samples_idx)-F_upper_threshold);
                 % based on newton values
-                AUC_overshoot.allTrials(iTrial) = AUC_overshoot.allTrials(iTrial) +...
-                    trapz(timeForce(samples_idx), trialForceLevels(samples_idx)-F_upper_threshold);
+                AUC_overshoot_N.allTrials(iTrial) = AUC_overshoot_N.allTrials(iTrial) +...
+                    trapz(timeForce_N(samples_idx), trialForceLevels_N(samples_idx)-threshold_newtons);
             end
         end % cluster loop
     end
