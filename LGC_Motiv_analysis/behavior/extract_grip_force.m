@@ -1,5 +1,5 @@
-function[latency, AUC, forcePeak, AUC_overshoot] = extract_grip_force(subBehaviorFolder, sub_nm, run_nm)
-% [latency, AUC, forcePeak, AUC_overshoot] = extract_grip_force(subBehaviorFolder, sub_nm, run_nm)
+function[latency, AUC, forcePeak, AUC_overshoot, AUC_N, forcePeak_N, AUC_overshoot_N] = extract_grip_force(subBehaviorFolder, sub_nm, run_nm)
+% [latency, AUC, forcePeak, AUC_overshoot, AUC_N, forcePeak_N, AUC_overshoot_N] = extract_grip_force(subBehaviorFolder, sub_nm, run_nm)
 % extract_grip_force will extract several parameters related to performance
 % in the phyical effort task, such as latency to squeeze, the area under
 % the curve (AUC) of effort performed, the peak of force reached during
@@ -17,13 +17,22 @@ function[latency, AUC, forcePeak, AUC_overshoot] = extract_grip_force(subBehavio
 % the handgrip (careful as this might be very noisy)
 %
 % AUC: area under the curve expressing the total amount of force that was
-% produced
+% produced (in volts, normalized by MVC)
 %
-% forcePeak: maximal force level for each trial
+% forcePeak: maximal force level for each trial (in volts, normalized by MVC)
 %
 % AUC_overshoot: area under the curve expressing the total amount of
 % "useless" force that was produced during the trial (i.e. force above the
-% required threshold indicated by the red zone on the screen)
+% required threshold indicated by the red zone on the screen) (in volts, normalized by MVC)
+%
+% AUC: area under the curve expressing the total amount of force that was
+% produced (in newtons)
+%
+% forcePeak: maximal force level for each trial (in newtons)
+%
+% AUC_overshoot: area under the curve expressing the total amount of
+% "useless" force that was produced during the trial (i.e. force above the
+% required threshold indicated by the red zone on the screen) (in newtons)
 %
 % N. Clairis - november 2022
 
@@ -39,23 +48,34 @@ F_upper_threshold = Fthreshold + F_tolerance;
 [latency.allTrials,...
     AUC.allTrials,...
     forcePeak.allTrials,...
-    AUC_overshoot.allTrials] = deal(NaN(1,nTrialsPerRun));
+    AUC_overshoot.allTrials,...
+    AUC_N.allTrials,...
+    forcePeak_N.allTrials,...
+    AUC_overshoot_N.allTrials] = deal(NaN(1,nTrialsPerRun));
 [latency.per_Ech,...
     AUC.per_Ech,...
     forcePeak.per_Ech,...
-    AUC_overshoot.per_Ech] = deal(NaN(1,n_Ech));
+    AUC_overshoot.per_Ech,...
+    AUC_N.per_Ech,...
+    forcePeak_N.per_Ech,...
+    AUC_overshoot_N.per_Ech] = deal(NaN(1,n_Ech));
 [latency.per_hE.choice_lowE,...
     AUC.per_hE.choice_lowE,...
     forcePeak.per_hE.choice_lowE,...
     AUC_overshoot.per_hE.choice_lowE,...
+    AUC_N.per_hE.choice_lowE,...
+    forcePeak_N.per_hE.choice_lowE,...
+    AUC_overshoot_N.per_hE.choice_lowE,...
     latency.per_hE.choice_highE,...
     AUC.per_hE.choice_highE,...
     forcePeak.per_hE.choice_highE,...
-    AUC_overshoot.per_hE.choice_highE] = deal(NaN(1,n_hE_levels));
+    AUC_overshoot.per_hE.choice_highE,...
+    AUC_N.per_hE.choice_highE,...
+    forcePeak_N.per_hE.choice_highE,...
+    AUC_overshoot_N.per_hE.choice_highE] = deal(NaN(1,n_hE_levels));
 %% load the data
 behaviorStruct = load([subBehaviorFolder,...
     'CID',sub_nm,'_session',run_nm,'_physical_task.mat']);
-
 %% extract grip force
 for iTrial = 1:nTrialsPerRun
     % extract force
@@ -65,8 +85,15 @@ for iTrial = 1:nTrialsPerRun
     % remove baseline which seems to vary weirdly
     trialForceLevels_corrected = trialForceLevels - trialForceLevels(1,1);
     
+    % extract force in newtons (instead of (F in volts)/MVC)
+    timeForce_N = behaviorStruct.physicalPerf.perfSummary{1,iTrial}.force_levels(:,2) +...
+        -behaviorStruct.physicalPerf.onsets.effortPeriod{1,iTrial}.effort_phase;
+    trialForceLevels_N = grip_biopac_volts_to_newtons_conversion(behaviorStruct.physicalPerf.perfSummary{1,iTrial}.force_levels(:,3));
+    trialForceLevels_corrected_N = trialForceLevels_N - trialForceLevels_N(1,1);
+    
     %% extract peak force
     forcePeak.allTrials(iTrial) = max(trialForceLevels_corrected,[],2,'omitnan');
+    forcePeak_N.allTrials(iTrial) = max(trialForceLevels_corrected_N,[],2,'omitnan');
     %% now get the latency
     latency_squeeze_idx = find(diff(trialForceLevels_corrected) > diffFStartThreshold, 1, 'first');
     if ~isempty(latency_squeeze_idx)
@@ -75,13 +102,15 @@ for iTrial = 1:nTrialsPerRun
     
     %% extract AUC for the whole trial
     AUC.allTrials(iTrial) = trapz(timeForce, trialForceLevels_corrected);
-
+    AUC_N.allTrials(iTrial) = trapz(timeForce_N, trialForceLevels_corrected_N);
+    
     %% extract AUC overshoot for the whole trial (need to work with actual values, not corrected for this measure)
     timePointsOverShoot = trialForceLevels >= F_upper_threshold;
     drv_clusterIdentif = diff(timePointsOverShoot);
     n_clusters = sum(drv_clusterIdentif == 1);
     if n_clusters == 0
         AUC_overshoot.allTrials(iTrial) = 0;
+        AUC_overshoot_N.allTrials(iTrial) = 0;
     elseif n_clusters >= 1
         clusterStarts = find(drv_clusterIdentif == 1);
         clusterEnds = find(drv_clusterIdentif == -1) + 1; % need to add (+1) for the derivative
@@ -91,9 +120,14 @@ for iTrial = 1:nTrialsPerRun
             clusterEnds = [clusterEnds, length(trialForceLevels)];
         end
         AUC_overshoot.allTrials(iTrial) = 0;
+        AUC_overshoot_N.allTrials(iTrial) = 0;
         for iCluster = 1:n_clusters
             if clusterEnds(iCluster) > clusterStarts(iCluster) % no sense to compute AUC if almost no samples
                 samples_idx = clusterStarts(iCluster):clusterEnds(iCluster);
+                % based on volts values
+                AUC_overshoot.allTrials(iTrial) = AUC_overshoot.allTrials(iTrial) +...
+                    trapz(timeForce(samples_idx), trialForceLevels(samples_idx)-F_upper_threshold);
+                % based on newton values
                 AUC_overshoot.allTrials(iTrial) = AUC_overshoot.allTrials(iTrial) +...
                     trapz(timeForce(samples_idx), trialForceLevels(samples_idx)-F_upper_threshold);
             end
@@ -116,11 +150,17 @@ for iEff = 1:n_hE_levels
     AUC.per_hE.choice_lowE(iEff) = mean(AUC.allTrials(j_hE_lowEChoice),2,'omitnan');
     forcePeak.per_hE.choice_lowE(iEff) = mean(forcePeak.allTrials(j_hE_lowEChoice),2,'omitnan');
     AUC_overshoot.per_hE.choice_lowE(iEff) = mean(AUC_overshoot.allTrials(j_hE_lowEChoice),2,'omitnan');
+    AUC_N.per_hE.choice_lowE(iEff) = mean(AUC_N.allTrials(j_hE_lowEChoice),2,'omitnan');
+    forcePeak_N.per_hE.choice_lowE(iEff) = mean(forcePeak_N.allTrials(j_hE_lowEChoice),2,'omitnan');
+    AUC_overshoot_N.per_hE.choice_lowE(iEff) = mean(AUC_overshoot_N.allTrials(j_hE_lowEChoice),2,'omitnan');
     % high effort chosen
     latency.per_hE.choice_highE(iEff) = mean(latency.allTrials(j_hE_hEChoice),2,'omitnan');
     AUC.per_hE.choice_highE(iEff) = mean(AUC.allTrials(j_hE_hEChoice),2,'omitnan');
     forcePeak.per_hE.choice_highE(iEff) = mean(forcePeak.allTrials(j_hE_hEChoice),2,'omitnan');
     AUC_overshoot.per_hE.choice_highE(iEff) = mean(AUC_overshoot.allTrials(j_hE_hEChoice),2,'omitnan');
+    AUC_N.per_hE.choice_highE(iEff) = mean(AUC_N.allTrials(j_hE_hEChoice),2,'omitnan');
+    forcePeak_N.per_hE.choice_highE(iEff) = mean(forcePeak_N.allTrials(j_hE_hEChoice),2,'omitnan');
+    AUC_overshoot_N.per_hE.choice_highE(iEff) = mean(AUC_overshoot_N.allTrials(j_hE_hEChoice),2,'omitnan');
 end
 
 % split by effort chosen
@@ -131,5 +171,8 @@ for iEch = 1:n_Ech
     AUC.per_Ech(iEch) = mean(AUC.allTrials(jEch_trials),2,'omitnan');
     forcePeak.per_Ech(iEch) = mean(forcePeak.allTrials(jEch_trials),2,'omitnan');
     AUC_overshoot.per_Ech(iEch) = mean(AUC_overshoot.allTrials(jEch_trials),2,'omitnan');
+    AUC_N.per_Ech(iEch) = mean(AUC_N.allTrials(jEch_trials),2,'omitnan');
+    forcePeak_N.per_Ech(iEch) = mean(forcePeak_N.allTrials(jEch_trials),2,'omitnan');
+    AUC_overshoot_N.per_Ech(iEch) = mean(AUC_overshoot_N.allTrials(jEch_trials),2,'omitnan');
 end % effort chosen
 end % function
