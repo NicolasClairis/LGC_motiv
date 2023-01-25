@@ -13,7 +13,7 @@ function [ hdl ] = fig()
 set(0,'defaultfigurecolor',[1 1 1]);
 %% create figure
 hdl = figure;
-%% force hold on to add multiple 
+%% force "hold on" to add multiple plots eventually
 hold on;
 %% maximize window size
 matlabVersion = version('-release'); % extract matlab version
