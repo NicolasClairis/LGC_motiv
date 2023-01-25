@@ -236,10 +236,10 @@ switch study_nm
                     '090','093','094','095','097','099'});
             case 'fMRI_noSatTaskSub_noMove_bis_Sub' % remove subjects who 
                 % either saturated a full task or moved too much
-                bad_subs = ismember(fullSubList,{'027','047','052','069','076','095',...
-                    '008','022','024'});
-                % '027','047','052','069','076','095': one or two tasks fully saturated
+                bad_subs = ismember(fullSubList,{'008','022','024',...
+                    '027','047','052','069','076','095'});
                 % '008','022','024': too much movement in all runs
+                % '027','047','052','069','076','095': one or two tasks fully saturated
         end
         %% split subjects based on gender
         males = {'002','004',...
