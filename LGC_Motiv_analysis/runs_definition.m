@@ -984,7 +984,7 @@ switch study_nm
                             '090','093','094','095','097','099'}
                         error([sub_nm,' should not be included under the condition ',condition]);
                 end
-            case 'fMRI_noSatTaskSub_noMoveSub'
+            case {'fMRI_noSatTaskSub_noMoveSub','fMRI_noSatTaskSub_noMove_bis_Sub'}
                 switch sub_nm
                     case {'017','043','074'} % first run: fMRI crashed => we have the behavior but not enough trials for fMRI
                         runs.runsToKeep = 2:4;
