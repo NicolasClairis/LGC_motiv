@@ -1,5 +1,5 @@
-function[low_met_subs, high_met_subs, metabolite_nm, ROI_nm, metabolite_allSubs] = medSplit_metabolites(study_nm, subject_id)
-% [low_met_subs, high_met_subs, metabolite_nm, ROI_nm, metabolite_allSubs] = medSplit_metabolites(study_nm, subject_id)
+function[low_met_subs, high_met_subs, metabolite_nm, MRS_ROI_nm, metabolite_allSubs] = medSplit_metabolites(study_nm, subject_id)
+% [low_met_subs, high_met_subs, metabolite_nm, MRS_ROI_nm, metabolite_allSubs] = medSplit_metabolites(study_nm, subject_id)
 % medSplit_metabolites will allow you to select the metabolite and the area
 % that you want in order to perform a median split based on it.
 %
@@ -18,7 +18,7 @@ function[low_met_subs, high_met_subs, metabolite_nm, ROI_nm, metabolite_allSubs]
 %
 % metabolite_nm: name of the selected metabolite
 %
-% ROI_nm: name of the brain area for which the metabolite has been selected
+% MRS_ROI_nm: name of the brain area for which the metabolite has been selected
 %
 % metabolite_allSubs: level of metabolite selected for each subject
 %
@@ -26,7 +26,7 @@ function[low_met_subs, high_met_subs, metabolite_nm, ROI_nm, metabolite_allSubs]
 
 
 %% define metabolite and ROI you want to focus on
-[metabolite_allSubs, ROI_nm, metabolite_nm] = metabolite_extraction(study_nm, subject_id);
+[metabolite_allSubs, MRS_ROI_nm, metabolite_nm] = metabolite_extraction(study_nm, subject_id);
 
 %% perform a median split based on the metabolite selected in the ROI
 % selected

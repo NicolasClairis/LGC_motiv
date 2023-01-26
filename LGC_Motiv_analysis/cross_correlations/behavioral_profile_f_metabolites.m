@@ -9,7 +9,7 @@ condition = subject_condition;
 [subject_id, NS] = LGCM_subject_selection(study_nm, condition);
 
 %% load metabolites
-[metabolite_allSubs, ROI_nm,...
+[metabolite_allSubs, MRS_ROI_nm,...
     metabolite_nm] = metabolite_extraction(study_nm, subject_id);
 
 %% load parameters

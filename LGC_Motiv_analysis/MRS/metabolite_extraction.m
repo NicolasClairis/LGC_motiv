@@ -1,5 +1,5 @@
-function[metabolite_allSubs, ROI_nm, metabolite_nm] = metabolite_extraction(study_nm, subject_id)
-% [metabolite_allSubs, ROI_nm, metabolite_nm] = metabolite_extraction(study_nm, subject_id)
+function[metabolite_allSubs, MRS_ROI_nm, metabolite_nm] = metabolite_extraction(study_nm, subject_id)
+% [metabolite_allSubs, MRS_ROI_nm, metabolite_nm] = metabolite_extraction(study_nm, subject_id)
 % metabolite_extraction will load the metabolites levels for the study and
 % the subjects selected and output it in the variable metabolite_allSubs.
 %
@@ -14,7 +14,7 @@ function[metabolite_allSubs, ROI_nm, metabolite_nm] = metabolite_extraction(stud
 % metabolite_allSubs: vector with all the levels of metabolites across
 % subjects
 %
-% ROI_nm: name of the selected ROI for the metabolite extraction
+% MRS_ROI_nm: name of the selected ROI for the metabolite extraction
 %
 % metabolite_nm: name of the metabolite that you extracted
 
@@ -28,9 +28,9 @@ switch study_nm
         ROIs = {'dmPFC','aIns'};
         ROI_idx = listdlg('PromptString','Metabolites in which brain area?',...
             'ListString',ROIs,'SelectionMode','single');
-        ROI_nm = ROIs{ROI_idx};
+        MRS_ROI_nm = ROIs{ROI_idx};
         %% select metabolite of interest
-        metabolite_names = fieldnames(metabolites.(ROI_nm));
+        metabolite_names = fieldnames(metabolites.(MRS_ROI_nm));
     otherwise
         error(['not ready yet for ',study_nm]);
 end
@@ -39,7 +39,7 @@ which_metab_idx = listdlg('PromptString','Which metabolite to focus on?',...
 metabolite_nm = metabolite_names{which_metab_idx};
 
 %% focus on metabolite and brain area selected
-metabolite_allSubs = metabolites.(ROI_nm).(metabolite_nm);
+metabolite_allSubs = metabolites.(MRS_ROI_nm).(metabolite_nm);
 
 % in some cases, replace name by generic name:
 if strcmp(metabolite_nm,'Glu_Gln')
