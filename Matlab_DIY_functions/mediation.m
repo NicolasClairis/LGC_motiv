@@ -104,6 +104,8 @@ pval.c = stats_3.p(2);
 %% display relevant p.values in the command window to summarize the 
 % results of the mediation
 if dispResults == 1
+    
+    %% show results in matlab dialog
     roundingVal = 3;
     
     % path a
@@ -126,6 +128,80 @@ if dispResults == 1
         ' + (',num2str(round(c, roundingVal)),')*',X_nm,';']);
     disp(['p(c=',X_nm,') = ',num2str(pval.c)]);
     disp(' ');
+    
+    %% display results with a figure
+    pSize = 40;
+    lWidth = 3;
+    black = [0 0 0];
+    grey = [143 143 143]./255;
+    
+    % extract relevant data for fit
+    X_ascOrder = sort(X);
+    % X => Y (direct path c)
+    Y_c_fit = glmval(betas_3, X_ascOrder,'identity');
+    % X => Y after removing M (direct path c')
+    Y_res_without_M = Y - b.*M;
+    Y_cPrime_fit = betas_2(1) + c_prime.*X_ascOrder;
+    % X => M (path a)
+    M_fit = glmval(betas_1, X_ascOrder,'identity');
+    % M => Y removing any influence of X (path b)
+    M_res_without_X = M - a.*X;
+    M_res_ascOrder = sort(M_res_without_X);
+    Y_res_without_X = Y - c_prime.*X;
+    Y_b_fit = betas_2(1) + b.*M_res_ascOrder;
+    
+    fig;
+    % X => Y direct path without mediation (c)
+    subplot(2,2,1);
+    scat_hdl = scatter(X, Y);
+    scat_hdl.LineWidth = lWidth;
+    scat_hdl.MarkerEdgeColor = black;
+    hold on;
+    fit_hdl = plot(X_ascOrder, Y_c_fit);
+    fit_hdl.LineWidth = lWidth;
+    fit_hdl.Color = grey;
+    xlabel([X_nm,' - direct path (c)']);
+    ylabel(Y_nm);
+    legend_size(pSize);
+    
+    % X => Y direct path competition with M (c')
+    subplot(2,2,2);
+    scat_hdl = scatter(X, Y_res_without_M);
+    scat_hdl.LineWidth = lWidth;
+    scat_hdl.MarkerEdgeColor = black;
+    hold on;
+    fit_hdl = plot(X_ascOrder, Y_cPrime_fit);
+    fit_hdl.LineWidth = lWidth;
+    fit_hdl.Color = grey;
+    xlabel([X_nm,' - direct path (c'')']);
+    ylabel(Y_nm);
+    legend_size(pSize);
+    
+    % X => M path
+    subplot(2,2,3);
+    scat_hdl = scatter(X, M);
+    scat_hdl.LineWidth = lWidth;
+    scat_hdl.MarkerEdgeColor = black;
+    hold on;
+    fit_hdl = plot(X_ascOrder, M_fit);
+    fit_hdl.LineWidth = lWidth;
+    fit_hdl.Color = grey;
+    xlabel(X_nm);
+    ylabel(M_nm);
+    legend_size(pSize);
+    
+    % M => Y path (after removing X => M)
+    subplot(2,2,4);
+    scat_hdl = scatter(M_res_without_X, Y_res_without_X);
+    scat_hdl.LineWidth = lWidth;
+    scat_hdl.MarkerEdgeColor = black;
+    hold on;
+    fit_hdl = plot(M_res_ascOrder, Y_b_fit);
+    fit_hdl.LineWidth = lWidth;
+    fit_hdl.Color = grey;
+    xlabel(M_nm);
+    ylabel(Y_nm);
+    legend_size(pSize);
 end
 
 end % function
