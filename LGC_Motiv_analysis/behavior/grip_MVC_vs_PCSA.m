@@ -1,7 +1,51 @@
+function[study_nm, cond, subject_id, sub_males, sub_females,...
+    MVC_all, PCSA_all,...
+    MVC_m, PCSA_m,...
+    MVC_f, PCSA_f,...
+    stats_all, stats_m, stats_f,...
+    b_all, b_m, b_f] = grip_MVC_vs_PCSA(dispFig)
+%[study_nm, cond, subject_id, sub_males, sub_females,...
+%     MVC_all, PCSA_all,...
+%     MVC_m, PCSA_m,...
+%     MVC_f, PCSA_f,...
+%     stats_all, stats_m, stats_f] = grip_MVC_vs_PCSA(dispFig)
 % grip_MVC_vs_PCSA.m will test how much the theoretical maximal voluntary
 % force inferred by measuring the forearm (PCSA) and the maximul voluntary
 % contraction (MVC) force performed by the subjects during calibration of
 % the physical grip task correlate with each other.
+%
+% INPUT
+% dispFig: display figure (1) or not (0)
+%
+% OUTPUT
+% study_nm: study name
+%
+% cond: condition used for the extraction
+%
+% subject_id: list of all subjects extracted
+%
+% sub_males: list of male subjects extracted
+%
+% sub_females: list of female subjects extracted
+%
+% MVC_all: maximum voluntary contraction force for all subjects
+%
+% PCSA_all: maximum theoretical force for all subjects
+%
+% MVC_m: maximum voluntary contraction force for male subjects only
+%
+% PCSA_m: maximum theoretical force for male subjects only
+%
+% MVC_f: maximum voluntary contraction force for female subjects only
+%
+% PCSA_f: maximum theoretical force for female subjects only
+%
+% stats_all: statistics for all subjects
+%
+% stats_m, stats_f: statistics for males (m) and females (f) only
+%
+% b_all, b_m, b_f: betas for the linear correlation for all, males (m) and
+% females (f)
 
 %% working directory
 list_pcs = {'Lab','Home'};
@@ -23,8 +67,8 @@ study_nm = 'study1';
 cond = 'behavior';
 [subject_id, NS] = LGCM_subject_selection(study_nm, cond);
 % check also gender to know who is who
-[males_id, NS_m] = LGCM_subject_selection(study_nm, cond,'males');
-[females_id, NS_f] = LGCM_subject_selection(study_nm, cond,'females');
+[sub_males, NS_m] = LGCM_subject_selection(study_nm, cond,'males');
+[sub_females, NS_f] = LGCM_subject_selection(study_nm, cond,'females');
 
 %% load infos (including info about maximal theoretical force)
 excelReadInfosFile = readtable([gitPath,study_nm,filesep,'summary_participants_infos.xlsx'],...
@@ -51,11 +95,11 @@ for iS = 1:NS
     MVC_all(iS) = grip_biopac_volts_to_newtons_conversion(MVC_volts); % convert in Newtons
     
     % same but split by gender
-    if ismember(sub_nm, males_id)
+    if ismember(sub_nm, sub_males)
         jM = jM + 1;
         PCSA_m(jM) = PCSA_all(iS);
         MVC_m(jM) = MVC_all(iS);
-    elseif ismember(sub_nm, females_id)
+    elseif ismember(sub_nm, sub_females)
         jF = jF + 1;
         PCSA_f(jF) = PCSA_all(iS);
         MVC_f(jF) = MVC_all(iS);
@@ -78,47 +122,50 @@ PCSA_f_ascOrder = sort(PCSA_f);
 MVC_f_fit = glmval(b_all, PCSA_f_ascOrder, 'identity');
 
 %% display result
-pSize = 40;
-lWidth = 3;
-black = [0 0 0];
-grey = [143 143 143]./255;
-blue = [0 0 1];
-green = [0 1 0];
-lightBlue = [0 255 255]./255;
-lightGreen = [106 204 132]./255;
-
-% all subjects
-fig;
-scat_hdl = scatter(PCSA_all, MVC_all);
-scat_hdl.LineWidth = lWidth;
-scat_hdl.MarkerEdgeColor = black;
-fit_hdl = plot(PCSA_all_ascOrder, MVC_all_fit);
-fit_hdl.LineWidth = lWidth;
-fit_hdl.Color = grey;
-fit_hdl.LineStyle = '--';
-xlabel('Theoretical maximal force (N)');
-ylabel('Calibrated force (N)');
-legend_size(pSize);
-
-% split by gender
-fig;
-scat_m_hdl = scatter(PCSA_m, MVC_m);
-scat_m_hdl.LineWidth = lWidth;
-scat_m_hdl.MarkerEdgeColor = blue;
-scat_f_hdl = scatter(PCSA_f, MVC_f);
-scat_f_hdl.LineWidth = lWidth;
-scat_f_hdl.MarkerEdgeColor = green;
-fit_m_hdl = plot(PCSA_m_ascOrder, MVC_m_fit);
-fit_m_hdl.LineWidth = lWidth;
-fit_m_hdl.Color = lightBlue;
-fit_m_hdl.LineStyle = '--';
-fit_f_hdl = plot(PCSA_f_ascOrder, MVC_f_fit);
-fit_f_hdl.LineWidth = lWidth;
-fit_f_hdl.Color = lightGreen;
-fit_f_hdl.LineStyle = '--';
-legend([scat_m_hdl, scat_f_hdl],{'males','females'});
-legend('boxoff');
-legend('Location','NorthWest');
-xlabel('Theoretical maximal force (N)');
-ylabel('Calibrated force (N)');
-legend_size(pSize);
+if dispFig == 1
+    pSize = 40;
+    lWidth = 3;
+    black = [0 0 0];
+    grey = [143 143 143]./255;
+    blue = [0 0 1];
+    green = [0 1 0];
+    lightBlue = [0 255 255]./255;
+    lightGreen = [106 204 132]./255;
+    
+    % all subjects
+    fig;
+    scat_hdl = scatter(PCSA_all, MVC_all);
+    scat_hdl.LineWidth = lWidth;
+    scat_hdl.MarkerEdgeColor = black;
+    fit_hdl = plot(PCSA_all_ascOrder, MVC_all_fit);
+    fit_hdl.LineWidth = lWidth;
+    fit_hdl.Color = grey;
+    fit_hdl.LineStyle = '--';
+    xlabel('Theoretical maximal force (N)');
+    ylabel('Calibrated force (N)');
+    legend_size(pSize);
+    
+    % split by gender
+    fig;
+    scat_m_hdl = scatter(PCSA_m, MVC_m);
+    scat_m_hdl.LineWidth = lWidth;
+    scat_m_hdl.MarkerEdgeColor = blue;
+    scat_f_hdl = scatter(PCSA_f, MVC_f);
+    scat_f_hdl.LineWidth = lWidth;
+    scat_f_hdl.MarkerEdgeColor = green;
+    fit_m_hdl = plot(PCSA_m_ascOrder, MVC_m_fit);
+    fit_m_hdl.LineWidth = lWidth;
+    fit_m_hdl.Color = lightBlue;
+    fit_m_hdl.LineStyle = '--';
+    fit_f_hdl = plot(PCSA_f_ascOrder, MVC_f_fit);
+    fit_f_hdl.LineWidth = lWidth;
+    fit_f_hdl.Color = lightGreen;
+    fit_f_hdl.LineStyle = '--';
+    legend([scat_m_hdl, scat_f_hdl],{'males','females'});
+    legend('boxoff');
+    legend('Location','NorthWest');
+    xlabel('Theoretical maximal force (N)');
+    ylabel('Calibrated force (N)');
+    legend_size(pSize);
+end % display figure
+end % function
