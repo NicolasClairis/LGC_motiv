@@ -43,6 +43,17 @@ function[subject_id, NS] = LGCM_subject_selection(study_nm, condition, genderFil
 % removed (even including borderline movement)
 % 'fMRI_noSatTask_noMove_bis': like 'fMRI' but any run with saturation or
 % too much movement will be removed
+% 'behavior_noSatRun_bayesianMdl': like 'behavior_noSatRun' but removing 
+% subjects who saturated because bayesian model was not applied on them
+% 'fMRI_noSatRun_bayesianMdl': like 'fMRI_noSatRun' but removing subjects
+% who saturated because bayesian model was not applied on them
+% 'behavior_noSatTask_bayesianMdl': like 'behavior_noSatTask' but removing 
+% subjects who saturated because bayesian model was not applied on them
+% 'fMRI_noSatTask_bayesianMdl': like 'fMRI_noSatTask' but removing subjects
+% who saturated because bayesian model was not applied on them
+% 'fMRI_noSatTask_noMove_bis_bayesianMdl': like 'fMRI_noSatTask_noMove_bis' 
+% but removing subjects who saturated because bayesian model was not 
+% applied on them
 %
 % genderFilter:
 % 'all': by default, include all subjects
@@ -90,7 +101,8 @@ switch study_nm
         %% remove some subjects depending on the condition entered as input
         switch condition
             case {'behavior','fMRI',...
-                    'fMRI_noMove_bis','fMRI_noMove_ter','fMRI_noSatRun_choiceSplit_Elvl'} % all subjects
+                    'fMRI_noMove_bis','fMRI_noMove_ter',...
+                    'fMRI_noSatRun_choiceSplit_Elvl'} % all subjects
                 % (but removing the bad runs if the condition requires it)
                 bad_subs = false(1,length(fullSubList));
             case {'behavior_noSatRun','fMRI_noSatRun',...
@@ -98,6 +110,13 @@ switch study_nm
                 % removing subjects where no run survives after removing
                 % runs with too much saturation
                 bad_subs = ismember(fullSubList,{'047'});
+            case {'behavior_noSatRun_bayesianMdl','fMRI_noSatRun_bayesianMdl',...
+                    'behavior_noSatTask_bayesianMdl','fMRI_noSatTask_bayesianMdl',...
+                    'fMRI_noSatTask_noMove_bis_bayesianMdl'}
+                % removing subjects where Arthur did not apply the
+                % computational model (027, 052, 095) because one task was
+                % saturated
+                bad_subs = ismember(fullSubList,{'027','047','052','095'});
             case 'fMRI_noSatRun_choiceSplit_Elvl_bis'
                 % removing subjects where no run survives after removing
                 % runs with too much saturation

@@ -96,7 +96,7 @@ switch study_nm
                         runs.runsToIgnore = 1;
                 end % subject
                 %% removing tasks fully saturated
-            case 'behavior_noSatTask'
+            case {'behavior_noSatTask','behavior_noSatTask_bayesianMdl'}
                 switch sub_nm
                     case '027' % Em full saturation
                         runs.runsToKeep = [1,3];
@@ -116,7 +116,7 @@ switch study_nm
                         runs.runsToKeep = [1,3];
                         runs.runsToIgnore = [2,4];
                 end % subject loop
-            case 'fMRI_noSatTask'
+            case {'fMRI_noSatTask','fMRI_noSatTask_bayesianMdl'}
                 switch sub_nm
                     case {'017','043','074'} % first run: fMRI crashed => we have the behavior but not enough trials for fMRI
                         runs.runsToKeep = 2:4;
@@ -140,7 +140,7 @@ switch study_nm
                         runs.runsToIgnore = [2,4];
                 end % subject loop
                 %% removing any run with saturation
-            case 'behavior_noSatRun'
+            case {'behavior_noSatRun','behavior_noSatRun_bayesianMdl'}
                 switch sub_nm
                     case '002'
                         runs.runsToKeep = [1,2,4];
@@ -223,7 +223,7 @@ switch study_nm
                         runs.runsToKeep = [1,2];
                         runs.runsToIgnore = [3,4];
                 end
-            case 'fMRI_noSatRun'
+            case {'fMRI_noSatRun','fMRI_noSatRun_bayesianMdl'}
                 switch sub_nm
                     case {'017','043','074'} % first run: fMRI crashed => we have the behavior but not enough trials for fMRI
                         runs.runsToKeep = 2:4;
@@ -754,7 +754,7 @@ switch study_nm
                         runs.runsToIgnore = [2,4];
                 end % subject
                 %% remove saturation tasks AND runs with too movement
-            case 'fMRI_noSatTask_noMove_bis'
+            case {'fMRI_noSatTask_noMove_bis','fMRI_noSatTask_noMove_bis_bayesianMdl'}
                 switch sub_nm
                     case {'017','043','074'} % first run: fMRI crashed => we have the behavior but not enough trials for fMRI
                         runs.runsToKeep = 2:4;

@@ -27,9 +27,9 @@ switch condition
             'fMRI_noMoveSub','fMRI_noMoveSub_bis','fMRI_noMoveSub_ter',...
             'fMRI_noSatTaskSub_noMove_bis_Sub'}
         resultsFolderShortName = ['GLM',GLM_nm];
-    case 'fMRI_noSatTask' % saturation runs removed for the full saturated tasks
+    case {'fMRI_noSatTask','fMRI_noSatTask_bayesianMdl'} % saturation runs removed for the full saturated tasks
         resultsFolderShortName = ['GLM',GLM_nm,'_no_satTask'];
-    case 'fMRI_noSatRun' % saturation runs removed
+    case {'fMRI_noSatRun','fMRI_noSatRun_bayesianMdl'} % saturation runs removed
         resultsFolderShortName = ['GLM',GLM_nm,'_no_satRun'];
     case 'fMRI_noSatRun_choiceSplit_Elvl' % saturation runs removed, including those where choice is 100% correlated with effort level
         resultsFolderShortName = ['GLM',GLM_nm,'_no_satRun_Elvl'];
@@ -39,7 +39,7 @@ switch condition
         resultsFolderShortName = ['GLM',GLM_nm,'_noMvmtRun_lenient'];
     case 'fMRI_noMove_ter' % any run with movement removed (even slightest movement removed)
         resultsFolderShortName = ['GLM',GLM_nm,'_noMmvmtRun_stringent'];
-    case 'fMRI_noSatTask_noMove_bis' % saturation runs removed for the full saturated tasks
+    case {'fMRI_noSatTask_noMove_bis','fMRI_noSatTask_noMove_bis_bayesianMdl'} % saturation runs removed for the full saturated tasks
         resultsFolderShortName = ['GLM',GLM_nm,'_no_satTask_noMmvmtRun'];
     otherwise
         resultsFolderShortName = [];
