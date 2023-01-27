@@ -62,6 +62,7 @@ nPrm = length(parameter_names);
 
 %% perform the mediation
 pval.signif = struct;
+dispMed = 0; % do not display mediation (too many plots)
 for iPrm = 1:nPrm
     prm_nm = parameter_names{iPrm};
     behavPrm = prm.(prm_nm);
@@ -81,7 +82,7 @@ for iPrm = 1:nPrm
                 pval.(MRS_ROI_nm).(metabolite_nm).(prm_nm)] = mediation(metabolite_allSubs(goodSubs),...
                 con_data(goodSubs),...
                 behavPrm(goodSubs),...
-                X_nm, M_nm, Y_nm);
+                X_nm, M_nm, Y_nm, dispMed);
             
             % store when significant
             if pval.(MRS_ROI_nm).(metabolite_nm).(prm_nm).a < 0.05 &&...
