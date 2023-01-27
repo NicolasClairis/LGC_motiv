@@ -186,6 +186,8 @@ for iCon = 1:n_con
     % directory for concatenated contrast
     conFolder_nm = strrep(current_con_nm,' ','_');
     conFolder_nm = strrep(conFolder_nm,':','');
+    conFolder_nm = strrep(conFolder_nm,'_|','_abs_');
+    conFolder_nm = strrep(conFolder_nm,'|','');
     conFolder_nm = [results_folder, conFolder_nm];
     mkdir(conFolder_nm);
 
