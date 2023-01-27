@@ -964,10 +964,13 @@ if ismember(choiceModel,{'stick','boxcar'})
             % net value non-default option
             if choiceModel_NV_varOption > 0
                 n_choiceMods = n_choiceMods + 1;
-                choice_modNames{n_choiceMods} = 'NV non-default';
                 switch choiceModel_NV_varOption
                     case 1
+                        choice_modNames{n_choiceMods} = 'delta NV high E - low E';
                         choice_modVals(n_choiceMods,:) = raw_or_z(NV_varOption(choice_trial_idx));
+                    case 2
+                        choice_modNames{n_choiceMods} = '|delta NV high E - low E|';
+                        choice_modVals(n_choiceMods,:) = raw_or_z(abs(NV_varOption(choice_trial_idx)));
                     otherwise
                         error('not ready yet');
                 end
@@ -1388,10 +1391,13 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
             % net value non-default option
             if chosenModel_NV_varOption > 0
                 n_chosenMods = n_chosenMods + 1;
-                chosen_modNames{n_chosenMods} = 'NV non-default';
                 switch chosenModel_NV_varOption
                     case 1
+                        chosen_modNames{n_chosenMods} = 'delta NV high E - low E';
                         chosen_modVals(n_chosenMods,:) = raw_or_z(NV_varOption(chosen_trial_idx));
+                    case 2
+                        chosen_modNames{n_chosenMods} = '|delta NV high E - low E|';
+                        chosen_modVals(n_chosenMods,:) = raw_or_z(abs(NV_varOption(chosen_trial_idx)));
                     otherwise
                         error('not ready yet');
                 end
@@ -1661,10 +1667,13 @@ if ismember(preEffortCrossModel,{'stick','boxcar','boxcar_bis'})
             % net value non-default option
             if preEcrossModel_NV_varOption > 0
                 n_preEcrossMods = n_preEcrossMods + 1;
-                preEcross_modNames{n_preEcrossMods} = 'NV non-default';
                 switch preEcrossModel_NV_varOption
                     case 1
+                        preEcross_modNames{n_preEcrossMods} = 'delta NV high E - low E';
                         preEcross_modVals(n_preEcrossMods,:) = raw_or_z(NV_varOption(preEcross_trial_idx));
+                    case 2
+                        preEcross_modNames{n_preEcrossMods} = '|delta NV high E - low E|';
+                        preEcross_modVals(n_preEcrossMods,:) = raw_or_z(abs(NV_varOption(preEcross_trial_idx)));
                     otherwise
                         error('not ready yet');
                 end
@@ -1906,10 +1915,13 @@ if ismember(EperfModel,{'stick','boxcar'})
             % net value non-default option
             if EperfModel_NV_varOption > 0
                 n_EperfMods = n_EperfMods + 1;
-                Eperf_modNames{n_EperfMods} = 'NV non-default';
                 switch EperfModel_NV_varOption
                     case 1
+                        Eperf_modNames{n_EperfMods} = 'delta NV high E - low E';
                         Eperf_modVals(n_EperfMods,:) = raw_or_z(NV_varOption(Eperf_trial_idx));
+                    case 2
+                        Eperf_modNames{n_EperfMods} = '|delta NV high E - low E|';
+                        Eperf_modVals(n_EperfMods,:) = raw_or_z(abs(NV_varOption(Eperf_trial_idx)));
                     otherwise
                         error('not ready yet');
                 end

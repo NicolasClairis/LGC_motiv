@@ -159,8 +159,10 @@ function [GLMprm] = which_GLM(GLM)
 %       .(choice/chosen).(Ep.Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).NV_mdl (='mdl_X' or 'bayesianModel_X')
 %
 %       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).NV_varOption
-%       (1) net value of the chosen option based on the model defined in
+%       (1) difference between net value of the high effort option and low effort options based on the model defined in
 %       .(choice/chosen).(Ep.Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).NV_mdl (='mdl_X' or 'bayesianModel_X')
+%       (2) absolute difference between net value of the high effort option
+%       and low effort option based on the model defined in .(choice/chosen).(Ep.Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).NV_mdl (='mdl_X' or 'bayesianModel_X')
 %
 %       .(choice/chosen).Ep.(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).F_integral: physical effort only: 
 %       force integral for the performance of the current trial
@@ -260,8 +262,11 @@ function [GLMprm] = which_GLM(GLM)
 %       .Eperf.(Ep.Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).NV_mdl (='mdl_X' or 'bayesianModel_X')
 %
 %       .Eperf.(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).NV_varOption
-%       (1) net value of the chosen option based on the model defined in
+%       (1) delta of the net value of the high E - low E based on the model defined in
 %       .Eperf.(Ep.Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).NV_mdl (='mdl_X' or 'bayesianModel_X')
+%       (2) absolute difference between net value of the high effort option
+%       and low effort option based on the model defined in .(choice/chosen).(Ep.Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).NV_mdl (='mdl_X' or 'bayesianModel_X')
+
 %
 %       .Eperf.(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).RT_1stAnswer
 %       (1) raw reaction time for first answer (force above threshold for Ep 
@@ -2376,6 +2381,43 @@ switch GLM
             GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
             % feedback
             GLMprm.model_onset.(Epm_nm).fbk = 'stick';
+        end % physical/mental loop
+    case 83 % look at correlates of |delta net value| for identifying hard trials
+        % general parameters
+        GLMprm.gal.orth_vars = 0;
+        GLMprm.gal.zPerRun = 1;
+        % loop per task
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'stick';
+            GLMprm.choice.(Epm_nm).RP.E.NV_varOption = 2;
+            GLMprm.choice.(Epm_nm).RP.E.NV_mdl = 'bayesianModel_3';
+            % chosen
+            GLMprm.model_onset.(Epm_nm).chosen = 'boxcar';
+            % effort perf (effort execution)
+            GLMprm.model_onset.(Epm_nm).Eperf = 'boxcar';
+            % feedback
+            GLMprm.model_onset.(Epm_nm).fbk = 'boxcar';
+        end % physical/mental loop
+    case 84 % same as GLM 83, including Effort
+        % general parameters
+        GLMprm.gal.orth_vars = 0;
+        GLMprm.gal.zPerRun = 1;
+        % loop per task
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'stick';
+            GLMprm.choice.(Epm_nm).RP.E.E_chosen = 1;
+            GLMprm.choice.(Epm_nm).RP.E.NV_varOption = 2;
+            GLMprm.choice.(Epm_nm).RP.E.NV_mdl = 'bayesianModel_3';
+            % chosen
+            GLMprm.model_onset.(Epm_nm).chosen = 'boxcar';
+            % effort perf (effort execution)
+            GLMprm.model_onset.(Epm_nm).Eperf = 'boxcar';
+            % feedback
+            GLMprm.model_onset.(Epm_nm).fbk = 'boxcar';
         end % physical/mental loop
 end % GLM number
 %% warnings: check compatibility of the GLM parameters entered
