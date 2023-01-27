@@ -89,6 +89,7 @@ for iTrial = 1:nTrialsPerRun
     timeForce_N = behaviorStruct.physicalPerf.perfSummary{1,iTrial}.force_levels(:,2) +...
         -behaviorStruct.physicalPerf.onsets.effortPeriod{1,iTrial}.effort_phase;
     trialForceLevels_N = grip_biopac_volts_to_newtons_conversion(behaviorStruct.physicalPerf.perfSummary{1,iTrial}.force_levels(:,3));
+    trialForceLevels_N = trialForceLevels_N';
     trialForceLevels_corrected_N = trialForceLevels_N - trialForceLevels_N(1,1);
     MVC_volts = behaviorStruct.physicalPerf.MVC;
     threshold_newtons = grip_biopac_volts_to_newtons_conversion(MVC_volts)*(F_upper_threshold/100);
