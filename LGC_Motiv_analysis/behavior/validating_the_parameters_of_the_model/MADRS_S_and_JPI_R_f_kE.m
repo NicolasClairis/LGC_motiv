@@ -30,8 +30,8 @@ goodSubs_MADRS_S = ~isnan(kEp.*kEm).*(~isnan(MADRS_S_score)) == 1;
 goodSubs_JPI_R = ~isnan(kEp.*kEm).*(~isnan(JPI_R_score)) == 1;
 [betas.kEp_MADRS,~,stats.kEp_MADRS] = glmfit(kEp(goodSubs_MADRS_S), MADRS_S_score(goodSubs_MADRS_S),'normal');
 [betas.kEm_MADRS,~,stats.kEm_MADRS] = glmfit(kEm(goodSubs_MADRS_S), MADRS_S_score(goodSubs_MADRS_S),'normal');
-[betas.kEp_JPI,~,stats.kEp_JPI] = glmfit(kEp(goodSubs_JPI_R), JPI_R_score(goodSubs_JPI_R),'normal');
-[betas.kEm_JPI,~,stats.kEm_JPI] = glmfit(kEm(goodSubs_JPI_R), JPI_R_score(goodSubs_JPI_R),'normal');
+[betas.kEp_JPIR,~,stats.kEp_JPIR] = glmfit(kEp(goodSubs_JPI_R), JPI_R_score(goodSubs_JPI_R),'normal');
+[betas.kEm_JPIR,~,stats.kEm_JPIR] = glmfit(kEm(goodSubs_JPI_R), JPI_R_score(goodSubs_JPI_R),'normal');
 % extract p.values
 pval.kEp_MADRS = stats.kEp_MADRS.p;
 pval.kEm_MADRS = stats.kEm_MADRS.p;
@@ -42,10 +42,10 @@ kEp_MADRS_sort = sort(kEp(goodSubs_MADRS_S));
 [MADRS_kEp_fit] = glmval(betas.kEp_MADRS, kEp_MADRS_sort, 'identity');
 kEm_MADRS_sort = sort(kEm(goodSubs_MADRS_S));
 [MADRS_kEm_fit] = glmval(betas.kEm_MADRS, kEm_MADRS_sort, 'identity');
-kEp_JPI_sort = sort(kEp(goodSubs_JPI_R));
-[JPI_kEp_fit] = glmval(betas.kEp_JPI, kEp_JPI_sort, 'identity');
-kEm_JPI_sort = sort(kEm(goodSubs_JPI_R));
-[JPI_kEm_fit] = glmval(betas.kEm_JPI, kEm_JPI_sort, 'identity');
+kEp_JPIR_sort = sort(kEp(goodSubs_JPI_R));
+[JPIR_kEp_fit] = glmval(betas.kEp_JPIR, kEp_JPIR_sort, 'identity');
+kEm_JPIR_sort = sort(kEm(goodSubs_JPI_R));
+[JPIR_kEm_fit] = glmval(betas.kEm_JPIR, kEm_JPIR_sort, 'identity');
 %% display figure
 lWidth = 3;
 pSize = 30;
@@ -91,8 +91,8 @@ scat_hdl = scatter(kEp(goodSubs_JPI_R),...
     JPI_R_score(goodSubs_JPI_R));
 scat_hdl.LineWidth = lWidth;
 scat_hdl.MarkerEdgeColor = 'k';
-fit_hdl = plot(kEp_JPI_sort,...
-    JPI_kEp_fit);
+fit_hdl = plot(kEp_JPIR_sort,...
+    JPIR_kEp_fit);
 fit_hdl.LineWidth = lWidth;
 fit_hdl.Color = grey;
 fit_hdl.LineStyle = '--';
@@ -107,8 +107,8 @@ scat_hdl = scatter(kEm(goodSubs_JPI_R),...
     JPI_R_score(goodSubs_JPI_R));
 scat_hdl.LineWidth = lWidth;
 scat_hdl.MarkerEdgeColor = 'k';
-fit_hdl = plot(kEm_JPI_sort,...
-    JPI_kEm_fit);
+fit_hdl = plot(kEm_JPIR_sort,...
+    JPIR_kEm_fit);
 fit_hdl.LineWidth = lWidth;
 fit_hdl.Color = grey;
 fit_hdl.LineStyle = '--';
