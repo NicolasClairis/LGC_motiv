@@ -47,6 +47,11 @@ function[study_nm, cond, subject_id, sub_males, sub_females,...
 % b_all, b_m, b_f: betas for the linear correlation for all, males (m) and
 % females (f)
 
+%% figure display
+if ~exist('dispFig','var') || isempty(dispFig)
+    dispFig = 1;
+end
+
 %% working directory
 list_pcs = {'Lab','Home'};
 which_pc_idx = listdlg('PromptString',{'Lab or home pc?'},...
