@@ -104,8 +104,10 @@ for iTrial = 1:nTrialsPerRun
     end
     
     %% extract AUC for the whole trial
-    AUC.allTrials(iTrial) = trapz(timeForce, trialForceLevels_corrected);
-    AUC_N.allTrials(iTrial) = trapz(timeForce_N, trialForceLevels_corrected_N);
+    rmv_AUC_NaNs = ~isnan(trialForceLevels_corrected);
+    AUC.allTrials(iTrial) = trapz(timeForce(rmv_AUC_NaNs), trialForceLevels_corrected(rmv_AUC_NaNs));
+    rmv_AUC_N_NaNs = ~isnan(trialForceLevels_corrected_N);
+    AUC_N.allTrials(iTrial) = trapz(timeForce_N(rmv_AUC_N_NaNs), trialForceLevels_corrected_N(rmv_AUC_N_NaNs));
     
     %% extract AUC overshoot for the whole trial (need to work with actual values, not corrected for this measure)
     timePointsOverShoot = trialForceLevels >= F_upper_threshold;
