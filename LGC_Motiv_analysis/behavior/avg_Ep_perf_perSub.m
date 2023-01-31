@@ -30,7 +30,8 @@ function [latency, AUC, forcePeak, AUC_overshoot, AUC_N, forcePeak_N, AUC_oversh
 % force to produce to do the trial (based on force in Newtons)
 
 %% working directories
-computerRoot = LGCM_root_paths;
+% computerRoot = LGCM_root_paths;
+computerRoot = ['E:',filesep];
 dataRoot = [computerRoot, filesep, study_nm, filesep];
 
 %% extract effort produced
@@ -114,6 +115,13 @@ for iRun = 1:runs.nb_runs.Ep
 end % run loop
 
 %% average data per variable of interest
+latency.allRuns.allTrials           = mean(latency_perTrial,2,'omitnan');
+AUC.allRuns.allTrials               = mean(AUC_perTrial,2,'omitnan');
+forcePeak.allRuns.allTrials         = mean(forcePeak_perTrial,2,'omitnan');
+AUC_overshoot.allRuns.allTrials     = mean(AUC_overshoot_perTrial,2,'omitnan');
+AUC_N.allRuns.allTrials             = mean(AUC_N_perTrial,2,'omitnan');
+forcePeak_N.allRuns.allTrials       = mean(forcePeak_N_perTrial,2,'omitnan');
+AUC_overshoot_N.allRuns.allTrials   = mean(AUC_overshoot_N_perTrial,2,'omitnan');
 
 %% split per effort chosen
 for iEch = Ech_levels
@@ -164,6 +172,8 @@ for iRP = 1:2
 end % R/P trials
 
 %% split per effort level proposed * choice made
+choice_hE_idx = choice_highE_perTrial == 1;
+choice_lE_idx = choice_highE_perTrial == 0;
 [latency.allRuns.per_hE.choice_lowE,...
     AUC.allRuns.per_hE.choice_lowE,...
     forcePeak.allRuns.per_hE.choice_lowE,...
@@ -180,8 +190,6 @@ end % R/P trials
     AUC_overshoot_N.allRuns.per_hE.choice_highE] = deal(NaN(1,n_hE_levels));
 for iE = 1:n_hE_levels
     hE_idx = hE_level_perTrial == iE;
-    choice_hE_idx = choice_highE_perTrial == 1;
-    choice_lE_idx = choice_highE_perTrial == 0;
     hEch_idx = (hE_idx.*choice_hE_idx) == 1;
     lEch_idx = (hE_idx.*choice_lE_idx) == 1;
     % extract data
@@ -202,5 +210,83 @@ for iE = 1:n_hE_levels
     forcePeak_N.allRuns.per_hE.choice_highE(iE) = mean(forcePeak_N_perTrial(hEch_idx),2,'omitnan');
     AUC_overshoot_N.allRuns.per_hE.choice_highE(iE) = mean(AUC_overshoot_N_perTrial(hEch_idx),2,'omitnan');
 end % effort level
+
+%% extract intercept and slope for each variable
+% latency high effort choice
+b_latency_highE = glmfit(hE_level_perTrial(choice_hE_idx),...
+    latency_perTrial(choice_hE_idx), 'normal');
+latency.intercept.choice_highE = b_latency_highE(1);
+latency.slope.choice_highE = b_latency_highE(2);
+% latency low effort choice
+b_latency_lowE = glmfit(hE_level_perTrial(choice_lE_idx),...
+    latency_perTrial(choice_lE_idx), 'normal');
+latency.intercept.choice_lowE = b_latency_lowE(1);
+latency.slope.choice_lowE = b_latency_lowE(2);
+
+% AUC high effort choice
+b_AUC_highE = glmfit(hE_level_perTrial(choice_hE_idx),...
+    AUC_perTrial(choice_hE_idx), 'normal');
+AUC.intercept.choice_highE = b_AUC_highE(1);
+AUC.slope.choice_highE = b_AUC_highE(2);
+% AUC low effort choice
+b_AUC_lowE = glmfit(hE_level_perTrial(choice_lE_idx),...
+    AUC_perTrial(choice_lE_idx), 'normal');
+AUC.intercept.choice_lowE = b_AUC_lowE(1);
+AUC.slope.choice_lowE = b_AUC_lowE(2);
+
+% forcePeak high effort choice
+b_forcePeak_highE = glmfit(hE_level_perTrial(choice_hE_idx),...
+    forcePeak_perTrial(choice_hE_idx), 'normal');
+forcePeak.intercept.choice_highE = b_forcePeak_highE(1);
+forcePeak.slope.choice_highE = b_forcePeak_highE(2);
+% forcePeak low effort choice
+b_forcePeak_lowE = glmfit(hE_level_perTrial(choice_lE_idx),...
+    forcePeak_perTrial(choice_lE_idx), 'normal');
+forcePeak.intercept.choice_lowE = b_forcePeak_lowE(1);
+forcePeak.slope.choice_lowE = b_forcePeak_lowE(2);
+
+% AUC_overshoot high effort choice
+b_AUC_overshoot_highE = glmfit(hE_level_perTrial(choice_hE_idx),...
+    AUC_overshoot_perTrial(choice_hE_idx), 'normal');
+AUC_overshoot.intercept.choice_highE = b_AUC_overshoot_highE(1);
+AUC_overshoot.slope.choice_highE = b_AUC_overshoot_highE(2);
+% AUC_overshoot low effort choice
+b_AUC_overshoot_lowE = glmfit(hE_level_perTrial(choice_lE_idx),...
+    AUC_overshoot_perTrial(choice_lE_idx), 'normal');
+AUC_overshoot.intercept.choice_lowE = b_AUC_overshoot_lowE(1);
+AUC_overshoot.slope.choice_lowE = b_AUC_overshoot_lowE(2);
+
+% AUC_N high effort choice
+b_AUC_N_highE = glmfit(hE_level_perTrial(choice_hE_idx),...
+    AUC_N_perTrial(choice_hE_idx), 'normal');
+AUC_N.intercept.choice_highE = b_AUC_N_highE(1);
+AUC_N.slope.choice_highE = b_AUC_N_highE(2);
+% AUC_N low effort choice
+b_AUC_N_lowE = glmfit(hE_level_perTrial(choice_lE_idx),...
+    AUC_N_perTrial(choice_lE_idx), 'normal');
+AUC_N.intercept.choice_lowE = b_AUC_N_lowE(1);
+AUC_N.slope.choice_lowE = b_AUC_N_lowE(2);
+
+% forcePeak_N high effort choice
+b_forcePeak_N_highE = glmfit(hE_level_perTrial(choice_hE_idx),...
+    forcePeak_N_perTrial(choice_hE_idx), 'normal');
+forcePeak_N.intercept.choice_highE = b_forcePeak_N_highE(1);
+forcePeak_N.slope.choice_highE = b_forcePeak_N_highE(2);
+% forcePeak_N low effort choice
+b_forcePeak_N_lowE = glmfit(hE_level_perTrial(choice_lE_idx),...
+    forcePeak_N_perTrial(choice_lE_idx), 'normal');
+forcePeak_N.intercept.choice_lowE = b_forcePeak_N_lowE(1);
+forcePeak_N.slope.choice_lowE = b_forcePeak_N_lowE(2);
+
+% AUC_overshoot_N high effort choice
+b_AUC_overshoot_N_highE = glmfit(hE_level_perTrial(choice_hE_idx),...
+    AUC_overshoot_N_perTrial(choice_hE_idx), 'normal');
+AUC_overshoot_N.intercept.choice_highE = b_AUC_overshoot_N_highE(1);
+AUC_overshoot_N.slope.choice_highE = b_AUC_overshoot_N_highE(2);
+% AUC_overshoot_N low effort choice
+b_AUC_overshoot_N_lowE = glmfit(hE_level_perTrial(choice_lE_idx),...
+    AUC_overshoot_N_perTrial(choice_lE_idx), 'normal');
+AUC_overshoot_N.intercept.choice_lowE = b_AUC_overshoot_N_lowE(1);
+AUC_overshoot_N.slope.choice_lowE = b_AUC_overshoot_N_lowE(2);
 
 end % function
