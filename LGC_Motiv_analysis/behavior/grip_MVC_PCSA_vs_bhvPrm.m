@@ -1,5 +1,5 @@
-% function[pval] = grip_MVC_PCSA_vs_bhvPrm()
-% [pval] = grip_MVC_PCSA_vs_bhvPrm()
+function[betas, pval] = grip_MVC_PCSA_vs_bhvPrm()
+% [betas, pval] = grip_MVC_PCSA_vs_bhvPrm()
 % grip_MVC_vs_bhvPrm compare maximum voluntary contraction force (MVC),
 % theoretical force (thFmax) and difference between theoretical and actual 
 % force(MVC-thFmax) and behavioral parameters.
@@ -96,19 +96,19 @@ for iPrm = 1:n_bhvPrm
     prm_MVC_min_thFmax_all_ascOrder = sort(prm.(prm_nm)(goodSubs_MVC_thFmax));
     
     % MVC = f(parameter)
-    [b_MVC_all.(prm_nm),~,stats_MVC_all.(prm_nm)] = glmfit(prm.(prm_nm)(goodSubs_MVC), MVC_all(goodSubs_MVC), 'normal');
+    [betas.MVC_all.(prm_nm),~,stats_MVC_all.(prm_nm)] = glmfit(prm.(prm_nm)(goodSubs_MVC), MVC_all(goodSubs_MVC), 'normal');
     pval.MVC.(prm_nm) = stats_MVC_all.(prm_nm).p;
-    MVC_all_fit.(prm_nm) = glmval(b_MVC_all.(prm_nm), prm_MVC_all_ascOrder, 'identity');
+    MVC_all_fit.(prm_nm) = glmval(betas.MVC_all.(prm_nm), prm_MVC_all_ascOrder, 'identity');
     
     % theoretical Fmax = f(parameter)
-    [b_thFmax_all.(prm_nm),~,stats_thFmax_all.(prm_nm)] = glmfit(prm.(prm_nm)(goodSubs_thFmax), thFmax_all(goodSubs_thFmax), 'normal');
+    [betas.thFmax_all.(prm_nm),~,stats_thFmax_all.(prm_nm)] = glmfit(prm.(prm_nm)(goodSubs_thFmax), thFmax_all(goodSubs_thFmax), 'normal');
     pval.thFmax.(prm_nm) = stats_thFmax_all.(prm_nm).p;
-    thFmax_all_fit.(prm_nm) = glmval(b_thFmax_all.(prm_nm), prm_thFmax_all_ascOrder, 'identity');
+    thFmax_all_fit.(prm_nm) = glmval(betas.thFmax_all.(prm_nm), prm_thFmax_all_ascOrder, 'identity');
     
     % MVC - thFmax = f(parameter)
-    [b_MVC_min_thFmax_all.(prm_nm),~,stats_MVC_min_thFmax_all.(prm_nm)] = glmfit(prm.(prm_nm)(goodSubs_MVC_thFmax), MVC_min_thFmax_all(goodSubs_MVC_thFmax), 'normal');
+    [betas.MVC_min_thFmax_all.(prm_nm),~,stats_MVC_min_thFmax_all.(prm_nm)] = glmfit(prm.(prm_nm)(goodSubs_MVC_thFmax), MVC_min_thFmax_all(goodSubs_MVC_thFmax), 'normal');
     pval.MVC_min_thFmax.(prm_nm) = stats_MVC_min_thFmax_all.(prm_nm).p;
-    MVC_min_thFmax_all_fit.(prm_nm) = glmval(b_MVC_min_thFmax_all.(prm_nm), prm_MVC_min_thFmax_all_ascOrder, 'identity');
+    MVC_min_thFmax_all_fit.(prm_nm) = glmval(betas.MVC_min_thFmax_all.(prm_nm), prm_MVC_min_thFmax_all_ascOrder, 'identity');
     
     %% display result
     
@@ -158,4 +158,4 @@ for iPrm = 1:n_bhvPrm
     legend_size(pSize);
 end % parameter loop
 
-% end % function
+end % function
