@@ -56,8 +56,8 @@ for iS = 1:NS
     pli_a = excelReadInfosFile.PliCutan_Ant_rieur_mm_(sub_info_idx);
     pli_p = excelReadInfosFile.PliCutan_Post_rieur_mm_(sub_info_idx);
     circ = excelReadInfosFile.Circonf_renceDeL_avant_bras_mm_(sub_info_idx);
-    length = excelReadInfosFile.LongeurDeL_avant_bras_mm_(sub_info_idx);
-    thFmax_all(iS) = Emax_morpho(pli_a, pli_p, circ, length);
+    armLength = excelReadInfosFile.LongeurDeL_avant_bras_mm_(sub_info_idx);
+    thFmax_all(iS) = Emax_morpho(pli_a, pli_p, circ, armLength);
     
     % extract calibrated Fmax
     subDataPath = [dataRoot,study_nm,filesep,'CID',sub_nm,filesep,'behavior',filesep];
