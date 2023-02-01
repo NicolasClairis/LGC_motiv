@@ -113,6 +113,7 @@ grey = [143 143 143]./255;
 lowBinCol = [160 52 114]./255;
 mediumBinCol = [59 131 189]./255;
 highBinCol = [14 41 75]./255;
+round_n = 3;
 
 for iPrm = 1:nPrmToTest
     prm_nm = prmToTest{iPrm};
@@ -189,6 +190,7 @@ for iPrm = 1:nPrmToTest
             AUC_N_bin.avg.(ch_nm),...
             forcePeak_N_bin.avg.(ch_nm),...
             AUC_overshoot_N_bin.avg.(ch_nm)] = deal(NaN(n_hE_levels, nBins_Ech));
+        prm_range = deal(NaN(2,nBins_Ech));
         
         for iIS = 1:length(interc_slope)
             IS_nm = interc_slope{iIS};
@@ -259,9 +261,14 @@ for iPrm = 1:nPrmToTest
             AUC_overshoot_bin.avg.(ch_nm)(iE,:)     = do_bin2(AUC_overshoot.avg.(ch_nm)(iE,:), prm_of_interest, nBins_Ech, 0);
             AUC_N_bin.avg.(ch_nm)(iE,:)             = do_bin2(AUC_N.avg.(ch_nm)(iE,:), prm_of_interest, nBins_Ech, 0);
             forcePeak_N_bin.avg.(ch_nm)(iE,:)       = do_bin2(forcePeak_N.avg.(ch_nm)(iE,:), prm_of_interest, nBins_Ech, 0);
-            AUC_overshoot_N_bin.avg.(ch_nm)(iE,:)   = do_bin2(AUC_overshoot_N.avg.(ch_nm)(iE,:), prm_of_interest, nBins_Ech, 0);
+            [AUC_overshoot_N_bin.avg.(ch_nm)(iE,:),~,bin_idx] = do_bin2(AUC_overshoot_N.avg.(ch_nm)(iE,:), prm_of_interest, nBins_Ech, 0);
         end
     end % choice loop
+    
+    for iBin = 1:nBins_Ech
+        prm_range(1,iBin) = min(prm_of_interest(bin_idx == iBin),[],'omitnan');
+        prm_range(2,iBin) = max(prm_of_interest(bin_idx == iBin),[],'omitnan');
+    end % bin loop
     
     %% figure with performance averaged
     fig;
@@ -373,7 +380,10 @@ for iPrm = 1:nPrmToTest
     %% figure with latency = f(E level)*choice depending on parameter
     fig;
     % latency = f(prm)
+    lgd_hdl = NaN(1,nBins_Ech*2);
+    lgd_nm = cell(1,nBins_Ech*2);
     for iBin = 1:nBins_Ech
+        bin_nm = ['bin',num2str(iBin)];
         switch iBin
             case 1 % low parameter
                 col = lowBinCol;
@@ -394,19 +404,42 @@ for iPrm = 1:nPrmToTest
         scat_hdl_hE.LineWidth = lWidth;
         scat_hdl_hE.MarkerEdgeColor = black;
         scat_hdl_hE.MarkerFaceColor = white;
-        fit_hdl_lE = plot(1:n_hE_levels,...
+        fit_hdl_lE.(bin_nm) = plot(1:n_hE_levels,...
             latency_bin.intercept.choice_lE(iBin) +...
             latency_bin.slope.choice_lE(iBin).*(1:n_hE_levels));
-        fit_hdl_hE = plot(1:n_hE_levels,...
+        fit_hdl_hE.(bin_nm) = plot(1:n_hE_levels,...
             latency_bin.intercept.choice_hE(iBin) +...
             latency_bin.slope.choice_hE(iBin).*(1:n_hE_levels));
-        fit_hdl_lE.LineWidth = lWidth;
-        fit_hdl_lE.Color = col;
-        fit_hdl_lE.LineStyle = '--';
-        fit_hdl_hE.LineWidth = lWidth;
-        fit_hdl_hE.Color = col;
-        fit_hdl_hE.LineStyle = '-';
-    end
+        fit_hdl_lE.(bin_nm).LineWidth = lWidth;
+        fit_hdl_lE.(bin_nm).Color = col;
+        fit_hdl_lE.(bin_nm).LineStyle = '--';
+        fit_hdl_hE.(bin_nm).LineWidth = lWidth;
+        fit_hdl_hE.(bin_nm).Color = col;
+        fit_hdl_hE.(bin_nm).LineStyle = '-';
+        idx_lE = 1 + 2*(iBin - 1);
+        idx_hE = 2 + 2*(iBin - 1);
+        lgd_hdl(idx_lE)  = fit_hdl_lE.(bin_nm);
+        lgd_hdl(idx_hE)  = fit_hdl_hE.(bin_nm);
+        if iBin == 1
+            lgd_nm{idx_lE} = ['low ch - ',...
+                prm_nm,'<',num2str(round(prm_range(2,iBin),round_n))];
+            lgd_nm{idx_hE} = ['high ch - ',...
+                prm_nm,'<',num2str(round(prm_range(2,iBin),round_n))];
+        elseif iBin == nBins_Ech
+            lgd_nm{idx_lE} = ['low ch - ',...
+                prm_nm,'>',num2str(round(prm_range(1,iBin),round_n))];
+            lgd_nm{idx_hE} = ['high ch - ',...
+                prm_nm,'>',num2str(round(prm_range(1,iBin),round_n))];
+        else
+            lgd_nm{idx_lE} = ['low ch - ',...
+                num2str(round(prm_range(1,iBin),round_n)),'<',prm_nm,'<',num2str(round(prm_range(2,iBin),round_n))];
+            lgd_nm{idx_hE} = ['high ch - ',...
+                num2str(round(prm_range(1,iBin),round_n)),'<',prm_nm,'<',num2str(round(prm_range(2,iBin),round_n))];
+        end
+    end % bin loop
+    legend(lgd_hdl, lgd_nm);
+    legend('boxoff');
+    legend('Location','NorthWest');
     xticks(1:n_hE_levels);
     xlabel('Effort level');
     ylabel('Latency (s)');
@@ -415,7 +448,10 @@ for iPrm = 1:nPrmToTest
     %% figure with peak force (%) = f(E level)*choice depending on parameter
     fig;
     % forcePeak = f(prm)
+    lgd_hdl = NaN(1,nBins_Ech*2);
+    lgd_nm = cell(1,nBins_Ech*2);
     for iBin = 1:nBins_Ech
+        bin_nm = ['bin',num2str(iBin)];
         switch iBin
             case 1 % low parameter
                 col = lowBinCol;
@@ -436,19 +472,42 @@ for iPrm = 1:nPrmToTest
         scat_hdl_hE.LineWidth = lWidth;
         scat_hdl_hE.MarkerEdgeColor = black;
         scat_hdl_hE.MarkerFaceColor = white;
-        fit_hdl_lE = plot(1:n_hE_levels,...
+        fit_hdl_lE.(bin_nm) = plot(1:n_hE_levels,...
             forcePeak_bin.intercept.choice_lE(iBin) +...
             forcePeak_bin.slope.choice_lE(iBin).*(1:n_hE_levels));
-        fit_hdl_hE = plot(1:n_hE_levels,...
+        fit_hdl_hE.(bin_nm) = plot(1:n_hE_levels,...
             forcePeak_bin.intercept.choice_hE(iBin) +...
             forcePeak_bin.slope.choice_hE(iBin).*(1:n_hE_levels));
-        fit_hdl_lE.LineWidth = lWidth;
-        fit_hdl_lE.Color = col;
-        fit_hdl_lE.LineStyle = '--';
-        fit_hdl_hE.LineWidth = lWidth;
-        fit_hdl_hE.Color = col;
-        fit_hdl_hE.LineStyle = '-';
+        fit_hdl_lE.(bin_nm).LineWidth = lWidth;
+        fit_hdl_lE.(bin_nm).Color = col;
+        fit_hdl_lE.(bin_nm).LineStyle = '--';
+        fit_hdl_hE.(bin_nm).LineWidth = lWidth;
+        fit_hdl_hE.(bin_nm).Color = col;
+        fit_hdl_hE.(bin_nm).LineStyle = '-';
+        idx_lE = 1 + 2*(iBin - 1);
+        idx_hE = 2 + 2*(iBin - 1);
+        lgd_hdl(idx_lE)  = fit_hdl_lE.(bin_nm);
+        lgd_hdl(idx_hE)  = fit_hdl_hE.(bin_nm);
+        if iBin == 1
+            lgd_nm{idx_lE} = ['low ch - ',...
+                prm_nm,'<',num2str(round(prm_range(2,iBin),round_n))];
+            lgd_nm{idx_hE} = ['high ch - ',...
+                prm_nm,'<',num2str(round(prm_range(2,iBin),round_n))];
+        elseif iBin == nBins_Ech
+            lgd_nm{idx_lE} = ['low ch - ',...
+                prm_nm,'>',num2str(round(prm_range(1,iBin),round_n))];
+            lgd_nm{idx_hE} = ['high ch - ',...
+                prm_nm,'>',num2str(round(prm_range(1,iBin),round_n))];
+        else
+            lgd_nm{idx_lE} = ['low ch - ',...
+                num2str(round(prm_range(1,iBin),round_n)),'<',prm_nm,'<',num2str(round(prm_range(2,iBin),round_n))];
+            lgd_nm{idx_hE} = ['high ch - ',...
+                num2str(round(prm_range(1,iBin),round_n)),'<',prm_nm,'<',num2str(round(prm_range(2,iBin),round_n))];
+        end
     end
+    legend(lgd_hdl, lgd_nm);
+    legend('boxoff');
+    legend('Location','NorthWest');
     xticks(1:n_hE_levels);
     xlabel('Effort level');
     ylabel('Peak force (%)');
@@ -457,7 +516,10 @@ for iPrm = 1:nPrmToTest
     %% figure with peak force (N) = f(E level)*choice depending on parameter
     fig;
     % forcePeak (N) = f(prm)
+    lgd_hdl = NaN(1,nBins_Ech*2);
+    lgd_nm = cell(1,nBins_Ech*2);
     for iBin = 1:nBins_Ech
+        bin_nm = ['bin',num2str(iBin)];
         switch iBin
             case 1 % low parameter
                 col = lowBinCol;
@@ -478,19 +540,42 @@ for iPrm = 1:nPrmToTest
         scat_hdl_hE.LineWidth = lWidth;
         scat_hdl_hE.MarkerEdgeColor = black;
         scat_hdl_hE.MarkerFaceColor = white;
-        fit_hdl_lE = plot(1:n_hE_levels,...
+        fit_hdl_lE.(bin_nm) = plot(1:n_hE_levels,...
             forcePeak_N_bin.intercept.choice_lE(iBin) +...
             forcePeak_N_bin.slope.choice_lE(iBin).*(1:n_hE_levels));
-        fit_hdl_hE = plot(1:n_hE_levels,...
+        fit_hdl_hE.(bin_nm) = plot(1:n_hE_levels,...
             forcePeak_N_bin.intercept.choice_hE(iBin) +...
             forcePeak_N_bin.slope.choice_hE(iBin).*(1:n_hE_levels));
-        fit_hdl_lE.LineWidth = lWidth;
-        fit_hdl_lE.Color = col;
-        fit_hdl_lE.LineStyle = '--';
-        fit_hdl_hE.LineWidth = lWidth;
-        fit_hdl_hE.Color = col;
-        fit_hdl_hE.LineStyle = '-';
+        fit_hdl_lE.(bin_nm).LineWidth = lWidth;
+        fit_hdl_lE.(bin_nm).Color = col;
+        fit_hdl_lE.(bin_nm).LineStyle = '--';
+        fit_hdl_hE.(bin_nm).LineWidth = lWidth;
+        fit_hdl_hE.(bin_nm).Color = col;
+        fit_hdl_hE.(bin_nm).LineStyle = '-';
+        idx_lE = 1 + 2*(iBin - 1);
+        idx_hE = 2 + 2*(iBin - 1);
+        lgd_hdl(idx_lE)  = fit_hdl_lE.(bin_nm);
+        lgd_hdl(idx_hE)  = fit_hdl_hE.(bin_nm);
+        if iBin == 1
+            lgd_nm{idx_lE} = ['low ch - ',...
+                prm_nm,'<',num2str(round(prm_range(2,iBin),round_n))];
+            lgd_nm{idx_hE} = ['high ch - ',...
+                prm_nm,'<',num2str(round(prm_range(2,iBin),round_n))];
+        elseif iBin == nBins_Ech
+            lgd_nm{idx_lE} = ['low ch - ',...
+                prm_nm,'>',num2str(round(prm_range(1,iBin),round_n))];
+            lgd_nm{idx_hE} = ['high ch - ',...
+                prm_nm,'>',num2str(round(prm_range(1,iBin),round_n))];
+        else
+            lgd_nm{idx_lE} = ['low ch - ',...
+                num2str(round(prm_range(1,iBin),round_n)),'<',prm_nm,'<',num2str(round(prm_range(2,iBin),round_n))];
+            lgd_nm{idx_hE} = ['high ch - ',...
+                num2str(round(prm_range(1,iBin),round_n)),'<',prm_nm,'<',num2str(round(prm_range(2,iBin),round_n))];
+        end
     end
+    legend(lgd_hdl, lgd_nm);
+    legend('boxoff');
+    legend('Location','NorthWest');
     xticks(1:n_hE_levels);
     xlabel('Effort level');
     ylabel('Peak force (N)');
