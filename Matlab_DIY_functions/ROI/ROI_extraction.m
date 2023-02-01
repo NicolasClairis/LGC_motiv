@@ -63,7 +63,7 @@ betadata    = spm_read_vols(betaVol); % reads the con file
 % sphere/mask
 vxyz        = unique(floor((inv(betaVol.mat) * sxyz_ROI')'), 'rows');   % converts the ROI to extract from MNI (mm) to voxel-space of your own specific study
 vi          = sub2ind(betaVol.dim, vxyz(:, 1), vxyz(:, 2), vxyz(:, 3)); % extracts coordinates of the ROI in the voxel-space of your study
-con_value   = nanmean(betadata(vi));                                    % extracts mean beta for the selected ROI sphere/mask
+con_value   = mean(betadata(vi),'omitnan');                             % extracts mean beta for the selected ROI sphere/mask
 
 
 %% script should be adapted for the case where ROI comes from another study with different voxel size and gap between slices.
