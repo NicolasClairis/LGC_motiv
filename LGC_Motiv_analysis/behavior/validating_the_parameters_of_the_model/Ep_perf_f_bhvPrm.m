@@ -22,7 +22,7 @@ nPrmToTest = length(prmToTest);
     AUC.avg.allTrials, forcePeak.avg.allTrials, AUC_overshoot.avg.allTrials,...
     AUC_N.avg.allTrials, forcePeak_N.avg.allTrials, AUC_overshoot_N.avg.allTrials] = deal(NaN(1,NS));
 n_hE_levels = 3;
-nBins_Ech = 2;
+nBins_Ech = 3;
 [latency.avg.choice_hE, latency.avg.choice_lE,...
     AUC.avg.choice_hE, AUC.avg.choice_lE,...
     forcePeak.avg.choice_hE, forcePeak.avg.choice_lE,...
@@ -173,8 +173,8 @@ for iPrm = 1:nPrmToTest
     goodSubs_AUC_overshoot_N = goodSubs_prm.*(~isnan(AUC_overshoot_N.avg.allTrials)) == 1;
     [b_AUC_overshoot_N,~,stats_AUC_overshoot_N] = glmfit(prm_of_interest(goodSubs_AUC_overshoot_N),...
         AUC_overshoot_N.avg.allTrials(goodSubs_AUC_overshoot_N),'normal');
-    prm_ascOrder_AUC_overshoot = sort(prm_of_interest(goodSubs_AUC_overshoot_N));
-    AUC_overshoot_N_fit = glmval(b_AUC_overshoot_N, prm_ascOrder_AUC_overshoot,'identity');
+    prm_ascOrder_AUC_overshoot_N = sort(prm_of_interest(goodSubs_AUC_overshoot_N));
+    AUC_overshoot_N_fit = glmval(b_AUC_overshoot_N, prm_ascOrder_AUC_overshoot_N,'identity');
     betas.(prm_nm).AUC_overshoot_N = b_AUC_overshoot_N;
     pval.(prm_nm).AUC_overshoot_N = stats_AUC_overshoot_N.p;
     
@@ -399,10 +399,10 @@ for iPrm = 1:nPrmToTest
         scat_hdl_hE = scatter(1:n_hE_levels,...
             latency_bin.avg.choice_hE(:,iBin));
         scat_hdl_lE.LineWidth = lWidth;
-        scat_hdl_lE.MarkerEdgeColor = black;
+        scat_hdl_lE.MarkerEdgeColor = col;
         scat_hdl_lE.MarkerFaceColor = grey;
         scat_hdl_hE.LineWidth = lWidth;
-        scat_hdl_hE.MarkerEdgeColor = black;
+        scat_hdl_hE.MarkerEdgeColor = col;
         scat_hdl_hE.MarkerFaceColor = white;
         fit_hdl_lE.(bin_nm) = plot(1:n_hE_levels,...
             latency_bin.intercept.choice_lE(iBin) +...
@@ -467,10 +467,10 @@ for iPrm = 1:nPrmToTest
         scat_hdl_hE = scatter(1:n_hE_levels,...
             forcePeak_bin.avg.choice_hE(:,iBin));
         scat_hdl_lE.LineWidth = lWidth;
-        scat_hdl_lE.MarkerEdgeColor = black;
+        scat_hdl_lE.MarkerEdgeColor = col;
         scat_hdl_lE.MarkerFaceColor = grey;
         scat_hdl_hE.LineWidth = lWidth;
-        scat_hdl_hE.MarkerEdgeColor = black;
+        scat_hdl_hE.MarkerEdgeColor = col;
         scat_hdl_hE.MarkerFaceColor = white;
         fit_hdl_lE.(bin_nm) = plot(1:n_hE_levels,...
             forcePeak_bin.intercept.choice_lE(iBin) +...
@@ -535,10 +535,10 @@ for iPrm = 1:nPrmToTest
         scat_hdl_hE = scatter(1:n_hE_levels,...
             forcePeak_N_bin.avg.choice_hE(:,iBin));
         scat_hdl_lE.LineWidth = lWidth;
-        scat_hdl_lE.MarkerEdgeColor = black;
+        scat_hdl_lE.MarkerEdgeColor = col;
         scat_hdl_lE.MarkerFaceColor = grey;
         scat_hdl_hE.LineWidth = lWidth;
-        scat_hdl_hE.MarkerEdgeColor = black;
+        scat_hdl_hE.MarkerEdgeColor = col;
         scat_hdl_hE.MarkerFaceColor = white;
         fit_hdl_lE.(bin_nm) = plot(1:n_hE_levels,...
             forcePeak_N_bin.intercept.choice_lE(iBin) +...
