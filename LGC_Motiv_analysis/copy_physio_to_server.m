@@ -44,10 +44,10 @@ for iS = 1:NS
     end % respiration file loop
     
     % copy trigger files (with TTL)
-    respiFiles = ls(['CID',sub_nm,'*.ext']);
-    lRespi = size(respiFiles,1);
-    for iFileR = 1:lRespi
-        copyfile(respiFiles(iFileR,:),subRespiFolder);
+    triggerFiles = ls(['CID',sub_nm,'*.ext']);
+    lTrig = size(triggerFiles,1);
+    for iFileT = 1:lTrig
+        copyfile(triggerFiles(iFileT,:),subTriggerFolder);
     end % respiration file loop
     %% indicate where you are at
     disp(['subject ',sub_nm,' - ',...
