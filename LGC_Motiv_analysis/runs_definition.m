@@ -12,11 +12,7 @@ function[runs, n_runs] = runs_definition(study_nm, sub_nm, condition)
 % variable allows to take into account this so that the corresponding runs
 % are still included in the behavioral analysis but not in the fMRI
 % analysis.
-% 'behavior': behavioral analysis
-% 'behavior_no_sat': behavioral analysis without the runs where subject
-% saturated
-% 'fMRI': fMRI analysis
-% 'fMRI_no_move': fMRI analysis without runs where too much movement
+% See subject_condition.m for the full list.
 %
 % OUTPUTS
 % runs: structure with number of runs for each task and also the order of
