@@ -100,10 +100,10 @@ for iS = 1:NS
     if needModeling == true
         switch mdlType
             case 'simple'
-            [~, dataInferred] = logitfit_choices(computerRoot, study_nm, sub_nm,...
-                0, 'levels', 6, 6);
-        case 'bayesian'
-            gitResultsFolder = [fullfile('C:','Users','clairis','Desktop',...
+                [~, dataInferred] = logitfit_choices(computerRoot, study_nm, sub_nm,...
+                    0, 'levels', 6, 6);
+            case 'bayesian'
+                gitResultsFolder = [fullfile('C:','Users','clairis','Desktop',...
                     'GitHub','LGC_motiv','LGC_Motiv_results',study_nm,'bayesian_modeling'),filesep];
         end
     end
