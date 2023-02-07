@@ -16,7 +16,8 @@ function[NV_chosen, deltaNV_hE_min_lE, confidence, pChoice] = extract_bayesian_m
 %
 % task_fullName: task full name 'mental'/'physical'
 %
-% mdl_nm: model name
+% mdl_nm: model name (should be a string with the form 'mdl_X' with X being
+% the model number)
 %
 % OUTPUTS
 % NV_chosen: 1*nTrials vector with information about the net value of the 
