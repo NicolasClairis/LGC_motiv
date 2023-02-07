@@ -21,6 +21,7 @@ function[subject_id, NS] = LGCM_subject_selection(study_nm, condition, genderFil
 % removed from the subjects concerned
 % 'behavior_noSatTask': like 'behavior' list but saturation tasks will be
 % removed from the subjects concerned
+% 'respiration_and_noSatRun': respiration ok and no saturation run
 % 'fMRI': all subjects who performed the behavioral task in the fMRI
 % (removing only the runs where fMRI crashed)
 % 'fMRI_noMoveSub': remove subjects with too much movement in ALL runs
@@ -105,8 +106,9 @@ switch study_nm
                     'fMRI_noSatRun_choiceSplit_Elvl'} % all subjects
                 % (but removing the bad runs if the condition requires it)
                 bad_subs = false(1,length(fullSubList));
-            case {'behavior_noSatRun','fMRI_noSatRun',...
-                    'behavior_noSatTask','fMRI_noSatTask','fMRI_noSatTask_noMove_bis'}
+            case {'behavior_noSatRun','behavior_noSatTask',...
+                    'respiration_and_noSatRun',...
+                    'fMRI_noSatRun','fMRI_noSatTask','fMRI_noSatTask_noMove_bis'}
                 % removing subjects where no run survives after removing
                 % runs with too much saturation
                 bad_subs = ismember(fullSubList,{'047'});
