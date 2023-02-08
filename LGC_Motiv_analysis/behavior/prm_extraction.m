@@ -69,7 +69,7 @@ end
 switch mdlType
     case 'bayesian'
         bayesian_models = getfield(load([bayesian_root,filesep,...
-            'behavioral_prm_tmp.mat'],'bayesian_mdl'),'bayesian_mdl');
+            'behavioral_prm.mat'],'bayesian_mdl'),'bayesian_mdl');
         bayesian_mdl = bayesian_models.(['mdl_',mdlN]);
         parameter_names = fieldnames(bayesian_mdl);
         % remove subject name from the list
