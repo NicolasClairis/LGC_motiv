@@ -165,6 +165,7 @@ if figDisp == 1
             sem_NV_f_NV_bin.(task_nm).low_confRtg);
         lowConfRtg_hdl.LineWidth = lWidth;
         lowConfRtg_hdl.Color = lowConf_col;
+        hold on;
         % high confidence
         highConfRtg_hdl = errorbar(m_NV_f_NV_bin.(task_nm).high_confRtg,...
             m_RT_f_NV_bin.(task_nm).high_confRtg,...
@@ -192,6 +193,7 @@ if figDisp == 1
             sem_NV_f_NV_bin.(task_nm).low_confMdl);
         lowConfMdl_hdl.LineWidth = lWidth;
         lowConfMdl_hdl.Color = lowConf_col;
+        hold on;
         % high confidence
         highConfMdl_hdl = errorbar(m_NV_f_NV_bin.(task_nm).high_confMdl,...
             m_RT_f_NV_bin.(task_nm).high_confMdl,...
