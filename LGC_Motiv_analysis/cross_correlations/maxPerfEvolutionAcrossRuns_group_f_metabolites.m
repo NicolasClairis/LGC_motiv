@@ -140,6 +140,10 @@ for iPM = 1:2
 %         [~,~,stats] = glmfit([run_effect, withinRun_effect], maxPerf.(task_id).mean,'normal');
 %         pval.glm.(task_id).run_effect = stats.p(2);
 %         pval.glm.(task_id).withinRun_effect = stats.p(3);
+
+% perform GLM to test metabolite level main effect:
+% Performance = b0 + bM*metabolite + bS
+% xGLM = [metabolite_allSubs, ];
         %% display figure
         if figGroupDisp == 1
             pSize = 30;
