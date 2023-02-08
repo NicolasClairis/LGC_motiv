@@ -36,7 +36,7 @@ end % subject loop
 goodSubs.age_f_AUCg = (~isnan(CORT.AUCg)).*(~isnan(age)) == 1;
 [betas.age_f_AUCg,~,stats.age_f_AUCg] = glmfit(CORT.AUCg(goodSubs.age_f_AUCg),...
     age(goodSubs.age_f_AUCg),'normal');
-pval.age_f_AUCg = stats.age_f_AUC.p;
+pval.age_f_AUCg = stats.age_f_AUCg.p;
 CORT_fit.age_f_AUCg = sort(CORT.AUCg(goodSubs.age_f_AUCg));
 age_fit.age_f_AUCg = glmval(betas.age_f_AUCg,...
     CORT_fit.age_f_AUCg, 'identity');

@@ -20,7 +20,7 @@ for iROI = 1:nROIs
 end % roi loop
 
 %% load inflammatory markers
-[IL_data] = load_IL;
+[IL_data] = load_IL(study_nm);
 
 %% extract correlation data
 [IL1b, IL6, IL18, IL_sum] = deal(NaN(1,NS));

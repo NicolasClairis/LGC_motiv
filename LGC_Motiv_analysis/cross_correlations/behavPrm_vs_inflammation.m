@@ -8,10 +8,10 @@ condition = subject_condition;
 [subject_id, NS] = LGCM_subject_selection(study_nm, condition);
 
 %% load interleukins
-[IL_data] = load_IL;
+[IL_data] = load_IL(study_nm);
 
 %% load behavioral parameter
-[prm, mdlType, mdlN] = prm_extraction(subject_id, [], []);
+[prm, mdlType, mdlN] = prm_extraction(study_nm, subject_id, [], []);
 % remove CID from parameters
 prm_CID = prm.CID;
 prm = rmfield(prm, 'CID');
