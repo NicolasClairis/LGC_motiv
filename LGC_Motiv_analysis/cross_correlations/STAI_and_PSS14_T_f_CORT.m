@@ -1,4 +1,4 @@
-%% compare MADRS-S and interleukin levels
+%% compare stress and anxiety questionnaires (STAI-T and PSS14) with cortisol levels
 
 %% load subject
 study_nm = 'study1';
@@ -9,7 +9,7 @@ condition = subject_condition;
 [excelReadQuestionnairesFile, quest_sub_CID_list] = load_questionnaires_data;
 
 %% load cortisol
-[CORT_data] = load_CORT;
+[CORT_data] = load_CORT(study_nm);
 
 %% extract the data for the selected subjects
 [CORT_AUCg, STAI_T_score, PSS14_score] = deal(NaN(1, NS));
