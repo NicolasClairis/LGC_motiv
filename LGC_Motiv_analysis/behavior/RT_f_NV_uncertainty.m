@@ -1,5 +1,5 @@
-function[RT, b_RT, pval] = RT_f_NV_uncertainty(study_nm, subject_id, condition, figDisp)
-% [RT, b_RT, pval] = RT_f_NV_uncertainty(study_nm, subject_id, condition, figDisp)
+function[RT_f_pChoice_bin] = RT_f_NV_uncertainty(study_nm, subject_id, condition, figDisp)
+% [RT_f_pChoice_bin] = RT_f_NV_uncertainty(study_nm, subject_id, condition, figDisp)
 % RT_f_NV_uncertainty will look at how reaction times (RT) during choice
 % vary with net value depending on the uncertainty rating and uncertainty
 % derived from the model, looking at all tasks together and each task
@@ -18,10 +18,6 @@ function[RT, b_RT, pval] = RT_f_NV_uncertainty(study_nm, subject_id, condition, 
 %
 % OUTPUTS
 % RT: structure with RT
-%
-% b_RT: beta for linear regressions
-%
-% pval: p.value for different linear regressions
 
 %% subject selection
 if ~exist('study_nm','var') || isempty(study_nm) ||...
