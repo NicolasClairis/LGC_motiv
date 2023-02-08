@@ -18,7 +18,12 @@ function[RT] = extract_RT(subBehaviorFolder, sub_nm, run_nm, task_fullName)
 behaviorStruct = load([subBehaviorFolder,...
     'CID',sub_nm,'_session',run_nm,'_',task_fullName,...
     '_task.mat']);
-onsets_tmp = behaviorStruct.onsets;
+switch task_fullName
+    case 'physical'
+        onsets_tmp = behaviorStruct.physicalPerf.onsets;
+    case 'mental'
+        onsets_tmp = behaviorStruct.mentalE_perf.onsets;
+end
 RT = onsets_tmp.choice - onsets_tmp.dispChoiceOptions;
         
 end % function
