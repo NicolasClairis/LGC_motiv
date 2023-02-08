@@ -137,9 +137,9 @@ for iT = 1:nTasks
     for iC = 1:nCond
         cond_nm = conditions{iC};
         [m_RT_f_NV_bin.(task_nm).(cond_nm),...
-            sem_RT_f_NV_bin.(task_nm).(cond_nm)] = mean_sem_sd(RT_f_NV_bin.(task_nm).(cond_nm),2,'omitnan');
+            sem_RT_f_NV_bin.(task_nm).(cond_nm)] = mean_sem_sd(RT_f_NV_bin.(task_nm).(cond_nm),2);
         [m_NV_f_NV_bin.(task_nm).(cond_nm),...
-            sem_NV_f_NV_bin.(task_nm).(cond_nm)] = mean_sem_sd(NV_f_NV_bin.(task_nm).(cond_nm),2,'omitnan');
+            sem_NV_f_NV_bin.(task_nm).(cond_nm)] = mean_sem_sd(NV_f_NV_bin.(task_nm).(cond_nm),2);
     end % condition loop
 end % task loop
 

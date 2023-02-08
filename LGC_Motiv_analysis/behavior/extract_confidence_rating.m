@@ -19,18 +19,14 @@ function[conf_rtg] = extract_confidence_rating(subBehaviorFolder, sub_nm, run_nm
 behaviorStruct = load([subBehaviorFolder,...
     'CID',sub_nm,'_session',run_nm,'_',task_fullName,...
     '_task.mat']);
-choiceOptions = behaviorStruct.choice_opt;
 switch task_fullName
     case 'mental'
         choiceAndPerf = behaviorStruct.mentalE_perf;
     case 'physical'
         choiceAndPerf = behaviorStruct.physicalPerf;
 end
-%% choice was left or right?
+%% choice was left (-1/-2) or right (+1/+2)? low (-1/+1) or high (-2/+2) conf?
 choice_LR = choiceAndPerf.choice;
-% remove confidence info from choice:
-choice_LR(choice_LR == 2) = 1;
-choice_LR(choice_LR == -2) = -1;
 %% extract confidence rating
 conf_rtg = NaN(1,length(choice_LR));
 conf_rtg(abs(choice_LR) == 2) = 1;
