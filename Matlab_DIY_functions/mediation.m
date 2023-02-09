@@ -82,6 +82,12 @@ else
     error('problem with Y');
 end
 
+%% remove any NaN or glmfit will not be able to work
+goodSamples = ~isnan(X).*~isnan(M).*~isnan(Y) == 1;
+X = X(goodSamples);
+M = M(goodSamples);
+Y = Y(goodSamples);
+
 %% perform each path of the mediation
 
 % test correlation between X and M (path a)
