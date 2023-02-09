@@ -56,7 +56,8 @@ nRunsPerTask = 2;
 mdl_nm = 'mdl_3';
 nBins = 6;
 [RT_perSub.Ep, confMdl_perSub.Ep, conf_rtg_perSub.Ep,...
-    RT_perSub.Em, confMdl_perSub.Em, conf_rtg_perSub.Em] = deal(NaN(nTrialsPerRun*nRunsPerTask,NS));
+    RT_perSub.Em, confMdl_perSub.Em, conf_rtg_perSub.Em,...
+    RT_confMdl_orth_perSub.Ep, RT_confMdl_orth_perSub.Em] = deal(NaN(nTrialsPerRun*nRunsPerTask,NS));
 [path_a_confMdl_RT.Ep, path_b_RT_confRtg.Ep,...
     path_c_confMdl_confRtg.Ep, path_cprime_confMdl_confRtg.Ep,...
     path_a_confMdl_RT.Em, path_b_RT_confRtg.Em,...
@@ -69,10 +70,16 @@ nBins = 6;
     RT_f_pChoice_bin.Ep.low_confRtg, pChoice_f_pChoice_bin.Ep.low_confRtg,...
     RT_f_pChoice_bin.Em.high_confRtg, pChoice_f_pChoice_bin.Em.high_confRtg,...
     RT_f_pChoice_bin.Em.low_confRtg, pChoice_f_pChoice_bin.Em.low_confRtg,...
-    RT_f_pChoice_bin.Ep.high_confMdl, pChoice_f_pChoice_bin.Ep.high_confMdl,...
-    RT_f_pChoice_bin.Ep.low_confMdl, pChoice_f_pChoice_bin.Ep.low_confMdl,...
-    RT_f_pChoice_bin.Em.high_confMdl, pChoice_f_pChoice_bin.Em.high_confMdl,...
-    RT_f_pChoice_bin.Em.low_confMdl, pChoice_f_pChoice_bin.Em.low_confMdl] = deal(NaN(nBins,NS));
+    RT_f_pChoice_bin.Ep.high_confMdl,...
+    RT_f_pChoice_bin.Ep.low_confMdl,...
+    RT_f_pChoice_bin.Em.high_confMdl,...
+    RT_f_pChoice_bin.Em.low_confMdl,...
+    RT_orth_ConfMdl_f_pChoice_bin.Ep.high_confRtg,...
+    RT_orth_ConfMdl_f_pChoice_bin.Ep.low_confRtg,...
+    RT_orth_ConfMdl_f_pChoice_bin.Em.high_confRtg,...
+    RT_orth_ConfMdl_f_pChoice_bin.Em.low_confRtg,...
+    RT_orth_ConfMdl_f_RT_orth_ConfMdl_bin.Ep, conf_rtg_f_RT_orth_ConfMdl_bin.Ep,...
+    RT_orth_ConfMdl_f_RT_orth_ConfMdl_bin.Em, conf_rtg_f_RT_orth_ConfMdl_bin.Em] = deal(NaN(nBins,NS));
 
 %% loop through subjects
 for iS = 1:NS
@@ -93,7 +100,8 @@ for iS = 1:NS
         [RT_f_pChoice_bin_highConfRtg_tmp, RT_f_pChoice_bin_lowConfRtg_tmp,...
             pChoice_f_pChoice_bin_highConfRtg_tmp, pChoice_f_pChoice_bin_lowConfRtg_tmp,...
             RT_f_pChoice_bin_highConfMdl_tmp, RT_f_pChoice_bin_lowConfMdl_tmp,...
-            pChoice_f_pChoice_bin_highConfMdl_tmp, pChoice_f_pChoice_bin_lowConfMdl_tmp] = deal(NaN(nBins, nRunsPerTask));
+            pChoice_f_pChoice_bin_highConfMdl_tmp, pChoice_f_pChoice_bin_lowConfMdl_tmp,...
+            RT_orth_ConfMdl_f_pChoice_bin_highConfRtg_tmp, RT_orth_ConfMdl_f_pChoice_bin_lowConfRtg_tmp] = deal(NaN(nBins, nRunsPerTask));
 
         for iRun = 1:runs.nb_runs.(task_nm)
             jRun = runs.(task_nm).runsToKeep(iRun);
@@ -110,6 +118,8 @@ for iS = 1:NS
             RT_perSub.(task_nm)(run_trial_idx, iS) = RT_tmp;
             confMdl_perSub.(task_nm)(run_trial_idx, iS) = modelConf_tmp;
             conf_rtg_perSub.(task_nm)(run_trial_idx, iS) = conf_rtg_tmp;
+            % RT orthogonalized to model confidence
+            [RT_orth_mdlConf_tmp] = mtrx_orthog(RT_tmp', modelConf_tmp);
 
             % split data per confidence  levels
             high_confRtg = conf_rtg_tmp == 1;
@@ -120,17 +130,23 @@ for iS = 1:NS
             % then do bins
             % bins for rated confidence
             if sum(high_confRtg) > 0
-                [RT_f_pChoice_bin_highConfRtg_tmp(:,iRun), pChoice_f_pChoice_bin_highConfRtg_tmp(:,iRun)] = do_bin2(RT_tmp(high_confRtg), pChoice_tmp(high_confRtg), nBins, 0);
+                [RT_f_pChoice_bin_highConfRtg_tmp(:,iRun),...
+                    pChoice_f_pChoice_bin_highConfRtg_tmp(:,iRun)] = do_bin2(RT_tmp(high_confRtg), pChoice_tmp(high_confRtg), nBins, 0);
+                RT_orth_ConfMdl_f_pChoice_bin_highConfRtg_tmp(:,iRun) = do_bin2(RT_orth_mdlConf_tmp(high_confRtg), pChoice_tmp(high_confRtg), nBins, 0);
             end
             if sum(low_confRtg) > 0
-                [RT_f_pChoice_bin_lowConfRtg_tmp(:,iRun), pChoice_f_pChoice_bin_lowConfRtg_tmp(:,iRun)] = do_bin2(RT_tmp(low_confRtg), pChoice_tmp(low_confRtg), nBins, 0);
+                [RT_f_pChoice_bin_lowConfRtg_tmp(:,iRun),...
+                    pChoice_f_pChoice_bin_lowConfRtg_tmp(:,iRun)] = do_bin2(RT_tmp(low_confRtg), pChoice_tmp(low_confRtg), nBins, 0);
+                RT_orth_ConfMdl_f_pChoice_bin_lowConfRtg_tmp(:,iRun) = do_bin2(RT_orth_mdlConf_tmp(low_confRtg), pChoice_tmp(low_confRtg), nBins, 0);
             end
             % bins for confidence inferred by the model
             if sum(high_confMdl) > 0
-                [RT_f_pChoice_bin_highConfMdl_tmp(:,iRun), pChoice_f_pChoice_bin_highConfMdl_tmp(:,iRun)] = do_bin2(RT_tmp(high_confMdl), pChoice_tmp(high_confMdl), nBins, 0);
+                [RT_f_pChoice_bin_highConfMdl_tmp(:,iRun),...
+                    pChoice_f_pChoice_bin_highConfMdl_tmp(:,iRun)] = do_bin2(RT_tmp(high_confMdl), pChoice_tmp(high_confMdl), nBins, 0);
             end
             if sum(low_confMdl) > 0
-                [RT_f_pChoice_bin_lowConfMdl_tmp(:,iRun), pChoice_f_pChoice_bin_lowConfMdl_tmp(:,iRun)] = do_bin2(RT_tmp(low_confMdl), pChoice_tmp(low_confMdl), nBins, 0);
+                [RT_f_pChoice_bin_lowConfMdl_tmp(:,iRun),...
+                    pChoice_f_pChoice_bin_lowConfMdl_tmp(:,iRun)] = do_bin2(RT_tmp(low_confMdl), pChoice_tmp(low_confMdl), nBins, 0);
             end
         end % run loop
 
@@ -145,6 +161,9 @@ for iS = 1:NS
         pChoice_f_pChoice_bin.(task_nm).high_confMdl(:,iS) = mean(pChoice_f_pChoice_bin_highConfMdl_tmp,2,'omitnan');
         RT_f_pChoice_bin.(task_nm).low_confMdl(:,iS) = mean(RT_f_pChoice_bin_lowConfMdl_tmp,2,'omitnan');
         pChoice_f_pChoice_bin.(task_nm).low_confMdl(:,iS) = mean(pChoice_f_pChoice_bin_lowConfMdl_tmp,2,'omitnan');
+        % extract RT orthogonalized to model confidence
+        RT_orth_ConfMdl_f_pChoice_bin.(task_nm).high_confRtg(:,iS) = mean(RT_orth_ConfMdl_f_pChoice_bin_highConfRtg_tmp,2,'omitnan');
+        RT_orth_ConfMdl_f_pChoice_bin.(task_nm).low_confRtg(:,iS) = mean(RT_orth_ConfMdl_f_pChoice_bin_lowConfRtg_tmp,2,'omitnan');
         
         %% perform mediation
         % all trials
@@ -161,6 +180,12 @@ for iS = 1:NS
                 RT_perSub.(task_nm)(lowConf_trials_tmp,iS), conf_rtg_perSub.(task_nm)(lowConf_trials_tmp,iS),...
                 'low conf model','RT','conf rating',0);
         end
+        
+        %% extract RT orthogonalized to model confidence
+        RT_confMdl_orth_perSub.(task_nm)(:, iS) = RT_perSub.(task_nm)(:, iS) - path_a_confMdl_RT.(task_nm)(iS).*confMdl_perSub.(task_nm)(:,iS);
+        % extract bin
+        [conf_rtg_f_RT_orth_ConfMdl_bin.(task_nm)(:,iS),...
+            RT_orth_ConfMdl_f_RT_orth_ConfMdl_bin.(task_nm)(:,iS)] = do_bin2(conf_rtg_perSub.(task_nm)(:,iS), RT_confMdl_orth_perSub.(task_nm)(:,iS),nBins,0);
     end % task loop
 end % subject loop
 %% average data across subjects
@@ -174,7 +199,18 @@ for iT = 1:nTasks
             sem_RT_f_pChoice_bin.(task_nm).(cond_nm)] = mean_sem_sd(RT_f_pChoice_bin.(task_nm).(cond_nm),2);
         [m_pChoice_f_pChoice_bin.(task_nm).(cond_nm),...
             sem_pChoice_f_pChoice_bin.(task_nm).(cond_nm)] = mean_sem_sd(pChoice_f_pChoice_bin.(task_nm).(cond_nm),2);
+        switch cond_nm
+            case {'high_confRtg','low_confRtg'}
+                [m_RT_orth_ConfMdl_f_pChoice_bin.(task_nm).(cond_nm),...
+                    sem_RT_orth_ConfMdl_f_pChoice_bin.(task_nm).(cond_nm)] = mean_sem_sd(RT_orth_ConfMdl_f_pChoice_bin.(task_nm).(cond_nm),2);
+        end
     end % condition loop
+    
+    % average bin
+    [m_conf_rtg_f_RT_orth_ConfMdl_bin.(task_nm),...
+        sem_conf_rtg_f_RT_orth_ConfMdl_bin.(task_nm)] = mean_sem_sd(conf_rtg_f_RT_orth_ConfMdl_bin.(task_nm),2);
+    [m_RT_orth_ConfMdl_f_RT_orth_ConfMdl_bin.(task_nm),...
+        sem_RT_orth_ConfMdl_f_RT_orth_ConfMdl_bin.(task_nm)] = mean_sem_sd(RT_orth_ConfMdl_f_RT_orth_ConfMdl_bin.(task_nm),2);
     
     % average and test mediation paths
     [mediation_paths.(task_nm).mean.allTrials.a_confMdl_RT,...
@@ -209,16 +245,17 @@ end % task loop
 %% display figure
 if figDisp == 1
     lWidth = 3;
-    pSize = 40;
+    pSize = 30;
     lowConf_col = [5 113 176]./255;
     highConf_col = [202 0 32]./255;
 
     for iT = 1:nTasks
         task_nm = tasks{iT};
-
+        
+        %% RT = f(confidence)
         fig;
         % RT = f(NV) split per confidence based on the model
-        subplot(1,2,1);
+        subplot(1,3,1);
         % low confidence
         lowConfMdl_hdl = errorbar(m_pChoice_f_pChoice_bin.(task_nm).low_confMdl,...
             m_RT_f_pChoice_bin.(task_nm).low_confMdl,...
@@ -241,12 +278,13 @@ if figDisp == 1
         legend([highConfMdl_hdl, lowConfMdl_hdl],...
             {'high model confidence', 'low model confidence'});
         legend('boxoff');
+        legend('Location','South');
         xlabel(['p(high effort) (',task_nm,')']);
         ylabel('RT (s)');
         legend_size(pSize);
         
         % RT = f(NV) split per confidence rating
-        subplot(1,2,2);
+        subplot(1,3,2);
         % low confidence
         lowConfRtg_hdl = errorbar(m_pChoice_f_pChoice_bin.(task_nm).low_confRtg,...
             m_RT_f_pChoice_bin.(task_nm).low_confRtg,...
@@ -269,10 +307,54 @@ if figDisp == 1
         legend([highConfRtg_hdl, lowConfRtg_hdl],...
             {'high confidence rating', 'low confidence rating'});
         legend('boxoff');
+        legend('Location','South');
         xlabel(['p(high effort) - ',task_nm]);
         ylabel('RT (s)');
         legend_size(pSize);
+        
+        % RT (orthogonalized to model confidence) = f(NV) split per confidence rating
+        subplot(1,3,3);
+        % low confidence
+        lowConfRtg_RTorth_hdl = errorbar(m_pChoice_f_pChoice_bin.(task_nm).low_confRtg,...
+            m_RT_orth_ConfMdl_f_pChoice_bin.(task_nm).low_confRtg,...
+            sem_RT_orth_ConfMdl_f_pChoice_bin.(task_nm).low_confRtg,...
+            sem_RT_orth_ConfMdl_f_pChoice_bin.(task_nm).low_confRtg,...
+            sem_pChoice_f_pChoice_bin.(task_nm).low_confRtg,...
+            sem_pChoice_f_pChoice_bin.(task_nm).low_confRtg);
+        lowConfRtg_RTorth_hdl.LineWidth = lWidth;
+        lowConfRtg_RTorth_hdl.Color = lowConf_col;
+        hold on;
+        % high confidence
+        highConfRtg_RTorth_hdl = errorbar(m_pChoice_f_pChoice_bin.(task_nm).high_confRtg,...
+            m_RT_orth_ConfMdl_f_pChoice_bin.(task_nm).high_confRtg,...
+            sem_RT_orth_ConfMdl_f_pChoice_bin.(task_nm).high_confRtg,...
+            sem_RT_orth_ConfMdl_f_pChoice_bin.(task_nm).high_confRtg,...
+            sem_pChoice_f_pChoice_bin.(task_nm).high_confRtg,...
+            sem_pChoice_f_pChoice_bin.(task_nm).high_confRtg);
+        highConfRtg_RTorth_hdl.LineWidth = lWidth;
+        highConfRtg_RTorth_hdl.Color = highConf_col;
+        legend([highConfRtg_RTorth_hdl, lowConfRtg_RTorth_hdl],...
+            {'high confidence rating', 'low confidence rating'});
+        legend('boxoff');
+        legend('Location','South');
+        xlabel(['p(high effort) - ',task_nm]);
+        ylabel('RT (s) (orthogonalized to model conf.)');
+        legend_size(pSize);
 
+        
+        %% confidence rating = f(RT orthogonalized to confidence model)
+        fig;
+        conf_rtg_RTorth_hdl = errorbar(m_RT_orth_ConfMdl_f_RT_orth_ConfMdl_bin.(task_nm),...
+            m_conf_rtg_f_RT_orth_ConfMdl_bin.(task_nm),...
+            sem_conf_rtg_f_RT_orth_ConfMdl_bin.(task_nm),...
+            sem_conf_rtg_f_RT_orth_ConfMdl_bin.(task_nm),...
+            sem_RT_orth_ConfMdl_f_RT_orth_ConfMdl_bin.(task_nm),...
+            sem_RT_orth_ConfMdl_f_RT_orth_ConfMdl_bin.(task_nm));
+        conf_rtg_RTorth_hdl.LineWidth = lWidth;
+        conf_rtg_RTorth_hdl.Color = 'k';
+        xlabel('RT (s) (orthogonalized to model conf.)');
+        ylabel('Confidence rating');
+        legend_size(pSize);
     end % task loop
 end % figure display
 end % function
