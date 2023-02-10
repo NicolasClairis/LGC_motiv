@@ -62,7 +62,7 @@ function [GLMprm] = which_GLM(GLM)
 %       effort/non-default option is selected
 %
 %   .choice/chosen/preEffortCross/Eperf/fbk: for each event, for each task (Ep/Em) and 
-%   for each condition (R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3) indicate if a given regressor should be 
+%   for each condition (R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch) indicate if a given regressor should be 
 %   included or not.
 %   .Ep/Em: physical (Ep) or mental (Em) effort task
 %   .R/P/RP/splitPerE/splitPerEch: reward only (R), punishment only (P) or reward and punishment
@@ -79,92 +79,92 @@ function [GLMprm] = which_GLM(GLM)
 %       (2) split per level of effort chosen (Ech0/Ech1/Ech2/Ech3)
 %       (3) split per option chosen (low/default vs high/non-default effort chosen)
 %
-%       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).R_vs_P:
+%       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).R_vs_P:
 %       (1) 0 when punishment trial, 1 when reward trial
 %
-%       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).choiceHighE
+%       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).choiceHighE
 %       (1) 0 when low effort/default option is selected and 1 when high
 %       effort/non-default option is selected
 %
-%       .choice.(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).money_left
+%       .choice.(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).money_left
 %       (1) money amount associated to left option
 %
-%       .choice.(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).money_right
+%       .choice.(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).money_right
 %       (1) money amount associated to right option
 %
-%       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).money_chosen:
+%       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).money_chosen:
 %       (1) money chosen amount
 %       (2) |money chosen amount|
 %       (3) money levels (-4/-3/-2/-1/1/2/3/4) chosen from highest loss
 %       until highest gain
 %       (4) |money levels (1/2/3/4) chosen|
 %
-%       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).money_unchosen:
+%       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).money_unchosen:
 %       (1) money unchosen amount
 %       (2) |money unchosen amount|
 %       (3) money levels (-4/-3/-2/-1/1/2/3/4) unchosen
 %       (4) |money levels (1/2/3/4) unchosen|
 %
-%       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).money_varOption:
+%       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).money_varOption:
 %       (1) money amount non-default option
 %       (2) |money amount non-default option|
 %       (3) money levels  (-3/-2/-1/1/2/3) non-default option
 %       (4) |money levels (1/2/3) non-default option|
 %
-%       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).money_ch_min_unch:
+%       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).money_ch_min_unch:
 %       (1) money chosen - money unchosen amount
 %
-%       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).money_ch_min_fixOption:
+%       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).money_ch_min_fixOption:
 %       (1) money chosen - money default option - amount
 %       (2) money chosen - money default option - levels (1/2/3/4 - 1)
 %
-%       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).money_sum:
+%       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).money_sum:
 %       (1) money default + money non-default amount
 %
-%       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).E_left
+%       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).E_left
 %       (1) effort level (0/1/2/3) associated to left option
 %       (2) effort difficulty associated to left option (Ep: duration to hold; Em: nb answers to give)
 %
-%       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).E_right
+%       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).E_right
 %       (1) effort level (0/1/2/3) associated to right option
 %       (2) effort difficulty associated to right option (Ep: duration to hold; Em: nb answers to give)
 %
-%       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).E_chosen
+%       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).E_chosen
 %       (1) effort level (0/1/2/3) associated to chosen option
 %       (2) effort difficulty associated to chosen option (Ep: duration to hold; Em: nb answers to give)
 %
-%       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).E_unchosen
+%       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).E_unchosen
 %       (1) effort level (0/1/2/3) associated to unchosen option
 %       (2) effort difficulty associated to unchosen option (Ep: duration to hold; Em: nb answers to give)
 %
-%       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).E_varOption
+%       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).E_varOption
 %       (1) effort level (0/1/2/3) associated to the non-default option
 %       (2) effort difficulty associated to the non-default option (Ep: duration to hold; Em: nb answers to give)
 %
-%       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).E_ch_min_unch
+%       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).E_ch_min_unch
 %       (1) effort level (0/1/2/3) associated to the chosen option minus
 %       the effort level (0/1/2/3) associated to the unchosen option
 %       (2) effort difficulty associated to the chosen option (Ep: duration to hold; Em: nb answers to give)
 %       minus the effort difficulty associated to the unchosen option (Ep: duration to hold; Em: nb answers to give)
 %
-%       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).E_ch_min_fixOption:
+%       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).E_ch_min_fixOption:
 %       (1) E chosen - E default option - levels (0/1/2/3)
 %
-%       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).E_sum
+%       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).E_sum
 %       (1) sum of the effort levels (0/1/2/3) associated to both options
 %       (2) sum of the effort difficulties (Ep: duration to hold; Em: nb answers to give) associated to both options
 %
-%       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).NV_chosen
+%       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).NV_chosen
 %       (1) net value of the chosen option based on the model defined in
-%       .(choice/chosen).(Ep.Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).NV_mdl (='mdl_X' or 'bayesianModel_X')
+%       .(choice/chosen).(Ep.Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).NV_mdl (='mdl_X' or 'bayesianModel_X')
 %
-%       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).NV_varOption
+%       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).NV_varOption
 %       (1) difference between net value of the high effort option and low effort options based on the model defined in
-%       .(choice/chosen).(Ep.Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).NV_mdl (='mdl_X' or 'bayesianModel_X')
+%       .(choice/chosen).(Ep.Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).NV_mdl (='mdl_X' or 'bayesianModel_X')
 %       (2) absolute difference between net value of the high effort option
-%       and low effort option based on the model defined in .(choice/chosen).(Ep.Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).NV_mdl (='mdl_X' or 'bayesianModel_X')
+%       and low effort option based on the model defined in .(choice/chosen).(Ep.Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).NV_mdl (='mdl_X' or 'bayesianModel_X')
 %
-%       .(choice/chosen).Ep.(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).F_integral: physical effort only: 
+%       .(choice/chosen).Ep.(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).F_integral: physical effort only: 
 %       force integral for the performance of the current trial
 %       (=anticipated force produced)
 %       (1) integral of effort performed during the effort period
@@ -172,7 +172,7 @@ function [GLMprm] = which_GLM(GLM)
 %       considering only the overshoot (force produced above the red
 %       threshold)
 %
-%       .(choice/chosen).Em.(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).efficacy:
+%       .(choice/chosen).Em.(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).efficacy:
 %       mental effort only: efficacy for the performance of the current trial
 %       (=anticipated effort produced) defined as:
 %       (1) (nb correct answers - nb errors made)/total time of effort
@@ -180,29 +180,29 @@ function [GLMprm] = which_GLM(GLM)
 %       (2) (nb correct answers - nb errors made)/time spent between answer
 %       of second useless number and end of the trial
 %
-%       .(choice/chosen).Ep.(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).fatigue:
+%       .(choice/chosen).Ep.(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).fatigue:
 %       physical effort only:
 %       (1) sum of previous AUC of force produced
 %
-%       .(choice/chosen).Em.(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).prevEfficacy:
+%       .(choice/chosen).Em.(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).prevEfficacy:
 %       mental effort only:
 %       (1) efficacy of previous trial computed as (nb correct answers - nb errors made)/total time of effort
 %       period
 %       (2) efficacy of previous trial computed  as (nb correct answers - nb errors made)/time spent between answer
 %       of second useless number and end of the trial
 %
-%       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).trialN
+%       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).trialN
 %       (1) trial number
 %       (2) (trial number)*(E chosen - E non-chosen option)
 %       (3) (trial number)*(E non-default - E default option)
 %       (4) (trial number)*(E non-default)
 %
-%       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).confidence
+%       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).confidence
 %       (1) confidence level (0/1) given by the subject for each choice
 %       (2) confidence inferred by the model (p(choice)-0.5)² for the model
-%       defined in .(choice/chosen).(Ep.Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).conf_mdl (='mdl_X' or 'bayesianModel_X')
+%       defined in .(choice/chosen).(Ep.Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).conf_mdl (='mdl_X' or 'bayesianModel_X')
 %
-%       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).RT: reaction time for choice
+%       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).RT: reaction time for choice
 %       (1) raw reaction time
 %       (2) reaction time zscored per run
 %       (3) reaction time zscored per subject across all runs
@@ -219,80 +219,80 @@ function [GLMprm] = which_GLM(GLM)
 %       (2) split per level of effort chosen (Ech0/Ech1/Ech2/Ech3)
 %       (3) split per option chosen (low/default vs high/non-default effort chosen)
 %
-%       .Eperf.(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).choiceHighE
+%       .Eperf.(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).choiceHighE
 %       (1) 0 when low effort/default option is selected and 1 when high
 %       effort/non-default option is selected
 %
-%       .Eperf.(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).money_chosen
+%       .Eperf.(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).money_chosen
 %       (1) money chosen amount
 %       (2) |money chosen amount|
 %       (3) money levels (-4/-3/-2/-1/1/2/3/4) chosen
 %       (4) |money levels (1/2/3/4) chosen|
 %
-%       .Eperf.(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).E_chosen
+%       .Eperf.(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).E_chosen
 %       (1) effort level (0/1/2/3) associated to chosen option
 %       (2) effort difficulty associated to chosen option (Ep: duration to hold; Em: nb answers to give)
 %
-%       .Eperf.Ep.(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).F_peak: physical effort only: force peak
+%       .Eperf.Ep.(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).F_peak: physical effort only: force peak
 %       (1) force peak in newtons
 %
-%       .Eperf.Ep.(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).F_integral: physical effort only: force integral
+%       .Eperf.Ep.(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).F_integral: physical effort only: force integral
 %       (1) integral of effort performed during the effort period
 %       (2) integral of effort performed during the effort period
 %       considering only the overshoot (force produced above the red
 %       threshold)
 %
-%       .Eperf.Em.(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).efficacy:
+%       .Eperf.Em.(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).efficacy:
 %       mental effort only: efficacy defined as:
 %       (1) (nb correct answers - nb errors made)/total time of effort
 %       period
 %       (2) (nb correct answers - nb errors made)/time spent between answer
 %       of second useless number and end of the trial
 %
-%       .Eperf.Em.(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).RT_avg: mental effort only: average reaction
+%       .Eperf.Em.(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).RT_avg: mental effort only: average reaction
 %       time for answering N-back task
 %       (1) average reaction time for answering to questions (in seconds)
 %
-%       .Eperf.Em.(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).n_errors: mental effort only: number of errors
+%       .Eperf.Em.(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).n_errors: mental effort only: number of errors
 %       made per trial
 %       (1) number of errors made
 %
-%       .Eperf.(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).NV_chosen
+%       .Eperf.(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).NV_chosen
 %       (1) net value of the chosen option based on the model defined in
-%       .Eperf.(Ep.Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).NV_mdl (='mdl_X' or 'bayesianModel_X')
+%       .Eperf.(Ep.Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).NV_mdl (='mdl_X' or 'bayesianModel_X')
 %
-%       .Eperf.(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).NV_varOption
+%       .Eperf.(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).NV_varOption
 %       (1) delta of the net value of the high E - low E based on the model defined in
-%       .Eperf.(Ep.Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).NV_mdl (='mdl_X' or 'bayesianModel_X')
+%       .Eperf.(Ep.Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).NV_mdl (='mdl_X' or 'bayesianModel_X')
 %       (2) absolute difference between net value of the high effort option
-%       and low effort option based on the model defined in .(choice/chosen).(Ep.Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).NV_mdl (='mdl_X' or 'bayesianModel_X')
+%       and low effort option based on the model defined in .(choice/chosen).(Ep.Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).NV_mdl (='mdl_X' or 'bayesianModel_X')
 
 %
-%       .Eperf.(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).RT_1stAnswer
+%       .Eperf.(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).RT_1stAnswer
 %       (1) raw reaction time for first answer (force above threshold for Ep 
 %       and first answer to first digit for Em)
 %
-%       .Eperf.Ep.(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).fatigue:
+%       .Eperf.Ep.(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).fatigue:
 %       physical effort only:
 %       (1) sum of previous AUC of force produced
 %
-%       .Eperf.Em.(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).prevEfficacy:
+%       .Eperf.Em.(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).prevEfficacy:
 %       mental effort only:
 %       (1) efficacy of previous trial computed as (nb correct answers - nb errors made)/total time of effort
 %       period
 %       (2) efficacy of previous trial computed  as (nb correct answers - nb errors made)/time spent between answer
 %       of second useless number and end of the trial
 %
-%       .Eperf.(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).trialN
+%       .Eperf.(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).trialN
 %       (1) trial number
 %       (2) (trial number)*(E chosen - E non-chosen option)
 %       (3) (trial number)*(E non-default - E default option)
 %       (4) (trial number)*(E non-default)
 %
-%       .Eperf.(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).confidence
+%       .Eperf.(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).confidence
 %       (1) confidence level (0/1) given by the subject for each choice
 %       (2) confidence inferred by the model (p(choice)-0.5)² for the model
-%       defined in .Eperf.(Ep.Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).conf_mdl (='mdl_X' or 'bayesianModel_X')
+%       defined in .Eperf.(Ep.Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).conf_mdl (='mdl_X' or 'bayesianModel_X')
 %
 %
 %       .fbk.(Ep/Em).RPpool
@@ -305,30 +305,30 @@ function [GLMprm] = which_GLM(GLM)
 %       (2) split per level of effort chosen (Ech0/Ech1/Ech2/Ech3)
 %       (3) split per option chosen (low/default vs high/non-default effort chosen)
 %
-%       .fbk.(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).win_vs_loss
+%       .fbk.(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).win_vs_loss
 %       (1) win (1) - loss (0) trials
 %
-%       .fbk.(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).choiceHighE
+%       .fbk.(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).choiceHighE
 %       (1) 0 when low effort/default option is selected and 1 when high
 %       effort/non-default option is selected
 %
-%       .fbk.(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).money_obtained
+%       .fbk.(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).money_obtained
 %       (1) money amount obtained at the end of the trial
 %       (1) |money amount| obtained at the end of the trial (~saliency)
 %
-%       .fbk.(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).E_made
+%       .fbk.(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).E_made
 %       (1) level of effort performed during effort performance
 %
-%       .fbk.(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).trialN
+%       .fbk.(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).trialN
 %       (1) trial number
 %       (2) (trial number)*(E chosen - E non-chosen option)
 %       (3) (trial number)*(E non-default - E default option)
 %       (4) (trial number)*(E non-default)
 %
-%       .fbk.(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).confidence
+%       .fbk.(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).confidence
 %       (1) confidence level (0/1) given by the subject for each choice
 %       (2) confidence inferred by the model (p(choice)-0.5)² for the model
-%       defined in .fbk.(Ep.Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3).conf_mdl (='mdl_X' or 'bayesianModel_X')
+%       defined in .fbk.(Ep.Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).conf_mdl (='mdl_X' or 'bayesianModel_X')
 %
 % See also GLM_details.m
 %
@@ -2418,6 +2418,28 @@ switch GLM
             GLMprm.model_onset.(Epm_nm).Eperf = 'boxcar';
             % feedback
             GLMprm.model_onset.(Epm_nm).fbk = 'boxcar';
+        end % physical/mental loop
+    case 85 % focus on the slope for high efforts chosen
+        % general parameters
+        GLMprm.gal.orth_vars = 0;
+        GLMprm.gal.zPerRun = 0;
+        % loop per task
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'stick';
+            % split low/high effort choice and look at the slope for the
+            % high effort choice
+            GLMprm.choice.(Epm_nm).splitperE = 3;
+            GLMprm.choice.(Epm_nm).RP.hEch.money_ch_min_fixOption = 1;
+            GLMprm.choice.(Epm_nm).RP.hEch.E_chosen = 1;
+            GLMprm.choice.(Epm_nm).RP.hEch.RT = 1;
+            % chosen
+            GLMprm.model_onset.(Epm_nm).chosen = 'stick';
+            % effort perf
+            GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
+            % feedback
+            GLMprm.model_onset.(Epm_nm).fbk = 'stick';
         end % physical/mental loop
 end % GLM number
 %% warnings: check compatibility of the GLM parameters entered
