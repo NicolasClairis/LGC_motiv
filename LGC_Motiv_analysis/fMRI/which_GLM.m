@@ -2430,7 +2430,7 @@ switch GLM
             GLMprm.model_onset.(Epm_nm).choice = 'stick';
             % split low/high effort choice and look at the slope for the
             % high effort choice
-            GLMprm.choice.(Epm_nm).splitperE = 3;
+            GLMprm.choice.(Epm_nm).splitPerE = 3;
             GLMprm.choice.(Epm_nm).RP.hEch.money_ch_min_fixOption = 1;
             GLMprm.choice.(Epm_nm).RP.hEch.E_chosen = 1;
             GLMprm.choice.(Epm_nm).RP.hEch.RT = 1;
