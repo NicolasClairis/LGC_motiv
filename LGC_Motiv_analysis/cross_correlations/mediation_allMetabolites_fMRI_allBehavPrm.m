@@ -63,15 +63,17 @@ nPrm = length(parameter_names);
 %% perform the mediation
 pval.signif = struct;
 dispMed = 0; % do not display mediation (too many plots)
-for iPrm = 1:nPrm
-    prm_nm = parameter_names{iPrm};
-    behavPrm = prm.(prm_nm);
-    for iROI = 1:nROIs
-        MRS_ROI_nm = ROIs{iROI};
-        for iMb = 1:n_metabolites.(MRS_ROI_nm)
-            metabolite_nm = metabolite_names.(MRS_ROI_nm){iMb};
-            metabolite_allSubs = metabolites.(MRS_ROI_nm).(metabolite_nm);
-            goodSubs = ~isnan(metabolite_allSubs);
+for iROI = 1:nROIs
+    MRS_ROI_nm = ROIs{iROI};
+    for iMb = 1:n_metabolites.(MRS_ROI_nm)
+        metabolite_nm = metabolite_names.(MRS_ROI_nm){iMb};
+        metabolite_allSubs = metabolites.(MRS_ROI_nm).(metabolite_nm);
+        goodSubs = ~isnan(metabolite_allSubs);
+        
+        for iPrm = 1:nPrm
+            prm_nm = parameter_names{iPrm};
+            behavPrm = prm.(prm_nm);
+            
             X_nm = [MRS_ROI_nm,'-',metabolite_nm];
             M_nm = ['fMRI-',ROI_coords.ROI_nm.ROI_1_shortName,'-',con_nm{1}];
             Y_nm = prm_nm;
@@ -90,6 +92,7 @@ for iPrm = 1:nPrm
                 pval.signif.([MRS_ROI_nm,'_',metabolite_nm]).(prm_nm) = max(pval.(MRS_ROI_nm).(metabolite_nm).(prm_nm).a,...
                     pval.(MRS_ROI_nm).(metabolite_nm).(prm_nm).b);
             end
-        end % metabolites loop
-    end % ROI loop
-end % parameter loop
+            
+        end % parameter loop
+    end % metabolites loop
+end % ROI loop
