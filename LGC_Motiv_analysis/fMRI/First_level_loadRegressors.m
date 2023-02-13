@@ -316,15 +316,19 @@ for iRP = 1:length(RPconds)
                     0, 'levels', 6, 6);
                 NV_chosen = modelledDataStruct.NV_chosen.(task_id).(NV_mdl_nm).(run_nm_bis);
                 NV_varOption = modelledDataStruct.NV_varOption.(task_id).(NV_mdl_nm).(run_nm_bis);
+                pChoice_hE = modelledDataStruct.pChoice_hE.(task_id).(NV_mdl_nm).(run_nm_bis);
             elseif strcmp(NV_mdl_nm(1:14),'bayesianModel_') % bayesian model
                 bayesianMdl_nm = strrep(NV_mdl_nm,'bayesianModel','mdl');
                 gitResultsFolder = [fullfile('C:','Users','clairis','Desktop',...
                     'GitHub','LGC_motiv','LGC_Motiv_results',study_nm,'bayesian_modeling'),filesep];
-                [NV_chosen, NV_varOption] = extract_bayesian_mdl(gitResultsFolder, subBehaviorFolder,...
+                [NV_chosen, NV_varOption,~,pChoice_hE] = extract_bayesian_mdl(gitResultsFolder, subBehaviorFolder,...
                     sub_nm, run_nm, task_fullName, bayesianMdl_nm);
             else
                 error(['model with ',NV_mdl_nm,' not ready yet']);
             end
+            
+            % probability of chosen option
+            pChosen = pChoice_hE.*(choice_hE == 1) + (1 - pChoice_hE).*(choice_hE == 0);
         end % net value
         
         % load confidence
@@ -459,6 +463,8 @@ if sum(choiceMissedTrials) > 0
             strcmp(NV_mdl_nm(1:14),'bayesianModel_'))
         NV_chosen(choiceMissedTrials) = [];
         NV_varOption(choiceMissedTrials) = [];
+        pChoice_hE(choiceMissedTrials) = [];
+        pChosen(choiceMissedTrials) = [];
     end
     trialN(choiceMissedTrials) = [];
     trialN_dEch(choiceMissedTrials) = [];
@@ -952,10 +958,13 @@ if ismember(choiceModel,{'stick','boxcar'})
             % net value chosen
             if choiceModel_NV_chosen > 0
                 n_choiceMods = n_choiceMods + 1;
-                choice_modNames{n_choiceMods} = 'NV chosen';
                 switch choiceModel_NV_chosen
                     case 1
+                        choice_modNames{n_choiceMods} = 'NV chosen';
                         choice_modVals(n_choiceMods,:) = raw_or_z(NV_chosen(choice_trial_idx));
+                    case 2
+                        choice_modNames{n_choiceMods} = 'p(chosen)';
+                        choice_modVals(n_choiceMods,:) = raw_or_z(pChosen(choice_trial_idx));
                     otherwise
                         error('not ready yet');
                 end
@@ -971,6 +980,9 @@ if ismember(choiceModel,{'stick','boxcar'})
                     case 2
                         choice_modNames{n_choiceMods} = '|delta NV high E - low E|';
                         choice_modVals(n_choiceMods,:) = raw_or_z(abs(NV_varOption(choice_trial_idx)));
+                    case 3
+                        choice_modNames{n_choiceMods} = 'p(choice=hE)';
+                        choice_modVals(n_choiceMods,:) = raw_or_z(pChoice_hE(choice_trial_idx));
                     otherwise
                         error('not ready yet');
                 end
@@ -1379,10 +1391,13 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
             % net value chosen
             if chosenModel_NV_chosen > 0
                 n_chosenMods = n_chosenMods + 1;
-                chosen_modNames{n_chosenMods} = 'NV chosen';
                 switch chosenModel_NV_chosen
                     case 1
+                        chosen_modNames{n_chosenMods} = 'NV chosen';
                         chosen_modVals(n_chosenMods,:) = raw_or_z(NV_chosen(chosen_trial_idx));
+                    case 2
+                        chosen_modNames{n_chosenMods} = 'p(chosen)';
+                        chosen_modVals(n_chosenMods,:) = raw_or_z(pChosen(chosen_trial_idx));
                     otherwise
                         error('not ready yet');
                 end
@@ -1398,6 +1413,9 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                     case 2
                         chosen_modNames{n_chosenMods} = '|delta NV high E - low E|';
                         chosen_modVals(n_chosenMods,:) = raw_or_z(abs(NV_varOption(chosen_trial_idx)));
+                    case 3
+                        chosen_modNames{n_chosenMods} = 'p(choice=hE)';
+                        chosen_modVals(n_chosenMods,:) = raw_or_z(abs(pChoice_hE(chosen_trial_idx)));
                     otherwise
                         error('not ready yet');
                 end
@@ -1655,10 +1673,13 @@ if ismember(preEffortCrossModel,{'stick','boxcar','boxcar_bis'})
             % net value chosen
             if preEcrossModel_NV_chosen > 0
                 n_preEcrossMods = n_preEcrossMods + 1;
-                preEcross_modNames{n_preEcrossMods} = 'NV chosen';
                 switch preEcrossModel_NV_chosen
                     case 1
+                        preEcross_modNames{n_preEcrossMods} = 'NV chosen';
                         preEcross_modVals(n_preEcrossMods,:) = raw_or_z(NV_chosen(preEcross_trial_idx));
+                    case 2
+                        preEcross_modNames{n_preEcrossMods} = 'p(chosen)';
+                        preEcross_modVals(n_preEcrossMods,:) = raw_or_z(pChosen(preEcross_trial_idx));
                     otherwise
                         error('not ready yet');
                 end
@@ -1674,6 +1695,9 @@ if ismember(preEffortCrossModel,{'stick','boxcar','boxcar_bis'})
                     case 2
                         preEcross_modNames{n_preEcrossMods} = '|delta NV high E - low E|';
                         preEcross_modVals(n_preEcrossMods,:) = raw_or_z(abs(NV_varOption(preEcross_trial_idx)));
+                    case 3
+                        preEcross_modNames{n_preEcrossMods} = 'p(choice=hE)';
+                        preEcross_modVals(n_preEcrossMods,:) = raw_or_z(abs(pChoice_hE(preEcross_trial_idx)));
                     otherwise
                         error('not ready yet');
                 end
@@ -1903,10 +1927,13 @@ if ismember(EperfModel,{'stick','boxcar'})
             % net value chosen
             if EperfModel_NV_chosen > 0
                 n_EperfMods = n_EperfMods + 1;
-                Eperf_modNames{n_EperfMods} = 'NV chosen';
                 switch EperfModel_NV_chosen
                     case 1
+                        Eperf_modNames{n_EperfMods} = 'NV chosen';
                         Eperf_modVals(n_EperfMods,:) = raw_or_z(NV_chosen(Eperf_trial_idx));
+                    case 2
+                        Eperf_modNames{n_EperfMods} = 'p(chosen)';
+                        Eperf_modVals(n_EperfMods,:) = raw_or_z(pChosen(Eperf_trial_idx));
                     otherwise
                         error('not ready yet');
                 end
@@ -1922,6 +1949,9 @@ if ismember(EperfModel,{'stick','boxcar'})
                     case 2
                         Eperf_modNames{n_EperfMods} = '|delta NV high E - low E|';
                         Eperf_modVals(n_EperfMods,:) = raw_or_z(abs(NV_varOption(Eperf_trial_idx)));
+                    case 3
+                        Eperf_modNames{n_EperfMods} = 'p(choice=hE)';
+                        Eperf_modVals(n_EperfMods,:) = raw_or_z(abs(pChoice_hE(Eperf_trial_idx)));
                     otherwise
                         error('not ready yet');
                 end
