@@ -86,11 +86,33 @@ function [GLMprm] = which_GLM(GLM)
 %       (1) 0 when low effort/default option is selected and 1 when high
 %       effort/non-default option is selected
 %
-%       .choice.(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).money_left
-%       (1) money amount associated to left option
+%       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).R_varOption
+%       (1) reward amount for the high effort option (zeros for punishment)
+%       (2) reward level for the high effort option (zeros for punishment)
 %
-%       .choice.(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).money_right
+%       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).R_chosen
+%       (1) reward amount for the chosen option (zeros for punishment)
+%       (2) reward level for the chosen option (zeros for punishment)
+%
+%       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).P_varOption
+%       (1) punishment amount for the high effort option (zeros for rewards)
+%       (2) punishment level for the high effort option (zeros for rewards)
+%
+%       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).P_chosen
+%       (1) punishment amount for the chosen option (zeros for rewards)
+%       (2) punishment level for the chosen option (zeros for rewards)
+%
+%       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).money_left
+%       (1) money amount associated to left option
+%       (2) |money amount| associated to left option
+%       (3) money level associated to left option
+%       (4) |money level| associated to left option
+%
+%       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).money_right
 %       (1) money amount associated to right option
+%       (2) |money amount| associated to right option
+%       (3) money level associated to right option
+%       (4) |money level| associated to right option
 %
 %       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).money_chosen:
 %       (1) money chosen amount
@@ -416,6 +438,10 @@ for iEpm = 1:length(Ep_Em)
             % by default all regressors are not included
             [GLMprm.choice.(EpEm_nm).(RP_nm).(Econd_nm).R_vs_P,...
                 GLMprm.choice.(EpEm_nm).(RP_nm).(Econd_nm).choiceHighE,...
+                GLMprm.choice.(EpEm_nm).(RP_nm).(Econd_nm).R_varOption,...
+                GLMprm.choice.(EpEm_nm).(RP_nm).(Econd_nm).R_chosen,...
+                GLMprm.choice.(EpEm_nm).(RP_nm).(Econd_nm).P_varOption,...
+                GLMprm.choice.(EpEm_nm).(RP_nm).(Econd_nm).P_chosen,...
                 GLMprm.choice.(EpEm_nm).(RP_nm).(Econd_nm).money_left,...
                 GLMprm.choice.(EpEm_nm).(RP_nm).(Econd_nm).money_right,...
                 GLMprm.choice.(EpEm_nm).(RP_nm).(Econd_nm).money_chosen,...
@@ -448,12 +474,20 @@ for iEpm = 1:length(Ep_Em)
             % by default all regressors are not included
             [GLMprm.chosen.(EpEm_nm).(RP_nm).(Econd_nm).R_vs_P,...
                 GLMprm.chosen.(EpEm_nm).(RP_nm).(Econd_nm).choiceHighE,...
+                GLMprm.chosen.(EpEm_nm).(RP_nm).(Econd_nm).R_varOption,...
+                GLMprm.chosen.(EpEm_nm).(RP_nm).(Econd_nm).R_chosen,...
+                GLMprm.chosen.(EpEm_nm).(RP_nm).(Econd_nm).P_varOption,...
+                GLMprm.chosen.(EpEm_nm).(RP_nm).(Econd_nm).P_chosen,...
+                GLMprm.chosen.(EpEm_nm).(RP_nm).(Econd_nm).money_left,...
+                GLMprm.chosen.(EpEm_nm).(RP_nm).(Econd_nm).money_right,...
                 GLMprm.chosen.(EpEm_nm).(RP_nm).(Econd_nm).money_chosen,...
                 GLMprm.chosen.(EpEm_nm).(RP_nm).(Econd_nm).money_unchosen,...
                 GLMprm.chosen.(EpEm_nm).(RP_nm).(Econd_nm).money_varOption,...
                 GLMprm.chosen.(EpEm_nm).(RP_nm).(Econd_nm).money_ch_min_unch,...
                 GLMprm.chosen.(EpEm_nm).(RP_nm).(Econd_nm).money_ch_min_fixOption,...
                 GLMprm.chosen.(EpEm_nm).(RP_nm).(Econd_nm).money_sum,...
+                GLMprm.chosen.(EpEm_nm).(RP_nm).(Econd_nm).E_left,...
+                GLMprm.chosen.(EpEm_nm).(RP_nm).(Econd_nm).E_right,...
                 GLMprm.chosen.(EpEm_nm).(RP_nm).(Econd_nm).E_chosen,...
                 GLMprm.chosen.(EpEm_nm).(RP_nm).(Econd_nm).E_unchosen,...
                 GLMprm.chosen.(EpEm_nm).(RP_nm).(Econd_nm).E_varOption,...
@@ -2482,6 +2516,49 @@ switch GLM
             Epm_nm = Epm{iEpm};
             % choice
             GLMprm.model_onset.(Epm_nm).choice = 'stick';
+            GLMprm.choice.(Epm_nm).RP.E.E_chosen = 1;
+            GLMprm.choice.(Epm_nm).RP.E.NV_varOption = 3;
+            GLMprm.choice.(Epm_nm).RP.E.NV_mdl = 'bayesianModel_3';
+            GLMprm.choice.(Epm_nm).RP.E.confidence = 2;
+            GLMprm.choice.(Epm_nm).RP.E.conf_mdl = 'bayesianModel_3';
+            GLMprm.choice.(Epm_nm).RP.E.RT = 1;
+            % chosen
+            GLMprm.model_onset.(Epm_nm).chosen = 'stick';
+            % effort perf (effort execution)
+            GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
+            % feedback
+            GLMprm.model_onset.(Epm_nm).fbk = 'stick';
+        end % physical/mental loop
+    case 88 % GLM with Effort, Reward and Punishment chosen during choice
+        % general parameters
+        GLMprm.gal.orth_vars = 0;
+        GLMprm.gal.zPerRun = 0;
+        % loop per task
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'stick';
+            GLMprm.choice.(Epm_nm).RP.E.R_chosen = 2;
+            GLMprm.choice.(Epm_nm).RP.E.P_chosen = 2;
+            GLMprm.choice.(Epm_nm).RP.E.E_chosen = 1;
+            % chosen
+            GLMprm.model_onset.(Epm_nm).chosen = 'stick';
+            % effort perf (effort execution)
+            GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
+            % feedback
+            GLMprm.model_onset.(Epm_nm).fbk = 'stick';
+        end % physical/mental loop
+    case 89 % same as GLM 88 but including several confounding factors (NV, RT, confidence)
+        % general parameters
+        GLMprm.gal.orth_vars = 0;
+        GLMprm.gal.zPerRun = 0;
+        % loop per task
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'stick';
+            GLMprm.choice.(Epm_nm).RP.E.R_chosen = 2;
+            GLMprm.choice.(Epm_nm).RP.E.P_chosen = 2;
             GLMprm.choice.(Epm_nm).RP.E.E_chosen = 1;
             GLMprm.choice.(Epm_nm).RP.E.NV_varOption = 3;
             GLMprm.choice.(Epm_nm).RP.E.NV_mdl = 'bayesianModel_3';

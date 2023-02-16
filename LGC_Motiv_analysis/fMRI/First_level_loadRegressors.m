@@ -135,6 +135,8 @@ abs_money_amount_varOption = abs(money_amount_varOption);
 money_level_left = behavioralDataStruct.(task_behavioral_id).choiceOptions.R.left.*RP_var;
 money_level_right = behavioralDataStruct.(task_behavioral_id).choiceOptions.R.right.*RP_var;
 money_amount_fixedOption = money_amount_left.*(defaultSide == -1) + money_amount_right.*(defaultSide == 1);
+R_amount_varOption = money_amount_varOption.*(RP_var == 1);
+P_amount_varOption = money_amount_varOption.*(RP_var == -1);
 
 % replace default option level for punishments by higher level (because
 % implies higher amount of money lost)
@@ -186,6 +188,8 @@ money_level_varOption = money_level_left.*(defaultSide == 1) +...
 money_level_fixedOption = money_level_left.*(defaultSide == -1) +...
     money_level_right.*(defaultSide == 1);
 abs_money_level_varOption = abs(money_level_varOption);
+R_level_varOption = money_level_varOption.*(RP_var == 1);
+P_level_varOption = money_level_varOption.*(RP_var == -1);
 % loading effort choice
 E_left = behavioralDataStruct.(task_behavioral_id).choiceOptions.E.left;
 E_right = behavioralDataStruct.(task_behavioral_id).choiceOptions.E.right;
@@ -212,6 +216,10 @@ money_level_unchosen = money_level_left.*(choice_LR == 1) + money_level_right.*(
 abs_money_amount_chosen = abs(money_amount_chosen);
 money_amount_unchosen = money_amount_left.*(choice_LR == 1) + money_amount_right.*(choice_LR == -1);
 abs_money_amount_unchosen = abs(money_amount_unchosen);
+R_amount_chosen = money_amount_chosen.*(RP_var == 1);
+P_amount_chosen = money_amount_chosen.*(RP_var == -1);
+R_level_chosen = money_level_chosen.*(RP_var == 1);
+P_level_chosen = money_level_chosen.*(RP_var == -1);
 
 switch task_fullName
     case 'physical'
@@ -419,14 +427,20 @@ if sum(choiceMissedTrials) > 0
     RP_var_binary(choiceMissedTrials) = [];
     choice_hE(choiceMissedTrials) = [];
     money_level_chosen(choiceMissedTrials) = [];
+    R_level_chosen(choiceMissedTrials) = [];
+    P_level_chosen(choiceMissedTrials) = [];
     money_amount_left(choiceMissedTrials) = [];
     money_amount_right(choiceMissedTrials) = [];
     money_amount_sum(choiceMissedTrials) = [];
     money_amount_varOption(choiceMissedTrials) = [];
+    R_amount_varOption(choiceMissedTrials) = [];
+    P_amount_varOption(choiceMissedTrials) = [];
     money_amount_fixedOption(choiceMissedTrials) = [];
     money_level_left(choiceMissedTrials) = [];
     money_level_right(choiceMissedTrials) = [];
     money_level_varOption(choiceMissedTrials) = [];
+    R_level_varOption(choiceMissedTrials) = [];
+    P_level_varOption(choiceMissedTrials) = [];
     abs_money_amount_varOption(choiceMissedTrials) = [];
     abs_money_level_varOption(choiceMissedTrials) = [];
     E_left(choiceMissedTrials) = [];
@@ -443,6 +457,8 @@ if sum(choiceMissedTrials) > 0
     E_chosen_min_E_unchosen(choiceMissedTrials) = [];
     Ech_min_Efixed(choiceMissedTrials) = [];
     money_amount_chosen(choiceMissedTrials) = [];
+    R_amount_chosen(choiceMissedTrials) = [];
+    P_amount_chosen(choiceMissedTrials) = [];
     abs_money_amount_chosen(choiceMissedTrials) = [];
     abs_money_level_chosen(choiceMissedTrials) = [];
     abs_money_amount_unchosen(choiceMissedTrials) = [];
@@ -662,6 +678,10 @@ if ismember(choiceModel,{'stick','boxcar'})
             splitE_dispChoice_nm = EsplitchoiceCond{iEsplit_dispChoice};
             choiceModel_RP                              = GLMprm.choice.(task_id).(RP_dispChoice_nm).(splitE_dispChoice_nm).R_vs_P;
             choiceModel_choicehE                        = GLMprm.choice.(task_id).(RP_dispChoice_nm).(splitE_dispChoice_nm).choiceHighE;
+            choiceModel_R_varOption                     = GLMprm.choice.(task_id).(RP_dispChoice_nm).(splitE_dispChoice_nm).R_varOption;
+            choiceModel_R_chosen                        = GLMprm.choice.(task_id).(RP_dispChoice_nm).(splitE_dispChoice_nm).R_chosen;
+            choiceModel_P_varOption                     = GLMprm.choice.(task_id).(RP_dispChoice_nm).(splitE_dispChoice_nm).P_varOption;
+            choiceModel_P_chosen                        = GLMprm.choice.(task_id).(RP_dispChoice_nm).(splitE_dispChoice_nm).P_chosen;
             choiceModel_moneyLeft                       = GLMprm.choice.(task_id).(RP_dispChoice_nm).(splitE_dispChoice_nm).money_left;
             choiceModel_moneyRight                      = GLMprm.choice.(task_id).(RP_dispChoice_nm).(splitE_dispChoice_nm).money_right;
             choiceModel_moneyChosen                     = GLMprm.choice.(task_id).(RP_dispChoice_nm).(splitE_dispChoice_nm).money_chosen;
@@ -771,14 +791,94 @@ if ismember(choiceModel,{'stick','boxcar'})
                 choice_modVals(n_choiceMods,:) = choice_hE(choice_trial_idx); % binary variable => no zscore
             end
             
+            % reward for the non-default option
+            if choiceModel_R_varOption > 0
+                n_choiceMods = n_choiceMods + 1;
+                choice_modNames{n_choiceMods} = 'R non-default';
+                switch choiceModel_R_varOption
+                    case 1 % R high effort option
+                        choice_modVals(n_choiceMods,:) = raw_or_z(R_amount_varOption(choice_trial_idx));
+                    case 2 % R chosen option
+                        choice_modVals(n_choiceMods,:) = raw_or_z(R_level_varOption(choice_trial_idx));
+                end
+            end
+            
+            % reward for the chosen option
+            if choiceModel_R_chosen > 0
+                n_choiceMods = n_choiceMods + 1;
+                choice_modNames{n_choiceMods} = 'R chosen';
+                switch choiceModel_R_chosen
+                    case 1 % R high effort option
+                        choice_modVals(n_choiceMods,:) = raw_or_z(R_amount_chosen(choice_trial_idx));
+                    case 2 % R chosen option
+                        choice_modVals(n_choiceMods,:) = raw_or_z(R_level_chosen(choice_trial_idx));
+                    otherwise
+                        error('not ready yet');
+                end
+            end
+            
+            % punishment for the non-default option
+            if choiceModel_P_varOption > 0
+                n_choiceMods = n_choiceMods + 1;
+                choice_modNames{n_choiceMods} = 'P non-default';
+                switch choiceModel_P_varOption
+                    case 1 % R high effort option
+                        choice_modVals(n_choiceMods,:) = raw_or_z(P_amount_varOption(choice_trial_idx));
+                    case 2 % R chosen option
+                        choice_modVals(n_choiceMods,:) = raw_or_z(P_level_varOption(choice_trial_idx));
+                    otherwise
+                        error('not ready yet');
+                end
+            end
+            
+            % punishment for the chosen option
+            if choiceModel_P_chosen > 0
+                n_choiceMods = n_choiceMods + 1;
+                choice_modNames{n_choiceMods} = 'P chosen';
+                switch choiceModel_P_chosen
+                    case 1 % R high effort option
+                        choice_modVals(n_choiceMods,:) = raw_or_z(P_amount_chosen(choice_trial_idx));
+                    case 2 % R chosen option
+                        choice_modVals(n_choiceMods,:) = raw_or_z(P_level_chosen(choice_trial_idx));
+                    otherwise
+                        error('not ready yet');
+                end
+            end
+            
             % money left
             if choiceModel_moneyLeft > 0
-                error('not ready yet');
+                n_choiceMods = n_choiceMods + 1;
+                choice_modNames{n_choiceMods} = 'money left';
+                switch choiceModel_moneyLeft
+                    case 1
+                        choice_modVals(n_choiceMods,:) = raw_or_z(money_amount_left(choice_trial_idx));
+                    case 2
+                        choice_modVals(n_choiceMods,:) = raw_or_z(abs(money_amount_left(choice_trial_idx)));
+                    case 3
+                        choice_modVals(n_choiceMods,:) = raw_or_z(money_level_left(choice_trial_idx));
+                    case 4
+                        choice_modVals(n_choiceMods,:) = raw_or_z(abs(money_level_left(choice_trial_idx)));
+                    otherwise
+                        error('not ready yet');
+                end
             end
             
             % money right
             if choiceModel_moneyRight > 0
-                error('not ready yet');
+                n_choiceMods = n_choiceMods + 1;
+                choice_modNames{n_choiceMods} = 'money right';
+                switch choiceModel_moneyRight
+                    case 1
+                        choice_modVals(n_choiceMods,:) = raw_or_z(money_amount_right(choice_trial_idx));
+                    case 2
+                        choice_modVals(n_choiceMods,:) = raw_or_z(abs(money_amount_right(choice_trial_idx)));
+                    case 3
+                        choice_modVals(n_choiceMods,:) = raw_or_z(money_level_right(choice_trial_idx));
+                    case 4
+                        choice_modVals(n_choiceMods,:) = raw_or_z(abs(money_level_right(choice_trial_idx)));
+                    otherwise
+                        error('not ready yet');
+                end
             end
             
             % money chosen
@@ -875,12 +975,26 @@ if ismember(choiceModel,{'stick','boxcar'})
             
             % effort left
             if choiceModel_E_left > 0
-                error('not ready yet');
+                n_choiceMods = n_choiceMods + 1;
+                choice_modNames{n_choiceMods} = 'E left';
+                switch choiceModel_E_left
+                    case 1
+                        choice_modVals(n_choiceMods,:) = raw_or_z(E_left(choice_trial_idx));
+                    otherwise
+                        error('not ready yet');
+                end
             end
             
             % effort right
             if choiceModel_E_right > 0
-                error('not ready yet');
+                n_choiceMods = n_choiceMods + 1;
+                choice_modNames{n_choiceMods} = 'E right';
+                switch choiceModel_E_right
+                    case 1
+                        choice_modVals(n_choiceMods,:) = raw_or_z(E_right(choice_trial_idx));
+                    otherwise
+                        error('not ready yet');
+                end
             end
             
             % effort chosen
@@ -1108,12 +1222,20 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
             splitE_dispChosen_nm = EsplitchosenCond{iEsplit_dispChosen};
             chosenModel_R_vs_P          = GLMprm.chosen.(task_id).(RP_dispChosen_nm).(splitE_dispChosen_nm).R_vs_P;
             chosenModel_choicehE        = GLMprm.chosen.(task_id).(RP_dispChosen_nm).(splitE_dispChosen_nm).choiceHighE;
+            chosenModel_R_varOption     = GLMprm.chosen.(task_id).(RP_dispChosen_nm).(splitE_dispChosen_nm).R_varOption;
+            chosenModel_P_varOption     = GLMprm.chosen.(task_id).(RP_dispChosen_nm).(splitE_dispChosen_nm).P_varOption;
+            chosenModel_R_chosen        = GLMprm.chosen.(task_id).(RP_dispChosen_nm).(splitE_dispChosen_nm).R_chosen;
+            chosenModel_P_chosen        = GLMprm.chosen.(task_id).(RP_dispChosen_nm).(splitE_dispChosen_nm).P_chosen;
+            chosenModel_moneyLeft       = GLMprm.choice.(task_id).(RP_dispChosen_nm).(splitE_dispChosen_nm).money_left;
+            chosenModel_moneyRight      = GLMprm.choice.(task_id).(RP_dispChosen_nm).(splitE_dispChosen_nm).money_right;
             chosenModel_moneyChosen     = GLMprm.chosen.(task_id).(RP_dispChosen_nm).(splitE_dispChosen_nm).money_chosen;
             chosenModel_moneyUnchosen   = GLMprm.chosen.(task_id).(RP_dispChosen_nm).(splitE_dispChosen_nm).money_unchosen;
             chosenModel_moneyNonDefault = GLMprm.chosen.(task_id).(RP_dispChosen_nm).(splitE_dispChosen_nm).money_varOption;
             chosenModel_money_chosen_min_money_unchosen = GLMprm.chosen.(task_id).(RP_dispChosen_nm).(splitE_dispChosen_nm).money_ch_min_unch;
             chosenModel_moneyChosen_min_moneyDefault    = GLMprm.chosen.(task_id).(RP_dispChosen_nm).(splitE_dispChosen_nm).money_ch_min_fixOption;
             chosenModel_moneySum        = GLMprm.chosen.(task_id).(RP_dispChosen_nm).(splitE_dispChosen_nm).money_sum;
+            chosenModel_E_left          = GLMprm.chosen.(task_id).(RP_dispChosen_nm).(splitE_dispChosen_nm).E_left;
+            chosenModel_E_right         = GLMprm.chosen.(task_id).(RP_dispChosen_nm).(splitE_dispChosen_nm).E_right;
             chosenModel_Echosen         = GLMprm.chosen.(task_id).(RP_dispChosen_nm).(splitE_dispChosen_nm).E_chosen;
             chosenModel_Eunchosen       = GLMprm.chosen.(task_id).(RP_dispChosen_nm).(splitE_dispChosen_nm).E_unchosen;
             chosenModel_EnonDefault     = GLMprm.chosen.(task_id).(RP_dispChosen_nm).(splitE_dispChosen_nm).E_varOption;
@@ -1124,7 +1246,7 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
             chosenModel_NV_varOption    = GLMprm.chosen.(task_id).(RP_dispChosen_nm).(splitE_dispChosen_nm).NV_varOption;
             switch task_id
                 case 'Ep'
-                    chosenModel_F_integral = GLMprm.chosen.(task_id).(RP_dispChoice_nm).(splitE_dispChosen_nm).F_integral;
+                    chosenModel_F_integral = GLMprm.chosen.(task_id).(RP_dispChosen_nm).(splitE_dispChosen_nm).F_integral;
                     chosenModel_fatigue = GLMprm.chosen.(task_id).(RP_dispChosen_nm).(splitE_dispChosen_nm).fatigue;
                 case 'Em'
                     chosenModel_efficacy = GLMprm.chosen.(task_id).(RP_dispChosen_nm).(splitE_dispChosen_nm).efficacy;
@@ -1213,7 +1335,7 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                     case 1
                         chosen_modVals(n_chosenMods,:) = RP_var_binary(chosen_trial_idx);
                     otherwise
-                        error('ready yet');
+                        error('not ready yet');
                 end
             end
             
@@ -1222,6 +1344,98 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                 n_chosenMods = n_chosenMods + 1;
                 chosen_modNames{n_chosenMods} = 'choice = high effort';
                 chosen_modVals(n_chosenMods,:) = choice_hE(chosen_trial_idx); % binary variable => no zscore
+            end
+            
+            % reward for the non-default option
+            if chosenModel_R_varOption > 0
+                n_chosenMods = n_chosenMods + 1;
+                chosen_modNames{n_chosenMods} = 'R non-default';
+                switch chosenModel_R_varOption
+                    case 1 % R high effort option
+                        chosen_modVals(n_chosenMods,:) = raw_or_z(R_amount_varOption(chosen_trial_idx));
+                    case 2 % R chosen option
+                        chosen_modVals(n_chosenMods,:) = raw_or_z(R_level_varOption(chosen_trial_idx));
+                    otherwise
+                        error('not ready yet');
+                end
+            end
+            
+            % reward for the chosen option
+            if chosenModel_R_chosen > 0
+                n_chosenMods = n_chosenMods + 1;
+                chosen_modNames{n_chosenMods} = 'R chosen';
+                switch chosenModel_R_chosen
+                    case 1 % R high effort option
+                        chosen_modVals(n_chosenMods,:) = raw_or_z(R_amount_chosen(chosen_trial_idx));
+                    case 2 % R chosen option
+                        chosen_modVals(n_chosenMods,:) = raw_or_z(R_level_chosen(chosen_trial_idx));
+                    otherwise
+                        error('not ready yet');
+                end
+            end
+            
+            % punishment for the non-default option
+            if chosenModel_P_varOption > 0
+                n_chosenMods = n_chosenMods + 1;
+                chosen_modNames{n_chosenMods} = 'P non-default';
+                switch chosenModel_P_varOption
+                    case 1 % R high effort option
+                        chosen_modVals(n_chosenMods,:) = raw_or_z(P_amount_varOption(chosen_trial_idx));
+                    case 2 % R chosen option
+                        chosen_modVals(n_chosenMods,:) = raw_or_z(P_level_varOption(chosen_trial_idx));
+                    otherwise
+                        error('not ready yet');
+                end
+            end
+            
+            % punishment for the chosen option
+            if chosenModel_P_chosen > 0
+                n_chosenMods = n_chosenMods + 1;
+                chosen_modNames{n_chosenMods} = 'P chosen';
+                switch chosenModel_P_chosen
+                    case 1 % R high effort option
+                        chosen_modVals(n_chosenMods,:) = raw_or_z(P_amount_chosen(chosen_trial_idx));
+                    case 2 % R chosen option
+                        chosen_modVals(n_chosenMods,:) = raw_or_z(P_level_chosen(chosen_trial_idx));
+                    otherwise
+                        error('not ready yet');
+                end
+            end
+            
+            % money left
+            if chosenModel_moneyLeft > 0
+                n_chosenMods = n_chosenMods + 1;
+                chosen_modNames{n_chosenMods} = 'money left';
+                switch chosenModel_moneyLeft
+                    case 1
+                        chosen_modVals(n_chosenMods,:) = raw_or_z(money_amount_left(chosen_trial_idx));
+                    case 2
+                        chosen_modVals(n_chosenMods,:) = raw_or_z(abs(money_amount_left(chosen_trial_idx)));
+                    case 3
+                        chosen_modVals(n_chosenMods,:) = raw_or_z(money_level_left(chosen_trial_idx));
+                    case 4
+                        chosen_modVals(n_chosenMods,:) = raw_or_z(abs(money_level_chosen(chosen_trial_idx)));
+                    otherwise
+                        error('not ready yet');
+                end
+            end
+            
+            % money right
+            if chosenModel_moneyRight > 0
+                n_chosenMods = n_chosenMods + 1;
+                chosen_modNames{n_chosenMods} = 'money right';
+                switch chosenModel_moneyRight
+                    case 1
+                        chosen_modVals(n_chosenMods,:) = raw_or_z(money_amount_right(chosen_trial_idx));
+                    case 2
+                        chosen_modVals(n_chosenMods,:) = raw_or_z(abs(money_amount_right(chosen_trial_idx)));
+                    case 3
+                        chosen_modVals(n_chosenMods,:) = raw_or_z(money_level_right(chosen_trial_idx));
+                    case 4
+                        chosen_modVals(n_chosenMods,:) = raw_or_z(abs(money_level_right(chosen_trial_idx)));
+                    otherwise
+                        error('not ready yet');
+                end
             end
             
             % money chosen
@@ -1316,6 +1530,30 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                 end
             end
             
+            % effort left
+            if chosenModel_E_left > 0
+                n_chosenMods = n_chosenMods + 1;
+                chosen_modNames{n_chosenMods} = 'effort left';
+                switch chosenModel_E_left
+                    case 1
+                        chosen_modVals(n_chosenMods,:) = raw_or_z(E_left(chosen_trial_idx));
+                    otherwise
+                        error('not ready yet');
+                end
+            end
+            
+            % effort right
+            if chosenModel_E_right > 0
+                n_chosenMods = n_chosenMods + 1;
+                chosen_modNames{n_chosenMods} = 'effort right';
+                switch chosenModel_E_right
+                    case 1
+                        chosen_modVals(n_chosenMods,:) = raw_or_z(E_right(chosen_trial_idx));
+                    otherwise
+                        error('not ready yet');
+                end
+            end
+            
             % effort chosen
             if chosenModel_Echosen > 0
                 n_chosenMods = n_chosenMods + 1;
@@ -1324,7 +1562,7 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                     case 1
                         chosen_modVals(n_chosenMods,:) = raw_or_z(E_chosen(chosen_trial_idx));
                     otherwise
-                        error('ready yet');
+                        error('not ready yet');
                 end
             end
             
