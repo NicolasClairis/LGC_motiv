@@ -14,7 +14,7 @@ dataRoot = [computerRoot, filesep, study_nm, filesep];
 [mdlType, mdlN] = behavioral_model_selection;
 [prm, mdlType, mdlN] = prm_extraction(study_nm, subject_id, mdlType, mdlN);
 % extract parameter of interest
-prmToTest = {'kFp','kEp'};
+prmToTest = {'kFp','kEp','kR'};
 nPrmToTest = length(prmToTest);
 
 %% load fatigue before/after each run
@@ -36,24 +36,28 @@ for iPrm = 1:nPrmToTest
     
     %% correlate for each run and averaging across runs
     goodSubs_r1 = (~isnan(prm_of_interest)).*(~isnan(maxPerfdelta_run1)) == 1;
-    [beta.r1,~,stats.r1] = glmfit(prm_of_interest(goodSubs_r1), maxPerfdelta_run1(goodSubs_r1), 'normal');
+    [beta.(prm_nm).r1,~,stats.(prm_nm).r1] = glmfit(prm_of_interest(goodSubs_r1), maxPerfdelta_run1(goodSubs_r1), 'normal');
     bhvPrm_sorted_r1 = sort(prm_of_interest(goodSubs_r1));
-    maxPerf_delta_r1_fit = glmval(beta.r1, bhvPrm_sorted_r1, 'identity');
+    maxPerf_delta_r1_fit = glmval(beta.(prm_nm).r1, bhvPrm_sorted_r1, 'identity');
+    pval.(prm_nm).r1 = stats.(prm_nm).r1.p;
     
     goodSubs_r2 = (~isnan(prm_of_interest)).*(~isnan(maxPerfdelta_run2)) == 1;
-    [beta.r2,~,stats.r2] = glmfit(prm_of_interest(goodSubs_r2), maxPerfdelta_run2(goodSubs_r2), 'normal');
+    [beta.(prm_nm).r2,~,stats.(prm_nm).r2] = glmfit(prm_of_interest(goodSubs_r2), maxPerfdelta_run2(goodSubs_r2), 'normal');
     bhvPrm_sorted_r2 = sort(prm_of_interest(goodSubs_r2));
-    maxPerf_delta_r2_fit = glmval(beta.r2, bhvPrm_sorted_r2, 'identity');
+    maxPerf_delta_r2_fit = glmval(beta.(prm_nm).r2, bhvPrm_sorted_r2, 'identity');
+    pval.(prm_nm).r2 = stats.(prm_nm).r2.p;
     
     goodSubs_avg = (~isnan(prm_of_interest)).*(~isnan(maxPerfdelta_avg)) == 1;
-    [beta.avg,~,stats.avg] = glmfit(prm_of_interest(goodSubs_avg), maxPerfdelta_avg(goodSubs_avg), 'normal');
+    [beta.(prm_nm).avg,~,stats.(prm_nm).avg] = glmfit(prm_of_interest(goodSubs_avg), maxPerfdelta_avg(goodSubs_avg), 'normal');
     bhvPrm_sorted_avg = sort(prm_of_interest(goodSubs_avg));
-    maxPerf_delta_avg_fit = glmval(beta.avg, bhvPrm_sorted_avg, 'identity');
+    maxPerf_delta_avg_fit = glmval(beta.(prm_nm).avg, bhvPrm_sorted_avg, 'identity');
+    pval.(prm_nm).avg = stats.(prm_nm).avg.p;
     
     goodSubs_r2_min_r1 = (~isnan(prm_of_interest)).*(~isnan(maxPerfdelta_run2_min_run1)) == 1;
-    [beta.r2_min_r1,~,stats.r2_min_r1] = glmfit(prm_of_interest(goodSubs_r2_min_r1), maxPerfdelta_run2_min_run1(goodSubs_r2_min_r1), 'normal');
+    [beta.(prm_nm).r2_min_r1,~,stats.(prm_nm).r2_min_r1] = glmfit(prm_of_interest(goodSubs_r2_min_r1), maxPerfdelta_run2_min_run1(goodSubs_r2_min_r1), 'normal');
     bhvPrm_sorted_r2_min_r1 = sort(prm_of_interest(goodSubs_r2_min_r1));
-    maxPerf_delta_r2_min_r1_fit = glmval(beta.r2_min_r1, bhvPrm_sorted_r2_min_r1, 'identity');
+    maxPerf_delta_r2_min_r1_fit = glmval(beta.(prm_nm).r2_min_r1, bhvPrm_sorted_r2_min_r1, 'identity');
+    pval.(prm_nm).r2_min_r1 = stats.(prm_nm).r2_min_r1.p;
     
     %% display figure
     % general figure infos
