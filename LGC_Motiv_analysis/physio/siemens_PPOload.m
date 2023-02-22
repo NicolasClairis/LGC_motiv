@@ -80,7 +80,12 @@ end
 t_on  = find(data{1} == 5000);  % System uses identifier 5000 as trigger ON
 t_off = find(data{1} == 5003);  % System uses identifier 5003 as trigger OFF
 
-startTrigger = t_on(1);
+% extract T0 start trigger index
+if ~isempty(t_on)
+    startTrigger = t_on(1);
+else
+    startTrigger = [];
+end
 
 
 % Filter the trigger markers from the data
