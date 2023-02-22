@@ -1,60 +1,54 @@
-function[minTotalToObtain, maxTotalToObtain, baselineAmountBasedOnRPDifference] = minMaxMoneyToGet()
-%[minTotalToObtain, maxTotalToObtain, baselineAmountBasedOnRPDifference] = minMaxMoneyToGet()
+function[minTotalToObtain, maxTotalToObtain] = minMaxMoneyToGet(deltaIP)
+%[minTotalToObtain, maxTotalToObtain] = minMaxMoneyToGet(deltaIP)
 % minMaxMoneyToGet will compute the total money you can obtain by
 % performing the LGC motivation task
 %
 % INPUTS
+% deltaIP: define delta between indifference point and low effort option to
+% get an idea about max/min performance depending on the IP
 %
 % OUTPUTS
-%minTotalToObtain: minimum obtainable
+% minTotalToObtain: minimum obtainable
 %
 % maxTotalToObtain: maximum obtainable
-%
-% baselineAmountBasedOnRPDifference: baseline difference between rewards
-% and punishments which provides with baseline money
 
 %% define number of trials
 nTrialsPerSession = 54;
-nTrialsPerConditionPerSession = nTrialsPerSession/2;
 nSessions = 4;
-nTrials = nTrialsPerSession*nSessions;
 
 %% check baseline difference in reward vs punishment amounts
 n_R_levels = 4;
 punishment_yn = 'yes';
-[R_money] = R_amounts(n_R_levels, punishment_yn);
-RP_difference = R_money.R_1 - R_money.P_1;
-baselineAmountBasedOnRPDifference = RP_difference*nTrials/2;
+IPdata.baselineR = 0.5;
+IPdata.baselineP = 0.5;
+IPdata.mentalDeltaIP = deltaIP;
+[R_money] = R_amounts_IP(n_R_levels, punishment_yn,IPdata,'mental');
 
 %% load design matrix
 bestMatrix = getfield(load('DaBestDesignMat.mat'),'bestMatrix');
 % extract reward vs punishment trials
-R_or_P = strcmp(bestMatrix.R_or_P,'R');
-Rtrials = R_or_P == 1;
-Ptrials = R_or_P == 0;
-% extract reward and punishment trials
-RmoneyLeft = bestMatrix.R.left(Rtrials);
-RmoneyRight = bestMatrix.R.right(Rtrials);
-PmoneyLeft = bestMatrix.R.left(Ptrials);
-PmoneyRight = bestMatrix.R.right(Ptrials);
-% extract max/min reward and punishment level per trial
-maxR = nanmax( [RmoneyLeft; RmoneyRight]);
-minR = nanmin( [RmoneyLeft; RmoneyRight]);
-minP = nanmin( [PmoneyLeft; PmoneyRight]);
-maxP = nanmax( [PmoneyLeft; PmoneyRight]);
-% convert reward/punishment levels in money
-[maxRmoney, minRmoney,...
-    maxPmoney, minPmoney] = deal(NaN(nTrialsPerConditionPerSession,1));
-for iTrial = 1:nTrialsPerConditionPerSession
-    maxRmoney(iTrial) = R_money.(['R_',num2str(maxR(iTrial))]);
-    minRmoney(iTrial) = R_money.(['R_',num2str(minR(iTrial))]);
-    minPmoney(iTrial) = R_money.(['P_',num2str(minP(iTrial))]);
-    maxPmoney(iTrial) = R_money.(['P_',num2str(maxP(iTrial))]);
-end
-sumMaxRP = (sum(maxRmoney) - sum(minPmoney))*nSessions;
-sumMinRP = (sum(minRmoney) - sum(maxPmoney))*nSessions;
+R_or_P = bestMatrix.R_or_P;
 
-%% compute total
-maxTotalToObtain = sumMaxRP;
-minTotalToObtain = sumMinRP;
+% convert reward/punishment levels in money
+[maxPerformer, minPerformer] = deal(NaN(1,nTrialsPerSession));
+for iTrial = 1:nTrialsPerSession
+    switch R_or_P{iTrial}
+        case 'R'
+            R_left = R_money.(['R_',num2str(bestMatrix.R.left(iTrial))]);
+            R_right = R_money.(['R_',num2str(bestMatrix.R.right(iTrial))]);
+            maxPerformer(iTrial) = max(R_left, R_right);
+            minPerformer(iTrial) = min(R_left, R_right);
+        case 'P'
+            P_left = R_money.(['P_',num2str(bestMatrix.R.left(iTrial))]);
+            P_right = R_money.(['P_',num2str(bestMatrix.R.right(iTrial))]);
+            maxPerformer(iTrial) = -min(P_left, P_right);
+            minPerformer(iTrial) = -max(P_left, P_right);
+    end
+end
+sumMaxRP = sum(maxPerformer);
+sumMinRP = sum(minPerformer);
+
+%% compute total across the four sessions
+maxTotalToObtain = sumMaxRP*nSessions;
+minTotalToObtain = sumMinRP*nSessions;
 end % function
