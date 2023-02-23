@@ -233,8 +233,8 @@ for iPM = 1:2
             betas.sd.(task_id).(mdl_nm).kEffort] = mean_sem_sd(betas.(task_id).(mdl_nm).kEffort,2);
         if ismember(iMdl,[3,4])
             [betas.mean.(task_id).(mdl_nm).kFatigue,...
-            betas.sem.(task_id).(mdl_nm).kFatigue,...
-            betas.sd.(task_id).(mdl_nm).kFatigue] = mean_sem_sd(betas.(task_id).(mdl_nm).kFatigue,2);
+                betas.sem.(task_id).(mdl_nm).kFatigue,...
+                betas.sd.(task_id).(mdl_nm).kFatigue] = mean_sem_sd(betas.(task_id).(mdl_nm).kFatigue,2);
         end
         
         %% test how significant betas are
