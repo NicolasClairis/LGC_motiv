@@ -2645,6 +2645,32 @@ switch GLM
             % feedback
             GLMprm.model_onset.(Epm_nm).fbk = 'boxcar';
         end % physical/mental loop
+    case 94 % same as GLM 90 but no chosen period
+        % general parameters
+        GLMprm.gal.onsets_only = 1;
+        % loop per task
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'stick';
+            % effort perf (effort execution)
+            GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
+            % feedback
+            GLMprm.model_onset.(Epm_nm).fbk = 'stick';
+        end % physical/mental loop
+    case 95 % same as GLM 93 but no chosen period
+        % general parameters
+        GLMprm.gal.onsets_only = 1;
+        % loop per task
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'boxcar';
+            % effort perf (effort execution)
+            GLMprm.model_onset.(Epm_nm).Eperf = 'boxcar';
+            % feedback
+            GLMprm.model_onset.(Epm_nm).fbk = 'boxcar';
+        end % physical/mental loop
 end % GLM number
 %% warnings: check compatibility of the GLM parameters entered
 isGLMokCheck(GLMprm);
