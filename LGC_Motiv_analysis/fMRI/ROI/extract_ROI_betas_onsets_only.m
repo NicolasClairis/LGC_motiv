@@ -53,7 +53,7 @@ ROI_trial_b_trial.subject_id = subject_id;
 
 %% which GLM
 if ~exist('GLM','var') || isempty(GLM)
-    listOfAllOnsetsOnlyGLM = [64, 65, 70];
+    listOfAllOnsetsOnlyGLM = [64, 65, 70, 90];
     nPossibleGLMs = size(listOfAllOnsetsOnlyGLM, 2);
     listGLM = ['GLM',num2str(listOfAllOnsetsOnlyGLM(1))];
     if nPossibleGLMs > 1
