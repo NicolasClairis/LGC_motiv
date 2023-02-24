@@ -34,7 +34,7 @@ ROI_names(strcmp(ROI_names,'subject_id')) = [];
 if length(ROI_names) > 1
     error(['There should be only 1 ROI selected, not ',num2str(length(ROI_names))])
 else
-    ROI_nm = ROI_names;
+    fMRI_ROI_nm = ROI_names;
 end
 ROI_short_nm = inputdlg('ROI short name?');
 ROI_short_nm = ROI_short_nm{1};
@@ -42,7 +42,7 @@ ROI_short_nm = ROI_short_nm{1};
 task_names = {'Ep','Em'};
 nTasks = length(task_names);
 % define time period
-timePeriods = fieldnames(ROI_trial_b_trial.(ROI_nm{1}).Ep.run1);
+timePeriods = fieldnames(ROI_trial_b_trial.(fMRI_ROI_nm{1}).Ep.run1);
 which_timePeriod = listdlg('PromptString','Which time phase of the trial?',...
     'listString',timePeriods);
 timePeriod_nm = timePeriods{which_timePeriod};
@@ -149,7 +149,7 @@ for iS = 1:NS
             (choiceOptions_tmp.E.right).*(choice_LR_tmp == 1);
         
         %% extract fMRI ROI mediator
-        fMRI_ROI.(task_nm_tmp).allTrials(runTrials_idx, iS) = ROI_trial_b_trial.(ROI_nm{1}).(task_nm_tmp).(run_nm_bis).(timePeriod_nm)(:, iS);
+        fMRI_ROI.(task_nm_tmp).allTrials(runTrials_idx, iS) = ROI_trial_b_trial.(fMRI_ROI_nm{1}).(task_nm_tmp).(run_nm_bis).(timePeriod_nm)(:, iS);
         %% extract all relevant variables
         choice_hE.(task_nm_tmp).allTrials(runTrials_idx, iS)  = choice_highE_tmp;
         hE_level.(task_nm_tmp).allTrials(runTrials_idx, iS)   = E_highE_tmp;
@@ -188,7 +188,7 @@ end % subject loop
 
 %% median split based on metabolites
 % extract of subjects based on the median split
-[low_met_subs, high_met_subs, metabolite_nm, ROI_nm] = medSplit_metabolites(study_nm, subject_id);
+[low_met_subs, high_met_subs, metabolite_nm, MRS_ROI_nm] = medSplit_metabolites(study_nm, subject_id);
 
 %% perform extraction for each task independently
 for iTask = 1:nTasks
