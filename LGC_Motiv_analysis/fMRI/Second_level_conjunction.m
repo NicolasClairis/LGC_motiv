@@ -130,7 +130,7 @@ end
 
 %% Be careful t2.scans (for two-sample t.test)
 which_technique = 1;
-if which_technique == 1
+if which_technique == 1 % 2-sample t.test (unpaired) allowing to group the contrasts for the conjunction together
     
     matlabbatch{batch_idx}.spm.stats.factorial_design.des.t2.scans1 = conlist(:,1);
     matlabbatch{batch_idx}.spm.stats.factorial_design.des.t2.scans2 = conlist(:,2);
