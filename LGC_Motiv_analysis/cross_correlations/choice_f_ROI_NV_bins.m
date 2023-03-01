@@ -159,16 +159,13 @@ for iS = 1:NS
             deltaMoney_tmp = money_hE_tmp - money_lE_tmp;
             
             %% RT
-            onsets_tmp = behaviorStruct_tmp.onsets;
             switch task_nm_tmp
                 case 'Ep'
-                    onsets_tmp = behaviorStruct_tmp.physicalPerf.onsets;
                     choice_LR_tmp = behaviorStruct_tmp.physicalPerf.choice;
                 case 'Em'
-                    onsets_tmp = behaviorStruct_tmp.mentalE_perf.onsets;
                     choice_LR_tmp = behaviorStruct_tmp.mentalE_perf.choice;
             end
-            RT_tmp = onsets_tmp.choice - onsets_tmp.dispChoiceOptions;
+            RT_tmp = extract_RT(subBehaviorFolder, sub_nm, run_nm, task_fullName);
             
             %% confidence rating
             uncertaintyRtg_tmp = NaN(1,length(choice_LR_tmp));
