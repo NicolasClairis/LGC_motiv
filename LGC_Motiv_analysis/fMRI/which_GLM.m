@@ -39,6 +39,8 @@ function [GLMprm] = which_GLM(GLM)
 %   ('none'), for some cases, 'boxcar_bis' and 'boxcar_ter' correspond to 
 %   situations where the boxcar also entails following periods of the task
 %       .preChoiceCross: (white) fixation cross before choice period
+%           - 'boxcar_bis': entails fixation cross and display of the two
+%           options until the choice is done
 %       .choice: choice period (when options are displayed on screen)
 %       .chosen: moment when the chosen option is displayed on screen
 %           - 'boxcar_bis': entails chosen option display until the end of
@@ -408,6 +410,7 @@ for iEpm = 1:length(Ep_Em)
     % no regressor during pre-choice cross (by default)
     GLMprm.preChoiceCross.(EpEm_nm).RT = 0;
     GLMprm.preChoiceCross.(EpEm_nm).choiceHighE = 0;
+    GLMprm.preChoiceCross.(EpEm_nm).E_chosen = 0;
     
     % pool reward and punishment together (by default)
     GLMprm.choice.(EpEm_nm).RPpool = 1;
@@ -2705,6 +2708,40 @@ switch GLM
             GLMprm.choice.(Epm_nm).RP.E.confidence = 2;
             GLMprm.choice.(Epm_nm).RP.E.conf_mdl = 'bayesianModel_3';
             GLMprm.choice.(Epm_nm).RP.E.RT = 1;
+            % effort perf (effort execution)
+            GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
+            % feedback
+            GLMprm.model_onset.(Epm_nm).fbk = 'stick';
+        end % physical/mental loop
+    case 98 % test whether BOLD baseline will predict choice made
+        % general parameters
+        GLMprm.gal.orth_vars = 0;
+        GLMprm.gal.zPerRun = 0;
+        % loop per task
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % pre-choice fixation cross
+            GLMprm.model_onset.(Epm_nm).preChoiceCross = 'boxcar_bis';
+            GLMprm.preChoiceCross.(Epm_nm).choiceHighE = 1;
+            % chosen option display
+            GLMprm.model_onset.(Epm_nm).chosen = 'stick';
+            % effort perf (effort execution)
+            GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
+            % feedback
+            GLMprm.model_onset.(Epm_nm).fbk = 'stick';
+        end % physical/mental loop
+    case 99 % test whether BOLD baseline will predict Effort chosen
+        % general parameters
+        GLMprm.gal.orth_vars = 0;
+        GLMprm.gal.zPerRun = 0;
+        % loop per task
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % pre-choice fixation cross
+            GLMprm.model_onset.(Epm_nm).preChoiceCross = 'boxcar_bis';
+            GLMprm.preChoiceCross.(Epm_nm).E_chosen = 1;
+            % chosen option display
+            GLMprm.model_onset.(Epm_nm).chosen = 'stick';
             % effort perf (effort execution)
             GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
             % feedback

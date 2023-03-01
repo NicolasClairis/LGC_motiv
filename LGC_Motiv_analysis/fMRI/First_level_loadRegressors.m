@@ -615,13 +615,16 @@ iCond = 0;
 preChoiceCrossModel = GLMprm.model_onset.(task_id).preChoiceCross;
 preChoiceCrossModel_RT = GLMprm.preChoiceCross.(task_id).RT;
 preChoiceCrossModel_choiceHighE = GLMprm.preChoiceCross.(task_id).choiceHighE;
-if ismember(preChoiceCrossModel,{'stick','boxcar'})
+preChoiceCrossModel_E_chosen    = GLMprm.preChoiceCross.(task_id).E_chosen;
+if ismember(preChoiceCrossModel,{'stick','boxcar','boxcar_bis'})
     iCond = iCond + 1;
     switch preChoiceCrossModel
         case 'stick'
             modelPreChoiceCrossdur = 0;
         case 'boxcar'
             modelPreChoiceCrossdur = preChoiceCrossDur;
+        case 'boxcar_bis' % go from fixation cross display until choice is made
+            modelPreChoiceCrossdur = preChoiceCrossDur + choice_RT;
     end
     
     %% pre-choice cross modulators
@@ -646,6 +649,18 @@ if ismember(preChoiceCrossModel,{'stick','boxcar'})
         n_preChoiceCrossMods = n_preChoiceCrossMods + 1;
         preChoiceCross_modNames{n_preChoiceCrossMods} = 'choice = high effort';
         preChoiceCross_modVals(n_preChoiceCrossMods,:) = choice_hE; % binary variable => no zscore
+    end
+    
+    % effort chosen
+    if preChoiceCrossModel_E_chosen == 1
+        n_preChoiceCrossMods = n_preChoiceCrossMods + 1;
+        preChoiceCross_modNames{n_preChoiceCrossMods} = 'effort chosen';
+        switch preChoiceCrossModel_E_chosen
+            case 1
+                preChoiceCross_modVals(n_preChoiceCrossMods,:) = raw_or_z(E_chosen);
+            otherwise
+                error('not ready yet');
+        end
     end
     
     % RT (last regressor)

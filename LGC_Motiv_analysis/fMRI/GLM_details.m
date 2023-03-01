@@ -122,6 +122,15 @@ for iEpm = 1:length(Epm)
             n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
         end
         
+        % effort chosen
+        if GLMprm.preChoiceCross.(task_id_nm).E_chosen == 1
+            n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+            reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG preChoice Cross RP E: effort chosen';
+            disp([num2str(n_regs.(task_id_nm)),') preChoice Cross: effort chosen (levels) ']);
+            % if derivative added => add derivatives
+            n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+        end
+        
         % RT (last regressor)
         switch GLMprm.preChoiceCross.(task_id_nm).RT
             case 1
