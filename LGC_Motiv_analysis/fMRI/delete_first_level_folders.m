@@ -49,22 +49,29 @@ end
 
 % loop through subjects
 for iS = 1:NS
-    subFullNm = ['CID',subject_id{iS}];
+    sub_nm = subject_id{iS};
+    subFullNm = ['CID',sub_nm];
     subj_folder = [root, filesep, subFullNm];
     subj_analysis_folder = [subj_folder,filesep,'fMRI_analysis',filesep,...
         'functional',filesep,'preproc_sm_',num2str(sm_kernel),'mm', filesep];
-    cd(subj_analysis_folder);
-    
-    [resultsFolderName, resultsFolderShortName] = fMRI_subFolder(subj_analysis_folder, GLM, condition);
-    if exist(resultsFolderName,'dir')
-        rmdir(resultsFolderShortName,'s');
-        disp([resultsFolderShortName, ' correctly removed for ',subject_id{iS}]);
+    if exist(subj_analysis_folder,'dir')
+        cd(subj_analysis_folder);
+        
+        [resultsFolderName, resultsFolderShortName] = fMRI_subFolder(subj_analysis_folder, GLM, condition);
+        if exist(resultsFolderName,'dir')
+            rmdir(resultsFolderShortName,'s');
+            disp([resultsFolderShortName, ' correctly removed for ',sub_nm]);
+        else
+            disp([resultsFolderShortName, ' not found for ',sub_nm]);
+        end
     else
-        disp([resultsFolderShortName, ' not found for ',subject_id{iS}]);
+        disp([subj_analysis_folder, ' not found for ',sub_nm]);
     end
 end
 
 %% go back to initial folder
-cd(baseline_folder);
+if exist(baseline_folder,'dir') % folder might have been removed by delete_first_level_folders.m
+    cd(baseline_folder);
+end
 
 end % function
