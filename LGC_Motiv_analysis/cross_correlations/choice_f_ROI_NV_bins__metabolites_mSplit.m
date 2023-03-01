@@ -5,7 +5,7 @@ choice_f_ROI_NV_bins;
 
 %% load group indexes depending on the level of metabolites
 [met_subs.low, met_subs.high,...
-    metabolite_nm, ROI_nm] = medSplit_metabolites(study_nm, subject_id);
+    metabolite_nm, MRS_ROI_nm] = medSplit_metabolites(study_nm, subject_id);
 met_groups = {'low','high'};
 n_met_grps = length(met_groups);
 %% average data according to which group (low/high metabolite)

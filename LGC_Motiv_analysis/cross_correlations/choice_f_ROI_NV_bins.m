@@ -24,27 +24,12 @@ condition = subject_condition;
     study_nm, subject_id, condition);
 % define which ROI, and which time period is of interest to you
 % define ROI
-ROI_names = fieldnames(ROI_trial_b_trial);
-ROI_subList = ROI_trial_b_trial.subject_id;
-ROI_names(strcmp(ROI_names,'subject_id')) = [];
-if length(ROI_names) > 1
-    error(['There should be only 1 ROI selected, not ',num2str(length(ROI_names))])
-else
-    ROI_nm = ROI_names;
-end
-ROI_short_nm = inputdlg('ROI short name?');
-ROI_short_nm = ROI_short_nm{1};
-% define task
-task_names = {'Ep','Em','EpEmPool'};
-which_ROI_task = listdlg('PromptString','Which task for ROI?','ListString',task_names);
-ROI_task_to_look = task_names{which_ROI_task};
-% define time period
-timePeriods = fieldnames(ROI_trial_b_trial.(ROI_nm{1}).Ep.run1);
-which_timePeriod = listdlg('PromptString','Which time phase of the trial?',...
-    'listString',timePeriods);
-timePeriod_nm = timePeriods{which_timePeriod};
+[fMRI_ROI_nm, ROI_short_nm,...
+    ROI_task_to_look,...
+    timePeriod_nm] = extract_ROI_betas_onsets_only_questInfos(ROI_trial_b_trial);
 
 %% select parameters of interest
+task_names = {'Ep','Em','EpEmPool'};
 potential_input_prm = {'NV_hE','deltaNV','pChoice',...
     'uncertainty',...
     'E_level','money_level','deltaMoney_level'};
@@ -243,7 +228,7 @@ for iS = 1:NS
         %% extract fMRI ROI mediator
         if strcmp(ROI_task_to_look,'EpEmPool') ||...
                 (strcmp(ROI_task_to_look, task_nm_tmp))
-            ROI_mediator(runTrials_idx, iS) = ROI_trial_b_trial.(ROI_nm{1}).(task_nm_tmp).(run_nm_bis).(timePeriod_nm)(:, iS);
+            ROI_mediator(runTrials_idx, iS) = ROI_trial_b_trial.(fMRI_ROI_nm{1}).(task_nm_tmp).(run_nm_bis).(timePeriod_nm)(:, iS);
         end
     end % run loop
     
