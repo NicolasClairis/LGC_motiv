@@ -17,14 +17,14 @@ condition = subject_condition();
 [metabolites] = metabolite_load(subject_id);
 switch study_nm
     case 'study1'
-        ROIs = {'dmPFC','aIns'};
+        MRS_ROIs = {'dmPFC','aIns'};
     case 'study2'
         error('not ready yet');
 end
-nROIs = length(ROIs);
+nROIs = length(MRS_ROIs);
 for iROI = 1:nROIs
-    metabolite_names.(ROIs{iROI}) = fieldnames(metabolites.(ROIs{iROI}));
-    n_metabolites.(ROIs{iROI}) = length(metabolite_names.(ROIs{iROI}));
+    metabolite_names.(MRS_ROIs{iROI}) = fieldnames(metabolites.(MRS_ROIs{iROI}));
+    n_metabolites.(MRS_ROIs{iROI}) = length(metabolite_names.(MRS_ROIs{iROI}));
 end % roi loop
 
 %% define fMRI GLM to work on
@@ -64,7 +64,7 @@ nPrm = length(parameter_names);
 pval.signif = struct;
 dispMed = 0; % do not display mediation (too many plots)
 for iROI = 1:nROIs
-    MRS_ROI_nm = ROIs{iROI};
+    MRS_ROI_nm = MRS_ROIs{iROI};
     for iMb = 1:n_metabolites.(MRS_ROI_nm)
         metabolite_nm = metabolite_names.(MRS_ROI_nm){iMb};
         metabolite_allSubs = metabolites.(MRS_ROI_nm).(metabolite_nm);
@@ -77,10 +77,10 @@ for iROI = 1:nROIs
             X_nm = [MRS_ROI_nm,'-',metabolite_nm];
             M_nm = ['fMRI-',ROI_coords.ROI_nm.ROI_1_shortName,'-',con_nm{1}];
             Y_nm = prm_nm;
-            [a.(MRS_ROI_nm).(metabolite_nm).(prm_nm),...
-                b.(MRS_ROI_nm).(metabolite_nm).(prm_nm),...
-                c.(MRS_ROI_nm).(metabolite_nm).(prm_nm),...
-                c_prime.(MRS_ROI_nm).(metabolite_nm).(prm_nm),...
+            [mediation_path.a.(MRS_ROI_nm).(metabolite_nm).(prm_nm),...
+                mediation_path.b.(MRS_ROI_nm).(metabolite_nm).(prm_nm),...
+                mediation_path.c.(MRS_ROI_nm).(metabolite_nm).(prm_nm),...
+                mediation_path.c_prime.(MRS_ROI_nm).(metabolite_nm).(prm_nm),...
                 pval.(MRS_ROI_nm).(metabolite_nm).(prm_nm)] = mediation(metabolite_allSubs(goodSubs),...
                 con_data(goodSubs),...
                 behavPrm(goodSubs),...
@@ -93,6 +93,28 @@ for iROI = 1:nROIs
                     pval.(MRS_ROI_nm).(metabolite_nm).(prm_nm).b);
             end
             
+            
+            %% perform the same but removing "outliers" (><mean*3SD)
+            [~, ~, metabolite_clean] = rmv_outliers_3sd(metabolite_allSubs);
+            [~, ~, con_data_clean] = rmv_outliers_3sd(con_data);
+            [~, ~, behavPrm_clean] = rmv_outliers_3sd(behavPrm);
+            goodSubs_bis = ~isnan(metabolite_clean).*~isnan(con_data_clean).*~isnan(behavPrm_clean) == 1;
+            
+            [mediation_path.no_outliers.a.(MRS_ROI_nm).(metabolite_nm).(prm_nm),...
+                mediation_path.no_outliers.b.(MRS_ROI_nm).(metabolite_nm).(prm_nm),...
+                mediation_path.no_outliers.c.(MRS_ROI_nm).(metabolite_nm).(prm_nm),...
+                mediation_path.no_outliers.c_prime.(MRS_ROI_nm).(metabolite_nm).(prm_nm),...
+                pval.no_outliers.(MRS_ROI_nm).(metabolite_nm).(prm_nm)] = mediation(metabolite_allSubs(goodSubs_bis),...
+                con_data(goodSubs_bis),...
+                behavPrm(goodSubs_bis),...
+                X_nm, M_nm, Y_nm, dispMed);
+            
+            % store when significant
+            if pval.no_outliers.(MRS_ROI_nm).(metabolite_nm).(prm_nm).a < 0.05 &&...
+                    pval.no_outliers.(MRS_ROI_nm).(metabolite_nm).(prm_nm).b < 0.05
+                pval.no_outliers.signif.([MRS_ROI_nm,'_',metabolite_nm]).(prm_nm) = max(pval.no_outliers.(MRS_ROI_nm).(metabolite_nm).(prm_nm).a,...
+                    pval.no_outliers.(MRS_ROI_nm).(metabolite_nm).(prm_nm).b);
+            end
         end % parameter loop
     end % metabolites loop
 end % ROI loop
