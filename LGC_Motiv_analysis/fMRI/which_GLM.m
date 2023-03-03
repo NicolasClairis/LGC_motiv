@@ -2747,6 +2747,45 @@ switch GLM
             % feedback
             GLMprm.model_onset.(Epm_nm).fbk = 'stick';
         end % physical/mental loop
+    case 100 % like GLM 96 but boxcar
+        % general parameters
+        GLMprm.gal.orth_vars = 0;
+        GLMprm.gal.zPerRun = 0;
+        % loop per task
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'boxcar';
+            GLMprm.choice.(Epm_nm).RP.E.R_chosen = 2;
+            GLMprm.choice.(Epm_nm).RP.E.P_chosen = 2;
+            GLMprm.choice.(Epm_nm).RP.E.E_chosen = 1;
+            % effort perf (effort execution)
+            GLMprm.model_onset.(Epm_nm).Eperf = 'boxcar';
+            % feedback
+            GLMprm.model_onset.(Epm_nm).fbk = 'boxcar';
+        end % physical/mental loop
+    case 101 % like GLM 97 but boxcar
+        % general parameters
+        GLMprm.gal.orth_vars = 0;
+        GLMprm.gal.zPerRun = 0;
+        % loop per task
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'boxcar';
+            GLMprm.choice.(Epm_nm).RP.E.R_chosen = 2;
+            GLMprm.choice.(Epm_nm).RP.E.P_chosen = 2;
+            GLMprm.choice.(Epm_nm).RP.E.E_chosen = 1;
+            GLMprm.choice.(Epm_nm).RP.E.NV_varOption = 3;
+            GLMprm.choice.(Epm_nm).RP.E.NV_mdl = 'bayesianModel_3';
+            GLMprm.choice.(Epm_nm).RP.E.confidence = 2;
+            GLMprm.choice.(Epm_nm).RP.E.conf_mdl = 'bayesianModel_3';
+            GLMprm.choice.(Epm_nm).RP.E.RT = 1;
+            % effort perf (effort execution)
+            GLMprm.model_onset.(Epm_nm).Eperf = 'boxcar';
+            % feedback
+            GLMprm.model_onset.(Epm_nm).fbk = 'boxcar';
+        end % physical/mental loop
 end % GLM number
 %% warnings: check compatibility of the GLM parameters entered
 isGLMokCheck(GLMprm);
