@@ -33,11 +33,11 @@ function[b_choice_f_fMRI, pval, fMRI_bins, choice_hE_bins, choice_hE_fit_bins] =
 if ~exist('study_nm','var') || isempty(study_nm)
     study_nm = 'study1';
 end
-% 
-% %% working directories
-% computerRoot = LGCM_root_paths;
-% studyBehaviorFolder = [computerRoot, filesep, study_nm, filesep];
-% 
+
+%% working directories
+computerRoot = LGCM_root_paths;
+studyBehaviorFolder = [computerRoot, filesep, study_nm, filesep];
+
 %% subject selection
 if ~exist('condition','var') || isempty(condition)
     condition = subject_condition;
@@ -68,14 +68,14 @@ n_E_levels = 3;
     fMRI_bins.Em.perElevel, choice_hE_bins.Em.perElevel, choice_hE_fit_bins.Em.perElevel] = deal(NaN(nBins, n_E_levels, NS));
 [b_choice_f_fMRI.Ep.perElevel, b_choice_f_fMRI.Em.perElevel] = deal(NaN(2, NS, n_E_levels));
 
-% %% extract ROI activity for all subjects
-% [ROI_trial_b_trial] = extract_ROI_betas_onsets_only(computerRoot,...
-%     study_nm, subject_id, condition);
-% % define which ROI, and which time period is of interest to you
-% % define ROI
-% [fMRI_ROI_nm, fMRI_ROI_short_nm,...
-%     ~,...
-%     timePeriod_nm] = extract_ROI_betas_onsets_only_questInfos(ROI_trial_b_trial);
+%% extract ROI activity for all subjects
+[ROI_trial_b_trial] = extract_ROI_betas_onsets_only(computerRoot,...
+    study_nm, subject_id, condition);
+% define which ROI, and which time period is of interest to you
+% define ROI
+[fMRI_ROI_nm, fMRI_ROI_short_nm,...
+    ~,...
+    timePeriod_nm] = extract_ROI_betas_onsets_only_questInfos(ROI_trial_b_trial);
 
 %% loop through subjects
 for iS = 1:NS
@@ -83,7 +83,7 @@ for iS = 1:NS
     subBehaviorFolder = [studyBehaviorFolder, 'CID',sub_nm, filesep, 'behavior',filesep];
     
     % extract runs
-    [runsStruct] = runs_definition(study_nm, sub_nm, 'behavior');
+    [runsStruct] = runs_definition(study_nm, sub_nm, condition);
     okRuns = runsStruct.runsToKeep;
     taskNames = runsStruct.tasks;
     jRun = 0;
@@ -117,23 +117,30 @@ for iS = 1:NS
     end % run loop
     
     %% fit
+    fitType = 'normal'; % binomial or normal
+    switch fitType
+        case 'binomial'
+            fitType_glmval = 'logit';
+        case 'normal'
+            fitType_glmval = 'identity';
+    end
     % choice = f(fMRI) logit
     b_choice_f_fMRI.(task_nm_tmp).allTrials(:,iS) = glmfit(fMRI_allTrials.(task_nm_tmp)(:, iS),...
-        choice_hE_allTrials.(task_nm_tmp)(:, iS),'normal');
+        choice_hE_allTrials.(task_nm_tmp)(:, iS),fitType);
     choice_hE_fit_allTrials.(task_nm_tmp)(:, iS) = glmval(b_choice_f_fMRI.(task_nm_tmp).allTrials(:,iS),...
-        fMRI_allTrials.(task_nm_tmp)(:, iS), 'identity');
+        fMRI_allTrials.(task_nm_tmp)(:, iS), fitType_glmval);
     
     % choice = f(fMRI) logit split per effort level
     for iE = 1:n_E_levels
         E_lvl_idx = E_level.(task_nm_tmp)(:, iS) == iE;
         b_choice_f_fMRI.(task_nm_tmp).perElevel(:,iS, iE) = glmfit(fMRI_allTrials.(task_nm_tmp)(E_lvl_idx, iS),...
-            choice_hE_allTrials.(task_nm_tmp)(E_lvl_idx, iS),'normal');
+            choice_hE_allTrials.(task_nm_tmp)(E_lvl_idx, iS),fitType);
         if sum(E_lvl_idx) == nTrialsPerTask/n_E_levels
             choice_hE_fit_perElevel.(task_nm_tmp)(:, iE, iS) = glmval(b_choice_f_fMRI.(task_nm_tmp).perElevel(:,iS,iE),...
-                fMRI_allTrials.(task_nm_tmp)(E_lvl_idx, iS), 'identity');
+                fMRI_allTrials.(task_nm_tmp)(E_lvl_idx, iS), fitType_glmval);
         else % prevent bug from subjects like CID040 where some runs were not performed in fMRI
             choice_hE_fit_perElevel.(task_nm_tmp)(1:sum(E_lvl_idx), iE, iS) = glmval(b_choice_f_fMRI.(task_nm_tmp).perElevel(:, iS, iE),...
-                fMRI_allTrials.(task_nm_tmp)(E_lvl_idx, iS), 'identity');
+                fMRI_allTrials.(task_nm_tmp)(E_lvl_idx, iS), fitType_glmval);
         end
     end
     
