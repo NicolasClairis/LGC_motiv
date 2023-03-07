@@ -57,16 +57,21 @@ nTasks = length(tasks);
 nTrialsPerRun = 54;
 nRunsPerTask = 2;
 nTrialsPerTask = nTrialsPerRun*nRunsPerTask;
+nTrials = nTrialsPerRun*nRunsPerTask*nTasks;
 n_E_levels = 3;
 [fMRI_allTrials.Ep, choice_hE_allTrials.Ep, E_level.Ep, choice_hE_fit_allTrials.Ep,...
     fMRI_allTrials.Em, choice_hE_allTrials.Em, E_level.Em, choice_hE_fit_allTrials.Em] = deal(NaN(nTrialsPerTask, NS));
+[fMRI_allTrials.EpEmPool, choice_hE_allTrials.EpEmPool, E_level.EpEmPool, choice_hE_fit_allTrials.EpEmPool] = deal(NaN(nTrials, NS));
 [choice_hE_fit_perElevel.Ep, choice_hE_fit_perElevel.Em] = deal(NaN(nTrialsPerTask/n_E_levels, n_E_levels, NS));
+choice_hE_fit_perElevel.EpEmPool = NaN(nTrials/n_E_levels, n_E_levels, NS);
 [fMRI_bins.Ep.allTrials, choice_hE_bins.Ep.allTrials, choice_hE_fit_bins.Ep.allTrials,...
-    fMRI_bins.Em.allTrials, choice_hE_bins.Em.allTrials, choice_hE_fit_bins.Em.allTrials] = deal(NaN(nBins, NS));
-[b_choice_f_fMRI.Ep.allTrials, b_choice_f_fMRI.Em.allTrials] = deal(NaN(2,NS));
+    fMRI_bins.Em.allTrials, choice_hE_bins.Em.allTrials, choice_hE_fit_bins.Em.allTrials,...
+    fMRI_bins.EpEmPool.allTrials, choice_hE_bins.EpEmPool.allTrials, choice_hE_fit_bins.EpEmPool.allTrials] = deal(NaN(nBins, NS));
+[b_choice_f_fMRI.Ep.allTrials, b_choice_f_fMRI.Em.allTrials, b_choice_f_fMRI.EpEmPool.allTrials] = deal(NaN(2,NS));
 [fMRI_bins.Ep.perElevel, choice_hE_bins.Ep.perElevel, choice_hE_fit_bins.Ep.perElevel,...
-    fMRI_bins.Em.perElevel, choice_hE_bins.Em.perElevel, choice_hE_fit_bins.Em.perElevel] = deal(NaN(nBins, n_E_levels, NS));
-[b_choice_f_fMRI.Ep.perElevel, b_choice_f_fMRI.Em.perElevel] = deal(NaN(2, NS, n_E_levels));
+    fMRI_bins.Em.perElevel, choice_hE_bins.Em.perElevel, choice_hE_fit_bins.Em.perElevel,...
+    fMRI_bins.EpEmPool.perElevel, choice_hE_bins.EpEmPool.perElevel, choice_hE_fit_bins.EpEmPool.perElevel] = deal(NaN(nBins, n_E_levels, NS));
+[b_choice_f_fMRI.Ep.perElevel, b_choice_f_fMRI.Em.perElevel, b_choice_f_fMRI.EpEmPool.perElevel] = deal(NaN(2, NS, n_E_levels));
 
 %% extract ROI activity for all subjects
 [ROI_trial_b_trial] = extract_ROI_betas_onsets_only(computerRoot,...
@@ -76,6 +81,15 @@ n_E_levels = 3;
 [fMRI_ROI_nm, fMRI_ROI_short_nm,...
     ~,...
     timePeriod_nm] = extract_ROI_betas_onsets_only_questInfos(ROI_trial_b_trial);
+
+%% fit parameters
+fitType = 'normal'; % binomial or normal
+switch fitType
+    case 'binomial'
+        fitType_glmval = 'logit';
+    case 'normal'
+        fitType_glmval = 'identity';
+end
 
 %% loop through subjects
 for iS = 1:NS
@@ -107,6 +121,7 @@ for iS = 1:NS
         end
         run_nm_bis = ['run',num2str(taskRun_idx)];
         runTrials_idx = (1:nTrialsPerRun) + nTrialsPerRun*(taskRun_idx-1);
+        runTrials_EpEmPool_idx = (1:nTrialsPerRun) + nTrialsPerRun*(kRun-1);
         
         %% extract choices for the current session
         choice_hE_allTrials.(task_nm_tmp)(runTrials_idx, iS) = extract_choice_hE(subBehaviorFolder, sub_nm, run_nm, task_fullName);
@@ -114,60 +129,63 @@ for iS = 1:NS
         
         %% extract fMRI ROI
         fMRI_allTrials.(task_nm_tmp)(runTrials_idx, iS) = ROI_trial_b_trial.(fMRI_ROI_nm{1}).(task_nm_tmp).(run_nm_bis).(timePeriod_nm)(:, iS);
+        
+        %% same but for Ep+Em pool
+        choice_hE_allTrials.EpEmPool(runTrials_EpEmPool_idx, iS) = extract_choice_hE(subBehaviorFolder, sub_nm, run_nm, task_fullName);
+        E_level.EpEmPool(runTrials_EpEmPool_idx, iS) = extract_hE_level(subBehaviorFolder, sub_nm, run_nm, task_fullName);
+        fMRI_allTrials.EpEmPool(runTrials_EpEmPool_idx, iS) = ROI_trial_b_trial.(fMRI_ROI_nm{1}).(task_nm_tmp).(run_nm_bis).(timePeriod_nm)(:, iS);
     end % run loop
     
     %% fit
-    fitType = 'normal'; % binomial or normal
-    switch fitType
-        case 'binomial'
-            fitType_glmval = 'logit';
-        case 'normal'
-            fitType_glmval = 'identity';
-    end
-    % choice = f(fMRI) logit
-    b_choice_f_fMRI.(task_nm_tmp).allTrials(:,iS) = glmfit(fMRI_allTrials.(task_nm_tmp)(:, iS),...
-        choice_hE_allTrials.(task_nm_tmp)(:, iS),fitType);
-    choice_hE_fit_allTrials.(task_nm_tmp)(:, iS) = glmval(b_choice_f_fMRI.(task_nm_tmp).allTrials(:,iS),...
-        fMRI_allTrials.(task_nm_tmp)(:, iS), fitType_glmval);
-    
-    % choice = f(fMRI) logit split per effort level
-    for iE = 1:n_E_levels
-        E_lvl_idx = E_level.(task_nm_tmp)(:, iS) == iE;
-        b_choice_f_fMRI.(task_nm_tmp).perElevel(:,iS, iE) = glmfit(fMRI_allTrials.(task_nm_tmp)(E_lvl_idx, iS),...
-            choice_hE_allTrials.(task_nm_tmp)(E_lvl_idx, iS),fitType);
-        if sum(E_lvl_idx) == nTrialsPerTask/n_E_levels
-            choice_hE_fit_perElevel.(task_nm_tmp)(:, iE, iS) = glmval(b_choice_f_fMRI.(task_nm_tmp).perElevel(:,iS,iE),...
-                fMRI_allTrials.(task_nm_tmp)(E_lvl_idx, iS), fitType_glmval);
-        else % prevent bug from subjects like CID040 where some runs were not performed in fMRI
-            choice_hE_fit_perElevel.(task_nm_tmp)(1:sum(E_lvl_idx), iE, iS) = glmval(b_choice_f_fMRI.(task_nm_tmp).perElevel(:, iS, iE),...
-                fMRI_allTrials.(task_nm_tmp)(E_lvl_idx, iS), fitType_glmval);
+    for iT = 1:(nTasks+1)
+        switch iT
+            case {1,2}
+                task_nm_tmp = tasks{iT};
+            case 3
+                task_nm_tmp = 'EpEmPool';
         end
-    end
-    
-    %% extract the bins
-    for iT = 1:nTasks
-        task_nm_tmp = tasks{iT};
-        % all trials
-        [choice_hE_bins.(task_nm_tmp).allTrials(:,iS),...
-            fMRI_bins.(task_nm_tmp).allTrials(:,iS)] = do_bin2(choice_hE_allTrials.(task_nm_tmp)(:, iS),...
-            fMRI_allTrials.(task_nm_tmp)(:, iS), nBins, 0);
-        [choice_hE_fit_bins.(task_nm_tmp).allTrials(:,iS),...
-            fMRI_bins.(task_nm_tmp).allTrials(:,iS)] = do_bin2(choice_hE_fit_allTrials.(task_nm_tmp)(:, iS),...
-            fMRI_allTrials.(task_nm_tmp)(:, iS), nBins, 0);
+        % choice = f(fMRI) logit
+        b_choice_f_fMRI.(task_nm_tmp).allTrials(:,iS) = glmfit(fMRI_allTrials.(task_nm_tmp)(:, iS),...
+            choice_hE_allTrials.(task_nm_tmp)(:, iS),fitType);
+        choice_hE_fit_allTrials.(task_nm_tmp)(:, iS) = glmval(b_choice_f_fMRI.(task_nm_tmp).allTrials(:,iS),...
+            fMRI_allTrials.(task_nm_tmp)(:, iS), fitType_glmval);
         
-        % split per effort level
+        % choice = f(fMRI) logit split per effort level
         for iE = 1:n_E_levels
             E_lvl_idx = E_level.(task_nm_tmp)(:, iS) == iE;
-            if sum(E_lvl_idx) > 0
-                [choice_hE_bins.(task_nm_tmp).perElevel(:,iE,iS),...
-                    fMRI_bins.(task_nm_tmp).perElevel(:,iE,iS)] = do_bin2(choice_hE_allTrials.(task_nm_tmp)(E_lvl_idx, iS),...
-                    fMRI_allTrials.(task_nm_tmp)(E_lvl_idx, iS), nBins, 0);
-                [choice_hE_fit_bins.(task_nm_tmp).perElevel(:,iE,iS),...
-                    fMRI_bins.(task_nm_tmp).perElevel(:,iE,iS)] = do_bin2(choice_hE_fit_perElevel.(task_nm_tmp)(1:sum(E_lvl_idx), iE, iS),...
-                    fMRI_allTrials.(task_nm_tmp)(E_lvl_idx, iS), nBins, 0);
+            b_choice_f_fMRI.(task_nm_tmp).perElevel(:,iS, iE) = glmfit(fMRI_allTrials.(task_nm_tmp)(E_lvl_idx, iS),...
+                choice_hE_allTrials.(task_nm_tmp)(E_lvl_idx, iS),fitType);
+            if sum(E_lvl_idx) == nTrialsPerTask/n_E_levels
+                choice_hE_fit_perElevel.(task_nm_tmp)(:, iE, iS) = glmval(b_choice_f_fMRI.(task_nm_tmp).perElevel(:,iS,iE),...
+                    fMRI_allTrials.(task_nm_tmp)(E_lvl_idx, iS), fitType_glmval);
+            else % prevent bug from subjects like CID040 where some runs were not performed in fMRI
+                choice_hE_fit_perElevel.(task_nm_tmp)(1:sum(E_lvl_idx), iE, iS) = glmval(b_choice_f_fMRI.(task_nm_tmp).perElevel(:, iS, iE),...
+                    fMRI_allTrials.(task_nm_tmp)(E_lvl_idx, iS), fitType_glmval);
             end
+        end % effort loop
+        
+    %% extract the bins
+    % all trials
+    [choice_hE_bins.(task_nm_tmp).allTrials(:,iS),...
+        fMRI_bins.(task_nm_tmp).allTrials(:,iS)] = do_bin2(choice_hE_allTrials.(task_nm_tmp)(:, iS),...
+        fMRI_allTrials.(task_nm_tmp)(:, iS), nBins, 0);
+    [choice_hE_fit_bins.(task_nm_tmp).allTrials(:,iS),...
+        fMRI_bins.(task_nm_tmp).allTrials(:,iS)] = do_bin2(choice_hE_fit_allTrials.(task_nm_tmp)(:, iS),...
+        fMRI_allTrials.(task_nm_tmp)(:, iS), nBins, 0);
+    
+    % split per effort level
+    for iE = 1:n_E_levels
+        E_lvl_idx = E_level.(task_nm_tmp)(:, iS) == iE;
+        if sum(E_lvl_idx) > 0
+            [choice_hE_bins.(task_nm_tmp).perElevel(:,iE,iS),...
+                fMRI_bins.(task_nm_tmp).perElevel(:,iE,iS)] = do_bin2(choice_hE_allTrials.(task_nm_tmp)(E_lvl_idx, iS),...
+                fMRI_allTrials.(task_nm_tmp)(E_lvl_idx, iS), nBins, 0);
+            [choice_hE_fit_bins.(task_nm_tmp).perElevel(:,iE,iS),...
+                fMRI_bins.(task_nm_tmp).perElevel(:,iE,iS)] = do_bin2(choice_hE_fit_perElevel.(task_nm_tmp)(1:sum(E_lvl_idx), iE, iS),...
+                fMRI_allTrials.(task_nm_tmp)(E_lvl_idx, iS), nBins, 0);
         end
     end
+    end % task loop
 end % subject loop
 
 if figDisp == 1
