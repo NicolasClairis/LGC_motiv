@@ -64,7 +64,10 @@ for iROI = 1:nROIs
     [metabolites.(ROI_nm).Gln_div_Glu,...
         metabolites.(ROI_nm).z_antiox,...
         metabolites.(ROI_nm).antiox,...
-        metabolites.(ROI_nm).Glu_div_GABA] = deal(NaN(1,NS));
+        metabolites.(ROI_nm).Glu_div_GSH,...
+        metabolites.(ROI_nm).Glu_div_Tau,...
+        metabolites.(ROI_nm).Glu_div_antiox,...
+        metabolites.(ROI_nm).Glu_div_z_antiox] = deal(NaN(1,NS));
     
     %% load the data
     switch ROI_nm
@@ -133,6 +136,11 @@ for iROI = 1:nROIs
         nanzscore(metabolites.(ROI_nm).Tau));
     % perform also division Glu/GABA
     metabolites.(ROI_nm).Glu_div_GABA = metabolites.(ROI_nm).Glu./metabolites.(ROI_nm).GABA;
+    % Glu/antioxidants
+    metabolites.(ROI_nm).Glu_div_GSH = metabolites.(ROI_nm).Glu./metabolites.(ROI_nm).GSH;
+    metabolites.(ROI_nm).Glu_div_Tau = metabolites.(ROI_nm).Glu./metabolites.(ROI_nm).Tau;
+    metabolites.(ROI_nm).Glu_div_antiox = metabolites.(ROI_nm).Glu./metabolites.(ROI_nm).antiox;
+    metabolites.(ROI_nm).Glu_div_z_antiox = metabolites.(ROI_nm).Glu./metabolites.(ROI_nm).z_antiox;
 end % ROI loop
 
 %% go back to root
