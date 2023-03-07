@@ -155,7 +155,8 @@ for iS = 1:NS
             E_lvl_idx = E_level.(task_nm_tmp)(:, iS) == iE;
             b_choice_f_fMRI.(task_nm_tmp).perElevel(:,iS, iE) = glmfit(fMRI_allTrials.(task_nm_tmp)(E_lvl_idx, iS),...
                 choice_hE_allTrials.(task_nm_tmp)(E_lvl_idx, iS),fitType);
-            if sum(E_lvl_idx) == nTrialsPerTask/n_E_levels
+            if (sum(E_lvl_idx) == nTrialsPerTask/n_E_levels && ismember(task_nm_tmp,{'Ep','Em'})) ||...
+                    (sum(E_lvl_idx) == nTrials/n_E_levels && strcmp(task_nm_tmp,'EpEmPool'))
                 choice_hE_fit_perElevel.(task_nm_tmp)(:, iE, iS) = glmval(b_choice_f_fMRI.(task_nm_tmp).perElevel(:,iS,iE),...
                     fMRI_allTrials.(task_nm_tmp)(E_lvl_idx, iS), fitType_glmval);
             else % prevent bug from subjects like CID040 where some runs were not performed in fMRI
@@ -195,8 +196,13 @@ if figDisp == 1
     E2_col = [161 217 155]./255;
     E3_col = [49 163 84]./255;
 end
-for iT = 1:nTasks
-    task_nm_tmp = tasks{iT};
+for iT = 1:(nTasks+1)
+    switch iT
+        case {1,2}
+            task_nm_tmp = tasks{iT};
+        case 3
+            task_nm_tmp = 'EpEmPool';
+    end
     
     %% average data across subjects
     % all trials
@@ -276,6 +282,6 @@ for iT = 1:nTasks
         xlabel([fMRI_ROI_short_nm,' BOLD during ',timePeriod_nm,' - ',task_nm_tmp]);
         ylabel(['Choice (%) - ',task_nm_tmp]);
         legend_size(pSize);
-    end
+    end % figure display
 end % task loop
 end % function
