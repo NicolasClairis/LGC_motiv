@@ -157,34 +157,9 @@ if dispResults == 1
     Y_b_fit = betas_2(1) + b.*M_res_ascOrder;
     
     fig;
-    % X => Y direct path without mediation (c)
-    subplot(2,2,1);
-    scat_hdl = scatter(X, Y);
-    scat_hdl.LineWidth = lWidth;
-    scat_hdl.MarkerEdgeColor = black;
-    hold on;
-    fit_hdl = plot(X_ascOrder, Y_c_fit);
-    fit_hdl.LineWidth = lWidth;
-    fit_hdl.Color = grey;
-    xlabel([X_nm,' - direct path (c)']);
-    ylabel(Y_nm);
-    legend_size(pSize);
-    
-    % X => Y direct path competition with M (c')
-    subplot(2,2,2);
-    scat_hdl = scatter(X, Y_res_without_M);
-    scat_hdl.LineWidth = lWidth;
-    scat_hdl.MarkerEdgeColor = black;
-    hold on;
-    fit_hdl = plot(X_ascOrder, Y_cPrime_fit);
-    fit_hdl.LineWidth = lWidth;
-    fit_hdl.Color = grey;
-    xlabel([X_nm,' - direct path (c'')']);
-    ylabel(Y_nm);
-    legend_size(pSize);
     
     % X => M path
-    subplot(2,2,3);
+    subplot(2,2,1);
     scat_hdl = scatter(X, M);
     scat_hdl.LineWidth = lWidth;
     scat_hdl.MarkerEdgeColor = black;
@@ -192,12 +167,12 @@ if dispResults == 1
     fit_hdl = plot(X_ascOrder, M_fit);
     fit_hdl.LineWidth = lWidth;
     fit_hdl.Color = grey;
-    xlabel(X_nm);
+    xlabel([X_nm,' -  path a']);
     ylabel(M_nm);
     legend_size(pSize);
     
     % M => Y path (after removing X => M)
-    subplot(2,2,4);
+    subplot(2,2,2);
     scat_hdl = scatter(M_res_without_X, Y_res_without_X);
     scat_hdl.LineWidth = lWidth;
     scat_hdl.MarkerEdgeColor = black;
@@ -205,7 +180,33 @@ if dispResults == 1
     fit_hdl = plot(M_res_ascOrder, Y_b_fit);
     fit_hdl.LineWidth = lWidth;
     fit_hdl.Color = grey;
-    xlabel(M_nm);
+    xlabel([M_nm,' -  path b']);
+    ylabel(Y_nm);
+    legend_size(pSize);
+    
+    % X => Y direct path without mediation (c)
+    subplot(2,2,3);
+    scat_hdl = scatter(X, Y);
+    scat_hdl.LineWidth = lWidth;
+    scat_hdl.MarkerEdgeColor = black;
+    hold on;
+    fit_hdl = plot(X_ascOrder, Y_c_fit);
+    fit_hdl.LineWidth = lWidth;
+    fit_hdl.Color = grey;
+    xlabel([X_nm,' - path c']);
+    ylabel(Y_nm);
+    legend_size(pSize);
+    
+    % X => Y direct path competition with M (c')
+    subplot(2,2,4);
+    scat_hdl = scatter(X, Y_res_without_M);
+    scat_hdl.LineWidth = lWidth;
+    scat_hdl.MarkerEdgeColor = black;
+    hold on;
+    fit_hdl = plot(X_ascOrder, Y_cPrime_fit);
+    fit_hdl.LineWidth = lWidth;
+    fit_hdl.Color = grey;
+    xlabel([X_nm,' - path c''']);
     ylabel(Y_nm);
     legend_size(pSize);
 end
