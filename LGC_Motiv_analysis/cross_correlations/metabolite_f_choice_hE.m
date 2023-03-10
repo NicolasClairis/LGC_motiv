@@ -16,14 +16,35 @@ mb_f_E_perE_hdl = fig;
 
 %% load metabolites
 [metabolite_allSubs, MRS_ROI_nm, metabolite_nm] = metabolite_extraction(study_nm, subject_id);
+
+
 for iT = 1:nTasks
      task_nm = tasks{iT};
      
+     switch task_nm
+         case 'Ep'
+             task_fullName = 'physical'
+         case 'Em'
+             task_fullName = 'mental';
+         otherwise
+             error('error with task name');
+     end
+     
+     [choice.(task_nm).E,...
+         choice.(task_nm).E1,...
+         choice.(task_nm).E2,...
+         choice.(task_nm).E3] = deal(zeros(1,NS));
+     
      for iS = 1:NS
+         sub_nm = subject_id{iS};
+         runs = runs_definition(study_nm, sub_nm, condition);
          
+         
+         [choice_highE_tmp] = extract_choice_hE(subBehaviorFolder, sub_nm, run_nm, task_fullName);
+         [hE_level_tmp] = extract_hE_level(subBehaviorFolder, sub_nm, run_nm, task_fullName);
      end % subject loop
      
-     %% average 
+     %% average across subjects
      
      %% figure
      pSize = 30;
