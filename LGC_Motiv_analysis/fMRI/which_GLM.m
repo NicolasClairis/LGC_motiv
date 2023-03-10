@@ -2795,7 +2795,7 @@ switch GLM
             Epm_nm = Epm{iEpm};
             % choice
             GLMprm.model_onset.(Epm_nm).choice = 'stick';
-            GLMprm.(Epm_nm).splitPerE = 1;
+            GLMprm.choice.(Epm_nm).splitPerE = 1;
             % chosen
             GLMprm.model_onset.(Epm_nm).chosen = 'stick';
             % effort perf (effort execution)
