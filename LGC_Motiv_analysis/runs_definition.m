@@ -1080,6 +1080,69 @@ switch study_nm
                             '008','022','024'}
                         error([sub_nm,' should not be included under the condition ',condition]);
                 end
+            case {'pulse'}
+                switch sub_nm
+                    case {'020','021','024','040','082','083','085','093'} % ignore completely those subjects
+                        runs.runsToKeep = [];
+                        runs.runsToIgnore = 1:4;
+                    case '002'
+                        runs.runsToKeep = 1:3;
+                        runs.runsToIgnore = 4;
+                    case '005'
+                        runs.runsToKeep = 1:3;
+                        runs.runsToIgnore = 4;
+                    case '012'
+                        runs.runsToKeep = 1:3;
+                        runs.runsToIgnore = 4;
+                    case '015'
+                        runs.runsToKeep = 1:3;
+                        runs.runsToIgnore = 4;
+                    case '017'
+                        runs.runsToKeep = [1,2];
+                        runs.runsToIgnore = 3:4;
+                    case '018'
+                        runs.runsToKeep = 1;
+                        runs.runsToIgnore = 2:4;
+                    case '022'
+                        runs.runsToKeep = 1:2;
+                        runs.runsToIgnore = 3:4;
+                    case '034'
+                        runs.runsToKeep = [1,3,4];
+                        runs.runsToIgnore = 2;
+                    case '043'
+                        runs.runsToKeep = [1,3,4];
+                        runs.runsToIgnore = 2;
+                    case '044'
+                        runs.runsToKeep = 2:4;
+                        runs.runsToIgnore = 1;
+                    case '047'
+                        runs.runsToKeep = [1,4];
+                        runs.runsToIgnore = 2:3;
+                    case '050'
+                        runs.runsToKeep = 2;
+                        runs.runsToIgnore = [1,3,4];
+                    case '053'
+                        runs.runsToKeep = 2:4;
+                        runs.runsToIgnore = 1;
+                    case '075'
+                        runs.runsToKeep = [1,2];
+                        runs.runsToIgnore = 3:4;
+                    case '078'
+                        runs.runsToKeep = 1;
+                        runs.runsToIgnore = 2:4;
+                    case '091'
+                        runs.runsToKeep = [1,3,4];
+                        runs.runsToIgnore = 2;
+                    case '097'
+                        runs.runsToKeep = [1,2,4];
+                        runs.runsToIgnore = 3;
+                    case '099'
+                        runs.runsToKeep = [1,3,4];
+                        runs.runsToIgnore = 2;
+                    case '100'
+                        runs.runsToKeep = 1:3;
+                        runs.runsToIgnore = 4;
+                end % subject loop
         end
     otherwise
         error('case not ready yet');
