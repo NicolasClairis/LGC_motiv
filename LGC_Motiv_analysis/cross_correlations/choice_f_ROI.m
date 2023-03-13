@@ -100,12 +100,10 @@ for iS = 1:NS
     [runsStruct] = runs_definition(study_nm, sub_nm, condition);
     okRuns = runsStruct.runsToKeep;
     taskNames = runsStruct.tasks;
-    jRun = 0;
     for iRun = 1:length(okRuns)
         kRun = okRuns(iRun);
+        task_nm_tmp = taskNames{iRun};
         run_nm = num2str(kRun);
-        jRun = jRun + 1;
-        task_nm_tmp = taskNames{jRun};
         switch task_nm_tmp
             case 'Em'
                 task_fullName = 'mental';
