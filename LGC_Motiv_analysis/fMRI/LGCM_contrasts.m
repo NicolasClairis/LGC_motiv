@@ -427,18 +427,18 @@ for iTimePeriod = 1:n_timePeriods
                             % already ok)
                             switch regType
                                 case 'ONSET'
-                                    regE1xpression = [task_nm,' ',posNeg,'ONSET ',timePhase_nm_bis,' ',RP_nm,' E1'];
-                                    regE2xpression = [task_nm,' ',posNeg,'ONSET ',timePhase_nm_bis,' ',RP_nm,' E2'];
-                                    regE3xpression = [task_nm,' ',posNeg,'ONSET ',timePhase_nm_bis,' ',RP_nm,' E3'];
-                                    areThereE1regs = strcmp(con_names, regE1xpression);
-                                    areThereE2regs = strcmp(con_names, regE2xpression);
-                                    areThereE3regs = strcmp(con_names, regE3xpression);
+                                    regE1Expression = [task_nm,' ',posNeg,'ONSET ',timePhase_nm_bis,' ',RP_nm,' E1'];
+                                    regE2Expression = [task_nm,' ',posNeg,'ONSET ',timePhase_nm_bis,' ',RP_nm,' E2'];
+                                    regE3Expression = [task_nm,' ',posNeg,'ONSET ',timePhase_nm_bis,' ',RP_nm,' E3'];
+                                    areThereE1regs = strcmp(con_names, regE1Expression);
+                                    areThereE2regs = strcmp(con_names, regE2Expression);
+                                    areThereE3regs = strcmp(con_names, regE3Expression);
                                 case 'REG'
                                     regE1Expression = [task_nm,' ',posNeg,regType,' ',timePhase_nm_bis,' ',RP_nm,' E1:'];
                                     regE2Expression = [task_nm,' ',posNeg,regType,' ',timePhase_nm_bis,' ',RP_nm,' E2:'];
                                     regE3Expression = [task_nm,' ',posNeg,regType,' ',timePhase_nm_bis,' ',RP_nm,' E3:'];
                                     n_regNameSize = length(regE1Expression);
-                                    areThereE1regs = strncmp(con_names, regE1xpression, n_regNameSize);
+                                    areThereE1regs = strncmp(con_names, regE1Expression, n_regNameSize);
                                     areThereE2regs = strncmp(con_names, regE2Expression, n_regNameSize);
                                     areThereE3regs = strncmp(con_names, regE3Expression, n_regNameSize);
                             end
@@ -474,9 +474,9 @@ for iTimePeriod = 1:n_timePeriods
                                     jReg = jReg + 1;
                                     switch regType
                                         case 'ONSET'
-                                            con_names{jReg} = regE1xpression(1:(end-1));
+                                            con_names{jReg} = regE1Expression(1:(end-1));
                                         case 'REG'
-                                            con_names{jReg} = [regE1xpression(1:(end-1)),':',conE1_nm];
+                                            con_names{jReg} = [regE1Expression(1:(end-1)),':',conE1_nm];
                                     end
                                     con_vector(jReg, 1:n_totalRegs) = con_vec_E_tmp;
                                     
