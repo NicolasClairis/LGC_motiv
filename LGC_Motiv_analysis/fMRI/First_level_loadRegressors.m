@@ -557,7 +557,7 @@ switch choice_splitPerE
     case 0
         EsplitchoiceCond = {'E'};
     case 1
-        EsplitchoiceCond = {'E1','E1','E2','E3'};
+        EsplitchoiceCond = {'E1','E2','E3'};
     case 2
         EsplitchoiceCond = {'Ech0','Ech1','Ech2','Ech3'};
     case 3
@@ -568,7 +568,7 @@ switch chosen_splitPerE
     case 0
         EsplitchosenCond = {'E'};
     case 1
-        EsplitchosenCond = {'E1','E1','E2','E3'};
+        EsplitchosenCond = {'E1','E2','E3'};
     case 2
         EsplitchosenCond = {'Ech0','Ech1','Ech2','Ech3'};
     case 3
@@ -579,7 +579,7 @@ switch preEcross_splitPerE
     case 0
         EsplitpreEcrossCond = {'E'};
     case 1
-        EsplitpreEcrossCond = {'E1','E1','E2','E3'};
+        EsplitpreEcrossCond = {'E1','E2','E3'};
     case 2
         EsplitpreEcrossCond = {'Ech0','Ech1','Ech2','Ech3'};
     case 3
@@ -590,7 +590,7 @@ switch Eperf_splitPerE
     case 0
         EsplitEperfCond = {'E'};
     case 1
-        EsplitEperfCond = {'E1','E1','E2','E3'};
+        EsplitEperfCond = {'E1','E2','E3'};
     case 2
         EsplitEperfCond = {'Ech0','Ech1','Ech2','Ech3'};
     case 3
@@ -601,7 +601,7 @@ switch fbk_splitPerE
     case 0
         EsplitFbkCond = {'E'};
     case 1
-        EsplitFbkCond = {'E1','E1','E2','E3'};
+        EsplitFbkCond = {'E1','E2','E3'};
     case 2
         EsplitFbkCond = {'Ech0','Ech1','Ech2','Ech3'};
     case 3
