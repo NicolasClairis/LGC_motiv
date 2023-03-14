@@ -19,7 +19,7 @@ function [cleaned_X, idx_badSubs, cleaned_X_bis] = rmv_outliers_3sd(variable_X)
 idx_badSubs = isnan(variable_X);
 
 %% extract mean and SD
-mu_X = mean(variable_X, 2, 'omitnan');
+mu_X = median(variable_X, 2, 'omitnan');
 std_X = std(variable_X, [],2, 'omitnan');
 
 %% extract outliers index

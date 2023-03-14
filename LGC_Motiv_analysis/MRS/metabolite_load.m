@@ -95,13 +95,13 @@ for iROI = 1:nROIs
         %% extract data for everybody for the current metabolite
         all_met_data = excelRead_tmp.(met_nm);
         
-        %% remove subjects too far (3*SD) from the mean
-        % compute the mean and SD across participants
-        mean_met_aSubs = mean(all_met_data, 1, 'omitnan');
+        %% remove subjects too far (3*SD) from the median
+        % compute the median and SD across participants
+        median_met_aSubs = median(all_met_data, 1, 'omitnan');
         sd_met_aSubs = std(all_met_data, 0, 1, 'omitnan');
         % identify subjects with metabolite values too far from the SD
-        bad_met_subs = (all_met_data > (mean_met_aSubs + (sd_met_aSubs.*3))) |...
-            (all_met_data < (mean_met_aSubs - (sd_met_aSubs.*3)));
+        bad_met_subs = (all_met_data > (median_met_aSubs + (sd_met_aSubs.*3))) |...
+            (all_met_data < (median_met_aSubs - (sd_met_aSubs.*3)));
         
         %% extract data, removing bad CRLB and far from the mean
         for iS = 1:NS
