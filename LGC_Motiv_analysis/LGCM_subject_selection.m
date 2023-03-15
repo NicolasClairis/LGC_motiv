@@ -55,6 +55,10 @@ function[subject_id, NS] = LGCM_subject_selection(study_nm, condition, genderFil
 % 'fMRI_noSatTask_noMove_bis_bayesianMdl': like 'fMRI_noSatTask_noMove_bis' 
 % but removing subjects who saturated because bayesian model was not 
 % applied on them
+% 'pulse: keep only subjects where pulse can be analyzed
+% 'pulse_noSatTaskSub': keep only subjects where pulse can be analyzed and
+% where there was not a full task being saturated (ie where behavior could
+% not be extracted)
 %
 % genderFilter:
 % 'all': by default, include all subjects
@@ -261,6 +265,14 @@ switch study_nm
                     '027','047','052','069','076','095'});
                 % '008','022','024': too much movement in all runs
                 % '027','047','052','069','076','095': one or two tasks fully saturated
+            case 'pulse' % remove any subject where pulse was bad
+                bad_subs = ismember(fullSubList,...
+                    {'020','021','024','040','082','083','085','093'});
+            case 'pulse_noSatTaskSub' % remove any subject where pulse was bad or where task was saturated (too much high effort choices)
+                bad_subs = ismember(fullSubList,...
+                    {'020','021','024','040','082','083','085','093',...
+                    '027','047',...
+                    '052','069','076','095'});
         end
         %% split subjects based on gender
         males = {'002','004',...
