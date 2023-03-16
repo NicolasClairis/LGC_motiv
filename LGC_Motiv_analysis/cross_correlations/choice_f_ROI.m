@@ -52,6 +52,9 @@ end
 if ~exist('nBins','var') || isempty(nBins)
     nBins = 6;
 end
+if ~exist('figDisp','var') || isempty(figDisp)
+    figDisp = 1;
+end
 tasks = {'Ep','Em'};
 nTasks = length(tasks);
 nTrialsPerRun = 54;
