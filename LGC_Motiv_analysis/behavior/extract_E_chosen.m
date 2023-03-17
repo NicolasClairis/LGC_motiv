@@ -30,7 +30,7 @@ choice_LR = choiceAndPerf.choice;
 % remove confidence info from choice:
 choice_LR(choice_LR == 2) = 1;
 choice_LR(choice_LR == -2) = -1;
-%% extract high effort level
+%% extract effort level chosen
 E_chosen = (choiceOptions.E.left).*(choice_LR == -1) +...
             (choiceOptions.E.right).*(choice_LR == 1);
         
