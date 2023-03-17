@@ -114,39 +114,14 @@ for iS = 1:NS
                 run_nm_bis = ['run',num2str(2)];
         end
         
-        %% load the data
-        behaviorStruct_tmp = load([subBehaviorFolder,...
-            'CID',sub_nm,'_session',run_nm,'_',task_fullName,...
-            '_task.mat']);
-        choiceOptions_tmp = behaviorStruct_tmp.choice_opt;
-        switch task_nm_tmp
-            case 'Em'
-                choiceAndPerf_tmp = behaviorStruct_tmp.mentalE_perf;
-            case 'Ep'
-                choiceAndPerf_tmp = behaviorStruct_tmp.physicalPerf;
-        end
-        
-        %% default side
-        defaultSide_tmp = choiceOptions_tmp.default_LR;
-        %% extract R or P
-        RP_var_tmp = strcmp(choiceOptions_tmp.R_or_P,'R');
         %% choice
-        choice_LR_tmp = choiceAndPerf_tmp.choice;
-        % remove confidence info from choice:
-        choice_LR_tmp(choice_LR_tmp == 2) = 1;
-        choice_LR_tmp(choice_LR_tmp == -2) = -1;
-        % extract high effort choice
-        choice_highE_tmp = NaN(1,length(choice_LR_tmp));
-        choice_highE_tmp(choice_LR_tmp == -defaultSide_tmp) = 1;
-        choice_highE_tmp(choice_LR_tmp == defaultSide_tmp) = 0;
+        choice_highE_tmp = extract_choice_hE(subBehaviorFolder,sub_nm,run_nm,task_fullName);
         
         %% effort level
-        E_highE_tmp = (choiceOptions_tmp.E.left).*(defaultSide_tmp == 1) +...
-            (choiceOptions_tmp.E.right).*(defaultSide_tmp == -1);
+        E_highE_tmp = extract_hE_level(subBehaviorFolder,sub_nm,run_nm,task_fullName);
         
         %% effort chosen
-        E_chosen_tmp = (choiceOptions_tmp.E.left).*(choice_LR_tmp == -1) +...
-            (choiceOptions_tmp.E.right).*(choice_LR_tmp == 1);
+        E_chosen_tmp = extract_E_chosen(subBehaviorFolder,sub_nm,run_nm,task_fullName);
         
         %% extract fMRI ROI mediator
         fMRI_ROI.(task_nm_tmp).allTrials(runTrials_idx, iS) = ROI_trial_b_trial.(fMRI_ROI_nm{1}).(task_nm_tmp).(run_nm_bis).(timePeriod_nm)(:, iS);
