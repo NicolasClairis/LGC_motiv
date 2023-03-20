@@ -13,7 +13,7 @@ function[pval, a_path, b_path, c_path, c_prime_path, subject_id,...
 % RT mediated by dmPFC.
 %
 % INPUTS
-% study_nm: study name ('study1'/'study2')
+% study_nm: study name ('study1'/'study2') (study 1 by default)
 %
 % condition: condition to use for the subjects (important to know which
 % runs to include or not) (will be asked if left empty)
@@ -78,7 +78,8 @@ end
 
 %% select parameters of interest
 potential_input_prm = {'NV_hE','NV_ch','uncertainty',...
-    'E_level','money_level','deltaMoney_level','E_x_uncertainty'};
+    'E_level','money_level','deltaMoney_level','E_x_uncertainty',...
+    'pChoice'};
 potential_output_prm = {'RT','uncertainty_rtg','choice_hE'};
 
 which_input = listdlg('PromptString','please select input parameter',...
@@ -90,13 +91,11 @@ output_prm_nm = potential_output_prm{which_output};
 
 %% if a parameter is based on modeling, you need to decide which model to use
 % bayesian across tasks or simple model each task separately?
-if ismember(input_prm_nm,{'NV_hE','NV_ch','uncertainty','E_x_uncertainty'})
+if ismember(input_prm_nm,{'NV_hE','NV_ch',...
+        'uncertainty','E_x_uncertainty',...
+        'pChoice'})
     needModeling = 1;
     [mdlType, mdlN] = behavioral_model_selection;
-    % warning until this gets fixed
-    if strcmp(mdlType,'bayesian')
-        error('uncertainty/NV extraction from bayesian model not ready yet.');
-    end
 else
     needModeling = 0;
 end
@@ -120,9 +119,13 @@ for iS = 1:NS
     
     % extract confidence based on the model
     if needModeling == 1
-        if strcmp(mdlType,'simple')
-            [~, dataInferred] = logitfit_choices(computerRoot, study_nm, sub_nm,...
-                0, 'levels', 6, 6);
+        switch mdlType
+            case 'simple'
+                [~, dataInferred] = logitfit_choices(computerRoot, study_nm, sub_nm,...
+                    0, 'levels', 6, 6);
+            case 'bayesian'
+                gitResultsFolder = [fullfile('C:','Users','clairis','Desktop',...
+                    'GitHub','LGC_motiv','LGC_Motiv_results',study_nm,'bayesian_modeling'),filesep];
         end
     end
     
@@ -199,14 +202,18 @@ for iS = 1:NS
         uncertaintyRtg_tmp(abs(choice_LR_tmp) == 1) = 1; % low confidence = high uncertainty
         
         %% confidence inferred by the model
-        if needModeling == 1 
+        if needModeling == 1
             switch mdlType
                 case 'simple'
                     NV_hE_tmp = dataInferred.NV_varOption.(task_nm_tmp).(['mdl_',mdlN]).(run_nm_bis);
-                    NV_ch_tmp = dataInferred.NV_chosen.(task_nm_tmp).(['mdl_',mdlN]).(run_nm_bis);
-                    uncertainty_tmp = - dataInferred.confidenceFitted.(['mdl_',mdlN]).(run_nm_bis); % revert sign to transform confidence into uncertainty
-                otherwise
-                    error('not ready yet');
+                    trial_idx = (1:nTrialsPerRun) + nTrialsPerRun*(kRun >= 3);
+                    deltaNV_tmp = dataInferred.deltaNV.(['mdl_',mdlN]).(task_nm_tmp)(trial_idx);
+                    uncertainty_tmp = - dataInferred.confidenceFitted.(['mdl_',mdlN]).(task_nm_tmp).(run_nm_bis); % revert sign to transform confidence into uncertainty
+                    pChoice_tmp = dataInferred.pChoice_hE.(task_nm_tmp).(['mdl_',mdlN]).(run_nm_bis)(trial_idx);
+                case 'bayesian'
+                    [~, NV_hE_tmp, confidence_tmp, pChoice_tmp] = extract_bayesian_mdl(gitResultsFolder, subBehaviorFolder,...
+                        sub_nm, run_nm, task_fullName, ['mdl_',mdlN]);
+                    uncertainty_tmp = -confidence_tmp;
             end
         end
         
@@ -236,6 +243,8 @@ for iS = 1:NS
                 input_prm(runTrials_idx, iS) = deltaMoney_tmp;
             case 'E_x_uncertainty'
                 input_prm(runTrials_idx, iS) = E_highE_tmp'.*uncertainty_tmp;
+            case 'pChoice'
+                input_prm(runTrials_idx, iS) = pChoice_tmp;
             otherwise
                 error(['input = ',input_prm_nm,' not ready yet']);
         end
