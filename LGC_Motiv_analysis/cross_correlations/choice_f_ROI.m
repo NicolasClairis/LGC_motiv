@@ -1,5 +1,11 @@
-function[b_choice_f_fMRI, pval, fMRI_bins, choice_hE_bins, choice_hE_fit_bins] = choice_f_ROI(nBins, study_nm, subject_id, condition, figDisp)
-% [b_choice_f_fMRI, pval, fMRI_bins, choice_hE_bins, choice_hE_fit_bins] = choice_f_ROI(nBins, study_nm, subject_id, condition, figDisp)
+function[b_choice_f_fMRI, pval, fMRI_bins, choice_hE_bins, choice_hE_fit_bins] = choice_f_ROI(nBins,...
+    study_nm, subject_id, condition,...
+    RT_orth,...
+    figDisp)
+% [b_choice_f_fMRI, pval, fMRI_bins, choice_hE_bins, choice_hE_fit_bins] = choice_f_ROI(nBins,...
+%     study_nm, subject_id, condition,...
+%     RT_orth,...
+%     figDisp)
 % choice_f_ROI will look at percentage of choices depending on ROI level of
 % activity. Then it will also split the data depending on the effort level
 % proposed and try to look whether the results vary accordingly.
@@ -13,6 +19,10 @@ function[b_choice_f_fMRI, pval, fMRI_bins, choice_hE_bins, choice_hE_fit_bins] =
 %
 % condition: condition to use for the extraction (which subjects and runs
 % to include)
+%
+% RT_orth: do you want to orthogonalize the fMRI activity to reaction times
+% (RT_orth=1) or not (RT_orth=0)? by default, no orthogonalization is
+% applied
 %
 % figDisp: display figure (1) or not (0)?
 %
@@ -52,6 +62,9 @@ end
 if ~exist('nBins','var') || isempty(nBins)
     nBins = 6;
 end
+if ~exist('RT_orth','var') || isempty(RT_orth)
+    RT_orth = 0;
+end
 if ~exist('figDisp','var') || isempty(figDisp)
     figDisp = 1;
 end
@@ -62,9 +75,10 @@ nRunsPerTask = 2;
 nTrialsPerTask = nTrialsPerRun*nRunsPerTask;
 nTrials = nTrialsPerRun*nRunsPerTask*nTasks;
 n_E_levels = 3;
-[fMRI_allTrials.Ep, choice_hE_allTrials.Ep, E_level.Ep, choice_hE_fit_allTrials.Ep,...
-    fMRI_allTrials.Em, choice_hE_allTrials.Em, E_level.Em, choice_hE_fit_allTrials.Em] = deal(NaN(nTrialsPerTask, NS));
-[fMRI_allTrials.EpEmPool, choice_hE_allTrials.EpEmPool, E_level.EpEmPool, choice_hE_fit_allTrials.EpEmPool] = deal(NaN(nTrials, NS));
+[fMRI_allTrials.Ep, choice_hE_allTrials.Ep, E_level.Ep, choice_hE_fit_allTrials.Ep, RT_allTrials.Ep,...
+    fMRI_allTrials.Em, choice_hE_allTrials.Em, E_level.Em, choice_hE_fit_allTrials.Em, RT_allTrials.Em] = deal(NaN(nTrialsPerTask, NS));
+[fMRI_allTrials.EpEmPool, choice_hE_allTrials.EpEmPool, E_level.EpEmPool,...
+    choice_hE_fit_allTrials.EpEmPool, RT_allTrials.EpEmPool] = deal(NaN(nTrials, NS));
 [choice_hE_fit_perElevel.Ep, choice_hE_fit_perElevel.Em] = deal(NaN(nTrialsPerTask/n_E_levels, n_E_levels, NS));
 choice_hE_fit_perElevel.EpEmPool = NaN(nTrials/n_E_levels, n_E_levels, NS);
 [fMRI_bins.Ep.allTrials, choice_hE_bins.Ep.allTrials, choice_hE_fit_bins.Ep.allTrials,...
@@ -127,16 +141,28 @@ for iS = 1:NS
         %% extract choices for the current session
         choice_hE_allTrials.(task_nm_tmp)(runTrials_idx, iS) = extract_choice_hE(subBehaviorFolder, sub_nm, run_nm, task_fullName);
         E_level.(task_nm_tmp)(runTrials_idx, iS) = extract_hE_level(subBehaviorFolder, sub_nm, run_nm, task_fullName);
-        
+        RT_allTrials.(task_nm_tmp)(runTrials_idx, iS) = extract_RT(subBehaviorFolder, sub_nm, run_nm, task_fullName);
         %% extract fMRI ROI
         fMRI_allTrials.(task_nm_tmp)(runTrials_idx, iS) = ROI_trial_b_trial.(fMRI_ROI_nm{1}).(task_nm_tmp).(run_nm_bis).(timePeriod_nm)(:, iS);
         
         %% same but for Ep+Em pool
         choice_hE_allTrials.EpEmPool(runTrials_EpEmPool_idx, iS) = extract_choice_hE(subBehaviorFolder, sub_nm, run_nm, task_fullName);
         E_level.EpEmPool(runTrials_EpEmPool_idx, iS) = extract_hE_level(subBehaviorFolder, sub_nm, run_nm, task_fullName);
+        RT_allTrials.EpEmPool(runTrials_EpEmPool_idx, iS) = extract_RT(subBehaviorFolder, sub_nm, run_nm, task_fullName);
         fMRI_allTrials.EpEmPool(runTrials_EpEmPool_idx, iS) = ROI_trial_b_trial.(fMRI_ROI_nm{1}).(task_nm_tmp).(run_nm_bis).(timePeriod_nm)(:, iS);
     end % run loop
-    
+
+    %% remove RT effect from fMRI ROI
+    if RT_orth == 1
+        % estimate how ROI is impacted by RT
+        beta_Ep_tmp = glmfit(RT_allTrials.Ep(:,iS), fMRI_allTrials.Ep(:,iS),'normal');
+        beta_Em_tmp = glmfit(RT_allTrials.Em(:,iS), fMRI_allTrials.Em(:,iS),'normal');
+        beta_EpEmPool_tmp = glmfit(RT_allTrials.EpEmPool(:,iS), fMRI_allTrials.EpEmPool(:,iS),'normal');
+        % then orthogonalize ROI activity to RT
+        fMRI_allTrials.Ep(:,iS) = fMRI_allTrials.Ep(:,iS) - beta_Ep_tmp(2).*RT_allTrials.Ep(:,iS);
+        fMRI_allTrials.Em(:,iS) = fMRI_allTrials.Em(:,iS) - beta_Em_tmp(2).*RT_allTrials.Em(:,iS);
+        fMRI_allTrials.EpEmPool(:,iS) = fMRI_allTrials.EpEmPool(:,iS) - beta_EpEmPool_tmp(2).*RT_allTrials.EpEmPool(:,iS);
+    end 
     %% fit
     for iT = 1:(nTasks+1)
         switch iT

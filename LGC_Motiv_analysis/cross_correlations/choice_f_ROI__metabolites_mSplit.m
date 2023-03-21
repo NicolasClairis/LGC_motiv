@@ -9,18 +9,22 @@
 
 %% subject selection
 study_nm = 'study1';
-nBins = 6;
 condition = subject_condition;
 subject_id = LGCM_subject_selection(study_nm, condition);
 
 %% general parameters
 tasks = {'Ep','Em'};
 nTasks = length(tasks);
+nBins = 6;
+ROI_RT_orth = 1; % orthogonalize ROI to RT
 
 %% load data
 figDisp = 0;
 [b_choice_f_fMRI, pval, fMRI_bins,...
-    choice_hE_bins, choice_hE_fit_bins] = choice_f_ROI(nBins, study_nm, subject_id, condition, figDisp);
+    choice_hE_bins, choice_hE_fit_bins] = choice_f_ROI(nBins,...
+    study_nm, subject_id, condition,...
+    ROI_RT_orth,...
+    figDisp);
 
 %% extract level of metabolites
 [low_met_subs, high_met_subs, metabolite_nm, MRS_ROI_nm,...
