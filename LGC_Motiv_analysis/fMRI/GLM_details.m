@@ -778,7 +778,7 @@ for iEpm = 1:length(Epm)
                     % efficacy of the next trial
                     switch GLMprm.choice.(task_id_nm).(RP_dispChoice_nm).(splitE_dispChoice_nm).efficacy
                         case 0
-                        case {1,2}
+                        case {1,2,3,4}
                             n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                             reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG choice ',RP_dispChoice_nm,' ',splitE_dispChoice_nm,': efficacy'];
                             disp([num2str(n_regs.(task_id_nm)),') choice: efficacy ']);
@@ -791,7 +791,7 @@ for iEpm = 1:length(Epm)
                     % efficacy during the previous trial
                     switch GLMprm.choice.(task_id_nm).(RP_dispChoice_nm).(splitE_dispChoice_nm).prevEfficacy
                         case 0
-                        case {1,2}
+                        case {1,2,3,4}
                             n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                             reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG choice ',RP_dispChoice_nm,' ',splitE_dispChoice_nm,': previous efficacy'];
                             disp([num2str(n_regs.(task_id_nm)),') choice: previous efficacy ']);
@@ -1383,7 +1383,7 @@ for iEpm = 1:length(Epm)
                     % efficacy of the next trial
                     switch GLMprm.chosen.(task_id_nm).(RP_dispChosen_nm).(splitE_dispChosen_nm).efficacy
                         case 0
-                        case {1,2}
+                        case {1,2,3,4}
                             n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                             reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG chosen ',RP_dispChosen_nm,' ',splitE_dispChosen_nm,': efficacy'];
                             disp([num2str(n_regs.(task_id_nm)),') chosen: efficacy ']);
@@ -1394,7 +1394,7 @@ for iEpm = 1:length(Epm)
                     % efficacy during the previous trial
                     switch GLMprm.chosen.(task_id_nm).(RP_dispChosen_nm).(splitE_dispChosen_nm).prevEfficacy
                         case 0
-                        case {1,2}
+                        case {1,2,3,4}
                             n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                             reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG chosen ',RP_dispChosen_nm,' ',splitE_dispChosen_nm,': previous efficacy'];
                             disp([num2str(n_regs.(task_id_nm)),') chosen: previous efficacy ']);
@@ -1817,7 +1817,7 @@ for iEpm = 1:length(Epm)
                     case 'Em'
                         % efficacy
                         switch GLMprm.Eperf.(task_id_nm).(RP_Eperf_nm).(splitE_Eperf_nm).efficacy
-                            case {1,2}
+                            case {1,2,3,4}
                                 n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                                 reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG effort ',RP_Eperf_nm,' ',splitE_Eperf_nm,': efficacy'];
                                 disp([num2str(n_regs.(task_id_nm)),') effort period: efficacy ']);
@@ -1909,7 +1909,7 @@ for iEpm = 1:length(Epm)
                     case 'Em'
                         % efficacy during the previous trial (learning boost)
                         switch GLMprm.Eperf.(task_id_nm).(RP_Eperf_nm).(splitE_Eperf_nm).prevEfficacy
-                            case {1,2}
+                            case {1,2,3,4}
                                 n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                                 reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG effort ',RP_Eperf_nm,' ',splitE_Eperf_nm,': previous efficacy'];
                                 disp([num2str(n_regs.(task_id_nm)),') effort period: previous efficacy ']);

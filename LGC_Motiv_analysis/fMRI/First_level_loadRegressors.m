@@ -242,20 +242,30 @@ switch task_fullName
             ~,...
             ~,...
             efficacy_with2first_tmp,...
-            efficacy_pureNback_tmp] = extract_mental_perf(subBehaviorFolder, sub_nm, run_nm);
+            efficacy_pureNback_tmp,...
+            efficacy_bis_with2first_tmp,...
+            efficacy_bis_pureNback_tmp] = extract_mental_perf(subBehaviorFolder, sub_nm, run_nm);
         n_errors = n_errors_tmp.allTrials;
         RT_avg = RT_avg_tmp.allTrials;
         efficacy_with2first = efficacy_with2first_tmp.allTrials;
         efficacy_pureNback = efficacy_pureNback_tmp.allTrials;
+        efficacy_bis_with2first = efficacy_bis_with2first_tmp.allTrials;
+        efficacy_bis_pureNback = efficacy_bis_pureNback_tmp.allTrials;
         [prevEfficacy_with2first,...
-            prevEfficacy_pureNback] = deal(NaN(1,n_trials));
+            prevEfficacy_pureNback,...
+            prevEfficacy_bis_with2first,...
+            prevEfficacy_bis_pureNback] = deal(NaN(1,n_trials));
         for iTrial = 1:n_trials
             if iTrial == 1
                 prevEfficacy_with2first(iTrial) = 0;
                 prevEfficacy_pureNback(iTrial) = 0;
+                prevEfficacy_bis_with2first(iTrial) = 0;
+                prevEfficacy_bis_pureNback(iTrial) = 0;
             else
                 prevEfficacy_with2first(iTrial) = efficacy_with2first(iTrial-1);
                 prevEfficacy_pureNback(iTrial) = efficacy_pureNback(iTrial-1);
+                prevEfficacy_bis_with2first(iTrial) = efficacy_bis_with2first(iTrial-1);
+                prevEfficacy_bis_pureNback(iTrial) = efficacy_bis_pureNback(iTrial-1);
             end
         end
 end
@@ -498,8 +508,12 @@ if sum(choiceMissedTrials) > 0
             RT_avg(choiceMissedTrials) = [];
             efficacy_with2first(choiceMissedTrials) = [];
             efficacy_pureNback(choiceMissedTrials) = [];
+            efficacy_bis_with2first(choiceMissedTrials) = [];
+            efficacy_bis_pureNback(choiceMissedTrials) = [];
             prevEfficacy_with2first(choiceMissedTrials) = [];
             prevEfficacy_pureNback(choiceMissedTrials) = [];
+            prevEfficacy_bis_with2first(choiceMissedTrials) = [];
+            prevEfficacy_bis_pureNback(choiceMissedTrials) = [];
     end
 end
 
@@ -1155,6 +1169,10 @@ if ismember(choiceModel,{'stick','boxcar'})
                             choice_modVals(n_choiceMods,:) = raw_or_z(efficacy_with2first(choice_trial_idx));
                         case 2
                             choice_modVals(n_choiceMods,:) = raw_or_z(efficacy_pureNback(choice_trial_idx));
+                        case 3
+                            choice_modVals(n_choiceMods,:) = raw_or_z(efficacy_bis_with2first(choice_trial_idx));
+                        case 4
+                            choice_modVals(n_choiceMods,:) = raw_or_z(efficacy_bis_pureNback(choice_trial_idx));
                         otherwise
                             error('not ready yet');
                     end
@@ -1169,6 +1187,10 @@ if ismember(choiceModel,{'stick','boxcar'})
                             choice_modVals(n_choiceMods,:) = raw_or_z(prevEfficacy_with2first(choice_trial_idx));
                         case 2
                             choice_modVals(n_choiceMods,:) = raw_or_z(prevEfficacy_pureNback(choice_trial_idx));
+                        case 3
+                            choice_modVals(n_choiceMods,:) = raw_or_z(prevEfficacy_bis_with2first(choice_trial_idx));
+                        case 4
+                            choice_modVals(n_choiceMods,:) = raw_or_z(prevEfficacy_bis_pureNback(choice_trial_idx));
                         otherwise
                             error('not ready yet');
                     end
@@ -1712,6 +1734,10 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                             chosen_modVals(n_chosenMods,:) = raw_or_z(efficacy_with2first(chosen_trial_idx));
                         case 2
                             chosen_modVals(n_chosenMods,:) = raw_or_z(efficacy_pureNback(chosen_trial_idx));
+                        case 3
+                            chosen_modVals(n_chosenMods,:) = raw_or_z(efficacy_bis_with2first(chosen_trial_idx));
+                        case 4
+                            chosen_modVals(n_chosenMods,:) = raw_or_z(efficacy_bis_pureNback(chosen_trial_idx));
                         otherwise
                             error('not ready yet');
                     end
@@ -1726,6 +1752,10 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                             chosen_modVals(n_chosenMods,:) = raw_or_z(prevEfficacy_with2first(chosen_trial_idx));
                         case 2
                             chosen_modVals(n_chosenMods,:) = raw_or_z(prevEfficacy_pureNback(chosen_trial_idx));
+                        case 3
+                            chosen_modVals(n_chosenMods,:) = raw_or_z(prevEfficacy_bis_with2first(chosen_trial_idx));
+                        case 4
+                            chosen_modVals(n_chosenMods,:) = raw_or_z(prevEfficacy_bis_pureNback(chosen_trial_idx));
                         otherwise
                             error('not ready yet');
                     end
@@ -2147,6 +2177,10 @@ if ismember(EperfModel,{'stick','boxcar'})
                             Eperf_modVals(n_EperfMods,:) = raw_or_z(efficacy_with2first(Eperf_trial_idx));
                         case 2
                             Eperf_modVals(n_EperfMods,:) = raw_or_z(efficacy_pureNback(Eperf_trial_idx));
+                        case 3
+                            Eperf_modVals(n_EperfMods,:) = raw_or_z(efficacy_bis_with2first(Eperf_trial_idx));
+                        case 4
+                            Eperf_modVals(n_EperfMods,:) = raw_or_z(efficacy_bis_pureNback(Eperf_trial_idx));
                         otherwise
                             error('not ready yet');
                     end
@@ -2247,6 +2281,10 @@ if ismember(EperfModel,{'stick','boxcar'})
                                 Eperf_modVals(n_EperfMods,:) = raw_or_z(prevEfficacy_with2first(Eperf_trial_idx));
                             case 2
                                 Eperf_modVals(n_EperfMods,:) = raw_or_z(prevEfficacy_pureNback(Eperf_trial_idx));
+                            case 3
+                                Eperf_modVals(n_EperfMods,:) = raw_or_z(prevEfficacy_bis_with2first(Eperf_trial_idx));
+                            case 4
+                                Eperf_modVals(n_EperfMods,:) = raw_or_z(prevEfficacy_bis_pureNback(Eperf_trial_idx));
                             otherwise
                                 error('not ready yet');
                         end
