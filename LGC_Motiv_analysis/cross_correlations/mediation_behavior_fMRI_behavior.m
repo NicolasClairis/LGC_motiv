@@ -105,13 +105,17 @@ nRuns = 4;
 nTrialsPerRun = 54;
 nTrials = nTrialsPerRun*nRuns;
 % input/mediator/output
-[input_prm, ROI_mediator, output_prm] = deal(NaN(nTrials, NS));
+[input_prm, ROI_mediator, output_prm,...
+    RT, ROI_mediator_RT_orth] = deal(NaN(nTrials, NS));
 % bin variables
 nBins = 3;
 [input_f_input_bin, ROI_f_input_bin, output_f_input_bin,...
-    ROI_f_ROI_bin, output_f_ROI_bin] = deal(NaN(nBins, NS));
+    ROI_f_ROI_bin, output_f_ROI_bin,...
+    ROI_RT_orth_f_input_bin,...
+    ROI_f_ROI_RT_orth_bin, output_f_ROI_RT_orth_bin] = deal(NaN(nBins, NS));
 % paths
-[a_path, b_path, c_path, c_prime_path] = deal(NaN(1,NS));
+[a_path, b_path, c_path, c_prime_path,...
+    a_path_RT_orth, b_path_RT_orth, c_path_RT_orth, c_prime_path_RT_orth] = deal(NaN(1,NS));
 
 for iS = 1:NS
     sub_nm = subject_id{iS};
@@ -154,122 +158,119 @@ for iS = 1:NS
                 run_nm_bis = ['run',num2str(2)];
         end
         
-        %% load the data
-        behaviorStruct_tmp = load([subBehaviorFolder,...
-            'CID',sub_nm,'_session',run_nm,'_',task_fullName,...
-            '_task.mat']);
-        choiceOptions_tmp = behaviorStruct_tmp.choice_opt;
-        switch task_nm_tmp
-            case 'Em'
-                choiceAndPerf_tmp = behaviorStruct_tmp.mentalE_perf;
-            case 'Ep'
-                choiceAndPerf_tmp = behaviorStruct_tmp.physicalPerf;
-        end
-        
-        %% default side
-        defaultSide_tmp = choiceOptions_tmp.default_LR;
-        %% extract R or P
-        RP_var_tmp = strcmp(choiceOptions_tmp.R_or_P,'R');
-        
-        %% effort level
-        E_highE_tmp = (choiceOptions_tmp.E.left).*(defaultSide_tmp == 1) +...
-            (choiceOptions_tmp.E.right).*(defaultSide_tmp == -1);
-        
-        %% high-effort money amount
-        money_hE_tmp = ((choiceOptions_tmp.monetary_amount.left).*(defaultSide_tmp == 1) +...
-            (choiceOptions_tmp.monetary_amount.right).*(defaultSide_tmp == -1)).*((RP_var_tmp == 1) - (RP_var_tmp == 0));
-        money_lE_tmp = ((choiceOptions_tmp.monetary_amount.left).*(defaultSide_tmp == -1) +...
-            (choiceOptions_tmp.monetary_amount.right).*(defaultSide_tmp == 1)).*((RP_var_tmp == 1) - (RP_var_tmp == 0));
-        
-        %% delta between high and low effort options
-        deltaMoney_tmp = money_hE_tmp - money_lE_tmp;
-        
-        %% RT
-        onsets_tmp = behaviorStruct_tmp.onsets;
-        switch task_nm_tmp
-            case 'Ep'
-                onsets_tmp = behaviorStruct_tmp.physicalPerf.onsets;
-                choice_LR_tmp = behaviorStruct_tmp.physicalPerf.choice;
-            case 'Em'
-                onsets_tmp = behaviorStruct_tmp.mentalE_perf.onsets;
-                choice_LR_tmp = behaviorStruct_tmp.mentalE_perf.choice;
-        end
-        RT_tmp = onsets_tmp.choice - onsets_tmp.dispChoiceOptions;
-        
-        %% confidence rating
-        uncertaintyRtg_tmp = NaN(1,length(choice_LR_tmp));
-        uncertaintyRtg_tmp(abs(choice_LR_tmp) == 2) = 0; % high confidence = low uncertainty
-        uncertaintyRtg_tmp(abs(choice_LR_tmp) == 1) = 1; % low confidence = high uncertainty
-        
-        %% confidence inferred by the model
-        if needModeling == 1
-            switch mdlType
-                case 'simple'
-                    NV_hE_tmp = dataInferred.NV_varOption.(task_nm_tmp).(['mdl_',mdlN]).(run_nm_bis);
-                    trial_idx = (1:nTrialsPerRun) + nTrialsPerRun*(kRun >= 3);
-                    deltaNV_tmp = dataInferred.deltaNV.(['mdl_',mdlN]).(task_nm_tmp)(trial_idx);
-                    uncertainty_tmp = - dataInferred.confidenceFitted.(['mdl_',mdlN]).(task_nm_tmp).(run_nm_bis); % revert sign to transform confidence into uncertainty
-                    pChoice_tmp = dataInferred.pChoice_hE.(task_nm_tmp).(['mdl_',mdlN]).(run_nm_bis)(trial_idx);
-                case 'bayesian'
-                    [~, NV_hE_tmp, confidence_tmp, pChoice_tmp] = extract_bayesian_mdl(gitResultsFolder, subBehaviorFolder,...
-                        sub_nm, run_nm, task_fullName, ['mdl_',mdlN]);
-                    uncertainty_tmp = -confidence_tmp;
+        %% task filter
+        if strcmp(task_to_look,task_nm_tmp) ||...
+                strcmp(task_to_look,'EpEmPool')
+            
+            %% load the data
+            behaviorStruct_tmp = load([subBehaviorFolder,...
+                'CID',sub_nm,'_session',run_nm,'_',task_fullName,...
+                '_task.mat']);
+            choiceOptions_tmp = behaviorStruct_tmp.choice_opt;
+            
+            %% default side
+            defaultSide_tmp = choiceOptions_tmp.default_LR;
+            %% extract R or P
+            RP_var_tmp = strcmp(choiceOptions_tmp.R_or_P,'R');
+            
+            %% effort level
+            E_highE_tmp = extract_hE_level(subBehaviorFolder, sub_nm, run_nm, task_fullName);
+            
+            %% high-effort money amount
+            money_hE_tmp = ((choiceOptions_tmp.monetary_amount.left).*(defaultSide_tmp == 1) +...
+                (choiceOptions_tmp.monetary_amount.right).*(defaultSide_tmp == -1)).*((RP_var_tmp == 1) - (RP_var_tmp == 0));
+            money_lE_tmp = ((choiceOptions_tmp.monetary_amount.left).*(defaultSide_tmp == -1) +...
+                (choiceOptions_tmp.monetary_amount.right).*(defaultSide_tmp == 1)).*((RP_var_tmp == 1) - (RP_var_tmp == 0));
+            
+            %% delta between high and low effort options
+            deltaMoney_tmp = money_hE_tmp - money_lE_tmp;
+            
+            %% RT
+            RT_tmp = extract_RT(subBehaviorFolder, sub_nm, run_nm, task_fullName);
+            RT(runTrials_idx, iS) = RT_tmp;
+            
+            %% confidence rating
+            switch task_nm_tmp
+                case 'Ep'
+                    choice_LR_tmp = behaviorStruct_tmp.physicalPerf.choice;
+                case 'Em'
+                    choice_LR_tmp = behaviorStruct_tmp.mentalE_perf.choice;
             end
-        end
-        
-        %% choice
-        choice_LR_tmp = choiceAndPerf_tmp.choice;
-        % remove confidence info from choice:
-        choice_LR_tmp(choice_LR_tmp == 2) = 1;
-        choice_LR_tmp(choice_LR_tmp == -2) = -1;
-        % extract high effort choice
-        choice_highE_tmp = NaN(1,length(choice_LR_tmp));
-        choice_highE_tmp(choice_LR_tmp == -defaultSide_tmp) = 1;
-        choice_highE_tmp(choice_LR_tmp == defaultSide_tmp) = 0;
-        
-        %% extract input behavioral variable
-        switch input_prm_nm
-            case 'NV_hE'
-                input_prm(runTrials_idx, iS) = NV_hE_tmp;
-            case 'NV_ch'
-                input_prm(runTrials_idx, iS) = NV_ch_tmp;
-            case 'uncertainty'
-                input_prm(runTrials_idx, iS) = uncertainty_tmp;
-            case 'E_level'
-                input_prm(runTrials_idx, iS) = E_highE_tmp;
-            case 'money_level'
-                input_prm(runTrials_idx, iS) = money_hE_tmp;
-            case 'deltaMoney_level'
-                input_prm(runTrials_idx, iS) = deltaMoney_tmp;
-            case 'E_x_uncertainty'
-                input_prm(runTrials_idx, iS) = E_highE_tmp'.*uncertainty_tmp;
-            case 'pChoice'
-                input_prm(runTrials_idx, iS) = pChoice_tmp;
-            otherwise
-                error(['input = ',input_prm_nm,' not ready yet']);
-        end
-        
-        %% extract fMRI ROI mediator
-        if strcmp(task_to_look,'EpEmPool') ||...
-                (strcmp(task_to_look, task_nm))
-            ROI_mediator(runTrials_idx, iS) = ROI_trial_b_trial.(ROI_nm{1}).(task_nm_tmp).(run_nm_bis).(timePeriod_nm)(:, iS);
-        end
-        %% extract output behavioral variable
-        switch output_prm_nm
-            case 'RT'
-                output_prm(runTrials_idx, iS) = RT_tmp;
-            case 'uncertainty_rtg'
-                output_prm(runTrials_idx, iS) = uncertaintyRtg_tmp;
-            case 'choice_hE'
-                output_prm(runTrials_idx, iS) = choice_highE_tmp;
-            otherwise
-                error(['output = ',output_prm_nm,' not ready yet']);
-        end
+            uncertaintyRtg_tmp = NaN(1,length(choice_LR_tmp));
+            uncertaintyRtg_tmp(abs(choice_LR_tmp) == 2) = 0; % high confidence = low uncertainty
+            uncertaintyRtg_tmp(abs(choice_LR_tmp) == 1) = 1; % low confidence = high uncertainty
+            
+            %% confidence inferred by the model
+            if needModeling == 1
+                switch mdlType
+                    case 'simple'
+                        NV_hE_tmp = dataInferred.NV_varOption.(task_nm_tmp).(['mdl_',mdlN]).(run_nm_bis);
+                        trial_idx = (1:nTrialsPerRun) + nTrialsPerRun*(kRun >= 3);
+                        deltaNV_tmp = dataInferred.deltaNV.(['mdl_',mdlN]).(task_nm_tmp)(trial_idx);
+                        uncertainty_tmp = - dataInferred.confidenceFitted.(['mdl_',mdlN]).(task_nm_tmp).(run_nm_bis); % revert sign to transform confidence into uncertainty
+                        pChoice_tmp = dataInferred.pChoice_hE.(task_nm_tmp).(['mdl_',mdlN]).(run_nm_bis)(trial_idx);
+                    case 'bayesian'
+                        [~, NV_hE_tmp, confidence_tmp, pChoice_tmp] = extract_bayesian_mdl(gitResultsFolder, subBehaviorFolder,...
+                            sub_nm, run_nm, task_fullName, ['mdl_',mdlN]);
+                        uncertainty_tmp = -confidence_tmp;
+                end
+            end
+            
+            %% choice
+            [choice_highE_tmp] = extract_choice_hE(subBehaviorFolder, sub_nm, run_nm, task_fullName);
+            
+            %% extract input behavioral variable
+            switch input_prm_nm
+                case 'NV_hE'
+                    input_prm(runTrials_idx, iS) = NV_hE_tmp;
+                case 'NV_ch'
+                    input_prm(runTrials_idx, iS) = NV_ch_tmp;
+                case 'uncertainty'
+                    input_prm(runTrials_idx, iS) = uncertainty_tmp;
+                case 'E_level'
+                    input_prm(runTrials_idx, iS) = E_highE_tmp;
+                case 'money_level'
+                    input_prm(runTrials_idx, iS) = money_hE_tmp;
+                case 'deltaMoney_level'
+                    input_prm(runTrials_idx, iS) = deltaMoney_tmp;
+                case 'E_x_uncertainty'
+                    input_prm(runTrials_idx, iS) = E_highE_tmp'.*uncertainty_tmp;
+                case 'pChoice'
+                    input_prm(runTrials_idx, iS) = pChoice_tmp;
+                otherwise
+                    error(['input = ',input_prm_nm,' not ready yet']);
+            end
+            
+            %% extract fMRI ROI mediator
+            if strcmp(task_to_look,'EpEmPool') ||...
+                    (strcmp(task_to_look, task_nm_tmp))
+                ROI_mediator(runTrials_idx, iS) = ROI_trial_b_trial.(ROI_nm{1}).(task_nm_tmp).(run_nm_bis).(timePeriod_nm)(:, iS);
+            end
+            %% extract output behavioral variable
+            switch output_prm_nm
+                case 'RT'
+                    output_prm(runTrials_idx, iS) = RT_tmp;
+                case 'uncertainty_rtg'
+                    output_prm(runTrials_idx, iS) = uncertaintyRtg_tmp;
+                case 'choice_hE'
+                    output_prm(runTrials_idx, iS) = choice_highE_tmp;
+                otherwise
+                    error(['output = ',output_prm_nm,' not ready yet']);
+            end
+        end % task filter
     end % run loop
+    
+    %% orthogonalize ROI mediator to RT
+    relevant_trials = (~isnan(RT(:,iS))).*(~isnan(ROI_mediator(:,iS))) == 1;
+    beta_RT_tmp = glmfit(RT(relevant_trials,iS), ROI_mediator(relevant_trials,iS),'normal');
+    ROI_mediator_RT_orth(:,iS) = ROI_mediator(:,iS) - beta_RT_tmp(2).*RT(:,iS);
     
     %% do the mediation between input, fMRI and output per subject
     dispIndivData = 0;
     [a_path(iS), b_path(iS), c_path(iS), c_prime_path(iS)] = mediation(input_prm(:,iS), ROI_mediator(:,iS), output_prm(:,iS),...
+        input_prm_nm, ROI_short_nm, output_prm_nm, dispIndivData);
+    [a_path_RT_orth(iS), b_path_RT_orth(iS),...
+        c_path_RT_orth(iS), c_prime_path_RT_orth(iS)] = mediation(input_prm(:,iS), ROI_mediator_RT_orth(:,iS), output_prm(:,iS),...
         input_prm_nm, ROI_short_nm, output_prm_nm, dispIndivData);
     
     %% do the bins per subject
@@ -279,9 +280,16 @@ for iS = 1:NS
         output_prm(:,iS), input_prm(:,iS), nBins, 0);
     [output_f_ROI_bin(:,iS), ROI_f_ROI_bin(:,iS)] = do_bin2(...
         output_prm(:,iS), ROI_mediator(:,iS), nBins, 0);
+    
+    % same for the ROI orthogonalized to RT
+    [ROI_RT_orth_f_input_bin(:,iS)] = do_bin2(...
+        ROI_mediator_RT_orth(:,iS), input_prm(:,iS), nBins, 0);
+    [output_f_ROI_RT_orth_bin(:,iS), ROI_f_ROI_RT_orth_bin(:,iS)] = do_bin2(...
+        output_prm(:,iS), ROI_mediator_RT_orth(:,iS), nBins, 0);
 end % subject loop
 
 %% average
+% mediation input=>ROI=>output
 [m_input_f_input_bin,...
     sem_input_f_input_bin,...
     sd_input_f_input_bin] = mean_sem_sd(input_f_input_bin, 2);
@@ -298,11 +306,29 @@ end % subject loop
     sem_output_f_ROI_bin,...
     sd_output_f_ROI_bin] = mean_sem_sd(output_f_ROI_bin, 2);
 
+% mediation input=>ROI orthogonalized to RT=>output
+[m_ROI_RT_orth_f_input_bin,...
+    sem_ROI_RT_orth_f_input_bin,...
+    sd_ROI_RT_orth_f_input_bin] = mean_sem_sd(ROI_RT_orth_f_input_bin, 2);
+[m_ROI_f_ROI_RT_orth_bin,...
+    sem_ROI_f_ROI_RT_orth_bin,...
+    sd_ROI_f_ROI_RT_orth_bin] = mean_sem_sd(ROI_f_ROI_RT_orth_bin, 2);
+[m_output_f_ROI_RT_orth_bin,...
+    sem_output_f_ROI_RT_orth_bin,...
+    sd_output_f_ROI_RT_orth_bin] = mean_sem_sd(output_f_ROI_RT_orth_bin, 2);
+
+
 %% test the mediation betas between input, fMRI and output across participants
+% mediation input=>ROI=>output
 [~,pval.a] = ttest(a_path);
 [~,pval.b] = ttest(b_path);
 [~,pval.c] = ttest(c_path);
 [~,pval.c_prime] = ttest(c_prime_path);
+% mediation input=>ROI orthogonalized to RT=>output
+[~,pval.a_RT_orth] = ttest(a_path_RT_orth);
+[~,pval.b_RT_orth] = ttest(b_path_RT_orth);
+[~,pval.c_RT_orth] = ttest(c_path_RT_orth);
+[~,pval.c_prime_RT_orth] = ttest(c_prime_path_RT_orth);
 
 %% figure showing different bins
 pSize = 50;
@@ -325,6 +351,43 @@ subplot(1,3,2);
 hdl = errorbar(m_ROI_f_ROI_bin,...
     m_output_f_ROI_bin,...
     sem_output_f_ROI_bin);
+hdl.LineWidth = lWidth;
+xlabel(ROI_short_nm);
+ylabel(output_prm_nm);
+legend_size(pSize);
+
+% output = f(input)
+subplot(1,3,3);
+hdl = errorbar(m_input_f_input_bin,...
+    m_output_f_input_bin,...
+    sem_output_f_input_bin);
+hdl.LineWidth = lWidth;
+xlabel(input_prm_nm);
+ylabel(output_prm_nm);
+legend_size(pSize);
+
+
+%% figure showing different bins with fMRI orthogonalized to RT
+pSize = 50;
+lWidth = 3;
+% start figure
+fig;
+
+% ROI = f(input)
+subplot(1,3,1);
+hdl = errorbar(m_input_f_input_bin,...
+    m_ROI_RT_orth_f_input_bin,...
+    sem_ROI_RT_orth_f_input_bin);
+hdl.LineWidth = lWidth;
+xlabel(input_prm_nm);
+ylabel(ROI_short_nm);
+legend_size(pSize);
+
+% output = f(ROI)
+subplot(1,3,2);
+hdl = errorbar(m_ROI_f_ROI_RT_orth_bin,...
+    m_output_f_ROI_RT_orth_bin,...
+    sem_output_f_ROI_RT_orth_bin);
 hdl.LineWidth = lWidth;
 xlabel(ROI_short_nm);
 ylabel(output_prm_nm);
