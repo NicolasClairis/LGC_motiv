@@ -231,6 +231,22 @@ function [GLMprm] = which_GLM(GLM)
 %       answers)/total time of effort period (no errors) between answer
 %       of second useless number and end of the trial
 %
+%       .(choice/chosen).Ep.(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).Ech_x_fatigue:
+%       physical effort only:
+%       (1) (Effort chosen) x (sum of previous AUC of force produced)
+%
+%       .(choice/chosen).Em.(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).Ech_x_prevEfficacy:
+%       mental effort only:
+%       (1) (Effort chosen) x (efficacy of previous trial computed as (nb correct answers - nb errors made)/total time of effort
+%       period)
+%       (2) (Effort chosen) x (efficacy of previous trial computed  as (nb correct answers - nb errors made)/time spent between answer
+%       of second useless number and end of the trial)
+%       (3) (Effort chosen) x (efficacy of previous trial computed as (nb correct
+%       answers)/total time of effort period (no errors))
+%       (4) (Effort chosen) x (efficacy of previous trial computed as (nb correct
+%       answers)/total time of effort period (no errors) between answer
+%       of second useless number and end of the trial)
+%
 %       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).trialN
 %       (1) trial number
 %       (2) (trial number)*(E chosen - E non-chosen option)
@@ -336,6 +352,22 @@ function [GLMprm] = which_GLM(GLM)
 %       period
 %       (4) efficacy of previous trial computed  as nb correct answers/time spent between answer
 %       of second useless number and end of the trial
+%
+%       .Eperf.Ep.(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).Ech_x_fatigue:
+%       physical effort only:
+%       (1) (Effort chosen) x (sum of previous AUC of force produced)
+%
+%       .Eperf.Em.(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).Ech_x_prevEfficacy:
+%       mental effort only:
+%       (1) (Effort chosen) x (efficacy of previous trial computed as (nb correct answers - nb errors made)/total time of effort
+%       period)
+%       (2) (Effort chosen) x (efficacy of previous trial computed  as (nb correct answers - nb errors made)/time spent between answer
+%       of second useless number and end of the trial)
+%       (3) (Effort chosen) x (efficacy of previous trial computed as (nb correct
+%       answers)/total time of effort period (no errors))
+%       (4) (Effort chosen) x (efficacy of previous trial computed as (nb correct
+%       answers)/total time of effort period (no errors) between answer
+%       of second useless number and end of the trial)
 %
 %       .Eperf.(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).trialN
 %       (1) trial number
@@ -482,6 +514,8 @@ for iEpm = 1:length(Ep_Em)
                 GLMprm.choice.Em.(RP_nm).(Econd_nm).efficacy,...
                 GLMprm.choice.Ep.(RP_nm).(Econd_nm).fatigue,...
                 GLMprm.choice.Em.(RP_nm).(Econd_nm).prevEfficacy,...
+                GLMprm.choice.Ep.(RP_nm).(Econd_nm).Ech_x_fatigue,...
+                GLMprm.choice.Em.(RP_nm).(Econd_nm).Ech_x_prevEfficacy,...
                 GLMprm.choice.(EpEm_nm).(RP_nm).(Econd_nm).confidence,...
                 GLMprm.choice.(EpEm_nm).(RP_nm).(Econd_nm).RT,...
                 GLMprm.choice.(EpEm_nm).(RP_nm).(Econd_nm).trialN] = deal(0);
@@ -518,6 +552,8 @@ for iEpm = 1:length(Ep_Em)
                 GLMprm.chosen.Em.(RP_nm).(Econd_nm).efficacy,...
                 GLMprm.chosen.Ep.(RP_nm).(Econd_nm).fatigue,...
                 GLMprm.chosen.Em.(RP_nm).(Econd_nm).prevEfficacy,...
+                GLMprm.chosen.Ep.(RP_nm).(Econd_nm).Ech_x_fatigue,...
+                GLMprm.chosen.Em.(RP_nm).(Econd_nm).Ech_x_prevEfficacy,...
                 GLMprm.chosen.(EpEm_nm).(RP_nm).(Econd_nm).confidence,...
                 GLMprm.chosen.(EpEm_nm).(RP_nm).(Econd_nm).RT,...
                 GLMprm.chosen.(EpEm_nm).(RP_nm).(Econd_nm).trialN] = deal(0);
@@ -563,6 +599,8 @@ for iEpm = 1:length(Ep_Em)
                 GLMprm.Eperf.(EpEm_nm).(RP_nm).(Econd_nm).RT_1stAnswer,...
                 GLMprm.Eperf.Ep.(RP_nm).(Econd_nm).fatigue,...
                 GLMprm.Eperf.Em.(RP_nm).(Econd_nm).prevEfficacy,...
+                GLMprm.Eperf.Ep.(RP_nm).(Econd_nm).Ech_x_fatigue,...
+                GLMprm.Eperf.Em.(RP_nm).(Econd_nm).Ech_x_prevEfficacy,...
                 GLMprm.Eperf.(EpEm_nm).(RP_nm).(Econd_nm).trialN,...
                 GLMprm.Eperf.(EpEm_nm).(RP_nm).(Econd_nm).confidence] = deal(0);
             % specific variables for each effort type
@@ -2874,6 +2912,57 @@ switch GLM
                     GLMprm.choice.(Epm_nm).RP.E.fatigue = 1;
                 case 'Em'
                     GLMprm.choice.(Epm_nm).RP.E.prevEfficacy = 3;
+            end
+            GLMprm.choice.(Epm_nm).RP.E.NV_varOption = 3;
+            GLMprm.choice.(Epm_nm).RP.E.NV_mdl = 'bayesianModel_3';
+            GLMprm.choice.(Epm_nm).RP.E.confidence = 2;
+            GLMprm.choice.(Epm_nm).RP.E.conf_mdl = 'bayesianModel_3';
+            GLMprm.choice.(Epm_nm).RP.E.RT = 1;
+            % effort perf (effort execution)
+            GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
+            % feedback
+            GLMprm.model_onset.(Epm_nm).fbk = 'stick';
+        end % physical/mental loop
+    case 106 % like GLM 104 but Ech*fatigue instead of fatigue
+        % general parameters
+        GLMprm.gal.orth_vars = 0;
+        GLMprm.gal.zPerRun = 0;
+        % loop per task
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'stick';
+            GLMprm.choice.(Epm_nm).RP.E.R_chosen = 2;
+            GLMprm.choice.(Epm_nm).RP.E.P_chosen = 2;
+            GLMprm.choice.(Epm_nm).RP.E.E_chosen = 1;
+            switch Epm_nm
+                case 'Ep'
+                    GLMprm.choice.(Epm_nm).RP.E.Ech_x_fatigue = 1;
+                case 'Em'
+                    GLMprm.choice.(Epm_nm).RP.E.Ech_x_prevEfficacy = 3;
+            end
+            % effort perf (effort execution)
+            GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
+            % feedback
+            GLMprm.model_onset.(Epm_nm).fbk = 'stick';
+        end % physical/mental loop
+    case 107 % like GLM 105 but Ech*fatigue instead of fatigue
+        % general parameters
+        GLMprm.gal.orth_vars = 0;
+        GLMprm.gal.zPerRun = 0;
+        % loop per task
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'stick';
+            GLMprm.choice.(Epm_nm).RP.E.R_chosen = 2;
+            GLMprm.choice.(Epm_nm).RP.E.P_chosen = 2;
+            GLMprm.choice.(Epm_nm).RP.E.E_chosen = 1;
+            switch Epm_nm
+                case 'Ep'
+                    GLMprm.choice.(Epm_nm).RP.E.Ech_x_fatigue = 1;
+                case 'Em'
+                    GLMprm.choice.(Epm_nm).RP.E.Ech_x_prevEfficacy = 3;
             end
             GLMprm.choice.(Epm_nm).RP.E.NV_varOption = 3;
             GLMprm.choice.(Epm_nm).RP.E.NV_mdl = 'bayesianModel_3';

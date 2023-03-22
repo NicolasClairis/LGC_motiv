@@ -762,15 +762,28 @@ for iEpm = 1:length(Epm)
                     
                     % fatigue
                     switch GLMprm.choice.(task_id_nm).(RP_dispChoice_nm).(splitE_dispChoice_nm).fatigue
-                    case 0
+                        case 0
                         case 1
                             n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                             reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG choice ',RP_dispChoice_nm,' ',splitE_dispChoice_nm,': fatigue'];
                             disp([num2str(n_regs.(task_id_nm)),') choice: fatigue ']);
                             % if derivative added => add derivatives
                             n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
-                    otherwise
-                        error('not ready yet');
+                        otherwise
+                            error('not ready yet');
+                    end
+                    
+                    % Ech*fatigue
+                    switch GLMprm.choice.(task_id_nm).(RP_dispChoice_nm).(splitE_dispChoice_nm).Ech_x_fatigue
+                        case 0
+                        case 1
+                            n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                            reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG choice ',RP_dispChoice_nm,' ',splitE_dispChoice_nm,': Ech_x_fatigue'];
+                            disp([num2str(n_regs.(task_id_nm)),') choice: Ech_x_fatigue ']);
+                            % if derivative added => add derivatives
+                            n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                        otherwise
+                            error('not ready yet');
                     end
                 end % physical effort filter
                 
@@ -795,6 +808,19 @@ for iEpm = 1:length(Epm)
                             n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                             reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG choice ',RP_dispChoice_nm,' ',splitE_dispChoice_nm,': previous efficacy'];
                             disp([num2str(n_regs.(task_id_nm)),') choice: previous efficacy ']);
+                            % if derivative added => add derivatives
+                            n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                        otherwise
+                            error('not ready yet');
+                    end
+                    
+                    % (effort chosen)*(efficacy during the previous trial)
+                    switch GLMprm.choice.(task_id_nm).(RP_dispChoice_nm).(splitE_dispChoice_nm).Ech_x_prevEfficacy
+                        case 0
+                        case {1,2,3,4}
+                            n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                            reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG choice ',RP_dispChoice_nm,' ',splitE_dispChoice_nm,': (Ech)x(previous efficacy)'];
+                            disp([num2str(n_regs.(task_id_nm)),') choice: (Ech)x(previous efficacy) ']);
                             % if derivative added => add derivatives
                             n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
                         otherwise
@@ -1377,6 +1403,17 @@ for iEpm = 1:length(Epm)
                             % if derivative added => add derivatives
                             n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
                     end
+                    
+                    % Ech*fatigue
+                    switch GLMprm.chosen.(task_id_nm).(RP_dispChosen_nm).(splitE_dispChosen_nm).Ech_x_fatigue
+                        case 0
+                        case 1
+                            n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                            reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG chosen ',RP_dispChosen_nm,' ',splitE_dispChosen_nm,': Ech_x_fatigue'];
+                            disp([num2str(n_regs.(task_id_nm)),') chosen: Ech_x_fatigue ']);
+                            % if derivative added => add derivatives
+                            n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                    end
                 end % physical effort filter
                 
                 if strcmp(task_id_nm,'Em') % mental effort only
@@ -1398,6 +1435,17 @@ for iEpm = 1:length(Epm)
                             n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                             reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG chosen ',RP_dispChosen_nm,' ',splitE_dispChosen_nm,': previous efficacy'];
                             disp([num2str(n_regs.(task_id_nm)),') chosen: previous efficacy ']);
+                            % if derivative added => add derivatives
+                            n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                    end
+                    
+                    % (effort chosen)*(efficacy during the previous trial)
+                    switch GLMprm.chosen.(task_id_nm).(RP_dispChosen_nm).(splitE_dispChosen_nm).prevEfficacy
+                        case 0
+                        case {1,2,3,4}
+                            n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                            reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG chosen ',RP_dispChosen_nm,' ',splitE_dispChosen_nm,': (Ech)x(previous efficacy)'];
+                            disp([num2str(n_regs.(task_id_nm)),') chosen: (Ech)x(previous efficacy) ']);
                             % if derivative added => add derivatives
                             n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
                     end
@@ -1897,11 +1945,22 @@ for iEpm = 1:length(Epm)
                 % fatigue
                 switch task_id_nm
                     case 'Ep'
+                        % fatigue
                         switch GLMprm.Eperf.(task_id_nm).(RP_Eperf_nm).(splitE_Eperf_nm).fatigue
                             case 1
                                 n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                                 reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG effort ',RP_Eperf_nm,' ',splitE_Eperf_nm,': fatigue'];
                                 disp([num2str(n_regs.(task_id_nm)),') effort period: fatigue ']);
+                                % if derivative added => add derivatives
+                                n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                        end
+                        
+                        % Ech*fatigue
+                        switch GLMprm.Eperf.(task_id_nm).(RP_Eperf_nm).(splitE_Eperf_nm).Ech_x_fatigue
+                            case 1
+                                n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                                reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG effort ',RP_Eperf_nm,' ',splitE_Eperf_nm,': Ech_x_fatigue'];
+                                disp([num2str(n_regs.(task_id_nm)),') effort period: Ech_x_fatigue ']);
                                 % if derivative added => add derivatives
                                 n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
                         end
@@ -1913,6 +1972,16 @@ for iEpm = 1:length(Epm)
                                 n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                                 reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG effort ',RP_Eperf_nm,' ',splitE_Eperf_nm,': previous efficacy'];
                                 disp([num2str(n_regs.(task_id_nm)),') effort period: previous efficacy ']);
+                                % if derivative added => add derivatives
+                                n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                        end
+                        
+                        % (effort chosen)*(efficacy during the previous trial)
+                        switch GLMprm.Eperf.(task_id_nm).(RP_Eperf_nm).(splitE_Eperf_nm).Ech_x_prevEfficacy
+                            case {1,2,3,4}
+                                n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                                reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG effort ',RP_Eperf_nm,' ',splitE_Eperf_nm,': (Ech)x(previous efficacy)'];
+                                disp([num2str(n_regs.(task_id_nm)),') effort period: (Ech)x(previous efficacy) ']);
                                 % if derivative added => add derivatives
                                 n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
                         end
