@@ -59,6 +59,8 @@ function[subject_id, NS] = LGCM_subject_selection(study_nm, condition, genderFil
 % 'pulse_noSatTaskSub': keep only subjects where pulse can be analyzed and
 % where there was not a full task being saturated (ie where behavior could
 % not be extracted)
+% 'fMRI_noSatTaskSub_noSatRun': remove subjects who saturated completely 
+% one of the tasks, and among those kept, remove any saturated run
 %
 % genderFilter:
 % 'all': by default, include all subjects
@@ -172,7 +174,7 @@ switch study_nm
                 % 097: run 1 ND for Ep task
                 % 099: run 3 ND for Em task
                 % 100: run 3 (Em) and run 4 (Ep) ND
-            case {'behavior_noSatTaskSub','fMRI_noSatTaskSub'}
+            case {'behavior_noSatTaskSub','fMRI_noSatTaskSub','fMRI_noSatTaskSub_noSatRun'}
                 % remove subjects for which either mental (Em) or physical
                 % (Ep) task was fully saturated during choices and remove
                 % runs that were saturating if only one saturated

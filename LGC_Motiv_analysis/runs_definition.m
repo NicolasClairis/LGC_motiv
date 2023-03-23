@@ -310,7 +310,8 @@ switch study_nm
                         runs.runsToKeep = [1,2];
                         runs.runsToIgnore = [3,4];
                 end
-            case {'fMRI_noSatRun','fMRI_noSatRun_bayesianMdl'}
+            case {'fMRI_noSatRun','fMRI_noSatRun_bayesianMdl',...
+                    'fMRI_noSatTaskSub_noSatRun'}
                 switch sub_nm
                     case {'017','043','074'} % first run: fMRI crashed => we have the behavior but not enough trials for fMRI
                         runs.runsToKeep = 2:4;
