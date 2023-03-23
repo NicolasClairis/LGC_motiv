@@ -42,7 +42,7 @@ switch condition
     case {'fMRI_noSatTask_noMove_bis','fMRI_noSatTask_noMove_bis_bayesianMdl'} % saturation runs removed for the full saturated tasks
         resultsFolderShortName = ['GLM',GLM_nm,'_no_satTask_noMmvmtRun'];
     otherwise
-        resultsFolderShortName = [];
+        error('problem with folder name');
 end
 resultsFolderName = [sm_folderName,...
     resultsFolderShortName,filesep];
