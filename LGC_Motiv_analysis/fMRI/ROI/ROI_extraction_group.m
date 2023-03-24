@@ -76,7 +76,7 @@ end
 
 %% which GLM
 if ~exist('GLM','var') || isempty(GLM)
-    GLM = spm_input('GLM number?',1,'e');
+    GLM = spm_input('fMRI GLM number?',1,'e');
 end
 GLMstr = num2str(GLM);
 GLMprm = which_GLM(GLM);
