@@ -1,4 +1,5 @@
-function[latency, AUC, forcePeak, AUC_overshoot, AUC_N, forcePeak_N, AUC_overshoot_N] = extract_grip_force(subBehaviorFolder, sub_nm, run_nm)
+function[latency, AUC, forcePeak, AUC_overshoot,...
+    AUC_N, forcePeak_N, AUC_overshoot_N] = extract_grip_force(subBehaviorFolder, sub_nm, run_nm)
 % [latency, AUC, forcePeak, AUC_overshoot, AUC_N, forcePeak_N, AUC_overshoot_N] = extract_grip_force(subBehaviorFolder, sub_nm, run_nm)
 % extract_grip_force will extract several parameters related to performance
 % in the phyical effort task, such as latency to squeeze, the area under
