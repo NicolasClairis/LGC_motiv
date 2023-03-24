@@ -1,0 +1,193 @@
+function[betas, choices] = logitfit_choices_with_fMRI(computerRoot, study_nm, sub_nm,...
+    figDisp, dispMoneyOrLevels, n_NV_bins, n_trialN_bins)
+% [betas, choices] = logitfit_choices_with_fMRI(computerRoot, study_nm, sub_nm,...
+%     figDisp, dispMoneyOrLevels, n_NV_bins, n_trialN_bins)
+% logitfit_choices_with_fMRI will look at a GLM explaining choices like
+% logitfit_choices.m but also includes fMRI information.
+%
+% INPUTS
+% computerRoot: pathway where data is
+% 
+% study_nm: study name
+%
+% sub_nm: subject number id 'XXX'
+%
+% figDisp: display individual figure (1) or not (0)
+%
+% dispMoneyOrLevels: display actual money ('money') or reward levels
+% ('levels')
+%
+% n_NV_bins: number of bins for net value
+%
+% n_trialN_bins: number of bins for fatigue
+%
+% OUTPUTS
+% betas: structure with betas
+%
+% choices: structure with bins for choices
+
+%% working directories
+% if root not defined => ask for it
+if ~exist('computerRoot','var') || isempty(computerRoot)
+    computerRoot = 'E:\';
+%     computerRoot = LGCM_root_paths;
+end
+
+%% working directories
+subBehaviorFolder = [computerRoot, filesep, study_nm, filesep,...
+    'CID',sub_nm, filesep, 'behavior', filesep];
+
+%% by default, display individual figure
+if ~exist('figDisp','var') || isempty(figDisp)
+    figDisp = 1;
+    disp(['figDisp was not defined in the inputs so that by default ',...
+        'figures are displayed for each individual.']);
+end
+
+%% by default, display monetary levels instead of actual monetary amounts
+if ~exist('dispMoneyOrLevels','var') || isempty(dispMoneyOrLevels)
+    dispMoneyOrLevels = 'levels';
+end
+
+if ~exist('n_NV_bins','var') || isempty(n_NV_bins)
+    n_NV_bins = 6;
+end
+
+if ~exist('n_trialN_bins','var') || isempty(n_trialN_bins)
+    n_trialN_bins = 6;
+end
+
+%% initialize variables of interest
+nTrialsPerRun = 54;
+% nTrialsPerRPConditionPerRun = nTrialsPerRun/2;
+if strcmp(study_nm,'study1') && strcmp(sub_nm,'040')
+    nRunsPerTask = 1;
+else
+    nRunsPerTask = 2;
+end
+nTrials = nTrialsPerRun*nRunsPerTask;
+% nTrialsPerRPCond = nTrialsPerRPConditionPerRun*nRunsPerTask;
+
+[choice_hE.Ep,...
+    deltaE_level.Ep,...
+    deltaR_money.Ep,...
+    deltaP_money.Ep,...
+    sumPrevAUC.Ep,...
+    BOLD.VS.Ep,...
+    BOLD.dmPFC.Ep,...
+    BOLD.aINS.Ep,...
+    choice_hE.Em,...
+    deltaE_level.Em,...
+    deltaR_money.Em,...
+    deltaP_money.Em,...
+    prevEfficacy.Em,...
+    BOLD.VS.Em,...
+    BOLD.dmPFC.Em,...
+    BOLD.aINS.Em] = deal(NaN(nTrials,1));
+
+%% extract runs
+[runsStruct] = runs_definition(study_nm, sub_nm, 'behavior');
+nRuns = length(runsStruct.tasks);
+runs_Ep = strcmp(runsStruct.tasks,'Ep');
+runs_Em = strcmp(runsStruct.tasks,'Em');
+
+%% loop through physical and mental
+for iPM = 1:2
+    switch iPM
+        case 1
+            task_id = 'Ep';
+            task_fullName = 'physical';
+        case 2
+            task_id = 'Em';
+            task_fullName = 'mental';
+    end
+    
+    jRun = 0;
+    for iRun = 1:nRuns
+        runToInclude = 0;
+        switch task_id
+            case 'Ep'
+                if runs_Ep(iRun) == 1
+                    jRun = jRun + 1;
+                    runToInclude = 1;
+                end
+            case 'Em'
+                if runs_Em(iRun) == 1
+                    jRun = jRun + 1;
+                    runToInclude = 1;
+                end
+        end
+        run_nm = ['run',num2str(jRun)];
+        
+        if runToInclude == 1
+            runTrials_idx = (1:nTrialsPerRun) + nTrialsPerRun*(jRun-1);
+            % extract relevant data
+            choice_hE.(task_id)(runTrials_idx) = extract_choice_hE(subBehaviorFolder, sub_nm, run_nm, task_fullName);
+            [deltaE_level.(task_id)(runTrials_idx)] = extract_hE_level(subBehaviorFolder, sub_nm, run_nm, task_fullName);
+            [deltaR_money.(task_id)(runTrials_idx)] = extract_deltaR_money(subBehaviorFolder, sub_nm, run_nm, task_fullName);
+            [deltaP_money.(task_id)(runTrials_idx)] = extract_deltaP_money(subBehaviorFolder, sub_nm, run_nm, task_fullName);
+            switch task_id
+                case 'Ep'
+                    sumPrevAUC.Ep(runTrials_idx) = extract_physical_fatigue(subBehaviorFolder, sub_nm, run_nm, task_fullName);
+                case 'Em'
+                    [~, ~, ~, ~,~,~,...
+                        ~,~,...
+                        efficacy_bis_with2first,...
+                        ~] = extract_mental_perf(subBehaviorFolder, sub_nm, run_nm);
+                    prevEfficacy.Em(runTrials_idx) = [0,efficacy_bis_with2first(2:end)];
+            end % task filter to adapt temporal cost
+        end % run to include?
+    end % run loop
+    %% check number of runs
+    if sum(runs_Ep) < 2 || sum(runs_Em) < 2
+       warning('one run had to be removed. please adapt the script accordingly where needed.'); 
+    end
+    %% perform the fit
+    switch task_id
+        case 'Ep'
+            xModel = [deltaR_money.Ep,...
+                deltaR_money.Ep.*BOLD.VS.Ep,...
+                deltaP_money.Ep,...
+                deltaP_money.Ep.*BOLD.aINS.Ep,...
+                deltaE_level.Ep,...
+                deltaE_level.Ep.*BOLD.dmPFC.Ep,...
+                deltaE_level.Ep.*sumPrevAUC.Ep,...
+                deltaE_level.Ep.*sumPrevAUC.Ep.*BOLD.dmPFC.Ep];
+        case 'Em'
+            xModel = [deltaR_money.Em,...
+                deltaR_money.Em.*BOLD.VS.Em,...
+                deltaP_money.Em,...
+                deltaP_money.Em.*BOLD.aINS.Em,...
+                deltaE_level.Em,...
+                deltaE_level.Em.*BOLD.dmPFC.Em,...
+                deltaE_level.Em.*prevEfficacy.Em,...
+                deltaE_level.Em.*prevEfficacy.Em.*BOLD.dmPFC.Em];
+    end % adapt fit to the task
+    % perform the model and extract the betas
+    betaModel = glmfit(xModel, choice_hE.(task_id),...
+        'binomial','link','logit');
+    % extract betas
+    betas.(task_id).bias = betaModel(1);
+    betas.(task_id).bR = betaModel(2);
+    betas.(task_id).b_VS_R = betaModel(3);
+    betas.(task_id).bP = betaModel(4);
+    betas.(task_id).b_aINS_P = betaModel(5);
+    betas.(task_id).bE = betaModel(6);
+    betas.(task_id).b_dmPFC_E = betaModel(7);
+    switch task_id
+        case 'Ep'
+            betas.(task_id).bFp = betaModel(8);
+            betas.(task_id).b_dmPFC_Fp = betaModel(9);
+        case 'Em'
+            betas.(task_id).bFm = betaModel(8);
+            betas.(task_id).b_dmPFC_Fm = betaModel(9);
+    end
+    % extract fitted choices
+    modelFit.(task_id) = glmval(betaModel, xModel, 'logit');
+    confidence.(task_id) = (modelFit.(task_id) - 0.5).^2;
+end % physical/mental
+
+% extract output
+choices.choicesFitted = modelFit;
+choices.confidenceFitted = confidence;
+end % function
