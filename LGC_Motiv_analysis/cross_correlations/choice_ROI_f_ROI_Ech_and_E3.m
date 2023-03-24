@@ -64,29 +64,29 @@ switch con_to_use
         %% extract corresponding activity trial/trial
         [ROI_trial_b_trial] = extract_ROI_betas_onsets_only(computerRoot,...
             study_nm, subject_id, condition);
-        find_ROI_name = fieldnames(ROI_trial_b_trial);
-        fMRI_ROI_trialPerTrial_idx = ~strcmp(find_ROI_name,'subject_id');
-        fMRI_ROI_trialPerTrial_name = find_ROI_name{fMRI_ROI_trialPerTrial_idx};
-        timePeriod_nm = 'choice';
     case 'E3_delta'
         [ROI_trial_b_trial] = extract_ROI_betas_onsets_only(computerRoot,...
             study_nm, subject_id, condition);
-        timePeriod_nm = 'choice';
-        
-        % extract delta for each task (remove subjects where data is
-        % missing)
-        
 end
-
+find_ROI_name = fieldnames(ROI_trial_b_trial);
+        fMRI_ROI_trialPerTrial_idx = ~strcmp(find_ROI_name,'subject_id');
+        fMRI_ROI_trialPerTrial_name = find_ROI_name{fMRI_ROI_trialPerTrial_idx};
+timePeriod_nm = 'choice';
 nTrialsPerRun = 54;
 nRunsPerTask = 2;
 nTrialsPerTask = nTrialsPerRun*nRunsPerTask;
-[fMRI_allTrials.Ep, choice_hE_allTrials.Ep, E_level.Ep, choice_hE_fit_allTrials.Ep, RT_allTrials.Ep,...
-    fMRI_allTrials.Em, choice_hE_allTrials.Em, E_level.Em, choice_hE_fit_allTrials.Em, RT_allTrials.Em] = deal(NaN(nTrialsPerTask, NS));
+[fMRI_allTrials.Ep,...
+    choice_hE_allTrials.Ep, E_level.Ep,...
+    choice_hE_fit_allTrials.Ep, RT_allTrials.Ep,...
+    fMRI_allTrials.Em,...
+    choice_hE_allTrials.Em, E_level.Em,...
+    choice_hE_fit_allTrials.Em, RT_allTrials.Em] = deal(NaN(nTrialsPerTask, NS));
 n_E_levels = 3;
 [choice_hE.Ep, choice_hE.Em,...
     fMRI_choice_highE.Ep, fMRI_choice_lowE.Ep,...
     fMRI_choice_highE.Em, fMRI_choice_lowE.Em] = deal(NaN(n_E_levels, NS));
+[delta_fMRI_choice_E3.Ep,...
+    delta_fMRI_choice_E3.Em] = deal(NaN(1,NS));
 
 % loop through subjects
 for iS = 1:NS
@@ -148,8 +148,26 @@ for iS = 1:NS
             choice_lowE_E_lvl_idx = (E_lvl_idx.*(choice_hE_allTrials.(task_nm_tmp)(:, iS) == 0)) == 1;
             fMRI_choice_lowE.(task_nm_tmp)(iE, iS) = mean(fMRI_allTrials.(task_nm_tmp)(choice_lowE_E_lvl_idx, iS),1,'omitnan');
         end
+        % extract delta for E3
+        delta_fMRI_choice_E3.(task_nm_tmp)(iS) = fMRI_choice_highE.(task_nm_tmp)(3, iS) - fMRI_choice_lowE.(task_nm_tmp)(3, iS);
     end % task loop
 end % subject loop
+
+
+%% perform median split
+if strcmp(con_to_use, 'E3_delta')
+    % extract median
+    med_E3.Ep = median(delta_fMRI_choice_E3.Ep,2,'omitnan');
+    med_E3.Em = median(delta_fMRI_choice_E3.Em,2,'omitnan');
+    
+    % split between low and high
+    % physical
+    low_con.Ep = delta_fMRI_choice_E3.Ep <= med_E3.Ep;
+    high_con.Ep = delta_fMRI_choice_E3.Ep > med_E3.Ep;
+    % mental
+    low_con.Em = delta_fMRI_choice_E3.Em <= med_E3.Em;
+    high_con.Em = delta_fMRI_choice_E3.Em > med_E3.Em;
+end
 
 %% perform the median split
 for iT = 1:nTasks
