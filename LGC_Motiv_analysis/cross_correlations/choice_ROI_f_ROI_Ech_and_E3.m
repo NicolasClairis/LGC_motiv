@@ -61,16 +61,20 @@ switch con_to_use
         low_con.Em = Ech_slope.Em <= med_Ech_slope.Em;
         high_con.Em = Ech_slope.Em > med_Ech_slope.Em;
         
+        % extract ROI name
+        fMRI_ROI_shortName = ROI_coords.ROI_nm.ROI_1_shortName;
         %% extract corresponding activity trial/trial
         [ROI_trial_b_trial] = extract_ROI_betas_onsets_only(computerRoot,...
             study_nm, subject_id, condition);
     case 'E3_delta'
         [ROI_trial_b_trial] = extract_ROI_betas_onsets_only(computerRoot,...
             study_nm, subject_id, condition);
+        fMRI_ROI_shortName0 = inputdlg('ROI short name?');
+        fMRI_ROI_shortName = fMRI_ROI_shortName0{1};
 end
 find_ROI_name = fieldnames(ROI_trial_b_trial);
-        fMRI_ROI_trialPerTrial_idx = ~strcmp(find_ROI_name,'subject_id');
-        fMRI_ROI_trialPerTrial_name = find_ROI_name{fMRI_ROI_trialPerTrial_idx};
+fMRI_ROI_trialPerTrial_idx = ~strcmp(find_ROI_name,'subject_id');
+fMRI_ROI_trialPerTrial_name = find_ROI_name{fMRI_ROI_trialPerTrial_idx};
 timePeriod_nm = 'choice';
 nTrialsPerRun = 54;
 nRunsPerTask = 2;
@@ -257,7 +261,7 @@ for iT = 1:nTasks
         legend('boxoff');
         xlabel('high E level');
         ylabel([task_nm_tmp,' ',...
-            ROI_coords.ROI_nm.ROI_1_shortName,' BOLD']);
+            fMRI_ROI_shortName,' BOLD']);
         legend_size(pSize);
         
     end % figure display
