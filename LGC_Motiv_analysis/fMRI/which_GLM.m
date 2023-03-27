@@ -66,10 +66,13 @@ function [GLMprm] = which_GLM(GLM)
 %   .choice/chosen/preEffortCross/Eperf/fbk: for each event, for each task (Ep/Em) and 
 %   for each condition (R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch) indicate if a given regressor should be 
 %   included or not.
-%   .Ep/Em: physical (Ep) or mental (Em) effort task
-%   .R/P/RP/splitPerE/splitPerEch: reward only (R), punishment only (P) or reward and punishment
-%   trials mixed (RP) or split per effort proposed (splitPerE) or per
-%   effort chosen (splitPerEch)
+%       .Ep/Em: physical (Ep) or mental (Em) effort task
+%           .R/P/RP: reward only (R), punishment only (P) or reward and punishment
+%           trials mixed (RP)
+%           .splitPerE/splitPerEch: split per effort proposed (E1/E2/E3) (splitPerE=1)
+%           or per effort chosen (Ech0/Ech/Ech1/Ech2/Ech3) (splitPerEch=2)
+%           or per choice (low vs high E choice) made (lEch/hEch) (splitPerEch=3)
+%               
 %
 %       .(choice/chosen).(Ep/Em).RPpool:
 %       (0) split rewards and punishments as separate events
@@ -2969,6 +2972,30 @@ switch GLM
             GLMprm.choice.(Epm_nm).RP.E.confidence = 2;
             GLMprm.choice.(Epm_nm).RP.E.conf_mdl = 'bayesianModel_3';
             GLMprm.choice.(Epm_nm).RP.E.RT = 1;
+            % effort perf (effort execution)
+            GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
+            % feedback
+            GLMprm.model_onset.(Epm_nm).fbk = 'stick';
+        end % physical/mental loop
+    case 108 % look at slope with effort, but only for when high effort option is chosen
+        % general parameters
+        GLMprm.gal.orth_vars = 0;
+        GLMprm.gal.zPerRun = 0;
+        % loop per task
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'stick';
+            GLMprm.choice.(Epm_nm).splitPerE = 3; % split trials according to choice made
+            GLMprm.choice.(Epm_nm).RP.hEch.R_chosen = 2;
+            GLMprm.choice.(Epm_nm).RP.hEch.P_chosen = 2;
+            GLMprm.choice.(Epm_nm).RP.hEch.E_chosen = 1;
+            switch Epm_nm
+                case 'Ep'
+                    GLMprm.choice.(Epm_nm).RP.hEch.fatigue = 1;
+                case 'Em'
+                    GLMprm.choice.(Epm_nm).RP.hEch.prevEfficacy = 3;
+            end
             % effort perf (effort execution)
             GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
             % feedback
