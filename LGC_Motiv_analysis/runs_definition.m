@@ -85,7 +85,7 @@ switch study_nm
         %% define subject runs to keep depending on condition
         switch condition
             %% for all fMRI conditions, need to remove run 1 from those subjects because of fMRI crash
-            case 'fMRI'
+            case {'fMRI','fMRI_noSatRunSub'}
                 switch sub_nm
                     case {'017','043','074'} % first run: fMRI crashed => we have the behavior but not enough trials for fMRI
                         runs.runsToKeep = 2:4;
