@@ -1,5 +1,7 @@
-function[ROI_trial_b_trial] = extract_ROI_betas_onsets_only(computerRoot, study_nm, subject_id, condition, GLM)
-% [ROI_trial_b_trial] = extract_ROI_betas_onsets_only(computerRoot, study_nm, subject_id, condition, GLM)
+function[ROI_trial_b_trial] = extract_ROI_betas_onsets_only(computerRoot, study_nm, subject_id, condition, GLM,...
+    ROI_infos)
+% [ROI_trial_b_trial] = extract_ROI_betas_onsets_only(computerRoot, study_nm, subject_id, condition, GLM,...
+%     ROI_infos)
 % extract_ROI_betas_onsets_only will extract the activity of the ROI
 % defined trial/trial and for each time point of the GLM that has been
 % used.
@@ -15,6 +17,10 @@ function[ROI_trial_b_trial] = extract_ROI_betas_onsets_only(computerRoot, study_
 %
 % GLM: GLM number to use for the trial/trial ROI activity extraction
 %
+% ROI_infos: structure containing ROI information (matrix coordinates, ROI
+% name, number of ROIs to extract, etc.). Can be left empty and will be
+% asked with ROI_selection.m.
+%
 % OUTPUTS
 % ROI_trial_b_trial: structure with ROI BOLD deconvoluted trial/trial and
 % for each phase of the GLM.
@@ -28,13 +34,16 @@ if ~exist('study_nm','var') || isempty(study_nm)
     study_nm = 'study1';
 end
 dataRoot = [computerRoot,filesep,study_nm,filesep];
-switch computerRoot
-    case 'E:\' % lab computer
-        gitFolder = fullfile('C:','Users','clairis','Desktop','GitHub','LGC_motiv','Matlab_DIY_functions','ROI');
-    case 'L:\human_data_private\raw_data_subject\' % home computer
-        gitFolder = fullfile('C:','Users','Loco','Documents','GitHub','LGC_motiv','Matlab_DIY_functions','ROI');
-    otherwise
-        error(['computer root ',computerRoot,' not ready yet.'])
+% git folder only required if you need to define the ROI to use
+if ~exist('ROI_infos','var') || isempty(ROI_infos)
+    switch computerRoot
+        case 'E:\' % lab computer
+            gitFolder = fullfile('C:','Users','clairis','Desktop','GitHub','LGC_motiv','Matlab_DIY_functions','ROI');
+        case 'L:\human_data_private\raw_data_subject\' % home computer
+            gitFolder = fullfile('C:','Users','Loco','Documents','GitHub','LGC_motiv','Matlab_DIY_functions','ROI');
+        otherwise
+            error(['gitFolder path with computerRoot = ',computerRoot,' not ready yet.'])
+    end
 end
 %% define subject list
 if ~exist('condition','var') || isempty(condition)
@@ -49,7 +58,13 @@ end
 ROI_trial_b_trial.subject_id = subject_id;
 
 %% select the ROI to use
-[ ROI_xyz, ~, ROI_names, n_ROIs ] = ROI_selection(gitFolder);
+if ~exist('ROI_infos','var') || isempty(ROI_infos)
+    [ ROI_xyz, ~, ROI_names, n_ROIs ] = ROI_selection(gitFolder);
+else
+    ROI_xyz = ROI_infos.ROI_xyz;
+    ROI_names = ROI_infos.ROI_names;
+    n_ROIs = ROI_infos.n_ROIs;
+end
 
 %% which GLM
 if ~exist('GLM','var') || isempty(GLM)
