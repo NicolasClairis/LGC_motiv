@@ -98,6 +98,8 @@ for iT = 1:nTasks
     legend('Location','NorthEast');
     ylim([0 1]);
     ylabel([task_nm,' choices (%)']);
+    xticks(1:n_hE_levels);
+    xlabel('Effort level');
     legend_size(pSize);
     
     %% figure with everybody
