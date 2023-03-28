@@ -1,4 +1,14 @@
-function[] = choice_f_E_fkE_and_kF()
+function[NS] = choice_f_E_fkE_and_kF(study_nm)
+% [NS] = choice_f_E_fkE_and_kF(study_nm)
+% choice_f_E_fkE_and_kF will split the choices according to effort level,
+% kEp and kFp (and kEm, kFm respectively) in order to see whether there is 
+% an interaction between kE and kF.
+%
+% INPUTS
+% study_nm: study name
+%
+% OUTPUTS
+% NS: number of subjects used
 
 %% subject selection
 if ~exist('study_nm','var') || isempty(study_nm)
@@ -33,9 +43,11 @@ for iT = 1:nTasks
         case 'Ep'
             kE_prm_nm = 'kEp';
             time_prm_nm = 'kFp';
+            time_prm_nm_bis = 'kFp';
         case 'Em'
             kE_prm_nm = 'kEm';
             time_prm_nm = 'kLm';
+            time_prm_nm_bis = 'kFm';
     end
     
     %% extract index of subject depending on low vs high kE and kF
@@ -96,14 +108,16 @@ for iT = 1:nTasks
     
     legend([low_kE_high_kF_hdl, low_kE_low_kF_hdl,...
         high_kE_high_kF_hdl, high_kE_low_kF_hdl],...
-        {['low ',kE_prm_nm,' high ',time_prm_nm],...
-        ['low ',kE_prm_nm,' low ',time_prm_nm],...
-        ['high ',kE_prm_nm,' high ',time_prm_nm],...
-        ['high ',kE_prm_nm,' low ',time_prm_nm]});
+        {['low ',kE_prm_nm,' high ',time_prm_nm_bis],...
+        ['low ',kE_prm_nm,' low ',time_prm_nm_bis],...
+        ['high ',kE_prm_nm,' high ',time_prm_nm_bis],...
+        ['high ',kE_prm_nm,' low ',time_prm_nm_bis]});
     legend('boxoff');
     legend('Location','NorthEast');
     ylim([0 1]);
     ylabel([task_nm,' choices (%)']);
+    xticks(1:n_hE_levels);
+    xlabel('high E level');
     legend_size(pSize);
     
     %% figure focusing on low kE
@@ -126,11 +140,13 @@ for iT = 1:nTasks
     low_kE_high_kF_hdl.LineStyle = '-';
     
     legend([low_kE_high_kF_hdl, low_kE_low_kF_hdl],...
-        {['low ',kE_prm_nm,' high ',time_prm_nm],...
-        ['low ',kE_prm_nm,' low ',time_prm_nm]});
+        {['low ',kE_prm_nm,' high ',time_prm_nm_bis],...
+        ['low ',kE_prm_nm,' low ',time_prm_nm_bis]});
     legend('boxoff');
     legend('Location','NorthEast');
     ylim([0 1]);
+    xticks(1:n_hE_levels);
+    xlabel('high E level');
     ylabel([task_nm,' choices (%)']);
     legend_size(pSize);
 end % task loop
