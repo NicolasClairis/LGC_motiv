@@ -1,15 +1,15 @@
-function[VS_ROI_infos] = load_VS_ROI()
-% [VS_ROI_infos] = load_VS_ROI()
-% load_VS_ROI will extract informations about ventral striatum mask
+function[aINS_ROI_infos] = load_aINS_ROI()
+% [aINS_ROI_infos] = load_aINS_ROI()
+% load_aINS_ROI will extract informations about anterior insula mask
 %
 % OUTPUT
-% VS_ROI_infos: big structure with all the relevant information
+% aINS_ROI_infos: big structure with all the relevant information
 
 %% path
 gitFolder = fullfile('C:','Users','clairis','Desktop','GitHub',...
     'LGC_motiv','Matlab_DIY_functions',...
-    'ROI','NicoC_masks','Striatum');
-maskName = 'NAcc_Pauli_75percent_threshold.nii';
+    'ROI','NicoC_masks','aIN');
+maskName = 'aIN_BartraNeg3_AAL-IN.nii';
 mask_img = [gitFolder, filesep, maskName];
 %% get ROI coordinates
 % extract ROI mask as a 3-D matrix
@@ -26,10 +26,10 @@ ROI_vol = spm_vol(mask_img); % extract info about voxel size and position of the
 sxyz_ROI = sxyz * ROI_vol.mat'; % convert mask from voxel space to MNI space
 
 %% extract in output
-VS_ROI_infos.ROI_xyz.ROI_1 = sxyz_ROI;
-VS_ROI_infos.ROI_sphere_or_mask.ROI_1 = 1;
-VS_ROI_infos.ROI_nm.ROI_1 = maskName;
-VS_ROI_infos.ROI_nm.ROI_1_shortName = 'VS';
-VS_ROI_infos.ROI_nm.fullpath.ROI_1 = mask_img;
+aINS_ROI_infos.ROI_xyz.ROI_1 = sxyz_ROI;
+aINS_ROI_infos.ROI_sphere_or_mask.ROI_1 = 1;
+aINS_ROI_infos.ROI_nm.ROI_1 = maskName;
+aINS_ROI_infos.ROI_nm.ROI_1_shortName = 'aINS';
+aINS_ROI_infos.ROI_nm.fullpath.ROI_1 = mask_img;
 
 end % function

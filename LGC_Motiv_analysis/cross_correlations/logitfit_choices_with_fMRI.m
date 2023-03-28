@@ -57,6 +57,22 @@ if ~exist('n_trialN_bins','var') || isempty(n_trialN_bins)
     n_trialN_bins = 6;
 end
 
+%% define ROIs
+[VS_ROI_infos] = load_VS_ROI();
+[dmPFC_ROI_infos] = load_dmPFC_ROI();
+[aINS_ROI_infos] = load_aINS_ROI();
+
+%% load BOLD for each ROI of interest
+[VS_trial_b_trial] = extract_ROI_betas_onsets_only(computerRoot,...
+    study_nm, sub_nm, condition, GLM,...
+    VS_ROI_infos);
+[dmPFC_trial_b_trial] = extract_ROI_betas_onsets_only(computerRoot,...
+    study_nm, sub_nm, condition, GLM,...
+    dmPFC_ROI_infos);
+[aINS_trial_b_trial] = extract_ROI_betas_onsets_only(computerRoot,...
+    study_nm, sub_nm, condition, GLM,...
+    aINS_ROI_infos);
+
 %% initialize variables of interest
 nTrialsPerRun = 54;
 % nTrialsPerRPConditionPerRun = nTrialsPerRun/2;
