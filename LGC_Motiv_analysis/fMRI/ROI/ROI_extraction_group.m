@@ -92,8 +92,14 @@ beta_or_t_value = 'beta_value';
 preproc_sm_kernel = 8; % by default
 
 %% prepare contrasts
-[con_names] = LGCM_contrasts(study_nm, subject_id{1}, GLM,...
-    computerRoot, preproc_sm_kernel, condition);
+switch condition
+    case 'fMRI_noSatRun_choiceSplit_Elvl_bis' % in this case, subject_id{1} does not include Em => need to adapt to include Em
+        con_names = LGCM_contrasts(study_nm, subject_id{16}, GLM,...
+            computerRoot, preproc_sm_kernel, condition);
+    otherwise
+        con_names = LGCM_contrasts(study_nm, subject_id{1}, GLM,...
+            computerRoot, preproc_sm_kernel, condition);
+end
 n_max_con = length(con_names);
 
 %% how many figures do you want to plot
