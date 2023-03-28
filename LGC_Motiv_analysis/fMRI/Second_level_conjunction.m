@@ -1,7 +1,7 @@
 % conjunction between two contrasts defined by the user
 
 %% clear
-clear all; close all; clc;
+clear; close all; clc;
 
 %% iniate spm
 spm('defaults','fmri');
@@ -202,5 +202,5 @@ matlabbatch{batch_idx}.spm.stats.con.delete = 0;
 cd(resultsFolder);
 
 %% display spm batch before running it
-spm_jobman('interactive',matlabbatch);
-% spm_jobman('run',matlabbatch);
+% spm_jobman('interactive',matlabbatch);
+spm_jobman('run',matlabbatch);
