@@ -62,7 +62,7 @@ if ~exist('ROI_infos','var') || isempty(ROI_infos)
     [ ROI_xyz, ~, ROI_names, n_ROIs ] = ROI_selection(gitFolder);
 else
     ROI_xyz = ROI_infos.ROI_xyz;
-    ROI_names = ROI_infos.ROI_names;
+    ROI_names = ROI_infos.ROI_nm;
     n_ROIs = ROI_infos.n_ROIs;
 end
 
