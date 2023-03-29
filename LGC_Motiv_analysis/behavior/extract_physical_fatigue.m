@@ -21,10 +21,11 @@ end
 %% load data
 [~, ~, ~, ~,...
     AUC_N] = extract_grip_force(subBehaviorFolder, sub_nm, run_nm);
+AUC_N_perTrial = AUC_N.allTrials;
 nTrialsPerRun = 54;
 sumPrevAUC = NaN(1,nTrialsPerRun);
 sumPrevAUC(1) = 0;
 for iTrial = 2:nTrialsPerRun
-    sumPrevAUC(iTrial) = sumPrevAUC(iTrial-1) + AUC_N(iTrial - 1);
+    sumPrevAUC(iTrial) = sumPrevAUC(iTrial-1) + AUC_N_perTrial(iTrial - 1);
 end % trial loop
 end % function
