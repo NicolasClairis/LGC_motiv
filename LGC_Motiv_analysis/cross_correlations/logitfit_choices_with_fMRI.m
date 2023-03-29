@@ -1,7 +1,5 @@
-function[betas, choices] = logitfit_choices_with_fMRI(computerRoot, study_nm, sub_nm,...
-    figDisp, dispMoneyOrLevels, n_NV_bins, n_trialN_bins)
-% [betas, choices] = logitfit_choices_with_fMRI(computerRoot, study_nm, sub_nm,...
-%     figDisp, dispMoneyOrLevels, n_NV_bins, n_trialN_bins)
+function[betas, choices] = logitfit_choices_with_fMRI(computerRoot, study_nm, sub_nm, condition)
+% [betas, choices] = logitfit_choices_with_fMRI(computerRoot, study_nm, sub_nm, condition)
 % logitfit_choices_with_fMRI will look at a GLM explaining choices like
 % logitfit_choices.m but also includes fMRI information.
 %
@@ -12,14 +10,7 @@ function[betas, choices] = logitfit_choices_with_fMRI(computerRoot, study_nm, su
 %
 % sub_nm: subject number id 'XXX'
 %
-% figDisp: display individual figure (1) or not (0)
-%
-% dispMoneyOrLevels: display actual money ('money') or reward levels
-% ('levels')
-%
-% n_NV_bins: number of bins for net value
-%
-% n_trialN_bins: number of bins for fatigue
+% condition: condition to use
 %
 % OUTPUTS
 % betas: structure with betas
@@ -37,24 +28,9 @@ end
 subBehaviorFolder = [computerRoot, filesep, study_nm, filesep,...
     'CID',sub_nm, filesep, 'behavior', filesep];
 
-%% by default, display individual figure
-if ~exist('figDisp','var') || isempty(figDisp)
-    figDisp = 1;
-    disp(['figDisp was not defined in the inputs so that by default ',...
-        'figures are displayed for each individual.']);
-end
-
-%% by default, display monetary levels instead of actual monetary amounts
-if ~exist('dispMoneyOrLevels','var') || isempty(dispMoneyOrLevels)
-    dispMoneyOrLevels = 'levels';
-end
-
-if ~exist('n_NV_bins','var') || isempty(n_NV_bins)
-    n_NV_bins = 6;
-end
-
-if ~exist('n_trialN_bins','var') || isempty(n_trialN_bins)
-    n_trialN_bins = 6;
+%% condition
+if ~exist('condition','var') || isempty(condition)
+    condition = subject_condition;
 end
 
 %% define ROIs
@@ -63,14 +39,15 @@ end
 [aINS_ROI_infos] = load_aINS_ROI();
 
 %% load BOLD for each ROI of interest
+GLM = 94;
 [VS_trial_b_trial] = extract_ROI_betas_onsets_only(computerRoot,...
-    study_nm, sub_nm, condition, GLM,...
+    study_nm, {sub_nm}, condition, GLM,...
     VS_ROI_infos);
 [dmPFC_trial_b_trial] = extract_ROI_betas_onsets_only(computerRoot,...
-    study_nm, sub_nm, condition, GLM,...
+    study_nm, {sub_nm}, condition, GLM,...
     dmPFC_ROI_infos);
 [aINS_trial_b_trial] = extract_ROI_betas_onsets_only(computerRoot,...
-    study_nm, sub_nm, condition, GLM,...
+    study_nm, {sub_nm}, condition, GLM,...
     aINS_ROI_infos);
 
 %% initialize variables of interest
@@ -133,7 +110,8 @@ for iPM = 1:2
                     runToInclude = 1;
                 end
         end
-        run_nm = ['run',num2str(jRun)];
+        run_nm = num2str(runsStruct.runsToKeep(iRun));
+        run_nm_bis = ['run',num2str(jRun)];
         
         if runToInclude == 1
             runTrials_idx = (1:nTrialsPerRun) + nTrialsPerRun*(jRun-1);
@@ -150,8 +128,13 @@ for iPM = 1:2
                         ~,~,...
                         efficacy_bis_with2first,...
                         ~] = extract_mental_perf(subBehaviorFolder, sub_nm, run_nm);
-                    prevEfficacy.Em(runTrials_idx) = [0,efficacy_bis_with2first(2:end)];
+                    efficacy_tmp = efficacy_bis_with2first.allTrials;
+                    prevEfficacy.Em(runTrials_idx) = [0,efficacy_tmp(2:end)];
             end % task filter to adapt temporal cost
+            % extract fMRI data
+            BOLD.VS.(task_id)(runTrials_idx) = VS_trial_b_trial.VS.(task_id).(run_nm_bis).choice(:,1);
+            BOLD.dmPFC.(task_id)(runTrials_idx) = dmPFC_trial_b_trial.dmPFC.(task_id).(run_nm_bis).choice(:,1);
+            BOLD.aINS.(task_id)(runTrials_idx) = aINS_trial_b_trial.aINS.(task_id).(run_nm_bis).choice(:,1);
         end % run to include?
     end % run loop
     %% check number of runs
@@ -162,48 +145,81 @@ for iPM = 1:2
     switch task_id
         case 'Ep'
             xModel = [deltaR_money.Ep,...
-                deltaR_money.Ep.*BOLD.VS.Ep,...
+                (deltaR_money.Ep.*BOLD.VS.Ep),...
                 deltaP_money.Ep,...
-                deltaP_money.Ep.*BOLD.aINS.Ep,...
+                (deltaP_money.Ep.*BOLD.aINS.Ep),...
                 deltaE_level.Ep,...
-                deltaE_level.Ep.*BOLD.dmPFC.Ep,...
-                deltaE_level.Ep.*sumPrevAUC.Ep,...
-                deltaE_level.Ep.*sumPrevAUC.Ep.*BOLD.dmPFC.Ep];
+                (deltaE_level.Ep.*BOLD.dmPFC.Ep),...
+                (deltaE_level.Ep.*sumPrevAUC.Ep),...
+                (deltaE_level.Ep.*sumPrevAUC.Ep.*BOLD.dmPFC.Ep)];
         case 'Em'
             xModel = [deltaR_money.Em,...
-                deltaR_money.Em.*BOLD.VS.Em,...
+                (deltaR_money.Em.*BOLD.VS.Em),...
                 deltaP_money.Em,...
-                deltaP_money.Em.*BOLD.aINS.Em,...
+                (deltaP_money.Em.*BOLD.aINS.Em),...
                 deltaE_level.Em,...
-                deltaE_level.Em.*BOLD.dmPFC.Em,...
-                deltaE_level.Em.*prevEfficacy.Em,...
-                deltaE_level.Em.*prevEfficacy.Em.*BOLD.dmPFC.Em];
+                (deltaE_level.Em.*BOLD.dmPFC.Em),...
+                (deltaE_level.Em.*prevEfficacy.Em),...
+                (deltaE_level.Em.*prevEfficacy.Em.*BOLD.dmPFC.Em)];
     end % adapt fit to the task
-    % perform the model and extract the betas
-    betaModel = glmfit(xModel, choice_hE.(task_id),...
-        'binomial','link','logit');
-    % extract betas
-    betas.(task_id).bias = betaModel(1);
-    betas.(task_id).bR = betaModel(2);
-    betas.(task_id).b_VS_R = betaModel(3);
-    betas.(task_id).bP = betaModel(4);
-    betas.(task_id).b_aINS_P = betaModel(5);
-    betas.(task_id).bE = betaModel(6);
-    betas.(task_id).b_dmPFC_E = betaModel(7);
-    switch task_id
-        case 'Ep'
-            betas.(task_id).bFp = betaModel(8);
-            betas.(task_id).b_dmPFC_Fp = betaModel(9);
-        case 'Em'
-            betas.(task_id).bFm = betaModel(8);
-            betas.(task_id).b_dmPFC_Fm = betaModel(9);
+    
+    % check whether there are NaNs
+    nTrials = size(xModel,1);
+    goodTrials = false(1,nTrials);
+    for iTrial = 1:nTrials
+        if ~isnan(sum(xModel(iTrial,:)))
+            goodTrials(iTrial) = true;
+        else
+            goodTrials(iTrial) = false;
+        end
     end
-    % extract fitted choices
-    modelFit.(task_id) = glmval(betaModel, xModel, 'logit');
-    confidence.(task_id) = (modelFit.(task_id) - 0.5).^2;
+    
+    %% only perform GLM if enough non-NaN data
+    if sum(goodTrials) > 3
+        % perform the model and extract the betas
+        betaModel = glmfit(xModel(goodTrials,:), choice_hE.(task_id)(goodTrials),...
+            'binomial','link','logit');
+        % extract betas
+        betas.(task_id).bias = betaModel(1);
+        betas.(task_id).bR = betaModel(2);
+        betas.(task_id).b_VS_R = betaModel(3);
+        betas.(task_id).bP = betaModel(4);
+        betas.(task_id).b_aINS_P = betaModel(5);
+        betas.(task_id).bE = betaModel(6);
+        betas.(task_id).b_dmPFC_E = betaModel(7);
+        switch task_id
+            case 'Ep'
+                betas.(task_id).bFp = betaModel(8);
+                betas.(task_id).b_dmPFC_Fp = betaModel(9);
+            case 'Em'
+                betas.(task_id).bFm = betaModel(8);
+                betas.(task_id).b_dmPFC_Fm = betaModel(9);
+        end
+        % extract fitted choices
+        modelFit.(task_id) = glmval(betaModel, xModel, 'logit');
+        confidence.(task_id) = (modelFit.(task_id) - 0.5).^2;
+    else % not possible to apply the model => put NaN everywhere
+        [betas.(task_id).bias,...
+            betas.(task_id).bR,...
+            betas.(task_id).b_VS_R,...
+            betas.(task_id).bP,...
+            betas.(task_id).b_aINS_P,...
+            betas.(task_id).bE,...
+            betas.(task_id).b_dmPFC_E] = deal(NaN);
+        switch task_id
+            case 'Ep'
+                [betas.(task_id).bFp,...
+                    betas.(task_id).b_dmPFC_Fp] = deal(NaN);
+            case 'Em'
+                [betas.(task_id).bFm,...
+                    betas.(task_id).b_dmPFC_Fm] = deal(NaN);
+        end
+        [modelFit, confidence] = deal(NaN(1,nTrials));
+    end
 end % physical/mental
 
 % extract output
+choices.actualChoices = choice_hE;
 choices.choicesFitted = modelFit;
 choices.confidenceFitted = confidence;
 end % function

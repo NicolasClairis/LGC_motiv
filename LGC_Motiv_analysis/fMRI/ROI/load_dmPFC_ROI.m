@@ -33,8 +33,9 @@ sxyz_ROI(:, 4) = 1;
 %% extract in output
 dmPFC_ROI_infos.ROI_xyz.ROI_1 = sxyz_ROI;
 dmPFC_ROI_infos.ROI_sphere_or_mask.ROI_1 = 0;
-dmPFC_ROI_infos.ROI_nm.ROI_1 = 'dmPFC_Kurniawan_centered_8mm_radius';
+dmPFC_ROI_infos.ROI_nm.ROI_1 = 'dmPFC';
 dmPFC_ROI_infos.ROI_nm.ROI_1_shortName = 'dmPFC';
 dmPFC_ROI_infos.ROI_nm.ROI_1_centerCoords = num2str(ROI_coord_center); % store coordinates of the center of the sphere
+dmPFC_ROI_infos.n_ROIs = 1;
 
 end % function
