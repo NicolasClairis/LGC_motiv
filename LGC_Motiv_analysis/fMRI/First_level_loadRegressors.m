@@ -346,7 +346,7 @@ for iRP = 1:length(RPconds)
             end
             
             % probability of chosen option
-            pChosen = pChoice_hE.*(choice_hE == 1) + (1 - pChoice_hE).*(choice_hE == 0);
+            pChosen = pChoice_hE.*(choice_hE == 1)' + (1 - pChoice_hE).*(choice_hE == 0)';
         end % net value
         
         % load confidence
