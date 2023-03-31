@@ -9,7 +9,7 @@ function[VS_ROI_infos] = load_VS_ROI()
 gitFolder = fullfile('C:','Users','clairis','Desktop','GitHub',...
     'LGC_motiv','Matlab_DIY_functions',...
     'ROI','NicoC_masks','Striatum');
-maskName = 'NAcc_Pauli_75percent_threshold';
+maskName = 'NAcc_Pauli2017';
 mask_img = [gitFolder, filesep, maskName,'.nii'];
 %% get ROI coordinates
 % extract ROI mask as a 3-D matrix
