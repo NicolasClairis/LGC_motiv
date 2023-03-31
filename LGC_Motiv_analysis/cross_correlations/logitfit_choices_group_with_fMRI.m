@@ -84,6 +84,7 @@ for iS = 1:NS
             betas.(task_id).(prm_nm)(iS) = betas_tmp.(task_id).(prm_nm);
         end
     end % physical/mental loop
+    disp(['Subject ',sub_nm,' - ',num2str(iS),'/',num2str(NS),' done']);
 end % subject loop
 
 %% average data
