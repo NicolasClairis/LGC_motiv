@@ -187,14 +187,8 @@ for iPM = 1:2
         betas.(task_id).b_aINS_P = betaModel(5);
         betas.(task_id).bE = betaModel(6);
         betas.(task_id).b_dmPFC_E = betaModel(7);
-        switch task_id
-            case 'Ep'
-                betas.(task_id).bFp = betaModel(8);
-                betas.(task_id).b_dmPFC_Fp = betaModel(9);
-            case 'Em'
-                betas.(task_id).bFm = betaModel(8);
-                betas.(task_id).b_dmPFC_Fm = betaModel(9);
-        end
+        betas.(task_id).bF = betaModel(8);
+        betas.(task_id).b_dmPFC_F = betaModel(9);
         % extract fitted choices
         modelFit.(task_id) = glmval(betaModel, xModel, 'logit');
         confidence.(task_id) = (modelFit.(task_id) - 0.5).^2;
@@ -205,15 +199,9 @@ for iPM = 1:2
             betas.(task_id).bP,...
             betas.(task_id).b_aINS_P,...
             betas.(task_id).bE,...
-            betas.(task_id).b_dmPFC_E] = deal(NaN);
-        switch task_id
-            case 'Ep'
-                [betas.(task_id).bFp,...
-                    betas.(task_id).b_dmPFC_Fp] = deal(NaN);
-            case 'Em'
-                [betas.(task_id).bFm,...
-                    betas.(task_id).b_dmPFC_Fm] = deal(NaN);
-        end
+            betas.(task_id).b_dmPFC_E,...
+            betas.(task_id).bF,...
+            betas.(task_id).b_dmPFC_F] = deal(NaN);
         [modelFit, confidence] = deal(NaN(1,nTrials));
     end
 end % physical/mental
