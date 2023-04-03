@@ -60,6 +60,9 @@ parameter_names = parameters;
 parameter_names(strcmp(parameter_names,'CID'))=[]; % remove indication of subject ID
 nPrm = length(parameter_names);
 
+%% launch this before to avoid case where nothing is significant for the
+% current BOLD contrast but the information from the previous test was kept
+clear('mediation_path','pval','N_goodSubs');
 %% perform the mediation
 pval.signif = struct;
 dispMed = 0; % do not display mediation (too many plots)
@@ -85,6 +88,8 @@ for iROI = 1:nROIs
                 con_data(goodSubs),...
                 behavPrm(goodSubs),...
                 X_nm, M_nm, Y_nm, dispMed);
+            % store how many subjects were kept
+            N_goodSubs.(MRS_ROI_nm).(metabolite_nm) = sum(goodSubs);
             
             % store when significant
             if pval.(MRS_ROI_nm).(metabolite_nm).(prm_nm).a < 0.05 &&...
@@ -108,6 +113,8 @@ for iROI = 1:nROIs
                 con_data(goodSubs_bis),...
                 behavPrm(goodSubs_bis),...
                 X_nm, M_nm, Y_nm, dispMed);
+            % store how many subjects were kept
+            N_goodSubs.no_outliers.(MRS_ROI_nm).(metabolite_nm).(prm_nm) = sum(goodSubs_bis);
             
             % store when significant
             if pval.no_outliers.(MRS_ROI_nm).(metabolite_nm).(prm_nm).a < 0.05 &&...
@@ -118,3 +125,8 @@ for iROI = 1:nROIs
         end % parameter loop
     end % metabolites loop
 end % ROI loop
+
+%% line to launch to run again on a different contrast
+% launch this before to avoid case where nothing is significant for the
+% current BOLD contrast but the information from the previous test was kept
+% clear('mediation_path','pval','N_goodSubs');
