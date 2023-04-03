@@ -743,14 +743,14 @@ for iEpm = 1:length(Epm)
                 if strcmp(task_id_nm, 'Ep') % physical effort only
                     % area under the curve of the force that is gonna be produced
                     switch GLMprm.choice.(task_id_nm).(RP_dispChoice_nm).(splitE_dispChoice_nm).F_integral
-                    case 0
-                        case 1
+                        case 0
+                        case {1,3}
                             n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                             reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG choice ',RP_dispChoice_nm,' ',splitE_dispChoice_nm,': effort integral'];
                             disp([num2str(n_regs.(task_id_nm)),') choice: effort integral ']);
                             % if derivative added => add derivatives
                             n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
-                        case 2
+                        case {2,4}
                             n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                             reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG choice ',RP_dispChoice_nm,' ',splitE_dispChoice_nm,': effort integral overshoot'];
                             disp([num2str(n_regs.(task_id_nm)),') choice: effort integral overshoot ']);
@@ -1379,13 +1379,13 @@ for iEpm = 1:length(Epm)
                     % area under the curve of the force that is gonna be produced
                     switch GLMprm.chosen.(task_id_nm).(RP_dispChosen_nm).(splitE_dispChosen_nm).F_integral
                         case 0
-                        case 1
+                        case {1,3}
                             n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                             reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG chosen ',RP_dispChosen_nm,' ',splitE_dispChosen_nm,': force integral'];
                             disp([num2str(n_regs.(task_id_nm)),') chosen: effort integral ']);
                             % if derivative added => add derivatives
                             n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
-                        case 2
+                        case {2,4}
                             n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                             reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG chosen ',RP_dispChosen_nm,' ',splitE_dispChosen_nm,': force integral overshoot'];
                             disp([num2str(n_regs.(task_id_nm)),') chosen: effort integral overshoot ']);
@@ -1613,7 +1613,7 @@ for iEpm = 1:length(Epm)
                 switch task_id_nm
                     case 'Ep'
                         switch GLMprm.preEffortCross.(task_id_nm).(RP_preEcross_nm).(splitE_preEcross_nm).F_peak
-                            case 1
+                            case {1,2}
                                 n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                                 reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG preEffort cross ',RP_preEcross_nm,' ',splitE_preEcross_nm,': force peak'];
                                 disp([num2str(n_regs.(task_id_nm)),') pre-effort cross: force peak ']);
@@ -1623,12 +1623,14 @@ for iEpm = 1:length(Epm)
                         
                         % force integral
                         switch GLMprm.preEffortCross.(task_id_nm).(RP_preEcross_nm).(splitE_preEcross_nm).F_integral
-                            case 1
+                            case {1,3}
                                 n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                                 reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG preEffort cross ',RP_preEcross_nm,' ',splitE_preEcross_nm,': force integral'];
                                 disp([num2str(n_regs.(task_id_nm)),') pre-effort cross: force integral ']);
                                 % if derivative added => add derivatives
                                 n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                            case {2,4}
+                                error('please update');
                         end
                         
                     case 'Em'
@@ -1838,7 +1840,7 @@ for iEpm = 1:length(Epm)
                     case 'Ep'
                         % force peak
                         switch GLMprm.Eperf.(task_id_nm).(RP_Eperf_nm).(splitE_Eperf_nm).F_peak
-                            case 1
+                            case {1,2}
                                 n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                                 reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG effort ',RP_Eperf_nm,' ',splitE_Eperf_nm,': force peak'];
                                 disp([num2str(n_regs.(task_id_nm)),') effort period: force peak ']);
@@ -1848,13 +1850,13 @@ for iEpm = 1:length(Epm)
                         
                         % force integral
                         switch GLMprm.Eperf.(task_id_nm).(RP_Eperf_nm).(splitE_Eperf_nm).F_integral
-                            case 1
+                            case {1,3}
                                 n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                                 reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG effort ',RP_Eperf_nm,' ',splitE_Eperf_nm,': force integral'];
                                 disp([num2str(n_regs.(task_id_nm)),') effort period: force integral ']);
                                 % if derivative added => add derivatives
                                 n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
-                            case 2
+                            case {2,4}
                                 n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                                 reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG effort ',RP_Eperf_nm,' ',splitE_Eperf_nm,': force integral overshoot'];
                                 disp([num2str(n_regs.(task_id_nm)),') effort period: force integral overshoot ']);
@@ -1936,8 +1938,8 @@ for iEpm = 1:length(Epm)
                 switch GLMprm.Eperf.(task_id_nm).(RP_Eperf_nm).(splitE_Eperf_nm).RT_1stAnswer
                     case 1
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
-                        reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG effort ',RP_Eperf_nm,' ',splitE_Eperf_nm,': RT 1st answer'];
-                        disp([num2str(n_regs.(task_id_nm)),') effort period: RT 1st answer (raw) ']);
+                        reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG effort ',RP_Eperf_nm,' ',splitE_Eperf_nm,': effort latency'];
+                        disp([num2str(n_regs.(task_id_nm)),') effort period: effort latency (raw) ']);
                         % if derivative added => add derivatives
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
                 end

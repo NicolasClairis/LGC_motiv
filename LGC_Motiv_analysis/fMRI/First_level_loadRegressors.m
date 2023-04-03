@@ -223,11 +223,19 @@ P_level_chosen = money_level_chosen.*(RP_var == -1);
 
 switch task_fullName
     case 'physical'
-        [latency_tmp, AUC_tmp, forcePeak_tmp, AUC_overshoot_tmp] = extract_grip_force(subBehaviorFolder, sub_nm, run_nm);
+        [latency_tmp,...
+            AUC_tmp, forcePeak_tmp, AUC_overshoot_tmp,...
+            AUC_N_tmp, forcePeak_N_tmp, AUC_overshoot_N_tmp] = extract_grip_force(subBehaviorFolder, sub_nm, run_nm);
+        % time to start squeezing
         latency = latency_tmp.allTrials;
+        % force variables in Volts
         AUC = AUC_tmp.allTrials;
         forcePeak = forcePeak_tmp.allTrials;
         AUC_overshoot = AUC_overshoot_tmp.allTrials;
+        % force variables converted in Newtons
+        AUC_N = AUC_N_tmp.allTrials;
+        forcePeak_N = forcePeak_N_tmp.allTrials;
+        AUC_overshoot_N = AUC_overshoot_N_tmp.allTrials;
         % extract fatigue
         fatigue = NaN(1,n_trials);
         for iTrial = 1:n_trials
@@ -244,7 +252,8 @@ switch task_fullName
             efficacy_with2first_tmp,...
             efficacy_pureNback_tmp,...
             efficacy_bis_with2first_tmp,...
-            efficacy_bis_pureNback_tmp] = extract_mental_perf(subBehaviorFolder, sub_nm, run_nm);
+            efficacy_bis_pureNback_tmp,...
+            latency_tmp] = extract_mental_perf(subBehaviorFolder, sub_nm, run_nm);
         n_errors = n_errors_tmp.allTrials;
         RT_avg = RT_avg_tmp.allTrials;
         efficacy_with2first = efficacy_with2first_tmp.allTrials;
@@ -268,6 +277,7 @@ switch task_fullName
                 prevEfficacy_bis_pureNback(iTrial) = efficacy_bis_pureNback(iTrial-1);
             end
         end
+        latency = latency_tmp.allTrials;
 end
 
 % reward levels = 0/1/2/3 and punishment levels = 1/2/3/4 in money_level
@@ -498,10 +508,12 @@ if sum(choiceMissedTrials) > 0
     trialN_dEnonDef(choiceMissedTrials) = [];
     switch task_fullName
         case 'physical'
-            latency(choiceMissedTrials) = [];
             AUC(choiceMissedTrials) = [];
             forcePeak(choiceMissedTrials) = [];
             AUC_overshoot(choiceMissedTrials) = [];
+            AUC_N(choiceMissedTrials) = [];
+            forcePeak_N(choiceMissedTrials) = [];
+            AUC_overshoot_N(choiceMissedTrials) = [];
             fatigue(choiceMissedTrials) = [];
         case 'mental'
             n_errors(choiceMissedTrials) = [];
@@ -515,6 +527,7 @@ if sum(choiceMissedTrials) > 0
             prevEfficacy_bis_with2first(choiceMissedTrials) = [];
             prevEfficacy_bis_pureNback(choiceMissedTrials) = [];
     end
+    latency(choiceMissedTrials) = [];
 end
 
 %% load the batch according to GLMprm variables
@@ -1143,6 +1156,10 @@ if ismember(choiceModel,{'stick','boxcar'})
                             choice_modVals(n_choiceMods,:) = raw_or_z(AUC(choice_trial_idx));
                         case 2
                             choice_modVals(n_choiceMods,:) = raw_or_z(AUC_overshoot(choice_trial_idx));
+                        case 3
+                            choice_modVals(n_choiceMods,:) = raw_or_z(AUC_N(choice_trial_idx));
+                        case 4
+                            choice_modVals(n_choiceMods,:) = raw_or_z(AUC_overshoot_N(choice_trial_idx));
                         otherwise
                             error('not ready yet');
                     end
@@ -1740,6 +1757,10 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                             chosen_modVals(n_chosenMods,:) = raw_or_z(AUC(chosen_trial_idx));
                         case 2
                             chosen_modVals(n_chosenMods,:) = raw_or_z(AUC_overshoot(chosen_trial_idx));
+                        case 3
+                            chosen_modVals(n_chosenMods,:) = raw_or_z(AUC_N(chosen_trial_idx));
+                        case 4
+                            chosen_modVals(n_chosenMods,:) = raw_or_z(AUC_overshoot_N(chosen_trial_idx));
                         otherwise
                             error('not ready yet');
                     end
@@ -2053,10 +2074,10 @@ if ismember(preEffortCrossModel,{'stick','boxcar','boxcar_bis'})
             % RT 1st answer
             if preEcrossModel_RT1stAnswer > 0
                 n_preEcrossMods = n_preEcrossMods + 1;
-                preEcross_modNames{n_preEcrossMods} = 'RT 1st answer';
+                preEcross_modNames{n_preEcrossMods} = 'Effort latency';
                 switch preEcrossModel_RT1stAnswer
                     case 1
-                        error('not ready yet');
+                        preEcross_modVals(n_preEcrossMods,:) = raw_or_z(latency(preEcross_trial_idx));
                         %             preEcross_modVals(n_preEcrossMods,:) = ;
                     otherwise
                         error('not ready yet');
@@ -2213,6 +2234,8 @@ if ismember(EperfModel,{'stick','boxcar'})
                     switch EperfModel_F_peak
                         case 1
                             Eperf_modVals(n_EperfMods,:) = raw_or_z(forcePeak(Eperf_trial_idx));
+                        case 2
+                            Eperf_modVals(n_EperfMods,:) = raw_or_z(forcePeak_N(Eperf_trial_idx));
                         otherwise
                             error('not ready yet');
                     end
@@ -2227,6 +2250,10 @@ if ismember(EperfModel,{'stick','boxcar'})
                             Eperf_modVals(n_EperfMods,:) = raw_or_z(AUC(Eperf_trial_idx));
                         case 2
                             Eperf_modVals(n_EperfMods,:) = raw_or_z(AUC_overshoot(Eperf_trial_idx));
+                        case 3
+                            Eperf_modVals(n_EperfMods,:) = raw_or_z(AUC_N(Eperf_trial_idx));
+                        case 4
+                            Eperf_modVals(n_EperfMods,:) = raw_or_z(AUC_overshoot_N(Eperf_trial_idx));
                         otherwise
                             error('not ready yet');
                     end
@@ -2313,11 +2340,10 @@ if ismember(EperfModel,{'stick','boxcar'})
             % RT 1st answer
             if EperfModel_RT1stAnswer > 0
                 n_EperfMods = n_EperfMods + 1;
-                Eperf_modNames{n_EperfMods} = 'RT 1st answer';
+                Eperf_modNames{n_EperfMods} = 'Effort latency';
                 switch EperfModel_RT1stAnswer
                     case 1
-                        error('not ready yet');
-                        %             Eperf_modVals(n_EperfMods,:) = ;
+                        Eperf_modVals(n_EperfMods,:) = raw_or_z(latency(Eperf_trial_idx));
                     otherwise
                         error('not ready yet');
                 end

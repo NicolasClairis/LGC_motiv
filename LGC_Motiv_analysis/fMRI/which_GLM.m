@@ -206,6 +206,11 @@ function [GLMprm] = which_GLM(GLM)
 %       (2) integral of effort performed during the effort period
 %       considering only the overshoot (force produced above the red
 %       threshold)
+%       (3) integral of effort performed during the effort period with
+%       force in newtons
+%       (4) integral of effort performed during the effort period
+%       considering only the overshoot (force produced above the red
+%       threshold) with force in newtons
 %
 %       .(choice/chosen).Em.(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).efficacy:
 %       mental effort only: efficacy for the performance of the current trial
@@ -293,13 +298,19 @@ function [GLMprm] = which_GLM(GLM)
 %       (2) effort difficulty associated to chosen option (Ep: duration to hold; Em: nb answers to give)
 %
 %       .Eperf.Ep.(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).F_peak: physical effort only: force peak
-%       (1) force peak in newtons
+%       (1) force peak in voltage
+%       (2) force peak in newtons
 %
 %       .Eperf.Ep.(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).F_integral: physical effort only: force integral
 %       (1) integral of effort performed during the effort period
 %       (2) integral of effort performed during the effort period
 %       considering only the overshoot (force produced above the red
 %       threshold)
+%       (3) integral of effort performed during the effort period with
+%       force in newtons
+%       (4) integral of effort performed during the effort period
+%       considering only the overshoot (force produced above the red
+%       threshold) with force in newtons
 %
 %       .Eperf.Em.(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).efficacy:
 %       mental effort only: efficacy defined as:
@@ -3059,6 +3070,36 @@ switch GLM
                 case 'Em'
                     GLMprm.Eperf.(Epm_nm).RP.E.prevEfficacy = 3;
             end
+            % feedback
+            GLMprm.model_onset.(Epm_nm).fbk = 'stick';
+        end % physical/mental loop
+    case 111 % looking at efficacy (in Em), force integral (in Ep) and latency
+        % general parameters
+        GLMprm.gal.orth_vars = 0;
+        GLMprm.gal.zPerRun = 0;
+        % loop per task
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'stick';
+            GLMprm.choice.(Epm_nm).RP.E.R_chosen = 2;
+            GLMprm.choice.(Epm_nm).RP.E.P_chosen = 2;
+            GLMprm.choice.(Epm_nm).RP.E.E_chosen = 1;
+            switch Epm_nm
+                case 'Ep'
+                    GLMprm.choice.(Epm_nm).RP.E.fatigue = 1;
+                case 'Em'
+                    GLMprm.choice.(Epm_nm).RP.E.prevEfficacy = 3;
+            end
+            % effort perf (effort execution)
+            GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
+            switch Epm_nm
+                case 'Ep'
+                    GLMprm.Eperf.Ep.RP.E.F_integral = 3;
+                case 'Em'
+                    GLMprm.Eperf.Em.RP.E.efficacy = 3;
+            end
+            GLMprm.Eperf.(Epm_nm).RP.E.RT_1stAnswer = 1;
             % feedback
             GLMprm.model_onset.(Epm_nm).fbk = 'stick';
         end % physical/mental loop
