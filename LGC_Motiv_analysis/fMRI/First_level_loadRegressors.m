@@ -530,6 +530,9 @@ if sum(choiceMissedTrials) > 0
     latency(choiceMissedTrials) = [];
 end
 
+% extract trials where no performance was achieved
+perfOkTrials = ~isnan(latency);
+
 %% load the batch according to GLMprm variables
 % load general GLM parameters
 orth_vars = GLMprm.gal.orth_vars;
@@ -2171,7 +2174,7 @@ if ismember(EperfModel,{'stick','boxcar'})
                 case 'hEch'
                     Efilter_Eperf = (choice_hE == 1);
             end
-            Eperf_trial_idx = (RPfilter_Eperf.*Efilter_Eperf) == 1; % NEED to transform it into logical or will just focus on the first trial
+            Eperf_trial_idx = (RPfilter_Eperf.*Efilter_Eperf.*perfOkTrials) == 1; % NEED to transform it into logical or will just focus on the first trial
             
             %% Effort performance onset
             iCond = iCond + 1;
