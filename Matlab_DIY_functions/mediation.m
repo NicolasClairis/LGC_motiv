@@ -1,5 +1,5 @@
-function[a,b,c,c_prime, pval] = mediation(X, M, Y, X_nm, M_nm, Y_nm, dispResults)
-% [a,b,c,c_prime pval] = mediation(X, M, Y, X_nm, M_nm, Y_nm, dispResults)
+function[a,b,c,c_prime, pval, stats] = mediation(X, M, Y, X_nm, M_nm, Y_nm, dispResults)
+% [a,b,c,c_prime, pval, stats] = mediation(X, M, Y, X_nm, M_nm, Y_nm, dispResults)
 % mediation will perform a mediation going from X to Y through M as a
 % mediator and will display the corresponding betas (rounded at 3 values
 % after the coma) and p.values.
@@ -35,6 +35,10 @@ function[a,b,c,c_prime, pval] = mediation(X, M, Y, X_nm, M_nm, Y_nm, dispResults
 % c_prime: beta of X=>Y path taking M into account
 %
 % pval: structure with p.value for each path
+%
+% stats: structure containing more information about the different path
+% (like t.values, correlation coefficient with a Pearson's correlation and
+% the degree of freedom)
 %
 % Developped by Nicolas Clairis - 17/08/2022 under Jules Brochard advice
 
@@ -94,18 +98,40 @@ Y = Y(goodSamples);
 [betas_1,~,stats_1] = glmfit(X, M,'normal');
 a = betas_1(2);
 pval.a = stats_1.p(2);
+stats.tValue.a = stats_1.t(2);
+stats.degree_of_freedom.a = stats_1.dfe;
+% extract coefficient of correlation between X and M
+path_A_corrCoef = corrcoeff(X,M);
+stats.R.a = path_A_corrCoef(2);
+stats.R2.a = path_A_corrCoef(2).^2;
 
 % test correlation between X, M and Y (path b)
 [betas_2,~,stats_2] = glmfit([M, X], Y,'normal');
 b       = betas_2(2);
 c_prime = betas_2(3);
+% store p.value
 pval.b          = stats_2.p(2);
 pval.c_prime    = stats_2.p(3);
+% store t.value
+stats.tValue.b = stats_2.t(2);
+stats.tValue.c_prime = stats_2.t(3);
+stats.degree_of_freedom.b = stats_2.dfe;
+% extract coefficient of correlation between M and Y taken X into account
+% not sure how to do it properly for now so let's temporarily forget about
+% it
 
 % test also direct path between X and Y (path c)
 [betas_3,~,stats_3] = glmfit(X, Y,'normal');
 c = betas_3(2);
+% store p.value
 pval.c = stats_3.p(2);
+% store t.value
+stats.tValue.c = stats_3.t(2);
+stats.degree_of_freedom.c = stats_3.dfe;
+% extract coefficient of correlation between X and Y
+path_C_corrCoef = corrcoeff(X,Y);
+stats.R.c = path_C_corrCoef(2);
+stats.R2.c = path_C_corrCoef(2).^2;
 
 %% display relevant p.values in the command window to summarize the 
 % results of the mediation
