@@ -53,10 +53,14 @@ switch onsets_only_GLM
                 matlabbatch{sub_idx}.spm.stats.fmri_spec.sess(iRun).cond(iCond).pmod(iMod).param = mod_vals(iMod,:);
                 matlabbatch{sub_idx}.spm.stats.fmri_spec.sess(iRun).cond(iCond).pmod(iMod).poly = 1;
                 
-                % verify that the regressor has some variability (otherwise
+                %% check that regressor is clean before launching 1st level
+                % 1) verify that the regressor has some variability (otherwise
                 % SPM may crash when performing the contrast)
+                % 2) verify that there are no NaNs remaining
                 if all(mod_vals(iMod,:) == mod_vals(iMod,1))
                     error([mod_nm{iMod},' condition ',cond_nm,' all values are the same.']);
+                elseif any(isnan(mod_vals(iMod,:)))
+                    error([mod_nm{iMod},' condition ',cond_nm,' contains NaN values.']);
                 end
             end
         end
