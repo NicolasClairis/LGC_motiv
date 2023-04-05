@@ -75,6 +75,11 @@ function[subject_id, NS] = LGCM_subject_selection(study_nm, condition, genderFil
 % by default include all subjects
 if ~exist('genderFilter','var') || isempty(genderFilter)
     genderFilter = 'all';
+else
+    if ~ismember(genderFilter,{'males','females'})
+        error(['gender defined as ',genderFilter,...
+            ' but this condition is not considered. Please fix and try again.']);
+    end
 end
 
 % extract list of subjects
