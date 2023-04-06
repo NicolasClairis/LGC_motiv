@@ -326,6 +326,11 @@ function [GLMprm] = which_GLM(GLM)
 %       time for answering N-back task
 %       (1) average reaction time for answering to questions (in seconds)
 %
+%       .Eperf.Em.(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).n_correct:
+%       mental effort only: number of correct answers made per trial
+%       (1) number of correct answers provided (ignoring the two first
+%       useless digits)
+%
 %       .Eperf.Em.(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).n_errors: mental effort only: number of errors
 %       made per trial
 %       (1) number of errors made
@@ -593,6 +598,7 @@ for iEpm = 1:length(Ep_Em)
                 case 'Em'
                     % effort performance
                     [GLMprm.preEffortCross.Em.(RP_nm).(Econd_nm).RT_avg,...
+                        GLMprm.preEffortCross.Em.(RP_nm).(Econd_nm).n_correct,...
                         GLMprm.preEffortCross.Em.(RP_nm).(Econd_nm).n_errors] = deal(0);
             end
             [GLMprm.preEffortCross.(EpEm_nm).(RP_nm).(Econd_nm).NV_mdl,...
@@ -607,6 +613,7 @@ for iEpm = 1:length(Ep_Em)
                 GLMprm.Eperf.Ep.(RP_nm).(Econd_nm).F_integral,...
                 GLMprm.Eperf.Em.(RP_nm).(Econd_nm).efficacy,...
                 GLMprm.Eperf.Em.(RP_nm).(Econd_nm).RT_avg,...
+                GLMprm.Eperf.Em.(RP_nm).(Econd_nm).n_correct,...
                 GLMprm.Eperf.Em.(RP_nm).(Econd_nm).n_errors,...
                 GLMprm.Eperf.(EpEm_nm).(RP_nm).(Econd_nm).NV_chosen,...
                 GLMprm.Eperf.(EpEm_nm).(RP_nm).(Econd_nm).NV_varOption,...
@@ -3100,6 +3107,35 @@ switch GLM
                     GLMprm.Eperf.Em.RP.E.efficacy = 3;
             end
             GLMprm.Eperf.(Epm_nm).RP.E.RT_1stAnswer = 1;
+            % feedback
+            GLMprm.model_onset.(Epm_nm).fbk = 'stick';
+        end % physical/mental loop
+    case 112 % looking at nb correct (in Em) and force integral (in Ep)
+        % general parameters
+        GLMprm.gal.orth_vars = 0;
+        GLMprm.gal.zPerRun = 0;
+        % loop per task
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'stick';
+            GLMprm.choice.(Epm_nm).RP.E.R_chosen = 2;
+            GLMprm.choice.(Epm_nm).RP.E.P_chosen = 2;
+            GLMprm.choice.(Epm_nm).RP.E.E_chosen = 1;
+            switch Epm_nm
+                case 'Ep'
+                    GLMprm.choice.(Epm_nm).RP.E.fatigue = 1;
+                case 'Em'
+                    GLMprm.choice.(Epm_nm).RP.E.prevEfficacy = 3;
+            end
+            % effort perf (effort execution)
+            GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
+            switch Epm_nm
+                case 'Ep'
+                    GLMprm.Eperf.Ep.RP.E.F_integral = 3;
+                case 'Em'
+                    GLMprm.Eperf.Em.RP.E.n_correct = 1;
+            end
             % feedback
             GLMprm.model_onset.(Epm_nm).fbk = 'stick';
         end % physical/mental loop

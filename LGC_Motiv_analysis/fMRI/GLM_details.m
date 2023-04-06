@@ -1644,6 +1644,16 @@ for iEpm = 1:length(Epm)
                                 n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
                         end
                         
+                        % number of correct answers
+                        switch GLMprm.preEffortCross.(task_id_nm).(RP_preEcross_nm).(splitE_preEcross_nm).n_correct
+                            case 1
+                                n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                                reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG preEffort cross ',RP_preEcross_nm,' ',splitE_preEcross_nm,': number of correct answers'];
+                                disp([num2str(n_regs.(task_id_nm)),') pre-effort cross: number of correct answers ']);
+                                % if derivative added => add derivatives
+                                n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                        end
+                        
                         % number of errors
                         switch GLMprm.preEffortCross.(task_id_nm).(RP_preEcross_nm).(splitE_preEcross_nm).n_errors
                             case 1
@@ -1881,6 +1891,16 @@ for iEpm = 1:length(Epm)
                                 n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                                 reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG effort ',RP_Eperf_nm,' ',splitE_Eperf_nm,': average RT effort'];
                                 disp([num2str(n_regs.(task_id_nm)),') effort period: average RT effort ']);
+                                % if derivative added => add derivatives
+                                n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                        end
+                        
+                        % number of correct answers
+                        switch GLMprm.Eperf.(task_id_nm).(RP_Eperf_nm).(splitE_Eperf_nm).n_correct
+                            case 1
+                                n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                                reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG effort ',RP_Eperf_nm,' ',splitE_Eperf_nm,': number of correct answers'];
+                                disp([num2str(n_regs.(task_id_nm)),') effort period: number of correct answers ']);
                                 % if derivative added => add derivatives
                                 n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
                         end

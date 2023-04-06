@@ -246,7 +246,7 @@ switch task_fullName
             end
         end
     case 'mental'
-        [~, ~, n_errors_tmp, RT_avg_tmp,...
+        [~, n_correct_tmp, n_errors_tmp, RT_avg_tmp,...
             ~,...
             ~,...
             efficacy_with2first_tmp,...
@@ -254,6 +254,7 @@ switch task_fullName
             efficacy_bis_with2first_tmp,...
             efficacy_bis_pureNback_tmp,...
             latency_tmp] = extract_mental_perf(subBehaviorFolder, sub_nm, run_nm);
+        n_correct = n_correct_tmp.allTrials;
         n_errors = n_errors_tmp.allTrials;
         RT_avg = RT_avg_tmp.allTrials;
         efficacy_with2first = efficacy_with2first_tmp.allTrials;
@@ -516,6 +517,7 @@ if sum(choiceMissedTrials) > 0
             AUC_overshoot_N(choiceMissedTrials) = [];
             fatigue(choiceMissedTrials) = [];
         case 'mental'
+            n_correct(choiceMissedTrials) = [];
             n_errors(choiceMissedTrials) = [];
             RT_avg(choiceMissedTrials) = [];
             efficacy_with2first(choiceMissedTrials) = [];
@@ -1924,6 +1926,7 @@ if ismember(preEffortCrossModel,{'stick','boxcar','boxcar_bis'})
                     preEcrossModel_F_peak = 0;
                     preEcrossModel_F_integral = 0;
                     preEcrossModel_RT_avg           = GLMprm.preEffortCross.(task_id).(RP_preEcross_nm).(splitE_preEcross_nm).RT_avg;
+                    preEcrossModel_n_correct        = GLMprm.preEffortCross.(task_id).(RP_preEcross_nm).(splitE_preEcross_nm).n_correct;
                     preEcrossModel_n_errors         = GLMprm.preEffortCross.(task_id).(RP_preEcross_nm).(splitE_preEcross_nm).n_errors;
             end
             preEcrossModel_NV_chosen        = GLMprm.preEffortCross.(task_id).(RP_preEcross_nm).(splitE_preEcross_nm).NV_chosen;
@@ -2036,6 +2039,11 @@ if ismember(preEffortCrossModel,{'stick','boxcar','boxcar_bis'})
                 error('case not ready yet.');
             end
             
+            % number of correct answers
+            if preEcrossModel_n_correct > 0
+                error('case not ready yet.');
+            end
+            
             % number of errors
             if preEcrossModel_n_errors > 0
                 error('case not ready yet.');
@@ -2136,6 +2144,7 @@ if ismember(EperfModel,{'stick','boxcar'})
                     EperfModel_prevEfficacy         = GLMprm.Eperf.(task_id).(RP_Eperf_nm).(splitE_Eperf_nm).prevEfficacy;
                     EperfModel_Ech_x_prevEfficacy   = GLMprm.Eperf.(task_id).(RP_Eperf_nm).(splitE_Eperf_nm).Ech_x_prevEfficacy;
                     EperfModel_RT_avg               = GLMprm.Eperf.(task_id).(RP_Eperf_nm).(splitE_Eperf_nm).RT_avg;
+                    EperfModel_n_correct            = GLMprm.Eperf.(task_id).(RP_Eperf_nm).(splitE_Eperf_nm).n_correct;
                     EperfModel_n_errors             = GLMprm.Eperf.(task_id).(RP_Eperf_nm).(splitE_Eperf_nm).n_errors;
             end
             EperfModel_NV_chosen        = GLMprm.Eperf.(task_id).(RP_Eperf_nm).(splitE_Eperf_nm).NV_chosen;
@@ -2294,6 +2303,18 @@ if ismember(EperfModel,{'stick','boxcar'})
                     end
                 end
 
+                % number of correct answers
+                if EperfModel_n_correct > 0
+                    n_EperfMods = n_EperfMods + 1;
+                    Eperf_modNames{n_EperfMods} = 'nb correct';
+                    switch EperfModel_n_correct
+                        case 1
+                            Eperf_modVals(n_EperfMods,:) = raw_or_z(n_correct(Eperf_trial_idx));
+                        otherwise
+                            error('not ready yet');
+                    end
+                end
+                
                 % number of errors
                 if EperfModel_n_errors > 0
                     n_EperfMods = n_EperfMods + 1;
