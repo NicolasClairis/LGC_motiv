@@ -101,7 +101,7 @@ pval.a = stats_1.p(2);
 stats.tValue.a = stats_1.t(2);
 stats.degree_of_freedom.a = stats_1.dfe;
 % extract coefficient of correlation between X and M
-path_A_corrCoef = corrcoeff(X,M);
+path_A_corrCoef = corrcoef(X,M);
 stats.R.a = path_A_corrCoef(2);
 stats.R2.a = path_A_corrCoef(2).^2;
 
@@ -129,7 +129,7 @@ pval.c = stats_3.p(2);
 stats.tValue.c = stats_3.t(2);
 stats.degree_of_freedom.c = stats_3.dfe;
 % extract coefficient of correlation between X and Y
-path_C_corrCoef = corrcoeff(X,Y);
+path_C_corrCoef = corrcoef(X,Y);
 stats.R.c = path_C_corrCoef(2);
 stats.R2.c = path_C_corrCoef(2).^2;
 
