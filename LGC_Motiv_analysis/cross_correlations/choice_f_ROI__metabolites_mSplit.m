@@ -13,7 +13,7 @@ condition = subject_condition;
 subject_id = LGCM_subject_selection(study_nm, condition);
 
 %% general parameters
-tasks = {'Ep','Em'};
+tasks = {'Ep','Em','EpEmPool'};
 nTasks = length(tasks);
 nBins = 6;
 ROI_RT_orth = 1; % orthogonalize ROI to RT
