@@ -177,10 +177,11 @@ if dispResults == 1
     % X => M (path a)
     M_fit = glmval(betas_1, X_ascOrder,'identity');
     % M => Y removing any influence of X (path b)
-    M_res_without_X = M - a.*X;
-    M_res_ascOrder = sort(M_res_without_X);
+%     M_res_without_X = M - a.*X;
+%     M_res_ascOrder = sort(M_res_without_X);
+    M_ascOrder = sort(M);
     Y_res_without_X = Y - c_prime.*X;
-    Y_b_fit = betas_2(1) + b.*M_res_ascOrder;
+    Y_b_fit = betas_2(1) + b.*M_ascOrder;
     
     fig;
     
@@ -197,13 +198,13 @@ if dispResults == 1
     ylabel(M_nm);
     legend_size(pSize);
     
-    % M => Y path (after removing X => M)
+    % M => Y path (after removing X => Y)
     subplot(2,2,2);
-    scat_hdl = scatter(M_res_without_X, Y_res_without_X);
+    scat_hdl = scatter(M, Y_res_without_X);
     scat_hdl.LineWidth = lWidth;
     scat_hdl.MarkerEdgeColor = black;
     hold on;
-    fit_hdl = plot(M_res_ascOrder, Y_b_fit);
+    fit_hdl = plot(M_ascOrder, Y_b_fit);
     fit_hdl.LineWidth = lWidth;
     fit_hdl.Color = grey;
     xlabel([M_nm,' -  path b']);
