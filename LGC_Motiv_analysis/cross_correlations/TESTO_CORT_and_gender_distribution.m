@@ -53,7 +53,7 @@ females_TESTO_CORT_E = females_TESTO_E./females_CORT_E;
 %% display data
 pSize = 30;
 %% for first sample
-fig;
+fig_A1 = fig;
 
 % testosterone
 subplot(1,3,1);
@@ -84,7 +84,7 @@ ylabel('Testosterone/Cortisol');
 legend_size(pSize);
 
 %% for last sample
-fig;
+fig_E = fig;
 
 % testosterone
 subplot(1,3,1);
