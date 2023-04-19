@@ -32,3 +32,11 @@ okSubs3 = ~isnan(dmPFC_GSH_allSubs).*~isnan(dmPFC_Glu_allSubs).*~isnan(dmPFC_Gly
 
 X_mb3 = [dmPFC_GSH_allSubs', dmPFC_Glu_allSubs', dmPFC_Gly_allSubs'];
 [beta_mb_fMRI3,~,stats_mb_fMRI3] = glmfit(X_mb3(okSubs3,:), con_data(okSubs3),'normal');
+
+%% same but without Gly
+dmPFC_GSH_allSubs = metabolites.dmPFC.GSH;
+dmPFC_Glu_allSubs = metabolites.dmPFC.Glu;
+okSubs4 = ~isnan(dmPFC_GSH_allSubs).*~isnan(dmPFC_Glu_allSubs).*~isnan(con_data) == 1; %.*~isnan(behavPrm)
+
+X_mb4 = [dmPFC_GSH_allSubs', dmPFC_Glu_allSubs'];
+[beta_mb_fMRI4,~,stats_mb_fMRI4] = glmfit(X_mb4(okSubs4,:), con_data(okSubs4),'normal');
