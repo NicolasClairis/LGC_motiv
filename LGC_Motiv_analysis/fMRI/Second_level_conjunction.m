@@ -1,7 +1,7 @@
-%% conjunction betwnneen two contrasts defined by the user
+% conjunction between two contrasts defined by the user
 
 %% clear
-clear all; close all; clc;
+clear; close all; clc;
 
 %% iniate spm
 spm('defaults','fmri');
@@ -34,25 +34,34 @@ preproc_sm_kernel = 8;
 % preproc_sm_kernel = spm_input('smoothing kernel to use?',1,'e','8');
 
 %% extract subjects
-[subject_id, NS] = LGCM_subject_selection(study_nm);
+[condition] = subject_condition;
+[subject_id, NS] = LGCM_subject_selection(study_nm, condition);
 NS_str = num2str(NS);
 
 %% define contrasts on which conjunction will be operated
-[con_names, con_vector] = LGCM_contrasts(study_nm, subject_id{1}, GLM, computerRoot, preproc_sm_kernel);
+switch condition
+    case 'fMRI_noSatRun_choiceSplit_Elvl_bis' % in this case, subject_id{1} does not include Em => need to adapt to include Em
+        con_names = LGCM_contrasts(study_nm, subject_id{16}, GLM,...
+            computerRoot, preproc_sm_kernel, condition);
+    otherwise
+        con_names = LGCM_contrasts(study_nm, subject_id{1}, GLM,...
+            computerRoot, preproc_sm_kernel, condition);
+end
 n_cons = length(con_names);
 
 nConsForConj = 2;
 selectedCon = NaN(1, nConsForConj);
-selectedConNames = cell(1,nConsForConj);
+[selectedConNames, selectedConShortNames] = deal(cell(1,nConsForConj));
 for iCon = 1:2
     selectedCon(iCon) = spm_input(['Please select contrast ',num2str(iCon),...
         ' for conjunction:'],...
         1,'m',con_names,1:n_cons,0);
-    selectedConNames{iCon} = spm_input(['Short name for: ',...
+    selectedConNames{iCon} = con_names{selectedCon(iCon)};
+    selectedConShortNames{iCon} = spm_input(['Short name for: ',...
         con_names{selectedCon(iCon)}],1,'s');
 end % contrast loop
 % create name for resulting conjunction
-conj_name = [selectedConNames{1},'_CONJ_',selectedConNames{2}];
+conj_name = [selectedConShortNames{1},'_CONJ_',selectedConShortNames{2}];
 % replace spaces by '_' if some spaces were left
 conj_name = strrep(conj_name,' ','_');
 
@@ -66,7 +75,8 @@ conResultsFolder = [resultsFolder,filesep,conj_name];
 if ~exist(conResultsFolder,'dir')
     mkdir(conResultsFolder);
 else
-    error([conResultsFolder,' already exists. Please rename folders to avoid confusion.']);
+    error([conResultsFolder,' already exists. ',...
+        'Please rename folders to avoid confusion.']);
 end
 %% initialize
 batch_idx = 0;
@@ -104,30 +114,42 @@ batch_idx = batch_idx + 1;
 % start second level:
 matlabbatch{batch_idx}.spm.stats.factorial_design.dir = {conResultsFolder};
 % list of inputs
-conlist = cell(NS, nConsForConj); % 1 con per EPI-subject
+conlist_allSubs = cell(NS, nConsForConj); % 1 con per EPI-subject
 % extract contrasts for each subject
 for iCon = 1:nConsForConj
-    con_idx = selectedCon(iCon);
-    con_str = num2str(con_idx);
+    current_con_nm = selectedConNames{iCon};
     for iS = 1:NS
         sub_nm = subject_id{iS};
+        % working directory
         subfMRIPath = [studyRoot,filesep,'CID',sub_nm, filesep,...
             'fMRI_analysis',filesep,'functional',filesep,...
-            'preproc_sm_',num2str(preproc_sm_kernel),'mm',filesep,...
-            'GLM',GLM_str, filesep];
-        if con_idx < 10
-            conlist(iS,iCon) = {[subfMRIPath,'con_000',con_str,'.nii,1']};
-        elseif con_idx >= 10 && con_idx < 100
-            conlist(iS,iCon) = {[subfMRIPath,'con_00',con_str,'.nii,1']};
-        elseif con_idx >= 100 && con_idx < 1000
-            conlist(iS,iCon) = {[subfMRIPath,'con_0',con_str,'.nii,1']};
+            'preproc_sm_',num2str(preproc_sm_kernel),'mm',filesep];
+        subject_main_folder = fMRI_subFolder(subfMRIPath, GLM, condition);
+        
+        % extract contrast names for current subject
+        con_names_perSub = LGCM_contrasts(study_nm, sub_nm, GLM,...
+            computerRoot, preproc_sm_kernel, condition);
+        if sum(strcmp(current_con_nm, con_names_perSub)) > 0
+            % extract index (for this subject) of the current contrast
+            jCon = find(strcmp(current_con_nm, con_names_perSub));
+            % extract name for this particular subject of the contrast of
+            % interest
+            [con_str] = conNumber2conName(jCon);
+            conlist_allSubs(iS,iCon) = {[subject_main_folder,'con_',con_str,'.nii,1']};
         end
     end
 end
 
+%% remove subjects where one of the contrast is missing
+okSubs = false(1,NS);
+for iS = 1:NS
+    okSubs(iS) = (~isempty(conlist_allSubs{iS,1}).*~isempty(conlist_allSubs{iS,2})) == 1;
+end % loop through subjects
+conlist = conlist_allSubs(okSubs,:);
+
 %% Be careful t2.scans (for two-sample t.test)
 which_technique = 1;
-if which_technique == 1
+if which_technique == 1 % 2-sample t.test (unpaired) allowing to group the contrasts for the conjunction together
     
     matlabbatch{batch_idx}.spm.stats.factorial_design.des.t2.scans1 = conlist(:,1);
     matlabbatch{batch_idx}.spm.stats.factorial_design.des.t2.scans2 = conlist(:,2);
@@ -150,7 +172,7 @@ elseif which_technique == 2
         tmp = zeros(NS*n_cons,1);
         tmp(1+(iCon-1)*NS:iCon*NS) = 1;
         matlabbatch{batch_idx}.spm.stats.factorial_design.cov(iCon).c = tmp;
-        matlabbatch{batch_idx}.spm.stats.factorial_design.cov(iCon).cname = list_con{selectedCon(iCon)};
+        matlabbatch{batch_idx}.spm.stats.factorial_design.cov(iCon).cname = selectedConNames{iCon};
         matlabbatch{batch_idx}.spm.stats.factorial_design.cov(iCon).iCFI = 1;
         matlabbatch{batch_idx}.spm.stats.factorial_design.cov(iCon).iCC = 5;
     end
@@ -199,5 +221,5 @@ matlabbatch{batch_idx}.spm.stats.con.delete = 0;
 cd(resultsFolder);
 
 %% display spm batch before running it
-spm_jobman('interactive',matlabbatch);
-% spm_jobman('run',matlabbatch);
+% spm_jobman('interactive',matlabbatch);
+spm_jobman('run',matlabbatch);

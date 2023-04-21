@@ -1,5 +1,5 @@
-function[choiceND_perRun] = choiceNDproportion_perRun(sub_nm, figDisp)
-%[choiceND_perRun] = choiceNDproportion_perRun(sub_nm, figDisp)
+function[choiceND_percentage_perRun, choiceND_perRun] = choiceNDproportion_perRun(sub_nm, figDisp)
+%[choiceND_percentage_perRun, choiceND_perRun] = choiceNDproportion_perRun(sub_nm, figDisp)
 % choiceNDproportion_perRun = function to check the proportion of 
 % non-default choices in each run
 %
@@ -9,11 +9,15 @@ function[choiceND_perRun] = choiceNDproportion_perRun(sub_nm, figDisp)
 % figDisp: figure display (1) or not (0)
 %
 % OUTPUTS
-% choiceND_perRun: structure with indication about the proportion of
-% non-default choices
+% choiceND_percentage_perRun: structure with indication about the proportion of
+% non-default choices compared to the total of choices done (ignoring
+% trials where no choice was performed)
+%
+% choiceND_perRun: structure with indication about the sum of
+% non-default and of default choices in the run
 
 %% define study name
-if ~exist('study_nm','var') || isempty(study_nm)
+if ~exist('study_nm','var')
     %     study_names = {'study1','study2','fMRI_pilots'};
     %     study_nm_idx = listdlg('ListString',study_names);
     %     study_nm = study_names{study_nm_idx};
@@ -23,12 +27,24 @@ end
 %% extract information about runs
 [runs_task, nRuns] = runs_definition(study_nm, sub_nm, 'behavior');
 
-[choiceND_perRun.run1, choiceND_perRun.run2,...
-        choiceND_perRun.run3, choiceND_perRun.run4] = deal(NaN);
-    [choiceND_perRun.Ep.run1,...
-        choiceND_perRun.Ep.run2,...
-        choiceND_perRun.Em.run1,...
-        choiceND_perRun.Em.run2] = deal(NaN);
+[choiceND_percentage_perRun.run1, choiceND_percentage_perRun.run2,...
+        choiceND_percentage_perRun.run3, choiceND_percentage_perRun.run4,...
+        choiceND_perRun.run1.hEchosen, choiceND_perRun.run2.hEchosen,...
+        choiceND_perRun.run3.hEchosen, choiceND_perRun.run4.hEchosen,...
+        choiceND_perRun.run1.lEchosen, choiceND_perRun.run2.lEchosen,...
+        choiceND_perRun.run3.lEchosen, choiceND_perRun.run4.lEchosen] = deal(NaN);
+    [choiceND_percentage_perRun.Ep.run1,...
+        choiceND_percentage_perRun.Ep.run2,...
+        choiceND_percentage_perRun.Em.run1,...
+        choiceND_percentage_perRun.Em.run2,...
+        choiceND_perRun.Ep.run1.hEchosen,...
+        choiceND_perRun.Ep.run2.hEchosen,...
+        choiceND_perRun.Em.run1.hEchosen,...
+        choiceND_perRun.Em.run2.hEchosen,...
+        choiceND_perRun.Ep.run1.lEchosen,...
+        choiceND_perRun.Ep.run2.lEchosen,...
+        choiceND_perRun.Em.run1.lEchosen,...
+        choiceND_perRun.Em.run2.lEchosen] = deal(NaN);
 nTrials = 54;
 for iRun = 1:nRuns
     run_nm = ['run',num2str(iRun)];
@@ -63,18 +79,25 @@ for iRun = 1:nRuns
         end % choice = default or not?
     end % trial loop
     
-    % extract proportion of non-default choices per run
-    choiceND_perRun.(run_nm) = (sum(choiceND_tmp,'omitnan')./jTrials).*100;
+    % extract proportion of non-default choices per run (ignoring trials
+    % where no choice was made)
+    choiceND_percentage_perRun.(run_nm) = (sum(choiceND_tmp,'omitnan')./jTrials).*100;
     % extract proportion of non-default choices per run per task type
-    choiceND_perRun.(runs_task.tasks{iRun}).(run_nm_bis) = (sum(choiceND_tmp,'omitnan')./jTrials).*100;
+    choiceND_percentage_perRun.(runs_task.tasks{iRun}).(run_nm_bis) = (sum(choiceND_tmp,'omitnan')./jTrials).*100;
+    
+    %  extract sum for each
+    choiceND_perRun.(run_nm).hEchosen = sum(choiceND_tmp == 1,'omitnan');
+    choiceND_perRun.(run_nm).lEchosen = sum(choiceND_tmp == 0,'omitnan');
+    choiceND_perRun.(runs_task.tasks{iRun}).(run_nm_bis).hEchosen = sum(choiceND_tmp == 1,'omitnan');
+    choiceND_perRun.(runs_task.tasks{iRun}).(run_nm_bis).lEchosen = sum(choiceND_tmp == 0,'omitnan');
 end % run loop
 
 %% display figure
 if figDisp == 1
     pSize = 40;
     figure;
-    bar(1:4, [choiceND_perRun.run1, choiceND_perRun.run2,...
-        choiceND_perRun.run3, choiceND_perRun.run4]);
+    bar(1:4, [choiceND_percentage_perRun.run1, choiceND_percentage_perRun.run2,...
+        choiceND_percentage_perRun.run3, choiceND_percentage_perRun.run4]);
     ylabel('Choice non-default option (%)');
     legend_size(pSize);
     xticks(1:4);

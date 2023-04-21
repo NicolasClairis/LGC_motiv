@@ -9,10 +9,18 @@ function [ hdl ] = fig()
 %
 % Written by Nicolas Clairis - august 2019 (in Matlab 2017a)
 
-hdl = figure; % create figure
-if ismember(version('-release'),{'2018a','2018b','2019a','2019b'})
+%% change matlab font from ugly grey to white
+set(0,'defaultfigurecolor',[1 1 1]);
+%% create figure
+hdl = figure;
+%% force "hold on" to add multiple plots eventually
+hold on;
+%% maximize window size
+matlabVersion = version('-release'); % extract matlab version
+matlabYearVersion = str2double(matlabVersion(1:4)); % extract the year
+if matlabYearVersion > 2018 % later versions of Matlab can work with this
     hdl.WindowState = 'maximized'; % maximize window size
-else
+else % alternatively, use this code to maximize the window size
     drawnow;
     set(get(handle(gcf),'JavaFrame'),'Maximized',1); % maximize window size
 end

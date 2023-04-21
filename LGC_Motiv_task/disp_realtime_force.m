@@ -119,7 +119,7 @@ if F_now > 0 && F_now < 100
     yActualLevelTop = bottomScaleLimit - (F_now/100)*graphYSize;
 elseif F_now <= 0 % bound to bottom of the scale
     yActualLevelTop = bottomScaleLimit;
-elseif F_now >= 100 % bount to top of the scale
+elseif F_now >= 100 % bound to top of the scale
     yActualLevelTop = bottomScaleLimit - graphYSize;
 end
 Screen('FillRect', window, orange,...

@@ -1,12 +1,18 @@
-function[] = Second_level_batch(GLM)
-% Second_level_batch(GLM)
+function[] = Second_level_batch(GLM, condition, gender)
+% Second_level_batch(GLM, condition, gender)
 % script to launch second level on LGC Motivation studies
 %
 % INPUTS
-% study_nm : name of the study to analyze
-%
 % GLM: number of the GLM
-
+%
+% condition: define subjects and runs to include
+% 'fMRI': all subjects where fMRI ok
+% 'fMRI_no_move': remove runs with too much movement
+%
+% gender:
+% 'all': all subjects by default
+% 'males': remove females from the list
+% 'females': remove males from the list
 
 %% clear workspace
 close all; clc;
@@ -23,7 +29,7 @@ preproc_sm_kernel = 8;
 
 %% define study and list of subjects to include
 % define study
-if ~exist('study_nm','var') || isempty(study_nm)
+if ~exist('study_nm','var')
     %     study_names = {'fMRI_pilots','study1','study2'};
     %     study_nm_idx = listdlg('ListString',study_names);
     %     study_nm = study_names{study_nm_idx};
@@ -31,7 +37,15 @@ if ~exist('study_nm','var') || isempty(study_nm)
 end
 
 % define subjects
-[subject_id, NS] = LGCM_subject_selection(study_nm);
+if ~exist('condition','var') || ~strcmp(condition(1:4),'fMRI')
+    condition = subject_condition;
+end
+if ~exist('gender','var') ||...
+        isempty(gender) ||...
+        ~ismember(gender,{'all','males','females'})
+    gender = 'all';
+end
+[subject_id, NS] = LGCM_subject_selection(study_nm, condition, gender);
 NS_str = num2str(NS);
 
 %% working directories
@@ -56,10 +70,77 @@ GLM_str = num2str(GLM);
 GLMprm = which_GLM(GLM);
 
 %% create results folder
-results_folder = [studyRoot,filesep,'Second_level',filesep,...
-    'GLM',GLM_str,'_',NS_str,'subs_preprocSm',num2str(preproc_sm_kernel),'mm',filesep];
-if exist(results_folder,'dir') ~= 7
+mainPath = [studyRoot,filesep,'Second_level',filesep];
+switch condition
+    case {'fMRI'}
+        results_folder = [mainPath,...
+            'GLM',GLM_str,'_',NS_str,'subs_',...
+            'preprocSm',num2str(preproc_sm_kernel),'mm',filesep];
+    case 'fMRI_noSatRunSub'
+        results_folder = [mainPath,...
+            'GLM',GLM_str,'_',NS_str,'subs_',...
+            'preprocSm',num2str(preproc_sm_kernel),'mm_noSatRunSubs',filesep];
+    case 'fMRI_noSatTaskSub'
+        results_folder = [mainPath,...
+            'GLM',GLM_str,'_',NS_str,'subs_',...
+            'preprocSm',num2str(preproc_sm_kernel),'mm_noSatTaskSubs',filesep];
+    case 'fMRI_noSatTaskSub_noSatRun'
+        results_folder = [mainPath,...
+            'GLM',GLM_str,'_',NS_str,'subs_',...
+            'preprocSm',num2str(preproc_sm_kernel),'mm_noSatTaskSubs_noSatRun',filesep];
+    case 'fMRI_noMoveSub'
+        results_folder = [mainPath,...
+            'GLM',GLM_str,'_',NS_str,'subs_',...
+            'preprocSm',num2str(preproc_sm_kernel),'mm_noFullMvmtSub',filesep];
+    case 'fMRI_noMoveSub_bis'
+        results_folder = [mainPath,...
+            'GLM',GLM_str,'_',NS_str,'subs_',...
+            'preprocSm',num2str(preproc_sm_kernel),'mm_noMvmtSubLenient_',filesep];
+    case 'fMRI_noMoveSub_ter'
+        results_folder = [mainPath,...
+            'GLM',GLM_str,'_',NS_str,'subs_',...
+            'preprocSm',num2str(preproc_sm_kernel),'mm_noMvmtSubStringent_',filesep];
+    case 'fMRI_noSatTaskSub_noMove_bis_Sub'
+        results_folder = [mainPath,...
+            'GLM',GLM_str,'_',NS_str,'subs_',...
+            'preprocSm',num2str(preproc_sm_kernel),'mm_noSatTaskNoMvmtSub_',filesep];
+    case {'fMRI_noSatTask','fMRI_noSatTask_bayesianMdl'}
+        results_folder = [mainPath,...
+            'GLM',GLM_str,'_',NS_str,'subs_',...
+            'preprocSm',num2str(preproc_sm_kernel),'mm_noSatTask',filesep];
+    case {'fMRI_noSatRun','fMRI_noSatRun_bayesianMdl'}
+        results_folder = [mainPath,...
+            'GLM',GLM_str,'_',NS_str,'subs_',...
+            'preprocSm',num2str(preproc_sm_kernel),'mm_noSatRun',filesep];
+    case 'fMRI_noSatRun_choiceSplit_Elvl'
+        results_folder = [mainPath,...
+            'GLM',GLM_str,'_',NS_str,'subs_',...
+            'preprocSm',num2str(preproc_sm_kernel),'mm_noSatRun_Elvl',filesep];
+    case 'fMRI_noSatRun_choiceSplit_Elvl_bis'
+        results_folder = [mainPath,...
+            'GLM',GLM_str,'_',NS_str,'subs_',...
+            'preprocSm',num2str(preproc_sm_kernel),'mm_noSatRun_Elvl_bis',filesep];
+    case 'fMRI_noMove_bis'
+        results_folder = [mainPath,...
+            'GLM',GLM_str,'_',NS_str,'subs_',...
+            'preprocSm',num2str(preproc_sm_kernel),'mm_noMvmtRunLenient_',filesep];
+    case 'fMRI_noMove_ter'
+        results_folder = [mainPath,...
+            'GLM',GLM_str,'_',NS_str,'subs_',...
+            'preprocSm',num2str(preproc_sm_kernel),'mm_noMvmtRunStringent_',filesep];
+    case {'fMRI_noSatTask_noMove_bis','fMRI_noSatTask_noMove_bis_bayesianMdl'}
+        results_folder = [mainPath,...
+            'GLM',GLM_str,'_',NS_str,'subs_',...
+            'preprocSm',num2str(preproc_sm_kernel),'mm_noSatTaskNoMvmtRun_',filesep];
+    otherwise
+        error(['folder not ready yet for the condition ',condition]);
+end
+
+% create folder to store the results
+if ~exist(results_folder,'dir')
     mkdir(results_folder);
+else
+    error(['Folder with the name ',results_folder,' already exists.']);
 end
 
 %% 1) take mean anatomy across participants
@@ -92,16 +173,25 @@ matlabbatch{batch_idx}.spm.util.imcalc.options.dtype = 4;
 %% perform the second level
 
 % load all contrasts of interest
-con_names = LGCM_contrasts(study_nm, subject_id{1}, GLM, computer_root, preproc_sm_kernel);
+switch condition
+    case 'fMRI_noSatRun_choiceSplit_Elvl_bis' % in this case, subject_id{1} does not include Em => need to adapt to include Em
+        con_names = LGCM_contrasts(study_nm, subject_id{16}, GLM,...
+            computer_root, preproc_sm_kernel, condition);
+    otherwise
+        con_names = LGCM_contrasts(study_nm, subject_id{1}, GLM,...
+            computer_root, preproc_sm_kernel, condition);
+end
 n_con = length(con_names);
 
 % loop over contrasts
 for iCon = 1:n_con
-    con_str = num2str(iCon);
+    current_con_nm = con_names{iCon};
 
     % directory for concatenated contrast
-    conFolder_nm = strrep(con_names{iCon},' ','_');
+    conFolder_nm = strrep(current_con_nm,' ','_');
     conFolder_nm = strrep(conFolder_nm,':','');
+    conFolder_nm = strrep(conFolder_nm,'_|','_abs_');
+    conFolder_nm = strrep(conFolder_nm,'|','');
     conFolder_nm = [results_folder, conFolder_nm];
     mkdir(conFolder_nm);
 
@@ -113,25 +203,34 @@ for iCon = 1:n_con
     % extract contrasts per subject
     for iS = 1:NS
         sub_nm = subject_id{iS};
-
+        
         % check incompatibility between some GLM and some subjects to see
         % if you need to redefine the list of subjects included in the
         % analysis
-        checkGLM_and_subjectIncompatibility(study_nm, sub_nm, GLMprm);
-
-        subject_folder = [studyRoot,filesep,'CID',sub_nm, filesep, 'fMRI_analysis' filesep,...
-            'functional' filesep, 'preproc_sm_',num2str(preproc_sm_kernel),'mm',filesep...
-            'GLM',GLM_str, filesep];
-        if iCon < 10
-            conlist(iS) = {[subject_folder,'con_000',con_str,'.nii,1']};
-        elseif iCon >= 10 && iCon < 100
-            conlist(iS) = {[subject_folder,'con_00',con_str,'.nii,1']};
-        elseif iCon >= 100 && iCon < 1000
-            conlist(iS) = {[subject_folder,'con_0',con_str,'.nii,1']};
-        elseif iCon >= 1000 && iCon < 10000
-            conlist(iS) = {[subject_folder,'con_',con_str,'.nii,1']};
+        checkGLM_and_subjectIncompatibility(study_nm, sub_nm, condition, GLMprm);
+        subject_main_folder = [studyRoot,filesep,'CID',sub_nm, filesep, 'fMRI_analysis' filesep,...
+            'functional' filesep, 'preproc_sm_',num2str(preproc_sm_kernel),'mm',filesep];
+        subject_main_folder = fMRI_subFolder(subject_main_folder, GLM, condition);
+        if isempty(subject_main_folder)
+            error(['condition ',condition,' not planned yet. Please add it.']);
         end
-    end
+        
+        %% adapt contrast index since some conditions and contrasts are missing for some subjects
+        con_names_perSub = LGCM_contrasts(study_nm, sub_nm, GLM,...
+            computer_root, preproc_sm_kernel, condition);
+        if sum(strcmp(current_con_nm, con_names_perSub)) > 0
+            % extract index (for this subject) of the current contrast
+            jCon = find(strcmp(current_con_nm, con_names_perSub));
+            
+            % extract name for this particular subject of the contrast of
+            % interest
+            [con_str] = conNumber2conName(jCon);
+            conlist(iS) = {[subject_main_folder,'con_',con_str,'.nii,1']};
+        end % in case contrast exists for the current subject
+    end % subject loop
+    
+    % remove empty subjects from the list for the current contrast
+    conlist(cellfun(@isempty,conlist)) = [];
 
     matlabbatch{batch_idx}.spm.stats.factorial_design.des.t1.scans = conlist;
 
@@ -157,7 +256,7 @@ for iCon = 1:n_con
     batch_idx = batch_idx + 1;
     matlabbatch{batch_idx}.spm.stats.con.spmmat(1) = cfg_dep('Model estimation: SPM.mat File',...
         substruct('.','val', '{}',{batch_estm_rtg}, '.','val', '{}',{1}, '.','val', '{}',{1}), substruct('.','spmmat'));
-    matlabbatch{batch_idx}.spm.stats.con.consess{1}.tcon.name = con_names{iCon};
+    matlabbatch{batch_idx}.spm.stats.con.consess{1}.tcon.name = current_con_nm;
     matlabbatch{batch_idx}.spm.stats.con.consess{1}.tcon.weights = 1;
     matlabbatch{batch_idx}.spm.stats.con.consess{1}.tcon.sessrep = 'none';
     matlabbatch{batch_idx}.spm.stats.con.delete = 0;

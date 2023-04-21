@@ -1,11 +1,11 @@
 function[roi_fig] = roi_graph2(selectedContrastIndex,...
             con_avg1, con_errorbar1,...
             con_avg2, con_errorbar2,...
-            figConName, ttest_pval_1_vs_2, xname1, xname2)
+            figConName, ttest_pval_1_vs_2, xname1, xname2, ROI_BOLD_nm)
 % [roi_fig] = roi_graph2(selectedContrastIndextrastIndex,...
 %             con_avg1, con_sem1,...
 %             con_avg2, con_sem2,...
-%             figConName, ttest_pval_1_vs_2, name1, name2)
+%             figConName, ttest_pval_1_vs_2, name1, name2, ROI_BOLD_nm)
 % roi_graph2 will display a bar graph showing 2 columns with a star if the
 % difference between the two is significant.
 %
@@ -27,6 +27,8 @@ function[roi_fig] = roi_graph2(selectedContrastIndex,...
 % xname1: name for first column
 %
 % xname2: name for second column
+%
+% ROI_BOLD_nm: name of the area where the regression estimate was extracted
 %
 % OUTPUTS
 %
@@ -84,7 +86,8 @@ while scale_ok_idx == 0
     xpos = (1:2)';
 
     bar_hdl = bar(xpos,...
-        [con_avg1(selectedContrastIndex), con_avg2(selectedContrastIndex)]);
+        [con_avg1(selectedContrastIndex),...
+        con_avg2(selectedContrastIndex)]);
     bar_hdl.EdgeColor = roi_color;
     bar_hdl.FaceColor = roi_color;
     hold on;
@@ -129,7 +132,7 @@ while scale_ok_idx == 0
 
     xticks(xpos);
     set(gca,'xtick',xpos,'XTickLabel',{xname1,xname2});
-    title(figConName);
+    title([ROI_BOLD_nm,' - ',figConName]);
     switch langage
         case 'engl'
             ylabel('Regression estimate');

@@ -239,9 +239,10 @@ else
     %% select participant
     computer_root = LGCM_root_paths();
     if ~exist('study_nm','var') || isempty(study_nm)
-        study_names = {'fMRI_pilots','study1','study2'};
-        study_nm_idx = listdlg('ListString',study_names);
-        study_nm = study_names{study_nm_idx};
+%         study_names = {'fMRI_pilots','study1','study2'};
+%         study_nm_idx = listdlg('ListString',study_names);
+%         study_nm = study_names{study_nm_idx};
+        study_nm = 'study1';
     end
     switch study_nm
         case 'fMRI_pilots'
@@ -253,7 +254,7 @@ else
     end
     
     % select subject
-    [subject_id, NS] = LGCM_subject_selection(study_nm);
+    [subject_id, NS] = LGCM_subject_selection(study_nm, 'fMRI');
     subjectList = subject_id{1};
     for iS = 2:NS
         subjectList = [subjectList,' | ',subject_id{iS}];

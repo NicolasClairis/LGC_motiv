@@ -1,0 +1,39 @@
+Dieser ZIP-Ordner enthält folgende 9 Dateien:
+
+ 1. BLS_3.02.txt
+ 2. BLS_3.02_Variablennamen_ausgeschrieben.xlsx
+ 3. BLS_3.02_Handbuch.pdf
+ 4. BLS_Änderungen_3.01-3.02.xlsx
+ 5. BLS_Änderungen_II.3 - 3.01.xls
+ 6. Matching-Tabelle_BLS_Codes_II.3 - 3.02.xls
+ 7. Diskrepanzenliste_BLS_3.02.pdf
+ 8. BLS-Dateiaufbau.xlsx
+ 9. ACHTUNG_bitte_lesen.txt (vorliegend)
+
+Zu 1. Anlage BLS_3.02.txt
+Die Datei BLS_3.02.txt beinhaltet die BLS-Nährstoffdaten zum Einlesen in eine Datenbank. Diese ist mit Tabstopp-Trennzeichen und ohne Texterkennungszeichen abgespeichert. Bitte berücksichtigen Sie dies, wenn Sie die Daten in eine Datenbank importieren bzw. die Datei mit MS-Excel oder vergleichbaren Programmen öffnen.
+
+Zu 2. BLS_3.02_Variablennamen_ausgeschrieben.xlsx:
+Die Datei BLS_3.02_Variablennamen_ausgeschrieben.xlsx beinhaltet die BLS-Nährstoffdaten mit ausgeschriebenen VariablenÜberschriften zum Öffnen mit MS-Excel.
+
+Zu 3. Anlage BLS_3.1_Handbuch.pdf:
+Im Handbuch finden Sie ausführliche Erläuterungen zur Datei BLS_3.02.txt bzw. BLS_3.02.xlsx
+
+Zu 4. Anlage BLS_Änderungen_3.01-3.02.xlsx
+In der Excel-Datei sind die Änderungen von BLS-Version 3.01 zu 3.02 detailliert aufgeführt.
+
+Zu 5. Anlage BLS_Änderungen_II.3 - 3.01.xls:
+Darin sind die Änderungen von BLS-Version II.3 zu 3.01 im Detail aufgelistet.
+
+Zu 6. Anlage 5 Matching-Tabelle_BLS_Codes_II.3 - 3.02.xls:
+Die enthaltene Matching-Tabelle dient zur Umwandlung der BLS-Codes der Versionen II.3 und II.3.1 in den Code der Version 3.02. Änderungen haben sich insbesondere in der 6. und 7. Stelle des BLS-Codes ergeben. Zudem wurden Lebensmittelgruppen und deren Codes aufgelöst und es erfolgten Neuzuordnungen.
+
+Zu 7. Diskrepanzenliste_BLS_3.02.pdf:
+Beinhaltet die derzeit bekannten Diskrepanzen in BLS 3.02. Die Datei "Diskrepanzenliste_BLS_3.02" finden Sie in ihrer jeweils aktuellsten Version auf unserer Website.
+
+Zu 8. BLS-Dateiaufbau.xlsx:
+Gibt eine Übersicht über den Dateiaufbau der Version 3.02.
+
+
+
+BITTE BEACHTEN SIE: Die beiden Variablen Energie inkl. Energie aus Ballaststoffen in Kilokalorien (GCALZB) sowie Energie inkl. Energie aus Ballaststoffen in Kilojoule (GJZB) sind zusätzlich eingefügt worden, dies ist beim Datenbankimport zu berücksichtigen.

@@ -1,21 +1,16 @@
-function[betas, pvalues] = logitfit_choices_group(computerRoot, study_nm,...
-    figDispGroup, figDispIndiv, dispMoneyOrLevels, n_NV_bins, n_trialN_bins)
-% [betas, pvalues] = logitfit_choices_group(computerRoot, study_nm,...
-%       figDispGroup, figDispIndiv, dispMoneyOrLevels, n_NV_bins, n_trialN_bins)
+function[betas, pvalues] = logitfit_choices_group(subject_id, computerRoot, figDispGroup, dispMoneyOrLevels)
+% [betas, pvalues] = logitfit_choices_group(subject_id, computerRoot, figDispGroup, dispMoneyOrLevels)
 %
 % INPUTS
-% computerRoot: pathway where data is
+% subject_id: list of subjects to extract (will be asked if left empty)
 %
-% study_nm: study name
+% computerRoot: root where data is stored (will be asked if left empty)
 %
-% figDispGroup: display group figures (1) or not (0)
-%
-% figDispIndiv: display individual figures (1) or not (0)
+% figDispGroup: display group figures (1) or not (0) (will be displayed by
+% default)
 %
 % dispMoneyOrLevels: display actual money ('money') or reward levels
-% ('levels')
-%
-% n_NV_bins: number of bins for net value
+% ('levels') (=levels by default)
 %
 % OUTPUT
 % betas: structure with betas
@@ -42,8 +37,6 @@ end
 %% by default, do not display individual figures
 if ~exist('figDispIndiv','var') || isempty(figDispIndiv)
     figDispIndiv = 0;
-    disp(['figDispGroup was not defined in the inputs so that by default ',...
-        'individual figures are not displayed.']);
 end
 %% by default, display monetary levels instead of actual monetary amounts
 if ~exist('dispMoneyOrLevels','var') || isempty(dispMoneyOrLevels)
@@ -77,8 +70,14 @@ if ~exist(resultFolder,'dir')
 end
 
 %% subject selection
-[subject_id, NS] = LGCM_subject_selection(study_nm);
-
+if ~exist('subject_id','var') || isempty(subject_id)
+    [condition] = subject_condition();
+    [subject_id, NS] = LGCM_subject_selection(study_nm, condition);
+else
+    NS = length(subject_id);
+end
+% store subject list to know which beta corresponds to which subject
+betas.subList = subject_id;
 %% initialize variables of interest
 for iPM = 1:2
     switch iPM
@@ -234,8 +233,8 @@ for iPM = 1:2
             betas.sd.(task_id).(mdl_nm).kEffort] = mean_sem_sd(betas.(task_id).(mdl_nm).kEffort,2);
         if ismember(iMdl,[3,4])
             [betas.mean.(task_id).(mdl_nm).kFatigue,...
-            betas.sem.(task_id).(mdl_nm).kFatigue,...
-            betas.sd.(task_id).(mdl_nm).kFatigue] = mean_sem_sd(betas.(task_id).(mdl_nm).kFatigue,2);
+                betas.sem.(task_id).(mdl_nm).kFatigue,...
+                betas.sd.(task_id).(mdl_nm).kFatigue] = mean_sem_sd(betas.(task_id).(mdl_nm).kFatigue,2);
         end
         
         %% test how significant betas are
@@ -261,7 +260,7 @@ for iPM = 1:2
         lWidth = 3;
 %         lWidth_borders = 1;
         %% loop through models
-        for iMdl = 4:nMdl
+        for iMdl = 3%4:nMdl
             mdl_nm = ['mdl_',num2str(iMdl)];
             
             %% display choice = f(net value)

@@ -1,5 +1,5 @@
-function [choiceND_perRun] = choiceNDproportion_perRun_group(figGrpDisp)
-%[choiceND_perRun] = choiceNDproportion_perRun_group()
+function [choiceND_perRun, saturationSubs] = choiceNDproportion_perRun_group(figGrpDisp)
+%[choiceND_perRun, saturationSubs] = choiceNDproportion_perRun_group()
 % choiceNDproportion_perRun_group will extract the average proportion of
 % non-default choices per run across all subjects.
 %
@@ -10,27 +10,26 @@ function [choiceND_perRun] = choiceNDproportion_perRun_group(figGrpDisp)
 % choiceND_perRun: structure with average, SD and SEM of percentage of 
 % choosing the non-default option across subjects
 %
+% saturationSubs: structure indicating which subjects saturated and for
+% which run
+%   .allSat: list with all the subject who had a saturation in either side
+%   (non
+%   .fullDef: list with all the subjects who saturated by always getting 
+%
 % See also choiceNDproportion_perRun
 
-%% define study name
-if ~exist('study_nm','var') || isempty(study_nm)
-    %     study_names = {'study1','study2','fMRI_pilots'};
-    %     study_nm_idx = listdlg('ListString',study_names);
-    %     study_nm = study_names{study_nm_idx};
-    study_nm = 'study1'; % by default
-end
-
+%% subject identification
+[study_nm, ~,~,subject_id, NS] = sub_id;
+% store the list
+choiceND_perRun.subject_id = subject_id;
 %% display group figure
 if ~exist('figGrpDisp','var') || isempty(figGrpDisp)
     figGrpDisp = 1; % by default
 end
 
-%% subject list
-[subject_id, NS] = LGCM_subject_selection(study_nm);
-
 %% working directories
-% computer_root = LGCM_root_paths();
-computerRoot = ['E:',filesep];
+computerRoot = LGCM_root_paths();
+% computerRoot = ['E:',filesep];
 switch study_nm
     case 'fMRI_pilots'
         studyRoot = fullfile(computerRoot,'fMRI_pilots');
@@ -54,24 +53,61 @@ nRunPerTask = 2;
 nTasks = 2; % physical/mental
 task_names = {'Ep','Em'};
 %% extract data per subject
+[saturationSubs.allSat.subList,...
+    saturationSubs.fullNonDef.subList,...
+    saturationSubs.fullDef.subList] = deal(cell(1,NS));
+percSaturationThreshold = 94;
 for iS = 1:NS
     sub_nm = subject_id{iS};
-    cd([studyRoot, filesep, 'CID',sub_nm, filesep,'behavior']);
-    [choiceND_perRun_tmp] = choiceNDproportion_perRun(sub_nm, figIndivDisp);
+    sub_nm_bis = ['CID',sub_nm];
+    cd([studyRoot, filesep, sub_nm_bis, filesep,'behavior']);
+    [choiceND_percentage_perRun_tmp] = choiceNDproportion_perRun(sub_nm, figIndivDisp);
     for iRun = 1:nRuns
         run_nm = ['run',num2str(iRun)];
-        choiceND_perRun.(run_nm)(iS) = choiceND_perRun_tmp.(run_nm);
+        choiceND_perRun.(run_nm)(iS) = choiceND_percentage_perRun_tmp.(run_nm);
+        
+        % extract name of subject if subject saturated
+        if round(choiceND_percentage_perRun_tmp.(run_nm)) >= percSaturationThreshold % always took non-default option
+            if sum(strcmp(saturationSubs.allSat.subList, sub_nm)) == 0 % add subject to the list
+                saturationSubs.allSat.subList{iS} = sub_nm;
+            end
+            if sum(strcmp(saturationSubs.fullNonDef.subList, sub_nm)) == 0 % add subject to the list
+                saturationSubs.fullNonDef.subList{iS} = sub_nm;
+            end
+            saturationSubs.satRunsPerSub.(sub_nm_bis).(run_nm) = 'all_ND';
+        elseif round(choiceND_percentage_perRun_tmp.(run_nm)) <= (100-percSaturationThreshold) % always took the default option
+            if sum(strcmp(saturationSubs.allSat.subList, sub_nm)) == 0 % add subject to the list
+                saturationSubs.allSat.subList{iS} = sub_nm;
+            end
+            if sum(strcmp(saturationSubs.fullDef.subList, sub_nm)) == 0 % add subject to the list
+                saturationSubs.fullDef.subList{iS} = sub_nm;
+            end
+            saturationSubs.satRunsPerSub.(sub_nm_bis).(run_nm) = 'all_Def';
+        end
     end % run loop
     
     for iPM = 1:nTasks
         task_nm = task_names{iPM};
         for iRun = 1:nRunPerTask
             runPerTask_nm = ['run',num2str(iRun)];
-            choiceND_perRun.(task_nm).(runPerTask_nm)(iS) = choiceND_perRun_tmp.(task_nm).(runPerTask_nm);
+            choiceND_perRun.(task_nm).(runPerTask_nm)(iS) = choiceND_percentage_perRun_tmp.(task_nm).(runPerTask_nm);
         end % run/task loop
     end % physical/mental loop
 end % subject loop
 cd(studyRoot);
+
+% clean subjects without any saturation
+[subjectToRemoveAllSat,...
+   subjectToRemoveNDSat,...
+   subjectToRemoveDefSat] = deal(false(1,NS));
+for iS = 1:NS
+    subjectToRemoveAllSat(iS) = isempty(saturationSubs.allSat.subList{iS});
+    subjectToRemoveDefSat(iS) = isempty(saturationSubs.fullDef.subList{iS});
+    subjectToRemoveNDSat(iS) = isempty(saturationSubs.fullNonDef.subList{iS});
+end
+saturationSubs.allSat.subList(subjectToRemoveAllSat) = [];
+saturationSubs.fullDef.subList(subjectToRemoveDefSat) = [];
+saturationSubs.fullNonDef.subList(subjectToRemoveNDSat) = [];
 
 %% average across subjects
 for iRun = 1:nRuns

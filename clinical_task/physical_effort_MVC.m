@@ -70,15 +70,26 @@ switch MVC_or_maxPerf
             end
         end
     case 'maxPerf'
+        for iTime = 1:2
         DrawFormattedText(window, stim.Ep.MVC.instructions.text,...
             stim.Ep.MVC.instructions.x, stim.Ep.MVC.instructions.y,...
             stim.Ep.MVC.instructions.colour, wrapat);
         DrawFormattedText(window, stim.Ep.MVC.instructions_bis.text,...
             stim.Ep.MVC.instructions_bis.x, stim.Ep.MVC.instructions_bis.y,...
             stim.Ep.MVC.instructions_bis.colour);
-        [~,time_disp1,~,~,~] = Screen(window,'Flip');
-        onsets.initial_MVC_instructions = time_disp1;
-        WaitSecs(t_MVC_calib_instructions1);
+        if iTime == 1
+            [~,time_disp1,~,~,~] = Screen(window,'Flip');
+            onsets.initial_MVC_instructions = time_disp1;
+            WaitSecs(t_MVC_calib_instructions1);
+        elseif iTime == 2
+            % allow the participant to start whenever he/she feels ready by
+            % pressing a button
+            DrawFormattedText(window, stim.pressWhenReady.text,...
+                stim.pressWhenReady.x, stim.pressWhenReady.y, stim.pressWhenReady.colour, wrapat);
+            [~, time_disp2] = Screen(window, 'Flip');
+            onsets.initial_MVC_instructions2 = time_disp2;
+            KbQueueWait(0,3); % wait for button press and button release before moving on
+        end
 end
 [bottomScaleLimit, topScaleLimit, leftScaleLimit, rightScaleLimit, graphYSize] = disp_realtime_force(scr, F_threshold, F_tolerance, F_start, 'calib');
 

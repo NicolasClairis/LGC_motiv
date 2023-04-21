@@ -37,12 +37,7 @@ function[avg_nonDefaultChoice, sem_nonDefaultChoice,...
 % See also checkChoiceNonDefaultProportion.m (same but for individual subject)
 
 %% list of subjects
-if ~exist('study_nm','var') || isempty(study_nm)
-    study_names = {'fMRI_pilots','study1','study2'};
-    study_nm_idx = listdlg('ListString',study_names);
-    study_nm = study_names{study_nm_idx};
-end
-[subs, NS] = LGCM_subject_selection(study_nm);
+[study_nm,~,~,subject_id,NS] = sub_id;
 
 %% working directories
 switch study_nm
@@ -113,7 +108,7 @@ for iTask = 1:nTaskTypes
     
     %% extract individual data
     for iS = 1:NS
-        sub_nm = subs{iS};
+        sub_nm = subject_id{iS};
         subFolder = [root,filesep,'CID',sub_nm,filesep,'behavior'];
         cd(subFolder);
         [avg_nonDefaultChoice_data_perSub{iS},...
@@ -143,15 +138,15 @@ for iTask = 1:nTaskTypes
             nonDefaultChoice_perSub.perSignedMoneylevel.([task_nm,'_R_',num2str(iAbsMoney)])(iS) = avg_nonDefaultChoice_data_perSub{iS}.perSignedMoneylevel.([task_nm,'_R_',num2str(iAbsMoney)]);
             nonDefaultChoice_perSub.perSignedMoneylevel.([task_nm,'_P_',num2str(iAbsMoney)])(iS) = avg_nonDefaultChoice_data_perSub{iS}.perSignedMoneylevel.([task_nm,'_P_',num2str(iAbsMoney)]);
             % same for confidence
-            conf_perSub.perDeltaMoneylevel.([task_nm,'_R_',num2str(iAbsMoney)])(iS) = avg_conf_data_perSub{iS}.perDeltaMoneylevel.([task_nm,'_',num2str(iAbsMoney)]);
+            conf_perSub.perDeltaMoneylevel.([task_nm,'_',num2str(iAbsMoney)])(iS) = avg_conf_data_perSub{iS}.perDeltaMoneylevel.([task_nm,'_',num2str(iAbsMoney)]);
             conf_perSub.perSignedMoneylevel.([task_nm,'_R_',num2str(iAbsMoney)])(iS) = avg_conf_data_perSub{iS}.perSignedMoneylevel.([task_nm,'_R_',num2str(iAbsMoney)]);
             conf_perSub.perSignedMoneylevel.([task_nm,'_P_',num2str(iAbsMoney)])(iS) = avg_conf_data_perSub{iS}.perSignedMoneylevel.([task_nm,'_P_',num2str(iAbsMoney)]);
             % same for RT
-            RT_perSub.perDeltaMoneylevel.([task_nm,'_R_',num2str(iAbsMoney)])(iS) = avg_RT_data_perSub{iS}.perDeltaMoneylevel.([task_nm,'_',num2str(iAbsMoney)]);
+            RT_perSub.perDeltaMoneylevel.([task_nm,'_',num2str(iAbsMoney)])(iS) = avg_RT_data_perSub{iS}.perDeltaMoneylevel.([task_nm,'_',num2str(iAbsMoney)]);
             RT_perSub.perSignedMoneylevel.([task_nm,'_R_',num2str(iAbsMoney)])(iS) = avg_RT_data_perSub{iS}.perSignedMoneylevel.([task_nm,'_R_',num2str(iAbsMoney)]);
             RT_perSub.perSignedMoneylevel.([task_nm,'_P_',num2str(iAbsMoney)])(iS) = avg_RT_data_perSub{iS}.perSignedMoneylevel.([task_nm,'_P_',num2str(iAbsMoney)]);
             % same for effort performance
-            Eperformance_perSub.perDeltaMoneylevel.([task_nm,'_R_',num2str(iAbsMoney)])(iS) = avg_Eperformance_data_perSub{iS}.perDeltaMoneylevel.([task_nm,'_',num2str(iAbsMoney)]);
+            Eperformance_perSub.perDeltaMoneylevel.([task_nm,'_',num2str(iAbsMoney)])(iS) = avg_Eperformance_data_perSub{iS}.perDeltaMoneylevel.([task_nm,'_',num2str(iAbsMoney)]);
             Eperformance_perSub.perSignedMoneylevel.([task_nm,'_R_',num2str(iAbsMoney)])(iS) = avg_Eperformance_data_perSub{iS}.perSignedMoneylevel.([task_nm,'_R_',num2str(iAbsMoney)]);
             Eperformance_perSub.perSignedMoneylevel.([task_nm,'_P_',num2str(iAbsMoney)])(iS) = avg_Eperformance_data_perSub{iS}.perSignedMoneylevel.([task_nm,'_P_',num2str(iAbsMoney)]);
         end
@@ -235,13 +230,38 @@ end % loop through physical and mental effort
 % figure parameters
 lWidth_50percentTrait = 2;
 lWidth = 3;
-pSize = 30;
+pSize = 40;
 bWidth = 0.4;
 bDist = 0.2;
 Em_col = [0 1 0];
 Ep_col = [0 153/255 1];
 
 % check choices = f(fatigue, R/P, level of R, level of E)
+%% check choices = f(fatigue) displaying all subjects
+fig;
+% mark the 50% trait
+plot(1:n_bins, 50*ones(1,n_bins),...
+    'LineWidth',lWidth_50percentTrait,'Color','k','LineStyle',':');
+hold on;
+for iS = 1:NS
+    plot(1:n_bins, nonDefaultChoice_perSub.Em_f_time(:,iS).*100,...
+        'Color',[0 1-0.01*iS 0], 'LineWidth',1)
+    plot(1:n_bins, nonDefaultChoice_perSub.Ep_f_time(:,iS).*100,...
+        'Color',[0 153/255 1-0.01*iS], 'LineWidth',1)
+end
+% ylim([0 100]);
+ylim([40 100]);
+xlim([1 n_bins]);
+xticks(1:n_bins);
+xLabelNames = cell(1,n_bins);
+nTrialsPerBin = nTrialsPerRun/n_bins;
+for iBin = 1:n_bins
+    xLabelNames{iBin} = [num2str( 1 + nTrialsPerBin*(iBin-1)),'-',num2str(nTrialsPerBin*iBin)];
+end
+xticklabels(xLabelNames);
+xlabel('trial number');
+ylabel('Choice high effort (%)');
+legend_size(pSize);
 %% check choices = f(fatigue)
 fig;
 % mark the 50% trait
@@ -333,6 +353,7 @@ for iAbsMoney = 1:(n_R_levels - 1)
 end
 ylim([0 100]);
 ylabel('Choice non-default option (%)');
+ylabel('High effort choice (%)');
 xticks(1:3);
 xticklabels({'1','2','3'});
 xlim([0 n_R_levels]);
@@ -536,7 +557,7 @@ end
 xticks([-3:-(1), 1:3]);
 xticklabels({'-3','-2','-1','1','2','3'});
 xlim([-n_R_levels n_R_levels]);
-ylim([1.5 3]);
+ylim([1.7 2.4]);
 ylabel('RT (s)');
 xlabel('Money level');
 legend([bar_hdl.Em, bar_hdl.Ep],'mental','physical');
@@ -563,7 +584,7 @@ ylabel('RT (s)');
 xticks(1:3);
 xticklabels({'1','2','3'});
 xlim([0 n_E_levels]);
-ylim([1.5 3]);
+ylim([1.8 2.3]);
 xlabel('Effort level');
 legend([bar_hdl.Em, bar_hdl.Ep],'mental','physical');
 legend('boxoff');
@@ -584,7 +605,7 @@ bar_hdl.Ep = jbfill(1:n_bins,...
     (avg_RT.Ep_f_time - sem_RT.Ep_f_time)',...
     avg_RT.Ep_f_time',...
     Ep_col);
-ylim([1.5 3]);
+ylim([1.8 2.5]);
 xlim([0 n_bins+1]);
 xlabel('trial bins');
 ylabel('RT (s)');
@@ -592,6 +613,36 @@ legend([bar_hdl.Em, bar_hdl.Ep],'mental','physical');
 legend('boxoff');
 legend_size(pSize);
 
+%% check effort performance = f(|delta money| level)
+fig;
+hold on;
+for iAbsMoney = 1:(n_R_levels - 1)
+    bar_hdl.Em = bar(iAbsMoney-bDist,...
+        avg_Eperformance.perDeltaMoneylevel.(['Em_',num2str(iAbsMoney)]),...
+        'FaceColor',Em_col,'BarWidth',bWidth);
+    bar_hdl.Ep = bar(iAbsMoney+bDist,...
+        avg_Eperformance.perDeltaMoneylevel.(['Ep_',num2str(iAbsMoney)]),...
+        'FaceColor',Ep_col,'BarWidth',bWidth);
+    errorbar(iAbsMoney-bDist,...
+        avg_Eperformance.perDeltaMoneylevel.(['Em_',num2str(iAbsMoney)]),...
+        sem_Eperformance.perDeltaMoneylevel.(['Em_',num2str(iAbsMoney)]),...
+        'k','LineWidth',lWidth);
+    errorbar(iAbsMoney+bDist,...
+        avg_Eperformance.perDeltaMoneylevel.(['Ep_',num2str(iAbsMoney)]),...
+        sem_Eperformance.perDeltaMoneylevel.(['Ep_',num2str(iAbsMoney)]),...
+        'k','LineWidth',lWidth);
+end
+ylim([90 100]);
+ylabel('Effort performance (%)');
+xticks(1:3);
+xticklabels({'1','2','3'});
+xlim([0 n_R_levels]);
+xlabel('|Δ money| level');
+legend_size(pSize);
+ylim([90 100]);
+legend([bar_hdl.Em, bar_hdl.Ep],'mental','physical');
+legend('boxoff');
+legend_size(pSize);
 
 %% check effort performance = f(money levels (splitting R and P trials))
 fig;

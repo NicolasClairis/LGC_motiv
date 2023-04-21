@@ -1,5 +1,5 @@
-function[] = LGCM_contrasts_spm(GLM, checking)
-% [] = LGCM_contrasts_spm(GLM, checking)
+function[] = LGCM_contrasts_spm(GLM, checking, condition, study_nm, subject_id, NS)
+% [] = LGCM_contrasts_spm(GLM, checking, condition, study_nm, subject_id, NS)
 % LGCM_contrasts_spm prepares the batch for SPM to perform the first level
 % contrasts in each individual of the study
 %
@@ -12,8 +12,15 @@ function[] = LGCM_contrasts_spm(GLM, checking)
 % GLM: GLM number
 %
 % checking: display batch before performing it or not? (1 by default)
-
-
+%
+% condition:
+%
+% subject_id: list of subject (determined automatically if not defined in
+% the inputs)
+%
+% NS: number of subjects (determined automatically if not defined in
+% the inputs)
+%
 close all; clc;
 
 %% working directories
@@ -55,8 +62,14 @@ spm('defaults','fmri');
 spm_jobman('initcfg');
 
 %% define subjects of interest
-[subject_id, NS] = LGCM_subject_selection(study_nm);
-
+if ~exist('condition','var') || ~strcmp(condition(1:4),'fMRI')
+    condition = subject_condition;
+end
+gender = 'all';
+if ~exist('subject_id','var') || ~exist('NS','var') ||...
+        isempty(subject_id) || isempty(NS)
+    [subject_id, NS] = LGCM_subject_selection(study_nm, condition, gender);
+end
 %% loop through subjects to extract all the regressors
 matlabbatch = cell(NS,1);
 
@@ -65,10 +78,15 @@ for iSubject = 1:NS
     sub_nm = subject_id{iSubject};
     
     %% extract contrasts list (vectors + corresponding names
-    [con_names, con_vector] = LGCM_contrasts(study_nm, sub_nm, GLM, computer_root, preproc_sm_kernel);
+    [con_names, con_vector] = LGCM_contrasts(study_nm, sub_nm, GLM,...
+        computer_root, preproc_sm_kernel, condition);
     
     %% define results directory
-    matlabbatch{iSubject}.spm.stats.con.spmmat = {fullfile(root,['CID',sub_nm],'fMRI_analysis','functional',['preproc_sm_',num2str(preproc_sm_kernel),'mm'],['GLM',num2str(GLM)],'SPM.mat')};
+    mainPath = [fullfile(root,['CID',sub_nm],...
+                'fMRI_analysis','functional',...
+                ['preproc_sm_',num2str(preproc_sm_kernel),'mm']), filesep];
+    [resultsFolderName] = fMRI_subFolder(mainPath, GLM, condition);
+    matlabbatch{iSubject}.spm.stats.con.spmmat = {fullfile(resultsFolderName,'SPM.mat')};
     %% add each contrast to the list
     for iCon = 1:length(con_names)
         matlabbatch{iSubject}.spm.stats.con.consess{iCon}.tcon.name     = con_names{iCon};

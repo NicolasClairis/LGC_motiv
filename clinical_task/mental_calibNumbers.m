@@ -92,9 +92,7 @@ for iInstructionsLoop = 1:2
             stim.pressWhenReady.x, stim.pressWhenReady.y, stim.pressWhenReady.colour, wrapat);
         [~, timeInstru_bis] = Screen(window, 'Flip');
         calib_summary.onset_instructions_press = timeInstru_bis;
-%         KbStrokeWait; % wait for button press and button release before moving on
         KbQueueWait(0,3); % wait for button press and button release before moving on
-        %         KbReleaseWait; % wait button press to be off to avoid it being recorder as an answer
     end
 end
 

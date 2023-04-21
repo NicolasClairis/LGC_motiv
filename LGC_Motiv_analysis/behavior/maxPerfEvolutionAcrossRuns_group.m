@@ -1,5 +1,7 @@
 function[maxPerf, pval] = maxPerfEvolutionAcrossRuns_group(computerRoot, study_nm, figGroupDisp, figIndivDisp)
 % [maxPerf, pval] = maxPerfEvolutionAcrossRuns_group(computerRoot, study_nm, figGroupDisp, figIndivDisp)
+% maxPerfEvolutionAcrossRuns_group will look at the average (across subjects)
+% maximal performance performed before and after each run.
 %
 % INPUTS
 % computerRoot: pathway where data is
@@ -39,7 +41,7 @@ if ~exist(resultFolder,'dir')
 end
 
 %% subject selection
-[subject_id, NS] = LGCM_subject_selection(study_nm);
+[subject_id, NS] = LGCM_subject_selection(study_nm, 'behavior');
 
 %% by default, display group figure
 if ~exist('figGroupDisp','var') || isempty(figGroupDisp)
@@ -48,7 +50,7 @@ if ~exist('figGroupDisp','var') || isempty(figGroupDisp)
         'figures are displayed for the group.']);
 end
 
-%% by default, display individual figure
+%% by default, do not display individual figure
 if ~exist('figIndivDisp','var') || isempty(figIndivDisp)
     figIndivDisp = 0;
     disp(['figGroupDisp was not defined in the inputs so that by default ',...

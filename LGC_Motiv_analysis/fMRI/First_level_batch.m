@@ -1,20 +1,31 @@
-function[] = First_level_batch(GLM, checking)
-%[] = First_level_batch(GLM, checking)
+function[] = First_level_batch(GLM, checking, condition, study_nm, subject_id, NS)
+%[] = First_level_batch(GLM, checking, condition, study_nm, subject_id, NS)
 % First_level_batch will perform 1st level for LGC motivation fMRI studies.
 %
 % INPUTS
-% study_nm: definition of the study on which you want to analyze the data
-% 'fMRI_pilots': pilots
-% 'study1': first study (dmPFC + AI)
-% 'study2': second study (clinical trial)
-%
 % GLM: GLM number
 %
 % checking:
 % (0) launch 1st level directly
 % (1) display SPM batch before launching to be able to check the inputs
 %
-% See also which_GLM.m, GLM_details.m, LGCM_contrasts_spm.m,
+% condition:
+% 'fMRI': all fMRI compatible data
+% 'fMRI_no_move': remove runs with too much movement
+%
+% study_nm: definition of the study on which you want to analyze the data
+% 'fMRI_pilots': pilots
+% 'study1': first study (dmPFC + AI)
+% 'study2': second study (clinical trial)
+% will be asked if not entered in the inputs
+%
+% subject_id: list of subject (determined automatically if not defined in
+% the inputs)
+%
+% NS: number of subjects (determined automatically if not defined in
+% the inputs)
+%
+% See also which_GLM.m, 
 % First_level_loadEachCondition.m, First_level_loadRegressors.m,
 % First_level_subRunFilter.m, LGCM_contrasts.m and Second_level_batch.m
 
@@ -74,13 +85,20 @@ switch study_nm
 end
 
 %% list subjects to analyze
-[subject_id, NS] = LGCM_subject_selection(study_nm);
+if ~exist('condition','var') ||...
+        ~strcmp(condition(1:4),'fMRI')
+    condition = subject_condition;
+end
+if ~exist('subject_id','var') || ~exist('NS','var') ||...
+        isempty(subject_id) || isempty(NS)
+    [subject_id, NS] = LGCM_subject_selection(study_nm, condition);
+end
 %% loop through subjects
 matlabbatch = cell(nb_batch_per_subj*NS,1);
 for iS = 1:NS
     sub_nm = subject_id{iS};
-    % check incompatibility between some GLM and some subjects
-    checkGLM_and_subjectIncompatibility(study_nm, sub_nm, GLMprm);
+    % check incompatibility between some GLM parameters and subject
+    checkGLM_and_subjectIncompatibility(study_nm, sub_nm, condition, GLMprm);
     
     % define working folders
     subj_folder             = [root, filesep, 'CID',sub_nm];
@@ -90,28 +108,42 @@ for iS = 1:NS
     subj_behavior_folder    = [subj_folder, filesep, 'behavior' filesep];
     
     % create folder to store the results for the current subject
-    sm_folderName = [subj_analysis_folder 'functional', filesep,'preproc_sm_',num2str(preproc_sm_kernel),'mm',filesep];
+    sm_folderName = [subj_analysis_folder 'functional', filesep,...
+        'preproc_sm_',num2str(preproc_sm_kernel),'mm',filesep];
     if ~exist(sm_folderName,'dir')
         mkdir(sm_folderName);
     end
-    resultsFolderName = [sm_folderName, 'GLM',num2str(GLM)];
+    [resultsFolderName] = fMRI_subFolder(sm_folderName, GLM, condition);
     if ~exist(resultsFolderName,'dir')
         mkdir(resultsFolderName);
     else
-        rmdir(resultsFolderName,'s');
-        mkdir(resultsFolderName);
-        warning(['First level folder ',resultsFolderName,' already existed. ',...
-            'It was deleted and recreated for CID',sub_nm,'.']);
+        if checking == 0
+            rmdir(resultsFolderName,'s');
+            mkdir(resultsFolderName);
+            warning(['First level folder ',resultsFolderName,' already existed. ',...
+                'It was deleted and recreated for CID',sub_nm,'.']);
+        elseif checking == 1
+            warning(['First level folder ',resultsFolderName,' already exists ',...
+                'for CID',sub_nm,'. Please check as much as you want ',...
+                'but don''t run this script before deleting the folder.']);
+        end
     end
     
     %% define number of runs
-    [~, nb_runs] = runs_definition(study_nm, sub_nm, 'fMRI');
+    [runs, n_runs] = runs_definition(study_nm, sub_nm, condition);
     
     %% load fMRI data
     subj_scan_folders_names = ls([subj_scans_folder, filesep, '*run*']); % takes all functional runs folders
+    % check if extraction worked
+    if ~exist('subj_scan_folders_names','var') ||...
+            isempty(subj_scan_folders_names)
+        error(['The fMRI files could not be extracted. ',...
+            'Check the name of the files maybe there is something wrong there.']);
+    end
     % clear files that should not be taken into account in the first level
     % analysis
-    [subj_scan_folders_names] = First_level_subRunFilter(study_nm, sub_nm, subj_scan_folders_names);
+    [subj_scan_folders_names] = First_level_subRunFilter(study_nm, sub_nm,...
+        subj_scan_folders_names, [], condition);
     
     %% starting 1st level GLM batch
     sub_idx = nb_batch_per_subj*(iS-1) + 1 ;
@@ -122,9 +154,9 @@ for iS = 1:NS
     matlabbatch{sub_idx}.spm.stats.fmri_spec.timing.fmri_t0 = 8;
     
     % loop through runs and tasks
-    for iRun = 1:nb_runs
+    for iRun = 1:n_runs
         % fix run index if some runs were removed
-        [~, jRun] = First_level_subRunFilter(study_nm, sub_nm, [], iRun);
+        [~, jRun] = First_level_subRunFilter(study_nm, sub_nm, [], iRun, condition);
         run_nm = num2str(jRun);
         % erase useless spaces from folder with run name
         n_char = size(subj_scan_folders_names(iRun,:),2);
@@ -162,8 +194,14 @@ for iS = 1:NS
         else
             error('problem in identifying task type because file name doesn''t match');
         end
+        % check that task type matches the one predicted by
+        % runs_definition.m script to be sure that all works ok
+        if (strcmp(task_nm,'physical') && ~strcmp(runs.tasks(iRun),'Ep')) ||...
+            (strcmp(task_nm,'mental') && ~strcmp(runs.tasks(iRun),'Em'))
+            error(['problem with run task type for subject ',sub_nm,' and run ',num2str(jRun)]);
+        end
         % perform 1st level
-        matlabbatch = First_level_loadRegressors(matlabbatch, GLMprm, study_nm, sub_nm, sub_idx, iRun,...
+        matlabbatch = First_level_loadRegressors(matlabbatch, GLMprm, study_nm, sub_nm, sub_idx, iRun, jRun,...
             subj_behavior_folder, currRunBehaviorFileNames, task_nm, computerRoot);
         
         %% global run parameters (rp movement file, etc.)
@@ -231,7 +269,8 @@ for iS = 1:NS
     
     %% estimate model
     estimate_mdl_rtg_idx = nb_batch_per_subj*iS;
-    matlabbatch{estimate_mdl_rtg_idx}.spm.stats.fmri_est.spmmat(1) = cfg_dep('fMRI model specification: SPM.mat File', substruct('.','val', '{}',{sub_idx}, '.','val', '{}',{1}, '.','val', '{}',{1}), substruct('.','spmmat'));
+    matlabbatch{estimate_mdl_rtg_idx}.spm.stats.fmri_est.spmmat(1) = cfg_dep('fMRI model specification: SPM.mat File',...
+        substruct('.','val', '{}',{sub_idx}, '.','val', '{}',{1}, '.','val', '{}',{1}), substruct('.','spmmat'));
     matlabbatch{estimate_mdl_rtg_idx}.spm.stats.fmri_est.write_residuals = 0;
     % classical model
     matlabbatch{estimate_mdl_rtg_idx}.spm.stats.fmri_est.method.Classical = 1;

@@ -42,7 +42,8 @@ end
 dataRoot = [computerRoot, filesep, study_nm, filesep];
 
 %% extract subjects
-[subject_id, NS] = LGCM_subject_selection(study_nm);
+condition = subject_condition;
+[subject_id, NS] = LGCM_subject_selection(study_nm, condition);
 
 [mean_deltaIP_perSub_Ep, mean_deltaIP_perSub_Em] = deal(NaN(1,NS));
 

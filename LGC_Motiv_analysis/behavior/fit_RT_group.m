@@ -1,23 +1,9 @@
-function[betas, pval] = fit_RT_group(computerRoot, study_nm,...
-    figDispGroup, figDispIndiv, dispMoneyOrLevels, n_NV_bins, n_trialN_bins, RT_type)
-% [betas, pval] = fit_RT_group(computerRoot, study_nm,...
-%       figDispGroup, figDispIndiv, dispMoneyOrLevels, n_NV_bins, n_trialN_bins, RT_type)
+function[betas, pval] = fit_RT_group(dispMoneyOrLevels, RT_type)
+% [betas, pval] = fit_RT_group(dispMoneyOrLevels, RT_type)
 %
 % INPUTS
-% computerRoot: pathway where data is
-%
-% study_nm: study name
-%
-% figDispGroup: display group figures (1) or not (0)
-%
-% figDispIndiv: display individual figures (1) or not (0)
-%
 % dispMoneyOrLevels: display actual money ('money') or reward levels
 % ('levels')
-%
-% n_NV_bins: number of bins for net value
-%
-% n_trialN_bins: number of trial number bins
 %
 % RT_type:
 % 'raw': raw reaction times (in seconds)
@@ -85,7 +71,8 @@ if ~exist(resultFolder,'dir')
 end
 
 %% subject selection
-[subject_id, NS] = LGCM_subject_selection(study_nm);
+condition = 'behavior_noSatTask';
+[subject_id, NS] = LGCM_subject_selection(study_nm, condition);
 
 %% initialize variables of interest
 for iPM = 1:2
@@ -96,11 +83,11 @@ for iPM = 1:2
             task_id = 'Em';
     end
     [betas.(task_id).mdl_0.b0,...
-        betas.(task_id).mdl_0.bR,...
-        betas.(task_id).mdl_0.bP,...
+        betas.(task_id).mdl_0.bM,...
         betas.(task_id).mdl_0.bRP,...
         betas.(task_id).mdl_0.bE,...
         betas.(task_id).mdl_0.bConf,...
+        betas.(task_id).mdl_0.bTrialN,...
         betas.(task_id).mdl_1.b0,...
         betas.(task_id).mdl_1.bNV,...
         betas.(task_id).mdl_1.bConf,...
@@ -113,6 +100,8 @@ for iPM = 1:2
         betas.(task_id).mdl_4.b0,...
         betas.(task_id).mdl_4.bNV,...
         betas.(task_id).mdl_4.bConf] = deal(NaN(1,NS));
+%     betas.(task_id).mdl_0.bR,...
+%         betas.(task_id).mdl_0.bP,...
     
     [RT.perMoneyLevel.(task_id),...
         RTfit.perMoneyLevel.mdl_0.(task_id),...
@@ -194,10 +183,12 @@ for iS = 1:NS
             betas.(task_id).(mdl_nm).bConf(iS) = betas_RT_perSub.(task_id).(mdl_nm).bConf;
             switch mdl_nm
                 case 'mdl_0'
-                    betas.(task_id).(mdl_nm).bR(iS)     = betas_RT_perSub.(task_id).(mdl_nm).bR;
-                    betas.(task_id).(mdl_nm).bP(iS)     = betas_RT_perSub.(task_id).(mdl_nm).bP;
+                    %                     betas.(task_id).(mdl_nm).bR(iS)     = betas_RT_perSub.(task_id).(mdl_nm).bR;
+                    %                     betas.(task_id).(mdl_nm).bP(iS)     = betas_RT_perSub.(task_id).(mdl_nm).bP;
+                    betas.(task_id).(mdl_nm).bM(iS) = betas_RT_perSub.(task_id).(mdl_nm).bM;
                     betas.(task_id).(mdl_nm).bRP(iS)    = betas_RT_perSub.(task_id).(mdl_nm).bRP;
                     betas.(task_id).(mdl_nm).bE(iS)     = betas_RT_perSub.(task_id).(mdl_nm).bE;
+                    betas.(task_id).(mdl_nm).bTrialN(iS)     = betas_RT_perSub.(task_id).(mdl_nm).bTrialN;
                 case {'mdl_1','mdl_2','mdl_3','mdl_4'}
                     betas.(task_id).(mdl_nm).bNV(iS) = betas_RT_perSub.(task_id).(mdl_nm).bNV;
             end
@@ -252,41 +243,51 @@ for iPM = 1:2
         
         % extract betas
         % beta 0
-        [betas.mean.(task_id).(mdl_nm).b0(iS),...
-            betas.sem.(task_id).(mdl_nm).b0(iS)] = mean_sem_sd(betas_RT_perSub.(task_id).(mdl_nm).b0,2);
+        [betas.mean.(task_id).(mdl_nm).b0,...
+            betas.sem.(task_id).(mdl_nm).b0] = mean_sem_sd(betas.(task_id).(mdl_nm).b0,2);
         [~,pval_tmp] = ttest(betas.(task_id).(mdl_nm).b0);
         pval.(task_id).(mdl_nm).b0 = pval_tmp;
         % beta confidence
-        [betas.mean.(task_id).(mdl_nm).bConf(iS),...
-            betas.sem.(task_id).(mdl_nm).bConf(iS)] = mean_sem_sd(betas.(task_id).(mdl_nm).bConf(iS),2);
+        [betas.mean.(task_id).(mdl_nm).bConf,...
+            betas.sem.(task_id).(mdl_nm).bConf] = mean_sem_sd(betas.(task_id).(mdl_nm).bConf,2);
         [~,pval_tmp] = ttest(betas.(task_id).(mdl_nm).bConf);
         pval.(task_id).(mdl_nm).bConf = pval_tmp;
         switch mdl_nm
             case 'mdl_0'
-                % beta net value
-                [betas.mean.(task_id).(mdl_nm).bR(iS),...
-                    betas.sem.(task_id).(mdl_nm).bR(iS)] = mean_sem_sd(betas.(task_id).(mdl_nm).bR(iS),2);
-                [~,pval_tmp] = ttest(betas.(task_id).(mdl_nm).bR);
-                pval.(task_id).(mdl_nm).bR = pval_tmp;
-                % beta punishment
-                [betas.mean.(task_id).(mdl_nm).bP(iS),...
-                    betas.sem.(task_id).(mdl_nm).bP(iS)] = mean_sem_sd(betas.(task_id).(mdl_nm).bP(iS),2);
-                [~,pval_tmp] = ttest(betas.(task_id).(mdl_nm).bP);
-                pval.(task_id).(mdl_nm).bP = pval_tmp;
+%                 % beta reward
+%                 [betas.mean.(task_id).(mdl_nm).bR,...
+%                     betas.sem.(task_id).(mdl_nm).bR] = mean_sem_sd(betas.(task_id).(mdl_nm).bR,2);
+%                 [~,pval_tmp] = ttest(betas.(task_id).(mdl_nm).bR);
+%                 pval.(task_id).(mdl_nm).bR = pval_tmp;
+%                 % beta punishment
+%                 [betas.mean.(task_id).(mdl_nm).bP,...
+%                     betas.sem.(task_id).(mdl_nm).bP] = mean_sem_sd(betas.(task_id).(mdl_nm).bP,2);
+%                 [~,pval_tmp] = ttest(betas.(task_id).(mdl_nm).bP);
+%                 pval.(task_id).(mdl_nm).bP = pval_tmp;
+                % beta money
+                [betas.mean.(task_id).(mdl_nm).bM,...
+                    betas.sem.(task_id).(mdl_nm).bM] = mean_sem_sd(betas.(task_id).(mdl_nm).bM,2);
+                [~,pval_tmp] = ttest(betas.(task_id).(mdl_nm).bM);
+                pval.(task_id).(mdl_nm).bM = pval_tmp;
                 % beta R vs P
-                [betas.mean.(task_id).(mdl_nm).bRP(iS),...
-                    betas.sem.(task_id).(mdl_nm).bRP(iS)] = mean_sem_sd(betas.(task_id).(mdl_nm).bRP(iS),2);
+                [betas.mean.(task_id).(mdl_nm).bRP,...
+                    betas.sem.(task_id).(mdl_nm).bRP] = mean_sem_sd(betas.(task_id).(mdl_nm).bRP,2);
                 [~,pval_tmp] = ttest(betas.(task_id).(mdl_nm).bRP);
                 pval.(task_id).(mdl_nm).bRP = pval_tmp;
                 % beta effort
-                [betas.mean.(task_id).(mdl_nm).bE(iS),...
-                    betas.sem.(task_id).(mdl_nm).bE(iS)] = mean_sem_sd(betas.(task_id).(mdl_nm).bE(iS),2);
+                [betas.mean.(task_id).(mdl_nm).bE,...
+                    betas.sem.(task_id).(mdl_nm).bE] = mean_sem_sd(betas.(task_id).(mdl_nm).bE,2);
                 [~,pval_tmp] = ttest(betas.(task_id).(mdl_nm).bE);
                 pval.(task_id).(mdl_nm).bE = pval_tmp;
+                % beta trial number
+                [betas.mean.(task_id).(mdl_nm).bTrialN,...
+                    betas.sem.(task_id).(mdl_nm).bTrialN] = mean_sem_sd(betas.(task_id).(mdl_nm).bTrialN,2);
+                [~,pval_tmp] = ttest(betas.(task_id).(mdl_nm).bTrialN);
+                pval.(task_id).(mdl_nm).bTrialN = pval_tmp;
             case {'mdl_1','mdl_2','mdl_3','mdl_4'}
                 % beta net value
-                [betas.mean.(task_id).(mdl_nm).bNV(iS),...
-                    betas.sem.(task_id).(mdl_nm).bNV(iS)] = mean_sem_sd(betas.(task_id).(mdl_nm).bNV(iS),2);
+                [betas.mean.(task_id).(mdl_nm).bNV,...
+                    betas.sem.(task_id).(mdl_nm).bNV] = mean_sem_sd(betas.(task_id).(mdl_nm).bNV,2);
                 [~,pval_tmp] = ttest(betas.(task_id).(mdl_nm).bNV);
                 pval.(task_id).(mdl_nm).bNV = pval_tmp;
         end
@@ -312,7 +313,7 @@ if figDispGroup == 1
     lWidth_borders = 1;
     
     %% loop through models (for the fit)
-    for iMdl = 0:nMdl
+    for iMdl = 0%0:nMdl
         mdl_nm = ['mdl_',num2str(iMdl)];
         
         %% loop through tasks

@@ -26,8 +26,7 @@ function [z,mu,sigma] = nanzscore(x,flag,dim)
 
 %   Copyright 1993-2006 The MathWorks, Inc. 
 %   $Revision: 1.1.6.1 $  $Date: 2010/03/16 00:18:33 $
-% Modified by NicoC 23/09/16 to change mean and std into nanmean and nanstd
-% to ignore NaN values...
+% Modified by NicoC 23/09/16 to change mean and std to ignore NaN values...
 
 % [] is a special case for std and mean, just handle it out here.
 if isequal(x,[]), z = []; return; end
@@ -42,8 +41,8 @@ if nargin < 3
 end
 
 % Compute X's mean and sd, and standardize it
-mu = nanmean(x,dim);
-sigma = nanstd(x,flag,dim);
+mu = mean(x,dim,'omitnan');
+sigma = std(x,flag,dim,'omitnan');
 sigma0 = sigma;
 sigma0(sigma0==0) = 1;
 z = bsxfun(@minus,x, mu);
