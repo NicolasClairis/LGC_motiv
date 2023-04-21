@@ -4,6 +4,11 @@ function[a,b,c,c_prime, pval, stats] = mediation(X, M, Y, X_nm, M_nm, Y_nm, disp
 % mediator and will display the corresponding betas (rounded at 3 values
 % after the coma) and p.values.
 %
+% Important note for the interpretation: The script will provide both raw
+% values for a,b,c and c' and coefficients of correlation based on zscored
+% X, M and Y. Depending on what inference you want to make, you may want to
+% use one or the other!
+%
 % Note: Ideally, vectors should be entered in n*1 format, but the script
 % will automatically flip each one of them if they are entered in 1*n
 % format.
@@ -26,9 +31,11 @@ function[a,b,c,c_prime, pval, stats] = mediation(X, M, Y, X_nm, M_nm, Y_nm, disp
 % want it to avoid spamming output in command window
 %
 % OUTPUTS
-% a: beta of X=>M path
+% a: beta of X=>M path (with raw values) and coefficient of correlation
+% (based on zscored X and M)
 %
-% b: beta of M=>Y path taking X into account
+% b: beta of M=>Y path taking X into account and coefficient of correlation
+% (based on zscored X and M)
 %
 % c: beta of X=>Y path
 %
@@ -37,7 +44,7 @@ function[a,b,c,c_prime, pval, stats] = mediation(X, M, Y, X_nm, M_nm, Y_nm, disp
 % pval: structure with p.value for each path
 %
 % stats: structure containing more information about the different path
-% (like t.values, correlation coefficient with a Pearson's correlation and
+% (like t.values, correlation coefficient based on zscored X, M, Y values and
 % the degree of freedom)
 %
 % Developped by Nicolas Clairis - 17/08/2022 under Jules Brochard advice
@@ -92,7 +99,12 @@ X = X(goodSamples);
 M = M(goodSamples);
 Y = Y(goodSamples);
 
-%% perform each path of the mediation
+%% zscore the variables to get the coefficients of correlation
+z_X = zscore(X);
+z_M = zscore(M);
+z_Y = zscore(Y);
+
+%% perform each path of the mediation with raw values
 
 % test correlation between X and M (path a)
 [betas_1,~,stats_1] = glmfit(X, M,'normal');
@@ -101,9 +113,9 @@ pval.a = stats_1.p(2);
 stats.tValue.a = stats_1.t(2);
 stats.degree_of_freedom.a = stats_1.dfe;
 % extract coefficient of correlation between X and M
-path_A_corrCoef = corrcoef(X,M);
-stats.R.a = path_A_corrCoef(2);
-stats.R2.a = path_A_corrCoef(2).^2;
+[z_betas_1] = glmfit(z_X, z_M,'normal');
+stats.r.a = z_betas_1(2);
+stats.r2.a = z_betas_1(2)^2;
 
 % test correlation between X, M and Y (path b)
 [betas_2,~,stats_2] = glmfit([M, X], Y,'normal');
@@ -116,9 +128,13 @@ pval.c_prime    = stats_2.p(3);
 stats.tValue.b = stats_2.t(2);
 stats.tValue.c_prime = stats_2.t(3);
 stats.degree_of_freedom.b = stats_2.dfe;
-% extract coefficient of correlation between M and Y taken X into account
-% not sure how to do it properly for now so let's temporarily forget about
-% it
+% extract coefficient of correlation between M and Y taking X into account
+% the other path
+z_betas_2 = glmfit([z_M, z_X], z_Y,'normal');
+stats.r.b = z_betas_2(2);
+stats.r.c_prime = z_betas_2(3);
+stats.r2.b = z_betas_2(2)^2;
+stats.r2.c_prime = z_betas_2(3)^2;
 
 % test also direct path between X and Y (path c)
 [betas_3,~,stats_3] = glmfit(X, Y,'normal');
@@ -129,9 +145,9 @@ pval.c = stats_3.p(2);
 stats.tValue.c = stats_3.t(2);
 stats.degree_of_freedom.c = stats_3.dfe;
 % extract coefficient of correlation between X and Y
-path_C_corrCoef = corrcoef(X,Y);
-stats.R.c = path_C_corrCoef(2);
-stats.R2.c = path_C_corrCoef(2).^2;
+z_betas_3 = glmfit(z_X, z_Y,'normal');
+stats.r.c = z_betas_3(2);
+stats.r2.c = z_betas_3(2)^2;
 
 %% display relevant p.values in the command window to summarize the 
 % results of the mediation
@@ -145,6 +161,7 @@ if dispResults == 1
         M_nm,' = ',num2str(round(betas_1(1),roundingVal)),...
         ' + (',num2str(round(a, roundingVal)),')*',X_nm,';']);
     disp(['p(a=',X_nm,') = ',num2str(pval.a)]);
+    disp(['R(a) = ',num2str(stats.r.a)]);
     disp(' ');
     % path b
     disp([M_nm,' -> ',Y_nm,' (path b): ',...
@@ -153,12 +170,15 @@ if dispResults == 1
         ' + (',num2str(round(c_prime,roundingVal)),')*',X_nm,';']);
     disp(['p(b=',M_nm,') = ',num2str(pval.b),';']);
     disp(['p(c''=',X_nm,') = ',num2str(pval.c_prime)]);
+    disp(['R(b) = ',num2str(stats.r.b)]);
+    disp(['R(c'') = ',num2str(stats.r.c_prime)]);
     disp(' ');
     % path c
     disp([X_nm,' -> ',Y_nm,' (path c): ',...
         Y_nm,' = ',num2str(round(betas_3(1), roundingVal)),...
         ' + (',num2str(round(c, roundingVal)),')*',X_nm,';']);
     disp(['p(c=',X_nm,') = ',num2str(pval.c)]);
+    disp(['R(c) = ',num2str(stats.r.c)]);
     disp(' ');
     
     %% display results with a figure
@@ -167,7 +187,8 @@ if dispResults == 1
     black = [0 0 0];
     grey = [143 143 143]./255;
     
-    % extract relevant data for fit
+    %% X/M/Y mediation with real values
+    % extract relevant data for fit with raw values
     X_ascOrder = sort(X);
     % X => Y (direct path c)
     Y_c_fit = glmval(betas_3, X_ascOrder,'identity');
@@ -235,6 +256,77 @@ if dispResults == 1
     fit_hdl.Color = grey;
     xlabel([X_nm,' - path c''']);
     ylabel(Y_nm);
+    legend_size(pSize);
+    
+    %% X/M/Y mediation with zscored values
+    % extract relevant data for fit with raw values
+    z_X_ascOrder = sort(z_X);
+    % z(X) => z(Y) (direct path c)
+    z_Y_c_fit = glmval(z_betas_3, z_X_ascOrder,'identity');
+    % z(X) => z(Y) after removing M (direct path c')
+    z_Y_res_without_M = z_Y - stats.r.b.*z_M;
+    z_Y_cPrime_fit = z_betas_2(1) + stats.r.c_prime.*z_X_ascOrder;
+    % z(X) => z(M) (path a)
+    z_M_fit = glmval(z_betas_1, z_X_ascOrder,'identity');
+    % z(M) => z(Y) removing any influence of X (path b)
+%     M_res_without_X = M - a.*X;
+%     M_res_ascOrder = sort(M_res_without_X);
+    z_M_ascOrder = sort(z_M);
+    z_Y_res_without_X = z_Y - stats.r.c_prime.*z_X;
+    z_Y_b_fit = z_betas_2(1) + stats.r.b.*z_M_ascOrder;
+    
+    fig;
+    
+    % z(X) => z(M) path
+    subplot(2,2,1);
+    scat_hdl = scatter(z_X, z_M);
+    scat_hdl.LineWidth = lWidth;
+    scat_hdl.MarkerEdgeColor = black;
+    hold on;
+    fit_hdl = plot(z_X_ascOrder, z_M_fit);
+    fit_hdl.LineWidth = lWidth;
+    fit_hdl.Color = grey;
+    xlabel(['z(',X_nm,') -  path a']);
+    ylabel(['z(',M_nm,')']);
+    legend_size(pSize);
+    
+    % z(M) => z(Y) path (after removing z(X) => z(Y))
+    subplot(2,2,2);
+    scat_hdl = scatter(z_M, z_Y_res_without_X);
+    scat_hdl.LineWidth = lWidth;
+    scat_hdl.MarkerEdgeColor = black;
+    hold on;
+    fit_hdl = plot(z_M_ascOrder, z_Y_b_fit);
+    fit_hdl.LineWidth = lWidth;
+    fit_hdl.Color = grey;
+    xlabel(['z(',M_nm,') -  path b']);
+    ylabel(['z(',Y_nm,')']);
+    legend_size(pSize);
+    
+    % z(X) => z(Y) direct path without mediation (c)
+    subplot(2,2,3);
+    scat_hdl = scatter(z_X, z_Y);
+    scat_hdl.LineWidth = lWidth;
+    scat_hdl.MarkerEdgeColor = black;
+    hold on;
+    fit_hdl = plot(z_X_ascOrder, z_Y_c_fit);
+    fit_hdl.LineWidth = lWidth;
+    fit_hdl.Color = grey;
+    xlabel(['z(',X_nm,') - path c']);
+    ylabel(['z(',Y_nm,')']);
+    legend_size(pSize);
+    
+    % X => Y direct path competition with M (c')
+    subplot(2,2,4);
+    scat_hdl = scatter(z_X, z_Y_res_without_M);
+    scat_hdl.LineWidth = lWidth;
+    scat_hdl.MarkerEdgeColor = black;
+    hold on;
+    fit_hdl = plot(z_X_ascOrder, z_Y_cPrime_fit);
+    fit_hdl.LineWidth = lWidth;
+    fit_hdl.Color = grey;
+    xlabel(['z(',X_nm,') - path c''']);
+    ylabel(['z(',Y_nm,')']);
     legend_size(pSize);
 end
 
