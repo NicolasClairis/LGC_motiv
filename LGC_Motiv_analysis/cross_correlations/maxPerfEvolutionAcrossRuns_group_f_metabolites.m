@@ -60,32 +60,8 @@ if ~exist('figIndivDisp','var') || isempty(figIndivDisp)
 end
 
 %% define metabolite and ROI you want to focus on
-% ROI
-ROIs = {'dmPFC','aIns'};
-nROIs = length(ROIs);
-ROI_idx = spm_input('Metabolites in which brain area?',1,'m',...
-    ROIs,1:nROIs,0);
-ROI_metabolite_nm = ROIs{ROI_idx};
-% select metabolite of interest
-metabolites = {'Mac','Ala','Asp','PCho','Cr','PCr','GABA',...
-    'Gln','Glu','GSH','Gly','Ins','Lac','NAA','Scyllo','Tau',...
-    'Asc','Glc','NAAG','GPC','PE','Ser',...
-    'NAA_NAAG','Glu_Gln','GPC_PCho','Cr_PCr','Gly_Ins','Gln_div_Glu'};
-n_met = length(metabolites);
-metabolite_idx = spm_input('Which metabolite to focus on?',1,'m',...
-    metabolites,1:n_met,0);
-metabolite_nm = metabolites{metabolite_idx};
-
-%% extract all metabolites
-[metabolites] = metabolite_load(subject_id);
-% focus on metabolite and brain area selected
-metabolite_allSubs = metabolites.(ROI_metabolite_nm).(metabolite_nm);
-% perform a median split based on the metabolite selected in the ROI
-% selected
-med_metabolite_allSubs = median(metabolite_allSubs,'omitnan');
-% extract index of participants with low or high level of metabolites
-low_met_subs = metabolite_allSubs <= med_metabolite_allSubs;
-high_met_subs = metabolite_allSubs > med_metabolite_allSubs;
+[low_met_subs, high_met_subs,...
+    metabolite_nm, MRS_ROI_nm, metabolite_allSubs] = medSplit_metabolites(study_nm, subject_id);
 
 %% initialize variables of interest
 n_maxPerf = 4;
