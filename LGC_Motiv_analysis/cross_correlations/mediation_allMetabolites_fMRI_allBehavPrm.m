@@ -135,8 +135,8 @@ end % ROI loop
 
 %% lines to launch to display metabolite of interest
 MRS_ROI_nm='dmPFC';
-metabolite_nm='GSH';
-prm_nm='kEp';
+metabolite_nm='Glu_div_GSH';
+prm_nm='kEm';
 metabolite_allSubs = metabolites.(MRS_ROI_nm).(metabolite_nm);
         goodSubs = ~isnan(metabolite_allSubs);
 behavPrm = prm.(prm_nm);
