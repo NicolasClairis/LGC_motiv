@@ -25,8 +25,8 @@ end
 [low_met_subs, high_met_subs, mSplit_metabolite_nm] = medSplit_metabolites(study_nm,subject_id);
 [metabolite_allSubs, MRS_ROI_nm, linear_metabolite_nm] = metabolite_extraction(study_nm, subject_id);
 % remove '_' from name for labels
-mSplit_metabolite_nm_bis = strrep(mSplit_metabolite_nm,'_div_','/');
-linear_metabolite_nm_bis = strrep(linear_metabolite_nm,'_div_','/');
+[mSplit_metabolite_nm_bis] = metab_div_rnm(mSplit_metabolite_nm);
+[linear_metabolite_nm_bis] = metab_div_rnm(linear_metabolite_nm);
 %% extract the data
 preMRS_fatigue_metSplit.low = preMRS_fatigue(low_met_subs);
 preMRS_fatigue_metSplit.high = preMRS_fatigue(high_met_subs);
