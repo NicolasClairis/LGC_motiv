@@ -19,7 +19,8 @@ study_nm = 'study1';
 
 %% define metabolite of interest
 [metabolite_allSubs, MRS_ROI_nm, metabolite_nm] = metabolite_extraction(study_nm, subject_id);
-
+[metabolite_nm_bis] = metab_div_rnm(metabolite_nm);
+ 
 %% load sleep
 [excelReadGeneralFile] = load_gal_data_bis(study_nm);
 prevDaySleepTable = excelReadGeneralFile.HeuresDeSommeilLaVeilleDeL_exp_rience;
@@ -79,7 +80,7 @@ lWidthScatter = 1.5;
 blackCol = [0 0 0];
 greyCol = [143 143 143]./255;
 pSize = 30;
-yLabeling = [MRS_ROI_nm,' - ',metabolite_nm];
+yLabeling = [MRS_ROI_nm,' - ',metabolite_nm_bis];
 
 % metabolite = f(avg sleep)
 fig;
