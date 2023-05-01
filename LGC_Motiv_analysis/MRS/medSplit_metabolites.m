@@ -1,4 +1,5 @@
-function[low_met_subs, high_met_subs, metabolite_nm, MRS_ROI_nm, metabolite_allSubs] = medSplit_metabolites(study_nm, subject_id)
+function[low_met_subs, high_met_subs, metabolite_nm,...
+    MRS_ROI_nm, metabolite_allSubs] = medSplit_metabolites(study_nm, subject_id)
 % [low_met_subs, high_met_subs, metabolite_nm, MRS_ROI_nm, metabolite_allSubs] = medSplit_metabolites(study_nm, subject_id)
 % medSplit_metabolites will allow you to select the metabolite and the area
 % that you want in order to perform a median split based on it.
