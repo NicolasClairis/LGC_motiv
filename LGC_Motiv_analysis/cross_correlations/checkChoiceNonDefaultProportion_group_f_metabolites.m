@@ -82,7 +82,8 @@ taskTypes = {'Ep','Em'};
 nTaskTypes = length(taskTypes);
 
 %% define metabolite and ROI you want to focus on and corresponding subjects
-[low_met_subs, high_met_subs, metabolite_nm] = medSplit_metabolites(subject_id);
+[low_met_subs, high_met_subs,...
+    metabolite_nm] = medSplit_metabolites(study_nm, subject_id);
 
 %% extract data with loop through tasks
 for iTask = 1:nTaskTypes
