@@ -48,6 +48,24 @@ for iBlood = 1:n_BloodPrm
     end
     bloodMb_sort.(corr_nm) = sort(bloodMb.(bloodMb_nm)(goodSubs.(corr_nm)));
     metabolite_fit.(corr_nm) = glmval(beta.(corr_nm), bloodMb_sort.(corr_nm), 'identity');
+    
+    %% try the same removing outliers
+    [~, idx_badBlood.(bloodMb_nm)] = rmv_outliers_3sd(bloodMb.(bloodMb_nm));
+    [~, idx_badSubs_mb] = rmv_outliers_3sd(metabolite_allSubs);
+    goodSubs_noOutliers.(corr_nm) = (idx_badBlood.(bloodMb_nm) == 0).*(idx_badSubs_mb == 0).*(goodSubs.(corr_nm) == 1) == 1;
+    [beta.no_outliers.(corr_nm),~,stats_tmp_bis] =...
+        glmfit(bloodMb.(bloodMb_nm)(goodSubs_noOutliers.(corr_nm)),...
+        metabolite_allSubs(goodSubs_noOutliers.(corr_nm)), 'normal');
+    pval.no_outliers.(corr_nm) = stats_tmp_bis.p;
+    % store significant p.values for slope
+    if stats_tmp_bis.p(2) < 0.05
+        pval.no_outliers.signif.(corr_nm) = stats_tmp_bis.p(2);
+    elseif stats_tmp_bis.p(2) > 0.05 && stats_tmp_bis.p(2) < 0.1
+        pval.no_outliers.almostSignif.(corr_nm) = stats_tmp_bis.p(2);
+    end
+    bloodMb_sort.no_outliers.(corr_nm) = sort(bloodMb.(bloodMb_nm)(goodSubs_noOutliers.(corr_nm)));
+    metabolite_fit.no_outliers.(corr_nm) = glmval(beta.no_outliers.(corr_nm), bloodMb_sort.no_outliers.(corr_nm), 'identity');
+    
 end % blood loop
 
 %% correlation and figure
@@ -59,6 +77,8 @@ orange = [254 75 3]./255;
 %% show results
 fig1 = fig; j_fig1 = 0;
 fig2 = fig; j_fig2 = 0;
+fig3 = fig; j_fig3 = 0;
+fig4 = fig; j_fig4 = 0;
 for iBlood = 1:n_BloodPrm
     bloodMb_nm = bloodMb_names{iBlood};
     corr_nm = [full_mb_nm,'_f_',bloodMb_nm];
@@ -86,6 +106,40 @@ for iBlood = 1:n_BloodPrm
     scat_hdl = scatter(bloodMb.(bloodMb_nm)(goodSubs.(corr_nm)),...
         metabolite_allSubs(goodSubs.(corr_nm)));
     plot_hdl = plot(bloodMb_sort.(corr_nm), metabolite_fit.(corr_nm));
+    scat_hdl.LineWidth = lWidth;
+    scat_hdl.MarkerEdgeColor = black;
+    plot_hdl.Color = orange;
+    plot_hdl.LineStyle = '--';
+    [blood_labelname] = blood_label(bloodMb_nm);
+    xlabel(blood_labelname);
+    ylabel(full_mb_nm_bis);
+    legend_size(pSize);
+    
+    %% same but for no outliers analysis
+    switch bloodMb_nm
+        case {'Nam','NMN','NR','NAD',...
+                'NADH','NADP','NADPH','MeNam',...
+                'MeXPY'}
+            figure(fig3);
+            j_fig3 = j_fig3 + 1;
+            subplot(3,4,j_fig3);
+        case {'NAD_div_NADH',...
+                'NADP_div_NADPH',...
+                'total_NAD_precursors',...
+                'total_NAD',...
+                'total_NAD_with_precursors',...
+                'total_NAD_with_byproducts',...
+                'total_NAD_byproducts'}
+            figure(fig4);
+            j_fig4 = j_fig4 + 1;
+            subplot(3,3,j_fig4);
+    end
+    %% figure
+    hold on;
+    scat_hdl = scatter(bloodMb.(bloodMb_nm)(goodSubs_noOutliers.(corr_nm)),...
+        metabolite_allSubs(goodSubs_noOutliers.(corr_nm)));
+    plot_hdl = plot(bloodMb_sort.no_outliers.(corr_nm),...
+        metabolite_fit.no_outliers.(corr_nm));
     scat_hdl.LineWidth = lWidth;
     scat_hdl.MarkerEdgeColor = black;
     plot_hdl.Color = orange;
