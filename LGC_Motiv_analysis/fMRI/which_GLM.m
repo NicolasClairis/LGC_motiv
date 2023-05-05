@@ -3206,7 +3206,7 @@ switch GLM
             % feedback
             GLMprm.model_onset.(Epm_nm).fbk = 'stick';
         end % physical/mental loop
-        case 115 % like GLM 104 but focus on high effort option instead of chosen option
+    case 115 % like GLM 104 but focus on high effort option instead of chosen option
         % general parameters
         GLMprm.gal.orth_vars = 0;
         GLMprm.gal.zPerRun = 0;
@@ -3218,6 +3218,32 @@ switch GLM
             GLMprm.choice.(Epm_nm).RP.E.R_varOption = 2;
             GLMprm.choice.(Epm_nm).RP.E.P_varOption = 2;
             GLMprm.choice.(Epm_nm).RP.E.E_varOption = 1;
+            switch Epm_nm
+                case 'Ep'
+                    GLMprm.choice.(Epm_nm).RP.E.fatigue = 1;
+                case 'Em'
+                    GLMprm.choice.(Epm_nm).RP.E.prevEfficacy = 3;
+            end
+            % effort perf (effort execution)
+            GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
+            % feedback
+            GLMprm.model_onset.(Epm_nm).fbk = 'stick';
+        end % physical/mental loop
+    case 116 % like GLM 104 and 115 but include both high effort option and chosen effort and see which is best
+        % general parameters
+        GLMprm.gal.orth_vars = 0;
+        GLMprm.gal.zPerRun = 0;
+        % loop per task
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'stick';
+            GLMprm.choice.(Epm_nm).RP.E.R_varOption = 2;
+            GLMprm.choice.(Epm_nm).RP.E.P_varOption = 2;
+            GLMprm.choice.(Epm_nm).RP.E.E_varOption = 1;
+            GLMprm.choice.(Epm_nm).RP.E.R_chosen = 2;
+            GLMprm.choice.(Epm_nm).RP.E.P_chosen = 2;
+            GLMprm.choice.(Epm_nm).RP.E.E_chosen = 1;
             switch Epm_nm
                 case 'Ep'
                     GLMprm.choice.(Epm_nm).RP.E.fatigue = 1;
