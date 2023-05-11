@@ -118,6 +118,7 @@ end
 %% loop through subjects
 for iS = 1:NS
     sub_nm = subject_id{iS};
+%     if ~ismember(sub_nm,{'054','061'})
     subBehaviorFolder = [studyBehaviorFolder, 'CID',sub_nm, filesep, 'behavior',filesep];
     
     % extract runs
@@ -221,6 +222,7 @@ for iS = 1:NS
             end
         end
     end % task loop
+%     end % bad subject Em filter
 end % subject loop
 
 if figDisp == 1
