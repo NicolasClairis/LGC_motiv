@@ -263,7 +263,9 @@ function [GLMprm] = which_GLM(GLM)
 %
 %       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).confidence
 %       (1) confidence level (0/1) given by the subject for each choice
-%       (2) confidence inferred by the model (p(choice)-0.5)² for the model
+%       (2) confidence inferred by the model (p(high E)-0.5)² for the model
+%       defined in .(choice/chosen).(Ep.Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).conf_mdl (='mdl_X' or 'bayesianModel_X')
+%       (3) confidence inferred by the model (p(left)-0.5)² for the model
 %       defined in .(choice/chosen).(Ep.Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).conf_mdl (='mdl_X' or 'bayesianModel_X')
 %
 %       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).RT: reaction time for choice
@@ -396,7 +398,9 @@ function [GLMprm] = which_GLM(GLM)
 %
 %       .Eperf.(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).confidence
 %       (1) confidence level (0/1) given by the subject for each choice
-%       (2) confidence inferred by the model (p(choice)-0.5)² for the model
+%       (2) confidence inferred by the model (p(high E)-0.5)² for the model
+%       defined in .Eperf.(Ep.Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).conf_mdl (='mdl_X' or 'bayesianModel_X')
+%       (3) confidence inferred by the model (p(left)-0.5)² for the model
 %       defined in .Eperf.(Ep.Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).conf_mdl (='mdl_X' or 'bayesianModel_X')
 %
 %
@@ -432,7 +436,9 @@ function [GLMprm] = which_GLM(GLM)
 %
 %       .fbk.(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).confidence
 %       (1) confidence level (0/1) given by the subject for each choice
-%       (2) confidence inferred by the model (p(choice)-0.5)² for the model
+%       (2) confidence inferred by the model (p(high E)-0.5)² for the model
+%       defined in .fbk.(Ep.Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).conf_mdl (='mdl_X' or 'bayesianModel_X')
+%       (3) confidence inferred by the model (p(left)-0.5)² for the model
 %       defined in .fbk.(Ep.Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).conf_mdl (='mdl_X' or 'bayesianModel_X')
 %
 % See also GLM_details.m

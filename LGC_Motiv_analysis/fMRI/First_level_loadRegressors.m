@@ -388,16 +388,32 @@ for iRP = 1:length(RPconds)
                     % load inferred confidence
                     [~, modelledDataStruct] = logitfit_choices(computerRoot, study_nm, sub_nm,...
                         0, 'levels', 6, 6);
-                    confidence = modelledDataStruct.confidenceFitted.(conf_mdl_nm).(task_id).(run_nm_bis);
+                    confidence_highE = modelledDataStruct.confidenceFitted_highE.(conf_mdl_nm).(task_id).(run_nm_bis);
+                    pChoice = modelledDataStruct.choicesFitted.(conf_mdl_nm).(task_id).(run_nm_bis);
                 elseif strcmp(conf_mdl_nm(1:14),'bayesianModel_') % bayesian model
                     bayesianMdl_nm = strrep(conf_mdl_nm,'bayesianModel','mdl');
                     gitResultsFolder = [fullfile('C:','Users','clairis','Desktop',...
                         'GitHub','LGC_motiv','LGC_Motiv_results',study_nm,'bayesian_modeling'),filesep];
-                    [~, ~, confidence] = extract_bayesian_mdl(gitResultsFolder, subBehaviorFolder,...
+                    [~, ~, confidence_highE, pChoice] = extract_bayesian_mdl(gitResultsFolder, subBehaviorFolder,...
                         sub_nm, run_nm, task_fullName, bayesianMdl_nm);
                 else
                     error(['model with ',conf_mdl_nm,' not ready yet']);
                 end
+                
+                % define confidence proxy to use
+                if GLMprm.choice.(task_id).(RP_nm).(Esplit_nm).confidence == 2 ||...
+                        GLMprm.chosen.(task_id).(RP_nm).(Esplit_nm).confidence == 2 ||...
+                        GLMprm.Eperf.(task_id).(RP_nm).(Esplit_nm).confidence == 2 ||...
+                        GLMprm.fbk.(task_id).(RP_nm).(Esplit_nm).confidence == 2
+                    confidence = confidence_highE;
+                elseif GLMprm.choice.(task_id).(RP_nm).(Esplit_nm).confidence == 3 ||...
+                        GLMprm.chosen.(task_id).(RP_nm).(Esplit_nm).confidence == 3 ||...
+                        GLMprm.Eperf.(task_id).(RP_nm).(Esplit_nm).confidence == 3 ||...
+                        GLMprm.fbk.(task_id).(RP_nm).(Esplit_nm).confidence == 3
+                    confidence_left = (pChoice.*(E_left > 0) + (1 - pChoice).*(E_left == 0) - 0.5).^2;
+                    confidence = confidence_left;
+                end
+                
             end % which confidence to use
         end % confidence
     end % Effort conditions
@@ -1278,7 +1294,7 @@ if ismember(choiceModel,{'stick','boxcar'})
                 switch choiceModel_conf
                     case 1 % binary variable => no zscore
                         choice_modVals(n_choiceMods,:) = confidence(choice_trial_idx);
-                    case 2 % confidence inferred by the model => ok to zscore
+                    case {2,3} % confidence inferred by the model => ok to zscore
                         choice_modVals(n_choiceMods,:) = raw_or_z(confidence(choice_trial_idx));
                     otherwise
                         error('not ready yet');
@@ -1881,7 +1897,7 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                 switch chosenModel_confidence
                     case 1
                         chosen_modVals(n_chosenMods,:) = confidence(chosen_trial_idx); % binary variable => no zscore
-                    case 2
+                    case {2,3}
                         chosen_modVals(n_chosenMods,:) = raw_or_z(confidence(chosen_trial_idx)); % confidence inferred by the model
                     otherwise
                         error('ready yet');

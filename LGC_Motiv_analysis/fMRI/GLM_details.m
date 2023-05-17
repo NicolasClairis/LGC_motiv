@@ -868,7 +868,7 @@ for iEpm = 1:length(Epm)
                         disp([num2str(n_regs.(task_id_nm)),') choice: confidence (levels) ']);
                         % if derivative added => add derivatives
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
-                    case 2 % confidence inferred by the model
+                    case {2,3} % confidence inferred by the model
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                         reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG choice ',RP_dispChoice_nm,' ',splitE_dispChoice_nm,': confidence'];
                         disp([num2str(n_regs.(task_id_nm)),') choice: confidence (inferred by the model) ']);
@@ -1489,7 +1489,7 @@ for iEpm = 1:length(Epm)
                         disp([num2str(n_regs.(task_id_nm)),') chosen: confidence (levels) ']);
                         % if derivative added => add derivatives
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
-                    case 2 % confidence inferred by the model
+                    case {2,3} % confidence inferred by the model
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                         reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG chosen ',RP_dispChosen_nm,' ',splitE_dispChosen_nm,': confidence'];
                         disp([num2str(n_regs.(task_id_nm)),') chosen: confidence (inferred by the model) ']);
@@ -1749,7 +1749,7 @@ for iEpm = 1:length(Epm)
                         disp([num2str(n_regs.(task_id_nm)),') pre-effort cross: confidence (levels) ']);
                         % if derivative added => add derivatives
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
-                    case 2 % confidence inferred by the model
+                    case {2,3} % confidence inferred by the model
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                         reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG effort ',RP_preEcross_nm,' ',splitE_preEcross_nm,': confidence'];
                         disp([num2str(n_regs.(task_id_nm)),') pre-effort cross: confidence (inferred by the model) ']);
@@ -2045,7 +2045,7 @@ for iEpm = 1:length(Epm)
                         disp([num2str(n_regs.(task_id_nm)),') effort period: confidence (levels) ']);
                         % if derivative added => add derivatives
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
-                    case 2 % confidence inferred by the model
+                    case {2,3} % confidence inferred by the model
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                         reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG effort ',RP_Eperf_nm,' ',splitE_Eperf_nm,': confidence'];
                         disp([num2str(n_regs.(task_id_nm)),') effort period: confidence (inferred by the model) ']);
@@ -2169,7 +2169,7 @@ for iEpm = 1:length(Epm)
                         disp([num2str(n_regs.(task_id_nm)),') feedback: confidence (levels) ']);
                         % if derivative added => add derivatives
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
-                    case 2 % confidence inferred by the model
+                    case {2,3} % confidence inferred by the model
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                         reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG feedback ',RP_fbk_nm,' ',splitE_fbk_nm,': confidence'];
                         disp([num2str(n_regs.(task_id_nm)),') feedback: confidence (inferred by the model) ']);
