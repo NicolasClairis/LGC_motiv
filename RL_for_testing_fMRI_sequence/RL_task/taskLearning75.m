@@ -63,6 +63,7 @@ rectLoss = CenterRectOnPoint(Screen('Rect',lossFdbk),x,y);
 % pair across subjects: pair/impair subjects
 
 % define order of pairs of stimuli across runs
+pair_order = 1:nbTotalRuns;
 pairForThisRun = pair_order(nrun);
 
 % define attribution of pairs across subjects (not always the same pair for
@@ -191,7 +192,6 @@ elseif IRM == 1
     key.escape = KbName('escape');
     
     % TTL trigger
-    dummy_scan = 4;
     trigger = 54;
     
     %% add a cross at the beginning
@@ -202,24 +202,9 @@ elseif IRM == 1
     
     %% TRIGGER RAPHAEL
     if IRM == 1 % useless for training
-        next = 0;
-        TTL = []; % TTL TIMES
-        % wait dummy_scan number of volumes before starting the task
-        while next < dummy_scan
-            [keyisdown, T0IRM, keycode] = KbCheck;
-            
-            if keyisdown == 1 && keycode(trigger) == 1
-                if next == 0
-                    T0 = T0IRM;
-                end
-                next = next+1;
-                disp(next);
-                TTL = [TTL; T0IRM];
-                while keycode(trigger) == 1
-                    [keyisdown, T, keycode] = KbCheck;
-                end
-            end
-        end
+        disp('Now waiting for first TTL to start');
+        dummy_scans = 1; % number of TTL to wait before starting the task (dummy scans are already integrated in CIBM scanner)
+        [T0] = TTL_wait(dummy_scans, trigger);
         
         % record all subsequent TTL in the whole task
         keysOfInterest = zeros(1,256);
@@ -553,8 +538,7 @@ if IRM == 1
         end
     end
     KbQueueRelease;
-    save([behaviordir,'\TTL_sub',subid,'_sess',runname,'.mat'],'T0','TTL');
-    onset.TTL = TTL;
+    save([behaviordir,'\TTL_sub',subid,'_sess',runname,'.mat'],'T0');
     save([behaviordir,'\MBB_battery_',taskName,'_onsets_sub',subid,'_sess',runname,'.mat'],'onset','duration');
 end
 
@@ -586,6 +570,9 @@ else
 end
 xlim([0 2.5]);
 ylim([0 110]);
+xticks(1:2);
+xticklabels({'Gains','Losses'});
+ylabel('% correct choices');
 
 % display temporal performance also
 figure
@@ -593,8 +580,12 @@ figure
 RrPlot = subplot(2,1,1);
 plot(response(npair == 1),'b');
 ylim([-1.2 1.2]);
+xlabel('Gain pair');
+ylabel('% correct choices');
 % L/l trials
 LlPlot = subplot(2,1,2);
 ylim([-1.2 1.2]);
 plot(response(npair == 3),'b');
 ylim([-1.2 1.2]);
+xlabel('Loss pair');
+ylabel('% correct choices');
