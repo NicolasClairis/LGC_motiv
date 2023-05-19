@@ -21,11 +21,12 @@ end
 %% working directories
 root = ['E:',filesep,'study2',filesep,...
     'pilots', filesep];
+root='C:\Users\Nicolas Clairis\Documents\GitHub\LGC_motiv\RL_for_testing_fMRI_sequence\RL_task\resultats\';
 warning('check path here');
 
 %% subject selection
 warning('ADD LIST SUBJECTS HERE')
-subject_id = {''};
+subject_id = {'sub100'};
 NS = length(subject_id);
 
 %% load model parameters
@@ -77,7 +78,7 @@ end
 
 %% main task parameters
 n_trials_per_run    = 60;
-n_RL_runs           = 3;
+n_RL_runs           = 2;
 n_total_trials      = n_trials_per_run*n_RL_runs;
 trialN_vector = 1:n_trials_per_run;
 trialN = repmat(trialN_vector, 1, n_RL_runs);
@@ -126,10 +127,8 @@ for iS = 1:NS
         
         %% subject identification
         sub_nm = subject_id{iS};
-        if strcmp(sub_nm(3),'_')
-            subid   = sub_nm(2);
-        elseif ~strcmp(sub_nm(3),'_') && strcmp(sub_nm(4),'_')
-            subid = sub_nm(2:3);
+        if strcmp(sub_nm(1:3),'sub')
+            subid   = sub_nm(4:end);
         end
         
         behavior_folder = [root,sub_nm,filesep,'behavior',filesep];
@@ -145,7 +144,10 @@ for iS = 1:NS
             lastOutcome] = deal( NaN(1, n_total_trials) ); % trialN
         
         %% pool data across runs
-        [runs_idx] = MS2_task_runs_extraction('RL', sub_nm);
+        switch subid
+           case '100'
+               runs_idx = 1:2;
+        end
         
         % loop through runs
         for iRun = 1:n_RL_runs
