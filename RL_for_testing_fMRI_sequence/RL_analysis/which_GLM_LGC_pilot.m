@@ -8,6 +8,42 @@ function[GLMprm] = which_GLM_LGC_pilot(GLM)
 % OUTPUTS
 % GLMprm: GLM parameters
 
+%% initialize everything to 0
+%% list of all possible onsets and regressors
+[list_all_GLMprm, n_potReg] = LGC_list_potential_onsets_and_modulators;
+
+%% set all parameters to zero by default
+
+% general
+for iGal = 1:n_potReg.gal
+    curr_gal_prm = list_all_GLMprm.gal{iGal};
+    GLMprm.gal.(curr_gal_prm) = 0;
+end
+GLMprm.gal.orth_vars = 1; % default = orthogonalize variables
+
+% RL
+% onsets & durations
+for iORL = 1:n_potReg.RL.onsets
+    curr_RL_onset_prm   = list_all_GLMprm.RL.onsets{iORL};
+    curr_RL_dur_prm     = list_all_GLMprm.RL.durations{iORL};
+    GLMprm.(curr_RL_onset_prm) = 0;
+    GLMprm.(curr_RL_dur_prm) = 0;
+end
+% loop through modulators
+for i_RL_mod = 1:n_potReg.RL.mods
+    curr_mod = list_all_GLMprm.RL.modulators{i_RL_mod};
+    for iRL_regs = 1:n_potReg.RL.(curr_mod) % loop through regressors
+        curr_RL_prm = list_all_GLMprm.RL.(curr_mod){iRL_regs};
+        GLMprm.(curr_mod).(curr_RL_prm) = 0;
+    end
+end
+
+% special case for model type which is a string and not a numerical value
+GLMprm.mod_stim.mdl_type    = '';
+GLMprm.mod_chosen.mdl_type  = '';
+GLMprm.mod_fbk.mdl_type     = '';
+
+%% set up main attributes
 switch GLM
     case 1
         % RL: Val = pAQA+pBQB/Conf = [p(left)-0.5]^2/DT

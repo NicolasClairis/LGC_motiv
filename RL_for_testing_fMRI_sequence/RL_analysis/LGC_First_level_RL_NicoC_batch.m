@@ -1,4 +1,4 @@
-function[] = LGC_First_level_RL_NicoC_batch(GLM, checking, subject_id)
+function[] = LGC_First_level_RL_NicoC_batch(GLM, checking)%, subject_id)
 %[] = LGC_First_level_RL_NicoC_batch(GLM, checking, subject_id)
 % Batch script for first level fMRI for fMRI sequence of LGC
 % Use of SPM-12
@@ -48,6 +48,7 @@ spm_jobman('initcfg');
 % number of subjects
 subject_id = {'fMRI_pilot1_AC'};
 NS = length(subject_id);
+preproc_folder = 'preproc_sm_8mm';
 learningRuns    = 3;
 nbRuns = learningRuns;
 
@@ -71,7 +72,6 @@ for iSub = 1:NS
     subj_folder             = [root, filesep, sub_nm];
     subj_analysis_folder    = [subj_folder, filesep, 'fMRI_analysis' filesep];
     subj_scans_folder       = [subj_folder, filesep, 'fMRI_scans' filesep];
-    subj_behavior_folder    = [subj_folder, filesep, 'behavior' filesep];
     % folder names
     subj_scan_folders_names = ls([subj_scans_folder, filesep, '*_run*']); % takes all functional runs folders (if TR = 1.10s, for multiband seq in particular)
     
@@ -101,7 +101,7 @@ for iSub = 1:NS
         end
         
         % load scans in the GLM
-        cd([subj_scans_folder filesep subj_runFoldername, filesep]); % go to run folder
+        cd([subj_scans_folder filesep subj_runFoldername, filesep, preproc_folder,filesep]); % go to run folder
         preprocessed_filenames = cellstr(spm_select('ExtFPList',pwd,'^swr.*\.nii$')); % extracts all the preprocessed swrf files (smoothed, normalized, realigned)
         matlabbatch{sub_idx}.spm.stats.fmri_spec.sess(iRun).scans = preprocessed_filenames;
         

@@ -20,12 +20,18 @@ function [] = LGC_onsets_for_fMRI_RL(subject_id)
 % folder)
 
 %% working directories
-root = ['E:' filesep 'study2',filesep,'pilots' filesep];
+root = ['E:' filesep 'study2',filesep,'pilots' filesep,...
+    'fMRI_pilots',filesep];
 subDir = [root subject_id filesep];
 behaviorDir = [subDir 'behavior' filesep];
 fMRI_Dir = [subDir 'fMRI_analysis' filesep];
 
 %% main infos
+if strcmp(subject_id,'fMRI_pilot1_AC')
+    subid = '1';
+else
+    error('other subject than fMRI_pilot1_AC not ready yet');
+end
 
 nbLearnRuns = 3; % number of learning runs
 
@@ -529,7 +535,7 @@ for iLearnRun = learn_runs % iLearnRun: real number of learn run (1,4,7)
         RL_model_bis_names = ls([fMRI_Dir,'RLmodel_bis_model*_sub',subid,'.mat']);
         nModels = size(RL_model_bis_names, 1);
         
-        for iModel = 1:nModels
+        for iModel = 6%1:nModels
             
             %% extract the data
             loadStruct_tmp = load([fMRI_Dir, 'RLmodel_bis_model',num2str(iModel),'_sub',subid,'.mat']);
@@ -649,6 +655,7 @@ for iLearnRun = learn_runs % iLearnRun: real number of learn run (1,4,7)
             end
             
             % proba for right item
+            pChoice_leftItem = pChoice_leftCue_wExclTrials;
             pChoice_rightItem = 1 - pChoice_leftItem;
             pChoice_worseItem_GL_Pairs = 1 - pChoice_bestItem_GL_Pairs; % proba of choosing worse option = 1 - proba of choosing the best
             pChoice_rightItem_all   = 1 - pChoice_leftItem_all;
