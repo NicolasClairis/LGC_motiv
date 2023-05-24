@@ -20,17 +20,14 @@ end
 
 %% working directories
 root = ['E:',filesep,'study2',filesep,...
-    'pilots', filesep];
-root='C:\Users\Nicolas Clairis\Documents\GitHub\LGC_motiv\RL_for_testing_fMRI_sequence\RL_task\resultats\';
-warning('check path here');
+    'pilots', filesep,'fMRI_pilots',filesep];
 
 %% subject selection
-warning('ADD LIST SUBJECTS HERE')
-subject_id = {'sub100'};
+subject_id = {'fMRI_pilot1_AC'};
 NS = length(subject_id);
 
 %% load model parameters
-[RL_mdl_prm] = MS2_RL_model_define(RL_model_n);
+[RL_mdl_prm] = LGC_RL_model_define(RL_model_n);
 alpha_prm       = RL_mdl_prm.alpha_prm;
 sigmaQ_prm      = RL_mdl_prm.sigmaQ_prm;
 RP_weights_prm  = RL_mdl_prm.RP_weights;
@@ -78,7 +75,7 @@ end
 
 %% main task parameters
 n_trials_per_run    = 60;
-n_RL_runs           = 2;
+n_RL_runs           = 3;
 n_total_trials      = n_trials_per_run*n_RL_runs;
 trialN_vector = 1:n_trials_per_run;
 trialN = repmat(trialN_vector, 1, n_RL_runs);
@@ -127,10 +124,9 @@ for iS = 1:NS
         
         %% subject identification
         sub_nm = subject_id{iS};
-        if strcmp(sub_nm(1:3),'sub')
-            subid   = sub_nm(4:end);
+        if strcmp(sub_nm,'fMRI_pilot1_AC')
+            subid = '1';
         end
-        
         behavior_folder = [root,sub_nm,filesep,'behavior',filesep];
         onsets_folder = [root,sub_nm,filesep,'fMRI_analysis',filesep];
         
@@ -144,10 +140,7 @@ for iS = 1:NS
             lastOutcome] = deal( NaN(1, n_total_trials) ); % trialN
         
         %% pool data across runs
-        switch subid
-           case '100'
-               runs_idx = 1:2;
-        end
+        runs_idx = 1:3;
         
         % loop through runs
         for iRun = 1:n_RL_runs
@@ -413,6 +406,9 @@ for iS = 1:NS
             Qval_sub.sigma.LP_worse.(run_nm) = Qvalues.sigma.lossPair_bad.perSub.(run_nm)(:,iS);
             
             % extract uncertainty variables
+            [uncertainty_sub.sigma_options.(run_nm),...
+                uncertainty_sub.overlap_distrib_options.(run_nm),...
+                uncertainty_sub.pChoice_Worse.(run_nm)] = deal(NaN(n_trials_per_run,1));
             for iT = 1:n_trials_per_run
                 jT = iT + n_trials_per_run*(iRun - 1);
                 

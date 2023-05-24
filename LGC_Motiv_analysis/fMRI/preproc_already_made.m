@@ -20,14 +20,23 @@ function[subject_id, NS] = preproc_already_made(computerRoot, study_nm, subject_
 %
 % NS: number of subjects after filtering those already preprocessed
 
-
-studyPath = [computerRoot, study_nm, filesep];
+switch study_nm
+    case {'study1','study2','fMRI_pilots'}
+        studyPath = [computerRoot, study_nm, filesep];
+    case 'study2_pilots'
+        studyPath = [fullfile(computerRoot, 'study2','pilots','fMRI_pilots'),filesep];
+end
 
 %% check for each subject if data already exists
 NS = length(subject_id);
 subNotAlreadyPreprocessed = true(1,NS);
 for iS = 1:NS
-    sub_nm = ['CID',subject_id{iS}];
+    switch study_nm
+        case {'study1','study2'}
+            sub_nm = ['CID',subject_id{iS}];
+        case {'fMRI_pilots','study2_pilots'}
+            sub_nm = subject_id{iS};
+    end
     subj_scans_folder = [studyPath, sub_nm, filesep, 'fMRI_scans' filesep];
     cd(subj_scans_folder);
     subj_scan_folders_names = ls('*run*'); % takes all functional runs folders

@@ -40,7 +40,7 @@ spm_jobman('initcfg');
 computerRoot = ['E:',filesep];
 spmFolderPath = fullfile('C:','Users','clairis','Desktop');
 if ~exist('study_nm','var') || isempty(study_nm)
-    study_nm_List = {'study1','study2','fMRI_pilots'};
+    study_nm_List = {'study1','study2','fMRI_pilots','study2_pilots'};
     study_nm_idx = listdlg('ListString',study_nm_List);
     study_nm = study_nm_List{study_nm_idx};
 end
@@ -51,6 +51,8 @@ switch study_nm
         root = [fullfile(computerRoot,'study1'),filesep];
     case 'study2'
         root = [fullfile(computerRoot,'study2'),filesep];
+    case 'study2_pilots'
+        root = [fullfile(computerRoot,'study2','pilots','fMRI_pilots'),filesep];
 end
 
 if ~exist('sub_nm','var') || isempty(sub_nm)
@@ -87,7 +89,12 @@ if NS >= 1
     for iS = 1:NS % loop through subjects
         disp(['loading batch for preprocessing subject ',num2str(iS),'/',num2str(NS)]);
         sub_nm = subject_id{iS};
-        sub_fullNm = ['CID',sub_nm];
+        switch study_nm
+            case {'study1','study2'}
+                sub_fullNm = ['CID',sub_nm];
+            case {'fMRI_pilots','study2_pilots'}
+                sub_fullNm = sub_nm;
+        end
         
         % create working directories and copy anat. file inside
         % \fMRI_analysis\anatomical folder
@@ -142,6 +149,12 @@ if NS >= 1
                 else
                     filenames = cellstr(spm_select('ExtFPList',pwd,'^CID.*\.nii$'));
                 end
+            elseif strcmp(study_nm,'study2_pilots')
+                if ismember(sub_nm,{'fMRI_pilot1_AC'})
+                    filenames = cellstr(spm_select('ExtFPList',pwd,'^AC.*\.nii$'));
+                else
+                    error('pilots other than fMRI_pilot1_AC not ready yet');
+                end
             else
                 filenames = cellstr(spm_select('ExtFPList',pwd,'^CID.*\.nii$'));
                 %             error('please check the format (nii/img) and the start of the name of each run because it has to be stabilized now...');
@@ -175,10 +188,12 @@ if NS >= 1
         coreg_step = nb_preprocessingSteps*(iS-1) + preproc_step;
         matlabbatch{coreg_step}.spm.spatial.coreg.estimate.ref(1) = cfg_dep('Realign: Estimate & Reslice: Mean Image', substruct('.','val', '{}',{realign_step}, '.','val', '{}',{1}, '.','val', '{}',{1}, '.','val', '{}',{1}), substruct('.','rmean'));
         cd(newAnatFolder);
-        if ismember(sub_nm,{'pilot_s1'})
+        if strcmp(study_nm,'fMRI_pilots') && ismember(sub_nm,{'pilot_s1'})
             anat_file = ls('LGCM_*.nii');
-        elseif ismember(sub_nm,{'pilot_s3'})
+        elseif strcmp(study_nm,'fMRI_pilots') && ismember(sub_nm,{'pilot_s3'})
             anat_file = ls('ABNC_*.img');
+        elseif strcmp(study_nm,'study2_pilots') && ismember(sub_nm,{'fMRI_pilot1_AC'})
+            anat_file = ls('AC*UNI-DEN.nii');
         else
             %         anat_file = ls('mp2rage_*.nii');
             anat_file = ls('CID*.nii');
@@ -265,13 +280,18 @@ if NS >= 1
     end
     
     % display spm batch before running it
-    % spm_jobman('interactive',matlabbatch);
+%     spm_jobman('interactive',matlabbatch);
     spm_jobman('run',matlabbatch);
     
     %% move files output from the last step
     for iS = 1:NS
         sub_nm = subject_id{iS};
-        sub_fullNm = ['CID',sub_nm];
+        switch study_nm
+            case {'study1','study2'}
+                sub_fullNm = ['CID',sub_nm];
+            case {'fMRI_pilots','study2_pilots'}
+                sub_fullNm = sub_nm;
+        end
         subj_scans_folder = [root, sub_fullNm, filesep,'fMRI_scans'];
         cd(subj_scans_folder);
         subj_scan_folders_names = ls('*run*'); % takes all functional runs folders
@@ -312,6 +332,10 @@ if NS >= 1
                     filenames = [filenames; ls('*swrABNC*.hdr')];
                 else
                     filenames = ls('*swrCID*.nii');
+                end
+            elseif strcmp(study_nm,'study2_pilots')
+                if ismember(sub_nm,'fMRI_pilot1_AC')
+                    filenames = ls('*swrAC*.nii');
                 end
             else
                 filenames = ls('*swrCID*.nii');

@@ -324,6 +324,8 @@ switch study_nm
         % trials during run 3
         %
         % '054': very weird behavior, could be considered as outlier
+    case 'study2_pilots'
+        subject_id = {'fMRI_pilot1_AC'};
     case 'study2'
         %         subject_id = {}; % 'XXX'
         error('experiment hasn''t started yet...');
