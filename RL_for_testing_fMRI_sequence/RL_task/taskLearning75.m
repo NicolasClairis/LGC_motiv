@@ -17,7 +17,7 @@ testing_script = 0; % parameters of screen to check on my own computer (1) or (0
 %% Identification
 subid = input('subject identification number? ','s');
 subject = str2double(subid);
-nbTotalRuns = 4; % total number of runs (all tasks considered)
+nbTotalRuns = 5; % total number of runs (all tasks considered)
 nrun = input('Run number ?');
 runname = num2str(nrun);
 IRM = 1;
@@ -90,8 +90,8 @@ for iCondition = 1:3
 end
 cd .. % back to main folder
 % define position of the stimuli on the screen
-stimRectSize{1} = CenterRectOnPoint(Screen('Rect',stimBest{1}),   x/2, y); % Left position
-stimRectSize{2} = CenterRectOnPoint(Screen('Rect',stimBest{1}), 3*x/2, y); % Right position
+stimRectSize{1} = CenterRectOnPoint(Screen('Rect',stimBest{1}),   x*2/3, y); % Left position
+stimRectSize{2} = CenterRectOnPoint(Screen('Rect',stimBest{1}),   x*4/3, y); % Right position
 
 %% main parameters for pairs of stimuli
 % number of trials per pair condition
@@ -359,14 +359,14 @@ for iTrial = 1:totalTrial
                 
                 switch choice(iTrial)
                     case 1 % right option chosen => red square around it
-                        L = 3*x/2 - 100;
+                        L = 4*x/3 - 100;
                         T = y - 100;
-                        R = 3*x/2 + 100;
+                        R = 4*x/3 + 100;
                         B = y + 100;
                     case -1 % left option chosen => red square around it
-                        L = x/2 - 100;
+                        L = 2*x/3 - 100;
                         T = y - 100;
-                        R = x/2 + 100;
+                        R = 2*x/3 + 100;
                         B = y + 100;
                 end
                 
@@ -490,11 +490,7 @@ if nrun == 1 % for the first run, define the totalgain variable
     totalGain(nrun) = sum(gain)*10; % multiply by 10 to match with actual values on screen
 elseif nrun > 1 % otherwise load totalGain and add gain of this run to it
     load([behaviordir,'\totalGain_sub_',subid,'.mat'],'totalGain')
-    if nrun == 4
-        totalGain(nrun) = totalGain(1) + sum(gain)*10;
-    elseif nrun == 7
-        totalGain(nrun) = totalGain(4) + sum(gain)*10;
-    end
+        totalGain(nrun) = max(totalGain,[],'omitnan') + sum(gain)*10;
 end
 
 save([behaviordir,'\totalGain_sub_',subid,'.mat'],'totalGain')
@@ -522,7 +518,7 @@ if IRM == 1
     while KbEventAvail
         [event, n] = KbEventGet;
         if event.Keycode == trigger
-            TTL = [TTL; event.Time];
+%             TTL = [TTL; event.Time];
         elseif event.Keycode == key.left % if left key pressed
             if event.Pressed == 1 % record start of press
                 keyLeft.Start = [keyLeft.Start; event.Time];
