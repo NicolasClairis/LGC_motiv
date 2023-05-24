@@ -41,6 +41,7 @@ Screen('Preference','VisualDebugLevel', 1);
 if testing_script == 0
     % PTB priority option ON
     Screen('Preference', 'SkipSyncTests', 0); % needs all other processes shut off
+%      Screen('Preference', 'SkipSyncTests', 1); % needs all other processes shut off
     window = Screen('OpenWindow',whichScreen,sc_colour);
     
     % Windows Maximum priority level so that all the computer power is given to this
@@ -53,7 +54,7 @@ elseif testing_script == 1 % my own computer
 end
 HideCursor();
 
-baselineTextSize = 40;
+baselineTextSize = 60;
 Screen('TextSize', window, baselineTextSize);
 Screen('TextFont', window, 'arial');
 [L, H] = Screen('WindowSize',whichScreen);
