@@ -48,7 +48,7 @@ spm_jobman('initcfg');
 % number of subjects
 subject_id = {'fMRI_pilot1_AC'};
 NS = length(subject_id);
-preproc_folder = 'preproc_sm_8mm';
+preproc_folder = 'preproc_sm_5mm';
 learningRuns    = 3;
 nbRuns = learningRuns;
 
@@ -77,7 +77,7 @@ for iSub = 1:NS
     
     % create folder for storing data for this subject
     filename = [subj_analysis_folder 'functional', filesep,...
-        'GLM',num2str(GLM)];
+        preproc_folder,filesep,'GLM',num2str(GLM)];
     mkdir(filename);
     
     %% starting 1st level GLM batch
