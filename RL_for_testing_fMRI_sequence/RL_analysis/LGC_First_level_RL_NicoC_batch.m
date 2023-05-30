@@ -146,7 +146,7 @@ for iSub = 1:NS
         matlabbatch{sub_idx}.spm.stats.fmri_spec.mask = {''};
     elseif grey_mask == 1
         % find grey matter mask
-        mask = ls([subj_anat_folder,'sbmwc1*']); % modulated grey matter mask
+        mask = ls([subj_anat_folder,'bmwc1*']); % modulated grey matter mask
         mask = [subj_anat_folder,mask];
         matlabbatch{sub_idx}.spm.stats.fmri_spec.mask = {mask};
     end
