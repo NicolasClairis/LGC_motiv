@@ -34,8 +34,8 @@ end
 
 %% GLM
 if ~exist('GLM','var') || isempty(GLM)
-%     GLM = input(sprintf('GLM number? \n '));
-GLM=1;
+    %     GLM = input(sprintf('GLM number? \n '));
+    GLM=1;
 end
 % load specific GLM parameters
 [GLMprm] = which_GLM_LGC_pilot(GLM);
@@ -48,7 +48,8 @@ spm_jobman('initcfg');
 % number of subjects
 subject_id = {'fMRI_pilot1_AC'};
 NS = length(subject_id);
-preproc_folder = 'preproc_sm_5mm';
+preproc_folder = 'preproc_sm_8mm';
+maskThresh = 0.5; % 0.8 by default
 learningRuns    = 3;
 nbRuns = learningRuns;
 
@@ -76,8 +77,10 @@ for iSub = 1:NS
     subj_scan_folders_names = ls([subj_scans_folder, filesep, '*_run*']); % takes all functional runs folders (if TR = 1.10s, for multiband seq in particular)
     
     % create folder for storing data for this subject
+%     filename = [subj_analysis_folder 'functional', filesep,...
+%         preproc_folder,filesep,'GLM',num2str(GLM)];
     filename = [subj_analysis_folder 'functional', filesep,...
-        preproc_folder,filesep,'GLM',num2str(GLM)];
+        preproc_folder,filesep,'GLM',num2str(GLM),'_SPMmask50percent'];
     mkdir(filename);
     
     %% starting 1st level GLM batch
@@ -130,7 +133,7 @@ for iSub = 1:NS
     matlabbatch{sub_idx}.spm.stats.fmri_spec.volt = 1;
     matlabbatch{sub_idx}.spm.stats.fmri_spec.global = 'None';
     % no grey mask
-    matlabbatch{sub_idx}.spm.stats.fmri_spec.mthresh = 0.8; % default value
+    matlabbatch{sub_idx}.spm.stats.fmri_spec.mthresh = maskThresh; % default value
     matlabbatch{sub_idx}.spm.stats.fmri_spec.mask = {''};    
     matlabbatch{sub_idx}.spm.stats.fmri_spec.cvi = 'AR(1)';
     
