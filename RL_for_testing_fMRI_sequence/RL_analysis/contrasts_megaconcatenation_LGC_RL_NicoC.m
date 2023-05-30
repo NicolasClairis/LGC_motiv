@@ -26,15 +26,15 @@ scripts_folder = fullfile('C:','Users','clairis','Desktop','GitHub',...
 
 %% by default checking = 0 if not selected
 if ~exist('checking','var') || isempty(checking)
-    checking = 1;
+    checking = 0;
 end
 
 %% GLM parameters
 if ~exist('GLM','var') || isempty(GLM)
-    GLM = 1;
+    GLM = 2;
 end
 [GLMprm] = which_GLM_LGC_pilot(GLM);
-
+grey_mask = GLMprm.gal.grey_mask;
 %% subjects identification
 if ~exist('subject_id','var') || isempty(subject_id)
     subject_id = {'fMRI_pilot1_AC'};
@@ -46,7 +46,10 @@ spm('defaults','fmri');
 spm_jobman('initcfg');
 
 %% preprocessing to use
-preproc_folder = 'preproc_sm_5mm';
+preproc_folder = 'preproc_sm_8mm';
+if grey_mask == 0
+    maskThresh = 0.8; % 0.8 by default
+end
 
 %% loop through subjects to extract all the regressors
 matlabbatch = cell(NS,1);
@@ -58,13 +61,16 @@ for iSub = 1:NS
     
     batch_idx = batch_idx + 1;
     
-    run_foldername = ['GLM',num2str(GLM) filesep];
-    
+    if grey_mask == 0
+        run_foldername = ['GLM',num2str(GLM),'_SPMmask',num2str(maskThresh*100),'percent'];
+    elseif grey_mask == 1
+        run_foldername = ['GLM',num2str(GLM),'_individualGreyMask'];
+    end
     matlabbatch{batch_idx}.spm.stats.con.spmmat = {fullfile(root,sub_nm,'fMRI_analysis','functional',...
         preproc_folder,filesep,run_foldername,'SPM.mat')};
     
     %% extract contrasts list (vectors + corresponding names
-    [con_names, con_vec] = LGC_RL_load_con(GLMprm, sub_nm);
+    [con_names, con_vec] = LGC_RL_load_con(GLMprm);
     n_con = length(con_names);
     
     %% add each contrast to the list

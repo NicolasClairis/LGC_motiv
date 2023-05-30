@@ -29,17 +29,17 @@ scripts_folder = fullfile('C:','Users','clairis','Desktop','GitHub',...
 
 %% by default checking = 0 if not selected
 if ~exist('checking','var') || isempty(checking)
-    checking = 1;
+    checking = 0;
 end
 
 %% GLM
 if ~exist('GLM','var') || isempty(GLM)
     %     GLM = input(sprintf('GLM number? \n '));
-    GLM=1;
+    GLM=2;
 end
 % load specific GLM parameters
 [GLMprm] = which_GLM_LGC_pilot(GLM);
-
+grey_mask = GLMprm.gal.grey_mask;
 %% iniate spm
 spm('defaults','fmri');
 spm_jobman('initcfg');
@@ -49,7 +49,11 @@ spm_jobman('initcfg');
 subject_id = {'fMRI_pilot1_AC'};
 NS = length(subject_id);
 preproc_folder = 'preproc_sm_8mm';
-maskThresh = 0.5; % 0.8 by default
+if grey_mask == 0
+    maskThresh = 0.8; % 0.8 by default
+else
+    maskThresh = -Inf;
+end
 learningRuns    = 3;
 nbRuns = learningRuns;
 
@@ -72,15 +76,19 @@ for iSub = 1:NS
     % define working folders
     subj_folder             = [root, filesep, sub_nm];
     subj_analysis_folder    = [subj_folder, filesep, 'fMRI_analysis' filesep];
+    subj_anat_folder = [subj_analysis_folder,filesep,'anatomical',filesep];
     subj_scans_folder       = [subj_folder, filesep, 'fMRI_scans' filesep];
     % folder names
     subj_scan_folders_names = ls([subj_scans_folder, filesep, '*_run*']); % takes all functional runs folders (if TR = 1.10s, for multiband seq in particular)
     
     % create folder for storing data for this subject
-%     filename = [subj_analysis_folder 'functional', filesep,...
-%         preproc_folder,filesep,'GLM',num2str(GLM)];
-    filename = [subj_analysis_folder 'functional', filesep,...
-        preproc_folder,filesep,'GLM',num2str(GLM),'_SPMmask50percent'];
+    if grey_mask == 0
+        filename = [subj_analysis_folder 'functional', filesep,...
+            preproc_folder,filesep,'GLM',num2str(GLM),'_SPMmask',num2str(maskThresh*100),'percent'];
+    elseif grey_mask == 1
+        filename = [subj_analysis_folder 'functional', filesep,...
+            preproc_folder,filesep,'GLM',num2str(GLM),'_individualGreyMask'];
+    end
     mkdir(filename);
     
     %% starting 1st level GLM batch
@@ -134,7 +142,14 @@ for iSub = 1:NS
     matlabbatch{sub_idx}.spm.stats.fmri_spec.global = 'None';
     % no grey mask
     matlabbatch{sub_idx}.spm.stats.fmri_spec.mthresh = maskThresh; % default value
-    matlabbatch{sub_idx}.spm.stats.fmri_spec.mask = {''};    
+    if grey_mask == 0
+        matlabbatch{sub_idx}.spm.stats.fmri_spec.mask = {''};
+    elseif grey_mask == 1
+        % find grey matter mask
+        mask = ls([subj_anat_folder,'sbmwc1*']); % modulated grey matter mask
+        mask = [subj_anat_folder,mask];
+        matlabbatch{sub_idx}.spm.stats.fmri_spec.mask = {mask};
+    end
     matlabbatch{sub_idx}.spm.stats.fmri_spec.cvi = 'AR(1)';
     
     
