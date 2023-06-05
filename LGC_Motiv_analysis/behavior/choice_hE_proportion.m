@@ -52,17 +52,48 @@ for iS = 1:NS
     runs_ok_Ep_tmp = run_conversion(runs.Ep.runsToKeep);
     runs_ok_Em_tmp = run_conversion(runs.Em.runsToKeep);
     
-    [~,...
-        choiceND_perRun_tmp] = choiceNDproportion_perRun(sub_nm, figDispIndiv);
-%     switch 
-    choice_hE.Ep(iS) = choiceND_perRun_tmp.Ep.run1.hEchosen +...
-        choiceND_perRun_tmp.Ep.run2.hEchosen;
-    choice_hE.Em(iS) = choiceND_perRun_tmp.Em.run1.hEchosen +...
-        choiceND_perRun_tmp.Em.run2.hEchosen;
-    choice_hE.EpEm(iS) = choiceND_perRun_tmp.Ep.run1.hEchosen +...
-        choiceND_perRun_tmp.Ep.run2.hEchosen +...
-        choiceND_perRun_tmp.Em.run1.hEchosen +...
-        choiceND_perRun_tmp.Em.run2.hEchosen;
+    [choiceND_percentage_perRun_tmp,...
+        ~] = choiceNDproportion_perRun(sub_nm, figDispIndiv);
+    if ismember(1,runs_ok_Ep_tmp) && ismember(2,runs_ok_Ep_tmp)
+        choice_hE.Ep(iS) = mean([choiceND_percentage_perRun_tmp.Ep.run1,...
+            choiceND_percentage_perRun_tmp.Ep.run2],2,'omitnan');
+    elseif ismember(1,runs_ok_Ep_tmp) && ~ismember(2,runs_ok_Ep_tmp)
+        choice_hE.Ep(iS) = choiceND_percentage_perRun_tmp.Ep.run1;
+    elseif ~ismember(1,runs_ok_Ep_tmp) && ismember(2,runs_ok_Ep_tmp)
+        choice_hE.Ep(iS) = choiceND_percentage_perRun_tmp.Ep.run2;
+    end
+    if ismember(1,runs_ok_Em_tmp) && ismember(2,runs_ok_Em_tmp)
+        choice_hE.Em(iS) = mean([choiceND_percentage_perRun_tmp.Em.run1,...
+            choiceND_percentage_perRun_tmp.Em.run2],2,'omitnan');
+    elseif ismember(1,runs_ok_Em_tmp) && ~ismember(2,runs_ok_Em_tmp)
+        choice_hE.Em(iS) = choiceND_percentage_perRun_tmp.Em.run1;
+    elseif ~ismember(1,runs_ok_Em_tmp) && ismember(2,runs_ok_Em_tmp)
+        choice_hE.Em(iS) = choiceND_percentage_perRun_tmp.Em.run2;
+    end
+    if ismember(1, runs.runsToKeep)
+        run1_data = choiceND_percentage_perRun_tmp.run1;
+    else
+        run1_data = [];
+    end
+    if ismember(2, runs.runsToKeep)
+        run2_data = choiceND_percentage_perRun_tmp.run2;
+    else
+        run2_data = [];
+    end
+    if ismember(3, runs.runsToKeep)
+        run3_data = choiceND_percentage_perRun_tmp.run3;
+    else
+        run3_data = [];
+    end
+    if ismember(4, runs.runsToKeep)
+        run4_data = choiceND_percentage_perRun_tmp.run4;
+    else
+        run4_data = [];
+    end
+    choice_hE.EpEm(iS) = mean([run1_data,...
+        run2_data,...
+        run3_data,...
+        run4_data],2,'omitnan');
 end % subject loop
 
 %% average and SEM
@@ -75,14 +106,16 @@ if fig_disp == 1
     Ep_col = [0 1 0];
     Em_col = [0 1 0];
     EpEm_col = [0 0 1];
+    pSize = 30;
     
     fig;
-    violinplot([choice_hE.Ep, choice_hE.Em,...
-        choice_hE.EpEm],...
+    violinplot([choice_hE.Ep', choice_hE.Em',...
+        choice_hE.EpEm'],...
         {'Ep','Em','EpEm'},...
         'ViolinColor',[Ep_col;Em_col;EpEm_col]);
-    ylabel('Nb of effortful choices');
+    ylabel('High E choices (%)');
     xlabel('Task');
+    legend_size(pSize);
 end % figure
 
 end % function
