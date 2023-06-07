@@ -48,28 +48,40 @@ for iS = 1:NS
     sub_nm = subject_id{iS};
     cd([rootPath,'CID',sub_nm,filesep,'behavior']);
     % select ok runs
-    [runs, n_runs] = runs_definition(study_nm, sub_nm, condition);
+    runs = runs_definition(study_nm, sub_nm, condition);
     runs_ok_Ep_tmp = run_conversion(runs.Ep.runsToKeep);
     runs_ok_Em_tmp = run_conversion(runs.Em.runsToKeep);
     
     [choiceND_percentage_perRun_tmp,...
         ~] = choiceNDproportion_perRun(sub_nm, figDispIndiv);
-    if ismember(1,runs_ok_Ep_tmp) && ismember(2,runs_ok_Ep_tmp)
-        choice_hE.Ep(iS) = mean([choiceND_percentage_perRun_tmp.Ep.run1,...
-            choiceND_percentage_perRun_tmp.Ep.run2],2,'omitnan');
-    elseif ismember(1,runs_ok_Ep_tmp) && ~ismember(2,runs_ok_Ep_tmp)
-        choice_hE.Ep(iS) = choiceND_percentage_perRun_tmp.Ep.run1;
-    elseif ~ismember(1,runs_ok_Ep_tmp) && ismember(2,runs_ok_Ep_tmp)
-        choice_hE.Ep(iS) = choiceND_percentage_perRun_tmp.Ep.run2;
+    
+    %% physical task
+    if ismember(1,runs_ok_Ep_tmp)
+        run1_Ep = choiceND_percentage_perRun_tmp.Ep.run1;
+    else
+        run1_Ep = [];
     end
-    if ismember(1,runs_ok_Em_tmp) && ismember(2,runs_ok_Em_tmp)
-        choice_hE.Em(iS) = mean([choiceND_percentage_perRun_tmp.Em.run1,...
-            choiceND_percentage_perRun_tmp.Em.run2],2,'omitnan');
-    elseif ismember(1,runs_ok_Em_tmp) && ~ismember(2,runs_ok_Em_tmp)
-        choice_hE.Em(iS) = choiceND_percentage_perRun_tmp.Em.run1;
-    elseif ~ismember(1,runs_ok_Em_tmp) && ismember(2,runs_ok_Em_tmp)
-        choice_hE.Em(iS) = choiceND_percentage_perRun_tmp.Em.run2;
+    if ismember(2,runs_ok_Ep_tmp)
+        run2_Ep = choiceND_percentage_perRun_tmp.Ep.run2;
+    else
+        run2_Ep = [];
     end
+    choice_hE.Ep(iS) = mean([run1_Ep, run2_Ep],2,'omitnan');
+    
+    %% mental task
+    if ismember(1,runs_ok_Em_tmp)
+        run1_Em = choiceND_percentage_perRun_tmp.Em.run1;
+    else
+        run1_Em = [];
+    end
+    if ismember(2,runs_ok_Ep_tmp)
+        run2_Em = choiceND_percentage_perRun_tmp.Em.run2;
+    else
+        run2_Em = [];
+    end
+    choice_hE.Em(iS) = mean([run1_Em, run2_Em],2,'omitnan');
+    
+    %% average across tasks
     if ismember(1, runs.runsToKeep)
         run1_data = choiceND_percentage_perRun_tmp.run1;
     else

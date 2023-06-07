@@ -52,8 +52,11 @@ con_nm = inputdlg('Contrast short name?');
 con_data = NaN(1,NS);
 con_data(:) = con_vec_all(con_idx, :, 1);
 
-%% extract behavioural parameters
-
+%% extract proportion of choices across individuals and tasks
+fig_disp = 0;
+[choice_hE] = choice_hE_proportion(study_nm, condition, fig_disp);
+parameter_names = {'Ep','Em','EpEm'};
+nPrm = length(parameter_names);
 
 %% launch this before to avoid case where nothing is significant for the
 % current BOLD contrast but the information from the previous test was kept
@@ -70,7 +73,7 @@ for iROI = 1:nROIs
         
         for iPrm = 1:nPrm
             prm_nm = parameter_names{iPrm};
-            behavPrm = prm.(prm_nm);
+            behavPrm = choice_hE.(prm_nm);
             
             X_nm = [MRS_ROI_nm,'-',metabolite_nm];
             M_nm = ['fMRI-',ROI_coords.ROI_nm.ROI_1_shortName,'-',con_nm{1}];
@@ -131,10 +134,10 @@ end % ROI loop
 %% lines to launch to display metabolite of interest
 MRS_ROI_nm='dmPFC';
 metabolite_nm='Glu_div_GSH';
-prm_nm='kEm';
+prm_nm='Em';
 metabolite_allSubs = metabolites.(MRS_ROI_nm).(metabolite_nm);
         goodSubs = ~isnan(metabolite_allSubs);
-behavPrm = prm.(prm_nm);
+behavPrm = choice_hE.(prm_nm);
 X_nm = [MRS_ROI_nm,'-',metabolite_nm];
 M_nm='dmPFC';
 Y_nm = prm_nm;
