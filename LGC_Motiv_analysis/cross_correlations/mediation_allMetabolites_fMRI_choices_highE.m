@@ -68,6 +68,7 @@ for iROI = 1:nROIs
     MRS_ROI_nm = MRS_ROIs{iROI};
     for iMb = 1:n_metabolites.(MRS_ROI_nm)
         metabolite_nm = metabolite_names.(MRS_ROI_nm){iMb};
+        metabolite_nm_bis = strrep(metabolite_nm,'_div_','/');
         metabolite_allSubs = metabolites.(MRS_ROI_nm).(metabolite_nm);
         goodSubs = ~isnan(metabolite_allSubs);
         
@@ -75,7 +76,7 @@ for iROI = 1:nROIs
             prm_nm = parameter_names{iPrm};
             behavPrm = choice_hE.(prm_nm);
             
-            X_nm = [MRS_ROI_nm,'-',metabolite_nm];
+            X_nm = [MRS_ROI_nm,'-',metabolite_nm_bis];
             M_nm = ['fMRI-',ROI_coords.ROI_nm.ROI_1_shortName,'-',con_nm{1}];
             Y_nm = prm_nm;
             [mediation_path.(MRS_ROI_nm).(metabolite_nm).(prm_nm).a,...
@@ -134,11 +135,12 @@ end % ROI loop
 %% lines to launch to display metabolite of interest
 MRS_ROI_nm='dmPFC';
 metabolite_nm='Glu_div_GSH';
-prm_nm='Em';
+metabolite_nm_bis = strrep(metabolite_nm,'_div_','/');
+prm_nm='Ep';
 metabolite_allSubs = metabolites.(MRS_ROI_nm).(metabolite_nm);
         goodSubs = ~isnan(metabolite_allSubs);
 behavPrm = choice_hE.(prm_nm);
-X_nm = [MRS_ROI_nm,'-',metabolite_nm];
+X_nm = [MRS_ROI_nm,'-',metabolite_nm_bis];
 M_nm='dmPFC';
 Y_nm = prm_nm;
 dispMed = 1;

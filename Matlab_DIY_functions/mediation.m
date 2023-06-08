@@ -65,6 +65,11 @@ if ~exist('Y_nm','var') || isempty(Y_nm)
     Y_nm = 'Y';
 end
 
+%% replace '_' by 'space' for better readability in the figures and text
+X_nm = strrep(X_nm,'_',' ');
+M_nm = strrep(M_nm,'_',' ');
+Y_nm = strrep(Y_nm,'_',' ');
+
 %% verify that the data are correctly flipped
 % check X
 if size(X,1) == 1 && size(X,2) > 1
