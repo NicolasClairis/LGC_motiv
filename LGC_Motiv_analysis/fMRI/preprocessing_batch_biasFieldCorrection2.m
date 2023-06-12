@@ -178,7 +178,7 @@ if NS >= 1
             case {'fMRI_pilots','study2_pilots'}
                 sub_fullNm = sub_nm;
         end
-        subj_scans_folder = [root, sub_fullNm, filesep,'fMRI_scans'];
+        subj_scans_folder = [root, sub_fullNm, filesep,'fMRI_scans',filesep];
         % define number of sessions to check
         if strcmp(study_nm,'fMRI_pilots') &&...
                 ismember(sub_nm, {'pilot_s1','pilot_s2','pilot_s3'}) % only 2 sessions for these pilots
@@ -207,11 +207,11 @@ if NS >= 1
             %% bias field estimation for correction using SPM segmentation (applied on the first image of each fMRI session)
             matlabbatch_biasField{1}.spm.tools.preproc8.channel.vols = realigned_filenames(1);
             matlabbatch_biasField{1}.spm.tools.preproc8.channel.write = [1 0];
-            spm_jobman('run', matlabbatch);
+            spm_jobman('run', matlabbatch_biasField);
             
             %% perform bias-field correction
             % extract bias field path
-            bf = fullfile(runPath, spm_select('List', runPath, '^BiasField.*\.nii$'));
+            bf = fullfile(strrep(runPath,' ',''), filesep, spm_select('List', runPath, '^BiasField.*\.nii$'));
             bfv = spm_vol(bf);
             BF = double(spm_read_vols(bfv));
             % perform correction and create 1 new file for each
@@ -231,6 +231,8 @@ if NS >= 1
         end % run loop
     end % subject loop
     
+%     %% final part of preprocessing
+%     matlabbatch_preproc = cell(nb_preprocessingSteps_step3*NS,1);
         %% coregistration
 %         preproc_step = 4;
 %         coreg_step = nb_preprocessingSteps*(iS-1) + preproc_step;
