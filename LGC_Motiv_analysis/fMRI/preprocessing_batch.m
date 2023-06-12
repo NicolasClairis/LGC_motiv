@@ -1,10 +1,7 @@
 function[] = preprocessing_batch(study_nm, sub_nm)
 %[] = preprocessing_batch(study_nm, sub_nm)
 % preprocessing for fMRI data
-% enter subject identification in 'subject_id' (sXX_ddMMyy dd: day,
-% MM: month, yy: year) and preprocessing number in 'preproc'
-% preproc: 0: "raw" preprocessing (grey matter saved during segmentation)
-%          1: added AP-PA correction
+% enter subject identification in 'subject_id' (XXX corresponding to CID number)
 %
 % all data is stored in the fMRI_scans folders + the script also creates
 % fMRI_analysis folder where the anatomical files are copied for the
@@ -25,11 +22,6 @@ function[] = preprocessing_batch(study_nm, sub_nm)
 %
 % See also First_level_batch, contrasts_batch and
 % Second_level_batch
-
-% clear;
-
-% %% preprocessing number in case you want to have several versions of it
-% preproc = 0; % see intro
 
 %% iniate spm
 spm('defaults','fmri');
@@ -95,37 +87,32 @@ if NS >= 1
             case {'fMRI_pilots','study2_pilots'}
                 sub_fullNm = sub_nm;
         end
-        
+        subFolder = [root, sub_fullNm, filesep];
         % create working directories and copy anat. file inside
         % \fMRI_analysis\anatomical folder
-        cd([root, sub_fullNm]);
-        if exist('fMRI_analysis','dir') ~= 7
-            mkdir fMRI_analysis;
+        subj_analysis_folder = [subFolder,'fMRI_analysis'];
+        if exist(subj_analysis_folder,'dir') ~= 7
+            mkdir(subj_analysis_folder);
         end
-        subj_analysis_folder = [root, sub_fullNm,filesep,'fMRI_analysis'];
-        cd(subj_analysis_folder);
-        if exist('anatomical','dir') ~= 7
-            mkdir anatomical;
+        newAnatFolder = [subFolder,'anatomical'];
+        if exist(newAnatFolder,'dir') ~= 7
+            mkdir(newAnatFolder);
         end
-        if exist('functional','dir') ~= 7
-            mkdir functional;
+        fMRI_analysis_folder = [subFolder,'functional'];
+        if exist(fMRI_analysis_folder,'dir') ~= 7
+            mkdir(fMRI_analysis_folder);
         end
-        subj_scans_folder = [root, sub_fullNm, filesep,'fMRI_scans'];
-        cd(subj_scans_folder);
-        anat_folder = ls('*UNI-DEN*');
-        newAnatFolder = [subj_analysis_folder, filesep,'anatomical',filesep];
-        copyfile(anat_folder, newAnatFolder); % copies the contempt of the anatomical folder
+        subj_scans_folder = [root, sub_fullNm, filesep,'fMRI_scans', filesep];
+        anat_folder = ls([subj_scans_folder,'*UNI-DEN*']);
+        copyfile([subj_scans_folder,anat_folder], newAnatFolder); % copies the contempt of the anatomical folder
         
         %% extract folders where functional runs are stored
-        cd(subj_scans_folder);
-        subj_scan_folders_names = ls('*run*'); % takes all functional runs folders
+        subj_scan_folders_names = ls([subj_scans_folder,'*run*']); % takes all functional runs folders
         % remove AP/PA top-up corrective runs when they were performed (only 2
         % first pilots)
         if strcmp(study_nm,'fMRI_pilots') && ismember(sub_nm,{'pilot_s1','pilot_s2'})
             [subj_scan_folders_names] = clear_topup_fromFileList(subj_scan_folders_names);
         end
-        %%
-        cd(subj_analysis_folder)
         %% define number of sessions to analyze
         if strcmp(study_nm,'fMRI_pilots') &&...
                 ismember(sub_nm, {'pilot_s1','pilot_s2','pilot_s3'}) % only 2 sessions for these pilots
@@ -136,35 +123,13 @@ if NS >= 1
         else
             n_runs = 4;
         end
-        cd(subj_scans_folder);
         for iRun = 1:n_runs % loop through runs
-            cd(subj_scan_folders_names(iRun,:)); % go to run folder
-            if strcmp(study_nm,'fMRI_pilots')
-                if ismember(sub_nm,{'pilot_s1'})
-                    filenames = cellstr(spm_select('ExtFPList',pwd,'^LGCM_.*\.nii$'));
-                elseif ismember(sub_nm,{'pilot_s2'})
-                    filenames = cellstr(spm_select('ExtFPList',pwd,'^run.*\.nii$'));
-                elseif ismember(sub_nm,{'pilot_s3'})
-                    filenames = cellstr(spm_select('ExtFPList',pwd,'^ABNC.*\.img$'));
-                else
-                    filenames = cellstr(spm_select('ExtFPList',pwd,'^CID.*\.nii$'));
-                end
-            elseif strcmp(study_nm,'study2_pilots')
-                if ismember(sub_nm,{'fMRI_pilot1_AC'})
-                    filenames = cellstr(spm_select('ExtFPList',pwd,'^AC.*\.nii$'));
-                else
-                    error('pilots other than fMRI_pilot1_AC not ready yet');
-                end
-            else
-                filenames = cellstr(spm_select('ExtFPList',pwd,'^CID.*\.nii$'));
-                %             error('please check the format (nii/img) and the start of the name of each run because it has to be stabilized now...');
-            end
+            runPath = [subj_scans_folder, subj_scan_folders_names(iRun,:)]; % extract run folder
+            [filenames] = preproc_run_name_extraction(study_nm, sub_nm, runPath);
             runFileNames.(['run_',num2str(iRun)]) = filenames;
-            cd(subj_scans_folder);
         end
         
         %% realignement
-        cd(subj_scans_folder);
         preproc_step = 1; % first step of preprocessing
         realign_step = nb_preprocessingSteps*(iS-1) + preproc_step; % number depends also on the number of subjects
         matlabbatch{realign_step}.spm.spatial.realign.estwrite.data = cell(n_runs, 1);
@@ -186,27 +151,25 @@ if NS >= 1
         %% coregistration
         preproc_step = 2;
         coreg_step = nb_preprocessingSteps*(iS-1) + preproc_step;
-        matlabbatch{coreg_step}.spm.spatial.coreg.estimate.ref(1) = cfg_dep('Realign: Estimate & Reslice: Mean Image', substruct('.','val', '{}',{realign_step}, '.','val', '{}',{1}, '.','val', '{}',{1}, '.','val', '{}',{1}), substruct('.','rmean'));
-        cd(newAnatFolder);
+        matlabbatch{coreg_step}.spm.spatial.coreg.estimate.ref(1) = cfg_dep('Realign: Estimate & Reslice: Mean Image',...
+            substruct('.','val', '{}',{realign_step}, '.','val', '{}',{1}, '.','val', '{}',{1}, '.','val', '{}',{1}), substruct('.','rmean'));
         if strcmp(study_nm,'fMRI_pilots') && ismember(sub_nm,{'pilot_s1'})
-            anat_file = ls('LGCM_*.nii');
+            anat_file = ls([newAnatFolder,'LGCM_*.nii']);
         elseif strcmp(study_nm,'fMRI_pilots') && ismember(sub_nm,{'pilot_s3'})
-            anat_file = ls('ABNC_*.img');
+            anat_file = ls([newAnatFolder,'ABNC_*.img']);
         elseif strcmp(study_nm,'study2_pilots') && ismember(sub_nm,{'fMRI_pilot1_AC'})
-            anat_file = ls('AC*UNI-DEN.nii');
+            anat_file = ls([newAnatFolder,'AC*UNI-DEN.nii']);
         else
             %         anat_file = ls('mp2rage_*.nii');
-            anat_file = ls('CID*.nii');
+            anat_file = ls([newAnatFolder,'CID*.nii']);
         end
         matlabbatch{coreg_step}.spm.spatial.coreg.estimate.source = {[newAnatFolder, anat_file]};
-        cd(subj_scans_folder);
         matlabbatch{coreg_step}.spm.spatial.coreg.estimate.other = {''};
         matlabbatch{coreg_step}.spm.spatial.coreg.estimate.eoptions.cost_fun = 'nmi';
         matlabbatch{coreg_step}.spm.spatial.coreg.estimate.eoptions.sep = [4 2];
         matlabbatch{coreg_step}.spm.spatial.coreg.estimate.eoptions.tol = [0.02 0.02 0.02 0.001 0.001 0.001 0.01 0.01 0.01 0.001 0.001 0.001];
         matlabbatch{coreg_step}.spm.spatial.coreg.estimate.eoptions.fwhm = [7 7];
         %% segmentation
-        cd(subj_scans_folder);
         preproc_step = 3;
         segm_step = nb_preprocessingSteps*(iS-1) + preproc_step;
         matlabbatch{segm_step}.spm.spatial.preproc.channel.vols = {[newAnatFolder,anat_file]};
@@ -293,8 +256,7 @@ if NS >= 1
                 sub_fullNm = sub_nm;
         end
         subj_scans_folder = [root, sub_fullNm, filesep,'fMRI_scans'];
-        cd(subj_scans_folder);
-        subj_scan_folders_names = ls('*run*'); % takes all functional runs folders
+        subj_scan_folders_names = ls([subj_scans_folder,'*run*']); % takes all functional runs folders
         % remove AP/PA top-up corrective runs when they were performed (only 2
         % first pilots)
         if strcmp(study_nm,'fMRI_pilots') && ismember(sub_nm,{'pilot_s1','pilot_s2'})
