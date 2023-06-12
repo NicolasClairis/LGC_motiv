@@ -22,7 +22,7 @@ end
 % -------------------------------------------------------------------------
 if ischar(epi_path) && exist(epi_path, 'dir')
 %     % Realigned & Unwarped images:
-    epi_all = cellstr(spm_select('FPList',epi_path,'^uf.*\.(img|nii)$'));
+    epi_all = cellstr(spm_select('FPList',epi_path,'^AC.*\.(img|nii)$'));
 %     % Realigned images:
 %     epi_all = cellstr(spm_select('FPList',epi,'^rf.*\.(img|nii)$'));
 %     % Unprocessed images:
@@ -39,7 +39,7 @@ end
 clear matlabbatch
 matlabbatch{1}.spm.tools.preproc8.channel.vols = {epi_all{1}};
 matlabbatch{1}.spm.tools.preproc8.channel.write = [1 0];
-spm_jobman('run', matlabbatch);
+spm_jobman('interactive', matlabbatch);
 
 
 %% read bias field into memory
