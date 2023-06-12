@@ -225,7 +225,7 @@ if NS >= 1
                 % save file
                 [pth, fnn, ext] = fileparts(fn);
                 nfn = fullfile(pth, ['b', fnn, ext]);
-                V.fname = nfn;
+                V.fname = strrep(nfn,',1','');
                 spm_write_vol(V,Y);
             end
         end % run loop
