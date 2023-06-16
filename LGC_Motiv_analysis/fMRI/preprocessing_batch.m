@@ -274,10 +274,10 @@ if NS >= 1
         end
         
         for iRun = 1:n_runs % loop through runs for 3 ratings, 3 choices 1D, 3 choices 2D runs
-            cd(subj_scan_folders_names(iRun,:)); % go to run folder
+            runPath = [subj_scan_folders_names(iRun,:),filesep]; % go to run folder
             preproc_newFolder_nm = ['preproc_sm_',num2str(smKernel),'mm'];
-            if ~exist(preproc_newFolder_nm,'dir')
-                mkdir(preproc_newFolder_nm);
+            if ~exist([runPath,preproc_newFolder_nm],'dir')
+                mkdir([runPath,preproc_newFolder_nm]);
             else
                 error(['preprocessing folder ',preproc_newFolder_nm,' already exists for subject ',sub_fullNm,' run ',num2str(iRun)]);
                 % note: something should be done above to avoid re-doing the
@@ -286,30 +286,29 @@ if NS >= 1
             
             if strcmp(study_nm,'fMRI_pilots')
                 if ismember(sub_nm,{'pilot_s1'})
-                    filenames = ls('*swrLGCM*.nii');
+                    filenames = ls([runPath,'*swrLGCM*.nii']);
                 elseif ismember(sub_nm,{'pilot_s2'})
-                    filenames = ls('*swrrun*.nii');
+                    filenames = ls([runPath,'*swrrun*.nii']);
                 elseif ismember(sub_nm,{'pilot_s3'})
-                    filenames = ls('*swrABNC*.img');
-                    filenames = [filenames; ls('*swrABNC*.hdr')];
+                    filenames = ls([runPath,'*swrABNC*.img']);
+                    filenames = [filenames; ls([runPath,'*swrABNC*.hdr'])];
                 else
-                    filenames = ls('*swrCID*.nii');
+                    filenames = ls([runPath,'*swrCID*.nii']);
                 end
             elseif strcmp(study_nm,'study2_pilots')
                 if ismember(sub_nm,'fMRI_pilot1_AC')
-                    filenames = ls('*swrAC*.nii');
+                    filenames = ls([runPath,'*swrAC*.nii']);
                 end
             else
-                filenames = ls('*swrCID*.nii');
+                filenames = ls([runPath,'*swrCID*.nii']);
                 %             error('please check the format (nii/img) and the start of the name of each run because it has to be stabilized now...');
             end
             
             % move files
             for iFile = 1:length(filenames)
-                movefile(filenames(iFile,:), preproc_newFolder_nm);
+                movefile([runPath,filenames(iFile,:)],...
+                    [runPath,preproc_newFolder_nm]);
             end
-            % go back to subject folder
-            cd(subj_scans_folder);
         end % run loop
     end % subject loop
     
