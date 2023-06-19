@@ -89,146 +89,146 @@ if NS >= 1
     % 5) smoothing functional
     
     
-%     %% initialize first batch
-%     matlabbatch_realign = cell(nb_preprocessingSteps_step1*NS,1);
-%     
-%     for iS = 1:NS % loop through subjects
-%         disp(['loading re-alignement for preprocessing subject ',num2str(iS),'/',num2str(NS)]);
-%         sub_nm = subject_id{iS};
-%         switch study_nm
-%             case {'study1','study2'}
-%                 sub_fullNm = ['CID',sub_nm];
-%             case {'fMRI_pilots','study2_pilots'}
-%                 sub_fullNm = sub_nm;
-%         end
-%         subFolder = [root, sub_fullNm, filesep];
-%         % create working directories and copy anat. file inside
-%         % \fMRI_analysis\anatomical folder
-%         subj_analysis_folder = [subFolder,'fMRI_analysis'];
-%         if exist(subj_analysis_folder,'dir') ~= 7
-%             mkdir(subj_analysis_folder);
-%         end
-%         newAnatFolder = [subFolder,'anatomical'];
-%         if exist(newAnatFolder,'dir') ~= 7
-%             mkdir(newAnatFolder);
-%         end
-%         fMRI_analysis_folder = [subFolder,'functional'];
-%         if exist(fMRI_analysis_folder,'dir') ~= 7
-%             mkdir(fMRI_analysis_folder);
-%         end
-%         subj_scans_folder = [root, sub_fullNm, filesep,'fMRI_scans', filesep];
-%         anat_folder = ls([subj_scans_folder,'*UNI-DEN*']);
-%         copyfile([subj_scans_folder,anat_folder],...
-%             newAnatFolder); % copies the contempt of the anatomical folder
-%         
-%         %% extract folders where functional runs are stored
-%         subj_scan_folders_names = ls([subj_scans_folder,'*run*']); % takes all functional runs folders
-%         % remove AP/PA top-up corrective runs when they were performed (only 2
-%         % first pilots)
-%         if strcmp(study_nm,'fMRI_pilots') && ismember(sub_nm,{'pilot_s1','pilot_s2'})
-%             [subj_scan_folders_names] = clear_topup_fromFileList(subj_scan_folders_names);
-%         end
-%         %% define number of sessions to analyze
-%         if strcmp(study_nm,'fMRI_pilots') &&...
-%                 ismember(sub_nm, {'pilot_s1','pilot_s2','pilot_s3'}) % only 2 sessions for these pilots
-%             n_runs = 2;
-%         elseif strcmp(study_nm,'study1') &&...
-%                 ismember(sub_nm,{'040'}) % fMRI had to be crashed during run 3
-%             n_runs = 2;
-%         else
-%             n_runs = 4;
-%         end
-%         for iRun = 1:n_runs % loop through runs
-%             runPath = [subj_scans_folder, subj_scan_folders_names(iRun,:)]; % extract run folder
-%             [filenames] = preproc_run_name_extraction(study_nm, sub_nm, runPath);
-%             runFileNames.(['run_',num2str(iRun)]) = filenames;
-%         end % run loop
-%         
-%         %% realignement
-%         preproc_step = 1; % first step of preprocessing
-%         realign_step = nb_preprocessingSteps_step1*(iS-1) + preproc_step; % number depends also on the number of subjects
-%         matlabbatch_realign{realign_step}.spm.spatial.realign.estwrite.data = cell(n_runs, 1);
-%         for iRun = 1:n_runs
-%             matlabbatch_realign{realign_step}.spm.spatial.realign.estwrite.data{iRun,1} = runFileNames.(['run_',num2str(iRun)]);
-%         end
-%         matlabbatch_realign{realign_step}.spm.spatial.realign.estwrite.eoptions.quality = 0.9;
-%         matlabbatch_realign{realign_step}.spm.spatial.realign.estwrite.eoptions.sep = 4;
-%         matlabbatch_realign{realign_step}.spm.spatial.realign.estwrite.eoptions.fwhm = 5;
-%         matlabbatch_realign{realign_step}.spm.spatial.realign.estwrite.eoptions.rtm = 1;
-%         matlabbatch_realign{realign_step}.spm.spatial.realign.estwrite.eoptions.interp = 2;
-%         matlabbatch_realign{realign_step}.spm.spatial.realign.estwrite.eoptions.wrap = [0 0 0];
-%         matlabbatch_realign{realign_step}.spm.spatial.realign.estwrite.eoptions.weight = '';
-%         matlabbatch_realign{realign_step}.spm.spatial.realign.estwrite.roptions.which = [2 1];
-%         matlabbatch_realign{realign_step}.spm.spatial.realign.estwrite.roptions.interp = 4;
-%         matlabbatch_realign{realign_step}.spm.spatial.realign.estwrite.roptions.wrap = [0 0 0];
-%         matlabbatch_realign{realign_step}.spm.spatial.realign.estwrite.roptions.mask = 1;
-%         matlabbatch_realign{realign_step}.spm.spatial.realign.estwrite.roptions.prefix = 'r';
-%     end % subject loop
-%     spm_jobman('run',matlabbatch_realign);
+    %% initialize first batch
+    matlabbatch_realign = cell(nb_preprocessingSteps_step1*NS,1);
+    
+    for iS = 1:NS % loop through subjects
+        disp(['loading re-alignement for preprocessing subject ',num2str(iS),'/',num2str(NS)]);
+        sub_nm = subject_id{iS};
+        switch study_nm
+            case {'study1','study2'}
+                sub_fullNm = ['CID',sub_nm];
+            case {'fMRI_pilots','study2_pilots'}
+                sub_fullNm = sub_nm;
+        end
+        subFolder = [root, sub_fullNm, filesep];
+        % create working directories and copy anat. file inside
+        % \fMRI_analysis\anatomical folder
+        subj_analysis_folder = [subFolder,'fMRI_analysis',filesep];
+        if exist(subj_analysis_folder,'dir') ~= 7
+            mkdir(subj_analysis_folder);
+        end
+        newAnatFolder = [subFolder,'anatomical',filesep];
+        if exist(newAnatFolder,'dir') ~= 7
+            mkdir(newAnatFolder);
+        end
+        fMRI_analysis_folder = [subFolder,'functional',filesep];
+        if exist(fMRI_analysis_folder,'dir') ~= 7
+            mkdir(fMRI_analysis_folder);
+        end
+        subj_scans_folder = [root, sub_fullNm, filesep,'fMRI_scans', filesep];
+        anat_folder = ls([subj_scans_folder,'*UNI-DEN*']);
+        copyfile([subj_scans_folder,anat_folder],...
+            newAnatFolder); % copies the contempt of the anatomical folder
+        
+        %% extract folders where functional runs are stored
+        subj_scan_folders_names = ls([subj_scans_folder,'*run*']); % takes all functional runs folders
+        % remove AP/PA top-up corrective runs when they were performed (only 2
+        % first pilots)
+        if strcmp(study_nm,'fMRI_pilots') && ismember(sub_nm,{'pilot_s1','pilot_s2'})
+            [subj_scan_folders_names] = clear_topup_fromFileList(subj_scan_folders_names);
+        end
+        %% define number of sessions to analyze
+        if strcmp(study_nm,'fMRI_pilots') &&...
+                ismember(sub_nm, {'pilot_s1','pilot_s2','pilot_s3'}) % only 2 sessions for these pilots
+            n_runs = 2;
+        elseif strcmp(study_nm,'study1') &&...
+                ismember(sub_nm,{'040'}) % fMRI had to be crashed during run 3
+            n_runs = 2;
+        else
+            n_runs = 4;
+        end
+        for iRun = 1:n_runs % loop through runs
+            runPath = [subj_scans_folder, subj_scan_folders_names(iRun,:)]; % extract run folder
+            [filenames] = preproc_run_name_extraction(study_nm, sub_nm, runPath);
+            runFileNames.(['run_',num2str(iRun)]) = filenames;
+        end % run loop
+        
+        %% realignement
+        preproc_step = 1; % first step of preprocessing
+        realign_step = nb_preprocessingSteps_step1*(iS-1) + preproc_step; % number depends also on the number of subjects
+        matlabbatch_realign{realign_step}.spm.spatial.realign.estwrite.data = cell(n_runs, 1);
+        for iRun = 1:n_runs
+            matlabbatch_realign{realign_step}.spm.spatial.realign.estwrite.data{iRun,1} = runFileNames.(['run_',num2str(iRun)]);
+        end
+        matlabbatch_realign{realign_step}.spm.spatial.realign.estwrite.eoptions.quality = 0.9;
+        matlabbatch_realign{realign_step}.spm.spatial.realign.estwrite.eoptions.sep = 4;
+        matlabbatch_realign{realign_step}.spm.spatial.realign.estwrite.eoptions.fwhm = 5;
+        matlabbatch_realign{realign_step}.spm.spatial.realign.estwrite.eoptions.rtm = 1;
+        matlabbatch_realign{realign_step}.spm.spatial.realign.estwrite.eoptions.interp = 2;
+        matlabbatch_realign{realign_step}.spm.spatial.realign.estwrite.eoptions.wrap = [0 0 0];
+        matlabbatch_realign{realign_step}.spm.spatial.realign.estwrite.eoptions.weight = '';
+        matlabbatch_realign{realign_step}.spm.spatial.realign.estwrite.roptions.which = [2 1];
+        matlabbatch_realign{realign_step}.spm.spatial.realign.estwrite.roptions.interp = 4;
+        matlabbatch_realign{realign_step}.spm.spatial.realign.estwrite.roptions.wrap = [0 0 0];
+        matlabbatch_realign{realign_step}.spm.spatial.realign.estwrite.roptions.mask = 1;
+        matlabbatch_realign{realign_step}.spm.spatial.realign.estwrite.roptions.prefix = 'r';
+    end % subject loop
+    spm_jobman('run',matlabbatch_realign);
     
     
-%     %% apply bias field correction to all the re-aligned files
-%     for iS = 1:NS % loop through subjects
-%         disp(['performing bias-field correction for preprocessing subject ',num2str(iS),'/',num2str(NS)]);
-%         sub_nm = subject_id{iS};
-%         switch study_nm
-%             case {'study1','study2'}
-%                 sub_fullNm = ['CID',sub_nm];
-%             case {'fMRI_pilots','study2_pilots'}
-%                 sub_fullNm = sub_nm;
-%         end
-%         subj_scans_folder = [root, sub_fullNm, filesep,'fMRI_scans',filesep];
-%         % define number of sessions to check
-%         if strcmp(study_nm,'fMRI_pilots') &&...
-%                 ismember(sub_nm, {'pilot_s1','pilot_s2','pilot_s3'}) % only 2 sessions for these pilots
-%             n_runs = 2;
-%         elseif strcmp(study_nm,'study1') &&...
-%                 ismember(sub_nm,{'040'}) % fMRI had to be crashed during run 3
-%             n_runs = 2;
-%         else
-%             n_runs = 4;
-%         end
-%         
-%         for iRun = 1:n_runs
-%             % re-initialize the matlab batch for each run
-%             matlabbatch_biasField = cell(1,1);
-%             %% extract folders where functional runs are stored
-%             subj_scan_folders_names = ls([subj_scans_folder,'*run*']); % takes all functional runs folders
-%             % remove AP/PA top-up corrective runs when they were performed (only 2
-%             % first pilots)
-%             if strcmp(study_nm,'fMRI_pilots') && ismember(sub_nm,{'pilot_s1','pilot_s2'})
-%                 [subj_scan_folders_names] = clear_topup_fromFileList(subj_scan_folders_names);
-%             end
-%             % select re-aligned files for the current run
-%             runPath = [subj_scans_folder, subj_scan_folders_names(iRun,:)]; % extract run folder
-%             [realigned_filenames] = preproc_run_name_extraction(study_nm, sub_nm, runPath,'r');
-%             
-%             %% bias field estimation for correction using SPM segmentation (applied on the first image of each fMRI session)
-%             matlabbatch_biasField{1}.spm.tools.preproc8.channel.vols = realigned_filenames(1);
-%             matlabbatch_biasField{1}.spm.tools.preproc8.channel.write = [1 0];
-%             spm_jobman('run', matlabbatch_biasField);
-%             
-%             %% perform bias-field correction
-%             % extract bias field path
-%             bf = fullfile(strrep(runPath,' ',''), filesep, spm_select('List', runPath, '^BiasField.*\.nii$'));
-%             bfv = spm_vol(bf);
-%             BF = double(spm_read_vols(bfv));
-%             % perform correction and create 1 new file for each
-%             for iFile = 1:numel(realigned_filenames)
-%                 % read file
-%                 fn = [realigned_filenames{iFile}];
-%                 V = spm_vol(fn);
-%                 Y = spm_read_vols(V);
-%                 % apply bias field
-%                 Y = BF.*Y;
-%                 % save file
-%                 [pth, fnn, ext] = fileparts(fn);
-%                 nfn = fullfile(pth, ['b', fnn, ext]);
-%                 V.fname = strrep(nfn,',1','');
-%                 spm_write_vol(V,Y);
-%             end
-%         end % run loop
-%     end % subject loop
+    %% apply bias field correction to all the re-aligned files
+    for iS = 1:NS % loop through subjects
+        disp(['performing bias-field correction for preprocessing subject ',num2str(iS),'/',num2str(NS)]);
+        sub_nm = subject_id{iS};
+        switch study_nm
+            case {'study1','study2'}
+                sub_fullNm = ['CID',sub_nm];
+            case {'fMRI_pilots','study2_pilots'}
+                sub_fullNm = sub_nm;
+        end
+        subj_scans_folder = [root, sub_fullNm, filesep,'fMRI_scans',filesep];
+        % define number of sessions to check
+        if strcmp(study_nm,'fMRI_pilots') &&...
+                ismember(sub_nm, {'pilot_s1','pilot_s2','pilot_s3'}) % only 2 sessions for these pilots
+            n_runs = 2;
+        elseif strcmp(study_nm,'study1') &&...
+                ismember(sub_nm,{'040'}) % fMRI had to be crashed during run 3
+            n_runs = 2;
+        else
+            n_runs = 4;
+        end
+        
+        for iRun = 1:n_runs
+            % re-initialize the matlab batch for each run
+            matlabbatch_biasField = cell(1,1);
+            %% extract folders where functional runs are stored
+            subj_scan_folders_names = ls([subj_scans_folder,'*run*']); % takes all functional runs folders
+            % remove AP/PA top-up corrective runs when they were performed (only 2
+            % first pilots)
+            if strcmp(study_nm,'fMRI_pilots') && ismember(sub_nm,{'pilot_s1','pilot_s2'})
+                [subj_scan_folders_names] = clear_topup_fromFileList(subj_scan_folders_names);
+            end
+            % select re-aligned files for the current run
+            runPath = [subj_scans_folder, subj_scan_folders_names(iRun,:)]; % extract run folder
+            [realigned_filenames] = preproc_run_name_extraction(study_nm, sub_nm, runPath,'r');
+            
+            %% bias field estimation for correction using SPM segmentation (applied on the first image of each fMRI session)
+            matlabbatch_biasField{1}.spm.tools.preproc8.channel.vols = realigned_filenames(1);
+            matlabbatch_biasField{1}.spm.tools.preproc8.channel.write = [1 0];
+            spm_jobman('run', matlabbatch_biasField);
+            
+            %% perform bias-field correction
+            % extract bias field path
+            bf = fullfile(strrep(runPath,' ',''), filesep, spm_select('List', runPath, '^BiasField.*\.nii$'));
+            bfv = spm_vol(bf);
+            BF = double(spm_read_vols(bfv));
+            % perform correction and create 1 new file for each
+            for iFile = 1:numel(realigned_filenames)
+                % read file
+                fn = [realigned_filenames{iFile}];
+                V = spm_vol(fn);
+                Y = spm_read_vols(V);
+                % apply bias field
+                Y = BF.*Y;
+                % save file
+                [pth, fnn, ext] = fileparts(fn);
+                nfn = fullfile(pth, ['b', fnn, ext]);
+                V.fname = strrep(nfn,',1','');
+                spm_write_vol(V,Y);
+            end
+        end % run loop
+    end % subject loop
     
     %% final part of preprocessing
     for iS = 1:NS
@@ -260,7 +260,7 @@ if NS >= 1
         end
         
         matlabbatch_finalPreproc = cell(nb_preprocessingSteps_step3*NS,1);
-        % coregistration
+        %% coregistration
         preproc_step = 1;
         coreg_step = nb_preprocessingSteps_step3*(iS-1) + preproc_step;
         % extract run files
