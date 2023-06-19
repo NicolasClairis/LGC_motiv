@@ -90,15 +90,15 @@ if NS >= 1
         subFolder = [root, sub_fullNm, filesep];
         % create working directories and copy anat. file inside
         % \fMRI_analysis\anatomical folder
-        subj_analysis_folder = [subFolder,'fMRI_analysis'];
+        subj_analysis_folder = [subFolder,'fMRI_analysis',filesep];
         if exist(subj_analysis_folder,'dir') ~= 7
             mkdir(subj_analysis_folder);
         end
-        newAnatFolder = [subFolder,'anatomical'];
+        newAnatFolder = [subFolder,'anatomical',filesep];
         if exist(newAnatFolder,'dir') ~= 7
             mkdir(newAnatFolder);
         end
-        fMRI_analysis_folder = [subFolder,'functional'];
+        fMRI_analysis_folder = [subFolder,'functional',filesep];
         if exist(fMRI_analysis_folder,'dir') ~= 7
             mkdir(fMRI_analysis_folder);
         end
@@ -210,11 +210,14 @@ if NS >= 1
         %% normalization
         preproc_step = 4;
         normf_step = nb_preprocessingSteps*(iS-1) + preproc_step;
-        matlabbatch{normf_step}.spm.spatial.normalise.write.subj.def(1) = cfg_dep('Segment: Forward Deformations', substruct('.','val', '{}',{segm_step}, '.','val', '{}',{1}, '.','val', '{}',{1}), substruct('.','fordef', '()',{':'}));
+        matlabbatch{normf_step}.spm.spatial.normalise.write.subj.def(1) = cfg_dep('Segment: Forward Deformations',...
+            substruct('.','val', '{}',{segm_step}, '.','val', '{}',{1}, '.','val', '{}',{1}), substruct('.','fordef', '()',{':'}));
         for iRun = 1:n_runs
-            matlabbatch{normf_step}.spm.spatial.normalise.write.subj.resample(iRun) = cfg_dep(['Realign: Estimate & Reslice: Resliced Images (Sess ',num2str(iRun),')'], substruct('.','val', '{}',{realign_step}, '.','val', '{}',{1}, '.','val', '{}',{1}, '.','val', '{}',{1}), substruct('.','sess', '()',{iRun}, '.','rfiles'));
+            matlabbatch{normf_step}.spm.spatial.normalise.write.subj.resample(iRun) = cfg_dep(['Realign: Estimate & Reslice: Resliced Images (Sess ',num2str(iRun),')'],...
+                substruct('.','val', '{}',{realign_step}, '.','val', '{}',{1}, '.','val', '{}',{1}, '.','val', '{}',{1}), substruct('.','sess', '()',{iRun}, '.','rfiles'));
         end
-        matlabbatch{normf_step}.spm.spatial.normalise.write.subj.resample(n_runs+1) = cfg_dep('Realign: Estimate & Reslice: Mean Image', substruct('.','val', '{}',{realign_step}, '.','val', '{}',{1}, '.','val', '{}',{1}, '.','val', '{}',{1}), substruct('.','rmean'));
+        matlabbatch{normf_step}.spm.spatial.normalise.write.subj.resample(n_runs+1) = cfg_dep('Realign: Estimate & Reslice: Mean Image',...
+            substruct('.','val', '{}',{realign_step}, '.','val', '{}',{1}, '.','val', '{}',{1}, '.','val', '{}',{1}), substruct('.','rmean'));
         matlabbatch{normf_step}.spm.spatial.normalise.write.woptions.bb = [-78 -112 -70
             78 76 85];
         matlabbatch{normf_step}.spm.spatial.normalise.write.woptions.vox = [2 2 2];
@@ -223,8 +226,10 @@ if NS >= 1
         %% normalization anatomical scan
         preproc_step = 5;
         norma_step = nb_preprocessingSteps*(iS-1) + preproc_step;
-        matlabbatch{norma_step}.spm.spatial.normalise.write.subj.def(1) = cfg_dep('Segment: Forward Deformations', substruct('.','val', '{}',{segm_step}, '.','val', '{}',{1}, '.','val', '{}',{1}), substruct('.','fordef', '()',{':'}));
-        matlabbatch{norma_step}.spm.spatial.normalise.write.subj.resample(1) = cfg_dep('Segment: Bias Corrected (1)', substruct('.','val', '{}',{segm_step}, '.','val', '{}',{1}, '.','val', '{}',{1}), substruct('.','channel', '()',{1}, '.','biascorr', '()',{':'}));
+        matlabbatch{norma_step}.spm.spatial.normalise.write.subj.def(1) = cfg_dep('Segment: Forward Deformations',...
+            substruct('.','val', '{}',{segm_step}, '.','val', '{}',{1}, '.','val', '{}',{1}), substruct('.','fordef', '()',{':'}));
+        matlabbatch{norma_step}.spm.spatial.normalise.write.subj.resample(1) = cfg_dep('Segment: Bias Corrected (1)',...
+            substruct('.','val', '{}',{segm_step}, '.','val', '{}',{1}, '.','val', '{}',{1}), substruct('.','channel', '()',{1}, '.','biascorr', '()',{':'}));
         matlabbatch{norma_step}.spm.spatial.normalise.write.woptions.bb = [-78 -112 -70
             78 76 85];
         matlabbatch{norma_step}.spm.spatial.normalise.write.woptions.vox = [1 1 1];
@@ -233,7 +238,8 @@ if NS >= 1
         %% smoothing
         preproc_step = 6;
         smooth_step = nb_preprocessingSteps*(iS-1) + preproc_step;
-        matlabbatch{smooth_step}.spm.spatial.smooth.data(1) = cfg_dep('Normalise: Write: Normalised Images (Subj 1)', substruct('.','val', '{}',{normf_step}, '.','val', '{}',{1}, '.','val', '{}',{1}, '.','val', '{}',{1}), substruct('()',{1}, '.','files'));
+        matlabbatch{smooth_step}.spm.spatial.smooth.data(1) = cfg_dep('Normalise: Write: Normalised Images (Subj 1)',...
+            substruct('.','val', '{}',{normf_step}, '.','val', '{}',{1}, '.','val', '{}',{1}, '.','val', '{}',{1}), substruct('()',{1}, '.','files'));
         matlabbatch{smooth_step}.spm.spatial.smooth.fwhm = [smKernel smKernel smKernel];
         matlabbatch{smooth_step}.spm.spatial.smooth.dtype = 0;
         matlabbatch{smooth_step}.spm.spatial.smooth.im = 0;
