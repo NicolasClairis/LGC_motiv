@@ -45,12 +45,13 @@ while isempty(iSubject) || length(iSubject) ~= 3
 end
 % Create subjectCodeName which is used as a file saving name
 subjectCodeName = strcat('CID',iSubject);
-subResultFolder = [results_folder, subjectCodeName, filesep,'behavior',filesep];
+subResultFolder = [results_folder, subjectCodeName, filesep,...
+    'behavior',filesep];
 if ~exist(subResultFolder,'dir')
     mkdir(subResultFolder);
 end
 
-if strcmp(p_or_m,'m') == 0 && strcmp(p_or_m,'p') == 0
+if ~ismember(p_or_m,{'p','m'})
     error('this letter has no definition');
 end
 
@@ -118,8 +119,12 @@ n_trainingTrials = 4;
 % define number of trials per staircase procedure
 n_trialsPerSession = 5;
 % load timings for each phase of the experiment
-[trainingTimes_Em, calibTimes_Em, learningTimes_Em, taskTimes_Em] = timings_definition({trainingRP_P_or_R}, n_trialsPerSession, n_trainingTrials, 'mental');
-[trainingTimes_Ep, calibTimes_Ep, learningTimes_Ep, taskTimes_Ep] = timings_definition({trainingRP_P_or_R}, n_trialsPerSession, n_trainingTrials, 'physical');
+[trainingTimes_Em, calibTimes_Em, learningTimes_Em,...
+    taskTimes_Em] = timings_definition({trainingRP_P_or_R},...
+    n_trialsPerSession, n_trainingTrials, 'mental');
+[trainingTimes_Ep, calibTimes_Ep, learningTimes_Ep,...
+    taskTimes_Ep] = timings_definition({trainingRP_P_or_R},...
+    n_trialsPerSession, n_trainingTrials, 'physical');
 
 
 n_sessions = 2;
@@ -573,7 +578,8 @@ switch p_or_m
 end
 
 %% indifference point measurement
-if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,'on')
+if strcmp(taskToPerform.physical.task,'on') ||...
+        strcmp(taskToPerform.mental.task,'on')
     
     % Number of repeats of the whole code (how many times will you measure
     % the IP?)
@@ -810,4 +816,3 @@ KbQueueRelease;
 %% close PTB
 ShowCursor;
 sca;
-
