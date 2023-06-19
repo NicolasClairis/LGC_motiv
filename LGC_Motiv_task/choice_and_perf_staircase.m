@@ -266,7 +266,8 @@ for iTrial = 1:nTrials
     end
     
     %% chosen option display period
-    [time_dispChoice] = choice_task_dispChosen(scr, stim, choice(iTrial), R_chosen(iTrial), E_chosen(iTrial), R_or_P, confidenceDispChosen);
+    [time_dispChoice] = choice_task_dispChosen(scr, stim, choice(iTrial),...
+        R_chosen(iTrial), E_chosen(iTrial), R_or_P, confidenceDispChosen);
     onsets.dispChoice(iTrial) = time_dispChoice;
     WaitSecs(t_dispChoice);
     dur.dispChoice(iTrial) = GetSecs - onsets.dispChoice(iTrial);
