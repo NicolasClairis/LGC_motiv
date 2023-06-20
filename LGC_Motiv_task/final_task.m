@@ -41,27 +41,29 @@ fileName = ['finalTask_data_',subjectCodeName,'.mat'];
 
 %% load indifference point (IP)
 file_nm_IP = ['delta_IP_CID',num2str(iSubject)];
-IP_variables = getfield(load([subResultFolder,...
-    file_nm_IP,'.mat'],'IP_variables'),'IP_variables');
-
+full_IP_filename = [subResultFolder,file_nm_IP,'.mat'];
+if exist(full_IP_filename,'dir')
+    IP_variables = getfield(load(full_IP_filename,'IP_variables'),'IP_variables');
+else
+    error(['Could not find ',full_IP_filename,' please check path and file name is ok.']);
+end
 %% initialize screen
 [scr, xScreenCenter, yScreenCenter,...
     window, baselineTextSize] = ScreenConfiguration(IRMdisp, testing_script);
 window = scr.window;
 white = scr.colours.white;
 black = scr.colours.black;
-% confidence feedback visual display
-confidenceDispChosen.display = true;
-% no display of the confidence mapping
-confidenceChoiceDisp = false;
+
 %% timings
 timings.cross.mainTask = 0.5;
 % precise if the choice and the performance periods will have a time
 % constraint
 choiceTimeParameters.timeLimit = false;
 t_dispChoice    = timings.dispChoice;
+% final time
+t_endSession = 3;
 
-
+%% general parameters of the task
 % initialize visual stimuli to use in the experiment
 langage = 'fr';
 [stim] = stim_initialize(scr, n_E_levels, langage);
@@ -73,23 +75,23 @@ switch IRMbuttons
     case 1 % test buttons
         n_buttonsChoice = 4;
 end
+% confidence feedback visual display
+confidenceDispChosen.display = true;
 
 %% perform the task
-% for how many levels of effort will you measure the IP?
-E_right = 2;
-E_left  = 2;
-E_left_nRepeats = 1;
-E_right_nRepeats = 1;
+% effort
+% baseline level of effort difficulty
+baselineE = 2;
+% number of repetitions for the fixed effort option
+E_lowE_nRepeats = 1;
 
 % Baseline Reward (CHF)
 baselineR = 0.5;
-baselineE = 2;
+R_or_P = 'R';
 
-% number of repetitions
+% number of trial repetitions until considering task is over if the
+% participant doesn't reach the breakpoint before
 nTrials = 10; % max should be at 1024
-
-% final time
-t_endSession = 3;
 
 switch p_or_m
     case 'p'
@@ -99,13 +101,22 @@ switch p_or_m
 end
 for iTask = 1:length(taskOrder)
     task_nm = taskOrder{iTask};
+    E_nm = ['E',task_nm];
+
+    %% extract information regarding fixed reward and effort values
+    % reward
     switch task_nm
         case 'm'
-            high_R.(E_nm) = baselineR + 10*IP_variables.mentalDeltaIP;
+            deltaIP = IP_variables.mentalDeltaIP;
         case 'p'
-            high_R.(E_nm) = baselineR + 10*IP_variables.physicalDeltaIP;
+            deltaIP = IP_variables.physicalDeltaIP;
     end
-    E_nm = ['E',task_nm];
+    high_R.(E_nm) = round(baselineR + 10*deltaIP,2);
+    R_left = baselineR;
+    R_right = high_R.(E_nm);
+    % effort
+    E_left = baselineE;
+    E_right = baselineE;
     
     % time variables
     [onsets.(E_nm).preChoiceCross,...
@@ -152,19 +163,23 @@ for iTask = 1:length(taskOrder)
         
         %% choice period
         % define effort difficulty
+        E_left_nRepeats = E_lowE_nRepeats;
         if iTrial == 1
             high_E_nRepeats.(E_nm)(1) = 2;
         else
             high_E_nRepeats.(E_nm)(iTrial) = high_E_nRepeats.(E_nm)(iTrial-1)*2;
         end
+        E_right_nRepeats = high_E_nRepeats.(E_nm)(iTrial);
         
         % keep choice period until a choice is done
         while choice_LR.(E_nm)(iTrial) == 0
             [choice_LR.(E_nm)(iTrial),...
                 onsets.(E_nm).dispChoiceOptions(iTrial),...
-                onsets.(E_nm).choice(iTrial)] = finalTask_choice_period(scr, stim,...
-                R_left, R_right, E_left, E_right, R_or_P,...
-                timeParameter, key, confidenceDisp);
+                onsets.(E_nm).choice(iTrial)] = final_task_choice_period(scr, stim,...
+                R_left, R_right, E_left, E_right,...
+                E_left_nRepeats, E_right_nRepeats,...
+                R_or_P,...
+                timeParameter, key);
         end % keep performing the trial until a choice is made
         
         %% display chosen option
@@ -175,7 +190,7 @@ for iTask = 1:length(taskOrder)
         dur.(E_nm).dispChoice(iTrial) = GetSecs - onsets.(E_nm).dispChoice(iTrial);
         
         %% check if break point has been reached
-        if choice_LR.(E_nm)(iTrial) == 1
+        if R_chosen.(E_nm)(iTrial) == baselineR
             breakPointReached.(E_nm) = 1;
         end
     end % trial loop

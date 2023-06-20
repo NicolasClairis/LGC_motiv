@@ -1,9 +1,11 @@
 function[choice_trial, onsetDispChoiceOptions, onsetChoice, stoptask] = final_task_choice_period(scr, stim,...
-    R_left, R_right, E_left, E_right, R_or_P,...
-    timeParameter, key, confidenceDisp)
+    R_left, R_right, E_left, E_right,...
+    E_left_repeats, E_right_repeats,...
+    R_or_P,...
+    timeParameter, key)
 % [choice_trial, onsetDispChoiceOptions, onsetChoice, stoptask] = final_task_choice_period(scr, stim,...
 %     R_left, R_right, E_left, E_right, R_or_P,...
-%     timeParameter, key, confidenceDisp)
+%     timeParameter, key)
 % final_task_choice_period will display the choice options and then wait for the 
 % choice to be made (or the time limit to be reached. Provides timings and 
 % choice made in output.
@@ -17,6 +19,9 @@ function[choice_trial, onsetDispChoiceOptions, onsetChoice, stoptask] = final_ta
 %
 % E_left, E_right: level of effort for left and right option
 %
+% E_left_repeats, E_right_repeats: number of repetitions of left (and
+% right) efforts)
+%
 % R_or_P: character indicating the nature of the current trial
 % 'R': reward trial
 % 'P': punishment trial
@@ -27,9 +32,6 @@ function[choice_trial, onsetDispChoiceOptions, onsetChoice, stoptask] = final_ta
 %   .t_choice: maximal time to wait for choice
 %
 % key: code for left/right keys
-%
-% confidenceDisp: true/false to know whether the mapping of the confidence
-% should be displayed or not
 %
 % OUTPUTS
 % choice_trial:
@@ -56,8 +58,10 @@ white = scr.colours.white;
 % end
     
 %% ask question on top
-DrawFormattedText(window, stim.choice.choiceQuestion.text, stim.choice.choiceQuestion.x, stim.choice.choiceQuestion.y, stim.choice.choiceQuestion.colour);
-DrawFormattedText(window, stim.choice.choiceOR.text, stim.choice.choiceOR.x, stim.choice.choiceOR.y, stim.choice.choiceOR.colour);
+DrawFormattedText(window, stim.choice.choiceQuestion.text,...
+    stim.choice.choiceQuestion.x, stim.choice.choiceQuestion.y, stim.choice.choiceQuestion.colour);
+DrawFormattedText(window, stim.choice.choiceOR.text,...
+    stim.choice.choiceOR.x, stim.choice.choiceOR.y, stim.choice.choiceOR.colour);
 
 %% display each difficulty level
 leftStartAngle = stim.difficulty.startAngle.(['level_',num2str(E_left)]);
@@ -81,6 +85,9 @@ Screen('FrameOval', window, stim.difficulty.maxColor,...
 Screen('FrameOval', window, stim.difficulty.maxColor,...
     stim.difficulty.below_right,...
     stim.difficulty.ovalWidth);
+
+% add number of repetitions
+
 
 %% display each monetary incentive level
 switch R_or_P
@@ -116,26 +123,6 @@ DrawFormattedText(window,stim.choice.for.text,...
     stim.effort_introText.bottom_right(1),...
     stim.effort_introText.bottom_right(2),...
     white);
-
-%% add mapping for confidence
-if confidenceDisp == true
-    % left sure
-    DrawFormattedText(window,stim.leftSure.text,...
-        stim.leftSure.x, stim.leftSure.y,...
-        stim.leftSure.colour);
-    % left unsure
-    DrawFormattedText(window,stim.leftUnsure.text,...
-        stim.leftUnsure.x, stim.leftUnsure.y,...
-        stim.leftUnsure.colour);
-    % right unsure
-    DrawFormattedText(window,stim.rightUnsure.text,...
-        stim.rightUnsure.x, stim.rightUnsure.y,...
-        stim.rightUnsure.colour);
-    % right sure
-    DrawFormattedText(window,stim.rightSure.text,...
-        stim.rightSure.x, stim.rightSure.y,...
-        stim.rightSure.colour);
-end
 
 %% display everything on the screen and record the timing
 [~,onsetDispChoiceOptions] = Screen('Flip',window);
