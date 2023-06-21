@@ -1,6 +1,7 @@
-function[onset_dispChoice] = final_task_dispChosen(scr, stim, choice, R_chosen, E_chosen, R_or_P, confidence)
-% [onset_dispChoice] = choice_task_dispChosen(scr, stim, choice, R_chosen, E_chosen,...
-%     R_or_P, confidence)
+function[onset_dispChoice] = final_task_dispChosen(scr, stim, choice,...
+    R_chosen, E_chosen, E_chosen_repeats, R_or_P, confidence)
+% [onset_dispChoice] = choice_task_dispChosen(scr, stim, choice,...
+% R_chosen, E_chosen, E_chosen_repeats, R_or_P, confidence)
 % choice_task_dispChosen will display the chosen option
 %
 % INPUTS
@@ -16,6 +17,8 @@ function[onset_dispChoice] = final_task_dispChosen(scr, stim, choice, R_chosen, 
 % R_chosen: reward amount of the chosen option
 %
 % E_chosen: effort level of the chosen option
+%
+% E_chosen_repeats: number of repetitions for the chosen option
 %
 % R_or_P: character indicating the nature of the current trial
 % 'R': reward trial
@@ -88,6 +91,12 @@ DrawFormattedText(window, stim.choice.for.text,...
     stim.effort_introText.bottom_center(1),...
     stim.effort_introText.bottom_center(2),...
     white);
+
+% display number of repetitions for the chosen option
+x_repeat = stim.chosenOption.difficulty(3);
+y_repeat = mean([stim.chosenOption.difficulty(2),stim.chosenOption.difficulty(4)]);
+DrawFormattedText(window,['x',num2str(E_chosen_repeats)],...
+    x_repeat,y_repeat,white)
 % end
 
 %% display a square on top of selected reward and effort

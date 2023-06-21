@@ -87,7 +87,13 @@ Screen('FrameOval', window, stim.difficulty.maxColor,...
     stim.difficulty.ovalWidth);
 
 % add number of repetitions
-
+x_left_repeat = stim.difficulty.below_left(3);
+x_right_repeat = stim.difficulty.below_right(3);
+y_repeat = mean([stim.difficulty.below_left(2),stim.difficulty.below_left(4)]);
+DrawFormattedText(window,['x',num2str(E_left_repeats)],...
+    x_left_repeat,y_repeat,white);
+DrawFormattedText(window,['x',num2str(E_right_repeats)],...
+    x_right_repeat,y_repeat,white)
 
 %% display each monetary incentive level
 switch R_or_P

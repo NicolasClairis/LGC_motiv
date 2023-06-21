@@ -37,7 +37,7 @@ if ~ismember(p_or_m,{'p','m'})
 end
 
 %% final file name
-fileName = ['finalTask_data_',subjectCodeName,'.mat'];
+finalTask_fileName = ['finalTask_data_',subjectCodeName,'.mat'];
 
 %% load indifference point (IP)
 file_nm_IP = ['delta_IP_CID',num2str(iSubject)];
@@ -55,11 +55,12 @@ white = scr.colours.white;
 black = scr.colours.black;
 
 %% timings
+t_instru = 2;
 timings.cross.mainTask = 0.5;
 % precise if the choice and the performance periods will have a time
 % constraint
 choiceTimeParameters.timeLimit = false;
-t_dispChoice    = timings.dispChoice;
+t_dispChosen    = timings.dispChoice;
 % final time
 t_endSession = 3;
 
@@ -93,6 +94,19 @@ R_or_P = 'R';
 % participant doesn't reach the breakpoint before
 nTrials = 10; % max should be at 1024
 
+% general introduction
+DrawFormattedText(['Dans cette derniere partie, nous allons vous poser quelques questions ',....
+    'sur vos preferences en general pour chaque type d''effort. Cette fois, ',...
+    'vous n''aurez plus besoin d''executer les efforts mais essayez de repondre ',...
+    'honnetement.'],...
+    'center','center',white);
+% display text: Press when you are ready to start
+DrawFormattedText(window, stim.pressWhenReady.text,...
+    stim.pressWhenReady.x, stim.pressWhenReady.y, stim.pressWhenReady.colour);
+[~, onsets.finalTask_general_instructions] = Screen(window, 'Flip');
+KbQueueWait(0,3);
+
+% define order of mental/physical tasks
 switch p_or_m
     case 'p'
         taskOrder = {'p','m'};
@@ -102,6 +116,21 @@ end
 for iTask = 1:length(taskOrder)
     task_nm = taskOrder{iTask};
     E_nm = ['E',task_nm];
+
+    %% introduction of the task
+    switch task_nm
+        case 'm'
+            DrawFormattedText('repondre pour les efforts MENTAUX',...
+                'center','center',white);
+        case 'p'
+            DrawFormattedText('repondre pour les efforts PHYSIQUES',...
+                'center','center',white);
+    end
+    % display text: Press when you are ready to start
+    DrawFormattedText(window, stim.pressWhenReady.text,...
+        stim.pressWhenReady.x, stim.pressWhenReady.y, stim.pressWhenReady.colour);
+    [~, onsets.(E_nm).finalTask_instructions] = Screen(window, 'Flip');
+    WaitSecs(t_instru);
 
     %% extract information regarding fixed reward and effort values
     % reward
@@ -124,16 +153,19 @@ for iTask = 1:length(taskOrder)
         onsets.(E_nm).choice,...
         onsets.(E_nm).preChoiceCross_keyReleaseMessage,...
         onsets.(E_nm).preChoiceCross_after_buttonRelease,...
+        onsets.(E_nm).dispChosen,...
         dur.(E_nm).preChoiceCross,...
         dur.(E_nm).dispChoiceOptions,...
         dur.(E_nm).preChoiceCross_keyReleaseMessage,...
         dur.(E_nm).preChoiceCross_after_buttonRelease,...
+        dur.(E_nm).dispChosen,...
         was_a_key_pressed_bf_trial.(E_nm)] = deal(NaN(1,nTrials));
     % main variables
     [RT.(E_nm),...
         confidence.(E_nm),...
         R_chosen.(E_nm),...
         E_chosen.(E_nm),...
+        E_chosen_repeats.(E_nm),...
         high_E_nRepeats.(E_nm)] = deal(NaN(1,nTrials));
     choice_LR.(E_nm) = zeros(1,nTrials);
     breakPointReached.(E_nm) = 0;
@@ -181,13 +213,24 @@ for iTask = 1:length(taskOrder)
                 R_or_P,...
                 timeParameter, key);
         end % keep performing the trial until a choice is made
-        
+
+        % store information relative to choice made
+        R_chosen.(E_nm)(iTrial) = R_left.*(choice_LR.(E_nm)(iTrial)<0) +...
+            R_right.*(choice_LR.(E_nm)(iTrial)>0);
+        E_chosen.(E_nm)(iTrial) = E_left.*(choice_LR.(E_nm)(iTrial)<0) +...
+            E_right.*(choice_LR.(E_nm)(iTrial)>0);
+        E_chosen_repeats.(E_nm)(iTrial) = E_left_nRepeats.*(choice_LR.(E_nm)(iTrial)<0) +...
+            E_right_nRepeats.*(choice_LR.(E_nm)(iTrial)>0);
+        confidence.(E_nm)(iTrial) = abs(choice_LR.(E_nm)(iTrial)) == 2;
+        RT.(E_nm) = onsets.(E_nm).choice(iTrial) - onsets.(E_nm).dispChoiceOptions(iTrial);
+
         %% display chosen option
-        [time_dispChoice] = final_task_dispChosen(scr, stim, choice(iTrial),...
-            R_chosen(iTrial), E_chosen(iTrial), R_or_P, confidenceDispChosen);
-        onsets.(E_nm).dispChoice(iTrial) = time_dispChoice;
-        WaitSecs(t_dispChoice);
-        dur.(E_nm).dispChoice(iTrial) = GetSecs - onsets.(E_nm).dispChoice(iTrial);
+        [time_dispChoice] = final_task_dispChosen(scr, stim, choice_LR.(E_nm)(iTrial),...
+            R_chosen.(E_nm)(iTrial), E_chosen.(E_nm)(iTrial), E_chosen_repeats.(E_nm)(iTrial),...
+            R_or_P, confidenceDispChosen);
+        onsets.(E_nm).dispChosen(iTrial) = time_dispChoice;
+        WaitSecs(t_dispChosen);
+        dur.(E_nm).dispChosen(iTrial) = GetSecs - onsets.(E_nm).dispChoice(iTrial);
         
         %% check if break point has been reached
         if R_chosen.(E_nm)(iTrial) == baselineR
@@ -197,7 +240,7 @@ for iTask = 1:length(taskOrder)
 end % task loop
 
 %% save the data
-save([subResultFolder, file_nm_IP,'.mat'],...
+save([subResultFolder, finalTask_fileName],...
     'choice_LR',...
     'breakPointReached',...
     'confidence',...
