@@ -95,8 +95,10 @@ DrawFormattedText(window, stim.choice.for.text,...
 % display number of repetitions for the chosen option
 x_repeat = stim.chosenOption.difficulty(3);
 y_repeat = mean([stim.chosenOption.difficulty(2),stim.chosenOption.difficulty(4)]);
-DrawFormattedText(window,['x',num2str(E_chosen_repeats)],...
-    x_repeat,y_repeat,white)
+Screen('TextSize', window, scr.textSize.middle);
+DrawFormattedText(window,[' x',num2str(E_chosen_repeats)],...
+    x_repeat,y_repeat,white);
+Screen('TextSize', window, scr.textSize.baseline);
 % end
 
 %% display a square on top of selected reward and effort

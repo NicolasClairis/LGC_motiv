@@ -72,11 +72,10 @@ t_endSession = 3;
 %% initialize screen
 IRMdisp = 0; % defines the screen parameters (0 for training screen, 1 for fMRI screen)
 testing_script = 1;
-[scr, xScreenCenter, yScreenCenter,...
-    window, baselineTextSize] = ScreenConfiguration(IRMdisp, testing_script);
-window = scr.window;
+[scr, ~, ~,...
+    window] = ScreenConfiguration(IRMdisp, testing_script);
 white = scr.colours.white;
-black = scr.colours.black;
+% black = scr.colours.black;
 
 %% general parameters of the task
 IRMbuttons = 1; % defines the buttons to use (1 = same as in fMRI)
@@ -94,7 +93,7 @@ switch IRMbuttons
 end
 % define relevant keys and dynamometer module
 [key] = relevant_key_definition('mental', IRMbuttons, n_buttonsChoice);
-
+keyboard_check_start(key, 0);
 % confidence feedback visual display
 confidenceDispChosen.display = true;
 
@@ -114,11 +113,11 @@ R_or_P = 'R';
 nTrials = 10; % max should be at 1024
 
 % general introduction
-DrawFormattedText(['Dans cette derniere partie, nous allons vous poser quelques questions ',....
+DrawFormattedText(window,['Dans cette derniere partie, nous allons vous poser quelques questions ',....
     'sur vos preferences en general pour chaque type d''effort. Cette fois, ',...
     'vous n''aurez plus besoin d''executer les efforts mais essayez de repondre ',...
     'honnetement.'],...
-    'center','center',white);
+    'center','center',white, scr.wrapat);
 % display text: Press when you are ready to start
 DrawFormattedText(window, stim.pressWhenReady.text,...
     stim.pressWhenReady.x, stim.pressWhenReady.y, stim.pressWhenReady.colour);
@@ -139,10 +138,10 @@ for iTask = 1:length(taskOrder)
     %% introduction of the task
     switch task_nm
         case 'm'
-            DrawFormattedText('repondre pour les efforts MENTAUX',...
+            DrawFormattedText(window,'repondre pour les efforts MENTAUX',...
                 'center','center',white);
         case 'p'
-            DrawFormattedText('repondre pour les efforts PHYSIQUES',...
+            DrawFormattedText(window,'repondre pour les efforts PHYSIQUES',...
                 'center','center',white);
     end
     % display text: Press when you are ready to start
@@ -188,7 +187,10 @@ for iTask = 1:length(taskOrder)
         high_E_nRepeats.(E_nm)] = deal(NaN(1,nTrials));
     choice_LR.(E_nm) = zeros(1,nTrials);
     breakPointReached.(E_nm) = 0;
+    iTrial = 0;
     while (iTrial < nTrials) && breakPointReached.(E_nm) == 0
+        % increase trial number
+        iTrial = iTrial + 1;
         
         %% fixation cross
         Screen('FillRect',window, white, stim.cross.verticalLine); % vertical line
@@ -244,12 +246,13 @@ for iTask = 1:length(taskOrder)
         RT.(E_nm) = onsets.(E_nm).choice(iTrial) - onsets.(E_nm).dispChoiceOptions(iTrial);
 
         %% display chosen option
-        [time_dispChoice] = final_task_dispChosen(scr, stim, choice_LR.(E_nm)(iTrial),...
+        confidenceDispChosen.lowOrHigh = abs(choice_LR.(E_nm)(iTrial));
+        [time_dispChosen] = final_task_dispChosen(scr, stim, choice_LR.(E_nm)(iTrial),...
             R_chosen.(E_nm)(iTrial), E_chosen.(E_nm)(iTrial), E_chosen_repeats.(E_nm)(iTrial),...
             R_or_P, confidenceDispChosen);
-        onsets.(E_nm).dispChosen(iTrial) = time_dispChoice;
+        onsets.(E_nm).dispChosen(iTrial) = time_dispChosen;
         WaitSecs(t_dispChosen);
-        dur.(E_nm).dispChosen(iTrial) = GetSecs - onsets.(E_nm).dispChoice(iTrial);
+        dur.(E_nm).dispChosen(iTrial) = GetSecs - onsets.(E_nm).dispChosen(iTrial);
         
         %% check if break point has been reached
         if R_chosen.(E_nm)(iTrial) == baselineR
@@ -263,15 +266,16 @@ save([subResultFolder, finalTask_fileName],...
     'choice_LR',...
     'breakPointReached',...
     'confidence',...
-    'onsets','dur','RT');
+    'onsets','dur','RT',...
+    'R_chosen','E_chosen','E_chosen_repeats',...
+    'high_E_nRepeats');
     
 %% end message
 DrawFormattedText(window,...
     'Felicitations! L''experience est maintenant terminee.',...
-    'center', 'center', scr.colours.white, scr.wrapat);
+    'center', 'center', white, scr.wrapat);
 Screen(window,'Flip');
 WaitSecs(t_endSession);
-waitSpace;
 
 %% releyse buffer for key presses
 KbQueueStop;
