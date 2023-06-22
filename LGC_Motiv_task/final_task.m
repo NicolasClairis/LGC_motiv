@@ -1,5 +1,18 @@
 function[] = final_task()
+% final_task will launch the final task to be performed at the end of the
+% experiment. Its purpose it to recompute a new indifference point at the
+% end of the experiment to see whether participants are impacted by fatigue
+% in their final subjective estimation of how much effort they would be
+% willing to make.
+%
+% See also main_TRAINING and choice_task_main for the previous parts of the
+% experiment.
+%
+% Designed by N.Clairis - june 2023
 
+%% start where the function is located
+scriptPath = [fileparts(matlab.desktop.editor.getActiveFilename),filesep];
+cd(scriptPath);
 
 %% working directories
 % launch within the folder where scripts are stored or will not work
@@ -19,8 +32,6 @@ addpath(Matlab_DIY_functions_folder);
 %% subject number?
 % physical/mental order?
 iSubject = [];
-IRMdisp = 0; % defines the screen parameters (0 for training screen, 1 for fMRI screen)
-IRMbuttons = 1; % defines the buttons to use (1 = same as in fMRI)
 while isempty(iSubject) || length(iSubject) ~= 3
     % repeat until all questions are answered
     info = inputdlg({'Subject CID (XXX)','p/m'});
@@ -42,17 +53,11 @@ finalTask_fileName = ['finalTask_data_',subjectCodeName,'.mat'];
 %% load indifference point (IP)
 file_nm_IP = ['delta_IP_CID',num2str(iSubject)];
 full_IP_filename = [subResultFolder,file_nm_IP,'.mat'];
-if exist(full_IP_filename,'dir')
+if exist(full_IP_filename,'file')
     IP_variables = getfield(load(full_IP_filename,'IP_variables'),'IP_variables');
 else
     error(['Could not find ',full_IP_filename,' please check path and file name is ok.']);
 end
-%% initialize screen
-[scr, xScreenCenter, yScreenCenter,...
-    window, baselineTextSize] = ScreenConfiguration(IRMdisp, testing_script);
-window = scr.window;
-white = scr.colours.white;
-black = scr.colours.black;
 
 %% timings
 t_instru = 2;
@@ -60,13 +65,24 @@ timings.cross.mainTask = 0.5;
 % precise if the choice and the performance periods will have a time
 % constraint
 choiceTimeParameters.timeLimit = false;
-t_dispChosen    = timings.dispChoice;
+t_dispChosen    = 2; % keep same timing as in main task
 % final time
 t_endSession = 3;
 
+%% initialize screen
+IRMdisp = 0; % defines the screen parameters (0 for training screen, 1 for fMRI screen)
+testing_script = 1;
+[scr, xScreenCenter, yScreenCenter,...
+    window, baselineTextSize] = ScreenConfiguration(IRMdisp, testing_script);
+window = scr.window;
+white = scr.colours.white;
+black = scr.colours.black;
+
 %% general parameters of the task
+IRMbuttons = 1; % defines the buttons to use (1 = same as in fMRI)
 % initialize visual stimuli to use in the experiment
 langage = 'fr';
+n_E_levels = 4;
 [stim] = stim_initialize(scr, n_E_levels, langage);
 
 % number of buttons to answer
@@ -76,6 +92,9 @@ switch IRMbuttons
     case 1 % test buttons
         n_buttonsChoice = 4;
 end
+% define relevant keys and dynamometer module
+[key] = relevant_key_definition('mental', IRMbuttons, n_buttonsChoice);
+
 % confidence feedback visual display
 confidenceDispChosen.display = true;
 
@@ -211,7 +230,7 @@ for iTask = 1:length(taskOrder)
                 R_left, R_right, E_left, E_right,...
                 E_left_nRepeats, E_right_nRepeats,...
                 R_or_P,...
-                timeParameter, key);
+                choiceTimeParameters, key);
         end % keep performing the trial until a choice is made
 
         % store information relative to choice made
