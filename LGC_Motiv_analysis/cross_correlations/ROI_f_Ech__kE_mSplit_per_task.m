@@ -82,6 +82,7 @@ n_hE_levels = length(hE_levels);
 %% loop through subjects
 for iS = 1:NS
     sub_nm = subject_id{iS};
+%     if ~ismember(sub_nm,{'054','061'})
     subBehaviorFolder = [studyBehaviorFolder, 'CID',sub_nm, filesep, 'behavior',filesep];
 
     % extract runs
@@ -184,6 +185,7 @@ for iS = 1:NS
         b_fMRI_f_E.(task_nm).lE_chosen.allSubs(:,iS) = glmfit(hE_levels, fMRI_ROI.(task_nm).choice_low.hE_level(:,iS), 'normal');
         b_fMRI_f_E.(task_nm).hE_chosen.allSubs(:,iS) = glmfit(hE_levels, fMRI_ROI.(task_nm).choice_high.hE_level(:,iS), 'normal');
     end % task loop
+%     end % filter bad Em subjects
 end % subject loop
 
 %% median split based on metabolites

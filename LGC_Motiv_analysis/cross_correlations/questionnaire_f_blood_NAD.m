@@ -18,9 +18,9 @@ studyPath = [root, filesep, study_nm, filesep];
 %% extract all blood data
 [bloodTable, blood_NAD_sub_List] = load_blood_NAD(study_nm);
 bloodMb_names = fieldnames(bloodTable);
-n_Mb = length(bloodMb_names);
-for iMb = 1:n_Mb
-    bloodMb.(bloodMb_names{iMb}) = NaN(1,NS);
+n_BloodPrm = length(bloodMb_names);
+for iBlood = 1:n_BloodPrm
+    bloodMb.(bloodMb_names{iBlood}) = NaN(1,NS);
 end % metabolite loop
 
 %% load questionnaire
@@ -52,15 +52,15 @@ for iS = 1:NS
     %% load blood
     sub_blood_idx = strcmp(sub_nm_bis, blood_NAD_sub_List);
     % extract blood info
-    for iMb = 1:n_Mb
-        bloodMb_nm = bloodMb_names{iMb};
+    for iBlood = 1:n_BloodPrm
+        bloodMb_nm = bloodMb_names{iBlood};
         bloodMb.(bloodMb_nm)(iS) = bloodTable.(bloodMb_nm)(sub_blood_idx);
     end
 end % subject loop
 
 %% test correlations
-for iMb = 1:n_Mb
-    bloodMb_nm = bloodMb_names{iMb};
+for iBlood = 1:n_BloodPrm
+    bloodMb_nm = bloodMb_names{iBlood};
     for iQuest = 1:nQuest
         quest_nm = questToCheck{iQuest};
         corr_nm = [quest_nm,'_f_',bloodMb_nm];
@@ -78,7 +78,7 @@ for iMb = 1:n_Mb
         bloodMb_sort.(corr_nm) = sort(bloodMb.(bloodMb_nm)(goodSubs.(corr_nm)));
         quest_fit.(corr_nm) = glmval(beta.(corr_nm), bloodMb_sort.(corr_nm), 'identity');
     end % questionnaire
-end % metabolite
+end % blood loop
 
 %% correlation and figure
 if figDisp == 1
@@ -91,8 +91,8 @@ if figDisp == 1
         quest_nm = questToCheck{iQuest};
         fig1 = fig; j_fig1 = 0;
         fig2 = fig; j_fig2 = 0;
-        for iMb = 1:n_Mb
-            bloodMb_nm = bloodMb_names{iMb};
+        for iBlood = 1:n_BloodPrm
+            bloodMb_nm = bloodMb_names{iBlood};
             corr_nm = [quest_nm,'_f_',bloodMb_nm];
             % define y.label for questionnaires
             switch quest_nm

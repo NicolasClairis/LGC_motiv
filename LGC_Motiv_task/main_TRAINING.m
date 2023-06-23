@@ -45,12 +45,13 @@ while isempty(iSubject) || length(iSubject) ~= 3
 end
 % Create subjectCodeName which is used as a file saving name
 subjectCodeName = strcat('CID',iSubject);
-subResultFolder = [results_folder, subjectCodeName, filesep,'behavior',filesep];
+subResultFolder = [results_folder, subjectCodeName, filesep,...
+    'behavior',filesep];
 if ~exist(subResultFolder,'dir')
     mkdir(subResultFolder);
 end
 
-if strcmp(p_or_m,'m') == 0 && strcmp(p_or_m,'p') == 0
+if ~ismember(p_or_m,{'p','m'})
     error('this letter has no definition');
 end
 
@@ -118,8 +119,12 @@ n_trainingTrials = 4;
 % define number of trials per staircase procedure
 n_trialsPerSession = 5;
 % load timings for each phase of the experiment
-[trainingTimes_Em, calibTimes_Em, learningTimes_Em, taskTimes_Em] = timings_definition({trainingRP_P_or_R}, n_trialsPerSession, n_trainingTrials, 'mental');
-[trainingTimes_Ep, calibTimes_Ep, learningTimes_Ep, taskTimes_Ep] = timings_definition({trainingRP_P_or_R}, n_trialsPerSession, n_trainingTrials, 'physical');
+[trainingTimes_Em, calibTimes_Em, learningTimes_Em,...
+    taskTimes_Em] = timings_definition({trainingRP_P_or_R},...
+    n_trialsPerSession, n_trainingTrials, 'mental');
+[trainingTimes_Ep, calibTimes_Ep, learningTimes_Ep,...
+    taskTimes_Ep] = timings_definition({trainingRP_P_or_R},...
+    n_trialsPerSession, n_trainingTrials, 'physical');
 
 
 n_sessions = 2;
@@ -573,7 +578,8 @@ switch p_or_m
 end
 
 %% indifference point measurement
-if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,'on')
+if strcmp(taskToPerform.physical.task,'on') ||...
+        strcmp(taskToPerform.mental.task,'on')
     
     % Number of repeats of the whole code (how many times will you measure
     % the IP?)
@@ -669,7 +675,7 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
                             Em_vars.timeRemainingEndTrial_ONOFF = 0;
                             perf_Em_IP_tmp = choice_and_perf_staircase(scr, stim, key_Em,...
                                 'mental', Em_vars,...
-                                R_or_P,E_right((iEffortLevel)),E_left(iEffortLevel), n_trialsPerSession, taskTimes_Em,...
+                                R_or_P, E_right((iEffortLevel)), E_left(iEffortLevel), n_trialsPerSession, taskTimes_Em,...
                                 subResultFolder, [file_nm,'_mental_session_nb',session_nm,'_effort_lvl',num2str(iEffortLevel)]);
                             perfSummary.mental.(['session_nb',num2str(iMental)]).(['Effort_lvl',(num2str(iEffortLevel))]) = perf_Em_IP_tmp;
                             sessionFinalGain = sessionFinalGain + perf_Em_IP_tmp.totalGain(end);
@@ -810,4 +816,3 @@ KbQueueRelease;
 %% close PTB
 ShowCursor;
 sca;
-

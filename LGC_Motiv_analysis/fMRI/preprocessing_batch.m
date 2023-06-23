@@ -1,10 +1,7 @@
 function[] = preprocessing_batch(study_nm, sub_nm)
 %[] = preprocessing_batch(study_nm, sub_nm)
 % preprocessing for fMRI data
-% enter subject identification in 'subject_id' (sXX_ddMMyy dd: day,
-% MM: month, yy: year) and preprocessing number in 'preproc'
-% preproc: 0: "raw" preprocessing (grey matter saved during segmentation)
-%          1: added AP-PA correction
+% enter subject identification in 'subject_id' (XXX corresponding to CID number)
 %
 % all data is stored in the fMRI_scans folders + the script also creates
 % fMRI_analysis folder where the anatomical files are copied for the
@@ -26,11 +23,6 @@ function[] = preprocessing_batch(study_nm, sub_nm)
 % See also First_level_batch, contrasts_batch and
 % Second_level_batch
 
-% clear;
-
-% %% preprocessing number in case you want to have several versions of it
-% preproc = 0; % see intro
-
 %% iniate spm
 spm('defaults','fmri');
 spm_jobman('initcfg');
@@ -40,7 +32,7 @@ spm_jobman('initcfg');
 computerRoot = ['E:',filesep];
 spmFolderPath = fullfile('C:','Users','clairis','Desktop');
 if ~exist('study_nm','var') || isempty(study_nm)
-    study_nm_List = {'study1','study2','fMRI_pilots'};
+    study_nm_List = {'study1','study2','fMRI_pilots','study2_pilots'};
     study_nm_idx = listdlg('ListString',study_nm_List);
     study_nm = study_nm_List{study_nm_idx};
 end
@@ -51,6 +43,8 @@ switch study_nm
         root = [fullfile(computerRoot,'study1'),filesep];
     case 'study2'
         root = [fullfile(computerRoot,'study2'),filesep];
+    case 'study2_pilots'
+        root = [fullfile(computerRoot,'study2','pilots','fMRI_pilots'),filesep];
 end
 
 if ~exist('sub_nm','var') || isempty(sub_nm)
@@ -87,38 +81,38 @@ if NS >= 1
     for iS = 1:NS % loop through subjects
         disp(['loading batch for preprocessing subject ',num2str(iS),'/',num2str(NS)]);
         sub_nm = subject_id{iS};
-        sub_fullNm = ['CID',sub_nm];
-        
+        switch study_nm
+            case {'study1','study2'}
+                sub_fullNm = ['CID',sub_nm];
+            case {'fMRI_pilots','study2_pilots'}
+                sub_fullNm = sub_nm;
+        end
+        subFolder = [root, sub_fullNm, filesep];
         % create working directories and copy anat. file inside
         % \fMRI_analysis\anatomical folder
-        cd([root, sub_fullNm]);
-        if exist('fMRI_analysis','dir') ~= 7
-            mkdir fMRI_analysis;
+        subj_analysis_folder = [subFolder,'fMRI_analysis',filesep];
+        if exist(subj_analysis_folder,'dir') ~= 7
+            mkdir(subj_analysis_folder);
         end
-        subj_analysis_folder = [root, sub_fullNm,filesep,'fMRI_analysis'];
-        cd(subj_analysis_folder);
-        if exist('anatomical','dir') ~= 7
-            mkdir anatomical;
+        newAnatFolder = [subFolder,'anatomical',filesep];
+        if exist(newAnatFolder,'dir') ~= 7
+            mkdir(newAnatFolder);
         end
-        if exist('functional','dir') ~= 7
-            mkdir functional;
+        fMRI_analysis_folder = [subFolder,'functional',filesep];
+        if exist(fMRI_analysis_folder,'dir') ~= 7
+            mkdir(fMRI_analysis_folder);
         end
-        subj_scans_folder = [root, sub_fullNm, filesep,'fMRI_scans'];
-        cd(subj_scans_folder);
-        anat_folder = ls('*UNI-DEN*');
-        newAnatFolder = [subj_analysis_folder, filesep,'anatomical',filesep];
-        copyfile(anat_folder, newAnatFolder); % copies the contempt of the anatomical folder
+        subj_scans_folder = [root, sub_fullNm, filesep,'fMRI_scans', filesep];
+        anat_folder = ls([subj_scans_folder,'*UNI-DEN*']);
+        copyfile([subj_scans_folder,anat_folder], newAnatFolder); % copies the contempt of the anatomical folder
         
         %% extract folders where functional runs are stored
-        cd(subj_scans_folder);
-        subj_scan_folders_names = ls('*run*'); % takes all functional runs folders
+        subj_scan_folders_names = ls([subj_scans_folder,'*run*']); % takes all functional runs folders
         % remove AP/PA top-up corrective runs when they were performed (only 2
         % first pilots)
         if strcmp(study_nm,'fMRI_pilots') && ismember(sub_nm,{'pilot_s1','pilot_s2'})
             [subj_scan_folders_names] = clear_topup_fromFileList(subj_scan_folders_names);
         end
-        %%
-        cd(subj_analysis_folder)
         %% define number of sessions to analyze
         if strcmp(study_nm,'fMRI_pilots') &&...
                 ismember(sub_nm, {'pilot_s1','pilot_s2','pilot_s3'}) % only 2 sessions for these pilots
@@ -129,29 +123,13 @@ if NS >= 1
         else
             n_runs = 4;
         end
-        cd(subj_scans_folder);
         for iRun = 1:n_runs % loop through runs
-            cd(subj_scan_folders_names(iRun,:)); % go to run folder
-            if strcmp(study_nm,'fMRI_pilots')
-                if ismember(sub_nm,{'pilot_s1'})
-                    filenames = cellstr(spm_select('ExtFPList',pwd,'^LGCM_.*\.nii$'));
-                elseif ismember(sub_nm,{'pilot_s2'})
-                    filenames = cellstr(spm_select('ExtFPList',pwd,'^run.*\.nii$'));
-                elseif ismember(sub_nm,{'pilot_s3'})
-                    filenames = cellstr(spm_select('ExtFPList',pwd,'^ABNC.*\.img$'));
-                else
-                    filenames = cellstr(spm_select('ExtFPList',pwd,'^CID.*\.nii$'));
-                end
-            else
-                filenames = cellstr(spm_select('ExtFPList',pwd,'^CID.*\.nii$'));
-                %             error('please check the format (nii/img) and the start of the name of each run because it has to be stabilized now...');
-            end
+            runPath = [subj_scans_folder, subj_scan_folders_names(iRun,:)]; % extract run folder
+            [filenames] = preproc_run_name_extraction(study_nm, sub_nm, runPath);
             runFileNames.(['run_',num2str(iRun)]) = filenames;
-            cd(subj_scans_folder);
         end
         
         %% realignement
-        cd(subj_scans_folder);
         preproc_step = 1; % first step of preprocessing
         realign_step = nb_preprocessingSteps*(iS-1) + preproc_step; % number depends also on the number of subjects
         matlabbatch{realign_step}.spm.spatial.realign.estwrite.data = cell(n_runs, 1);
@@ -173,25 +151,25 @@ if NS >= 1
         %% coregistration
         preproc_step = 2;
         coreg_step = nb_preprocessingSteps*(iS-1) + preproc_step;
-        matlabbatch{coreg_step}.spm.spatial.coreg.estimate.ref(1) = cfg_dep('Realign: Estimate & Reslice: Mean Image', substruct('.','val', '{}',{realign_step}, '.','val', '{}',{1}, '.','val', '{}',{1}, '.','val', '{}',{1}), substruct('.','rmean'));
-        cd(newAnatFolder);
-        if ismember(sub_nm,{'pilot_s1'})
-            anat_file = ls('LGCM_*.nii');
-        elseif ismember(sub_nm,{'pilot_s3'})
-            anat_file = ls('ABNC_*.img');
+        matlabbatch{coreg_step}.spm.spatial.coreg.estimate.ref(1) = cfg_dep('Realign: Estimate & Reslice: Mean Image',...
+            substruct('.','val', '{}',{realign_step}, '.','val', '{}',{1}, '.','val', '{}',{1}, '.','val', '{}',{1}), substruct('.','rmean'));
+        if strcmp(study_nm,'fMRI_pilots') && ismember(sub_nm,{'pilot_s1'})
+            anat_file = ls([newAnatFolder,'LGCM_*.nii']);
+        elseif strcmp(study_nm,'fMRI_pilots') && ismember(sub_nm,{'pilot_s3'})
+            anat_file = ls([newAnatFolder,'ABNC_*.img']);
+        elseif strcmp(study_nm,'study2_pilots') && ismember(sub_nm,{'fMRI_pilot1_AC'})
+            anat_file = ls([newAnatFolder,'AC*UNI-DEN.nii']);
         else
             %         anat_file = ls('mp2rage_*.nii');
-            anat_file = ls('CID*.nii');
+            anat_file = ls([newAnatFolder,'CID*.nii']);
         end
         matlabbatch{coreg_step}.spm.spatial.coreg.estimate.source = {[newAnatFolder, anat_file]};
-        cd(subj_scans_folder);
         matlabbatch{coreg_step}.spm.spatial.coreg.estimate.other = {''};
         matlabbatch{coreg_step}.spm.spatial.coreg.estimate.eoptions.cost_fun = 'nmi';
         matlabbatch{coreg_step}.spm.spatial.coreg.estimate.eoptions.sep = [4 2];
         matlabbatch{coreg_step}.spm.spatial.coreg.estimate.eoptions.tol = [0.02 0.02 0.02 0.001 0.001 0.001 0.01 0.01 0.01 0.001 0.001 0.001];
         matlabbatch{coreg_step}.spm.spatial.coreg.estimate.eoptions.fwhm = [7 7];
         %% segmentation
-        cd(subj_scans_folder);
         preproc_step = 3;
         segm_step = nb_preprocessingSteps*(iS-1) + preproc_step;
         matlabbatch{segm_step}.spm.spatial.preproc.channel.vols = {[newAnatFolder,anat_file]};
@@ -232,11 +210,14 @@ if NS >= 1
         %% normalization
         preproc_step = 4;
         normf_step = nb_preprocessingSteps*(iS-1) + preproc_step;
-        matlabbatch{normf_step}.spm.spatial.normalise.write.subj.def(1) = cfg_dep('Segment: Forward Deformations', substruct('.','val', '{}',{segm_step}, '.','val', '{}',{1}, '.','val', '{}',{1}), substruct('.','fordef', '()',{':'}));
+        matlabbatch{normf_step}.spm.spatial.normalise.write.subj.def(1) = cfg_dep('Segment: Forward Deformations',...
+            substruct('.','val', '{}',{segm_step}, '.','val', '{}',{1}, '.','val', '{}',{1}), substruct('.','fordef', '()',{':'}));
         for iRun = 1:n_runs
-            matlabbatch{normf_step}.spm.spatial.normalise.write.subj.resample(iRun) = cfg_dep(['Realign: Estimate & Reslice: Resliced Images (Sess ',num2str(iRun),')'], substruct('.','val', '{}',{realign_step}, '.','val', '{}',{1}, '.','val', '{}',{1}, '.','val', '{}',{1}), substruct('.','sess', '()',{iRun}, '.','rfiles'));
+            matlabbatch{normf_step}.spm.spatial.normalise.write.subj.resample(iRun) = cfg_dep(['Realign: Estimate & Reslice: Resliced Images (Sess ',num2str(iRun),')'],...
+                substruct('.','val', '{}',{realign_step}, '.','val', '{}',{1}, '.','val', '{}',{1}, '.','val', '{}',{1}), substruct('.','sess', '()',{iRun}, '.','rfiles'));
         end
-        matlabbatch{normf_step}.spm.spatial.normalise.write.subj.resample(n_runs+1) = cfg_dep('Realign: Estimate & Reslice: Mean Image', substruct('.','val', '{}',{realign_step}, '.','val', '{}',{1}, '.','val', '{}',{1}, '.','val', '{}',{1}), substruct('.','rmean'));
+        matlabbatch{normf_step}.spm.spatial.normalise.write.subj.resample(n_runs+1) = cfg_dep('Realign: Estimate & Reslice: Mean Image',...
+            substruct('.','val', '{}',{realign_step}, '.','val', '{}',{1}, '.','val', '{}',{1}, '.','val', '{}',{1}), substruct('.','rmean'));
         matlabbatch{normf_step}.spm.spatial.normalise.write.woptions.bb = [-78 -112 -70
             78 76 85];
         matlabbatch{normf_step}.spm.spatial.normalise.write.woptions.vox = [2 2 2];
@@ -245,8 +226,10 @@ if NS >= 1
         %% normalization anatomical scan
         preproc_step = 5;
         norma_step = nb_preprocessingSteps*(iS-1) + preproc_step;
-        matlabbatch{norma_step}.spm.spatial.normalise.write.subj.def(1) = cfg_dep('Segment: Forward Deformations', substruct('.','val', '{}',{segm_step}, '.','val', '{}',{1}, '.','val', '{}',{1}), substruct('.','fordef', '()',{':'}));
-        matlabbatch{norma_step}.spm.spatial.normalise.write.subj.resample(1) = cfg_dep('Segment: Bias Corrected (1)', substruct('.','val', '{}',{segm_step}, '.','val', '{}',{1}, '.','val', '{}',{1}), substruct('.','channel', '()',{1}, '.','biascorr', '()',{':'}));
+        matlabbatch{norma_step}.spm.spatial.normalise.write.subj.def(1) = cfg_dep('Segment: Forward Deformations',...
+            substruct('.','val', '{}',{segm_step}, '.','val', '{}',{1}, '.','val', '{}',{1}), substruct('.','fordef', '()',{':'}));
+        matlabbatch{norma_step}.spm.spatial.normalise.write.subj.resample(1) = cfg_dep('Segment: Bias Corrected (1)',...
+            substruct('.','val', '{}',{segm_step}, '.','val', '{}',{1}, '.','val', '{}',{1}), substruct('.','channel', '()',{1}, '.','biascorr', '()',{':'}));
         matlabbatch{norma_step}.spm.spatial.normalise.write.woptions.bb = [-78 -112 -70
             78 76 85];
         matlabbatch{norma_step}.spm.spatial.normalise.write.woptions.vox = [1 1 1];
@@ -255,7 +238,8 @@ if NS >= 1
         %% smoothing
         preproc_step = 6;
         smooth_step = nb_preprocessingSteps*(iS-1) + preproc_step;
-        matlabbatch{smooth_step}.spm.spatial.smooth.data(1) = cfg_dep('Normalise: Write: Normalised Images (Subj 1)', substruct('.','val', '{}',{normf_step}, '.','val', '{}',{1}, '.','val', '{}',{1}, '.','val', '{}',{1}), substruct('()',{1}, '.','files'));
+        matlabbatch{smooth_step}.spm.spatial.smooth.data(1) = cfg_dep('Normalise: Write: Normalised Images (Subj 1)',...
+            substruct('.','val', '{}',{normf_step}, '.','val', '{}',{1}, '.','val', '{}',{1}, '.','val', '{}',{1}), substruct('()',{1}, '.','files'));
         matlabbatch{smooth_step}.spm.spatial.smooth.fwhm = [smKernel smKernel smKernel];
         matlabbatch{smooth_step}.spm.spatial.smooth.dtype = 0;
         matlabbatch{smooth_step}.spm.spatial.smooth.im = 0;
@@ -265,16 +249,20 @@ if NS >= 1
     end
     
     % display spm batch before running it
-    % spm_jobman('interactive',matlabbatch);
+%     spm_jobman('interactive',matlabbatch);
     spm_jobman('run',matlabbatch);
     
     %% move files output from the last step
     for iS = 1:NS
         sub_nm = subject_id{iS};
-        sub_fullNm = ['CID',sub_nm];
+        switch study_nm
+            case {'study1','study2'}
+                sub_fullNm = ['CID',sub_nm];
+            case {'fMRI_pilots','study2_pilots'}
+                sub_fullNm = sub_nm;
+        end
         subj_scans_folder = [root, sub_fullNm, filesep,'fMRI_scans'];
-        cd(subj_scans_folder);
-        subj_scan_folders_names = ls('*run*'); % takes all functional runs folders
+        subj_scan_folders_names = ls([subj_scans_folder,'*run*']); % takes all functional runs folders
         % remove AP/PA top-up corrective runs when they were performed (only 2
         % first pilots)
         if strcmp(study_nm,'fMRI_pilots') && ismember(sub_nm,{'pilot_s1','pilot_s2'})
@@ -292,10 +280,10 @@ if NS >= 1
         end
         
         for iRun = 1:n_runs % loop through runs for 3 ratings, 3 choices 1D, 3 choices 2D runs
-            cd(subj_scan_folders_names(iRun,:)); % go to run folder
+            runPath = [subj_scan_folders_names(iRun,:),filesep]; % go to run folder
             preproc_newFolder_nm = ['preproc_sm_',num2str(smKernel),'mm'];
-            if ~exist(preproc_newFolder_nm,'dir')
-                mkdir(preproc_newFolder_nm);
+            if ~exist([runPath,preproc_newFolder_nm],'dir')
+                mkdir([runPath,preproc_newFolder_nm]);
             else
                 error(['preprocessing folder ',preproc_newFolder_nm,' already exists for subject ',sub_fullNm,' run ',num2str(iRun)]);
                 % note: something should be done above to avoid re-doing the
@@ -304,26 +292,29 @@ if NS >= 1
             
             if strcmp(study_nm,'fMRI_pilots')
                 if ismember(sub_nm,{'pilot_s1'})
-                    filenames = ls('*swrLGCM*.nii');
+                    filenames = ls([runPath,'*swrLGCM*.nii']);
                 elseif ismember(sub_nm,{'pilot_s2'})
-                    filenames = ls('*swrrun*.nii');
+                    filenames = ls([runPath,'*swrrun*.nii']);
                 elseif ismember(sub_nm,{'pilot_s3'})
-                    filenames = ls('*swrABNC*.img');
-                    filenames = [filenames; ls('*swrABNC*.hdr')];
+                    filenames = ls([runPath,'*swrABNC*.img']);
+                    filenames = [filenames; ls([runPath,'*swrABNC*.hdr'])];
                 else
-                    filenames = ls('*swrCID*.nii');
+                    filenames = ls([runPath,'*swrCID*.nii']);
+                end
+            elseif strcmp(study_nm,'study2_pilots')
+                if ismember(sub_nm,'fMRI_pilot1_AC')
+                    filenames = ls([runPath,'*swrAC*.nii']);
                 end
             else
-                filenames = ls('*swrCID*.nii');
+                filenames = ls([runPath,'*swrCID*.nii']);
                 %             error('please check the format (nii/img) and the start of the name of each run because it has to be stabilized now...');
             end
             
             % move files
             for iFile = 1:length(filenames)
-                movefile(filenames(iFile,:), preproc_newFolder_nm);
+                movefile([runPath,filenames(iFile,:)],...
+                    [runPath,preproc_newFolder_nm]);
             end
-            % go back to subject folder
-            cd(subj_scans_folder);
         end % run loop
     end % subject loop
     

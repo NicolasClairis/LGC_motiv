@@ -3,14 +3,15 @@
 % parameter sensitivities of the different behavioural models.
 
 %% define subjects
+study_nm = 'study1';
 condition = subject_condition();
-[subject_id, NS] = LGCM_subject_selection('study1',condition);
+[subject_id, NS] = LGCM_subject_selection(study_nm,condition);
 
 %% define GLM number
 fMRI_GLM = spm_input('fMRI GLM number',1,'e');
 
 %% define behavioural model to check
-[prm] = prm_extraction(subject_id);
+[prm] = prm_extraction(study_nm,subject_id);
 
 %% extract list of all potential parameters
 allPrm_names = fieldnames(prm);
@@ -50,6 +51,7 @@ con_nm = con_names{selectedContrast};
 %% test all potential correlations
 pSize = 30;
 lSize = 3;
+grey = [143 143 143]./255;
 for iPrm = 1:nPrm
     prm_nm = allPrm_names{iPrm};
     prm_tmp = prm.(prm_nm);
@@ -66,10 +68,19 @@ for iPrm = 1:nPrm
     fig;
     hold on;
     scatter(ROI_beta_values(goodSubs), prm_tmp(goodSubs),...
-        'LineWidth',3);
+        'LineWidth',3,'MarkerEdgeColor','k');
     plot(ROI_beta_values(goodSubs), fitted_prm_tmp,...
-        'LineStyle','--','LineWidth',lSize,'Color','k');
+        'LineStyle','--','LineWidth',lSize,'Color',grey);
     xlabel([ROI_BOLD_nm,' ',con_nm]);
     ylabel(prm_nm);
+%     % if you want to check the bad subject id
+%     for iS = 1:length(goodSubs)
+%         if goodSubs(iS) == 1
+%             sub_nm = subject_id{iS};
+%             text(ROI_beta_values(iS), prm_tmp(iS),...
+%                 sub_nm, 'HorizontalAlignment','center',...
+%                 'VerticalAlignment', 'top', 'FontSize', 18);
+%         end
+%     end
     legend_size(pSize);
 end % parameter loop

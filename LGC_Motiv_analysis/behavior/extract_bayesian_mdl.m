@@ -1,6 +1,6 @@
-function[NV_chosen, deltaNV_hE_min_lE, confidence, pChoice] = extract_bayesian_mdl(resultsFolder, subBehaviorFolder,...
+function[NV_chosen, deltaNV_hE_min_lE, confidence_highE, pChoice] = extract_bayesian_mdl(resultsFolder, subBehaviorFolder,...
     sub_nm, run_nm, task_fullName, mdl_nm)
-% [NV_chosen, deltaNV_hE_min_lE, confidence, pChoice] = extract_bayesian_mdl(resultsFolder, sub_nm, run_nm, mdl_nm)
+% [NV_chosen, deltaNV_hE_min_lE, confidence_highE, pChoice] = extract_bayesian_mdl(resultsFolder, sub_nm, run_nm, mdl_nm)
 % extract_bayesian_mdl will extract the different variables inferred thanks
 % to the bayesian modeling approach for the model and subjects and run
 % defined in the inputs.
@@ -26,8 +26,9 @@ function[NV_chosen, deltaNV_hE_min_lE, confidence, pChoice] = extract_bayesian_m
 % deltaNV_hE_min_lE: 1*nTrials vector with information about the net value of the 
 % high effort option - low effort option for the current study, subject and run.
 %
-% confidence: 1*nTrials vector with information about the confidence
-% inferred by the model for the current study, subject and run.
+% confidence_highE: 1*nTrials vector with information about the confidence
+% inferred by the model for the current study, subject and run. Confidence
+% is computed in reference of the high effort option as [p(high E)-0.5]²
 %
 % pChoice: 1*nTrials vector with information about the probability of
 % choosing the high effort option for the current study, subject and run.
@@ -73,7 +74,7 @@ NV_chosen(isnan(choice_highE)) = NaN;
 
 %% confidence
 pChoice = pChoiceStruct.(mdl_nm).(['CID',sub_nm]).(run_nm_bis);
-confidence = (pChoice - 0.5).^2;
+confidence_highE = (pChoice - 0.5).^2;
 % normalize confidence to make it between 0 and 1
-confidence = confidence./0.25;
+confidence_highE = confidence_highE./0.25;
 end % function

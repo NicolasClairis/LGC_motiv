@@ -26,9 +26,9 @@ function [ handle_signif ] = place_signif_curve( fig_hdl, x_signif, col, ypos_pe
 ylim_range = ylim;
 ylim_size = abs( ylim_range(2) - ylim_range(1) );
 
-%% define position on the y. axis
+%% define position on the y.axis
 if ~exist('ypos_perc','var') || isempty(ypos_perc) || isnan(ypos_perc)
-    ypos = 1/100*ylim_size;
+    ypos = (1/100)*ylim_size;
 else
     ypos = ypos_perc*ylim_size;
 end
@@ -36,7 +36,7 @@ y_index_signifClust = ylim_range(2) - ypos;
 y_axis_data = ones(length(x_signif),1).*y_index_signifClust;
 
 %% colour
-if ~exist('col','var') || isempty(col) || isnan(col)
+if ~exist('col','var') || isempty(col)
     col = 'k';
 end
 

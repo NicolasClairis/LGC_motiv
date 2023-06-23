@@ -247,21 +247,20 @@ for iS = 1:NS
             % find grey matter mask
             switch grey_mask
                 case 1 % grey mask per subject
-                    mask_file = ls([subj_anat_folder filesep 'bmwc1s*']); % modulated grey matter mask
-                    mask_file_path = [subj_anat_folder, mask_file];
-                case 2 % grey matter filter across subs
-                    %                     mask_file_path = [root, filesep, 'Second_level', filesep,...
-                    %                         'mean_anatomy', filesep,'mean_greyMatter_XX_subjects.nii'];
-                    error('not ready yet: you need to average the grey matter of your participants first');
-                case 3 % SPM template
-                    mask_file_path = [root, filesep, 'Second_level', filesep,...
-                        'mean_anatomy', filesep,'bgrey_10perc_SPM_template.nii'];
+                    error('individual grey matter not extracted yet');
+                case 2 % SPM template
+                    mask_file_path = [root, filesep, 'grey_matter_mask', filesep,...
+                        'bgrey_10perc_SPM_template.nii'];
+                    error('copy-paste SPM template file first and then remove this line');
+                case 3 %  grey matter filter across subs
+                    mask_file_path = [root, filesep, 'grey_matter_mask', filesep,...
+                        'bmean_greyM_',num2str(NS),'_subjects_',condition,'_50percentGreyM.nii'];
             end
             % load grey mask (or check if file missing)
             if exist(mask_file_path,'file')
                 matlabbatch{sub_idx}.spm.stats.fmri_spec.mask = {mask_file_path};
             else
-                error('problem: mean anatomy file not found for this number of subjects');
+                error('problem: mean anatomy file not found for this set of subjects');
             end
     end
     
