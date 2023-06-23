@@ -60,7 +60,7 @@ else
 end
 
 %% timings
-t_instru = 2;
+t_instru = 0.5;
 timings.cross.mainTask = 0.5;
 % precise if the choice and the performance periods will have a time
 % constraint
@@ -152,6 +152,7 @@ for iTask = 1:length(taskOrder)
         stim.pressWhenReady.x, stim.pressWhenReady.y, stim.pressWhenReady.colour);
     [~, onsets.(E_nm).finalTask_instructions] = Screen(window, 'Flip');
     WaitSecs(t_instru);
+    KbQueueWait(0,3);
 
     %% extract information regarding fixed reward and effort values
     % reward
