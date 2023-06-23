@@ -134,6 +134,9 @@ end
 for iTask = 1:length(taskOrder)
     task_nm = taskOrder{iTask};
     E_nm = ['E',task_nm];
+    %% initialize breakpoint
+    % (in case subject saturates will still be initialized)
+    breakPointValue.(E_nm) = NaN;
 
     %% introduction of the task
     switch task_nm
