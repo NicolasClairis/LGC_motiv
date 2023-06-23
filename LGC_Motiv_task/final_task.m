@@ -257,6 +257,7 @@ for iTask = 1:length(taskOrder)
         %% check if break point has been reached
         if R_chosen.(E_nm)(iTrial) == baselineR
             breakPointReached.(E_nm) = 1;
+            breakPointValue.(E_nm) = high_E_nRepeats.(E_nm)(iTrial);
         end
     end % trial loop
 end % task loop
@@ -268,7 +269,7 @@ save([subResultFolder, finalTask_fileName],...
     'confidence',...
     'onsets','dur','RT',...
     'R_chosen','E_chosen','E_chosen_repeats',...
-    'high_E_nRepeats');
+    'high_E_nRepeats','breakPointValue');
     
 %% end message
 DrawFormattedText(window,...
