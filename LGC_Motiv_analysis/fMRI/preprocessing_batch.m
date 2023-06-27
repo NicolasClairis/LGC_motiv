@@ -106,11 +106,11 @@ if NS >= 1
         if exist(subj_analysis_folder,'dir') ~= 7
             mkdir(subj_analysis_folder);
         end
-        newAnatFolder = [subFolder,'anatomical',filesep];
+        newAnatFolder = [subj_analysis_folder,'anatomical',filesep];
         if exist(newAnatFolder,'dir') ~= 7
             mkdir(newAnatFolder);
         end
-        fMRI_analysis_folder = [subFolder,'functional',filesep];
+        fMRI_analysis_folder = [subj_analysis_folder,'functional',filesep];
         if exist(fMRI_analysis_folder,'dir') ~= 7
             mkdir(fMRI_analysis_folder);
         end
