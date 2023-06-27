@@ -260,8 +260,9 @@ if NS >= 1
             n_runs = 4;
         end
         subFolder = [root, sub_fullNm, filesep];
-        newAnatFolder = [subFolder,'anatomical', filesep];
-        subj_scans_folder = [root, sub_fullNm, filesep,'fMRI_scans',filesep];
+        subj_analysis_folder = [subFolder,'fMRI_analysis',filesep];
+        newAnatFolder = [subj_analysis_folder,'anatomical', filesep];
+        subj_scans_folder = [subFolder,'fMRI_scans',filesep];
         subj_scan_folders_names = ls([subj_scans_folder,'*run*']); % takes all functional runs folders
         % remove AP/PA top-up corrective runs when they were performed (only 2
         % first pilots)
