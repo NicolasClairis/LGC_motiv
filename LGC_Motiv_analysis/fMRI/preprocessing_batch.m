@@ -56,8 +56,20 @@ end
 %% smoothing kernel
 smKernel = 8;
 
+%% decide whether you want to display the preprocessing script at the end 
+% or nor run it directly
+spm_launch_or_display = 'interactive'; % 'run' or 'interactive'
+
 %% remove from the list participants for which preprocessing was already made
-[subject_id, NS] = preproc_already_made(computerRoot, study_nm, subject_id, smKernel);
+switch spm_launch_or_display
+    case 'run'
+        [subject_id, NS] = preproc_already_made(computerRoot, study_nm, subject_id, smKernel);
+    otherwise
+        warning(['Careful spm_launch_or_display is set to "interactive" ',...
+            'and no filter has been done to remove subjects already ',...
+            'preprocessed, so be cautious before launching it, but feel free ',...
+            'to explore as much as you want.']);
+end
 
 if NS >= 1
     %% give path for anatomical template
@@ -254,8 +266,7 @@ if NS >= 1
         cd(root);
     end
     
-    % display spm batch before running it
-    spm_launch_or_display = 'interactive'; % 'run' or 'interactive'
+    % display spm batch before running it?
     spm_jobman(spm_launch_or_display,matlabbatch);
     
     %% move files output from the last step (if you launched the script)
