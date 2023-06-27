@@ -110,15 +110,15 @@ if NS >= 1
         % create working directories and copy anat. file inside
         % \fMRI_analysis\anatomical folder
         subj_analysis_folder = [subFolder,'fMRI_analysis',filesep];
-        if exist(subj_analysis_folder,'dir') ~= 7
+        if ~exist(subj_analysis_folder,'dir')
             mkdir(subj_analysis_folder);
         end
-        newAnatFolder = [subFolder,'anatomical',filesep];
-        if exist(newAnatFolder,'dir') ~= 7
+        newAnatFolder = [subj_analysis_folder,'anatomical',filesep];
+        if ~exist(newAnatFolder,'dir')
             mkdir(newAnatFolder);
         end
-        fMRI_analysis_folder = [subFolder,'functional',filesep];
-        if exist(fMRI_analysis_folder,'dir') ~= 7
+        fMRI_analysis_folder = [subj_analysis_folder,'functional',filesep];
+        if ~exist(fMRI_analysis_folder,'dir')
             mkdir(fMRI_analysis_folder);
         end
         subj_scans_folder = [root, sub_fullNm, filesep,'fMRI_scans', filesep];
@@ -342,8 +342,8 @@ if NS >= 1
         rfiles_to_normalise_to_MNI = [];
         for iRun = 1:n_runs % select re-aligned files for the current run
             runPath = [subj_scans_folder, subj_scan_folders_names(iRun,:)]; % extract run folder
-            [realign_run_files_tmp] = preproc_run_name_extraction(study_nm, sub_nm, runPath,'r');
-            rfiles_to_normalise_to_MNI = [rfiles_to_normalise_to_MNI; realign_run_files_tmp];
+            [realign_biasFieldCorr_run_files_tmp] = preproc_run_name_extraction(study_nm, sub_nm, runPath,'br');
+            rfiles_to_normalise_to_MNI = [rfiles_to_normalise_to_MNI; realign_biasFieldCorr_run_files_tmp];
         end % run loop
         rfiles_to_normalise_to_MNI = [rfiles_to_normalise_to_MNI; [run1Path,meanFile]];
         matlabbatch_finalPreproc{normf_step}.spm.spatial.normalise.write.subj.resample = rfiles_to_normalise_to_MNI;
@@ -392,7 +392,7 @@ if NS >= 1
     if strcmp(spm_launch_or_display,'run')
         biasFieldCorr = 1;
         move_preproc_files_to_saveFolder(root, study_nm,...
-            subject_id, NS, smKernel, biasFieldCorr)
+            subject_id, NS, smKernel, biasFieldCorr);
     end % move files
 else
     disp(['All subjects have already been preprocessed with smoothing ',...
