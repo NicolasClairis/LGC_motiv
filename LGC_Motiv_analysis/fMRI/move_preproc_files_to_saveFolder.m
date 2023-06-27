@@ -30,7 +30,7 @@ for iS = 1:NS
         case {'fMRI_pilots','study2_pilots'}
             sub_fullNm = sub_nm;
     end
-    subj_scans_folder = [root, sub_fullNm, filesep,'fMRI_scans'];
+    subj_scans_folder = [root, sub_fullNm, filesep,'fMRI_scans',filesep];
     subj_scan_folders_names = ls([subj_scans_folder,'*run*']); % takes all functional runs folders
     % remove AP/PA top-up corrective runs when they were performed (only 2
     % first pilots)
@@ -49,7 +49,8 @@ for iS = 1:NS
     end
     
     for iRun = 1:n_runs % loop through runs for 3 ratings, 3 choices 1D, 3 choices 2D runs
-        runPath = [subj_scan_folders_names(iRun,:),filesep]; % go to run folder
+        runPath = [subj_scans_folder,...
+            strrep(subj_scan_folders_names(iRun,:),' ',''),filesep]; % go to run folder
         switch biasFieldCorr
             case 0 % no bias-field correction
                 preproc_newFolder_nm = ['preproc_sm_',num2str(smKernel),'mm'];
