@@ -27,6 +27,9 @@ checking = 0;
 %% value of the smoothing during preprocessing?
 preproc_sm_kernel = 8;
 
+%% use bias-field corrected files or not?
+biasFieldCorr = 0;
+
 %% define study and list of subjects to include
 % define study
 if ~exist('study_nm','var')
@@ -70,7 +73,12 @@ GLM_str = num2str(GLM);
 GLMprm = which_GLM(GLM);
 
 %% create results folder
-mainPath = [studyRoot,filesep,'Second_level',filesep];
+switch biasFieldCorr
+    case 0
+        mainPath = [studyRoot,filesep,'Second_level',filesep];
+    case 1
+        mainPath = [studyRoot,filesep,'Second_level_with_BiasFieldCorrection',filesep];
+end
 switch condition
     case {'fMRI'}
         results_folder = [mainPath,...
@@ -208,8 +216,16 @@ for iCon = 1:n_con
         % if you need to redefine the list of subjects included in the
         % analysis
         checkGLM_and_subjectIncompatibility(study_nm, sub_nm, condition, GLMprm);
-        subject_main_folder = [studyRoot,filesep,'CID',sub_nm, filesep, 'fMRI_analysis' filesep,...
-            'functional' filesep, 'preproc_sm_',num2str(preproc_sm_kernel),'mm',filesep];
+        switch biasFieldCorr
+            case 0
+                subject_main_folder = [studyRoot,filesep,'CID',sub_nm, filesep,...
+                    'fMRI_analysis' filesep, 'functional' filesep,...
+                    'preproc_sm_',num2str(preproc_sm_kernel),'mm',filesep];
+            case 1
+                subject_main_folder = [studyRoot,filesep,'CID',sub_nm, filesep,...
+                    'fMRI_analysis' filesep, 'functional' filesep,...
+                    'preproc_sm_',num2str(preproc_sm_kernel),'mm_with_BiasFieldCorrection',filesep];
+        end
         subject_main_folder = fMRI_subFolder(subject_main_folder, GLM, condition);
         if isempty(subject_main_folder)
             error(['condition ',condition,' not planned yet. Please add it.']);

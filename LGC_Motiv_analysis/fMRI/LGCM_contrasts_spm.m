@@ -50,6 +50,9 @@ end
 %% preprocessing smoothing kernel to consider
 preproc_sm_kernel = 8;
 
+%% use bias-field corrected files or not?
+biasFieldCorr = 0;
+
 %% checking by default the batch before launching it
 if ~exist('checking','var') ||...
         isempty(checking) ||...
@@ -82,9 +85,16 @@ for iSubject = 1:NS
         computer_root, preproc_sm_kernel, condition);
     
     %% define results directory
-    mainPath = [fullfile(root,['CID',sub_nm],...
+    switch biasFieldCorr
+        case 0
+            mainPath = [fullfile(root,['CID',sub_nm],...
                 'fMRI_analysis','functional',...
                 ['preproc_sm_',num2str(preproc_sm_kernel),'mm']), filesep];
+        case 1
+            mainPath = [fullfile(root,['CID',sub_nm],...
+                'fMRI_analysis','functional',...
+                ['preproc_sm_',num2str(preproc_sm_kernel),'mm_with_BiasFieldCorrection']), filesep];
+    end
     [resultsFolderName] = fMRI_subFolder(mainPath, GLM, condition);
     matlabbatch{iSubject}.spm.stats.con.spmmat = {fullfile(resultsFolderName,'SPM.mat')};
     %% add each contrast to the list

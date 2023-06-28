@@ -46,7 +46,14 @@ spm('defaults','fmri');
 spm_jobman('initcfg');
 
 %% preprocessing to use
-preproc_folder = 'preproc_sm_8mm';
+biasFieldCorr = 1;
+
+switch biasFieldCorr
+    case 0
+        preproc_folder = 'preproc_sm_8mm';
+    case 1
+        preproc_folder = 'preproc_sm_8mm_with_BiasFieldCorrection';
+end
 if grey_mask == 0
     maskThresh = 0.8; % 0.8 by default
 end
@@ -61,10 +68,19 @@ for iSub = 1:NS
     
     batch_idx = batch_idx + 1;
     
-    if grey_mask == 0
-        run_foldername = ['GLM',num2str(GLM),'_SPMmask',num2str(maskThresh*100),'percent'];
-    elseif grey_mask == 1
-        run_foldername = ['GLM',num2str(GLM),'_individualGreyMask'];
+    switch biasFieldCorr
+        case 0
+            if grey_mask == 0
+                run_foldername = ['GLM',num2str(GLM),'_SPMmask',num2str(maskThresh*100),'percent'];
+            elseif grey_mask == 1
+                run_foldername = ['GLM',num2str(GLM),'_individualGreyMask'];
+            end
+        case 1
+            if grey_mask == 0
+                run_foldername = ['GLM',num2str(GLM),'_SPMmask',num2str(maskThresh*100),'percent_with_BiasFieldCorrection'];
+            elseif grey_mask == 1
+                run_foldername = ['GLM',num2str(GLM),'_individualGreyMask_with_BiasFieldCorrection'];
+            end
     end
     matlabbatch{batch_idx}.spm.stats.con.spmmat = {fullfile(root,sub_nm,'fMRI_analysis','functional',...
         preproc_folder,filesep,run_foldername,'SPM.mat')};

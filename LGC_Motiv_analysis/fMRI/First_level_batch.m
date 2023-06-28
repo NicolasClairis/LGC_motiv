@@ -65,6 +65,15 @@ grey_mask = GLMprm.gal.grey_mask;
 % value of the smoothing during preprocessing?
 preproc_sm_kernel = 8;
 
+% use bias-field corrected images or not?
+biasFieldCorr = 0;
+switch biasFieldCorr
+    case 0
+        prefix = 'swr';
+    case 1
+        prefix = 'swbr';
+end
+
 % repetition time for fMRI
 TR = 2.00;
 
@@ -108,8 +117,14 @@ for iS = 1:NS
     subj_behavior_folder    = [subj_folder, filesep, 'behavior' filesep];
     
     % create folder to store the results for the current subject
-    sm_folderName = [subj_analysis_folder 'functional', filesep,...
-        'preproc_sm_',num2str(preproc_sm_kernel),'mm',filesep];
+    switch biasFieldCorr
+        case 0
+            sm_folderName = [subj_analysis_folder 'functional', filesep,...
+                'preproc_sm_',num2str(preproc_sm_kernel),'mm',filesep];
+        case 1
+            sm_folderName = [subj_analysis_folder 'functional', filesep,...
+                'preproc_sm_',num2str(preproc_sm_kernel),'mm_with_BiasFieldCorrection',filesep];
+    end
     if ~exist(sm_folderName,'dir')
         mkdir(sm_folderName);
     end
@@ -167,11 +182,18 @@ for iS = 1:NS
         end
         
         % load scans in the GLM
-        cd([subj_scans_folder filesep subj_runFoldername_tmp, filesep,'preproc_sm_',num2str(preproc_sm_kernel),'mm',filesep]); % go to run folder
-        preprocessed_filenames = cellstr(spm_select('ExtFPList',pwd,'^swr.*\.nii$')); % extracts all the preprocessed swrf files (smoothed, normalized, realigned)
+        switch biasFieldCorr
+            case 0
+                runPath = [subj_scans_folder filesep subj_runFoldername_tmp, filesep,...
+                    'preproc_sm_',num2str(preproc_sm_kernel),'mm',filesep]; % grun folder
+            case 1
+                runPath = [subj_scans_folder filesep subj_runFoldername_tmp, filesep,...
+                    'preproc_sm_',num2str(preproc_sm_kernel),'mm_with_BiasFieldCorrection',filesep]; % run folder
+        end
+        preprocessed_filenames = cellstr(spm_select('ExtFPList',runPath,['^',prefix,'.*\.nii$'])); % extracts all the preprocessed swrf files (smoothed, normalized, realigned)
         % in case data is not in .nii but in .img & .hdr
         if isempty(preprocessed_filenames{1})
-            preprocessed_filenames = cellstr(spm_select('ExtFPList',pwd,'^swr.*\.img$')); % extracts all the preprocessed swrf files (smoothed, normalized, realigned)
+            preprocessed_filenames = cellstr(spm_select('ExtFPList',runPath,['^',prefix,'.*\.img$'])); % extracts all the preprocessed swrf files (smoothed, normalized, realigned)
         end
         % check if still empty => if yes, stop the script
         if isempty(preprocessed_filenames{1})
