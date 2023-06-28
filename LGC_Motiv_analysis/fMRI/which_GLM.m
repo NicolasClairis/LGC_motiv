@@ -3390,6 +3390,23 @@ switch GLM
             % feedback
             GLMprm.model_onset.(Epm_nm).fbk = 'stick';
         end % physical/mental loop
+        
+        %% GLM to check % signal change dmPFC during choice vs % high E
+    case 122 % like GLM 104 without any parametric regulator
+        % general parameters
+        GLMprm.gal.orth_vars = 0;
+        GLMprm.gal.zPerRun = 0;
+        % loop per task
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'stick';
+            % effort perf (effort execution)
+            GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
+            % feedback
+            GLMprm.model_onset.(Epm_nm).fbk = 'stick';
+        end % physical/mental loop
+        %%
 end % GLM number
 %% warnings: check compatibility of the GLM parameters entered
 isGLMokCheck(GLMprm);
