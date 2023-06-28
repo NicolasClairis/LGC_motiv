@@ -1,5 +1,5 @@
-function[choice_hE] = choice_hE_proportion(study_nm, condition, fig_disp)
-% [choice_hE] = choice_hE_proportion(study_nm, condition, fig_disp)
+function[choice_hE] = choice_hE_proportion(study_nm, condition, subject_id, fig_disp)
+% [choice_hE] = choice_hE_proportion(study_nm, condition, subject_id, fig_disp)
 % choice_hE_proportion will extract the proportion of effortful choices per
 %individual and per task (physical/mental) and also across the two tasks.
 %
@@ -7,6 +7,8 @@ function[choice_hE] = choice_hE_proportion(study_nm, condition, fig_disp)
 % study_nm: study name 'study1'/'study2'
 %
 % condition: condition to use for filtering subjects and runs
+%
+% subject_id: subject identification list
 %
 % fig_disp: figure display (1) or not (0)?
 %
@@ -22,7 +24,11 @@ end
 if ~exist('condition','var') || isempty(condition)
     condition = subject_condition();
 end
-[subject_id, NS] = LGCM_subject_selection(study_nm, condition, 'all');
+if ~exist('subject_id','var') || isempty(subject_id)
+    [subject_id, NS] = LGCM_subject_selection(study_nm, condition, 'all');
+else
+    NS = length(subject_id);
+end
 
 %% working directories
 which_pc = 'lab';
