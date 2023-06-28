@@ -48,20 +48,20 @@ if ~exist('study_nm','var') || isempty(study_nm)
     study_nm_idx = listdlg('ListString',study_nm_List);
     study_nm = study_nm_List{study_nm_idx};
 end
-% switch study_nm
-%     case 'fMRI_pilots' % pilots
-%         root = [fullfile(computerRoot,'fMRI_pilots'),filesep];
-%     case 'study1'
-%         root = [fullfile(computerRoot,'study1'),filesep];
-%     case 'study2'
-%         root = [fullfile(computerRoot,'study2'),filesep];
-%     case 'study2_pilots'
-%         root = [fullfile(computerRoot,'study2','pilots','fMRI_pilots'),filesep];
-% end
-root = [fullfile(computerRoot,'test'),filesep];
+switch study_nm
+    case 'fMRI_pilots' % pilots
+        root = [fullfile(computerRoot,'fMRI_pilots'),filesep];
+    case 'study1'
+        root = [fullfile(computerRoot,'study1'),filesep];
+    case 'study2'
+        root = [fullfile(computerRoot,'study2'),filesep];
+    case 'study2_pilots'
+        root = [fullfile(computerRoot,'study2','pilots','fMRI_pilots'),filesep];
+end
 
 if ~exist('sub_nm','var') || isempty(sub_nm)
-    subject_id = LGCM_subject_selection(study_nm);
+    condition = subject_condition;
+    subject_id = LGCM_subject_selection(study_nm, condition);
 else
     subject_id = {sub_nm};
 end

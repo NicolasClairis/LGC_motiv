@@ -48,7 +48,8 @@ switch study_nm
 end
 
 if ~exist('sub_nm','var') || isempty(sub_nm)
-    subject_id = LGCM_subject_selection(study_nm);
+    condition = subject_condition;
+    subject_id = LGCM_subject_selection(study_nm, condition);
 else
     subject_id = {sub_nm};
 end
