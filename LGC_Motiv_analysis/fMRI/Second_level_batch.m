@@ -28,7 +28,7 @@ checking = 0;
 preproc_sm_kernel = 8;
 
 %% use bias-field corrected files or not?
-biasFieldCorr = 0;
+biasFieldCorr = 1;
 
 %% define study and list of subjects to include
 % define study

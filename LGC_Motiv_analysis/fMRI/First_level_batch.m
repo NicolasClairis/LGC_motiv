@@ -66,7 +66,7 @@ grey_mask = GLMprm.gal.grey_mask;
 preproc_sm_kernel = 8;
 
 % use bias-field corrected images or not?
-biasFieldCorr = 0;
+biasFieldCorr = 1;
 switch biasFieldCorr
     case 0
         prefix = 'swr';
