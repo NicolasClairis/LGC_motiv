@@ -241,6 +241,7 @@ if NS >= 1
     disp(['Bias-field correction of ',num2str(NS),' subjects has been correctly performed.']);
     
     %% final part of preprocessing
+    matlabbatch_finalPreproc = cell(nb_preprocessingSteps_step3*NS,1);
     for iS = 1:NS
         sub_nm = subject_id{iS};
         switch study_nm
@@ -270,7 +271,6 @@ if NS >= 1
             [subj_scan_folders_names] = clear_topup_fromFileList(subj_scan_folders_names);
         end
         
-        matlabbatch_finalPreproc = cell(nb_preprocessingSteps_step3*NS,1);
         %% coregistration
         preproc_step = 1;
         coreg_step = nb_preprocessingSteps_step3*(iS-1) + preproc_step;
