@@ -184,10 +184,10 @@ matlabbatch{batch_idx}.spm.util.imcalc.options.dtype = 4;
 switch condition
     case 'fMRI_noSatRun_choiceSplit_Elvl_bis' % in this case, subject_id{1} does not include Em => need to adapt to include Em
         con_names = LGCM_contrasts(study_nm, subject_id{16}, GLM,...
-            computer_root, preproc_sm_kernel, condition);
+            computer_root, preproc_sm_kernel, condition, biasFieldCorr);
     otherwise
         con_names = LGCM_contrasts(study_nm, subject_id{1}, GLM,...
-            computer_root, preproc_sm_kernel, condition);
+            computer_root, preproc_sm_kernel, condition, biasFieldCorr);
 end
 n_con = length(con_names);
 

@@ -1,7 +1,7 @@
 function[con_names, con_vector] = LGCM_contrasts(study_nm, sub_nm, GLM,...
-    computer_root, preproc_sm_kernel, condition)
+    computer_root, preproc_sm_kernel, condition, biasFieldCorr)
 % [con_names, con_vector] = LGCM_contrasts(study_nm, sub_nm, GLM,...
-%   computer_root, preproc_sm_kernel, condition)
+%   computer_root, preproc_sm_kernel, condition, biasFieldCorr)
 % LGCM_contrasts will define the contrast names and contrast vector for the
 % subject and study entered in input.
 %
@@ -23,6 +23,9 @@ function[con_names, con_vector] = LGCM_contrasts(study_nm, sub_nm, GLM,...
 % 'fMRI': all subjects where fMRI ok
 % 'fMRI_no_move': remove runs with too much movement
 %
+% biasFieldCorr: binary variable indicating whether results are based on
+% bias-field corrected files (1) or not (0)
+%
 % OUTPUTS
 % con_names: list of contrast names
 %
@@ -41,8 +44,14 @@ switch study_nm
         root = fullfile(computer_root,'study2');
 end
 subj_folder             = [root, filesep, 'CID',sub_nm];
-subj_analysis_folder    = [subj_folder, filesep, 'fMRI_analysis' filesep,...
-    'functional',filesep,'preproc_sm_',num2str(preproc_sm_kernel),'mm',filesep];
+switch biasFieldCorr
+    case 0
+        subj_analysis_folder    = [subj_folder, filesep, 'fMRI_analysis' filesep,...
+            'functional',filesep,'preproc_sm_',num2str(preproc_sm_kernel),'mm',filesep];
+    case 1
+        subj_analysis_folder    = [subj_folder, filesep, 'fMRI_analysis' filesep,...
+            'functional',filesep,'preproc_sm_',num2str(preproc_sm_kernel),'mm_with_BiasFieldCorrection',filesep];
+end
 [resultsFolderName] = fMRI_subFolder(subj_analysis_folder, GLM, condition);
 
 %% extract GLM informations

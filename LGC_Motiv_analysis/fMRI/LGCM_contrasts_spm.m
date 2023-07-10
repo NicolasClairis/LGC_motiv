@@ -82,7 +82,7 @@ for iSubject = 1:NS
     
     %% extract contrasts list (vectors + corresponding names
     [con_names, con_vector] = LGCM_contrasts(study_nm, sub_nm, GLM,...
-        computer_root, preproc_sm_kernel, condition);
+        computer_root, preproc_sm_kernel, condition, biasFieldCorr);
     
     %% define results directory
     switch biasFieldCorr
