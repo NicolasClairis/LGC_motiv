@@ -2,12 +2,12 @@ function[con_vec_all,...
     con_avg, con_sem, con_sd,...
     con_names,...
     ROI_coords, ttest_ROI] = ROI_extraction_group(study_nm, GLM,...
-    subject_id, condition, fig_disp)
+    subject_id, condition, fig_disp, biasFieldCorr)
 % [con_vec_all,...
 %     con_avg, con_sem, con_sd,...
 %     con_names,...
 %     ROI_coords, ttest_ROI] = ROI_extraction_group(study_nm, GLM,...
-%     subject_id, condition, fig_disp)
+%     subject_id, condition, fig_disp, biasFieldCorr)
 % ROI_extraction_group will serve to extract the ROI data across all
 % participants for a given GLM number.
 %
@@ -26,6 +26,8 @@ function[con_vec_all,...
 % fig_disp:
 %(0) no display
 %(1) display figure
+%
+% biasFieldCorr: use bias-field corrected files or not?
 %
 % OUTPUTS
 % con_vec_all: contrast*participant*ROI matrix with all the data
@@ -57,7 +59,8 @@ switch computerRoot
     case 'E:\' % lab computer
         gitFolder = fullfile('C:','Users','clairis','Desktop','GitHub','LGC_motiv','Matlab_DIY_functions','ROI');
     case 'L:\human_data_private\raw_data_subject\' % home computer
-        gitFolder = fullfile('C:','Users','Loco','Documents','GitHub','LGC_motiv','Matlab_DIY_functions','ROI');
+        gitFolder = fullfile('C:','Users','Loco','Documents',...
+            'GitHub','LGC_motiv','Matlab_DIY_functions','ROI');
 end
 ROI_path = [dataRoot,filesep,'results',filesep,'ROI',filesep];
 
@@ -91,14 +94,20 @@ beta_or_t_value = 'beta_value';
 % preproc_sm_kernel  = spm_input('preprocessing smoothing kernel?',1,'r');
 preproc_sm_kernel = 8; % by default
 
+%% use bias-field corrected images or not?
+if ~exist('biasFieldCorr','var') || isempty(biasFieldCorr) ||...
+        ~ismember(biasFieldCorr,[0,1])
+    biasFieldCorr = 0;
+end
+
 %% prepare contrasts
 switch condition
     case 'fMRI_noSatRun_choiceSplit_Elvl_bis' % in this case, subject_id{1} does not include Em => need to adapt to include Em
         con_names = LGCM_contrasts(study_nm, subject_id{16}, GLM,...
-            computerRoot, preproc_sm_kernel, condition);
+            computerRoot, preproc_sm_kernel, condition, biasFieldCorr);
     otherwise
         con_names = LGCM_contrasts(study_nm, subject_id{1}, GLM,...
-            computerRoot, preproc_sm_kernel, condition);
+            computerRoot, preproc_sm_kernel, condition, biasFieldCorr);
 end
 n_max_con = length(con_names);
 
@@ -158,13 +167,20 @@ for iROI = 1:n_ROIs
     %% loop through subjects for each study
     for iS = 1:NS
         sub_nm = subject_id{iS};
-        subPath = fullfile(dataRoot,['CID',sub_nm],...
-            'fMRI_analysis','functional',...
-            ['preproc_sm_',num2str(preproc_sm_kernel),'mm']);
+        switch biasFieldCorr
+            case 0
+                subPath = fullfile(dataRoot,['CID',sub_nm],...
+                    'fMRI_analysis','functional',...
+                    ['preproc_sm_',num2str(preproc_sm_kernel),'mm']);
+            case 1
+                subPath = fullfile(dataRoot,['CID',sub_nm],...
+                    'fMRI_analysis','functional',...
+                    ['preproc_sm_',num2str(preproc_sm_kernel),'mm_with_BiasFieldCorrection']);
+        end
         [sub_fMRI_path] = fMRI_subFolder(subPath, GLM, condition);
         % extract contrasts for the current subject
         [con_names_currSub] = LGCM_contrasts(study_nm, sub_nm, GLM,...
-            computerRoot, preproc_sm_kernel, condition);
+            computerRoot, preproc_sm_kernel, condition, biasFieldCorr);
         
         % extract contrast for the current subject in the current ROI
         % for each contrast
@@ -209,8 +225,17 @@ for iROI = 1:n_ROIs
 end % ROI loop
 
 %% save all the data
-filename = [ROI_path,beta_or_t_value,...
-    '_GLM',GLMstr,'_',num2str(n_ROIs),'ROIs_',num2str(NS),'subs_',condition];
+switch biasFieldCorr
+    case 0
+        filename = [ROI_path,beta_or_t_value,...
+            '_GLM',GLMstr,'_',num2str(n_ROIs),'ROIs_',...
+            num2str(NS),'subs_',condition];
+    case 1
+        filename = [ROI_path,beta_or_t_value,...
+            '_GLM',GLMstr,'_',num2str(n_ROIs),'ROIs_',...
+            'biasFieldCorr_',...
+            num2str(NS),'subs_',condition];
+end
 if ~exist([filename,'.mat'],'file')
         save([filename,'.mat'])
     else
