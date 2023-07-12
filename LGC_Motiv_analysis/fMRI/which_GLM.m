@@ -16,10 +16,11 @@ function [GLMprm] = which_GLM(GLM)
 %       (2) temporal AND spatial derivative
 %
 %       .grey_mask:
-%       (0) include all voxels
+%       (0) no manual mask, only SPM implicit masking
 %       (1) grey-matter filter based on individual grey matter
 %       (2) use SPM template grey matter mask
 %       (3) grey-matter filter based on group average grey-matter
+%       (4) SPM implicit mask but with a lower threshold (0.5 instead of 0.8)
 %
 %       .orth_vars:
 %       (0) don't orthogonalize the regressors

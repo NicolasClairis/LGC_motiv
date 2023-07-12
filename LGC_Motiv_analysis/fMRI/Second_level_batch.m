@@ -233,7 +233,7 @@ for iCon = 1:n_con
         
         %% adapt contrast index since some conditions and contrasts are missing for some subjects
         con_names_perSub = LGCM_contrasts(study_nm, sub_nm, GLM,...
-            computer_root, preproc_sm_kernel, condition);
+            computer_root, preproc_sm_kernel, condition, biasFieldCorr);
         if sum(strcmp(current_con_nm, con_names_perSub)) > 0
             % extract index (for this subject) of the current contrast
             jCon = find(strcmp(current_con_nm, con_names_perSub));
