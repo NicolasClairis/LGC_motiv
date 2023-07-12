@@ -21,6 +21,7 @@ function [GLMprm] = which_GLM(GLM)
 %       (2) use SPM template grey matter mask
 %       (3) grey-matter filter based on group average grey-matter
 %       (4) SPM implicit mask but with a lower threshold (0.5 instead of 0.8)
+%       (5) SPM implicit mask but with a lower threshold (0.3 instead of 0.8)
 %
 %       .orth_vars:
 %       (0) don't orthogonalize the regressors
@@ -3414,6 +3415,31 @@ switch GLM
         GLMprm.gal.orth_vars = 0;
         GLMprm.gal.zPerRun = 0;
         GLMprm.gal.grey_mask = 4;
+        % loop per task
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'stick';
+            GLMprm.choice.(Epm_nm).RP.E.R_chosen = 2;
+            GLMprm.choice.(Epm_nm).RP.E.P_chosen = 2;
+            GLMprm.choice.(Epm_nm).RP.E.E_chosen = 1;
+            switch Epm_nm
+                case 'Ep'
+                    GLMprm.choice.(Epm_nm).RP.E.fatigue = 1;
+                case 'Em'
+                    GLMprm.choice.(Epm_nm).RP.E.prevEfficacy = 3;
+            end
+            % effort perf (effort execution)
+            GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
+            % feedback
+            GLMprm.model_onset.(Epm_nm).fbk = 'stick';
+        end % physical/mental loop
+        
+    case 124 % like GLM 104 and 123 but even more lenient SPM threshold at 1st level to include striatum
+        % general parameters
+        GLMprm.gal.orth_vars = 0;
+        GLMprm.gal.zPerRun = 0;
+        GLMprm.gal.grey_mask = 5;
         % loop per task
         for iEpm = 1:length(Epm)
             Epm_nm = Epm{iEpm};
