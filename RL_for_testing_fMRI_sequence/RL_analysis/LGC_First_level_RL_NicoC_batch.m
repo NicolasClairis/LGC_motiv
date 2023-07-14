@@ -58,10 +58,13 @@ switch biasFieldCorr
     case 1
         preproc_folder = 'preproc_sm_8mm_with_BiasFieldCorrection';
 end
-if grey_mask == 0
-    maskThresh = 0.8; % 0.8 by default
-else
-    maskThresh = -Inf;
+switch grey_mask
+    case 0
+        maskThresh = 0.8; % 0.8 by default
+    case 2
+        maskThresh = 0.1; % lower threshold
+    otherwise
+        maskThresh = -Inf;
 end
 learningRuns    = 3;
 nbRuns = learningRuns;
@@ -93,24 +96,26 @@ for iSub = 1:NS
     % create folder for storing data for this subject
     switch biasFieldCorr
         case 0
-            if grey_mask == 0
-                filename = [subj_analysis_folder 'functional', filesep,...
-                    preproc_folder,filesep,...
-                    'GLM',num2str(GLM),'_SPMmask',num2str(maskThresh*100),'percent'];
-            elseif grey_mask == 1
-                filename = [subj_analysis_folder 'functional', filesep,...
-                    preproc_folder,filesep,...
-                    'GLM',num2str(GLM),'_individualGreyMask'];
+            switch grey_mask
+                case {0,2}
+                    filename = [subj_analysis_folder 'functional', filesep,...
+                        preproc_folder,filesep,...
+                        'GLM',num2str(GLM),'_SPMmask',num2str(maskThresh*100),'percent'];
+                case 1
+                    filename = [subj_analysis_folder 'functional', filesep,...
+                        preproc_folder,filesep,...
+                        'GLM',num2str(GLM),'_individualGreyMask'];
             end
         case 1 % bias-field corrected files
-            if grey_mask == 0
-                filename = [subj_analysis_folder 'functional', filesep,...
-                    preproc_folder,filesep,...
-                    'GLM',num2str(GLM),'_SPMmask',num2str(maskThresh*100),'percent_with_BiasFieldCorrection'];
-            elseif grey_mask == 1
-                filename = [subj_analysis_folder 'functional', filesep,...
-                    preproc_folder,filesep,...
-                    'GLM',num2str(GLM),'_individualGreyMask_with_BiasFieldCorrection'];
+            switch grey_mask
+                case {0,2}
+                    filename = [subj_analysis_folder 'functional', filesep,...
+                        preproc_folder,filesep,...
+                        'GLM',num2str(GLM),'_SPMmask',num2str(maskThresh*100),'percent_with_BiasFieldCorrection'];
+                case 1
+                    filename = [subj_analysis_folder 'functional', filesep,...
+                        preproc_folder,filesep,...
+                        'GLM',num2str(GLM),'_individualGreyMask_with_BiasFieldCorrection'];
             end
     end
     mkdir(filename);
@@ -171,13 +176,14 @@ for iSub = 1:NS
     matlabbatch{sub_idx}.spm.stats.fmri_spec.global = 'None';
     % no grey mask
     matlabbatch{sub_idx}.spm.stats.fmri_spec.mthresh = maskThresh; % default value
-    if grey_mask == 0
-        matlabbatch{sub_idx}.spm.stats.fmri_spec.mask = {''};
-    elseif grey_mask == 1
-        % find grey matter mask
-        mask = ls([subj_anat_folder,'bmwc1*']); % modulated grey matter mask
-        mask = [subj_anat_folder,mask];
-        matlabbatch{sub_idx}.spm.stats.fmri_spec.mask = {mask};
+    switch grey_mask
+        case {0,2}
+            matlabbatch{sub_idx}.spm.stats.fmri_spec.mask = {''};
+        case 1
+            % find grey matter mask
+            mask = ls([subj_anat_folder,'bmwc1*']); % modulated grey matter mask
+            mask = [subj_anat_folder,mask];
+            matlabbatch{sub_idx}.spm.stats.fmri_spec.mask = {mask};
     end
     matlabbatch{sub_idx}.spm.stats.fmri_spec.cvi = 'AR(1)';
     

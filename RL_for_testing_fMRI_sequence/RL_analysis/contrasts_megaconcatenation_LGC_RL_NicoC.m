@@ -54,8 +54,11 @@ switch biasFieldCorr
     case 1
         preproc_folder = 'preproc_sm_8mm_with_BiasFieldCorrection';
 end
-if grey_mask == 0
-    maskThresh = 0.8; % 0.8 by default
+switch grey_mask
+    case 0
+        maskThresh = 0.8; % 0.8 by default
+    case 2
+        maskThresh = 0.1; % lower
 end
 
 %% loop through subjects to extract all the regressors
@@ -70,16 +73,18 @@ for iSub = 1:NS
     
     switch biasFieldCorr
         case 0
-            if grey_mask == 0
-                run_foldername = ['GLM',num2str(GLM),'_SPMmask',num2str(maskThresh*100),'percent'];
-            elseif grey_mask == 1
-                run_foldername = ['GLM',num2str(GLM),'_individualGreyMask'];
+            switch grey_mask
+                case {0,2}
+                    run_foldername = ['GLM',num2str(GLM),'_SPMmask',num2str(maskThresh*100),'percent'];
+                case 1
+                    run_foldername = ['GLM',num2str(GLM),'_individualGreyMask'];
             end
         case 1
-            if grey_mask == 0
-                run_foldername = ['GLM',num2str(GLM),'_SPMmask',num2str(maskThresh*100),'percent_with_BiasFieldCorrection'];
-            elseif grey_mask == 1
-                run_foldername = ['GLM',num2str(GLM),'_individualGreyMask_with_BiasFieldCorrection'];
+            switch grey_mask
+                case {0,2}
+                    run_foldername = ['GLM',num2str(GLM),'_SPMmask',num2str(maskThresh*100),'percent_with_BiasFieldCorrection'];
+                case 1
+                    run_foldername = ['GLM',num2str(GLM),'_individualGreyMask_with_BiasFieldCorrection'];
             end
     end
     matlabbatch{batch_idx}.spm.stats.con.spmmat = {fullfile(root,sub_nm,'fMRI_analysis','functional',...
