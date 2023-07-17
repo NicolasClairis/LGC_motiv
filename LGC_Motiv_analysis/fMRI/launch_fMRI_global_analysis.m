@@ -1,6 +1,7 @@
 
 %% define main parameters
-GLM = inputdlg('GLM number?');
+GLM_str = inputdlg('GLM number?');
+GLM = str2double(GLM_str); % convert from cell to numeric
 checking = 0;
 condition = subject_condition;
 study_nm = 'study1';
