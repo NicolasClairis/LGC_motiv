@@ -19,10 +19,11 @@ function [GLMprm] = which_GLM(GLM)
 %       (0) no manual mask, only SPM implicit masking
 %       (1) grey-matter filter based on individual grey matter
 %       (2) use SPM template grey matter mask
-%       (3) grey-matter filter based on group average grey-matter
+%       (3) grey-matter filter based on group average
 %       (4) SPM implicit mask but with a lower threshold (0.5 instead of 0.8)
 %       (5) SPM implicit mask but with a lower threshold (0.3 instead of 0.8)
 %       (6) SPM implicit mask but with a lower threshold (0.1 instead of 0.8)
+%       (7) grey + white matter filter based on group average
 %
 %       .orth_vars:
 %       (0) don't orthogonalize the regressors
