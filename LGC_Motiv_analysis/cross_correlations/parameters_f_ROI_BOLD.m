@@ -59,7 +59,8 @@ for iPrm = 1:nPrm
     [betas_tmp, ~, stats_tmp] = glmfit(ROI_beta_values(goodSubs), prm_tmp(goodSubs), 'normal');
     betas.(prm_nm) = betas_tmp;
     pval.(prm_nm) = stats_tmp.p;
-    fitted_prm_tmp = glmval(betas_tmp, ROI_beta_values(goodSubs), 'identity');
+    ROI_b_ascOrder = sort(ROI_beta_values(goodSubs));
+    fitted_prm_tmp = glmval(betas_tmp, ROI_b_ascOrder, 'identity');
     
     disp([prm_nm,'=f(',ROI_BOLD_nm,' ',con_names{selectedContrast},') ;',...
         'p = ',num2str(stats_tmp.p(2))]);
@@ -69,7 +70,7 @@ for iPrm = 1:nPrm
     hold on;
     scatter(ROI_beta_values(goodSubs), prm_tmp(goodSubs),...
         'LineWidth',3,'MarkerEdgeColor','k');
-    plot(ROI_beta_values(goodSubs), fitted_prm_tmp,...
+    plot(ROI_b_ascOrder, fitted_prm_tmp,...
         'LineStyle','--','LineWidth',lSize,'Color',grey);
     xlabel([ROI_BOLD_nm,' ',con_nm]);
     ylabel(prm_nm);
