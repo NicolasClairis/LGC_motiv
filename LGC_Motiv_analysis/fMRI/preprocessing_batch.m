@@ -265,7 +265,7 @@ if NS >= 1
         matlabbatch{smooth_step}.spm.spatial.smooth.prefix = 's';
         
         cd(root);
-    end
+    end % subject loop
     
     % display spm batch before running it?
     spm_jobman(spm_launch_or_display,matlabbatch);
