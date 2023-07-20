@@ -286,7 +286,7 @@ for iS = 1:NS
                         'bmean_greyM_',num2str(NS),'_subjects_',condition,'_',maskProbaThreshold_nm,'percentGreyM.nii'];
                 case 7 % grey + white matter filter across subs
                     mask_file_path = [root, filesep, 'greyAndWhite_matter_mask', filesep,...
-                        'bmean_greyAndWhiteM_',num2str(NS),'_subjects_',condition,'_',maskProbaThreshold_nm,'percentGreyM.nii'];
+                        'bmean_greyAndWhiteM_',num2str(NS),'_subjects_',condition,'_',maskProbaThreshold_nm,'percentM.nii'];
             end
             % load grey mask (or check if file missing)
             if exist(mask_file_path,'file')
