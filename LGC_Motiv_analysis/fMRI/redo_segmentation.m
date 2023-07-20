@@ -37,6 +37,7 @@ if ~exist('sub_nm','var') || isempty(sub_nm)
 else
     subject_id = {sub_nm};
 end
+NS = length(subject_id);
 
 %% smoothing kernel
 smKernel = 8;
@@ -50,19 +51,8 @@ if NS >= 1
     spmTemplatePath = fullfile(spmFolderPath,'spm12','spm12','tpm','TPM.nii');
     
     
-    %% define number of preprocessing steps
-    nb_preprocessingSteps = 6;
-    % nb of preprocessing steps per subject:
-    % 1)realign-reslice
-    % 2)coregistration functional - anatomical
-    % 3) segmentation
-    % 4) normalization functional
-    % 5) normalization anatomical
-    % 6) smoothing functional
-    
-    
     %% initialize batch
-    matlabbatch = cell(nb_preprocessingSteps*NS,1);
+    matlabbatch = cell(NS,1);
     
     for iS = 1:NS % loop through subjects
         disp(['loading batch for preprocessing subject ',num2str(iS),'/',num2str(NS)]);
@@ -105,43 +95,41 @@ if NS >= 1
             anat_file = ls([newAnatFolder,'CID*.nii']);
         end
         %% segmentation
-        preproc_step = 1;
-        segm_step = nb_preprocessingSteps*(iS-1) + preproc_step;
-        matlabbatch{segm_step}.spm.spatial.preproc.channel.vols = {[newAnatFolder,anat_file]};
-        matlabbatch{segm_step}.spm.spatial.preproc.channel.biasreg = 0.001;
-        matlabbatch{segm_step}.spm.spatial.preproc.channel.biasfwhm = 60;
-        matlabbatch{segm_step}.spm.spatial.preproc.channel.write = [1 1];
-        matlabbatch{segm_step}.spm.spatial.preproc.tissue(1).tpm = {[spmTemplatePath,',1']};
-        matlabbatch{segm_step}.spm.spatial.preproc.tissue(1).ngaus = 1;
-        matlabbatch{segm_step}.spm.spatial.preproc.tissue(1).native = [1 0];
-        matlabbatch{segm_step}.spm.spatial.preproc.tissue(1).warped = [1 1]; % normalise grey matter and record modulated and unmodulated warped tissue
-        matlabbatch{segm_step}.spm.spatial.preproc.tissue(2).tpm = {[spmTemplatePath,',2']};
-        matlabbatch{segm_step}.spm.spatial.preproc.tissue(2).ngaus = 1;
-        matlabbatch{segm_step}.spm.spatial.preproc.tissue(2).native = [1 0];
-        matlabbatch{segm_step}.spm.spatial.preproc.tissue(2).warped = [1 1]; % normalise white matter and record modulated and unmodulated warped tissue
-        matlabbatch{segm_step}.spm.spatial.preproc.tissue(3).tpm = {[spmTemplatePath,',3']};
-        matlabbatch{segm_step}.spm.spatial.preproc.tissue(3).ngaus = 2;
-        matlabbatch{segm_step}.spm.spatial.preproc.tissue(3).native = [1 0];
-        matlabbatch{segm_step}.spm.spatial.preproc.tissue(3).warped = [0 0];
-        matlabbatch{segm_step}.spm.spatial.preproc.tissue(4).tpm = {[spmTemplatePath,',4']};
-        matlabbatch{segm_step}.spm.spatial.preproc.tissue(4).ngaus = 3;
-        matlabbatch{segm_step}.spm.spatial.preproc.tissue(4).native = [1 0];
-        matlabbatch{segm_step}.spm.spatial.preproc.tissue(4).warped = [0 0];
-        matlabbatch{segm_step}.spm.spatial.preproc.tissue(5).tpm = {[spmTemplatePath,',5']};
-        matlabbatch{segm_step}.spm.spatial.preproc.tissue(5).ngaus = 4;
-        matlabbatch{segm_step}.spm.spatial.preproc.tissue(5).native = [1 0];
-        matlabbatch{segm_step}.spm.spatial.preproc.tissue(5).warped = [0 0];
-        matlabbatch{segm_step}.spm.spatial.preproc.tissue(6).tpm = {[spmTemplatePath,',6']};
-        matlabbatch{segm_step}.spm.spatial.preproc.tissue(6).ngaus = 2;
-        matlabbatch{segm_step}.spm.spatial.preproc.tissue(6).native = [0 0];
-        matlabbatch{segm_step}.spm.spatial.preproc.tissue(6).warped = [0 0];
-        matlabbatch{segm_step}.spm.spatial.preproc.warp.mrf = 1;
-        matlabbatch{segm_step}.spm.spatial.preproc.warp.cleanup = 1;
-        matlabbatch{segm_step}.spm.spatial.preproc.warp.reg = [0 0.001 0.5 0.05 0.2];
-        matlabbatch{segm_step}.spm.spatial.preproc.warp.affreg = 'mni';
-        matlabbatch{segm_step}.spm.spatial.preproc.warp.fwhm = 0;
-        matlabbatch{segm_step}.spm.spatial.preproc.warp.samp = 3;
-        matlabbatch{segm_step}.spm.spatial.preproc.warp.write = [1 1];
+        matlabbatch{iS}.spm.spatial.preproc.channel.vols = {[newAnatFolder,anat_file]};
+        matlabbatch{iS}.spm.spatial.preproc.channel.biasreg = 0.001;
+        matlabbatch{iS}.spm.spatial.preproc.channel.biasfwhm = 60;
+        matlabbatch{iS}.spm.spatial.preproc.channel.write = [1 1];
+        matlabbatch{iS}.spm.spatial.preproc.tissue(1).tpm = {[spmTemplatePath,',1']};
+        matlabbatch{iS}.spm.spatial.preproc.tissue(1).ngaus = 1;
+        matlabbatch{iS}.spm.spatial.preproc.tissue(1).native = [1 0];
+        matlabbatch{iS}.spm.spatial.preproc.tissue(1).warped = [1 1]; % normalise grey matter and record modulated and unmodulated warped tissue
+        matlabbatch{iS}.spm.spatial.preproc.tissue(2).tpm = {[spmTemplatePath,',2']};
+        matlabbatch{iS}.spm.spatial.preproc.tissue(2).ngaus = 1;
+        matlabbatch{iS}.spm.spatial.preproc.tissue(2).native = [1 0];
+        matlabbatch{iS}.spm.spatial.preproc.tissue(2).warped = [1 1]; % normalise white matter and record modulated and unmodulated warped tissue
+        matlabbatch{iS}.spm.spatial.preproc.tissue(3).tpm = {[spmTemplatePath,',3']};
+        matlabbatch{iS}.spm.spatial.preproc.tissue(3).ngaus = 2;
+        matlabbatch{iS}.spm.spatial.preproc.tissue(3).native = [1 0];
+        matlabbatch{iS}.spm.spatial.preproc.tissue(3).warped = [0 0];
+        matlabbatch{iS}.spm.spatial.preproc.tissue(4).tpm = {[spmTemplatePath,',4']};
+        matlabbatch{iS}.spm.spatial.preproc.tissue(4).ngaus = 3;
+        matlabbatch{iS}.spm.spatial.preproc.tissue(4).native = [1 0];
+        matlabbatch{iS}.spm.spatial.preproc.tissue(4).warped = [0 0];
+        matlabbatch{iS}.spm.spatial.preproc.tissue(5).tpm = {[spmTemplatePath,',5']};
+        matlabbatch{iS}.spm.spatial.preproc.tissue(5).ngaus = 4;
+        matlabbatch{iS}.spm.spatial.preproc.tissue(5).native = [1 0];
+        matlabbatch{iS}.spm.spatial.preproc.tissue(5).warped = [0 0];
+        matlabbatch{iS}.spm.spatial.preproc.tissue(6).tpm = {[spmTemplatePath,',6']};
+        matlabbatch{iS}.spm.spatial.preproc.tissue(6).ngaus = 2;
+        matlabbatch{iS}.spm.spatial.preproc.tissue(6).native = [0 0];
+        matlabbatch{iS}.spm.spatial.preproc.tissue(6).warped = [0 0];
+        matlabbatch{iS}.spm.spatial.preproc.warp.mrf = 1;
+        matlabbatch{iS}.spm.spatial.preproc.warp.cleanup = 1;
+        matlabbatch{iS}.spm.spatial.preproc.warp.reg = [0 0.001 0.5 0.05 0.2];
+        matlabbatch{iS}.spm.spatial.preproc.warp.affreg = 'mni';
+        matlabbatch{iS}.spm.spatial.preproc.warp.fwhm = 0;
+        matlabbatch{iS}.spm.spatial.preproc.warp.samp = 3;
+        matlabbatch{iS}.spm.spatial.preproc.warp.write = [1 1];
         
         cd(root);
     end

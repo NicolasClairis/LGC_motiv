@@ -51,7 +51,7 @@ end
 preproc_sm_kernel = 8;
 
 %% use bias-field corrected files or not?
-biasFieldCorr = 1;
+biasFieldCorr = 0;
 
 %% checking by default the batch before launching it
 if ~exist('checking','var') ||...

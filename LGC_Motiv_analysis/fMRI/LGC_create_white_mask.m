@@ -1,6 +1,6 @@
-function[]=LGC_create_grey_mask(study_nm, condition)
-% []=LGC_create_grey_mask(study_nm, condition)
-% LGC_create_grey_mask will create a grey mask for study defined in
+function[]=LGC_create_white_mask(study_nm, condition)
+% []=LGC_create_white_mask(study_nm, condition)
+% LGC_create_white_mask will create a white mask for study defined in
 % study_nm and subjects based on the condition entered. If those
 % parameters are not defined, they will be asked.
 %
@@ -30,7 +30,7 @@ if ~exist('condition','var') || isempty(condition)
     condition = subject_condition;
 end
 rootPath = [fullfile('E:',study_nm),filesep];
-outDir = fullfile(rootPath,'grey_matter_mask');
+outDir = fullfile(rootPath,'white_matter_mask');
 if ~exist(outDir,'dir')
     mkdir(outDir);
 end
@@ -43,13 +43,13 @@ anatFiles = cell(NS,1);
 for iS = 1:NS
     sub_nm = ['CID',subject_id{iS}];
     subFolder = fullfile(rootPath, sub_nm, 'fMRI_analysis','anatomical');
-    anatFile_tmp = ls([subFolder,filesep,'mwc1*.nii']);
+    anatFile_tmp = ls([subFolder,filesep,'mwc2*.nii']);
     anatFiles(iS,:) = {[subFolder,filesep,anatFile_tmp]};
 end % subject loop
 mean_filename = ['mean_greyM_proba_',num2str(NS),'_subjects_',condition];
-binary_filename = ['bmean_greyM_',...
+binary_filename = ['bmean_whiteM_',...
     num2str(NS),'_subjects_',condition,...
-    '_',num2str(proba_threshold*100),'percentGreyM'];
+    '_',num2str(proba_threshold*100),'percentWhiteM'];
 
 %% average all anatomical files together
 batch_avg = 1;
@@ -64,7 +64,8 @@ matlabbatch{batch_avg}.spm.util.imcalc.options.interp   = 1;
 matlabbatch{batch_avg}.spm.util.imcalc.options.dtype    = 4;
 %% binarize resulting grey mask
 batch_binarize = 2;
-matlabbatch{batch_binarize}.spm.util.imcalc.input(1) = cfg_dep('Image Calculator: ImCalc Computed Image: output', substruct('.','val', '{}',{batch_avg}, '.','val', '{}',{1}, '.','val', '{}',{1}), substruct('.','files'));
+matlabbatch{batch_binarize}.spm.util.imcalc.input(1) = cfg_dep('Image Calculator: ImCalc Computed Image: output',...
+    substruct('.','val', '{}',{batch_avg}, '.','val', '{}',{1}, '.','val', '{}',{1}), substruct('.','files'));
 matlabbatch{batch_binarize}.spm.util.imcalc.output           = binary_filename;
 matlabbatch{batch_binarize}.spm.util.imcalc.outdir           = {outDir};
 matlabbatch{batch_binarize}.spm.util.imcalc.expression       = ['i1>',num2str(proba_threshold)]; % keep only voxels with probability of being in the grey matter higher than proba threshold%

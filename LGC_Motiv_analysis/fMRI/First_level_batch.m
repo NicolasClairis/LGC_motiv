@@ -66,7 +66,7 @@ grey_mask = GLMprm.gal.grey_mask;
 preproc_sm_kernel = 8;
 
 % use bias-field corrected images or not?
-biasFieldCorr = 1;
+biasFieldCorr = 0;
 switch biasFieldCorr
     case 0
         prefix = 'swr';
@@ -262,7 +262,7 @@ for iS = 1:NS
             matlabbatch{sub_idx}.spm.stats.fmri_spec.mthresh = 0.3; % try lower value to include ventral striatum
         case 6 % filter with threshold here if no mask entered
             matlabbatch{sub_idx}.spm.stats.fmri_spec.mthresh = 0.1; % try lower value to include ventral striatum
-        case {1,2,3} % no filter here since the mask will do the job
+        case {1,2,3,7} % no filter here since the mask will do the job
             matlabbatch{sub_idx}.spm.stats.fmri_spec.mthresh = -Inf; % implicitly masks the first level depending on the probability that the voxel is "relevant"
     end
     
@@ -271,7 +271,8 @@ for iS = 1:NS
     switch grey_mask
         case {0,4,5,6}
             matlabbatch{sub_idx}.spm.stats.fmri_spec.mask = {''};
-        case {1,2,3}
+        case {1,2,3,7}
+            maskProbaThreshold_nm = num2str(GLMprm.gal.mask_probaThreshold);
             % find grey matter mask
             switch grey_mask
                 case 1 % grey mask per subject
@@ -282,7 +283,10 @@ for iS = 1:NS
                     error('copy-paste SPM template file first and then remove this line');
                 case 3 %  grey matter filter across subs
                     mask_file_path = [root, filesep, 'grey_matter_mask', filesep,...
-                        'bmean_greyM_',num2str(NS),'_subjects_',condition,'_50percentGreyM.nii'];
+                        'bmean_greyM_',num2str(NS),'_subjects_',condition,'_',maskProbaThreshold_nm,'percentGreyM.nii'];
+                case 7 % grey + white matter filter across subs
+                    mask_file_path = [root, filesep, 'greyAndWhite_matter_mask', filesep,...
+                        'bmean_greyAndWhiteM_',num2str(NS),'_subjects_',condition,'_',maskProbaThreshold_nm,'percentGreyM.nii'];
             end
             % load grey mask (or check if file missing)
             if exist(mask_file_path,'file')
