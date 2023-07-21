@@ -1,6 +1,6 @@
 % This script will allow to test whether the BOLD activity in reaction to a
 % given contrast of interest in a given GLM actually correlates with the
-% parameter sensitivities of the different behavioural models.
+% proportion of effortful choices.
 
 %% define subjects
 study_nm = 'study1';
