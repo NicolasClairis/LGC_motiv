@@ -40,7 +40,7 @@ for iS = 1:NS
     sub_nm = subject_id{iS};
     
     % extract runs
-    [runs, n_runs] = runs_definition(study_nm, sub_nm, condition);
+    [runsStruct, n_runs] = runs_definition(study_nm, sub_nm, condition);
     okRuns = runsStruct.runsToKeep;
     taskNames = runsStruct.tasks;
     %% loop through runs
@@ -61,8 +61,6 @@ for iS = 1:NS
                 taskRun_idx = 2;
         end
         run_nm_bis = ['run',num2str(taskRun_idx)];
-        runTrials_idx = (1:nTrialsPerRun) + nTrialsPerRun*(taskRun_idx-1);
-        runTrials_EpEmPool_idx = (1:nTrialsPerRun) + nTrialsPerRun*(kRun-1);
         
         %% extract choices for the current session
         choice_hE_allTrials_tmp = extract_choice_hE(subBehaviorFolder, sub_nm, run_nm, task_fullName);
@@ -80,8 +78,8 @@ for iS = 1:NS
                 jBox = jBox + 1;
                 PE_trials_idx = (E_level_tmp == iE).*(P_level_tmp == iP) == 1;
                 ROI_avg_perSubperRun.(task_nm_tmp)(iP, iE, iS, kRun) = fMRI_allTrials_tmp(PE_trials_idx);
-                choice_avg_perSubperRun.(task_nm_tmp)(iP, iE, iS, kRun) = fMRI_allTrials_tmp(PE_trials_idx);
-                RT_avg_perSubperRun.(task_nm_tmp)(iP, iE, iS, kRun) = fMRI_allTrials_tmp(PE_trials_idx);
+                choice_avg_perSubperRun.(task_nm_tmp)(iP, iE, iS, kRun) = choice_hE_allTrials_tmp(PE_trials_idx);
+                RT_avg_perSubperRun.(task_nm_tmp)(iP, iE, iS, kRun) = RT_allTrials_tmp(PE_trials_idx);
             end % punishment
             
             for iR = 1:n_R
@@ -89,8 +87,8 @@ for iS = 1:NS
                 jBox = jBox + 1;
                 RE_trials_idx = (E_level_tmp == iE).*(R_level_tmp == iR) == 1;
                 ROI_avg_perSubperRun.(task_nm_tmp)(jR, iE, iS, kRun) = fMRI_allTrials_tmp(RE_trials_idx);
-                choice_avg_perSubperRun.(task_nm_tmp)(jR, iE, iS, kRun) = fMRI_allTrials_tmp(RE_trials_idx);
-                RT_avg_perSubperRun.(task_nm_tmp)(jR, iE, iS, kRun) = fMRI_allTrials_tmp(RE_trials_idx);
+                choice_avg_perSubperRun.(task_nm_tmp)(jR, iE, iS, kRun) = choice_hE_allTrials_tmp(RE_trials_idx);
+                RT_avg_perSubperRun.(task_nm_tmp)(jR, iE, iS, kRun) = RT_allTrials_tmp(RE_trials_idx);
             end % reward
         end % effort level
     end % run loop
@@ -134,7 +132,7 @@ for iTask = 1:nTasks
     % choices
     subplot(nTasks, nPlotsPerLine, 2 + nPlotsPerLine*(iTask - 1));
     title('Choice (%)');
-    choice_hdl = imagesc(choice_avg_perSub.(task_nm), choice_range);
+    choice_hdl = imagesc(choice_avg.(task_nm), choice_range);
     xticks(1:n_E);
     xticklabels({'E1','E2','E3'});
     yticks(1:n_inc)
@@ -145,7 +143,7 @@ for iTask = 1:nTasks
     % RT
     subplot(nTasks, nPlotsPerLine, 3 + nPlotsPerLine*(iTask - 1));
     title('RT (s)');
-    RT_hdl = imagesc(RT_avg_perSub.(task_nm));
+    RT_hdl = imagesc(RT_avg.(task_nm));
     xticks(1:n_E);
     xticklabels({'E1','E2','E3'});
     yticks(1:n_inc)
