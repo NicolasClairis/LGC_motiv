@@ -1,6 +1,6 @@
-function[betas, pval] = choices_f_VS_and_dmPFC()
-% [betas, pval] = choices_f_VS_and_dmPFC()
-% choices_f_VS_and_dmPFC will test whether the selection of a high effort
+function[betas, pval] = choice_f_VS_and_dmPFC()
+% [betas, pval] = choice_f_VS_and_dmPFC()
+% choice_f_VS_and_dmPFC will test whether the selection of a high effort
 % choice can be determined by the level of activity of the ventral striatum
 % (VS) and of the dorsomedial prefrontal cortex (dmPFC)
 %
@@ -170,9 +170,6 @@ for iS = 1:NS
         betas.sigmo_mdl.(task_nm_tmp).b0(iS) = betas_tmp(1);
         betas.sigmo_mdl.(task_nm_tmp).bVS(iS) = betas_tmp(2);
         betas.sigmo_mdl.(task_nm_tmp).bdmPFC(iS) = betas_tmp(3);
-        
-        %% extract bins
-        
     end % task loop
 end % subject loop
 
@@ -188,7 +185,5 @@ for iT = 1:nTasks
     [~,pval.sigmo_mdl.(task_nm_tmp).bVS] = ttest(betas.sigmo_mdl.(task_nm_tmp).bVS);
     [~,pval.sigmo_mdl.(task_nm_tmp).bdmPFC] = ttest(betas.sigmo_mdl.(task_nm_tmp).bdmPFC);
 end
-
-%% figure
 
 end % function
