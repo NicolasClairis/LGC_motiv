@@ -106,6 +106,10 @@ switch study_nm
             otherwise
                 bad_subs1 = ismember(fullSubList,{'030','049'});
                 fullSubList(bad_subs1) = [];
+
+                %% also remove outlier subject who has bad brain image + weird behavior in all tasks
+                bad_subs1b = ismember(fullSubList,{'054','090'});
+                fullSubList(bad_subs1b) = [];
         end
         %% initialize the list of subjects to consider
         all_subs = fullSubList;
