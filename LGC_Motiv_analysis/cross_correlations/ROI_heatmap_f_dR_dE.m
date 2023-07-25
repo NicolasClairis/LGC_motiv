@@ -77,7 +77,7 @@ for iS = 1:NS
         %% average per incentive and effort level
         jBox = 0;
         for iE = 1:n_dE
-            for iP = 1:n_dP
+            for iP = n_dP:(-1):1 % revert order to have symetry with rewards
                 jBox = jBox + 1;
                 PE_trials_idx = (E_level_tmp == iE).*(P_level_tmp == iP) == 1;
                 ROI_avg_perSubperRun.(task_nm_tmp)(iP, iE, iS, kRun) = mean(fMRI_allTrials_tmp(PE_trials_idx),'omitnan');
@@ -111,26 +111,33 @@ end % subject loop
 %% average subjects together
 for iTask = 1:nTasks
     task_nm = task_names{iTask};
-    ROI_avg_perSub.(task_nm) = mean(ROI_avg_perSub.(task_nm), 3,'omitnan');
+    ROI_avg.(task_nm) = mean(ROI_avg_perSub.(task_nm), 3,'omitnan');
     choice_avg.(task_nm) = mean(choice_avg_perSub.(task_nm), 3,'omitnan');
     RT_avg.(task_nm) = mean(RT_avg_perSub.(task_nm), 3,'omitnan');
 end % task loop
 
 %% figures
 nPlotsPerLine = 3;
-[pSize, lWidth, col, mSize] = general_fig_prm;
+[pSize] = general_fig_prm;
+ROI_range = [0 2];
 choice_range = [0 1];
+RT_range = [1 1.5];
 fig;
+% define which colormap you want to use (see full list here if you are not
+% happy with the selection:
+% https://ch.mathworks.com/help/matlab/ref/colormap.html)
+colormap hot;
 
 for iTask = 1:nTasks
     task_nm = task_names{iTask};
     % ROI
     subplot(nTasks, nPlotsPerLine, 1 + nPlotsPerLine*(iTask - 1));
-    ROI_hdl = imagesc(ROI_avg_perSub.(task_nm),[0 2]);
+    % ROI_hdl = imagesc(ROI_avg_perSub.(task_nm),ROI_range);
+    ROI_hdl = imagesc(ROI_avg.(task_nm));
     xticks(1:n_dE);
     xticklabels({'E1','E2','E3'});
     yticks(1:n_dInc)
-    yticklabels({'P1','P2','P3','R1','R2','R3'});
+    yticklabels({'P3','P2','P1','R1','R2','R3'});
     legend_size(pSize);
     colorbar;
     title(ROI_short_nm);
@@ -141,18 +148,18 @@ for iTask = 1:nTasks
     xticks(1:n_dE);
     xticklabels({'E1','E2','E3'});
     yticks(1:n_dInc)
-    yticklabels({'P1','P2','P3','R1','R2','R3'});
+    yticklabels({'P3','P2','P1','R1','R2','R3'});
     legend_size(pSize);
     colorbar;
     title('Choice (%)');
     
     % RT
     subplot(nTasks, nPlotsPerLine, 3 + nPlotsPerLine*(iTask - 1));
-    RT_hdl = imagesc(RT_avg.(task_nm));
+    RT_hdl = imagesc(RT_avg.(task_nm), RT_range);
     xticks(1:n_dE);
     xticklabels({'E1','E2','E3'});
     yticks(1:n_dInc)
-    yticklabels({'P1','P2','P3','R1','R2','R3'});
+    yticklabels({'P3','P2','P1','R1','R2','R3'});
     legend_size(pSize);
     colorbar;
     title('RT (s)');
