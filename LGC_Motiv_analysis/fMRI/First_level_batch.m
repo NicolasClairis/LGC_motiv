@@ -185,7 +185,7 @@ for iS = 1:NS
         switch biasFieldCorr
             case 0
                 runPath = [subj_scans_folder filesep subj_runFoldername_tmp, filesep,...
-                    'preproc_sm_',num2str(preproc_sm_kernel),'mm',filesep]; % grun folder
+                    'preproc_sm_',num2str(preproc_sm_kernel),'mm',filesep]; % run folder
             case 1
                 runPath = [subj_scans_folder filesep subj_runFoldername_tmp, filesep,...
                     'preproc_sm_',num2str(preproc_sm_kernel),'mm_with_BiasFieldCorrection',filesep]; % run folder
