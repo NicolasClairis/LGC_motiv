@@ -2205,7 +2205,12 @@ if ismember(EperfModel,{'stick','boxcar'})
                 case 'hEch'
                     Efilter_Eperf = (choice_hE == 1);
             end
-            Eperf_trial_idx = (RPfilter_Eperf.*Efilter_Eperf.*perfOkTrials) == 1; % NEED to transform it into logical or will just focus on the first trial
+            switch onsets_only_GLM
+                case 0
+                    Eperf_trial_idx = (RPfilter_Eperf.*Efilter_Eperf.*perfOkTrials) == 1; % NEED to transform it into logical or will just focus on the first trial
+                case 1 % keep same number of trials as in choices and feedback to avoid problems in the analysis
+                    Eperf_trial_idx = (RPfilter_Eperf.*Efilter_Eperf) == 1;
+            end
             
             %% Effort performance onset
             iCond = iCond + 1;
