@@ -68,7 +68,7 @@ end
 
 %% which GLM
 if ~exist('GLM','var') || isempty(GLM)
-    listOfAllOnsetsOnlyGLM = [64, 65, 70, 90, 93, 94, 95];
+    listOfAllOnsetsOnlyGLM = [64, 65, 70, 90, 93, 94, 95, 128, 129];
     nPossibleGLMs = size(listOfAllOnsetsOnlyGLM, 2);
     listGLM = ['GLM',num2str(listOfAllOnsetsOnlyGLM(1))];
     if nPossibleGLMs > 1
@@ -100,6 +100,9 @@ n_mvmt = 6;
 %% preprocessing smoothing kernel
 % preproc_sm_kernel  = spm_input('preprocessing smoothing kernel?',1,'r');
 preproc_sm_kernel = 8; % by default
+
+%% bias-field
+biasFieldCorr = 0;
 
 %% initialize variables of interest
 nTrialsPerRun = 54;
@@ -153,8 +156,14 @@ for iROI = 1:n_ROIs
         sub_nm = subject_id{iS};
         if ~strcmp(sub_nm,'036')
             subj_folder = [fullfile(dataRoot, ['CID',sub_nm]),filesep];
-            sub_folderName = [fullfile(subj_folder, 'fMRI_analysis','functional',...
+            switch biasFieldCorr
+                case 0
+                    sub_folderName = [fullfile(subj_folder, 'fMRI_analysis','functional',...
                         ['preproc_sm_',num2str(preproc_sm_kernel),'mm']),filesep];
+                case 1
+                    sub_folderName = [fullfile(subj_folder, 'fMRI_analysis','functional',...
+                        ['preproc_sm_',num2str(preproc_sm_kernel),'mm_with_BiasFieldCorrection']),filesep];
+            end
             sub_fMRI_path = fMRI_subFolder(sub_folderName, GLM, condition);
             if ~exist(sub_fMRI_path,'dir')
                 error(['ROI extraction not ready for ',condition,' yet.']);
