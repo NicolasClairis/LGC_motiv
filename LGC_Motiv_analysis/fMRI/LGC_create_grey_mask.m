@@ -19,7 +19,7 @@ spm_jobman('initcfg');
 % % define smoothing kernel for the last step
 % sm_kernel = 8;
 % define threshold to use for probability to be in the grey matter
-proba_threshold = 0.05;
+proba_threshold = 0.00; % for 50%, write 0.50
 %% check inputs
 if ~exist('study_nm','var') || isempty(study_nm)
     %    error('study name not defined');
