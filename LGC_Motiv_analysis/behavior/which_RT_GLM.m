@@ -32,10 +32,12 @@ function[GLMprm] = which_RT_GLM(GLM)
 GLMprm.main.RT_format = 'raw';
 GLMprm.main.orth_vars = 'off';
 GLMprm.main.confMdlType = 'simple';
-GLMprm.main.confMdlN = '3';
+GLMprm.main.confMdlN = '';
 potentialRegressors = {'run_cstt','task_cstt',...
     'conf','confRtg',...
-    'deltaMoney','deltaEffort','trialN','RT_raw_prevTrial'};
+    'RP','deltaMoney','deltaR','deltaP',...
+    'deltaEffort','deltaEp','deltaEm',...
+    'trialN','physical_Fatigue','mental_Facilitation','RT_raw_prevTrial'};
 for iReg = 1:length(potentialRegressors)
     GLMprm.regs.(potentialRegressors{iReg}) = 'off';
 end % regressor loop
@@ -57,6 +59,23 @@ switch GLM
         GLMprm.regs.deltaEffort = 'on';
         GLMprm.regs.trialN = 'on';
         GLMprm.regs.RT_raw_prevTrial = 'on';
+    case 2
+        % general
+        GLMprm.main.RT_format = 'raw';
+        GLMprm.main.orth_vars = 'off';
+        GLMprm.main.confMdlType = 'bayesian';
+        GLMprm.main.confMdlN = '3';
+        % which regressors to include
+        GLMprm.regs.run_cstt = 'on';
+        GLMprm.regs.task_cstt = 'off';
+        GLMprm.regs.conf = 'on';
+        GLMprm.regs.RP = 'off';
+        GLMprm.regs.deltaR = 'on';
+        GLMprm.regs.deltaP = 'on';
+        GLMprm.regs.deltaEp = 'on';
+        GLMprm.regs.deltaEm = 'on';
+        GLMprm.regs.physical_Fatigue = 'on';
+        GLMprm.regs.mental_Facilitation = 'on';
     otherwise
         error(['RT GLM number ',num2str(GLM),' does not exist yet.']);
 end % GLM
