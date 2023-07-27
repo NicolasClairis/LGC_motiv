@@ -113,7 +113,8 @@ fig;
 % define which colormap you want to use (see full list here if you are not
 % happy with the selection:
 % https://ch.mathworks.com/help/matlab/ref/colormap.html)
-colormap hot;
+% colormap hot;
+colormap turbo;
 
 for iTask = 1:nTasks
     task_nm = task_names{iTask};
