@@ -3517,7 +3517,7 @@ switch GLM
             % feedback
             GLMprm.model_onset.(Epm_nm).fbk = 'stick';
         end % physical/mental loop
-    case 127 % like GLM 104, 123, 124, 125 and 126 but using grey + white matter mask and more lenient threshold
+    case 127 % like GLM 104, 123, 124, 125 and 126 but using grey + white matter mask and more lenient threshold for mask
         % general parameters
         GLMprm.gal.orth_vars = 0;
         GLMprm.gal.zPerRun = 0;
@@ -3566,6 +3566,42 @@ switch GLM
             Epm_nm = Epm{iEpm};
             % choice
             GLMprm.model_onset.(Epm_nm).choice = 'stick';
+            % effort perf (effort execution)
+            GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
+            % feedback
+            GLMprm.model_onset.(Epm_nm).fbk = 'stick';
+        end % physical/mental loop
+        
+    case 130 % like GLM 127 but only regressor = choice
+        % general parameters
+        GLMprm.gal.orth_vars = 0;
+        GLMprm.gal.zPerRun = 0;
+        GLMprm.gal.grey_mask = 7;
+        GLMprm.gal.mask_probaThreshold = 0;
+        % loop per task
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'stick';
+            GLMprm.choice.(Epm_nm).RP.E.choiceHighE = 1;
+            % effort perf (effort execution)
+            GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
+            % feedback
+            GLMprm.model_onset.(Epm_nm).fbk = 'stick';
+        end % physical/mental loop
+    case 131 % like GLM 130 but p(high E) instead of actual choice
+        % general parameters
+        GLMprm.gal.orth_vars = 0;
+        GLMprm.gal.zPerRun = 0;
+        GLMprm.gal.grey_mask = 7;
+        GLMprm.gal.mask_probaThreshold = 0;
+        % loop per task
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'stick';
+            GLMprm.choice.(Epm_nm).RP.E.NV_varOption = 3;
+            GLMprm.choice.(Epm_nm).RP.E.NV_mdl = 'bayesianModel_3';
             % effort perf (effort execution)
             GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
             % feedback
