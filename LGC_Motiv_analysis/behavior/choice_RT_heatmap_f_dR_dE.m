@@ -24,22 +24,32 @@ n_dR = 3;
 n_dP = 3;
 n_dInc = n_dR + n_dP;
 n_dE = 3;
-[choice_avg_perSub.Ep,...
+[choice_avg_perSub.Ep, choice_fit_avg_perSub.Ep,...
     RT_avg_perSub.Ep, RT_fit_avg_perSub.Ep,...
-    choice_avg_perSub.Em,...
+    choice_avg_perSub.Em, choice_fit_avg_perSub.Em,...
     RT_avg_perSub.Em, RT_fit_avg_perSub.Em] = deal(NaN(n_dInc, n_dE, NS));
 nRunsPerTask = 2;
-[choice_avg_perSubperRun.Ep,...
+[choice_avg_perSubperRun.Ep, choice_fit_avg_perSubperRun.Ep,...
     RT_avg_perSubperRun.Ep, RT_fit_avg_perSubperRun.Ep,...
-    choice_avg_perSubperRun.Em,...
+    choice_avg_perSubperRun.Em, choice_fit_avg_perSubperRun.Em,...
     RT_avg_perSubperRun.Em, RT_fit_avg_perSubperRun.Em] = deal(NaN(n_dInc, n_dE, NS, nRunsPerTask));
 RT_fit_GLM = 2; % GLM to use for RT fit extraction
+choice_fit_GLM = 3;
+bayesian_choice_folder = [fullfile('C:','Users','clairis','Desktop',...
+    'GitHub','LGC_motiv','LGC_Motiv_results',study_nm,...
+    'bayesian_modeling'), filesep];
+bayesian_pChoice = getfield(load([bayesian_choice_folder,...
+    'bayesian_pChoice_data.mat'],'bayesian_pChoice'),'bayesian_pChoice');
+choice_fit_allSubs = bayesian_pChoice.(['mdl_',num2str(choice_fit_GLM)]);
 
 %% loop through subjects
 for iS = 1:NS
     sub_nm = subject_id{iS};
     subBehaviorFolder = [studyBehaviorFolder,...
         'CID',sub_nm, filesep, 'behavior',filesep];
+    
+    % extract choice bayesian fit for this particular subject
+    choice_fit_perRun_tmp = choice_fit_allSubs.(['CID',sub_nm]);
     
     % extract RT fit for this particular subject
     [~, ~, ~, ~,...
@@ -64,6 +74,7 @@ for iS = 1:NS
         
         %% extract choices for the current session
         choice_hE_allTrials_tmp = extract_choice_hE(subBehaviorFolder, sub_nm, run_nm, task_fullName);
+        choice_fit_hE_allTrials_tmp = choice_fit_perRun_tmp.(run_fullNm);
         R_level_tmp = extract_hR_level(subBehaviorFolder, sub_nm, run_nm, task_fullName);
         P_level_tmp = extract_hP_level(subBehaviorFolder, sub_nm, run_nm, task_fullName);
         E_level_tmp = extract_hE_level(subBehaviorFolder, sub_nm, run_nm, task_fullName);
@@ -77,6 +88,7 @@ for iS = 1:NS
                 jIncentiveLine = jIncentiveLine + 1;
                 PE_trials_idx = (E_level_tmp == iE).*(P_level_tmp == iP) == 1;
                 choice_avg_perSubperRun.(task_nm_tmp)(jIncentiveLine, iE, iS, kRun) = mean(choice_hE_allTrials_tmp(PE_trials_idx),'omitnan');
+                choice_fit_avg_perSubperRun.(task_nm_tmp)(jIncentiveLine, iE, iS, kRun) = mean(choice_fit_hE_allTrials_tmp(PE_trials_idx),'omitnan');
                 RT_avg_perSubperRun.(task_nm_tmp)(jIncentiveLine, iE, iS, kRun) = mean(RT_allTrials_tmp(PE_trials_idx),'omitnan');
                 RT_fit_avg_perSubperRun.(task_nm_tmp)(jIncentiveLine, iE, iS, kRun) = mean(RT_fit_allTrials_tmp(PE_trials_idx),'omitnan');
             end % punishment
@@ -85,6 +97,7 @@ for iS = 1:NS
                 jIncentiveLine = jIncentiveLine + 1;
                 RE_trials_idx = (E_level_tmp == iE).*(R_level_tmp == iR) == 1;
                 choice_avg_perSubperRun.(task_nm_tmp)(jIncentiveLine, iE, iS, kRun) = mean(choice_hE_allTrials_tmp(RE_trials_idx),'omitnan');
+                choice_fit_avg_perSubperRun.(task_nm_tmp)(jIncentiveLine, iE, iS, kRun) = mean(choice_fit_hE_allTrials_tmp(RE_trials_idx),'omitnan');
                 RT_avg_perSubperRun.(task_nm_tmp)(jIncentiveLine, iE, iS, kRun) = mean(RT_allTrials_tmp(RE_trials_idx),'omitnan');
                 RT_fit_avg_perSubperRun.(task_nm_tmp)(jIncentiveLine, iE, iS, kRun) = mean(RT_fit_allTrials_tmp(RE_trials_idx),'omitnan');
             end % reward
@@ -95,6 +108,7 @@ for iS = 1:NS
     for iTask = 1:nTasks
         task_nm = task_names{iTask};
         choice_avg_perSub.(task_nm)(:,:,iS) = mean(choice_avg_perSubperRun.(task_nm)(:, :, iS, :), 4,'omitnan');
+        choice_fit_avg_perSub.(task_nm)(:,:,iS) = mean(choice_fit_avg_perSubperRun.(task_nm)(:, :, iS, :), 4,'omitnan');
         RT_avg_perSub.(task_nm)(:,:,iS) = mean(RT_avg_perSubperRun.(task_nm)(:, :, iS, :), 4,'omitnan');
         RT_fit_avg_perSub.(task_nm)(:,:,iS) = mean(RT_fit_avg_perSubperRun.(task_nm)(:, :, iS, :), 4,'omitnan');
     end % task loop
@@ -107,6 +121,7 @@ end % subject loop
 for iTask = 1:nTasks
     task_nm = task_names{iTask};
     choice_avg.(task_nm) = mean(choice_avg_perSub.(task_nm), 3,'omitnan');
+    choice_fit_avg.(task_nm) = mean(choice_fit_avg_perSub.(task_nm), 3,'omitnan');
     RT_avg.(task_nm) = mean(RT_avg_perSub.(task_nm), 3,'omitnan');
     RT_fit_avg.(task_nm) = mean(RT_fit_avg_perSub.(task_nm), 3,'omitnan');
 end % task loop
@@ -143,7 +158,21 @@ for iTask = 1:nTasks
     
     % should add bayesian fit here
     iChoiceLine = 2;
-    warning('please find a way to include Arthur''s bayesian model results here');
+    choice_fit_plot_hdl = subplot(nLines, nTasks, iTask + nTasks*(iChoiceLine - 1));
+    imagesc(choice_fit_avg.(task_nm), choice_range);
+    % define which colormap you want to use (see full list here if you are not
+    % happy with the selection:
+    % https://ch.mathworks.com/help/matlab/ref/colormap.html)
+    % colormap hot;
+    % colormap jet;
+    colormap(choice_fit_plot_hdl,redblue(45));
+    xticks(1:n_dE);
+    xticklabels({'E1','E2','E3'});
+    yticks(1:n_dInc)
+    yticklabels({'P3','P2','P1','R1','R2','R3'});
+    title('Choice (%)');
+    legend_size(pSize);
+    colorbar;
     
     %% RT figures
     figure(RT_fig);
