@@ -107,7 +107,7 @@ choice_hE_fit_perElevel.EpEmPool = NaN(nTrials/n_E_levels, n_E_levels, NS);
     timePeriod_nm] = extract_ROI_betas_onsets_only_questInfos(ROI_trial_b_trial);
 
 %% fit parameters
-fitType = 'normal'; % binomial or normal
+fitType = 'binomial'; % binomial or normal
 switch fitType
     case 'binomial'
         fitType_glmval = 'logit';
