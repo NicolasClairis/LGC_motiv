@@ -154,7 +154,7 @@ for iROI = 1:n_ROIs
     
     for iS = 1:NS
         sub_nm = subject_id{iS};
-        if ~strcmp(sub_nm,'036')
+%         if ~strcmp(sub_nm,'036')
             subj_folder = [fullfile(dataRoot, ['CID',sub_nm]),filesep];
             switch biasFieldCorr
                 case 0
@@ -287,7 +287,9 @@ for iROI = 1:n_ROIs
                     
                 end % ignore mvmt and run cstt
             end % trial number loop
-        end % filter subject 036 who for some reason doesn't work
+%         else
+%             warning('check 036 with last upgrades.');
+%         end % filter subject 036 who for some reason doesn't work
         %% indicator subject done
         disp(['Subject ',num2str(iS),'/',num2str(NS),' extracted']);
     end % subject loop
