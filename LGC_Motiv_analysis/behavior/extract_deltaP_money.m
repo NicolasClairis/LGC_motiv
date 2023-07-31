@@ -1,5 +1,5 @@
 function[deltaP_money] = extract_deltaP_money(subBehaviorFolder, sub_nm, run_nm, task_fullName)
-% [deltaP_money] = extract_deltaR_money(subBehaviorFolder, sub_nm, run_nm, task_fullName)
+% [deltaP_money] = extract_deltaP_money(subBehaviorFolder, sub_nm, run_nm, task_fullName)
 %
 % INPUTS
 % subBehaviorFolder: folder where data is stored
@@ -32,7 +32,7 @@ lowI_level_v0 = (-choiceOptions.monetary_amount.left).*highE_right +...
     (-choiceOptions.monetary_amount.right).*highE_left;
 %% valence
 RP_var_tmp = extract_RP(subBehaviorFolder, sub_nm, run_nm, task_fullName);
-%% store and remove all punishment trials
+%% store and remove all reward trials
 deltaP_money = hI_level_v0 - lowI_level_v0;
 deltaP_money(RP_var_tmp == 1) = 0;
         
