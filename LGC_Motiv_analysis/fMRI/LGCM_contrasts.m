@@ -51,6 +51,8 @@ switch biasFieldCorr
     case 1
         subj_analysis_folder    = [subj_folder, filesep, 'fMRI_analysis' filesep,...
             'functional',filesep,'preproc_sm_',num2str(preproc_sm_kernel),'mm_with_BiasFieldCorrection',filesep];
+    otherwise
+        error('biasFieldCorr not defined in the input. Please enter a value');
 end
 [resultsFolderName] = fMRI_subFolder(subj_analysis_folder, GLM, condition);
 
