@@ -45,10 +45,10 @@ NS_str = num2str(NS);
 switch condition
     case 'fMRI_noSatRun_choiceSplit_Elvl_bis' % in this case, subject_id{1} does not include Em => need to adapt to include Em
         con_names = LGCM_contrasts(study_nm, subject_id{16}, GLM,...
-            computerRoot, preproc_sm_kernel, condition);
+            computerRoot, preproc_sm_kernel, condition, biasFieldCorr);
     otherwise
         con_names = LGCM_contrasts(study_nm, subject_id{1}, GLM,...
-            computerRoot, preproc_sm_kernel, condition);
+            computerRoot, preproc_sm_kernel, condition, biasFieldCorr);
 end
 n_cons = length(con_names);
 
@@ -144,7 +144,7 @@ for iCon = 1:nConsForConj
         
         % extract contrast names for current subject
         con_names_perSub = LGCM_contrasts(study_nm, sub_nm, GLM,...
-            computerRoot, preproc_sm_kernel, condition);
+            computerRoot, preproc_sm_kernel, condition, biasFieldCorr);
         if sum(strcmp(current_con_nm, con_names_perSub)) > 0
             % extract index (for this subject) of the current contrast
             jCon = find(strcmp(current_con_nm, con_names_perSub));
