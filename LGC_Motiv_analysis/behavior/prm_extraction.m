@@ -32,7 +32,7 @@ switch whichPc
         gitRoot = fullfile('C:','Users','clairis','Desktop');
         computerRoot = [fullfile('E:'),filesep];
     case 'home'
-        gitRoot = fullfile('C:','Users','Loco','Documents');
+        gitRoot = fullfile('C:','Users','Nicolas Clairis','Documents');
         computerRoot = [fullfile('L:','human_data_private',...
             'raw_data_subject'),filesep];
     otherwise
