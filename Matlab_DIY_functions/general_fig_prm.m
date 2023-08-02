@@ -17,7 +17,7 @@ pSize = 30;
 lWidth = 3;
 
 %% marker size
-mSize = 50;
+mSize = 20;
 
 %% initialize colours
 col.white = [1 1 1];
