@@ -669,6 +669,7 @@ end % task loop
 %% define variables according to GLM number
 Epm = {'Ep','Em'};
 RP_conds = {'R','P'};
+Elvl_conds = {'E1','E2','E3'};
 Ech_conds = {'Ech0','Ech1','Ech2','Ech3'};
 Ech_conds_bis = {'lEch','hEch'};
 switch GLM
@@ -3602,6 +3603,28 @@ switch GLM
             GLMprm.model_onset.(Epm_nm).choice = 'stick';
             GLMprm.choice.(Epm_nm).RP.E.NV_varOption = 3;
             GLMprm.choice.(Epm_nm).RP.E.NV_mdl = 'bayesianModel_3';
+            % effort perf (effort execution)
+            GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
+            % feedback
+            GLMprm.model_onset.(Epm_nm).fbk = 'stick';
+        end % physical/mental loop
+    case 132 % split onsets per effort level and modulate by incentive
+        % general parameters
+        GLMprm.gal.orth_vars = 0;
+        GLMprm.gal.zPerRun = 0;
+        GLMprm.gal.grey_mask = 7;
+        GLMprm.gal.mask_probaThreshold = 0;
+        % loop per task
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'stick';
+            GLMprm.choice.(Epm_nm).splitPerE = 1;
+            for iE = 1:length(Elvl_conds)
+                E_lvl_nm = Elvl_conds{iE};
+                GLMprm.choice.(Epm_nm).RP.(E_lvl_nm).R_varOption = 2;
+                GLMprm.choice.(Epm_nm).RP.(E_lvl_nm).P_varOption = 2;
+            end % effort loop
             % effort perf (effort execution)
             GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
             % feedback

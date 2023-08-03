@@ -221,6 +221,8 @@ P_amount_chosen = money_amount_chosen.*(RP_var == -1);
 R_level_chosen = money_level_chosen.*(RP_var == 1);
 P_level_chosen = money_level_chosen.*(RP_var == -1);
 
+error('check and fix P_level_chosen if necessary')
+
 switch task_fullName
     case 'physical'
         [latency_tmp,...
