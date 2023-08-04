@@ -267,7 +267,6 @@ if runs.nb_runs.Em > 0 && runs.nb_runs.Ep > 0
 end % at least one run of each task has been performed?
 
 %% pool contrasts across R and P trials if have been modelled separately
-% same for Effort trials if have been modelled separately
 timePeriod = {'choice','chosen','Eperf','fbk'};
 n_timePeriods = length(timePeriod);
 timePeriod_names = {'choice','chosen','effort','feedback'};
@@ -302,10 +301,11 @@ for iTimePeriod = 1:n_timePeriods
                 'differs between mental and physical effort']);
         end
         
+        % loop through E conditions
         for iEcond = 1:length(Econd)
             Econd_nm = Econd{iEcond};
             
-            % check if R and P trials have been split in both tasks, if not no need to pool
+            %% check if R and P trials have been split in both tasks, if not no need to pool
             if (ismember(task_nm,{'Ep','Em'}) && GLMprm.(timePhase_nm).(task_nm).RPpool == 0) ||...
                     (GLMprm.(timePhase_nm).Ep.RPpool == 0 && GLMprm.(timePhase_nm).Em.RPpool == 0)
                 % pool through onsets and regressors
@@ -320,6 +320,7 @@ for iTimePeriod = 1:n_timePeriods
                             case 2
                                 posNeg = '-';
                         end
+                        
                         % to avoid pooling R+P if already done, add ':' for REG
                         % specifically (no need for ONSET as full expression is
                         % already ok)
@@ -332,8 +333,8 @@ for iTimePeriod = 1:n_timePeriods
                                 areThereRregs = strcmp(con_names, regRExpression);
                                 areTherePregs = strcmp(con_names, regPExpression);
                             case 'REG'
-                                regRExpression_short = [task_nm,' ',posNeg,regType,' ',timePhase_nm_bis,' R'];
-                                regPExpression_short = [task_nm,' ',posNeg,regType,' ',timePhase_nm_bis,' P'];
+                                regRExpression_short = [task_nm,' ',posNeg,'REG ',timePhase_nm_bis,' R'];
+                                regPExpression_short = [task_nm,' ',posNeg,'REG ',timePhase_nm_bis,' P'];
                                 regRExpression = [regRExpression_short,' ',Econd_nm,':'];
                                 regPExpression = [regPExpression_short,' ',Econd_nm,':'];
                                 n_regNameSize = length(regRExpression);
@@ -413,13 +414,17 @@ for iTimePeriod = 1:n_timePeriods
     for iTask = 1:nTasks
         task_nm = tasks{iTask};
         
-        for iRP = 1:length(RP_cond) % loop through R/P/RP conditions
+        % loop through R/P/RP conditions
+        for iRP = 1:length(RP_cond)
             RP_nm = RP_cond{iRP};
+            
             % check if E trials have been split, if yes, perform the pooling
             if (ismember(task_nm,{'Ep','Em'}) && GLMprm.(timePhase_nm).(task_nm).splitPerE > 0) ||...
                     (GLMprm.(timePhase_nm).Ep.splitPerE > 0 && GLMprm.(timePhase_nm).Em.splitPerE > 0) % check if more than 1 effort condition modeled
+                
+                %% split per effort proposed (3 levels)
                 if (ismember(task_nm,{'Ep','Em'}) && GLMprm.(timePhase_nm).(task_nm).splitPerE == 1) ||...
-                        (GLMprm.(timePhase_nm).Ep.splitPerE == 1 && GLMprm.(timePhase_nm).Em.splitPerE == 1) % split per effort proposed (3 levels)
+                        (GLMprm.(timePhase_nm).Ep.splitPerE == 1 && GLMprm.(timePhase_nm).Em.splitPerE == 1)
                     
                     % pool through onsets and regressors
                     for iRegType = 1:nRegTypes
@@ -445,9 +450,9 @@ for iTimePeriod = 1:n_timePeriods
                                     areThereE2regs = strcmp(con_names, regE2Expression);
                                     areThereE3regs = strcmp(con_names, regE3Expression);
                                 case 'REG'
-                                    regE1Expression = [task_nm,' ',posNeg,regType,' ',timePhase_nm_bis,' ',RP_nm,' E1:'];
-                                    regE2Expression = [task_nm,' ',posNeg,regType,' ',timePhase_nm_bis,' ',RP_nm,' E2:'];
-                                    regE3Expression = [task_nm,' ',posNeg,regType,' ',timePhase_nm_bis,' ',RP_nm,' E3:'];
+                                    regE1Expression = [task_nm,' ',posNeg,'REG ',timePhase_nm_bis,' ',RP_nm,' E1'];
+                                    regE2Expression = [task_nm,' ',posNeg,'REG ',timePhase_nm_bis,' ',RP_nm,' E2'];
+                                    regE3Expression = [task_nm,' ',posNeg,'REG ',timePhase_nm_bis,' ',RP_nm,' E3'];
                                     n_regNameSize = length(regE1Expression);
                                     areThereE1regs = strncmp(con_names, regE1Expression, n_regNameSize);
                                     areThereE2regs = strncmp(con_names, regE2Expression, n_regNameSize);
@@ -496,8 +501,9 @@ for iTimePeriod = 1:n_timePeriods
                         end % positive/negative contrast
                     end % ONSET/REG
                     
+                    %% split per effort chosen (4 levels)
                 elseif (ismember(task_nm,{'Ep','Em'}) && GLMprm.(timePhase_nm).(task_nm).splitPerE == 2) ||...
-                        (GLMprm.(timePhase_nm).Ep.splitPerE == 2 && GLMprm.(timePhase_nm).Em.splitPerE == 2) % split per effort chosen (4 levels)
+                        (GLMprm.(timePhase_nm).Ep.splitPerE == 2 && GLMprm.(timePhase_nm).Em.splitPerE == 2)
                     
                     % pool through onsets and regressors
                     for iRegType = 1:nRegTypes
@@ -525,10 +531,10 @@ for iTimePeriod = 1:n_timePeriods
                                     areThereEch2regs = strcmp(con_names, regEch2Expression);
                                     areThereEch3regs = strcmp(con_names, regEch3Expression);
                                 case 'REG'
-                                    regEch0Expression = [task_nm,' ',posNeg,regType,' ',timePhase_nm_bis,' ',RP_nm,' Ech0:'];
-                                    regEch1Expression = [task_nm,' ',posNeg,regType,' ',timePhase_nm_bis,' ',RP_nm,' Ech1:'];
-                                    regEch2Expression = [task_nm,' ',posNeg,regType,' ',timePhase_nm_bis,' ',RP_nm,' Ech2:'];
-                                    regEch3Expression = [task_nm,' ',posNeg,regType,' ',timePhase_nm_bis,' ',RP_nm,' Ech3:'];
+                                    regEch0Expression = [task_nm,' ',posNeg,'REG ',timePhase_nm_bis,' ',RP_nm,' Ech0'];
+                                    regEch1Expression = [task_nm,' ',posNeg,'REG ',timePhase_nm_bis,' ',RP_nm,' Ech1'];
+                                    regEch2Expression = [task_nm,' ',posNeg,'REG ',timePhase_nm_bis,' ',RP_nm,' Ech2'];
+                                    regEch3Expression = [task_nm,' ',posNeg,'REG ',timePhase_nm_bis,' ',RP_nm,' Ech3'];
                                     n_regNameSize = length(regEch0Expression);
                                     areThereEch0regs = strncmp(con_names, regEch0Expression, n_regNameSize);
                                     areThereEch1regs = strncmp(con_names, regEch1Expression, n_regNameSize);
@@ -584,8 +590,9 @@ for iTimePeriod = 1:n_timePeriods
                         end % positive/negative contrast
                     end % ONSET/REG
                     
+                    %% split per low vs high effort chosen
                 elseif (ismember(task_nm,{'Ep','Em'}) && GLMprm.(timePhase_nm).(task_nm).splitPerE == 3) ||...
-                        (GLMprm.(timePhase_nm).Ep.splitPerE == 3 && GLMprm.(timePhase_nm).Em.splitPerE == 3) % split per low vs high effort chosen
+                        (GLMprm.(timePhase_nm).Ep.splitPerE == 3 && GLMprm.(timePhase_nm).Em.splitPerE == 3)
                     
                     % pool through onsets and regressors
                     for iRegType = 1:nRegTypes
@@ -609,8 +616,8 @@ for iTimePeriod = 1:n_timePeriods
                                     areThereLowEchregs = strcmp(con_names, regLowEchxpression);
                                     areThereHighEchregs = strcmp(con_names, regHighEchxpression);
                                 case 'REG'
-                                    regLowEchxpression = [task_nm,' ',posNeg,regType,' ',timePhase_nm_bis,' ',RP_nm,' lEch:'];
-                                    regHighEchxpression = [task_nm,' ',posNeg,regType,' ',timePhase_nm_bis,' ',RP_nm,' hEch:'];
+                                    regLowEchxpression = [task_nm,' ',posNeg,'REG ',timePhase_nm_bis,' ',RP_nm,' lEch'];
+                                    regHighEchxpression = [task_nm,' ',posNeg,'REG ',timePhase_nm_bis,' ',RP_nm,' hEch'];
                                     n_regNameSize = length(regLowEchxpression);
                                     areThereLowEchregs = strncmp(con_names, regLowEchxpression, n_regNameSize);
                                     areThereHighEchregs = strncmp(con_names, regHighEchxpression, n_regNameSize);
