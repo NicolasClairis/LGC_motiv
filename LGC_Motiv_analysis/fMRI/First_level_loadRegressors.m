@@ -132,55 +132,15 @@ money_amount_right = behavioralDataStruct.(task_behavioral_id).choiceOptions.mon
 money_amount_sum = money_amount_left + money_amount_right;
 money_amount_varOption = money_amount_left.*(defaultSide == 1) + money_amount_right.*(defaultSide == -1);
 abs_money_amount_varOption = abs(money_amount_varOption);
-money_level_left = behavioralDataStruct.(task_behavioral_id).choiceOptions.R.left.*RP_var;
-money_level_right = behavioralDataStruct.(task_behavioral_id).choiceOptions.R.right.*RP_var;
+money_level_left_v0 = behavioralDataStruct.(task_behavioral_id).choiceOptions.R.left.*RP_var;
+money_level_right_v0 = behavioralDataStruct.(task_behavioral_id).choiceOptions.R.right.*RP_var;
 money_amount_fixedOption = money_amount_left.*(defaultSide == -1) + money_amount_right.*(defaultSide == 1);
 R_amount_varOption = money_amount_varOption.*(RP_var == 1);
 P_amount_varOption = money_amount_varOption.*(RP_var == -1);
 
-% replace default option level for punishments by higher level (because
-% implies higher amount of money lost)
-money_level_left(money_level_left == 0 & RP_var == -1) = -4;
-money_level_right(money_level_right == 0 & RP_var == -1) = -4;
-
-% fix data for subjects where IP had a bug and two options were based on
-% the same amount
-if strcmp(study_nm,'study1')
-    if strcmp(sub_nm,'064') && strcmp(task_fullName,'mental')
-        money_level_left(money_level_left == 3) = 2;
-        money_level_left(money_level_left == -2) = -1;
-        money_level_right(money_level_right == 3) = 2;
-        money_level_right(money_level_right == -2) = -1;
-        % given that only 2 levels, also reduce punishment 3 to 2
-        % and punishment 4 to 3
-        money_level_left(money_level_left == -3) = -2;
-        money_level_right(money_level_right == -3) = -2;
-        money_level_left(money_level_left == -4) = -3;
-        money_level_right(money_level_right == -4) = -3;
-    elseif strcmp(sub_nm,'090') && strcmp(task_fullName,'physical')
-        money_level_left(money_level_left == 3) = 2;
-        money_level_left(money_level_left == -2) = -1;
-        money_level_right(money_level_right == 3) = 2;
-        money_level_right(money_level_right == -2) = -1;
-        % given that only 2 levels, also reduce punishment 3 to 2
-        % and punishment 4 to 3
-        money_level_left(money_level_left == -3) = -2;
-        money_level_right(money_level_right == -3) = -2;
-        money_level_left(money_level_left == -4) = -3;
-        money_level_right(money_level_right == -4) = -3;
-    end
-end
-
-% increase all reward levels to have a range between 1 and 4 instead of
-% between 0 and 3
-money_level_left(money_level_left == 3 & RP_var == 1) = 4;
-money_level_left(money_level_left == 2 & RP_var == 1) = 3;
-money_level_left(money_level_left == 1 & RP_var == 1) = 2;
-money_level_left(money_level_left == 0 & RP_var == 1) = 1;
-money_level_right(money_level_right == 3 & RP_var == 1) = 4;
-money_level_right(money_level_right == 2 & RP_var == 1) = 3;
-money_level_right(money_level_right == 1 & RP_var == 1) = 2;
-money_level_right(money_level_right == 0 & RP_var == 1) = 1;
+% fix money levels
+[money_level_left, money_level_right] = First_level_fix_money_levels(study_nm, sub_nm, task_fullName,...
+    money_level_left_v0, money_level_right_v0, RP_var);
 
 % extract other relevant variables
 money_level_varOption = money_level_left.*(defaultSide == 1) +...
@@ -220,8 +180,6 @@ R_amount_chosen = money_amount_chosen.*(RP_var == 1);
 P_amount_chosen = money_amount_chosen.*(RP_var == -1);
 R_level_chosen = money_level_chosen.*(RP_var == 1);
 P_level_chosen = money_level_chosen.*(RP_var == -1);
-
-error('check and fix P_level_chosen if necessary')
 
 switch task_fullName
     case 'physical'
