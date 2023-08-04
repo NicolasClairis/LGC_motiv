@@ -12,7 +12,7 @@ studyFolder = [computerRoot, study_nm, filesep];
 %% load ROI
 [ROI_trial_b_trial, ROI_subList,...
     ROI_nm, ROI_short_nm,...
-    task_to_look, timePeriod_nm] = extract_ROI_betas_onsets_only_bis(computerRoot,...
+    ~, timePeriod_nm] = extract_ROI_betas_onsets_only_bis(computerRoot,...
     study_nm, subject_id, condition);
 
 %% main parameters of interest
@@ -43,7 +43,7 @@ for iT = 1:nTasks
     [fMRI_ROI.(task_nm).hP_level, choice_hE.(task_nm).hP_level] = deal(NaN(n_hP_levels, NS));
     
     % data split by level of effort proposed for high effort option
-    [fMRI_ROI.(task_nm).hE_level, choice_hE.(task_nm).hE_level] = deal(NaN(n_hI_levels, NS));
+    [fMRI_ROI.(task_nm).hE_level, choice_hE.(task_nm).hE_level] = deal(NaN(n_hE_levels, NS));
     
     % data split by incentive*choice
     [fMRI_ROI.(task_nm).lEch.hR_level, fMRI_ROI.(task_nm).hEch.hR_level] = deal(NaN(n_hR_levels, NS));
@@ -55,7 +55,7 @@ end % task loop
 %% loop through subjects
 for iS = 1:NS
     sub_nm = subject_id{iS};
-    subBehaviorFolder = [studyBehaviorFolder, 'CID',sub_nm, filesep, 'behavior',filesep];
+    subBehaviorFolder = [studyFolder, 'CID',sub_nm, filesep, 'behavior',filesep];
 
     % extract runs
     [runsStruct, n_runs] = runs_definition(study_nm, sub_nm, 'behavior');
@@ -64,14 +64,14 @@ for iS = 1:NS
     for iRun = 1:n_runs
         kRun = okRuns(iRun);
         run_nm = num2str(kRun);
-        task_nm_tmp = taskNames{jRun};
+        task_nm_tmp = taskNames{kRun};
         switch kRun
             case {1,2}
                 jRun = 1;
             case {3,4}
                 jRun = 2;
         end
-        run_nm_bis = num2str(jRun);
+        run_nm_bis = ['run',num2str(jRun)];
         runTrials_idx = (1:nTrialsPerRun) + nTrialsPerRun*(jRun - 1);
         switch task_nm_tmp
             case 'Em'
@@ -97,7 +97,7 @@ for iS = 1:NS
         Echosen.(task_nm_tmp).allTrials(runTrials_idx,iS) = extract_E_chosen(subBehaviorFolder, sub_nm, run_nm, task_fullName);
         
         %% extract fMRI ROI mediator
-        fMRI_ROI.(task_nm_tmp).allTrials(runTrials_idx, iS) = ROI_trial_b_trial.(fMRI_ROI_nm{1}).(task_nm_tmp).(run_nm_bis).(timePeriod_nm)(:, iS);
+        fMRI_ROI.(task_nm_tmp).allTrials(runTrials_idx, iS) = ROI_trial_b_trial.(ROI_nm{1}).(task_nm_tmp).(run_nm_bis).(timePeriod_nm)(:, iS);
     end % run loop
     
     %% now average the data according to R/P/E and choice
@@ -108,22 +108,22 @@ for iS = 1:NS
         % extract data per reward level
         for iR = 1:n_hR_levels
             R_idx = hR_level.(task_nm).allTrials(:,iS) == iR;
-            fMRI_ROI.(task_nm).hR_level(:,iS) = mean(fMRI_ROI.(task_nm_tmp).allTrials(R_idx, iS),1,'omitnan');
-            choice_hE.(task_nm).hR_level(:,iS) = mean(choice_hE.(task_nm_tmp).allTrials(R_idx, iS),1,'omitnan');
+            fMRI_ROI.(task_nm).hR_level(iR,iS) = mean(fMRI_ROI.(task_nm_tmp).allTrials(R_idx, iS),1,'omitnan');
+            choice_hE.(task_nm).hR_level(iR,iS) = mean(choice_hE.(task_nm_tmp).allTrials(R_idx, iS),1,'omitnan');
         end % reward
 
         % extract data per punishment level
         for iP = 1:n_hP_levels
             P_idx = hP_level.(task_nm).allTrials(:,iS) == iP;
-            fMRI_ROI.(task_nm).hP_level(:,iS) = mean(fMRI_ROI.(task_nm_tmp).allTrials(P_idx, iS),1,'omitnan');
-            choice_hE.(task_nm).hP_level(:,iS) = mean(choice_hE.(task_nm_tmp).allTrials(P_idx, iS),1,'omitnan');
+            fMRI_ROI.(task_nm).hP_level(iP,iS) = mean(fMRI_ROI.(task_nm_tmp).allTrials(P_idx, iS),1,'omitnan');
+            choice_hE.(task_nm).hP_level(iP,iS) = mean(choice_hE.(task_nm_tmp).allTrials(P_idx, iS),1,'omitnan');
         end % punishment
 
         % extract data per effort level
         for iE = 1:n_hE_levels
             E_idx = hE_level.(task_nm).allTrials(:,iS) == iE;
-            fMRI_ROI.(task_nm).hE_level(:,iS) = mean(fMRI_ROI.(task_nm_tmp).allTrials(E_idx, iS),1,'omitnan');
-            choice_hE.(task_nm).hE_level(:,iS) = mean(choice_hE.(task_nm_tmp).allTrials(E_idx, iS),1,'omitnan');
+            fMRI_ROI.(task_nm).hE_level(iE,iS) = mean(fMRI_ROI.(task_nm_tmp).allTrials(E_idx, iS),1,'omitnan');
+            choice_hE.(task_nm).hE_level(iE,iS) = mean(choice_hE.(task_nm_tmp).allTrials(E_idx, iS),1,'omitnan');
         end % effort
 
         %% extract data depending on choice (high/low) and high effort option features
@@ -133,24 +133,24 @@ for iS = 1:NS
         for iR = 1:n_hR_levels
             R_hE_idx = (hR_level.(task_nm).allTrials(:,iS) == iR).*(choice_highE_idx_tmp == 1) == 1;
             R_lE_idx = (hR_level.(task_nm).allTrials(:,iS) == iR).*(choice_highE_idx_tmp == 0) == 1;
-            fMRI_ROI.(task_nm).hEch.hR_level(:,iS) = mean(fMRI_ROI.(task_nm_tmp).allTrials(R_hE_idx, iS),1,'omitnan');
-            choice_hE.(task_nm).lEch.hR_level(:,iS) = mean(choice_hE.(task_nm_tmp).allTrials(R_lE_idx, iS),1,'omitnan');
+            fMRI_ROI.(task_nm).hEch.hR_level(iR,iS) = mean(fMRI_ROI.(task_nm_tmp).allTrials(R_hE_idx, iS),1,'omitnan');
+            fMRI_ROI.(task_nm).lEch.hR_level(iR,iS) = mean(fMRI_ROI.(task_nm_tmp).allTrials(R_lE_idx, iS),1,'omitnan');
         end
 
         % punishment
         for iP = 1:n_hP_levels
             P_hE_idx = (hP_level.(task_nm).allTrials(:,iS) == iP).*(choice_highE_idx_tmp == 1) == 1;
             P_lE_idx = (hP_level.(task_nm).allTrials(:,iS) == iP).*(choice_highE_idx_tmp == 0) == 1;
-            fMRI_ROI.(task_nm).lEch.hP_level(:,iS) = mean(fMRI_ROI.(task_nm_tmp).allTrials(P_hE_idx, iS),1,'omitnan');
-            fMRI_ROI.(task_nm).hEch.hP_level(:,iS) = mean(choice_hE.(task_nm_tmp).allTrials(P_lE_idx, iS),1,'omitnan');
+            fMRI_ROI.(task_nm).hEch.hP_level(iP,iS) = mean(fMRI_ROI.(task_nm_tmp).allTrials(P_hE_idx, iS),1,'omitnan');
+            fMRI_ROI.(task_nm).lEch.hP_level(iP,iS) = mean(fMRI_ROI.(task_nm_tmp).allTrials(P_lE_idx, iS),1,'omitnan');
         end
 
         % effort
         for iE = 1:n_hE_levels
             E_hE_idx = (hP_level.(task_nm).allTrials(:,iS) == iE).*(choice_highE_idx_tmp == 1) == 1;
             E_lE_idx = (hP_level.(task_nm).allTrials(:,iS) == iE).*(choice_highE_idx_tmp == 0) == 1;
-            fMRI_ROI.(task_nm).lEch.hE_level(:,iS) = mean(fMRI_ROI.(task_nm_tmp).allTrials(E_hE_idx, iS),1,'omitnan');
-            fMRI_ROI.(task_nm).hEch.hE_level(:,iS) = mean(choice_hE.(task_nm_tmp).allTrials(E_lE_idx, iS),1,'omitnan');
+            fMRI_ROI.(task_nm).hEch.hE_level(iE,iS) = mean(fMRI_ROI.(task_nm_tmp).allTrials(E_hE_idx, iS),1,'omitnan');
+            fMRI_ROI.(task_nm).lEch.hE_level(iE,iS) = mean(fMRI_ROI.(task_nm_tmp).allTrials(E_lE_idx, iS),1,'omitnan');
         end
     end % task loop
 end % subject loop
@@ -203,7 +203,7 @@ for iT = 1:nTasks
     figure(figHighE);
 
     % reward
-    subplot(1,3,1); hold on;
+    subplot(nTasks,3,1 + 3*(iT-1)); hold on;
     R_er_hdl = errorbar(1:n_hR_levels,...
         mean_fMRI_ROI.(task_nm).hR_level,...
         sem_fMRI_ROI.(task_nm).hR_level);
@@ -213,7 +213,7 @@ for iT = 1:nTasks
     legend_size(pSize);
 
     % punishment
-    subplot(1,3,2); hold on;
+    subplot(nTasks,3,2 + 3*(iT-1)); hold on;
     P_er_hdl = errorbar(1:n_hP_levels,...
         mean_fMRI_ROI.(task_nm).hP_level,...
         sem_fMRI_ROI.(task_nm).hP_level);
@@ -223,7 +223,7 @@ for iT = 1:nTasks
     legend_size(pSize);
 
     % effort
-    subplot(1,3,3); hold on;
+    subplot(nTasks,3,3 + 3*(iT-1)); hold on;
     E_er_hdl = errorbar(1:n_hE_levels,...
         mean_fMRI_ROI.(task_nm).hE_level,...
         sem_fMRI_ROI.(task_nm).hE_level);
@@ -237,7 +237,7 @@ for iT = 1:nTasks
     figure(figChoice_x_highE);
 
     % reward
-    subplot(1,3,1); hold on;
+    subplot(nTasks,3,1 + 3*(iT-1)); hold on;
     R_hE_er_hdl = errorbar(1:n_hR_levels,...
         mean_fMRI_ROI.(task_nm).hEch.hR_level,...
         sem_fMRI_ROI.(task_nm).hEch.hR_level);
@@ -251,7 +251,7 @@ for iT = 1:nTasks
     legend_size(pSize);
 
     % punishment
-    subplot(1,3,2); hold on;
+    subplot(nTasks,3,2 + 3*(iT-1)); hold on;
     P_hE_er_hdl = errorbar(1:n_hP_levels,...
         mean_fMRI_ROI.(task_nm).hEch.hP_level,...
         sem_fMRI_ROI.(task_nm).hEch.hP_level);
@@ -265,7 +265,7 @@ for iT = 1:nTasks
     legend_size(pSize);
 
     % effort
-    subplot(1,3,3); hold on;
+    subplot(nTasks,3,3 + 3*(iT-1)); hold on;
     E_hE_er_hdl = errorbar(1:n_hE_levels,...
         mean_fMRI_ROI.(task_nm).hEch.hE_level,...
         sem_fMRI_ROI.(task_nm).hEch.hE_level);
