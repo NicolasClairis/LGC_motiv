@@ -696,6 +696,84 @@ for iEpm = 1:length(Epm)
                         error('not ready yet');
                 end
                 
+                % (money)*(effort) for high effort option
+                switch GLMprm.choice.(task_id_nm).(RP_dispChoice_nm).(splitE_dispChoice_nm).money_level_x_E_varOption
+                    case 0
+                    case 1 % (money level)*(effort level) high E option
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                        reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG choice ',RP_dispChoice_nm,' ',splitE_dispChoice_nm,': money x effort non-default'];
+                        disp([num2str(n_regs.(task_id_nm)),') choice: money x effort non-default option ']);
+                        % if derivative added => add derivatives
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                    otherwise
+                        error('not ready yet');
+                end
+                
+                % (money)*(effort) for chosen option
+                switch GLMprm.choice.(task_id_nm).(RP_dispChoice_nm).(splitE_dispChoice_nm).money_level_x_E_chosen
+                    case 0
+                    case 1 % (money level)*(effort level) chosen option
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                        reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG choice ',RP_dispChoice_nm,' ',splitE_dispChoice_nm,': money x effort chosen'];
+                        disp([num2str(n_regs.(task_id_nm)),') choice: money x effort chosen ']);
+                        % if derivative added => add derivatives
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                    otherwise
+                        error('not ready yet');
+                end
+                
+                % (reward)*(effort) for high effort option
+                switch GLMprm.choice.(task_id_nm).(RP_dispChoice_nm).(splitE_dispChoice_nm).R_level_x_E_varOption
+                    case 0
+                    case 1 % (R level)*(effort level) high E option
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                        reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG choice ',RP_dispChoice_nm,' ',splitE_dispChoice_nm,': R x E non-default'];
+                        disp([num2str(n_regs.(task_id_nm)),') choice: R x E non-default option ']);
+                        % if derivative added => add derivatives
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                    otherwise
+                        error('not ready yet');
+                end
+                
+                % (reward)*(effort) for chosen option
+                switch GLMprm.choice.(task_id_nm).(RP_dispChoice_nm).(splitE_dispChoice_nm).R_level_x_E_chosen
+                    case 0
+                    case 1 % (R level)*(effort level) chosen option
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                        reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG choice ',RP_dispChoice_nm,' ',splitE_dispChoice_nm,': R x E chosen'];
+                        disp([num2str(n_regs.(task_id_nm)),') choice: R x E chosen ']);
+                        % if derivative added => add derivatives
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                    otherwise
+                        error('not ready yet');
+                end
+                
+                % (punishment)*(effort) for high effort option
+                switch GLMprm.choice.(task_id_nm).(RP_dispChoice_nm).(splitE_dispChoice_nm).P_level_x_E_varOption
+                    case 0
+                    case 1 % (P level)*(effort level) high E option
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                        reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG choice ',RP_dispChoice_nm,' ',splitE_dispChoice_nm,': P x E non-default'];
+                        disp([num2str(n_regs.(task_id_nm)),') choice: P x E non-default option ']);
+                        % if derivative added => add derivatives
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                    otherwise
+                        error('not ready yet');
+                end
+                
+                % (punishment)*(effort) for chosen option
+                switch GLMprm.choice.(task_id_nm).(RP_dispChoice_nm).(splitE_dispChoice_nm).P_level_x_E_chosen
+                    case 0
+                    case 1 % (P level)*(effort level) chosen option
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                        reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG choice ',RP_dispChoice_nm,' ',splitE_dispChoice_nm,': P x E chosen'];
+                        disp([num2str(n_regs.(task_id_nm)),') choice: P x E chosen ']);
+                        % if derivative added => add derivatives
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                    otherwise
+                        error('not ready yet');
+                end
+                
                 % net value chosen option
                 switch GLMprm.choice.(task_id_nm).(RP_dispChoice_nm).(splitE_dispChoice_nm).NV_chosen
                     case 0
@@ -1333,6 +1411,84 @@ for iEpm = 1:length(Epm)
                         end
                         % if derivative added => add derivatives
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                end
+                
+                % (money)*(effort) for high effort option
+                switch GLMprm.chosen.(task_id_nm).(RP_dispChosen_nm).(splitE_dispChosen_nm).money_level_x_E_varOption
+                    case 0
+                    case 1 % (money level)*(effort level) high E option
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                        reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG chosen ',RP_dispChosen_nm,' ',splitE_dispChosen_nm,': money x effort non-default'];
+                        disp([num2str(n_regs.(task_id_nm)),') chosen: money x effort non-default option ']);
+                        % if derivative added => add derivatives
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                    otherwise
+                        error('not ready yet');
+                end
+                
+                % (money)*(effort) for chosen option
+                switch GLMprm.chosen.(task_id_nm).(RP_dispChosen_nm).(splitE_dispChosen_nm).money_level_x_E_chosen
+                    case 0
+                    case 1 % (money level)*(effort level) chosen option
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                        reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG chosen ',RP_dispChosen_nm,' ',splitE_dispChosen_nm,': money x effort chosen'];
+                        disp([num2str(n_regs.(task_id_nm)),') chosen: money x effort chosen ']);
+                        % if derivative added => add derivatives
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                    otherwise
+                        error('not ready yet');
+                end
+                
+                % (reward)*(effort) for high effort option
+                switch GLMprm.chosen.(task_id_nm).(RP_dispChosen_nm).(splitE_dispChosen_nm).R_level_x_E_varOption
+                    case 0
+                    case 1 % (R level)*(effort level) high E option
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                        reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG chosen ',RP_dispChosen_nm,' ',splitE_dispChosen_nm,': R x E non-default'];
+                        disp([num2str(n_regs.(task_id_nm)),') chosen: R x E non-default option ']);
+                        % if derivative added => add derivatives
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                    otherwise
+                        error('not ready yet');
+                end
+                
+                % (reward)*(effort) for chosen option
+                switch GLMprm.chosen.(task_id_nm).(RP_dispChosen_nm).(splitE_dispChosen_nm).R_level_x_E_chosen
+                    case 0
+                    case 1 % (R level)*(effort level) chosen option
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                        reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG chosen ',RP_dispChosen_nm,' ',splitE_dispChosen_nm,': R x E chosen'];
+                        disp([num2str(n_regs.(task_id_nm)),') chosen: R x E chosen ']);
+                        % if derivative added => add derivatives
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                    otherwise
+                        error('not ready yet');
+                end
+                
+                % (punishment)*(effort) for high effort option
+                switch GLMprm.chosen.(task_id_nm).(RP_dispChosen_nm).(splitE_dispChosen_nm).P_level_x_E_varOption
+                    case 0
+                    case 1 % (P level)*(effort level) high E option
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                        reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG chosen ',RP_dispChosen_nm,' ',splitE_dispChosen_nm,': P x E non-default'];
+                        disp([num2str(n_regs.(task_id_nm)),') chosen: P x E non-default option ']);
+                        % if derivative added => add derivatives
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                    otherwise
+                        error('not ready yet');
+                end
+                
+                % (punishment)*(effort) for chosen option
+                switch GLMprm.chosen.(task_id_nm).(RP_dispChosen_nm).(splitE_dispChosen_nm).P_level_x_E_chosen
+                    case 0
+                    case 1 % (P level)*(effort level) chosen option
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                        reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG chosen ',RP_dispChosen_nm,' ',splitE_dispChosen_nm,': P x E chosen'];
+                        disp([num2str(n_regs.(task_id_nm)),') chosen: P x E chosen ']);
+                        % if derivative added => add derivatives
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                    otherwise
+                        error('not ready yet');
                 end
                 
                 % net value chosen option
