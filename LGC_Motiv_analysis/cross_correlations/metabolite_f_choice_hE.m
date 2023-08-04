@@ -45,6 +45,7 @@ col.E3 = [44 162 95]./255;
 [metabolite_allSubs,...
     MRS_ROI_nm, metabolite_nm] = metabolite_extraction(study_nm, subject_id);
 goodSubs = ~isnan(metabolite_allSubs);
+[metabolite_nm_bis] = metab_div_rnm(metabolite_nm);
 
 for iT = 1:nTasks
      task_nm = tasks{iT};
@@ -137,8 +138,9 @@ for iT = 1:nTasks
      line([0.5 0.5],ylim(),...
          'Color','k','LineStyle','-',...
          'LineWidth',lWidth);
+     xlim([0 1]);
      xlabel(['Choices (%) - ',task_nm]);
-     ylabel([MRS_ROI_nm,' ', metabolite_nm]);
+     ylabel([MRS_ROI_nm,' ', metabolite_nm_bis]);
      legend_size(pSize);
      
      
@@ -162,7 +164,7 @@ for iT = 1:nTasks
              'Color','k','LineStyle','-',...
              'LineWidth',lWidth);
          xlabel([E_nm,' choices (%) - ',task_nm]);
-         ylabel([MRS_ROI_nm,' ', metabolite_nm]);
+         ylabel([MRS_ROI_nm,' ', metabolite_nm_bis]);
          legend_size(pSize);
      end % effort level loop
 

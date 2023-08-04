@@ -53,17 +53,22 @@ betas.subList = subject_id;
 [dmPFC_ROI_infos] = load_dmPFC_ROI();
 
 %% load BOLD for each ROI of interest
-GLM = 94;
+GLM = 128;
 % [VS_trial_b_trial] = extract_ROI_betas_onsets_only(computerRoot,...
 %     study_nm, subject_id, condition, GLM,...
 %     VS_ROI_infos);
 % [dmPFC_trial_b_trial] = extract_ROI_betas_onsets_only(computerRoot,...
 %     study_nm, subject_id, condition, GLM,...
 %     dmPFC_ROI_infos);
-ROI_trialPerTrial = load(fullfile(resultFolder_a,'ROI','ROI_BOLDperTrial_GLM94_65subs_VS_dmPFC.mat'),...
-    'VS_trial_b_trial','dmPFC_trial_b_trial');
-VS_trial_b_trial = ROI_trialPerTrial.VS_trial_b_trial;
-dmPFC_trial_b_trial = ROI_trialPerTrial.dmPFC_trial_b_trial;
+% ROI_trialPerTrial = load(fullfile(resultFolder_a,'ROI','ROI_BOLDperTrial_GLM94_65subs_VS_dmPFC.mat'),...
+%     'VS_trial_b_trial','dmPFC_trial_b_trial');
+% VS_trial_b_trial = ROI_trialPerTrial.VS_trial_b_trial;
+% dmPFC_trial_b_trial = ROI_trialPerTrial.dmPFC_trial_b_trial;
+ROI_folder = fullfile('P:','boulot','postdoc_CarmenSandi','results','ROI');
+VS_trial_b_trial = getfield(load([ROI_folder,filesep,...
+    'VS_Pauli_GLM128_trialBtrial_63subs.mat']),'ROI_trial_b_trial');
+dmPFC_trial_b_trial = getfield(load([ROI_folder,filesep,...
+    'dmPFC_from_GLM104_GLM128_trialBtrial_63subs.mat']),'ROI_trial_b_trial');
 
 %% initialize variables of interest
 task_names = {'Ep','Em','EpEm'};
@@ -129,8 +134,10 @@ for iS = 1:NS
             % extract choice (high/low) and VS/dmPFC BOLD activity for each trial
             [choice_highE_tmp] = extract_choice_hE(subBehaviorFolder,...
                 sub_nm, run_nm, task_fullName);
-            VS_tmp = VS_trial_b_trial.VS.(task_nm_tmp).(run_nm_bis).choice(:,iS);
-            dmPFC_tmp = dmPFC_trial_b_trial.dmPFC.(task_nm_tmp).(run_nm_bis).choice(:,iS);
+            %             VS_tmp = VS_trial_b_trial.VS.(task_nm_tmp).(run_nm_bis).choice(:,iS);
+            VS_tmp = VS_trial_b_trial.striatum.(task_nm_tmp).(run_nm_bis).choice(:,iS);
+            %             dmPFC_tmp = dmPFC_trial_b_trial.dmPFC.(task_nm_tmp).(run_nm_bis).choice(:,iS);
+            dmPFC_tmp = dmPFC_trial_b_trial.GLM104_dmPFC_EpConjEm_Ech_pFWE005voxelCorr.(task_nm_tmp).(run_nm_bis).choice(:,iS);
             % distribute variables in the output
             switch task_nm_tmp
                 case 'Ep'
@@ -184,6 +191,16 @@ for iT = 1:nTasks
     [~,pval.sigmo_mdl.(task_nm_tmp).b0] = ttest(betas.sigmo_mdl.(task_nm_tmp).b0);
     [~,pval.sigmo_mdl.(task_nm_tmp).bVS] = ttest(betas.sigmo_mdl.(task_nm_tmp).bVS);
     [~,pval.sigmo_mdl.(task_nm_tmp).bdmPFC] = ttest(betas.sigmo_mdl.(task_nm_tmp).bdmPFC);
+    
+    %% average betas
+    [betas.mean.linear_mdl.(task_nm_tmp).bVS,...
+        betas.sem.linear_mdl.(task_nm_tmp).bVS] = mean_sem_sd(betas.linear_mdl.(task_nm_tmp).bVS,2);
+    [betas.mean.linear_mdl.(task_nm_tmp).bdmPFC,...
+        betas.sem.linear_mdl.(task_nm_tmp).bdmPFC] = mean_sem_sd(betas.linear_mdl.(task_nm_tmp).bdmPFC,2);
+    [betas.mean.sigmo_mdl.(task_nm_tmp).bVS,...
+        betas.sem.sigmo_mdl.(task_nm_tmp).bVS] = mean_sem_sd(betas.sigmo_mdl.(task_nm_tmp).bVS,2);
+    [betas.mean.sigmo_mdl.(task_nm_tmp).bdmPFC,...
+        betas.sem.sigmo_mdl.(task_nm_tmp).bdmPFC] = mean_sem_sd(betas.sigmo_mdl.(task_nm_tmp).bdmPFC,2);
 end
 
 end % function

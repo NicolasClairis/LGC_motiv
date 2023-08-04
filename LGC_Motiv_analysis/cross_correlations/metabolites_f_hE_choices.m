@@ -181,9 +181,9 @@ for iT = 1:nTasks
             sem_metabolites.(task_nm).midSplit.(metab_nm).hE);
         % shape
         low_hdl.LineWidth = lWidth;
-        low_hdl.Color = orange;
+        low_hdl.Color = lightBlue;
         high_hdl.LineWidth = lWidth;
-        high_hdl.Color = lightBlue;
+        high_hdl.Color = orange;
 
         % add a line on top if the p.value is significant
         if pval.(task_nm).midSplit.(metab_nm) < 0.05
