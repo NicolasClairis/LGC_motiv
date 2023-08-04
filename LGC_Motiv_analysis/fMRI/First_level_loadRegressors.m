@@ -132,8 +132,8 @@ money_amount_right = behavioralDataStruct.(task_behavioral_id).choiceOptions.mon
 money_amount_sum = money_amount_left + money_amount_right;
 money_amount_varOption = money_amount_left.*(defaultSide == 1) + money_amount_right.*(defaultSide == -1);
 abs_money_amount_varOption = abs(money_amount_varOption);
-money_level_left_v0 = behavioralDataStruct.(task_behavioral_id).choiceOptions.R.left.*RP_var;
-money_level_right_v0 = behavioralDataStruct.(task_behavioral_id).choiceOptions.R.right.*RP_var;
+money_level_left_v0 = behavioralDataStruct.(task_behavioral_id).choiceOptions.R.left;
+money_level_right_v0 = behavioralDataStruct.(task_behavioral_id).choiceOptions.R.right;
 money_amount_fixedOption = money_amount_left.*(defaultSide == -1) + money_amount_right.*(defaultSide == 1);
 R_amount_varOption = money_amount_varOption.*(RP_var == 1);
 P_amount_varOption = money_amount_varOption.*(RP_var == -1);
@@ -143,13 +143,19 @@ P_amount_varOption = money_amount_varOption.*(RP_var == -1);
     money_level_left_v0, money_level_right_v0, RP_var);
 
 % extract other relevant variables
-money_level_varOption = money_level_left.*(defaultSide == 1) +...
-    money_level_right.*(defaultSide == -1);
+money_level_varOption = (money_level_left.*(defaultSide == 1) +...
+    money_level_right.*(defaultSide == -1)) + 4*(RP_var == 1); % add 4 to distinguish rewards and punishments
 money_level_fixedOption = money_level_left.*(defaultSide == -1) +...
-    money_level_right.*(defaultSide == 1);
-abs_money_level_varOption = abs(money_level_varOption);
-R_level_varOption = money_level_varOption.*(RP_var == 1);
-P_level_varOption = money_level_varOption.*(RP_var == -1);
+    money_level_right.*(defaultSide == 1) + 4*(RP_var == 1); % add 4 to distinguish rewards and punishments
+
+% consider that levels of reward (R1 to R4) are equivalent to levels of punishments (P1 to P4) and pool them together
+abs_money_level_varOption = (money_level_left.*(defaultSide == 1) +...
+    money_level_right.*(defaultSide == -1));
+
+R_level_varOption = (money_level_left.*(defaultSide == 1) +...
+    money_level_right.*(defaultSide == -1)).*(RP_var == 1);
+P_level_varOption = (money_level_left.*(defaultSide == 1) +...
+    money_level_right.*(defaultSide == -1)).*(RP_var == -1);
 % loading effort choice
 E_left = behavioralDataStruct.(task_behavioral_id).choiceOptions.E.left;
 E_right = behavioralDataStruct.(task_behavioral_id).choiceOptions.E.right;
@@ -170,16 +176,33 @@ run_nm = num2str(jRun); % careful: use jRun for the run name
 E_chosen = behavioralDataStruct.(task_behavioral_id).E_chosen;
 E_unchosen = E_left.*(choice_LR == 1) + E_right.*(choice_LR == -1);
 E_chosen_min_E_unchosen = E_chosen - E_unchosen;
+
+% money levels
+money_level_chosen = money_level_left.*(choice_LR == -1) + money_level_right.*(choice_LR == 1) + 4*(RP_var == 1);% add 4 to distinguish rewards and punishments
+money_level_unchosen = money_level_left.*(choice_LR == 1) + money_level_right.*(choice_LR == -1) + 4*(RP_var == 1);% add 4 to distinguish rewards and punishments
+% consider that levels of reward (R1 to R4) are equivalent to levels of punishments (P1 to P4) and pool them together
+abs_money_level_chosen = money_level_left.*(choice_LR == -1) + money_level_right.*(choice_LR == 1);
+abs_money_level_unchosen = money_level_left.*(choice_LR == 1) + money_level_right.*(choice_LR == -1);
+moneyChosen_min_moneyUnchosen_level = money_level_chosen - money_level_unchosen;
+absMoneyChosen_min_moneyUnchosen_level = abs_money_level_chosen - abs_money_level_unchosen;
+% money chosen - money fixed option
+moneyChosen_min_moneyFixed_level = money_level_chosen - money_level_fixedOption;
+R_level_chosen = (money_level_left.*(choice_LR == -1) + money_level_right.*(choice_LR == 1)).*(RP_var == 1);
+P_level_chosen = (money_level_left.*(choice_LR == -1) + money_level_right.*(choice_LR == 1)).*(RP_var == -1);
+% E chosen - E fixed option
+Ech_min_Efixed = E_chosen - E_fixedOption;
+
+% amount variables
 money_amount_chosen = behavioralDataStruct.(task_behavioral_id).R_chosen.*RP_var;
-money_level_chosen = money_level_left.*(choice_LR == -1) + money_level_right.*(choice_LR == 1);
-money_level_unchosen = money_level_left.*(choice_LR == 1) + money_level_right.*(choice_LR == -1);
-abs_money_amount_chosen = abs(money_amount_chosen);
 money_amount_unchosen = money_amount_left.*(choice_LR == 1) + money_amount_right.*(choice_LR == -1);
+% money chosen - money unchosen option
+moneyChosen_min_moneyFixed_amount = money_amount_chosen - money_amount_fixedOption;
+moneyChosen_min_moneyUnchosen_amount = money_amount_chosen - money_amount_unchosen;
+absMoneyChosen_min_moneyUnchosen_amount = abs(money_amount_chosen - money_amount_unchosen);
+abs_money_amount_chosen = abs(money_amount_chosen);
 abs_money_amount_unchosen = abs(money_amount_unchosen);
 R_amount_chosen = money_amount_chosen.*(RP_var == 1);
 P_amount_chosen = money_amount_chosen.*(RP_var == -1);
-R_level_chosen = money_level_chosen.*(RP_var == 1);
-P_level_chosen = money_level_chosen.*(RP_var == -1);
 
 switch task_fullName
     case 'physical'
@@ -241,21 +264,6 @@ switch task_fullName
         latency = latency_tmp.allTrials;
 end
 
-% reward levels = 0/1/2/3 and punishment levels = 1/2/3/4 in money_level
-% therefore you need to remove 1 to punishments for absolute levels to
-% match with rewards and have only 0/1/2/3 levels
-abs_money_level_chosen = abs(money_level_chosen.*(RP_var == 1) + (money_level_chosen - 1).*(RP_var == -1));
-abs_money_level_unchosen = abs(money_level_unchosen.*(RP_var == 1) + (money_level_unchosen - 1).*(RP_var == -1));
-% money chosen - money unchosen option
-moneyChosen_min_moneyUnchosen_amount = money_amount_chosen - money_amount_unchosen;
-absMoneyChosen_min_moneyUnchosen_amount = abs(money_amount_chosen - money_amount_unchosen);
-moneyChosen_min_moneyUnchosen_level = money_level_chosen - money_level_unchosen;
-absMoneyChosen_min_moneyUnchosen_level = abs_money_level_chosen - abs_money_level_unchosen;
-% money chosen - money fixed option
-moneyChosen_min_moneyFixed_amount = money_amount_chosen - money_amount_fixedOption;
-moneyChosen_min_moneyFixed_level = money_level_chosen - money_level_fixedOption;
-% E chosen - E fixed option
-Ech_min_Efixed = E_chosen - E_fixedOption;
 % loading feedback
 money_amount_obtained = behavioralDataStruct.(task_behavioral_id).gain; % could be different from reward chosen (in case of failure) but mostly similar
 win_vs_loss_fbk = money_amount_obtained > 0;
