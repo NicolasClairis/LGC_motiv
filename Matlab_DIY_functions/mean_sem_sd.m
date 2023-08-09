@@ -16,6 +16,11 @@ function[meanVar, semVar, sdVar]=mean_sem_sd(var, dim)
 %
 % sd: standard error deviation along dim
 
+if ~exist('dim','var') || isempty(dim)
+    error('Please provide a value for ''dim''.');
+end
+
+%% extract mean, SEM and SD
 meanVar = mean(var, dim,'omitnan');
 semVar = sem(var, dim);
 sdVar = std(var, 0, dim,'omitnan');
