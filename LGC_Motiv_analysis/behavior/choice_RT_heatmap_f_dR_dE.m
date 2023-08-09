@@ -133,6 +133,13 @@ choice_range = [0 1];
 RT_range = [1 1.5];
 choice_fig = fig;
 RT_fig = fig;
+% define which colormap you want to use (see full list here if you are not
+% happy with the selection:
+% https://ch.mathworks.com/help/matlab/ref/colormap.html)
+% color_range_choices = 'hot';
+% color_range_choices = 'turbo';
+% color_range_choices = 'jet';
+color_range_choices = redblue(45);
 
 for iTask = 1:nTasks
     task_nm = task_names{iTask};
@@ -142,12 +149,7 @@ for iTask = 1:nTasks
     iChoiceLine = 1;
     choice_plot_hdl = subplot(nLines, nTasks, iTask + nTasks*(iChoiceLine - 1));
     imagesc(choice_avg.(task_nm), choice_range);
-    % define which colormap you want to use (see full list here if you are not
-    % happy with the selection:
-    % https://ch.mathworks.com/help/matlab/ref/colormap.html)
-    % colormap hot;
-    % colormap jet;
-    colormap(choice_plot_hdl,redblue(45));
+    colormap(choice_plot_hdl,color_range_choices);
     xticks(1:n_dE);
     xticklabels({'E1','E2','E3'});
     yticks(1:n_dInc)
@@ -160,12 +162,7 @@ for iTask = 1:nTasks
     iChoiceLine = 2;
     choice_fit_plot_hdl = subplot(nLines, nTasks, iTask + nTasks*(iChoiceLine - 1));
     imagesc(choice_fit_avg.(task_nm), choice_range);
-    % define which colormap you want to use (see full list here if you are not
-    % happy with the selection:
-    % https://ch.mathworks.com/help/matlab/ref/colormap.html)
-    % colormap hot;
-    % colormap jet;
-    colormap(choice_fit_plot_hdl,redblue(45));
+    colormap(choice_fit_plot_hdl,color_range_choices);
     xticks(1:n_dE);
     xticklabels({'E1','E2','E3'});
     yticks(1:n_dInc)
@@ -179,13 +176,9 @@ for iTask = 1:nTasks
     iRTline = 1;
     RT_plot_hdl = subplot(nLines, nTasks, iTask +  + nTasks*(iRTline - 1));
     imagesc(RT_avg.(task_nm), RT_range);
-    % define which colormap you want to use (see full list here if you are not
-    % happy with the selection:
-    % https://ch.mathworks.com/help/matlab/ref/colormap.html)
-    % colormap hot;
-    % colormap jet;
+    colormap(RT_plot_hdl,color_range_choices);
     % revert color axis for RT (so that faster is shown with hoter colors)
-    colormap(RT_plot_hdl,flipud(redblue(45)));
+    RT_plot_hdl.Colormap = flipud(RT_plot_hdl.Colormap);
     xticks(1:n_dE);
     xticklabels({'E1','E2','E3'});
     yticks(1:n_dInc)
@@ -198,13 +191,9 @@ for iTask = 1:nTasks
     iRTline = 2;
     RT_fit_plot_hdl = subplot(nLines, nTasks, iTask +  + nTasks*(iRTline - 1));
     imagesc(RT_fit_avg.(task_nm), RT_range);
-    % define which colormap you want to use (see full list here if you are not
-    % happy with the selection:
-    % https://ch.mathworks.com/help/matlab/ref/colormap.html)
-    % colormap hot;
-    % colormap jet;
+    colormap(RT_fit_plot_hdl,color_range_choices);
     % revert color axis for RT (so that faster is shown with hoter colors)
-    colormap(RT_fit_plot_hdl,flipud(redblue(45)));
+    RT_fit_plot_hdl.Colormap = flipud(RT_fit_plot_hdl.Colormap);
     xticks(1:n_dE);
     xticklabels({'E1','E2','E3'});
     yticks(1:n_dInc)
