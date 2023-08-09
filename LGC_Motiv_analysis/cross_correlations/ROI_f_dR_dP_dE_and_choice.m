@@ -10,10 +10,11 @@ computerRoot = LGCM_root_paths;
 studyFolder = [computerRoot, study_nm, filesep];
 
 %% load ROI
-[ROI_trial_b_trial, ROI_subList,...
-    ROI_nm, ROI_short_nm,...
-    ~, timePeriod_nm] = extract_ROI_betas_onsets_only_bis(computerRoot,...
-    study_nm, subject_id, condition);
+[condition_for_fMRI_extraction] = condition_for_fMRI(condition);
+% [ROI_trial_b_trial, ROI_subList,...
+%     ROI_nm, ROI_short_nm,...
+%     ~, timePeriod_nm] = extract_ROI_betas_onsets_only_bis(computerRoot,...
+%     study_nm, subject_id, condition_for_fMRI_extraction);
 
 %% main parameters of interest
 nRunsPerTask = 2;
@@ -34,15 +35,15 @@ for iT = 1:nTasks
     task_nm1 = tasks{iT};
     % data for all trials
     [fMRI_ROI.(task_nm1).allTrials,...
-        fMRI_ROI_fit.f_dR.(task_nm1).allTrials,...
-        fMRI_ROI_fit.f_dP.(task_nm1).allTrials,...
-        fMRI_ROI_fit.f_dE.(task_nm1).allTrials,...
-        fMRI_ROI_fit.f_dR_lowEch.(task_nm1).allTrials,...
-        fMRI_ROI_fit.f_dR_highEch.(task_nm1).allTrials,...
-        fMRI_ROI_fit.f_dP_lowEch.(task_nm1).allTrials,...
-        fMRI_ROI_fit.f_dP_highEch.(task_nm1).allTrials,...
-        fMRI_ROI_fit.f_dE_lowEch.(task_nm1).allTrials,...
-        fMRI_ROI_fit.f_dE_highEch.(task_nm1).allTrials,...
+        fMRI_ROI_fit.(task_nm1).f_dR.allTrials,...
+        fMRI_ROI_fit.(task_nm1).f_dP.allTrials,...
+        fMRI_ROI_fit.(task_nm1).f_dE.allTrials,...
+        fMRI_ROI_fit.(task_nm1).f_dR_lowEch.allTrials,...
+        fMRI_ROI_fit.(task_nm1).f_dR_highEch.allTrials,...
+        fMRI_ROI_fit.(task_nm1).f_dP_lowEch.allTrials,...
+        fMRI_ROI_fit.(task_nm1).f_dP_highEch.allTrials,...
+        fMRI_ROI_fit.(task_nm1).f_dE_lowEch.allTrials,...
+        fMRI_ROI_fit.(task_nm1).f_dE_highEch.allTrials,...
         choice_hE.(task_nm1).allTrials,...
         RP.(task_nm1).allTrials,...
         hR_level.(task_nm1).allTrials, Rchosen.(task_nm1).allTrials,...
@@ -113,13 +114,13 @@ for iS = 1:NS
     subBehaviorFolder = [studyFolder, 'CID',sub_nm, filesep, 'behavior',filesep];
 
     % extract runs
-    [runsStruct, n_runs] = runs_definition(study_nm, sub_nm, 'behavior');
+    [runsStruct, n_runs] = runs_definition(study_nm, sub_nm, condition);
     okRuns = runsStruct.runsToKeep;
     taskNames = runsStruct.tasks;
     for iRun = 1:n_runs
+        task_nm2 = taskNames{iRun};
         kRun = okRuns(iRun);
         run_nm = num2str(kRun);
-        task_nm2 = taskNames{kRun};
         switch kRun
             case {1,2}
                 jRun = 1;
@@ -171,11 +172,11 @@ for iS = 1:NS
             hR_level.(task_nm3).allTrials(R_okTrials,iS)];
         betas_R_tmp = glmfit(x_R_regs,...
             fMRI_ROI.(task_nm3).allTrials(R_okTrials, iS),...
-            'normal');
+            'normal','Constant','off');
         betas.(task_nm3).ROI_f_dR.allTrials.b_r1(iS) = betas_R_tmp(1);
         betas.(task_nm3).ROI_f_dR.allTrials.b_r2(iS) = betas_R_tmp(2);
         betas.(task_nm3).ROI_f_dR.allTrials.bR(iS) = betas_R_tmp(3);
-        fMRI_ROI_fit.f_dR.(task_nm3).allTrials(R_okTrials, iS) = glmval(betas_R_tmp, x_R_regs, 'identity');
+        fMRI_ROI_fit.(task_nm3).f_dR.allTrials(R_okTrials, iS) = glmval(betas_R_tmp, x_R_regs, 'identity','Constant','off');
         
         % punishment
         P_okTrials = ~isnan(run1_cstt.(task_nm3).allTrials(:,iS).*hP_level.(task_nm3).allTrials(:,iS).*fMRI_ROI.(task_nm3).allTrials(:, iS));
@@ -184,11 +185,11 @@ for iS = 1:NS
             hP_level.(task_nm3).allTrials(P_okTrials,iS)];
         betas_P_tmp = glmfit(x_P_regs,...
             fMRI_ROI.(task_nm3).allTrials(P_okTrials, iS),...
-            'normal');
+            'normal','Constant','off');
         betas.(task_nm3).ROI_f_dP.allTrials.b_r1(iS) = betas_P_tmp(1);
         betas.(task_nm3).ROI_f_dP.allTrials.b_r2(iS) = betas_P_tmp(2);
         betas.(task_nm3).ROI_f_dP.allTrials.bP(iS) = betas_P_tmp(3);
-        fMRI_ROI_fit.f_dP.(task_nm3).allTrials(P_okTrials, iS) = glmval(betas_P_tmp, x_P_regs, 'identity');
+        fMRI_ROI_fit.(task_nm3).f_dP.allTrials(P_okTrials, iS) = glmval(betas_P_tmp, x_P_regs, 'identity','Constant','off');
         
         % effort
         E_okTrials = ~isnan(run1_cstt.(task_nm3).allTrials(:,iS).*hE_level.(task_nm3).allTrials(:,iS).*fMRI_ROI.(task_nm3).allTrials(:, iS));
@@ -197,92 +198,93 @@ for iS = 1:NS
             hE_level.(task_nm3).allTrials(E_okTrials,iS)];
         betas_E_tmp = glmfit(x_E_regs,...
             fMRI_ROI.(task_nm3).allTrials(E_okTrials, iS),...
-            'normal');
+            'normal','Constant','off');
         betas.(task_nm3).ROI_f_dE.allTrials.b_r1(iS) = betas_E_tmp(1);
         betas.(task_nm3).ROI_f_dE.allTrials.b_r2(iS) = betas_E_tmp(2);
         betas.(task_nm3).ROI_f_dE.allTrials.bE(iS) = betas_E_tmp(3);
-        fMRI_ROI_fit.f_dE.(task_nm3).allTrials(E_okTrials, iS) = glmval(betas_E_tmp, x_E_regs, 'identity');
-        
+        fMRI_ROI_fit.(task_nm3).f_dE.allTrials(E_okTrials, iS) = glmval(betas_E_tmp, x_E_regs, 'identity','Constant','off');        
         
         % fits for dR/dP/dE*choice
+        choice_hE_tmp = choice_hE.(task_nm3).allTrials(:, iS) == 1;
+        choice_lE_tmp = choice_hE.(task_nm3).allTrials(:, iS) == 0;
         % reward
         % high E chosen
-        R_hEch_okTrials = ~isnan(R_okTrials.*(choice_hE.(task_nm3).allTrials(:, iS) == 1));
+        R_hEch_okTrials = (R_okTrials.*choice_hE_tmp) == 1;
         x_R_hEch_regs = [run1_cstt.(task_nm3).allTrials(R_hEch_okTrials,iS),...
             run2_cstt.(task_nm3).allTrials(R_hEch_okTrials,iS),...
             hR_level.(task_nm3).allTrials(R_hEch_okTrials,iS)];
         betas_R_hEch_tmp = glmfit(x_R_hEch_regs,...
             fMRI_ROI.(task_nm3).allTrials(R_hEch_okTrials, iS),...
-            'normal');
+            'normal','Constant','off');
         betas.(task_nm3).ROI_f_dR.highEch.b_r1(iS) = betas_R_hEch_tmp(1);
         betas.(task_nm3).ROI_f_dR.highEch.b_r2(iS) = betas_R_hEch_tmp(2);
         betas.(task_nm3).ROI_f_dR.highEch.bR(iS) = betas_R_hEch_tmp(3);
-        fMRI_ROI_fit.f_dR.(task_nm3).highEch(R_hEch_okTrials, iS) = glmval(betas_R_hEch_tmp, x_R_hEch_regs, 'identity');
+        fMRI_ROI_fit.(task_nm3).f_dR_highEch.allTrials(R_hEch_okTrials, iS) = glmval(betas_R_hEch_tmp, x_R_hEch_regs, 'identity','Constant','off');
         % low E chosen
-        R_lEch_okTrials = ~isnan(R_okTrials.*(choice_hE.(task_nm3).allTrials(:, iS) == 0));
+        R_lEch_okTrials = (R_okTrials.*choice_lE_tmp) == 1;
         x_R_lEch_regs = [run1_cstt.(task_nm3).allTrials(R_lEch_okTrials,iS),...
             run2_cstt.(task_nm3).allTrials(R_lEch_okTrials,iS),...
             hR_level.(task_nm3).allTrials(R_lEch_okTrials,iS)];
         betas_R_lEch_tmp = glmfit(x_R_lEch_regs,...
             fMRI_ROI.(task_nm3).allTrials(R_lEch_okTrials, iS),...
-            'normal');
+            'normal','Constant','off');
         betas.(task_nm3).ROI_f_dR.lowEch.b_r1(iS) = betas_R_lEch_tmp(1);
         betas.(task_nm3).ROI_f_dR.lowEch.b_r2(iS) = betas_R_lEch_tmp(2);
         betas.(task_nm3).ROI_f_dR.lowEch.bR(iS) = betas_R_lEch_tmp(3);
-        fMRI_ROI_fit.f_dR.(task_nm3).lowEch(R_lEch_okTrials, iS) = glmval(betas_R_lEch_tmp, x_R_lEch_regs, 'identity');
+        fMRI_ROI_fit.(task_nm3).f_dR_lowEch.allTrials(R_lEch_okTrials, iS) = glmval(betas_R_lEch_tmp, x_R_lEch_regs, 'identity','Constant','off');
         
         % punishment
         % high E chosen
-        P_hEch_okTrials = ~isnan(P_okTrials.*(choice_hE.(task_nm3).allTrials(:, iS) == 1));
+        P_hEch_okTrials = (P_okTrials.*choice_hE_tmp) == 1;
         x_P_hEch_regs = [run1_cstt.(task_nm3).allTrials(P_hEch_okTrials,iS),...
             run2_cstt.(task_nm3).allTrials(P_hEch_okTrials,iS),...
             hP_level.(task_nm3).allTrials(P_hEch_okTrials,iS)];
         betas_P_hEch_tmp = glmfit(x_P_hEch_regs,...
             fMRI_ROI.(task_nm3).allTrials(P_hEch_okTrials, iS),...
-            'normal');
+            'normal','Constant','off');
         betas.(task_nm3).ROI_f_dP.highEch.b_r1(iS) = betas_P_hEch_tmp(1);
         betas.(task_nm3).ROI_f_dP.highEch.b_r2(iS) = betas_P_hEch_tmp(2);
         betas.(task_nm3).ROI_f_dP.highEch.bP(iS) = betas_P_hEch_tmp(3);
-        fMRI_ROI_fit.f_dP.(task_nm3).highEch(P_hEch_okTrials, iS) = glmval(betas_P_hEch_tmp, x_P_hEch_regs, 'identity');
+        fMRI_ROI_fit.(task_nm3).f_dP_highEch.allTrials(P_hEch_okTrials, iS) = glmval(betas_P_hEch_tmp, x_P_hEch_regs, 'identity','Constant','off');
         % low E chosen
-        P_lEch_okTrials = ~isnan(P_okTrials.*(choice_hE.(task_nm3).allTrials(:, iS) == 0));
+        P_lEch_okTrials = (P_okTrials.*choice_lE_tmp) == 1;
         x_P_lEch_regs = [run1_cstt.(task_nm3).allTrials(P_lEch_okTrials,iS),...
             run2_cstt.(task_nm3).allTrials(P_lEch_okTrials,iS),...
             hP_level.(task_nm3).allTrials(P_lEch_okTrials,iS)];
         betas_P_lEch_tmp = glmfit(x_P_lEch_regs,...
             fMRI_ROI.(task_nm3).allTrials(P_lEch_okTrials, iS),...
-            'normal');
+            'normal','Constant','off');
         betas.(task_nm3).ROI_f_dP.lowEch.b_r1(iS) = betas_P_lEch_tmp(1);
         betas.(task_nm3).ROI_f_dP.lowEch.b_r2(iS) = betas_P_lEch_tmp(2);
         betas.(task_nm3).ROI_f_dP.lowEch.bP(iS) = betas_P_lEch_tmp(3);
-        fMRI_ROI_fit.f_dP.(task_nm3).lowEch(P_lEch_okTrials, iS) = glmval(betas_P_lEch_tmp, x_P_lEch_regs, 'identity');
+        fMRI_ROI_fit.(task_nm3).f_dP_lowEch.allTrials(P_lEch_okTrials, iS) = glmval(betas_P_lEch_tmp, x_P_lEch_regs, 'identity','Constant','off');
         
         
         % effort
         % high E chosen
-        E_hEch_okTrials = ~isnan(E_okTrials.*(choice_hE.(task_nm3).allTrials(:, iS) == 1));
+        E_hEch_okTrials = (E_okTrials.*choice_hE_tmp) == 1;
         x_E_hEch_regs = [run1_cstt.(task_nm3).allTrials(E_hEch_okTrials,iS),...
             run2_cstt.(task_nm3).allTrials(E_hEch_okTrials,iS),...
             hE_level.(task_nm3).allTrials(E_hEch_okTrials,iS)];
         betas_E_hEch_tmp = glmfit(x_E_hEch_regs,...
             fMRI_ROI.(task_nm3).allTrials(E_hEch_okTrials, iS),...
-            'normal');
+            'normal','Constant','off');
         betas.(task_nm3).ROI_f_dE.highEch.b_r1(iS) = betas_E_hEch_tmp(1);
         betas.(task_nm3).ROI_f_dE.highEch.b_r2(iS) = betas_E_hEch_tmp(2);
         betas.(task_nm3).ROI_f_dE.highEch.bE(iS) = betas_E_hEch_tmp(3);
-        fMRI_ROI_fit.f_dE.(task_nm3).highEch(E_hEch_okTrials, iS) = glmval(betas_E_hEch_tmp, x_E_hEch_regs, 'identity');
+        fMRI_ROI_fit.(task_nm3).f_dE_highEch.allTrials(E_hEch_okTrials, iS) = glmval(betas_E_hEch_tmp, x_E_hEch_regs, 'identity','Constant','off');
         % low E chosen
-        E_lEch_okTrials = ~isnan(E_okTrials.*(choice_hE.(task_nm3).allTrials(:, iS) == 0));
+        E_lEch_okTrials = (E_okTrials.*choice_lE_tmp) == 1;
         x_E_lEch_regs = [run1_cstt.(task_nm3).allTrials(E_lEch_okTrials,iS),...
             run2_cstt.(task_nm3).allTrials(E_lEch_okTrials,iS),...
             hE_level.(task_nm3).allTrials(E_lEch_okTrials,iS)];
         betas_E_lEch_tmp = glmfit(x_E_lEch_regs,...
             fMRI_ROI.(task_nm3).allTrials(E_lEch_okTrials, iS),...
-            'normal');
+            'normal','Constant','off');
         betas.(task_nm3).ROI_f_dE.lowEch.b_r1(iS) = betas_E_lEch_tmp(1);
         betas.(task_nm3).ROI_f_dE.lowEch.b_r2(iS) = betas_E_lEch_tmp(2);
         betas.(task_nm3).ROI_f_dE.lowEch.bE(iS) = betas_E_lEch_tmp(3);
-        fMRI_ROI_fit.f_dE.(task_nm3).lowEch(E_lEch_okTrials, iS) = glmval(betas_E_lEch_tmp, x_E_lEch_regs, 'identity');
+        fMRI_ROI_fit.(task_nm3).f_dE_lowEch.allTrials(E_lEch_okTrials, iS) = glmval(betas_E_lEch_tmp, x_E_lEch_regs, 'identity','Constant','off');
         
         %% extract data per high effort option features
         % extract data per reward level
@@ -290,7 +292,7 @@ for iS = 1:NS
             R_idx = hR_level.(task_nm3).allTrials(:,iS) == iR;
             fMRI_ROI.(task_nm3).hR_level(iR,iS) = mean(fMRI_ROI.(task_nm3).allTrials(R_idx, iS),1,'omitnan');
             choice_hE.(task_nm3).hR_level(iR,iS) = mean(choice_hE.(task_nm3).allTrials(R_idx, iS),1,'omitnan');
-            fMRI_ROI_fit.(task_nm3).hR_level(iR,iS) = mean(fMRI_ROI_fit.f_dR.(task_nm3).allTrials(R_idx, iS),1,'omitnan');
+            fMRI_ROI_fit.(task_nm3).hR_level(iR,iS) = mean(fMRI_ROI_fit.(task_nm3).f_dR.allTrials(R_idx, iS),1,'omitnan');
         end % reward
 
         % extract data per punishment level
@@ -298,7 +300,7 @@ for iS = 1:NS
             P_idx = hP_level.(task_nm3).allTrials(:,iS) == iP;
             fMRI_ROI.(task_nm3).hP_level(iP,iS) = mean(fMRI_ROI.(task_nm3).allTrials(P_idx, iS),1,'omitnan');
             choice_hE.(task_nm3).hP_level(iP,iS) = mean(choice_hE.(task_nm3).allTrials(P_idx, iS),1,'omitnan');
-            fMRI_ROI_fit.(task_nm3).hP_level(iP,iS) = mean(fMRI_ROI_fit.f_dP.(task_nm3).allTrials(P_idx, iS),1,'omitnan');
+            fMRI_ROI_fit.(task_nm3).hP_level(iP,iS) = mean(fMRI_ROI_fit.(task_nm3).f_dP.allTrials(P_idx, iS),1,'omitnan');
         end % punishment
 
         % extract data per effort level
@@ -306,7 +308,7 @@ for iS = 1:NS
             E_idx = hE_level.(task_nm3).allTrials(:,iS) == iE;
             fMRI_ROI.(task_nm3).hE_level(iE,iS) = mean(fMRI_ROI.(task_nm3).allTrials(E_idx, iS),1,'omitnan');
             choice_hE.(task_nm3).hE_level(iE,iS) = mean(choice_hE.(task_nm3).allTrials(E_idx, iS),1,'omitnan');
-            fMRI_ROI_fit.(task_nm3).hE_level(iE,iS) = mean(fMRI_ROI_fit.f_dE.(task_nm3).allTrials(E_idx, iS),1,'omitnan');
+            fMRI_ROI_fit.(task_nm3).hE_level(iE,iS) = mean(fMRI_ROI_fit.(task_nm3).f_dE.allTrials(E_idx, iS),1,'omitnan');
         end % effort
 
         %% extract data depending on choice (high/low) and high effort option features
@@ -319,8 +321,8 @@ for iS = 1:NS
             fMRI_ROI.(task_nm3).hEch.hR_level(iR,iS) = mean(fMRI_ROI.(task_nm3).allTrials(R_hE_idx, iS),1,'omitnan');
             fMRI_ROI.(task_nm3).lEch.hR_level(iR,iS) = mean(fMRI_ROI.(task_nm3).allTrials(R_lE_idx, iS),1,'omitnan');
             % fit
-            fMRI_ROI_fit.(task_nm3).hEch.hR_level(iR,iS) = mean(fMRI_ROI_fit.f_dR_highEch.(task_nm3).allTrials(R_hE_idx, iS),1,'omitnan');
-            fMRI_ROI_fit.(task_nm3).lEch.hR_level(iR,iS) = mean(fMRI_ROI_fit.f_dR_lowEch.(task_nm3).allTrials(R_lE_idx, iS),1,'omitnan');
+            fMRI_ROI_fit.(task_nm3).hEch.hR_level(iR,iS) = mean(fMRI_ROI_fit.(task_nm3).f_dR_highEch.allTrials(R_hE_idx, iS),1,'omitnan');
+            fMRI_ROI_fit.(task_nm3).lEch.hR_level(iR,iS) = mean(fMRI_ROI_fit.(task_nm3).f_dR_lowEch.allTrials(R_lE_idx, iS),1,'omitnan');
         end
 
         % punishment
@@ -330,8 +332,8 @@ for iS = 1:NS
             fMRI_ROI.(task_nm3).hEch.hP_level(iP,iS) = mean(fMRI_ROI.(task_nm3).allTrials(P_hE_idx, iS),1,'omitnan');
             fMRI_ROI.(task_nm3).lEch.hP_level(iP,iS) = mean(fMRI_ROI.(task_nm3).allTrials(P_lE_idx, iS),1,'omitnan');
             % fit
-            fMRI_ROI_fit.(task_nm3).hEch.hP_level(iR,iS) = mean(fMRI_ROI_fit.f_dP_highEch.(task_nm3).allTrials(P_hE_idx, iS),1,'omitnan');
-            fMRI_ROI_fit.(task_nm3).lEch.hP_level(iR,iS) = mean(fMRI_ROI_fit.f_dP_lowEch.(task_nm3).allTrials(P_lE_idx, iS),1,'omitnan');
+            fMRI_ROI_fit.(task_nm3).hEch.hP_level(iP,iS) = mean(fMRI_ROI_fit.(task_nm3).f_dP_highEch.allTrials(P_hE_idx, iS),1,'omitnan');
+            fMRI_ROI_fit.(task_nm3).lEch.hP_level(iP,iS) = mean(fMRI_ROI_fit.(task_nm3).f_dP_lowEch.allTrials(P_lE_idx, iS),1,'omitnan');
         end
 
         % effort
@@ -341,8 +343,8 @@ for iS = 1:NS
             fMRI_ROI.(task_nm3).hEch.hE_level(iE,iS) = mean(fMRI_ROI.(task_nm3).allTrials(E_hE_idx, iS),1,'omitnan');
             fMRI_ROI.(task_nm3).lEch.hE_level(iE,iS) = mean(fMRI_ROI.(task_nm3).allTrials(E_lE_idx, iS),1,'omitnan');
             % fit
-            fMRI_ROI_fit.(task_nm3).hEch.hE_level(iR,iS) = mean(fMRI_ROI_fit.f_dE_highEch.(task_nm3).allTrials(E_hE_idx, iS),1,'omitnan');
-            fMRI_ROI_fit.(task_nm3).lEch.hE_level(iR,iS) = mean(fMRI_ROI_fit.f_dE_lowEch.(task_nm3).allTrials(E_lE_idx, iS),1,'omitnan');
+            fMRI_ROI_fit.(task_nm3).hEch.hE_level(iE,iS) = mean(fMRI_ROI_fit.(task_nm3).f_dE_highEch.allTrials(E_hE_idx, iS),1,'omitnan');
+            fMRI_ROI_fit.(task_nm3).lEch.hE_level(iE,iS) = mean(fMRI_ROI_fit.(task_nm3).f_dE_lowEch.allTrials(E_lE_idx, iS),1,'omitnan');
         end
     end % task loop
 end % subject loop
@@ -351,6 +353,8 @@ end % subject loop
 [pSize, lWidth, col, mSize] = general_fig_prm;
 figHighE = fig;
 figChoice_x_highE = fig;
+xRange = [0.8 3.2];
+y_ROI_range = [-4.2 6.5];
 
 %% loop through tasks for average + figure
 for iT = 1:nTasks
@@ -360,41 +364,104 @@ for iT = 1:nTasks
     % data split by level of incentive proposed for high effort option
     [mean_fMRI_ROI.(task_nm4).hR_level,...
         sem_fMRI_ROI.(task_nm4).hR_level] = mean_sem_sd(fMRI_ROI.(task_nm4).hR_level, 2);
-    warning('add fit here');
+    [mean_fMRI_ROI_fit.(task_nm4).hR_level,...
+        sem_fMRI_ROI_fit.(task_nm4).hR_level] = mean_sem_sd(fMRI_ROI_fit.(task_nm4).hR_level, 2);
     [mean_choice_hE.(task_nm4).hR_level,...
-        sem_choice_hE.(task_nm4).hR_level] = mean_sem_sd(choice_hE.(task_nm4).hR_level,2);
+        sem_choice_hE.(task_nm4).hR_level] = mean_sem_sd(choice_hE.(task_nm4).hR_level, 2);
     [mean_fMRI_ROI.(task_nm4).hP_level,...
-        sem_fMRI_ROI.(task_nm4).hP_level] = mean_sem_sd(fMRI_ROI.(task_nm4).hP_level,2);
-    warning('add fit here');
+        sem_fMRI_ROI.(task_nm4).hP_level] = mean_sem_sd(fMRI_ROI.(task_nm4).hP_level, 2);
+    [mean_fMRI_ROI_fit.(task_nm4).hP_level,...
+        sem_fMRI_ROI_fit.(task_nm4).hP_level] = mean_sem_sd(fMRI_ROI_fit.(task_nm4).hP_level, 2);
     [mean_choice_hE.(task_nm4).hP_level,...
-        sem_choice_hE.(task_nm4).hP_level] = mean_sem_sd(choice_hE.(task_nm4).hP_level,2);
+        sem_choice_hE.(task_nm4).hP_level] = mean_sem_sd(choice_hE.(task_nm4).hP_level, 2);
     
     % data split by level of effort proposed for high effort option
     [mean_fMRI_ROI.(task_nm4).hE_level,...
-        sem_fMRI_ROI.(task_nm4).hE_level] = mean_sem_sd(fMRI_ROI.(task_nm4).hE_level,2);
-    warning('add fit here');
+        sem_fMRI_ROI.(task_nm4).hE_level] = mean_sem_sd(fMRI_ROI.(task_nm4).hE_level, 2);
+    [mean_fMRI_ROI_fit.(task_nm4).hE_level,...
+        sem_fMRI_ROI_fit.(task_nm4).hE_level] = mean_sem_sd(fMRI_ROI_fit.(task_nm4).hE_level, 2);
     [mean_choice_hE.(task_nm4).hE_level,...
-        sem_choice_hE.(task_nm4).hE_level] = mean_sem_sd(choice_hE.(task_nm4).hE_level,2);
+        sem_choice_hE.(task_nm4).hE_level] = mean_sem_sd(choice_hE.(task_nm4).hE_level, 2);
     
     % data split by incentive*choice
     [mean_fMRI_ROI.(task_nm4).lEch.hR_level,...
-        sem_fMRI_ROI.(task_nm4).lEch.hR_level] = mean_sem_sd(fMRI_ROI.(task_nm4).lEch.hR_level,2);
+        sem_fMRI_ROI.(task_nm4).lEch.hR_level] = mean_sem_sd(fMRI_ROI.(task_nm4).lEch.hR_level, 2);
     [mean_fMRI_ROI.(task_nm4).hEch.hR_level,...
-        sem_fMRI_ROI.(task_nm4).hEch.hR_level] = mean_sem_sd(fMRI_ROI.(task_nm4).hEch.hR_level,2);
+        sem_fMRI_ROI.(task_nm4).hEch.hR_level] = mean_sem_sd(fMRI_ROI.(task_nm4).hEch.hR_level, 2);
     [mean_fMRI_ROI.(task_nm4).lEch.hP_level,...
-        sem_fMRI_ROI.(task_nm4).lEch.hP_level] = mean_sem_sd(fMRI_ROI.(task_nm4).lEch.hP_level,2);
+        sem_fMRI_ROI.(task_nm4).lEch.hP_level] = mean_sem_sd(fMRI_ROI.(task_nm4).lEch.hP_level, 2);
     [mean_fMRI_ROI.(task_nm4).hEch.hP_level,...
-        sem_fMRI_ROI.(task_nm4).hEch.hP_level] = mean_sem_sd(fMRI_ROI.(task_nm4).hEch.hP_level,2);
-    warning('add fit here');
+        sem_fMRI_ROI.(task_nm4).hEch.hP_level] = mean_sem_sd(fMRI_ROI.(task_nm4).hEch.hP_level, 2);
+    % same for fit
+    [mean_fMRI_ROI_fit.(task_nm4).lEch.hR_level,...
+        sem_fMRI_ROI_fit.(task_nm4).lEch.hR_level] = mean_sem_sd(fMRI_ROI_fit.(task_nm4).lEch.hR_level, 2);
+    [mean_fMRI_ROI_fit.(task_nm4).hEch.hR_level,...
+        sem_fMRI_ROI_fit.(task_nm4).hEch.hR_level] = mean_sem_sd(fMRI_ROI_fit.(task_nm4).hEch.hR_level, 2);
+    [mean_fMRI_ROI_fit.(task_nm4).lEch.hP_level,...
+        sem_fMRI_ROI_fit.(task_nm4).lEch.hP_level] = mean_sem_sd(fMRI_ROI_fit.(task_nm4).lEch.hP_level, 2);
+    [mean_fMRI_ROI_fit.(task_nm4).hEch.hP_level,...
+        sem_fMRI_ROI_fit.(task_nm4).hEch.hP_level] = mean_sem_sd(fMRI_ROI_fit.(task_nm4).hEch.hP_level, 2);
 
     % data split by effort*choice
     [mean_fMRI_ROI.(task_nm4).lEch.hE_level,...
-        sem_fMRI_ROI.(task_nm4).lEch.hE_level] = mean_sem_sd(fMRI_ROI.(task_nm4).lEch.hE_level,2);
+        sem_fMRI_ROI.(task_nm4).lEch.hE_level] = mean_sem_sd(fMRI_ROI.(task_nm4).lEch.hE_level, 2);
     [mean_fMRI_ROI.(task_nm4).hEch.hE_level,...
-        sem_fMRI_ROI.(task_nm4).hEch.hE_level] = mean_sem_sd(fMRI_ROI.(task_nm4).hEch.hE_level,2);
-    warning('add fit here');
+        sem_fMRI_ROI.(task_nm4).hEch.hE_level] = mean_sem_sd(fMRI_ROI.(task_nm4).hEch.hE_level, 2);
+    % same for fit
+    [mean_fMRI_ROI_fit.(task_nm4).lEch.hE_level,...
+        sem_fMRI_ROI_fit.(task_nm4).lEch.hE_level] = mean_sem_sd(fMRI_ROI_fit.(task_nm4).lEch.hE_level, 2);
+    [mean_fMRI_ROI_fit.(task_nm4).hEch.hE_level,...
+        sem_fMRI_ROI_fit.(task_nm4).hEch.hE_level] = mean_sem_sd(fMRI_ROI_fit.(task_nm4).hEch.hE_level, 2);
     
-    %% compare slopes between low and high effort choice
+    %% average betas
+    % across all trials
+    [betas.(task_nm4).ROI_f_dR.allTrials.m_bR,...
+        betas.(task_nm4).ROI_f_dR.allTrials.sem_bR] = mean_sem_sd(betas.(task_nm4).ROI_f_dR.allTrials.bR, 2);
+    [betas.(task_nm4).ROI_f_dP.allTrials.m_bP,...
+        betas.(task_nm4).ROI_f_dP.allTrials.sem_bP] = mean_sem_sd(betas.(task_nm4).ROI_f_dP.allTrials.bP, 2);
+    [betas.(task_nm4).ROI_f_dE.allTrials.m_bE,...
+        betas.(task_nm4).ROI_f_dE.allTrials.sem_bE] = mean_sem_sd(betas.(task_nm4).ROI_f_dE.allTrials.bE, 2);
+    
+    % split per type of effort chosen
+    % reward
+    [betas.(task_nm4).ROI_f_dR.highEch.m_bR,...
+        betas.(task_nm4).ROI_f_dR.highEch.sem_bR] = mean_sem_sd(betas.(task_nm4).ROI_f_dR.highEch.bR, 2);
+    [betas.(task_nm4).ROI_f_dR.lowEch.m_bR,...
+        betas.(task_nm4).ROI_f_dR.lowEch.sem_bR] = mean_sem_sd(betas.(task_nm4).ROI_f_dR.lowEch.bR, 2);
+    % punishment
+    [betas.(task_nm4).ROI_f_dP.highEch.m_bP,...
+        betas.(task_nm4).ROI_f_dP.highEch.sem_bP] = mean_sem_sd(betas.(task_nm4).ROI_f_dP.highEch.bP, 2);
+    [betas.(task_nm4).ROI_f_dP.lowEch.m_bP,...
+        betas.(task_nm4).ROI_f_dP.lowEch.sem_bP] = mean_sem_sd(betas.(task_nm4).ROI_f_dP.lowEch.bP, 2);
+    % effort
+    [betas.(task_nm4).ROI_f_dE.highEch.m_bE,...
+        betas.(task_nm4).ROI_f_dE.highEch.sem_bE] = mean_sem_sd(betas.(task_nm4).ROI_f_dE.highEch.bE, 2);
+    [betas.(task_nm4).ROI_f_dE.lowEch.m_bE,...
+        betas.(task_nm4).ROI_f_dE.lowEch.sem_bE] = mean_sem_sd(betas.(task_nm4).ROI_f_dE.lowEch.bE, 2);
+    
+    %% t.test on betas + comparing slopes
+    
+    % are betas of the slopes significant?
+    % pool across all trials
+    [~,pval.(task_nm4).ROI_f_dR.allTrials.bR] = ttest(betas.(task_nm4).ROI_f_dR.allTrials.bR);
+    [~,pval.(task_nm4).ROI_f_dP.allTrials.bP] = ttest(betas.(task_nm4).ROI_f_dP.allTrials.bP);
+    [~,pval.(task_nm4).ROI_f_dE.allTrials.bE] = ttest(betas.(task_nm4).ROI_f_dE.allTrials.bE);
+    
+    % only high effort chosen slopes
+    [~,pval.(task_nm4).ROI_f_dR.highEch.bR] = ttest(betas.(task_nm4).ROI_f_dR.highEch.bR);
+    [~,pval.(task_nm4).ROI_f_dP.highEch.bP] = ttest(betas.(task_nm4).ROI_f_dP.highEch.bP);
+    [~,pval.(task_nm4).ROI_f_dE.highEch.bE] = ttest(betas.(task_nm4).ROI_f_dE.highEch.bE);
+    
+    % only low effort chosen slopes
+    [~,pval.(task_nm4).ROI_f_dR.lowEch.bR] = ttest(betas.(task_nm4).ROI_f_dR.lowEch.bR);
+    [~,pval.(task_nm4).ROI_f_dP.lowEch.bP] = ttest(betas.(task_nm4).ROI_f_dP.lowEch.bP);
+    [~,pval.(task_nm4).ROI_f_dE.lowEch.bE] = ttest(betas.(task_nm4).ROI_f_dE.lowEch.bE);
+    
+    % comparing slopes (with paired t.test)
+    [~,pval.(task_nm4).ROI_f_dR.high_vs_low_Ech.bR] = ttest(betas.(task_nm4).ROI_f_dR.highEch.bR, betas.(task_nm4).ROI_f_dR.lowEch.bR);
+    [~,pval.(task_nm4).ROI_f_dP.high_vs_low_Ech.bP] = ttest(betas.(task_nm4).ROI_f_dP.highEch.bP, betas.(task_nm4).ROI_f_dP.lowEch.bP);
+    [~,pval.(task_nm4).ROI_f_dE.high_vs_low_Ech.bE] = ttest(betas.(task_nm4).ROI_f_dE.highEch.bE, betas.(task_nm4).ROI_f_dE.lowEch.bE);
+    
     %% figures
 
     %% figure focused on varying option
@@ -406,7 +473,11 @@ for iT = 1:nTasks
         mean_fMRI_ROI.(task_nm4).hR_level,...
         sem_fMRI_ROI.(task_nm4).hR_level);
     errorbar_hdl_upgrade(R_er_hdl);
-    warning('add fit here');
+    R_fit_hdl = plot(1:n_hR_levels,...
+        mean_fMRI_ROI_fit.(task_nm4).hR_level);
+    fit_hdl_upgrade(R_fit_hdl);
+    ylim(y_ROI_range);
+    xlim(xRange);
     xlabel('Reward');
     ylabel(ROI_short_nm);
     legend_size(pSize);
@@ -417,7 +488,11 @@ for iT = 1:nTasks
         mean_fMRI_ROI.(task_nm4).hP_level,...
         sem_fMRI_ROI.(task_nm4).hP_level);
     errorbar_hdl_upgrade(P_er_hdl);
-    warning('add fit here');
+    P_fit_hdl = plot(1:n_hP_levels,...
+        mean_fMRI_ROI_fit.(task_nm4).hP_level);
+    fit_hdl_upgrade(P_fit_hdl);
+    ylim(y_ROI_range);
+    xlim(xRange);
     xlabel('Punishment');
     ylabel(ROI_short_nm);
     legend_size(pSize);
@@ -428,7 +503,11 @@ for iT = 1:nTasks
         mean_fMRI_ROI.(task_nm4).hE_level,...
         sem_fMRI_ROI.(task_nm4).hE_level);
     errorbar_hdl_upgrade(E_er_hdl);
-    warning('add fit here');
+    E_fit_hdl = plot(1:n_hE_levels,...
+        mean_fMRI_ROI_fit.(task_nm4).hE_level);
+    fit_hdl_upgrade(E_fit_hdl);
+    ylim(y_ROI_range);
+    xlim(xRange);
     xlabel('Effort');
     ylabel(ROI_short_nm);
     legend_size(pSize);
@@ -445,9 +524,16 @@ for iT = 1:nTasks
     R_lE_er_hdl = errorbar(1:n_hR_levels,...
         mean_fMRI_ROI.(task_nm4).lEch.hR_level,...
         sem_fMRI_ROI.(task_nm4).lEch.hR_level);
-    warning('add fit here');
+    R_hE_fit_hdl = plot(1:n_hR_levels,...
+        mean_fMRI_ROI_fit.(task_nm4).hEch.hR_level);
+    R_lE_fit_hdl = plot(1:n_hR_levels,...
+        mean_fMRI_ROI_fit.(task_nm4).lEch.hR_level);
     errorbar_hdl_upgrade(R_hE_er_hdl, col.orange);
     errorbar_hdl_upgrade(R_lE_er_hdl, col.blue);
+    fit_hdl_upgrade(R_hE_fit_hdl, col.orange_light);
+    fit_hdl_upgrade(R_lE_fit_hdl, col.blue_light);
+    ylim(y_ROI_range);
+    xlim(xRange);
     xlabel('Reward');
     ylabel(ROI_short_nm);
     legend_size(pSize);
@@ -460,9 +546,16 @@ for iT = 1:nTasks
     P_lE_er_hdl = errorbar(1:n_hP_levels,...
         mean_fMRI_ROI.(task_nm4).lEch.hP_level,...
         sem_fMRI_ROI.(task_nm4).lEch.hP_level);
-    warning('add fit here');
+    P_hE_fit_hdl = plot(1:n_hR_levels,...
+        mean_fMRI_ROI_fit.(task_nm4).hEch.hP_level);
+    P_lE_fit_hdl = plot(1:n_hR_levels,...
+        mean_fMRI_ROI_fit.(task_nm4).lEch.hP_level);
     errorbar_hdl_upgrade(P_hE_er_hdl, col.orange);
     errorbar_hdl_upgrade(P_lE_er_hdl, col.blue);
+    fit_hdl_upgrade(P_hE_fit_hdl, col.orange_light);
+    fit_hdl_upgrade(P_lE_fit_hdl, col.blue_light);
+    ylim(y_ROI_range);
+    xlim(xRange);
     xlabel('Punishment');
     ylabel(ROI_short_nm);
     legend_size(pSize);
@@ -475,9 +568,16 @@ for iT = 1:nTasks
     E_lE_er_hdl = errorbar(1:n_hE_levels,...
         mean_fMRI_ROI.(task_nm4).lEch.hE_level,...
         sem_fMRI_ROI.(task_nm4).lEch.hE_level);
-    warning('add fit here');
+    E_hE_fit_hdl = plot(1:n_hE_levels,...
+        mean_fMRI_ROI_fit.(task_nm4).hEch.hE_level);
+    E_lE_fit_hdl = plot(1:n_hE_levels,...
+        mean_fMRI_ROI_fit.(task_nm4).lEch.hE_level);
     errorbar_hdl_upgrade(E_hE_er_hdl, col.orange);
     errorbar_hdl_upgrade(E_lE_er_hdl, col.blue);
+    fit_hdl_upgrade(E_hE_fit_hdl, col.orange_light);
+    fit_hdl_upgrade(E_lE_fit_hdl, col.blue_light);
+    ylim(y_ROI_range);
+    xlim(xRange);
     xlabel('Effort');
     ylabel(ROI_short_nm);
     legend_size(pSize);
