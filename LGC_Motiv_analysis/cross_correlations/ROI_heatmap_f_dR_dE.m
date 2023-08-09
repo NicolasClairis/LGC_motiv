@@ -16,12 +16,13 @@ if ~exist('condition','var') || ~isempty(condition)
     condition = subject_condition;
 end
 [subject_id, NS] = LGCM_subject_selection(study_nm,condition);
+[condition_for_fMRI_extraction] = condition_for_fMRI(condition);
 
 %% select and extract the ROI data
 [ROI_trial_b_trial, ROI_subList,...
     fMRI_ROI_nm, ROI_short_nm,...
     ~, timePeriod_nm] = extract_ROI_betas_onsets_only_bis(computerRoot,...
-    study_nm, subject_id, condition);
+    study_nm, subject_id, condition_for_fMRI_extraction);
 
 %% prepare output of interest
 task_names = {'Ep','Em'};
@@ -125,44 +126,49 @@ fig;
 % define which colormap you want to use (see full list here if you are not
 % happy with the selection:
 % https://ch.mathworks.com/help/matlab/ref/colormap.html)
-% colormap hot;
-% colormap turbo;
-colormap(redblue(45))
+color_range_ROI_choices = 'hot';
+% color_range_choices = 'turbo';
+% color_range_choices = redblue(45);
 
 for iTask = 1:nTasks
     task_nm = task_names{iTask};
     % ROI
-    subplot(nTasks, nPlotsPerLine, 1 + nPlotsPerLine*(iTask - 1));
-    % ROI_hdl = imagesc(ROI_avg_perSub.(task_nm),ROI_range);
-    ROI_hdl = imagesc(ROI_avg.(task_nm));
+    ROI_hdl = subplot(nTasks, nPlotsPerLine, 1 + nPlotsPerLine*(iTask - 1));
+    % imagesc(ROI_avg_perSub.(task_nm),ROI_range);
+    imagesc(ROI_avg.(task_nm));
+    colormap(ROI_hdl, color_range_ROI_choices);
     xticks(1:n_dE);
     xticklabels({'E1','E2','E3'});
     yticks(1:n_dInc)
     yticklabels({'P3','P2','P1','R1','R2','R3'});
+    title(ROI_short_nm);
     legend_size(pSize);
     colorbar;
-    title(ROI_short_nm);
     
     % choices
-    subplot(nTasks, nPlotsPerLine, 2 + nPlotsPerLine*(iTask - 1));
-    choice_hdl = imagesc(choice_avg.(task_nm), choice_range);
+    choice_hdl = subplot(nTasks, nPlotsPerLine, 2 + nPlotsPerLine*(iTask - 1));
+    imagesc(choice_avg.(task_nm), choice_range);
+    colormap(choice_hdl, color_range_ROI_choices);
     xticks(1:n_dE);
     xticklabels({'E1','E2','E3'});
     yticks(1:n_dInc)
     yticklabels({'P3','P2','P1','R1','R2','R3'});
+    title('Choice (%)');
     legend_size(pSize);
     colorbar;
-    title('Choice (%)');
     
     % RT
-    subplot(nTasks, nPlotsPerLine, 3 + nPlotsPerLine*(iTask - 1));
-    RT_hdl = imagesc(RT_avg.(task_nm), RT_range);
+    RT_hdl = subplot(nTasks, nPlotsPerLine, 3 + nPlotsPerLine*(iTask - 1));
+    imagesc(RT_avg.(task_nm), RT_range);
+    colormap(RT_hdl, color_range_ROI_choices);
+    % revert axis for RT to have warmer colours for faster answers
+    RT_hdl.Colormap = flipud(RT_hdl.Colormap);
     xticks(1:n_dE);
     xticklabels({'E1','E2','E3'});
     yticks(1:n_dInc)
     yticklabels({'P3','P2','P1','R1','R2','R3'});
+    title('RT (s)');
     legend_size(pSize);
     colorbar;
-    title('RT (s)');
 end % task loop
 end % function
