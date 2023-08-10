@@ -60,11 +60,11 @@ for iS = 1:NS
         end
         switch kRun
             case {1,2}
-                taskRun_idx = 1;
+                jRun = 1;
             case {3,4}
-                taskRun_idx = 2;
+                jRun = 2;
         end
-        run_nm_bis = ['run',num2str(taskRun_idx)];
+        run_nm_bis = ['run',num2str(jRun)];
         
         %% extract choices for the current session
         choice_hE_allTrials_tmp = extract_choice_hE(subBehaviorFolder, sub_nm, run_nm, task_fullName);
@@ -81,17 +81,17 @@ for iS = 1:NS
             for iP = n_dP:(-1):1 % revert order to have symetry with rewards
                 jIncentiveLine = jIncentiveLine + 1;
                 PE_trials_idx = (E_level_tmp == iE).*(P_level_tmp == iP) == 1;
-                ROI_avg_perSubperRun.(task_nm_tmp)(jIncentiveLine, iE, iS, kRun) = mean(fMRI_allTrials_tmp(PE_trials_idx),'omitnan');
-                choice_avg_perSubperRun.(task_nm_tmp)(jIncentiveLine, iE, iS, kRun) = mean(choice_hE_allTrials_tmp(PE_trials_idx),'omitnan');
-                RT_avg_perSubperRun.(task_nm_tmp)(jIncentiveLine, iE, iS, kRun) = mean(RT_allTrials_tmp(PE_trials_idx),'omitnan');
+                ROI_avg_perSubperRun.(task_nm_tmp)(jIncentiveLine, iE, iS, jRun) = mean(fMRI_allTrials_tmp(PE_trials_idx),'omitnan');
+                choice_avg_perSubperRun.(task_nm_tmp)(jIncentiveLine, iE, iS, jRun) = mean(choice_hE_allTrials_tmp(PE_trials_idx),'omitnan');
+                RT_avg_perSubperRun.(task_nm_tmp)(jIncentiveLine, iE, iS, jRun) = mean(RT_allTrials_tmp(PE_trials_idx),'omitnan');
             end % punishment
             
             for iR = 1:n_dR
                 jIncentiveLine = jIncentiveLine + 1;
                 RE_trials_idx = (E_level_tmp == iE).*(R_level_tmp == iR) == 1;
-                ROI_avg_perSubperRun.(task_nm_tmp)(jIncentiveLine, iE, iS, kRun) = mean(fMRI_allTrials_tmp(RE_trials_idx),'omitnan');
-                choice_avg_perSubperRun.(task_nm_tmp)(jIncentiveLine, iE, iS, kRun) = mean(choice_hE_allTrials_tmp(RE_trials_idx),'omitnan');
-                RT_avg_perSubperRun.(task_nm_tmp)(jIncentiveLine, iE, iS, kRun) = mean(RT_allTrials_tmp(RE_trials_idx),'omitnan');
+                ROI_avg_perSubperRun.(task_nm_tmp)(jIncentiveLine, iE, iS, jRun) = mean(fMRI_allTrials_tmp(RE_trials_idx),'omitnan');
+                choice_avg_perSubperRun.(task_nm_tmp)(jIncentiveLine, iE, iS, jRun) = mean(choice_hE_allTrials_tmp(RE_trials_idx),'omitnan');
+                RT_avg_perSubperRun.(task_nm_tmp)(jIncentiveLine, iE, iS, jRun) = mean(RT_allTrials_tmp(RE_trials_idx),'omitnan');
             end % reward
         end % effort level
     end % run loop
@@ -119,23 +119,24 @@ end % task loop
 %% figures
 nPlotsPerLine = 3;
 [pSize] = general_fig_prm;
-ROI_range = [0 2];
+ROI_range = [min(ROI_avg.Ep, ROI_avg.Em),...
+    max(ROI_avg.Ep, ROI_avg.Em)];
 choice_range = [0 1];
-RT_range = [1 1.5];
+RT_range = [1.8 2.4];
 fig;
 % define which colormap you want to use (see full list here if you are not
 % happy with the selection:
 % https://ch.mathworks.com/help/matlab/ref/colormap.html)
-color_range_ROI_choices = 'hot';
-% color_range_choices = 'turbo';
-% color_range_choices = redblue(45);
+% color_range_ROI_choices = 'hot';
+% color_range_ROI_choices = 'turbo';
+color_range_ROI_choices = redblue(45);
 
 for iTask = 1:nTasks
     task_nm = task_names{iTask};
     % ROI
     ROI_hdl = subplot(nTasks, nPlotsPerLine, 1 + nPlotsPerLine*(iTask - 1));
-    % imagesc(ROI_avg_perSub.(task_nm),ROI_range);
-    imagesc(ROI_avg.(task_nm));
+    imagesc(ROI_avg.(task_nm),ROI_range);
+%     imagesc(ROI_avg.(task_nm));
     colormap(ROI_hdl, color_range_ROI_choices);
     xticks(1:n_dE);
     xticklabels({'E1','E2','E3'});

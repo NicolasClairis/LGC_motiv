@@ -71,6 +71,12 @@ for iS = 1:NS
             case 'Ep'
                 task_fullName = 'physical';
         end
+        switch kRun
+            case {1,2}
+                jRun = 1;
+            case {3,4}
+                jRun = 2;
+        end
         
         %% extract choices for the current session
         choice_hE_allTrials_tmp = extract_choice_hE(subBehaviorFolder, sub_nm, run_nm, task_fullName);
@@ -87,30 +93,30 @@ for iS = 1:NS
             for iP = n_dP:(-1):1 % revert order to have symetry with rewards
                 jIncentiveLine = jIncentiveLine + 1;
                 PE_trials_idx = (E_level_tmp == iE).*(P_level_tmp == iP) == 1;
-                choice_avg_perSubperRun.(task_nm_tmp)(jIncentiveLine, iE, iS, kRun) = mean(choice_hE_allTrials_tmp(PE_trials_idx),'omitnan');
-                choice_fit_avg_perSubperRun.(task_nm_tmp)(jIncentiveLine, iE, iS, kRun) = mean(choice_fit_hE_allTrials_tmp(PE_trials_idx),'omitnan');
-                RT_avg_perSubperRun.(task_nm_tmp)(jIncentiveLine, iE, iS, kRun) = mean(RT_allTrials_tmp(PE_trials_idx),'omitnan');
-                RT_fit_avg_perSubperRun.(task_nm_tmp)(jIncentiveLine, iE, iS, kRun) = mean(RT_fit_allTrials_tmp(PE_trials_idx),'omitnan');
+                choice_avg_perSubperRun.(task_nm_tmp)(jIncentiveLine, iE, iS, jRun) = mean(choice_hE_allTrials_tmp(PE_trials_idx),'omitnan');
+                choice_fit_avg_perSubperRun.(task_nm_tmp)(jIncentiveLine, iE, iS, jRun) = mean(choice_fit_hE_allTrials_tmp(PE_trials_idx),'omitnan');
+                RT_avg_perSubperRun.(task_nm_tmp)(jIncentiveLine, iE, iS, jRun) = mean(RT_allTrials_tmp(PE_trials_idx),'omitnan');
+                RT_fit_avg_perSubperRun.(task_nm_tmp)(jIncentiveLine, iE, iS, jRun) = mean(RT_fit_allTrials_tmp(PE_trials_idx),'omitnan');
             end % punishment
             
             for iR = 1:n_dR
                 jIncentiveLine = jIncentiveLine + 1;
                 RE_trials_idx = (E_level_tmp == iE).*(R_level_tmp == iR) == 1;
-                choice_avg_perSubperRun.(task_nm_tmp)(jIncentiveLine, iE, iS, kRun) = mean(choice_hE_allTrials_tmp(RE_trials_idx),'omitnan');
-                choice_fit_avg_perSubperRun.(task_nm_tmp)(jIncentiveLine, iE, iS, kRun) = mean(choice_fit_hE_allTrials_tmp(RE_trials_idx),'omitnan');
-                RT_avg_perSubperRun.(task_nm_tmp)(jIncentiveLine, iE, iS, kRun) = mean(RT_allTrials_tmp(RE_trials_idx),'omitnan');
-                RT_fit_avg_perSubperRun.(task_nm_tmp)(jIncentiveLine, iE, iS, kRun) = mean(RT_fit_allTrials_tmp(RE_trials_idx),'omitnan');
+                choice_avg_perSubperRun.(task_nm_tmp)(jIncentiveLine, iE, iS, jRun) = mean(choice_hE_allTrials_tmp(RE_trials_idx),'omitnan');
+                choice_fit_avg_perSubperRun.(task_nm_tmp)(jIncentiveLine, iE, iS, jRun) = mean(choice_fit_hE_allTrials_tmp(RE_trials_idx),'omitnan');
+                RT_avg_perSubperRun.(task_nm_tmp)(jIncentiveLine, iE, iS, jRun) = mean(RT_allTrials_tmp(RE_trials_idx),'omitnan');
+                RT_fit_avg_perSubperRun.(task_nm_tmp)(jIncentiveLine, iE, iS, jRun) = mean(RT_fit_allTrials_tmp(RE_trials_idx),'omitnan');
             end % reward
         end % effort level
     end % run loop
     
     %% average runs together
     for iTask = 1:nTasks
-        task_nm = task_names{iTask};
-        choice_avg_perSub.(task_nm)(:,:,iS) = mean(choice_avg_perSubperRun.(task_nm)(:, :, iS, :), 4,'omitnan');
-        choice_fit_avg_perSub.(task_nm)(:,:,iS) = mean(choice_fit_avg_perSubperRun.(task_nm)(:, :, iS, :), 4,'omitnan');
-        RT_avg_perSub.(task_nm)(:,:,iS) = mean(RT_avg_perSubperRun.(task_nm)(:, :, iS, :), 4,'omitnan');
-        RT_fit_avg_perSub.(task_nm)(:,:,iS) = mean(RT_fit_avg_perSubperRun.(task_nm)(:, :, iS, :), 4,'omitnan');
+        task_nm1 = task_names{iTask};
+        choice_avg_perSub.(task_nm1)(:,:,iS) = mean(choice_avg_perSubperRun.(task_nm1)(:, :, iS, :), 4,'omitnan');
+        choice_fit_avg_perSub.(task_nm1)(:,:,iS) = mean(choice_fit_avg_perSubperRun.(task_nm1)(:, :, iS, :), 4,'omitnan');
+        RT_avg_perSub.(task_nm1)(:,:,iS) = mean(RT_avg_perSubperRun.(task_nm1)(:, :, iS, :), 4,'omitnan');
+        RT_fit_avg_perSub.(task_nm1)(:,:,iS) = mean(RT_fit_avg_perSubperRun.(task_nm1)(:, :, iS, :), 4,'omitnan');
     end % task loop
     
     % indicate where we are at
@@ -119,20 +125,16 @@ end % subject loop
 
 %% average subjects together
 for iTask = 1:nTasks
-    task_nm = task_names{iTask};
-    choice_avg.(task_nm) = mean(choice_avg_perSub.(task_nm), 3,'omitnan');
-    choice_fit_avg.(task_nm) = mean(choice_fit_avg_perSub.(task_nm), 3,'omitnan');
-    RT_avg.(task_nm) = mean(RT_avg_perSub.(task_nm), 3,'omitnan');
-    RT_fit_avg.(task_nm) = mean(RT_fit_avg_perSub.(task_nm), 3,'omitnan');
+    task_nm2 = task_names{iTask};
+    choice_avg.(task_nm2) = mean(choice_avg_perSub.(task_nm2), 3,'omitnan');
+    choice_fit_avg.(task_nm2) = mean(choice_fit_avg_perSub.(task_nm2), 3,'omitnan');
+    RT_avg.(task_nm2) = mean(RT_avg_perSub.(task_nm2), 3,'omitnan');
+    RT_fit_avg.(task_nm2) = mean(RT_fit_avg_perSub.(task_nm2), 3,'omitnan');
 end % task loop
 
 %% figures
 nLines = 2;
 [pSize] = general_fig_prm;
-choice_range = [0 1];
-RT_range = [1 1.5];
-choice_fig = fig;
-RT_fig = fig;
 % define which colormap you want to use (see full list here if you are not
 % happy with the selection:
 % https://ch.mathworks.com/help/matlab/ref/colormap.html)
@@ -141,14 +143,17 @@ RT_fig = fig;
 % color_range_choices = 'jet';
 color_range_choices = redblue(45);
 
+% choice figure
+choice_range = [0 100];
+choice_fig = fig;
 for iTask = 1:nTasks
-    task_nm = task_names{iTask};
+    task_nm3 = task_names{iTask};
     
     %% choice figure
     figure(choice_fig);
     iChoiceLine = 1;
     choice_plot_hdl = subplot(nLines, nTasks, iTask + nTasks*(iChoiceLine - 1));
-    imagesc(choice_avg.(task_nm), choice_range);
+    imagesc(choice_avg.(task_nm3).*100, choice_range);
     colormap(choice_plot_hdl,color_range_choices);
     xticks(1:n_dE);
     xticklabels({'E1','E2','E3'});
@@ -161,7 +166,7 @@ for iTask = 1:nTasks
     % should add bayesian fit here
     iChoiceLine = 2;
     choice_fit_plot_hdl = subplot(nLines, nTasks, iTask + nTasks*(iChoiceLine - 1));
-    imagesc(choice_fit_avg.(task_nm), choice_range);
+    imagesc(choice_fit_avg.(task_nm3).*100, choice_range);
     colormap(choice_fit_plot_hdl,color_range_choices);
     xticks(1:n_dE);
     xticklabels({'E1','E2','E3'});
@@ -170,12 +175,18 @@ for iTask = 1:nTasks
     title('Choice (%)');
     legend_size(pSize);
     colorbar;
-    
+end % task loop
+
+% RT figure
+RT_fig = fig;
+RT_range = [1.8 2.4];
+for iTask = 1:nTasks
+    task_nm4 = task_names{iTask};
     %% RT figures
     figure(RT_fig);
     iRTline = 1;
     RT_plot_hdl = subplot(nLines, nTasks, iTask +  + nTasks*(iRTline - 1));
-    imagesc(RT_avg.(task_nm), RT_range);
+    imagesc(RT_avg.(task_nm4), RT_range);
     colormap(RT_plot_hdl,color_range_choices);
     % revert color axis for RT (so that faster is shown with hoter colors)
     RT_plot_hdl.Colormap = flipud(RT_plot_hdl.Colormap);
@@ -190,7 +201,7 @@ for iTask = 1:nTasks
     % RT fit
     iRTline = 2;
     RT_fit_plot_hdl = subplot(nLines, nTasks, iTask +  + nTasks*(iRTline - 1));
-    imagesc(RT_fit_avg.(task_nm), RT_range);
+    imagesc(RT_fit_avg.(task_nm4), RT_range);
     colormap(RT_fit_plot_hdl,color_range_choices);
     % revert color axis for RT (so that faster is shown with hoter colors)
     RT_fit_plot_hdl.Colormap = flipud(RT_fit_plot_hdl.Colormap);
