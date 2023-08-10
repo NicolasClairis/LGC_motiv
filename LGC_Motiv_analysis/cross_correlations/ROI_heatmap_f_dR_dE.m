@@ -119,9 +119,9 @@ end % task loop
 %% figures
 nPlotsPerLine = 3;
 [pSize] = general_fig_prm;
-ROI_range = [min(ROI_avg.Ep, ROI_avg.Em),...
-    max(ROI_avg.Ep, ROI_avg.Em)];
-choice_range = [0 1];
+ROI_range = [min(min(min(ROI_avg.Ep, ROI_avg.Em))),...
+    max(max(max(ROI_avg.Ep, ROI_avg.Em)))];
+choice_range = [0 100];
 RT_range = [1.8 2.4];
 fig;
 % define which colormap you want to use (see full list here if you are not
@@ -148,7 +148,7 @@ for iTask = 1:nTasks
     
     % choices
     choice_hdl = subplot(nTasks, nPlotsPerLine, 2 + nPlotsPerLine*(iTask - 1));
-    imagesc(choice_avg.(task_nm), choice_range);
+    imagesc(choice_avg.(task_nm).*100, choice_range);
     colormap(choice_hdl, color_range_ROI_choices);
     xticks(1:n_dE);
     xticklabels({'E1','E2','E3'});
