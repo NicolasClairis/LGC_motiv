@@ -1,5 +1,8 @@
 function[x_regs, reg_names] = RT_GLM_regs(GLMprm, potentialRegs)
 % [x_regs, reg_names] = RT_GLM_regs(GLMprm, potentialRegs)
+% RT_GLM_regs will prepare the regressors for performing a glmfit with
+% RT_GLM. Note that RT_GLM_regs will automatically remove the constants for
+% runs and/or tasks that are removed for the current subject
 %
 % INPUTS
 % GLMprm: structure with GLM parameters
@@ -30,30 +33,42 @@ for iReg = 1:nPotRegs
                 case 'run_cstt'
                     % add one constant per run
                     % run 1
-                    jRegs = jRegs + 1;
-                    reg_names{jRegs} = 'run1_cstt';
-                    x_regs(:, jRegs) = potentialRegs.(reg_names{jRegs});
+                    if sum(potentialRegs.run1_cstt) > 0
+                        jRegs = jRegs + 1;
+                        reg_names{jRegs} = 'run1_cstt';
+                        x_regs(:, jRegs) = potentialRegs.(reg_names{jRegs});
+                    end
                     % run 2
-                    jRegs = jRegs + 1;
-                    reg_names{jRegs} = 'run2_cstt';
-                    x_regs(:, jRegs) = potentialRegs.(reg_names{jRegs});
+                    if sum(potentialRegs.run2_cstt) > 0
+                        jRegs = jRegs + 1;
+                        reg_names{jRegs} = 'run2_cstt';
+                        x_regs(:, jRegs) = potentialRegs.(reg_names{jRegs});
+                    end
                     % run 3
-                    jRegs = jRegs + 1;
-                    reg_names{jRegs} = 'run3_cstt';
-                    x_regs(:, jRegs) = potentialRegs.(reg_names{jRegs});
+                    if sum(potentialRegs.run3_cstt) > 0
+                        jRegs = jRegs + 1;
+                        reg_names{jRegs} = 'run3_cstt';
+                        x_regs(:, jRegs) = potentialRegs.(reg_names{jRegs});
+                    end
                     % run 4
-                    jRegs = jRegs + 1;
-                    reg_names{jRegs} = 'run4_cstt';
-                    x_regs(:, jRegs) = potentialRegs.(reg_names{jRegs});
+                    if sum(potentialRegs.run4_cstt) > 0
+                        jRegs = jRegs + 1;
+                        reg_names{jRegs} = 'run4_cstt';
+                        x_regs(:, jRegs) = potentialRegs.(reg_names{jRegs});
+                    end
                 case 'task_cstt'
                     % mental
-                    jRegs = jRegs + 1;
-                    reg_names{jRegs} = 'Em_cstt';
-                    x_regs(:, jRegs) = potentialRegs.(reg_names{jRegs});
+                    if sum(potentialRegs.Em_cstt) > 0
+                        jRegs = jRegs + 1;
+                        reg_names{jRegs} = 'Em_cstt';
+                        x_regs(:, jRegs) = potentialRegs.(reg_names{jRegs});
+                    end
                     % physical
-                    jRegs = jRegs + 1;
-                    reg_names{jRegs} = 'Ep_cstt';
-                    x_regs(:, jRegs) = potentialRegs.(reg_names{jRegs});
+                    if sum(potentialRegs.Ep_cstt) > 0
+                        jRegs = jRegs + 1;
+                        reg_names{jRegs} = 'Ep_cstt';
+                        x_regs(:, jRegs) = potentialRegs.(reg_names{jRegs});
+                    end
                 case {'conf','confRtg',...
                         'RP','deltaMoney','deltaR','deltaP',...
                         'deltaEffort','deltaEp','deltaEm',...

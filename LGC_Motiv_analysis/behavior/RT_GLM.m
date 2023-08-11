@@ -131,7 +131,7 @@ for iS = 1:NS
     end
     
     % extract runs
-    [runsStruct] = runs_definition(study_nm, sub_nm, 'behavior');
+    [runsStruct] = runs_definition(study_nm, sub_nm, condition);
     okRuns = runsStruct.runsToKeep;
 %     badRuns = runsStruct.runsToIgnore;
     taskNames = runsStruct.tasks;
@@ -141,12 +141,7 @@ for iS = 1:NS
         jRun = jRun + 1;
         task_nm_tmp = taskNames{jRun};
         runTrials_idx = (1:nTrialsPerRun) + nTrialsPerRun*(iRun-1);
-        switch task_nm_tmp
-            case 'Em'
-                task_fullName = 'mental';
-            case 'Ep'
-                task_fullName = 'physical';
-        end
+        task_fullName = task_fullName_extraction(task_nm_tmp);
         
         % run constant
         switch iRun
@@ -314,9 +309,9 @@ for iS = 1:NS
         'identity','constant','off');
     
     % distribute data for each run
-    for iRun = 1:nRuns
-        run_trial_idx = (1:nTrialsPerRun) + nTrialsPerRun*(iRun - 1);
-        RT_fit_perRun.(['run',num2str(iRun)])(:,iS) = RT_fit(run_trial_idx,iS);
+    for iRun_b = 1:nRuns
+        run_trial_idx = (1:nTrialsPerRun) + nTrialsPerRun*(iRun_b - 1);
+        RT_fit_perRun.(['run',num2str(iRun_b)])(:,iS) = RT_fit(run_trial_idx,iS);
     end % run loop
     
     % store betas
