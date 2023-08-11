@@ -23,7 +23,7 @@ end
 [betas_RT, pval_RT, betas_grp_RT, pval_grp_RT] = RT_GLM(0, computerRoot, study_nm, subject_id);
 
 %% extract behavioral parameters
-[prm_choices, mdlType, mdlN] = prm_extraction(subject_id);
+[prm_choices, mdlType, mdlN] = prm_extraction(study_nm, subject_id);
 
 %% test correlation between RT coefficient on confidence and choice coefficient on effort(s)
 bUncertainty_RT = - betas_RT.conf;
