@@ -669,6 +669,8 @@ if ismember(preChoiceCrossModel,{'stick','boxcar','boxcar_bis'})
         switch preChoiceCrossModel_RT
             case 4
                 preChoiceCross_modVals(n_preChoiceCrossMods,:) = raw_or_z(choice_RT);
+            case 5
+                preChoiceCross_modVals(n_preChoiceCrossMods,:) = zscore(choice_RT);
             otherwise
                 error('not ready yet');
         end
@@ -823,6 +825,8 @@ if ismember(choiceModel,{'stick','boxcar'})
                 switch choiceModel_RT
                     case 4
                         choice_modVals(n_choiceMods,:) = raw_or_z(choice_RT(choice_trial_idx));
+                    case 5
+                        choice_modVals(n_choiceMods,:) = zscore(choice_RT(choice_trial_idx));
                     otherwise
                         error('not ready yet');
                 end
@@ -1501,6 +1505,8 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                 switch chosenModel_RT
                     case 4
                         chosen_modVals(n_chosenMods,:) = raw_or_z(choice_RT(chosen_trial_idx));
+                    case 5
+                        chosen_modVals(n_chosenMods,:) = zscore(choice_RT(chosen_trial_idx));
                     otherwise
                         error('not ready yet');
                 end
