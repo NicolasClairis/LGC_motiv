@@ -129,12 +129,7 @@ for iS = 1:NS
         end
         run_nm_bis = ['run',num2str(jRun)];
         runTrials_idx = (1:nTrialsPerRun) + nTrialsPerRun*(jRun - 1);
-        switch task_nm2
-            case 'Em'
-                task_fullName = 'mental';
-            case 'Ep'
-                task_fullName = 'physical';
-        end
+        [task_fullName] = task_fullName_extraction(task_nm2);
         
         %% extract relevant variables
         switch jRun
