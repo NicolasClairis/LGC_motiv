@@ -65,12 +65,7 @@ for iS = 1:NS
         task_nm_tmp = taskNames{iRun};
         run_nm = num2str(kRun);
         run_fullNm = ['run',num2str(run_nm)];
-        switch task_nm_tmp
-            case 'Em'
-                task_fullName = 'mental';
-            case 'Ep'
-                task_fullName = 'physical';
-        end
+        [task_fullName] = task_fullName_extraction(task_nm_tmp);
         switch kRun
             case {1,2}
                 jRun = 1;
