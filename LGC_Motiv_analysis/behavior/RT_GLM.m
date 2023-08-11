@@ -1,5 +1,5 @@
-function[betas, pval, betas_grp, pval_grp, RT_fit_perRun] = RT_GLM(figDisp, computerRoot, study_nm, subject_id, GLM)
-% [betas, pval, betas_grp, pval_grp, RT_fit_perRun] = RT_GLM(figDisp, computerRoot, study_nm, subject_id, GLM)
+function[betas, pval, betas_grp, pval_grp, RT_fit_perRun] = RT_GLM(figDisp, computerRoot, study_nm, subject_id, condition, GLM)
+% [betas, pval, betas_grp, pval_grp, RT_fit_perRun] = RT_GLM(figDisp, computerRoot, study_nm, subject_id, condition, GLM)
 %RT_GLM will perform a GLM on the reaction times
 % 
 % INPUTS
@@ -10,6 +10,8 @@ function[betas, pval, betas_grp, pval_grp, RT_fit_perRun] = RT_GLM(figDisp, comp
 % study_nm: study name 'study1' or 'study2' ? (study1 by default if left empty)
 %
 % subject_id: list of subjects (will be asked by default if left empty)
+%
+% condition: condition to use for subjects and runs to include
 %
 % GLM: which RT GLM to use?
 %
@@ -59,8 +61,10 @@ if ~exist(resultFolder,'dir')
 end
 
 %% subject selection
-if ~exist('subject_id','var') || isempty(subject_id)
+if ~exist('condition','var') || isempty(condition)
     condition = subject_condition;
+end
+if ~exist('subject_id','var') || isempty(subject_id)
     [subject_id, NS] = LGCM_subject_selection(study_nm, condition);
 else
     NS = length(subject_id);

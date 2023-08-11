@@ -587,9 +587,9 @@ end % task loop
 function[betas_tmp2, fMRI_ROI_fit_tmp] = filter_bad_runs_and_fit(run1_cstt_tmp, run2_cstt_tmp, X_var, fMRI_var)
 
 % check which runs can be used
-both_runs_ok = sum(run1_cstt_tmp) > 0 & sum(run2_cstt_tmp) > 0;
-only_run1_ok = sum(run1_cstt_tmp) > 0 & sum(run2_cstt_tmp) == 0;
-only_run2_ok = sum(run1_cstt_tmp) == 0 & sum(run2_cstt_tmp) > 0;
+both_runs_ok = sum(run1_cstt_tmp,'omitnan') > 0 & sum(run2_cstt_tmp,'omitnan') > 0;
+only_run1_ok = sum(run1_cstt_tmp,'omitnan') > 0 & sum(run2_cstt_tmp,'omitnan') == 0;
+only_run2_ok = sum(run1_cstt_tmp,'omitnan') == 0 & sum(run2_cstt_tmp,'omitnan') > 0;
 % prepare X matrix accordingly
 if both_runs_ok
     x_regs = [run1_cstt_tmp,...

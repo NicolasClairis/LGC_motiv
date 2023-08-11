@@ -20,7 +20,7 @@ else
 end
 
 %% extract RT parameters
-[betas_RT, pval_RT, betas_grp_RT, pval_grp_RT] = RT_GLM(0, computerRoot, study_nm, subject_id);
+[betas_RT, pval_RT, betas_grp_RT, pval_grp_RT] = RT_GLM(0, computerRoot, study_nm, subject_id, condition);
 
 %% extract behavioral parameters
 [prm_choices, mdlType, mdlN] = prm_extraction(study_nm, subject_id);

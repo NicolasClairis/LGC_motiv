@@ -33,38 +33,38 @@ for iReg = 1:nPotRegs
                 case 'run_cstt'
                     % add one constant per run
                     % run 1
-                    if sum(potentialRegs.run1_cstt) > 0
+                    if sum(potentialRegs.run1_cstt,'omitnan') > 0
                         jRegs = jRegs + 1;
                         reg_names{jRegs} = 'run1_cstt';
                         x_regs(:, jRegs) = potentialRegs.(reg_names{jRegs});
                     end
                     % run 2
-                    if sum(potentialRegs.run2_cstt) > 0
+                    if sum(potentialRegs.run2_cstt,'omitnan') > 0
                         jRegs = jRegs + 1;
                         reg_names{jRegs} = 'run2_cstt';
                         x_regs(:, jRegs) = potentialRegs.(reg_names{jRegs});
                     end
                     % run 3
-                    if sum(potentialRegs.run3_cstt) > 0
+                    if sum(potentialRegs.run3_cstt,'omitnan') > 0
                         jRegs = jRegs + 1;
                         reg_names{jRegs} = 'run3_cstt';
                         x_regs(:, jRegs) = potentialRegs.(reg_names{jRegs});
                     end
                     % run 4
-                    if sum(potentialRegs.run4_cstt) > 0
+                    if sum(potentialRegs.run4_cstt,'omitnan') > 0
                         jRegs = jRegs + 1;
                         reg_names{jRegs} = 'run4_cstt';
                         x_regs(:, jRegs) = potentialRegs.(reg_names{jRegs});
                     end
                 case 'task_cstt'
                     % mental
-                    if sum(potentialRegs.Em_cstt) > 0
+                    if sum(potentialRegs.Em_cstt,'omitnan') > 0
                         jRegs = jRegs + 1;
                         reg_names{jRegs} = 'Em_cstt';
                         x_regs(:, jRegs) = potentialRegs.(reg_names{jRegs});
                     end
                     % physical
-                    if sum(potentialRegs.Ep_cstt) > 0
+                    if sum(potentialRegs.Ep_cstt,'omitnan') > 0
                         jRegs = jRegs + 1;
                         reg_names{jRegs} = 'Ep_cstt';
                         x_regs(:, jRegs) = potentialRegs.(reg_names{jRegs});
