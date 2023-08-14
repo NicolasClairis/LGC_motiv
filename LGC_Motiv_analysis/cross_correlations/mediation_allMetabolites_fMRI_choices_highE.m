@@ -54,7 +54,7 @@ con_data(:) = con_vec_all(con_idx, :, 1);
 
 %% extract proportion of choices across individuals and tasks
 fig_disp = 0;
-[choice_hE] = choice_hE_proportion(study_nm, condition, fig_disp);
+[choice_hE] = choice_hE_proportion(study_nm, condition, subject_id, fig_disp);
 parameter_names = {'Ep','Em','EpEm'};
 nPrm = length(parameter_names);
 
