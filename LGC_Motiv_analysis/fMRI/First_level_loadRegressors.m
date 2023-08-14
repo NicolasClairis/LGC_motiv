@@ -124,6 +124,8 @@ RP_var_binary = strcmp( behavioralDataStruct.(task_behavioral_id).choiceOptions.
 RP_var = NaN(1, length(RP_var_binary));
 RP_var(RP_var_binary == 1) = 1;
 RP_var(RP_var_binary == 0) = -1;
+R_trials = RP_var == 1;
+P_trials = RP_var == -1;
 % loading default option side
 defaultSide = behavioralDataStruct.(task_behavioral_id).choiceOptions.default_LR;
 % loading money choice
@@ -135,8 +137,8 @@ abs_money_amount_varOption = abs(money_amount_varOption);
 money_level_left_v0 = behavioralDataStruct.(task_behavioral_id).choiceOptions.R.left;
 money_level_right_v0 = behavioralDataStruct.(task_behavioral_id).choiceOptions.R.right;
 money_amount_fixedOption = money_amount_left.*(defaultSide == -1) + money_amount_right.*(defaultSide == 1);
-R_amount_varOption = money_amount_varOption.*(RP_var == 1);
-P_amount_varOption = money_amount_varOption.*(RP_var == -1);
+R_amount_varOption = money_amount_varOption.*R_trials;
+P_amount_varOption = money_amount_varOption.*P_trials;
 
 % fix money levels
 [money_level_left, money_level_right] = First_level_fix_money_levels(study_nm, sub_nm, task_fullName,...
@@ -144,18 +146,18 @@ P_amount_varOption = money_amount_varOption.*(RP_var == -1);
 
 % extract other relevant variables
 money_level_varOption = (money_level_left.*(defaultSide == 1) +...
-    money_level_right.*(defaultSide == -1)) + 4*(RP_var == 1); % add 4 to distinguish rewards and punishments
+    money_level_right.*(defaultSide == -1)) + 4*R_trials; % add 4 to distinguish rewards and punishments
 money_level_fixedOption = money_level_left.*(defaultSide == -1) +...
-    money_level_right.*(defaultSide == 1) + 4*(RP_var == 1); % add 4 to distinguish rewards and punishments
+    money_level_right.*(defaultSide == 1) + 4*R_trials; % add 4 to distinguish rewards and punishments
 
 % consider that levels of reward (R1 to R4) are equivalent to levels of punishments (P1 to P4) and pool them together
 abs_money_level_varOption = (money_level_left.*(defaultSide == 1) +...
     money_level_right.*(defaultSide == -1));
 
 R_level_varOption = (money_level_left.*(defaultSide == 1) +...
-    money_level_right.*(defaultSide == -1)).*(RP_var == 1);
+    money_level_right.*(defaultSide == -1)).*R_trials;
 P_level_varOption = (money_level_left.*(defaultSide == 1) +...
-    money_level_right.*(defaultSide == -1)).*(RP_var == -1);
+    money_level_right.*(defaultSide == -1)).*P_trials;
 % loading effort choice
 E_left = behavioralDataStruct.(task_behavioral_id).choiceOptions.E.left;
 E_right = behavioralDataStruct.(task_behavioral_id).choiceOptions.E.right;
@@ -178,8 +180,8 @@ E_unchosen = E_left.*(choice_LR == 1) + E_right.*(choice_LR == -1);
 E_chosen_min_E_unchosen = E_chosen - E_unchosen;
 
 % money levels
-money_level_chosen = money_level_left.*(choice_LR == -1) + money_level_right.*(choice_LR == 1) + 4*(RP_var == 1);% add 4 to distinguish rewards and punishments
-money_level_unchosen = money_level_left.*(choice_LR == 1) + money_level_right.*(choice_LR == -1) + 4*(RP_var == 1);% add 4 to distinguish rewards and punishments
+money_level_chosen = money_level_left.*(choice_LR == -1) + money_level_right.*(choice_LR == 1) + 4*R_trials;% add 4 to distinguish rewards and punishments
+money_level_unchosen = money_level_left.*(choice_LR == 1) + money_level_right.*(choice_LR == -1) + 4*R_trials;% add 4 to distinguish rewards and punishments
 % consider that levels of reward (R1 to R4) are equivalent to levels of punishments (P1 to P4) and pool them together
 abs_money_level_chosen = money_level_left.*(choice_LR == -1) + money_level_right.*(choice_LR == 1);
 abs_money_level_unchosen = money_level_left.*(choice_LR == 1) + money_level_right.*(choice_LR == -1);
@@ -187,8 +189,8 @@ moneyChosen_min_moneyUnchosen_level = money_level_chosen - money_level_unchosen;
 absMoneyChosen_min_moneyUnchosen_level = abs_money_level_chosen - abs_money_level_unchosen;
 % money chosen - money fixed option
 moneyChosen_min_moneyFixed_level = money_level_chosen - money_level_fixedOption;
-R_level_chosen = (money_level_left.*(choice_LR == -1) + money_level_right.*(choice_LR == 1)).*(RP_var == 1);
-P_level_chosen = (money_level_left.*(choice_LR == -1) + money_level_right.*(choice_LR == 1)).*(RP_var == -1);
+R_level_chosen = (money_level_left.*(choice_LR == -1) + money_level_right.*(choice_LR == 1)).*R_trials;
+P_level_chosen = (money_level_left.*(choice_LR == -1) + money_level_right.*(choice_LR == 1)).*P_trials;
 % E chosen - E fixed option
 Ech_min_Efixed = E_chosen - E_fixedOption;
 
@@ -201,8 +203,8 @@ moneyChosen_min_moneyUnchosen_amount = money_amount_chosen - money_amount_unchos
 absMoneyChosen_min_moneyUnchosen_amount = abs(money_amount_chosen - money_amount_unchosen);
 abs_money_amount_chosen = abs(money_amount_chosen);
 abs_money_amount_unchosen = abs(money_amount_unchosen);
-R_amount_chosen = money_amount_chosen.*(RP_var == 1);
-P_amount_chosen = money_amount_chosen.*(RP_var == -1);
+R_amount_chosen = money_amount_chosen.*R_trials;
+P_amount_chosen = money_amount_chosen.*P_trials;
 
 % interaction terms
 money_level_x_E_varOption = money_level_varOption.*E_varOption;
