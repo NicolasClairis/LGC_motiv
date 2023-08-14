@@ -20,7 +20,7 @@ end
 
 %% select and extract the ROI data
 [ROI_trial_b_trial, ROI_subList,...
-    fMRI_ROI_nm, ROI_short_nm,...
+    ROI_nm, ROI_short_nm,...
     ~, timePeriod_nm] = extract_ROI_betas_onsets_only_bis(computerRoot,...
     study_nm, subject_id, condition_for_fMRI_extraction);
 
@@ -73,7 +73,7 @@ for iS = 1:NS
         E_level_tmp = extract_hE_level(subBehaviorFolder, sub_nm, run_nm, task_fullName);
         RT_allTrials_tmp = extract_RT(subBehaviorFolder, sub_nm, run_nm, task_fullName);
         %% extract fMRI ROI
-        fMRI_allTrials_tmp = ROI_trial_b_trial.(fMRI_ROI_nm{1}).(task_nm_tmp).(run_nm_bis).(timePeriod_nm)(:, iS);
+        fMRI_allTrials_tmp = ROI_trial_b_trial.(ROI_nm{1}).(task_nm_tmp).(run_nm_bis).(timePeriod_nm)(:, iS);
         
         %% average per incentive and effort level
         for iE = 1:n_dE
