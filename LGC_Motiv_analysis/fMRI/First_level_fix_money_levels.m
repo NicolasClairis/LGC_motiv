@@ -36,33 +36,44 @@ money_level_right = money_level_right_v0;
 % between 0 and 3:
 % R1 = default low R;
 % R4 = highest more rewarding R
-money_level_left(money_level_left_v0 == 3 & RP_var == 1) = 4;
-money_level_left(money_level_left_v0 == 2 & RP_var == 1) = 3;
-money_level_left(money_level_left_v0 == 1 & RP_var == 1) = 2;
-money_level_left(money_level_left_v0 == 0 & RP_var == 1) = 1;
-money_level_right(money_level_right_v0 == 3 & RP_var == 1) = 4;
-money_level_right(money_level_right_v0 == 2 & RP_var == 1) = 3;
-money_level_right(money_level_right_v0 == 1 & RP_var == 1) = 2;
-money_level_right(money_level_right_v0 == 0 & RP_var == 1) = 1;
 
-%% increase all punishment levels to have a range between 1 and 4 instead 
-% of between 0 and 3 + swap original P1 and original P3 so that the range 
-% goes from more aversive (default P1) to least aversive (P4).
-% P1 = default high P;
+% index for reward trials
+R_trials = RP_var == 1;
+% increase all R levels
+money_level_left(money_level_left_v0 == 3 & R_trials) = 4;
+money_level_left(money_level_left_v0 == 2 & R_trials) = 3;
+money_level_left(money_level_left_v0 == 1 & R_trials) = 2;
+money_level_left(money_level_left_v0 == 0 & R_trials) = 1;
+money_level_right(money_level_right_v0 == 3 & R_trials) = 4;
+money_level_right(money_level_right_v0 == 2 & R_trials) = 3;
+money_level_right(money_level_right_v0 == 1 & R_trials) = 2;
+money_level_right(money_level_right_v0 == 0 & R_trials) = 1;
+
+%% modify P levels:
+%
+% 1) increase all punishment levels to have a range between 1 and 4 instead 
+% of between 0 and 3
+%
+% 2) + swap original P1 and original P3 so that the range goes from more 
+% aversive (default P1) to least aversive (P4).
+% P1 = default option and highest P;
 % P4 = lowest and least aversive P (and therefore more motivating P)
 
+% index for punishment trials
+P_trials = RP_var == -1;
+
 % least aversive option P1 becomes P4
-money_level_left(money_level_left_v0 == 1 & RP_var == -1) = 4;
-money_level_right(money_level_right_v0 == 1 & RP_var == -1) = 4;
+money_level_left(money_level_left_v0 == 1 & P_trials) = 4;
+money_level_right(money_level_right_v0 == 1 & P_trials) = 4;
 % second least aversive option P2 becomes P3
-money_level_left(money_level_left_v0 == 2 & RP_var == -1) = 3;
-money_level_right(money_level_right_v0 == 2 & RP_var == -1) = 3;
+money_level_left(money_level_left_v0 == 2 & P_trials) = 3;
+money_level_right(money_level_right_v0 == 2 & P_trials) = 3;
 % more aversive varying option P3 becomes P2
-money_level_left(money_level_left_v0 == 3 & RP_var == -1) = 2;
-money_level_right(money_level_right_v0 == 3 & RP_var == -1) = 2;
+money_level_left(money_level_left_v0 == 3 & P_trials) = 2;
+money_level_right(money_level_right_v0 == 3 & P_trials) = 2;
 % default option P0 becomes P1
-money_level_left(money_level_left_v0 == 0 & RP_var == -1) = 1;
-money_level_right(money_level_right_v0 == 0 & RP_var == -1) = 1;
+money_level_left(money_level_left_v0 == 0 & P_trials) = 1;
+money_level_right(money_level_right_v0 == 0 & P_trials) = 1;
 
 
 %% fix data for subjects where IP had a bug and two options were based on
@@ -72,24 +83,24 @@ if strcmp(study_nm,'study1')
         
         % R4 is equal to R3 (rewards only go from R1 to R3 for this
         % subject)
-        money_level_left(money_level_left == 4 & RP_var == 1) = 3;
-        money_level_right(money_level_right == 4 & RP_var == 1) = 3;
+        money_level_left(money_level_left == 4 & R_trials) = 3;
+        money_level_right(money_level_right == 4 & R_trials) = 3;
         
         % P4 is also equal to P3 (punishments only go from P1 to P3 for
         % this subject)
-        money_level_left(money_level_left == 4 & RP_var == -1) = 3;
-        money_level_right(money_level_right == 4 & RP_var == -1) = 3;
+        money_level_left(money_level_left == 4 & P_trials) = 3;
+        money_level_right(money_level_right == 4 & P_trials) = 3;
     elseif strcmp(sub_nm,'090') && strcmp(task_fullName,'physical')
         
         % R4 is equal to R3 (rewards only go from R1 to R3 for this
         % subject)
-        money_level_left(money_level_left == 4 & RP_var == 1) = 3;
-        money_level_right(money_level_right == 4 & RP_var == 1) = 3;
+        money_level_left(money_level_left == 4 & R_trials) = 3;
+        money_level_right(money_level_right == 4 & R_trials) = 3;
         
         % P4 is also equal to P3 (punishments only go from P1 to P3 for
         % this subject)
-        money_level_left(money_level_left == 4 & RP_var == -1) = 3;
-        money_level_right(money_level_right == 4 & RP_var == -1) = 3;
+        money_level_left(money_level_left == 4 & P_trials) = 3;
+        money_level_right(money_level_right == 4 & P_trials) = 3;
     end
 end
 
