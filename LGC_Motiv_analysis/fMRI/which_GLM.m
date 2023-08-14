@@ -3872,6 +3872,8 @@ switch GLM
             % feedback
             GLMprm.model_onset.(Epm_nm).fbk = 'stick';
         end % physical/mental loop
+        
+        %% new series of GLMS with temporal derivative + mask at 20%
     case 141 % like GLM 139 but with temporal derivative
         % general parameters
         GLMprm.gal.orth_vars = 0;
@@ -3901,8 +3903,6 @@ switch GLM
             % feedback
             GLMprm.model_onset.(Epm_nm).fbk = 'stick';
         end % physical/mental loop
-        
-        %% new best GLMS
     case 142 % same as GLM 127 but threshold at 20% for mask + adding temporal derivative
         % general parameters
         GLMprm.gal.add_drv = 1;
@@ -3952,6 +3952,34 @@ switch GLM
                     GLMprm.choice.(Epm_nm).RP.E.prevEfficacy = 3;
             end
             GLMprm.choice.(Epm_nm).RT.E.RT = 2;
+            % effort perf (effort execution)
+            GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
+            % feedback
+            GLMprm.model_onset.(Epm_nm).fbk = 'stick';
+        end % physical/mental loop
+        
+        %% new series of GLM with mask at 20% but no temporal derivative
+    case 144 % same as GLM 127 but threshold at 20% for mask
+        % and same as GLM 142 but without temporal derivative
+        % general parameters
+        GLMprm.gal.orth_vars = 0;
+        GLMprm.gal.zPerRun = 0;
+        GLMprm.gal.grey_mask = 7;
+        GLMprm.gal.mask_probaThreshold = 20;
+        % loop per task
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'stick';
+            GLMprm.choice.(Epm_nm).RP.E.R_chosen = 2;
+            GLMprm.choice.(Epm_nm).RP.E.P_chosen = 2;
+            GLMprm.choice.(Epm_nm).RP.E.E_chosen = 1;
+            switch Epm_nm
+                case 'Ep'
+                    GLMprm.choice.(Epm_nm).RP.E.fatigue = 1;
+                case 'Em'
+                    GLMprm.choice.(Epm_nm).RP.E.prevEfficacy = 3;
+            end
             % effort perf (effort execution)
             GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
             % feedback
