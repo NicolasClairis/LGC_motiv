@@ -128,15 +128,17 @@ R_trials = RP_var == 1;
 P_trials = RP_var == -1;
 % loading default option side
 defaultSide = behavioralDataStruct.(task_behavioral_id).choiceOptions.default_LR;
+default_on_the_left = defaultSide == -1;
+default_on_the_right = defaultSide == 1;
 % loading money choice
 money_amount_left = behavioralDataStruct.(task_behavioral_id).choiceOptions.monetary_amount.left.*RP_var;
 money_amount_right = behavioralDataStruct.(task_behavioral_id).choiceOptions.monetary_amount.right.*RP_var;
 money_amount_sum = money_amount_left + money_amount_right;
-money_amount_varOption = money_amount_left.*(defaultSide == 1) + money_amount_right.*(defaultSide == -1);
+money_amount_varOption = money_amount_left.*default_on_the_right + money_amount_right.*default_on_the_left;
 abs_money_amount_varOption = abs(money_amount_varOption);
 money_level_left_v0 = behavioralDataStruct.(task_behavioral_id).choiceOptions.R.left;
 money_level_right_v0 = behavioralDataStruct.(task_behavioral_id).choiceOptions.R.right;
-money_amount_fixedOption = money_amount_left.*(defaultSide == -1) + money_amount_right.*(defaultSide == 1);
+money_amount_fixedOption = money_amount_left.*default_on_the_left + money_amount_right.*default_on_the_right;
 R_amount_varOption = money_amount_varOption.*R_trials;
 P_amount_varOption = money_amount_varOption.*P_trials;
 
@@ -145,25 +147,25 @@ P_amount_varOption = money_amount_varOption.*P_trials;
     money_level_left_v0, money_level_right_v0, RP_var);
 
 % extract other relevant variables
-money_level_varOption = (money_level_left.*(defaultSide == 1) +...
-    money_level_right.*(defaultSide == -1)) + 4*R_trials; % add 4 to distinguish rewards and punishments
-money_level_fixedOption = money_level_left.*(defaultSide == -1) +...
-    money_level_right.*(defaultSide == 1) + 4*R_trials; % add 4 to distinguish rewards and punishments
+money_level_varOption = (money_level_left.*default_on_the_right +...
+    money_level_right.*default_on_the_left) + 4*R_trials; % add 4 to distinguish rewards and punishments
+money_level_fixedOption = money_level_left.*default_on_the_left +...
+    money_level_right.*default_on_the_right + 4*R_trials; % add 4 to distinguish rewards and punishments
 
 % consider that levels of reward (R1 to R4) are equivalent to levels of punishments (P1 to P4) and pool them together
-abs_money_level_varOption = (money_level_left.*(defaultSide == 1) +...
-    money_level_right.*(defaultSide == -1));
+abs_money_level_varOption = (money_level_left.*default_on_the_right +...
+    money_level_right.*default_on_the_left);
 
-R_level_varOption = (money_level_left.*(defaultSide == 1) +...
-    money_level_right.*(defaultSide == -1)).*R_trials;
-P_level_varOption = (money_level_left.*(defaultSide == 1) +...
-    money_level_right.*(defaultSide == -1)).*P_trials;
+R_level_varOption = (money_level_left.*default_on_the_right +...
+    money_level_right.*default_on_the_left).*R_trials;
+P_level_varOption = (money_level_left.*default_on_the_right +...
+    money_level_right.*default_on_the_left).*P_trials;
 % loading effort choice
 E_left = behavioralDataStruct.(task_behavioral_id).choiceOptions.E.left;
 E_right = behavioralDataStruct.(task_behavioral_id).choiceOptions.E.right;
 E_sum = E_left + E_right;
-E_varOption = E_left.*(defaultSide == 1) + E_right.*(defaultSide == -1);
-E_fixedOption = E_left.*(defaultSide == -1) + E_right.*(defaultSide == 1);
+E_varOption = E_left.*default_on_the_right + E_right.*default_on_the_left;
+E_fixedOption = E_left.*default_on_the_left + E_right.*default_on_the_right;
 % loading chosen option
 choice_LRandConf = behavioralDataStruct.(task_behavioral_id).choice;
 % transform into one variable equal to -1 when choice = left and 1 when
