@@ -4043,14 +4043,15 @@ switch GLM
             GLMprm.model_onset.(Epm_nm).fbk = 'stick';
         end % physical/mental loop
         
-        %% Kurniawan-like GLM with 20% mask
-    case 148 % R/P/E for high E option + Ech + RT + choice
+        %% new series of GLM back to more lenient mask to avoid problems close to midline
+    case 148 % (Kurniawan et al, 2021)-like GLM with 20% mask
+        % R/P/E for high E option + Ech + RT + choice
         % general parameters
         GLMprm.gal.add_drv = 1;
         GLMprm.gal.orth_vars = 0;
         GLMprm.gal.zPerRun = 0;
         GLMprm.gal.grey_mask = 7;
-        GLMprm.gal.mask_probaThreshold = 20;
+        GLMprm.gal.mask_probaThreshold = 5;
         % loop per task
         for iEpm = 1:length(Epm)
             Epm_nm = Epm{iEpm};
@@ -4067,12 +4068,13 @@ switch GLM
             % feedback
             GLMprm.model_onset.(Epm_nm).fbk = 'stick';
         end % physical/mental loop
-    case 149 % same as GLM 148 but without temporal derivative
+    case 149 % (Kurniawan et al, 2021)-like GLM wihtout temporal derivative
+        % R/P/E for high E option + Ech + RT + choice
         % general parameters
         GLMprm.gal.orth_vars = 0;
         GLMprm.gal.zPerRun = 0;
         GLMprm.gal.grey_mask = 7;
-        GLMprm.gal.mask_probaThreshold = 20;
+        GLMprm.gal.mask_probaThreshold = 5;
         % loop per task
         for iEpm = 1:length(Epm)
             Epm_nm = Epm{iEpm};
@@ -4084,6 +4086,107 @@ switch GLM
             GLMprm.choice.(Epm_nm).RP.E.E_varOption = 1;
             GLMprm.choice.(Epm_nm).RP.E.E_chosen = 1;
             GLMprm.choice.(Epm_nm).RP.E.RT = 2;
+            % effort perf (effort execution)
+            GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
+            % feedback
+            GLMprm.model_onset.(Epm_nm).fbk = 'stick';
+        end % physical/mental loop
+        
+        
+    case 150 % basic GLM with Rch/Pch/Ech
+        % general parameters
+        GLMprm.gal.orth_vars = 0;
+        GLMprm.gal.zPerRun = 0;
+        GLMprm.gal.grey_mask = 7;
+        GLMprm.gal.mask_probaThreshold = 5;
+        % loop per task
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'stick';
+            GLMprm.choice.(Epm_nm).RP.E.R_chosen = 2;
+            GLMprm.choice.(Epm_nm).RP.E.P_chosen = 2;
+            GLMprm.choice.(Epm_nm).RP.E.E_chosen = 1;
+            % effort perf (effort execution)
+            GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
+            % feedback
+            GLMprm.model_onset.(Epm_nm).fbk = 'stick';
+        end % physical/mental loop
+        
+    case 151 % GLM 150 + Fp/Fm
+        % general parameters
+        GLMprm.gal.orth_vars = 0;
+        GLMprm.gal.zPerRun = 0;
+        GLMprm.gal.grey_mask = 7;
+        GLMprm.gal.mask_probaThreshold = 5;
+        % loop per task
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'stick';
+            GLMprm.choice.(Epm_nm).RP.E.R_chosen = 2;
+            GLMprm.choice.(Epm_nm).RP.E.P_chosen = 2;
+            GLMprm.choice.(Epm_nm).RP.E.E_chosen = 1;
+            switch Epm_nm
+                case 'Ep'
+                    GLMprm.choice.(Epm_nm).RP.E.fatigue = 1;
+                case 'Em'
+                    GLMprm.choice.(Epm_nm).RP.E.prevEfficacy = 3;
+            end
+            % effort perf (effort execution)
+            GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
+            % feedback
+            GLMprm.model_onset.(Epm_nm).fbk = 'stick';
+        end % physical/mental loop
+    case 152 % GLM 151 + z(RT)
+        % general parameters
+        GLMprm.gal.orth_vars = 0;
+        GLMprm.gal.zPerRun = 0;
+        GLMprm.gal.grey_mask = 7;
+        GLMprm.gal.mask_probaThreshold = 5;
+        % loop per task
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'stick';
+            GLMprm.choice.(Epm_nm).RP.E.R_chosen = 2;
+            GLMprm.choice.(Epm_nm).RP.E.P_chosen = 2;
+            GLMprm.choice.(Epm_nm).RP.E.E_chosen = 1;
+            switch Epm_nm
+                case 'Ep'
+                    GLMprm.choice.(Epm_nm).RP.E.fatigue = 1;
+                case 'Em'
+                    GLMprm.choice.(Epm_nm).RP.E.prevEfficacy = 3;
+            end
+            GLMprm.choice.(Epm_nm).RP.E.RT = 2;
+            % effort perf (effort execution)
+            GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
+            % feedback
+            GLMprm.model_onset.(Epm_nm).fbk = 'stick';
+        end % physical/mental loop
+    case 153 % GLM 152 + model-derived confidence
+        % general parameters
+        GLMprm.gal.orth_vars = 0;
+        GLMprm.gal.zPerRun = 0;
+        GLMprm.gal.grey_mask = 7;
+        GLMprm.gal.mask_probaThreshold = 5;
+        % loop per task
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'stick';
+            GLMprm.choice.(Epm_nm).RP.E.R_chosen = 2;
+            GLMprm.choice.(Epm_nm).RP.E.P_chosen = 2;
+            GLMprm.choice.(Epm_nm).RP.E.E_chosen = 1;
+            switch Epm_nm
+                case 'Ep'
+                    GLMprm.choice.(Epm_nm).RP.E.fatigue = 1;
+                case 'Em'
+                    GLMprm.choice.(Epm_nm).RP.E.prevEfficacy = 3;
+            end
+            GLMprm.choice.(Epm_nm).RP.E.RT = 2;
+            GLMprm.choice.(Epm_nm).RP.E.confidence = 2;
+            GLMprm.choice.(Epm_nm).RP.E.conf_mdl = 'bayesianModel_3';
             % effort perf (effort execution)
             GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
             % feedback
