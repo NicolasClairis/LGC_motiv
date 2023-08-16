@@ -23,4 +23,4 @@ biasFieldCorr = 0;
 %% launch first level, contrasts and 2nd level subsequently
 First_level_batch(GLM,checking,condition,study_nm, [],[], biasFieldCorr);
 LGCM_contrasts_spm(GLM,checking,condition,study_nm, [],[], biasFieldCorr);
-Second_level_batch(GLM,condition, [],[], biasFieldCorr);
+Second_level_batch(GLM,condition, [],biasFieldCorr);
