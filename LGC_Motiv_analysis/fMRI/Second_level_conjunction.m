@@ -162,6 +162,10 @@ for iS = 1:NS
     okSubs(iS) = (~isempty(conlist_allSubs{iS,1}).*~isempty(conlist_allSubs{iS,2})) == 1;
 end % loop through subjects
 conlist = conlist_allSubs(okSubs,:);
+NS_ok = sum(okSubs);
+if NS_ok < NS
+    warning(['Only ',num2str(NS_ok),'/',num2str(NS),' subjects with ok data for conjunction']);
+end
 
 %% Be careful t2.scans (for two-sample t.test)
 which_technique = 1;
