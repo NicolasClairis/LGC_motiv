@@ -20,7 +20,7 @@ for iS = 1:NS
     sub_nber = num_data(iS);
     if sub_nber < 10
         sub_cell{iS} = ['00',num2str(sub_nber)];
-    elseif sub_nber >= 10 && num_data(iS) <= 100
+    elseif sub_nber >= 10 && num_data(iS) < 100
         sub_cell{iS} = ['0',num2str(sub_nber)];
     elseif sub_nber >= 100
         sub_cell{iS} = num2str(sub_nber);
