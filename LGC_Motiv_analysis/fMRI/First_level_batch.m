@@ -1,5 +1,5 @@
-function[] = First_level_batch(GLM, checking, condition, study_nm, subject_id, NS)
-%[] = First_level_batch(GLM, checking, condition, study_nm, subject_id, NS)
+function[] = First_level_batch(GLM, checking, condition, study_nm, subject_id, NS, biasFieldCorr)
+%[] = First_level_batch(GLM, checking, condition, study_nm, subject_id, NS, biasFieldCorr)
 % First_level_batch will perform 1st level for LGC motivation fMRI studies.
 %
 % INPUTS
@@ -24,6 +24,9 @@ function[] = First_level_batch(GLM, checking, condition, study_nm, subject_id, N
 %
 % NS: number of subjects (determined automatically if not defined in
 % the inputs)
+%
+% biasFieldCorr: use bias-field corrected images (1) or not (0)? By default
+% will not use bias-field corrected images
 %
 % See also which_GLM.m, 
 % First_level_loadEachCondition.m, First_level_loadRegressors.m,
@@ -66,7 +69,9 @@ grey_mask = GLMprm.gal.grey_mask;
 preproc_sm_kernel = 8;
 
 % use bias-field corrected images or not?
-biasFieldCorr = 0;
+if ~exist('biasFieldCorr','var') || ~ismember(biasFieldCorr,[0,1])
+    biasFieldCorr = 0;
+end
 switch biasFieldCorr
     case 0
         prefix = 'swr';

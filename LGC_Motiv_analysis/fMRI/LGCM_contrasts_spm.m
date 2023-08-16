@@ -1,5 +1,5 @@
-function[] = LGCM_contrasts_spm(GLM, checking, condition, study_nm, subject_id, NS)
-% [] = LGCM_contrasts_spm(GLM, checking, condition, study_nm, subject_id, NS)
+function[] = LGCM_contrasts_spm(GLM, checking, condition, study_nm, subject_id, NS, biasFieldCorr)
+% [] = LGCM_contrasts_spm(GLM, checking, condition, study_nm, subject_id, NS, biasFieldCorr)
 % LGCM_contrasts_spm prepares the batch for SPM to perform the first level
 % contrasts in each individual of the study
 %
@@ -21,6 +21,10 @@ function[] = LGCM_contrasts_spm(GLM, checking, condition, study_nm, subject_id, 
 % NS: number of subjects (determined automatically if not defined in
 % the inputs)
 %
+% biasFieldCorr: use bias-field corrected images (1) or not (0)? By default
+% will not use bias-field corrected images
+%
+
 close all; clc;
 
 %% working directories
@@ -51,7 +55,9 @@ end
 preproc_sm_kernel = 8;
 
 %% use bias-field corrected files or not?
-biasFieldCorr = 0;
+if ~exist('biasFieldCorr','var') || ~ismember(biasFieldCorr,[0,1])
+    biasFieldCorr = 0;
+end
 
 %% checking by default the batch before launching it
 if ~exist('checking','var') ||...

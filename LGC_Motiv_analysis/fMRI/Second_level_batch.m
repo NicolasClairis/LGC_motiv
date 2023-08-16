@@ -1,5 +1,5 @@
-function[] = Second_level_batch(GLM, condition, gender)
-% Second_level_batch(GLM, condition, gender)
+function[] = Second_level_batch(GLM, condition, gender, biasFieldCorr)
+% Second_level_batch(GLM, condition, gender, biasFieldCorr)
 % script to launch second level on LGC Motivation studies
 %
 % INPUTS
@@ -13,7 +13,10 @@ function[] = Second_level_batch(GLM, condition, gender)
 % 'all': all subjects by default
 % 'males': remove females from the list
 % 'females': remove males from the list
-
+%
+% biasFieldCorr: use bias-field corrected images (1) or not (0)? By default
+% will not use bias-field corrected images
+%
 %% clear workspace
 close all; clc;
 
@@ -28,7 +31,9 @@ checking = 0;
 preproc_sm_kernel = 8;
 
 %% use bias-field corrected files or not?
-biasFieldCorr = 0;
+if ~exist('biasFieldCorr','var') || ~ismember(biasFieldCorr,[0,1])
+    biasFieldCorr = 0;
+end
 
 %% define study and list of subjects to include
 % define study
