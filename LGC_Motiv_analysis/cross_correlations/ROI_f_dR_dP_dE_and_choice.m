@@ -11,10 +11,10 @@ studyFolder = [computerRoot, study_nm, filesep];
 
 %% load ROI
 [condition_for_fMRI_extraction] = condition_for_fMRI(condition);
-% [ROI_trial_b_trial, ROI_subList,...
-%     ROI_nm, ROI_short_nm,...
-%     ~, timePeriod_nm] = extract_ROI_betas_onsets_only_bis(computerRoot,...
-%     study_nm, subject_id, condition_for_fMRI_extraction);
+[ROI_trial_b_trial, ROI_subList,...
+    ROI_nm, ROI_short_nm,...
+    ~, timePeriod_nm] = extract_ROI_betas_onsets_only_bis(computerRoot,...
+    study_nm, subject_id, condition_for_fMRI_extraction);
 
 %% main parameters of interest
 nRunsPerTask = 2;
@@ -342,7 +342,10 @@ end % subject loop
 [pSize, lWidth, col, mSize] = general_fig_prm;
 figHighE = fig;
 figChoice_x_highE = fig;
+figChoice_x_highE_Eonly = fig;
+figChoice_x_highE_RPonly = fig;
 xRange = [0.8 3.2];
+xRange_RP = [0.8 6.2];
 y_ROI_range = [-4.2 6.5];
 
 %% loop through tasks for average + figure
@@ -580,6 +583,74 @@ for iT = 1:nTasks
     ylim(y_ROI_range);
     xlim(xRange);
     xlabel('Effort');
+    ylabel(ROI_short_nm);
+    legend_size(pSize);
+    
+    %% figure for choice*high effort option - E-only
+    figure(figChoice_x_highE_Eonly);
+    subplot(1,nTasks,iT); hold on;
+    % effort
+    E_hE_er_hdl = errorbar(1:n_hE_levels,...
+        mean_fMRI_ROI.(task_nm4).hEch.hE_level,...
+        sem_fMRI_ROI.(task_nm4).hEch.hE_level);
+    E_lE_er_hdl = errorbar(1:n_hE_levels,...
+        mean_fMRI_ROI.(task_nm4).lEch.hE_level,...
+        sem_fMRI_ROI.(task_nm4).lEch.hE_level);
+    E_hE_fit_hdl = plot(1:n_hE_levels,...
+        mean_fMRI_ROI_fit.(task_nm4).hEch.hE_level);
+    E_lE_fit_hdl = plot(1:n_hE_levels,...
+        mean_fMRI_ROI_fit.(task_nm4).lEch.hE_level);
+    errorbar_hdl_upgrade(E_hE_er_hdl, col.orange);
+    errorbar_hdl_upgrade(E_lE_er_hdl, col.blue);
+    fit_hdl_upgrade(E_hE_fit_hdl, col.orange_light);
+    fit_hdl_upgrade(E_lE_fit_hdl, col.blue_light);
+    ylim(y_ROI_range);
+    xlim(xRange);
+    xlabel('Effort');
+    ylabel(ROI_short_nm);
+    legend_size(pSize);
+    
+    %% figure for choice*high effort option with R and P together
+    figure(figChoice_x_highE_RPonly);
+    subplot(1,nTasks,iT); hold on;
+    
+    % reward
+    R_hE_er_hdl = errorbar(3 + (1:n_hR_levels),...
+        mean_fMRI_ROI.(task_nm4).hEch.hR_level,...
+        sem_fMRI_ROI.(task_nm4).hEch.hR_level);
+    R_lE_er_hdl = errorbar(3 + (1:n_hR_levels),...
+        mean_fMRI_ROI.(task_nm4).lEch.hR_level,...
+        sem_fMRI_ROI.(task_nm4).lEch.hR_level);
+    R_hE_fit_hdl = plot(3 + (1:n_hR_levels),...
+        mean_fMRI_ROI_fit.(task_nm4).hEch.hR_level);
+    R_lE_fit_hdl = plot(3 + (1:n_hR_levels),...
+        mean_fMRI_ROI_fit.(task_nm4).lEch.hR_level);
+    % punishment
+    P_hE_er_hdl = errorbar(1:n_hP_levels,...
+        mean_fMRI_ROI.(task_nm4).hEch.hP_level,...
+        sem_fMRI_ROI.(task_nm4).hEch.hP_level);
+    P_lE_er_hdl = errorbar(1:n_hP_levels,...
+        mean_fMRI_ROI.(task_nm4).lEch.hP_level,...
+        sem_fMRI_ROI.(task_nm4).lEch.hP_level);
+    P_hE_fit_hdl = plot(1:n_hP_levels,...
+        mean_fMRI_ROI_fit.(task_nm4).hEch.hP_level);
+    P_lE_fit_hdl = plot(1:n_hP_levels,...
+        mean_fMRI_ROI_fit.(task_nm4).lEch.hP_level);
+    % improve display
+    errorbar_hdl_upgrade(R_hE_er_hdl, col.orange);
+    errorbar_hdl_upgrade(R_lE_er_hdl, col.blue);
+    errorbar_hdl_upgrade(P_hE_er_hdl, col.orange);
+    errorbar_hdl_upgrade(P_lE_er_hdl, col.blue);
+    fit_hdl_upgrade(R_hE_fit_hdl, col.orange_light);
+    fit_hdl_upgrade(R_lE_fit_hdl, col.blue_light);
+    fit_hdl_upgrade(P_hE_fit_hdl, col.orange_light);
+    fit_hdl_upgrade(P_lE_fit_hdl, col.blue_light);
+    % add x.label
+    xticks(1:6);
+    xticklabels({'P1','P2','P3','R1','R2','R3'});
+    ylim(y_ROI_range);
+    xlim(xRange_RP);
+    xlabel('Incentives');
     ylabel(ROI_short_nm);
     legend_size(pSize);
 end % task loop
