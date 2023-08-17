@@ -49,7 +49,9 @@ function[con_vec_all,...
 %% extract working directories
 [computerRoot] = LGCM_root_paths();
 
-if ~strcmp(study_nm,'study1')
+if ~exist('study_nm','var') || ~strcmp(study_nm,'study1')
+    study_nm = 'study1';
+elseif exist('study_nm','var') && ~strcmp(study_nm,'study1')
     error('case not ready yet');
 end
 
@@ -112,6 +114,9 @@ end
 n_max_con = length(con_names);
 
 %% how many figures do you want to plot
+if ~exist('fig_disp','var') || isempty(fig_disp)
+    fig_disp = 1;
+end
 if fig_disp == 1
     n_figs = spm_input('How many figures?',1,'e');
     
@@ -253,7 +258,8 @@ if fig_disp == 1
         selectedCon = find(conFig == 1); % extract index of contrasts selected
         % display figure
         [roi_fig] = roi_graph(selectedCon, n_ROIs,...
-            con_avg, con_sem, figConNames.(['fig',num2str(iFig)]), ttest_pval);
+            con_vec_all, con_avg, con_sem,...
+            figConNames.(['fig',num2str(iFig)]), ttest_pval);
         % save image
         cd(ROI_path);
         img_name = ['GLM',num2str(GLM),'_',beta_or_t_value,...
