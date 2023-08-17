@@ -137,15 +137,34 @@ end % ROI loop
 %% lines to launch to display metabolite of interest
 MRS_ROI_nm='dmPFC';
 metabolite_nm='Glu_div_GSH';
-metabolite_nm_bis = strrep(metabolite_nm,'_div_','/');
-prm_nm='kEp';
+[metabolite_nm_bis] = metab_div_rnm(metabolite_nm);
 metabolite_allSubs = metabolites.(MRS_ROI_nm).(metabolite_nm);
-        goodSubs = ~isnan(metabolite_allSubs);
-behavPrm = prm.(prm_nm);
-X_nm = [MRS_ROI_nm,'-',metabolite_nm_bis];
-M_nm='dmPFC';
-Y_nm = prm_nm;
 dispMed = 1;
+X_nm = [MRS_ROI_nm,'-',metabolite_nm_bis];
+M_nm='dmPFC=f(Ech)';
+
+% kEp
+prm_nm='kEp';
+behavPrm = prm.(prm_nm);
+Y_nm = prm_nm;
+[~, ~, metabolite_clean] = rmv_outliers_3sd(metabolite_allSubs);
+[~, ~, con_data_clean] = rmv_outliers_3sd(con_data);
+[~, ~, behavPrm_clean] = rmv_outliers_3sd(behavPrm);
+goodSubs_bis = ~isnan(metabolite_clean).*~isnan(con_data_clean).*~isnan(behavPrm_clean) == 1;
+
+[mediation_path.no_outliers.a.(MRS_ROI_nm).(metabolite_nm).(prm_nm),...
+    mediation_path.no_outliers.b.(MRS_ROI_nm).(metabolite_nm).(prm_nm),...
+    mediation_path.no_outliers.c.(MRS_ROI_nm).(metabolite_nm).(prm_nm),...
+    mediation_path.no_outliers.c_prime.(MRS_ROI_nm).(metabolite_nm).(prm_nm),...
+    pval.no_outliers.(MRS_ROI_nm).(metabolite_nm).(prm_nm)] = mediation(metabolite_allSubs(goodSubs_bis),...
+    con_data(goodSubs_bis),...
+    behavPrm(goodSubs_bis),...
+    X_nm, M_nm, Y_nm, dispMed);
+
+% kEm
+prm_nm='kEm';
+behavPrm = prm.(prm_nm);
+Y_nm = prm_nm;
 [~, ~, metabolite_clean] = rmv_outliers_3sd(metabolite_allSubs);
 [~, ~, con_data_clean] = rmv_outliers_3sd(con_data);
 [~, ~, behavPrm_clean] = rmv_outliers_3sd(behavPrm);
