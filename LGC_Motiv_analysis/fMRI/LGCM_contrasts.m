@@ -354,7 +354,9 @@ for iTimePeriod = 1:n_timePeriods
                                 if strcmp(regType,'REG')
                                     conR_nm = Rreg_full_nm(n_regNameSize+1:end);
                                     conP_nm = Preg_full_nm(n_regNameSize+1:end);
-                                    if ~strcmp(conR_nm, conP_nm)
+                                    if ~strcmp(conR_nm, conP_nm) &&...
+                                            ~strcmp(conR_nm,' R level chosen') &&...
+                                            ~strcmp(conR_nm,' P level chosen')
                                         error('problem mismatch R and P regressor for pooling. Please fix it.');
                                     end % comparison R/P regressor
                                 end
