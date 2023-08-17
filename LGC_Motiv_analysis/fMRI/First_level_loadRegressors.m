@@ -173,32 +173,33 @@ choice_LRandConf = behavioralDataStruct.(task_behavioral_id).choice;
 choice_LR = choice_LRandConf;
 choice_LR(choice_LRandConf == -2) = -1;
 choice_LR(choice_LRandConf == 2) = 1;
+choice_left = choice_LR == -1;
+choice_right = choice_LR == 1;
 % choice = high effort
 run_nm = num2str(jRun); % careful: use jRun for the run name
 [choice_hE] = extract_choice_hE(subBehaviorFolder, sub_nm, run_nm, task_fullName);
-% loading chosen variables
+% loading effort variables
 E_chosen = behavioralDataStruct.(task_behavioral_id).E_chosen;
-E_unchosen = E_left.*(choice_LR == 1) + E_right.*(choice_LR == -1);
+E_unchosen = E_left.*choice_right + E_right.*choice_left;
 E_chosen_min_E_unchosen = E_chosen - E_unchosen;
+Ech_min_Efixed = E_chosen - E_fixedOption;
 
 % money levels
-money_level_chosen = money_level_left.*(choice_LR == -1) + money_level_right.*(choice_LR == 1) + 4*R_trials;% add 4 to distinguish rewards and punishments
-money_level_unchosen = money_level_left.*(choice_LR == 1) + money_level_right.*(choice_LR == -1) + 4*R_trials;% add 4 to distinguish rewards and punishments
+money_level_chosen = money_level_left.*choice_left + money_level_right.*choice_right + 4*R_trials;% add 4 to distinguish rewards and punishments
+money_level_unchosen = money_level_left.*choice_right + money_level_right.*choice_left + 4*R_trials;% add 4 to distinguish rewards and punishments
 % consider that levels of reward (R1 to R4) are equivalent to levels of punishments (P1 to P4) and pool them together
-abs_money_level_chosen = money_level_left.*(choice_LR == -1) + money_level_right.*(choice_LR == 1);
-abs_money_level_unchosen = money_level_left.*(choice_LR == 1) + money_level_right.*(choice_LR == -1);
+abs_money_level_chosen = money_level_left.*choice_left + money_level_right.*choice_right;
+abs_money_level_unchosen = money_level_left.*choice_right + money_level_right.*choice_left;
 moneyChosen_min_moneyUnchosen_level = money_level_chosen - money_level_unchosen;
 absMoneyChosen_min_moneyUnchosen_level = abs_money_level_chosen - abs_money_level_unchosen;
 % money chosen - money fixed option
 moneyChosen_min_moneyFixed_level = money_level_chosen - money_level_fixedOption;
-R_level_chosen = (money_level_left.*(choice_LR == -1) + money_level_right.*(choice_LR == 1)).*R_trials;
-P_level_chosen = (money_level_left.*(choice_LR == -1) + money_level_right.*(choice_LR == 1)).*P_trials;
-% E chosen - E fixed option
-Ech_min_Efixed = E_chosen - E_fixedOption;
+R_level_chosen = (money_level_left.*choice_left + money_level_right.*choice_right).*R_trials;
+P_level_chosen = (money_level_left.*choice_left + money_level_right.*choice_right).*P_trials;
 
 % amount variables
 money_amount_chosen = behavioralDataStruct.(task_behavioral_id).R_chosen.*RP_var;
-money_amount_unchosen = money_amount_left.*(choice_LR == 1) + money_amount_right.*(choice_LR == -1);
+money_amount_unchosen = money_amount_left.*choice_right + money_amount_right.*choice_left;
 % money chosen - money unchosen option
 moneyChosen_min_moneyFixed_amount = money_amount_chosen - money_amount_fixedOption;
 moneyChosen_min_moneyUnchosen_amount = money_amount_chosen - money_amount_unchosen;
