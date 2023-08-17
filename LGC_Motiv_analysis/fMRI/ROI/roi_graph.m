@@ -1,6 +1,6 @@
 function[roi_fig] = roi_graph(selectedCon, n_ROIs,...
-        con_avg, con_sem, con_names, ttest_pval)
-% [roi_fig] = roi_graph(selectedCon, n_ROIs, con_avg, con_sem, con_names, ttest_pval);
+        con_vec_all, con_avg, con_sem, con_names, ttest_pval)
+% [roi_fig] = roi_graph(selectedCon, n_ROIs, con_vec_all, con_avg, con_sem, con_names, ttest_pval);
 % roi_graph will represent the data for the selected ROI
 %
 % INPUTS
@@ -22,13 +22,17 @@ function[roi_fig] = roi_graph(selectedCon, n_ROIs,...
 %
 % OUTPUTS
 % roi_fig: handle for figure
+%
+% Script requires violinplot function which can be downloaded here: https://github.com/bastibe/Violinplot-Matlab/
+
 
 %% extract general informations
 n_cons = length(selectedCon);
+NS = size(con_vec_all, 2);
 langage = 'engl';
 lSize = 3;
 pSize = 50;
-roi_color = ([143 0 0])./255;
+% roi_color = ([143 0 0])./255;
 % roi_color = ([143 143 143])./255;
 
 % no more than 4 subplots per line:
@@ -36,25 +40,36 @@ nb_ROI_graph_lines = 1*(n_ROIs <= 4) + 2*(n_ROIs > 4)*(n_ROIs <= 8) + 3*(n_ROIs 
 % if more than 4 ROIs studied, then max nber of graphs per line = 4 (more = hard to read)
 max_graph_per_line = n_ROIs*(n_ROIs < 4) + 4*(n_ROIs >=4);
 
-% default yscale values
-minYvalue = min(min(min(min(con_avg(selectedCon,:) - con_sem(selectedCon,:) )))); % extract min beta value across subs and ROI
-maxYvalue = max(max(max(max(con_avg(selectedCon,:) + con_sem(selectedCon,:) )))); % extract max beta value across subs and ROI
+%% show mean +/- SEM or violinplot?
+graphType = 'violin'; % 'violin'/'meanSem'
+
+%% y.scale range
+switch graphType
+    case 'meanSem'
+        % default yscale values if displaying mean +/- SEM
+        minYvalue = min(min(min(min(con_avg(selectedCon,:) - con_sem(selectedCon,:) )))); % extract min beta value across subs and ROI
+        maxYvalue = max(max(max(max(con_avg(selectedCon,:) + con_sem(selectedCon,:) )))); % extract max beta value across subs and ROI
+    case 'violin'
+        % default yscale values if displaying violinplot
+        minYvalue = min(min(min(min(con_vec_all(selectedCon,:,:))))); % extract min beta value across subs and ROI
+        maxYvalue = max(max(max(max(con_vec_all(selectedCon,:,:))))); % extract max beta value across subs and ROI
+end
 dist_min_max_Yvalue = abs(maxYvalue - minYvalue);
 % define various possible default yscale values depending on minBeta and
 % maxBeta
 % stop scale at 0 if all contrasts are positive or negative
-if (minYvalue - dist_min_max_Yvalue/3) > 0 
+marginY = dist_min_max_Yvalue/8;
+if (minYvalue - marginY) > 0 
     minYscale = 0;
 else
-    minYscale = minYvalue - dist_min_max_Yvalue/3;
+    minYscale = minYvalue - marginY;
 end
-if (maxYvalue + dist_min_max_Yvalue/3) < 0 
+if (maxYvalue + marginY) < 0 
     maxYscale = 0;
 else
-    maxYscale = maxYvalue + dist_min_max_Yvalue/3;
+    maxYscale = maxYvalue + marginY;
 end
 yscale = [minYscale,  maxYscale];
-fig_size = abs(yscale(2) - yscale(1));
 
 %% display figure
 scale_ok_idx = 0;
@@ -70,15 +85,29 @@ while scale_ok_idx == 0
         %% loop through sequences
         xpos = (1:1:n_cons)';
         
-        bar_hdl = bar(1:n_cons, con_avg(selectedCon, iROI)' );
-        bar_hdl.EdgeColor = roi_color;
-        bar_hdl.FaceColor = roi_color;
-        hold on;
-        error_hdl = errorbar(1:n_cons,...
-            con_avg(selectedCon, iROI)',...
-            con_sem(selectedCon, iROI)',...
-            'LineStyle','none',...
-            'LineWidth',lSize,'Color','k');
+        switch graphType
+            case 'meanSem'
+                % show mean +/- SEM
+                bar_hdl = bar(1:n_cons, con_avg(selectedCon, iROI)' );
+                bar_hdl.EdgeColor = roi_color;
+                bar_hdl.FaceColor = roi_color;
+                hold on;
+                error_hdl = errorbar(1:n_cons,...
+                    con_avg(selectedCon, iROI)',...
+                    con_sem(selectedCon, iROI)',...
+                    'LineStyle','none',...
+                    'LineWidth',lSize,'Color','k');
+                
+            case 'violin'
+                % show violinplot
+                nCon = length(selectedCon);
+                con_values = NaN(NS, nCon);
+                for iC = 1:nCon
+                    jCon = selectedCon(iC);
+                    con_values(:, iC) = con_vec_all(jCon,:, iROI);
+                end
+                violinplot(con_values);
+        end
         
         % add stars for significant differences
         % put the p.value close to top of screen
@@ -87,8 +116,14 @@ while scale_ok_idx == 0
             pval_xpos = xpos(iCon);
             % disp p.value (above bar when positive contrast and below when
             % negative)
-            maxYvalue_tmp = con_avg(selectedCon(iCon), iROI) + con_sem(selectedCon(iCon), iROI);
-            minYvalue_tmp = con_avg(selectedCon(iCon), iROI) - con_sem(selectedCon(iCon), iROI);
+            switch graphType
+                case 'meanSem'
+                    maxYvalue_tmp = con_avg(selectedCon(iCon), iROI) + con_sem(selectedCon(iCon), iROI);
+                    minYvalue_tmp = con_avg(selectedCon(iCon), iROI) - con_sem(selectedCon(iCon), iROI);
+                case 'violin'
+                    maxYvalue_tmp = max(max(max(max(con_vec_all(selectedCon,:,iROI)))));
+                    minYvalue_tmp = min(min(min(min(con_vec_all(selectedCon,:,iROI)))));
+            end
             if maxYvalue_tmp > 0
                 dYpos_yscale_tmp = abs(yscale(2) - maxYvalue_tmp);
                 pval_Ypos = maxYvalue_tmp + (1/3)*dYpos_yscale_tmp;
@@ -115,7 +150,7 @@ while scale_ok_idx == 0
         end % contrast loop
         
         % define graph limits
-        xlim([0 n_cons+1]);
+        xlim([0.5 n_cons+0.5]);
         ylim(yscale);
 
         % draw a line to show where the zero stands
@@ -144,9 +179,6 @@ while scale_ok_idx == 0
         scale_ok_idx = 1;
     elseif scale_ok == 2
         yscale = spm_input('New scale values [y1 (low) y2 (high)]?',1,'e');
-        fig_size = abs(yscale(2) - yscale(1));
-        % position of stars for each column
-        column_pval_Ypos = yscale(2) - fig_size/8;
         close(roi_fig); % close graph with previous values if not ok
     end
     close(scale_fig);
