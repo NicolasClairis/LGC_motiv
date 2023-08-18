@@ -481,6 +481,7 @@ for iT = 1:nTasks
         mean_fMRI_ROI_fit.(task_nm4).hR_level);
     fit_hdl_upgrade(R_fit_hdl);
     ylim(y_ROI_range);
+    xticks(1:n_hR_levels);
     xlim(xRange);
     xlabel('Reward');
     ylabel(ROI_short_nm);
@@ -496,6 +497,7 @@ for iT = 1:nTasks
         mean_fMRI_ROI_fit.(task_nm4).hP_level);
     fit_hdl_upgrade(P_fit_hdl);
     ylim(y_ROI_range);
+    xticks(1:n_hP_levels);
     xlim(xRange);
     xlabel('Punishment');
     ylabel(ROI_short_nm);
@@ -511,6 +513,7 @@ for iT = 1:nTasks
         mean_fMRI_ROI_fit.(task_nm4).hE_level);
     fit_hdl_upgrade(E_fit_hdl);
     ylim(y_ROI_range);
+    xticks(1:n_hE_levels);
     xlim(xRange);
     xlabel('Effort');
     ylabel(ROI_short_nm);
@@ -536,6 +539,7 @@ for iT = 1:nTasks
     errorbar_hdl_upgrade(R_lE_er_hdl, col.blue);
     fit_hdl_upgrade(R_hE_fit_hdl, col.orange_light);
     fit_hdl_upgrade(R_lE_fit_hdl, col.blue_light);
+    xticks(1:n_hR_levels);
     ylim(y_ROI_range);
     xlim(xRange);
     xlabel('Reward');
@@ -558,6 +562,7 @@ for iT = 1:nTasks
     errorbar_hdl_upgrade(P_lE_er_hdl, col.blue);
     fit_hdl_upgrade(P_hE_fit_hdl, col.orange_light);
     fit_hdl_upgrade(P_lE_fit_hdl, col.blue_light);
+    xticks(1:n_hP_levels);
     ylim(y_ROI_range);
     xlim(xRange);
     xlabel('Punishment');
@@ -580,6 +585,7 @@ for iT = 1:nTasks
     errorbar_hdl_upgrade(E_lE_er_hdl, col.blue);
     fit_hdl_upgrade(E_hE_fit_hdl, col.orange_light);
     fit_hdl_upgrade(E_lE_fit_hdl, col.blue_light);
+    xticks(1:n_hE_levels);
     ylim(y_ROI_range);
     xlim(xRange);
     xlabel('Effort');
@@ -604,6 +610,7 @@ for iT = 1:nTasks
     errorbar_hdl_upgrade(E_lE_er_hdl, col.blue);
     fit_hdl_upgrade(E_hE_fit_hdl, col.orange_light);
     fit_hdl_upgrade(E_lE_fit_hdl, col.blue_light);
+    xticks(1:n_hE_levels);
     ylim(y_ROI_range);
     xlim(xRange);
     xlabel('Effort');
