@@ -28,6 +28,8 @@ if n_ROIs > 1
     error('script not ready yet for more than 1 ROI');
 end
 ROI_BOLD_nm = ROI_coords.ROI_nm.ROI_1_shortName;
+ROI_BOLD_short_nm1 = inputdlg('ROI BOLD contrast short name?');
+ROI_BOLD_short_nm = ROI_BOLD_short_nm1{1};
 
 %% select contrast of interest
 % prepare contrast names for question
@@ -55,12 +57,13 @@ for iT = 1:nTasks
     choice_hE_tmp = choice_hE.(task_nm);
     goodSubs = ~isnan(choice_hE_tmp);
     [betas_tmp, ~, stats_tmp] = glmfit(ROI_beta_values(goodSubs), choice_hE_tmp(goodSubs), 'normal');
+    [rho.(task_nm), pval_rho.(task_nm)] = corr(ROI_beta_values(goodSubs)', choice_hE_tmp(goodSubs)');
     betas.(task_nm) = betas_tmp;
     pval.(task_nm) = stats_tmp.p;
     ROI_b_ascOrder = sort(ROI_beta_values(goodSubs));
     fitted_prm_tmp = glmval(betas_tmp, ROI_b_ascOrder, 'identity');
     
-    disp([task_nm,'=f(',ROI_BOLD_nm,' ',con_names{selectedContrast},') ;',...
+    disp([task_nm,'=f(',ROI_BOLD_short_nm,' ',con_names{selectedContrast},') ;',...
         'p = ',num2str(stats_tmp.p(2))]);
     
     % display figure with correlation data
@@ -70,7 +73,7 @@ for iT = 1:nTasks
         'LineWidth',3,'MarkerEdgeColor','k');
     plot(ROI_b_ascOrder, fitted_prm_tmp,...
         'LineStyle','--','LineWidth',lSize,'Color',grey);
-        xlabel([ROI_BOLD_nm,' ',con_nm]);
+        xlabel([ROI_BOLD_short_nm,' ',con_nm]);
 %     xlabel('dmPFC fMRI');
     ylabel(['Choices % ',task_nm]);
 %     % if you want to check the bad subject id
