@@ -68,7 +68,8 @@ for iROI = 1:nROIs
     MRS_ROI_nm = MRS_ROIs{iROI};
     for iMb = 1:n_metabolites.(MRS_ROI_nm)
         metabolite_nm = metabolite_names.(MRS_ROI_nm){iMb};
-        metabolite_nm_bis = strrep(metabolite_nm,'_div_','/');
+        metabolite_nm_bis = metab_div_rnm(metabolite_nm);
+        
         metabolite_allSubs = metabolites.(MRS_ROI_nm).(metabolite_nm);
         goodSubs = ~isnan(metabolite_allSubs);
         
