@@ -68,7 +68,7 @@ end
 
 %% which GLM
 if ~exist('GLM','var') || isempty(GLM)
-    listOfAllOnsetsOnlyGLM = [64, 65, 70, 90, 93, 94, 95, 128, 129];
+    listOfAllOnsetsOnlyGLM = [64, 65, 70, 90, 93, 94, 95, 128, 129, 158];
     nPossibleGLMs = size(listOfAllOnsetsOnlyGLM, 2);
     listGLM = ['GLM',num2str(listOfAllOnsetsOnlyGLM(1))];
     if nPossibleGLMs > 1
