@@ -87,6 +87,11 @@ end
 Ep_runs = strcmp(runs.tasks,'Ep');
 Em_runs = strcmp(runs.tasks,'Em');
 
+% extract number of runs per task to normalize the data by the number of
+% runs:
+n_Ep_runs = sum(Ep_runs);
+n_Em_runs = sum(Em_runs);
+
 %% extract the contrasts of interest
 jReg = 0;
 %% physical effort
@@ -144,21 +149,24 @@ if runs.nb_runs.Ep > 0
                 run4_Ep_vec = [];
             end
             
-            con_vec_Ep_tmp = [run1_Ep_vec,...
-                        run2_Ep_vec,...
-                        run3_Ep_vec,...
-                        run4_Ep_vec,...
-                        zeros(1, runs.nb_runs.Ep), zeros(1, runs.nb_runs.Em)];
+            %% global variable
+            con_vec_Ep_tmp1 = [run1_Ep_vec,...
+                run2_Ep_vec,...
+                run3_Ep_vec,...
+                run4_Ep_vec,...
+                zeros(1, runs.nb_runs.Ep), zeros(1, runs.nb_runs.Em)];
+            %% normalize by number of Ep runs
+            con_vec_Ep_tmp1 = con_vec_Ep_tmp1./n_Ep_runs;
             
-            % positive contrast
+            %% positive contrast
             jReg = jReg + 1;
             con_names{jReg} = ['Ep ',reg_nm];
-            con_vector(jReg, 1:n_totalRegs) = con_vec_Ep_tmp;
+            con_vector(jReg, 1:n_totalRegs) = con_vec_Ep_tmp1;
             
-            % negative contrast
+            %% negative contrast
             jReg = jReg + 1;
             con_names{jReg} = ['Ep -',reg_nm];
-            con_vector(jReg, 1:n_totalRegs) = -con_vec_Ep_tmp;
+            con_vector(jReg, 1:n_totalRegs) = -con_vec_Ep_tmp1;
             
         end % movement and derivative filter
     end % loop through physical effort regressors
@@ -219,21 +227,24 @@ if runs.nb_runs.Em > 0
                 run4_Em_vec = [];
             end
             
-            con_vec_Em_tmp = [run1_Em_vec,...
+            %% global variable
+            con_vec_Em_tmp1 = [run1_Em_vec,...
                         run2_Em_vec,...
                         run3_Em_vec,...
                         run4_Em_vec,...
                         zeros(1, runs.nb_runs.Ep), zeros(1, runs.nb_runs.Em)];
+            %% normalize by number of Em runs
+            con_vec_Em_tmp1 = con_vec_Em_tmp1./n_Em_runs;
             
-            % positive contrast
+            %% positive contrast
             jReg = jReg + 1;
             con_names{jReg} = ['Em ',reg_nm];
-            con_vector(jReg, 1:n_totalRegs) = con_vec_Em_tmp;
+            con_vector(jReg, 1:n_totalRegs) = con_vec_Em_tmp1;
             
-            % negative contrast
+            %% negative contrast
             jReg = jReg + 1;
             con_names{jReg} = ['Em -',reg_nm];
-            con_vector(jReg, 1:n_totalRegs) = -con_vec_Em_tmp;
+            con_vector(jReg, 1:n_totalRegs) = -con_vec_Em_tmp1;
             
         end % movement and derivative filter
     end % loop through mental effort regressors
@@ -249,8 +260,11 @@ if runs.nb_runs.Em > 0 && runs.nb_runs.Ep > 0
             % extract previously defined contrast for each task
             jReg_Ep = strcmp(con_names,['Ep ',reg_nm]);
             jReg_Em = strcmp(con_names,['Em ',reg_nm]);
+            % extract each task
+            con_vec_Ep_tmp2 = con_vector(jReg_Ep, :);
+            con_vec_Em_tmp2 = con_vector(jReg_Em, :);
             % pool the two contrasts
-            con_vec_EpEm_tmp = con_vector(jReg_Ep, :) + con_vector(jReg_Em, :);
+            con_vec_EpEm_tmp = (con_vec_Ep_tmp2 + con_vec_Em_tmp2)./2;
             
             % positive contrast
             jReg = jReg + 1;
@@ -361,9 +375,12 @@ for iTimePeriod = 1:n_timePeriods
                                     end % comparison R/P regressor
                                 end
                                 
+                                %% extract R and P
+                                con_R_tmp = con_vector(jRregList(iRPreg), :);
+                                con_P_tmp = con_vector(jPregList(iRPreg), :);
+                                
                                 %% pool the two contrasts
-                                con_vec_RP_tmp = con_vector(jRregList(iRPreg), :) +...
-                                    con_vector(jPregList(iRPreg), :);
+                                con_vec_RP_tmp = (con_R_tmp + con_P_tmp)./2;
                                 
                                 % positive contrast (no need for negative contrast
                                 % for once, because will automatically be created
@@ -378,8 +395,7 @@ for iTimePeriod = 1:n_timePeriods
                                 con_vector(jReg, 1:n_totalRegs) = con_vec_RP_tmp;
                                 
                                 %% compare R and P also
-                                con_vec_RminP_tmp = con_vector(jRregList(iRPreg), :) -...
-                                    con_vector(jPregList(iRPreg), :);
+                                con_vec_RminP_tmp = con_R_tmp - con_P_tmp;
                                 jReg = jReg + 1;
                                 switch regType
                                     case 'ONSET'
@@ -481,10 +497,13 @@ for iTimePeriod = 1:n_timePeriods
                                         end % comparison R/P regressor
                                     end
                                     
-                                    % pool the contrasts
-                                    con_vec_E_tmp = con_vector(jE1regList(iEreg), :) +...
-                                        con_vector(jE2regList(iEreg), :) +...
-                                        con_vector(jE3regList(iEreg), :);
+                                    %% extract individual contrasts
+                                    con_E1_tmp = con_vector(jE1regList(iEreg), :);
+                                    con_E2_tmp = con_vector(jE2regList(iEreg), :);
+                                    con_E3_tmp = con_vector(jE3regList(iEreg), :);
+                                    
+                                    %% pool the contrasts
+                                    con_vec_E_tmp1 = (con_E1_tmp + con_E2_tmp + con_E3_tmp)./3;
                                     
                                     % positive contrast (no need for negative contrast
                                     % for once, because will automatically be created
@@ -496,7 +515,7 @@ for iTimePeriod = 1:n_timePeriods
                                         case 'REG'
                                             con_names{jReg} = [regE1Expression(1:(end-1)),':',conE1_nm];
                                     end
-                                    con_vector(jReg, 1:n_totalRegs) = con_vec_E_tmp;
+                                    con_vector(jReg, 1:n_totalRegs) = con_vec_E_tmp1;
                                     
                                 end % loop through regressors to pool
                             end % filter: more than 0 regressors then ok
@@ -569,11 +588,14 @@ for iTimePeriod = 1:n_timePeriods
                                         end % comparison R/P regressor
                                     end
                                     
-                                    % pool the contrasts
-                                    con_vec_E_tmp = con_vector(jEch0regList(iEreg), :) +...
-                                        con_vector(jEch1regList(iEreg), :) +...
-                                        con_vector(jEch2regList(iEreg), :) +...
-                                        con_vector(jEch3regList(iEreg), :);
+                                    %% extract individual contrasts
+                                    con_Ech0_tmp = con_vector(jEch0regList(iEreg), :);
+                                    con_Ech1_tmp = con_vector(jEch1regList(iEreg), :);
+                                    con_Ech2_tmp = con_vector(jEch2regList(iEreg), :);
+                                    con_Ech3_tmp = con_vector(jEch3regList(iEreg), :);
+                                    
+                                    %% pool the contrasts
+                                    con_vec_E_tmp2 = (con_Ech0_tmp + con_Ech1_tmp + con_Ech2_tmp + con_Ech3_tmp)./4;
                                     
                                     % positive contrast (no need for negative contrast
                                     % for once, because will automatically be created
@@ -585,7 +607,7 @@ for iTimePeriod = 1:n_timePeriods
                                         case 'REG'
                                             con_names{jReg} = [regEch0Expression(1:(end-1)),':',conEch0_nm];
                                     end
-                                    con_vector(jReg, 1:n_totalRegs) = con_vec_E_tmp;
+                                    con_vector(jReg, 1:n_totalRegs) = con_vec_E_tmp2;
                                     
                                 end % loop through regressors to pool
                             end % filter: more than 0 regressors then ok
@@ -642,9 +664,12 @@ for iTimePeriod = 1:n_timePeriods
                                         end % comparison R/P regressor
                                     end
                                     
+                                    %% extract individual contrasts
+                                    con_lowEch_tmp = con_vector(jLowEchRegList(iEreg),:);
+                                    con_highEch_tmp = con_vector(jHighEchRegList(iEreg),:);
+                                    
                                     %% pool the contrasts
-                                    con_vec_E_tmp = con_vector(jLowEchRegList(iEreg), :) +...
-                                        con_vector(jHighEchRegList(iEreg), :);
+                                    con_vec_E_tmp3 = (con_lowEch_tmp + con_highEch_tmp)./2;
                                     
                                     % positive contrast (no need for negative contrast
                                     % for once, because will automatically be created
@@ -656,11 +681,10 @@ for iTimePeriod = 1:n_timePeriods
                                         case 'REG'
                                             con_names{jReg} = [regLowEchxpression(1:(end-5)),'E:',conLowEch_nm];
                                     end
-                                    con_vector(jReg, 1:n_totalRegs) = con_vec_E_tmp;
+                                    con_vector(jReg, 1:n_totalRegs) = con_vec_E_tmp3;
                                     
                                     %% compare low vs high effort choice also
-                                    con_vec_HighEchMinLowEch_tmp = -con_vector(jLowEchRegList(iEreg), :) +...
-                                        con_vector(jHighEchRegList(iEreg), :);
+                                    con_vec_HighEchMinLowEch_tmp = con_highEch_tmp - con_lowEch_tmp;
                                     jReg = jReg + 1;
                                     switch regType
                                         case 'ONSET'
@@ -706,38 +730,46 @@ for iTaskPhase = 1:length(task_phases)
             for iTask = 1:length(Epm)
                 task_nm = Epm{iTask};
                 
-                % money chosen - money unchosen
+                %% money chosen - money unchosen
                 if (sum(strcmp(reg_names.(task_nm), money_chosen_ConNm)) > 0 &&...
                         sum(strcmp(reg_names.(task_nm), money_unchosen_ConNm)) > 0)
                     
-                    % extract contrast
+                    %% extract and normalise individual contrasts
                     moneyCh_idx = strcmp(con_names,[task_nm,' ',money_chosen_ConNm]);
                     moneyUnch_idx = strcmp(con_names,[task_nm,' ',money_unchosen_ConNm]);
-                    con_moneyCh_min_moneyUnch = con_vector(moneyCh_idx, :) - con_vector(moneyUnch_idx, :);
-                    % positive contrast
+                    con_moneyCh_tmp = con_vector(moneyCh_idx, :);
+                    con_moneyUnch_tmp = con_vector(moneyUnch_idx, :);
+                    %% check the difference
+                    con_moneyCh_min_moneyUnch = con_moneyCh_tmp - con_moneyUnch_tmp;
+                    
+                    %% positive contrast
                     jReg = jReg + 1;
                     con_names{jReg} = [task_nm,' REG ',taskPhase_nm,' ',RP_nm,' ',Esplit_nm,': money chosen - unchosen'];
                     con_vector(jReg, 1:n_totalRegs) = con_moneyCh_min_moneyUnch;
                     
-                    % negative contrast
+                    %% negative contrast
                     jReg = jReg + 1;
                     con_names{jReg} = [task_nm,' REG ',taskPhase_nm,' ',RP_nm,' ',Esplit_nm,': money unchosen - chosen'];
                     con_vector(jReg, 1:n_totalRegs) = -con_moneyCh_min_moneyUnch;
                 end % money chosen - money unchosen
                 
-                % effort chosen - effort unchosen
+                %% effort chosen - effort unchosen
                 if (sum(strcmp(reg_names.(task_nm), effort_chosen_ConNm)) > 0 &&...
                         sum(strcmp(reg_names.(task_nm), effort_unchosen_ConNm)) > 0)
-                    % extract contrast
+                    %% extract individual contrasts
                     effortCh_idx = strcmp(con_names,[task_nm,' ',effort_chosen_ConNm]);
                     effortUnch_idx = strcmp(con_names,[task_nm,' ',effort_unchosen_ConNm]);
-                    con_effortCh_min_effortUnch = con_vector(effortCh_idx, :) - con_vector(effortUnch_idx, :);
-                    % positive contrast
+                    con_Ech_tmp = con_vector(effortCh_idx, :);
+                    con_Eunch_tmp = con_vector(effortUnch_idx, :);
+                    %% check the difference
+                    con_effortCh_min_effortUnch = con_Ech_tmp - con_Eunch_tmp;
+                    
+                    %% positive contrast
                     jReg = jReg + 1;
                     con_names{jReg} = [task_nm,' REG ',taskPhase_nm,' ',RP_nm,' ',Esplit_nm,': effort chosen - unchosen'];
                     con_vector(jReg, 1:n_totalRegs) = con_effortCh_min_effortUnch;
                     
-                    % negative contrast
+                    %% negative contrast
                     jReg = jReg + 1;
                     con_names{jReg} = [task_nm,' REG ',taskPhase_nm,' ',RP_nm,' ',Esplit_nm,': effort unchosen - chosen'];
                     con_vector(jReg, 1:n_totalRegs) = -con_effortCh_min_effortUnch;
@@ -747,49 +779,64 @@ for iTaskPhase = 1:length(task_phases)
                 
             end % task
             
-            % pool both tasks together
-            % money chosen - money unchosen
+            %% pool both tasks together
+            %% money chosen - money unchosen
             if (sum(strcmp(reg_names.Ep, money_chosen_ConNm)) > 0 &&...
                     sum(strcmp(reg_names.Ep, money_unchosen_ConNm)) > 0) &&...
                     (sum(strcmp(reg_names.Em, money_chosen_ConNm)) > 0 &&...
                     sum(strcmp(reg_names.Em, money_unchosen_ConNm)) > 0)
                 
-                % extract contrast
+                %% extract individual contrasts
                 moneyCh_Ep_idx = strcmp(con_names,['Ep ',money_chosen_ConNm]);
                 moneyUnch_Ep_idx = strcmp(con_names,['Ep ',money_unchosen_ConNm]);
                 moneyCh_Em_idx = strcmp(con_names,['Em ',money_chosen_ConNm]);
                 moneyUnch_Em_idx = strcmp(con_names,['Em ',money_unchosen_ConNm]);
-                con_moneyCh_min_moneyUnch_EpEm = con_vector(moneyCh_Ep_idx, :) - con_vector(moneyUnch_Ep_idx, :) +...
-                    con_vector(moneyCh_Em_idx, :) - con_vector(moneyUnch_Em_idx, :);
-                % positive contrast
+                
+                con_moneyCh_Ep_tmp = con_vector(moneyCh_Ep_idx, :);
+                con_moneyUnch_Ep_tmp = con_vector(moneyUnch_Ep_idx, :);
+                con_moneyCh_min_Unch_Ep_tmp = con_moneyCh_Ep_tmp - con_moneyUnch_Ep_tmp;
+                con_moneyCh_Em_tmp = con_vector(moneyCh_Em_idx, :);
+                con_moneyUnch_Em_tmp = con_vector(moneyUnch_Em_idx, :);
+                con_moneyCh_min_Unch_Em_tmp = con_moneyCh_Em_tmp - con_moneyUnch_Em_tmp;
+                %% average two tasks
+                con_moneyCh_min_moneyUnch_EpEm = (con_moneyCh_min_Unch_Ep_tmp + con_moneyCh_min_Unch_Em_tmp)./2;
+                
+                %% positive contrast
                 jReg = jReg + 1;
                 con_names{jReg} = ['Ep+Em REG ',taskPhase_nm,' ',RP_nm,' ',Esplit_nm,': money chosen - unchosen'];
                 con_vector(jReg, 1:n_totalRegs) = con_moneyCh_min_moneyUnch_EpEm;
                 
-                % negative contrast
+                %% negative contrast
                 jReg = jReg + 1;
                 con_names{jReg} = ['Ep+Em REG ',taskPhase_nm,' ',RP_nm,' ',Esplit_nm,': money unchosen - chosen'];
                 con_vector(jReg, 1:n_totalRegs) = -con_moneyCh_min_moneyUnch_EpEm;
             end % money chosen - money unchosen
             
-            % effort chosen - effort unchosen
+            %% effort chosen - effort unchosen
             if (sum(strcmp(reg_names.Ep, effort_chosen_ConNm)) > 0 &&...
                     sum(strcmp(reg_names.Ep, effort_unchosen_ConNm)) > 0) &&...
                     (sum(strcmp(reg_names.Em, effort_chosen_ConNm)) > 0 &&...
                     sum(strcmp(reg_names.Em, effort_unchosen_ConNm)) > 0)
-                % extract contrast
+                %% extract and normalise individual contrasts
                 effortCh_Ep_idx = strcmp(con_names,['Ep ',effort_chosen_ConNm]);
                 effortUnch_Ep_idx = strcmp(con_names,['Ep ',effort_unchosen_ConNm]);
                 effortCh_Em_idx = strcmp(con_names,['Em ',effort_chosen_ConNm]);
                 effortUnch_Em_idx = strcmp(con_names,['Em ',effort_unchosen_ConNm]);
-                con_effortCh_min_effortUnch_EpEm = con_vector(effortCh_Ep_idx, :) - con_vector(effortUnch_Ep_idx, :) +...
-                    con_vector(effortCh_Em_idx, :) - con_vector(effortUnch_Em_idx, :);
-                % positive contrast
+                
+                con_Ech_Ep_tmp = con_vector(effortCh_Ep_idx, :);
+                con_Eunch_Ep_tmp = con_vector(effortUnch_Ep_idx, :);
+                con_Ech_min_Eunch_Ep_tmp = con_Ech_Ep_tmp - con_Eunch_Ep_tmp;
+                con_Ech_Em_tmp = con_vector(effortCh_Em_idx, :);
+                con_Eunch_Em_tmp = con_vector(effortUnch_Em_idx, :);
+                con_Ech_min_Eunch_Em_tmp = con_Ech_Em_tmp - con_Eunch_Em_tmp;
+                con_effortCh_min_effortUnch_EpEm = (con_Ech_min_Eunch_Ep_tmp + con_Ech_min_Eunch_Em_tmp)./2;
+                
+                %% positive contrast
                 jReg = jReg + 1;
                 con_names{jReg} = ['Ep+Em REG ',taskPhase_nm,' ',RP_nm,' ',Esplit_nm,': effort chosen - unchosen'];
                 con_vector(jReg, 1:n_totalRegs) = con_effortCh_min_effortUnch_EpEm;
                 
-                % negative contrast
+                %% negative contrast
                 jReg = jReg + 1;
                 con_names{jReg} = ['Ep+Em REG ',taskPhase_nm,' ',RP_nm,' ',Esplit_nm,': effort unchosen - chosen'];
                 con_vector(jReg, 1:n_totalRegs) = -con_effortCh_min_effortUnch_EpEm;
