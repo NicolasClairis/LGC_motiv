@@ -52,14 +52,32 @@ con_nm = con_names{selectedContrast};
 pSize = 30;
 lSize = 3;
 grey = [143 143 143]./255;
+subsIncluded = {'allSubs','withoutOutliers'};
+
+for iUncorrCorr = 1:length(subsIncluded)
+    uncCorr_nm = subsIncluded{iUncorrCorr};
+    switch iUncorrCorr
+        case 1
+            disp('Uncorrected data:');
+        case 2
+            disp(' ');
+            disp('After outlier removal:');
+    end
 for iT = 1:nTasks
     task_nm = allTask_names{iT};
     choice_hE_tmp = choice_hE.(task_nm);
-    goodSubs = ~isnan(choice_hE_tmp);
+    switch iUncorrCorr
+        case 1 % all subjects included as long as no-NaN values
+            goodSubs = ~isnan(choice_hE_tmp);
+        case 2 % remove any outlier in any measure
+            [~,~,ROI_beta_values_bis] = rmv_outliers_3sd(ROI_beta_values);
+            [~,~,choice_hE_tmp] = rmv_outliers_3sd(choice_hE_tmp);
+            goodSubs = ~isnan(ROI_beta_values_bis.*choice_hE_tmp);
+    end
     [betas_tmp, ~, stats_tmp] = glmfit(ROI_beta_values(goodSubs), choice_hE_tmp(goodSubs), 'normal');
-    [rho.(task_nm), pval_rho.(task_nm)] = corr(ROI_beta_values(goodSubs)', choice_hE_tmp(goodSubs)');
-    betas.(task_nm) = betas_tmp;
-    pval.(task_nm) = stats_tmp.p;
+    [rho.(uncCorr_nm).(task_nm), pval_rho.(uncCorr_nm).(task_nm)] = corr(ROI_beta_values(goodSubs)', choice_hE_tmp(goodSubs)');
+    betas.(uncCorr_nm).(task_nm) = betas_tmp;
+    pval.(uncCorr_nm).(task_nm) = stats_tmp.p;
     ROI_b_ascOrder = sort(ROI_beta_values(goodSubs));
     fitted_prm_tmp = glmval(betas_tmp, ROI_b_ascOrder, 'identity');
     
