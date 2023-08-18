@@ -30,6 +30,8 @@ if n_ROIs > 1
     error('script not ready yet for more than 1 ROI');
 end
 ROI_BOLD_nm = ROI_coords.ROI_nm.ROI_1_shortName;
+ROI_BOLD_short_nm1 = inputdlg('ROI BOLD contrast short name?');
+ROI_BOLD_short_nm = ROI_BOLD_short_nm1{1};
 
 %% select contrast of interest
 % prepare contrast names for question
@@ -52,36 +54,56 @@ con_nm = con_names{selectedContrast};
 pSize = 30;
 lSize = 3;
 grey = [143 143 143]./255;
-for iPrm = 1:nPrm
-    prm_nm = allPrm_names{iPrm};
-    prm_tmp = prm.(prm_nm);
-    goodSubs = ~isnan(prm_tmp);
-    [betas_tmp, ~, stats_tmp] = glmfit(ROI_beta_values(goodSubs), prm_tmp(goodSubs), 'normal');
-    betas.(prm_nm) = betas_tmp;
-    pval.(prm_nm) = stats_tmp.p;
-    ROI_b_ascOrder = sort(ROI_beta_values(goodSubs));
-    fitted_prm_tmp = glmval(betas_tmp, ROI_b_ascOrder, 'identity');
-    
-    disp([prm_nm,'=f(',ROI_BOLD_nm,' ',con_names{selectedContrast},') ;',...
-        'p = ',num2str(stats_tmp.p(2))]);
-    
-    % display figure with correlation data
-    fig;
-    hold on;
-    scatter(ROI_beta_values(goodSubs), prm_tmp(goodSubs),...
-        'LineWidth',3,'MarkerEdgeColor','k');
-    plot(ROI_b_ascOrder, fitted_prm_tmp,...
-        'LineStyle','--','LineWidth',lSize,'Color',grey);
-    xlabel([ROI_BOLD_nm,' ',con_nm]);
-    ylabel(prm_nm);
-%     % if you want to check the bad subject id
-%     for iS = 1:length(goodSubs)
-%         if goodSubs(iS) == 1
-%             sub_nm = subject_id{iS};
-%             text(ROI_beta_values(iS), prm_tmp(iS),...
-%                 sub_nm, 'HorizontalAlignment','center',...
-%                 'VerticalAlignment', 'top', 'FontSize', 18);
-%         end
-%     end
-    legend_size(pSize);
-end % parameter loop
+subsIncluded = {'allSubs','withoutOutliers'};
+
+for iUncorrCorr = 1:length(subsIncluded)
+    uncCorr_nm = subsIncluded{iUncorrCorr};
+    switch iUncorrCorr
+        case 1
+            disp('Uncorrected data:');
+        case 2
+            disp(' ');
+            disp('After outlier removal:');
+    end
+    for iPrm = 1:nPrm
+        prm_nm = allPrm_names{iPrm};
+        prm_tmp = prm.(prm_nm);
+        switch iUncorrCorr
+            case 1 % all subjects included as long as no-NaN values
+                goodSubs = ~isnan(prm_tmp);
+            case 2 % remove any outlier in any measure
+                [~,~,ROI_beta_values_bis] = rmv_outliers_3sd(ROI_beta_values);
+                [~,~,prm_tmp] = rmv_outliers_3sd(prm_tmp);
+                goodSubs = ~isnan(ROI_beta_values_bis.*prm_tmp);
+        end
+        [betas_tmp, ~, stats_tmp] = glmfit(ROI_beta_values(goodSubs), prm_tmp(goodSubs), 'normal');
+        [rho.(uncCorr_nm).(prm_nm), pval_rho.(uncCorr_nm).(prm_nm)] = corr(ROI_beta_values(goodSubs)', prm_tmp(goodSubs)');
+        betas.(uncCorr_nm).(prm_nm) = betas_tmp;
+        pval.(uncCorr_nm).(prm_nm) = stats_tmp.p;
+        ROI_b_ascOrder = sort(ROI_beta_values(goodSubs));
+        fitted_prm_tmp = glmval(betas_tmp, ROI_b_ascOrder, 'identity');
+        
+        disp([prm_nm,'=f(',ROI_BOLD_short_nm,' ',con_names{selectedContrast},') ;',...
+            'p = ',num2str(stats_tmp.p(2))]);
+        
+        % display figure with correlation data
+        fig;
+        hold on;
+        scatter(ROI_beta_values(goodSubs), prm_tmp(goodSubs),...
+            'LineWidth',3,'MarkerEdgeColor','k');
+        plot(ROI_b_ascOrder, fitted_prm_tmp,...
+            'LineStyle','--','LineWidth',lSize,'Color',grey);
+        xlabel([ROI_BOLD_short_nm,' ',con_nm]);
+        ylabel(prm_nm);
+        %     % if you want to check the bad subject id
+        %     for iS = 1:length(goodSubs)
+        %         if goodSubs(iS) == 1
+        %             sub_nm = subject_id{iS};
+        %             text(ROI_beta_values(iS), prm_tmp(iS),...
+        %                 sub_nm, 'HorizontalAlignment','center',...
+        %                 'VerticalAlignment', 'top', 'FontSize', 18);
+        %         end
+        %     end
+        legend_size(pSize);
+    end % parameter loop
+end % loop over uncorrected/corrected for outliers
