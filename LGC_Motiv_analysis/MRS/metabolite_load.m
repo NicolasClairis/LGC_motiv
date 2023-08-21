@@ -125,22 +125,30 @@ for iROI = 1:nROIs
                 metabolites.(ROI_nm).(met_nm_bis)(iS) = all_met_data(subj_line);
             end
         end % subject loop
-    end % metabolites
+    end % metabolites loop
     
+    %% bonus metabolites: combination of other metabolites
     % perform also division Gln/Glu
     metabolites.(ROI_nm).Gln_div_Glu = metabolites.(ROI_nm).Gln./metabolites.(ROI_nm).Glu;
+    
     % extract a pool of antioxidants
     metabolites.(ROI_nm).antiox = metabolites.(ROI_nm).GSH +...
         metabolites.(ROI_nm).Tau;
     metabolites.(ROI_nm).z_antiox = nanzscore(nanzscore(metabolites.(ROI_nm).GSH) +...
         nanzscore(metabolites.(ROI_nm).Tau));
+    
     % perform also division Glu/GABA
     metabolites.(ROI_nm).Glu_div_GABA = metabolites.(ROI_nm).Glu./metabolites.(ROI_nm).GABA;
+    
     % Glu/antioxidants
     metabolites.(ROI_nm).Glu_div_GSH = metabolites.(ROI_nm).Glu./metabolites.(ROI_nm).GSH;
     metabolites.(ROI_nm).Glu_div_Tau = metabolites.(ROI_nm).Glu./metabolites.(ROI_nm).Tau;
     metabolites.(ROI_nm).Glu_div_antiox = metabolites.(ROI_nm).Glu./metabolites.(ROI_nm).antiox;
     metabolites.(ROI_nm).Glu_div_z_antiox = metabolites.(ROI_nm).Glu./metabolites.(ROI_nm).z_antiox;
+    
+    % combination Asp+Lac
+    metabolites.(ROI_nm).Asp_plus_Lac = metabolites.(ROI_nm).Asp + metabolites.(ROI_nm).Lac;
+    metabolites.(ROI_nm).zAsp_plus_zLac = nanzscore(metabolites.(ROI_nm).Asp) + nanzscore(metabolites.(ROI_nm).Lac);
 end % ROI loop
 
 %% go back to root
