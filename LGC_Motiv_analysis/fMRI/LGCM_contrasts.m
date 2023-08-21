@@ -57,7 +57,9 @@ end
 [resultsFolderName] = fMRI_subFolder(subj_analysis_folder, GLM, condition);
 
 %% extract GLM informations
-[reg_names, n_regsPerTask] = GLM_details(GLM);
+dispGLM = 0;
+disp(['GLM',num2str(GLM),' launching contrasts']);
+[reg_names, n_regsPerTask] = GLM_details(GLM, dispGLM);
 GLMprm = which_GLM(GLM);
 
 %% define runs based on current subject

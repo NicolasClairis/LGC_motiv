@@ -56,7 +56,8 @@ switch biasFieldCorr
 end
 GLM_path = fMRI_subFolder(GLM_folder,GLM,condition);
 % extract regressors
-[~, n_regsPerTask] = GLM_details(GLM);
+dispGLM = 0;
+[~, n_regsPerTask] = GLM_details(GLM,dispGLM);
 
 %% get full subject list
 [subject_id, NS] = LGCM_subject_selection(study_nm, condition);
