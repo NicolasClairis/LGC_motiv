@@ -136,7 +136,6 @@ for iTask = 1:nTasks
     % ROI
     ROI_hdl = subplot(nTasks, nPlotsPerLine, 1 + nPlotsPerLine*(iTask - 1));
     imagesc(ROI_avg.(task_nm),ROI_range);
-%     imagesc(ROI_avg.(task_nm));
     colormap(ROI_hdl, color_range_ROI_choices);
     xticks(1:n_dE);
     xticklabels({'E1','E2','E3'});
