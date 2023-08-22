@@ -26,9 +26,6 @@ end
     timePeriod_nm] = extract_ROI_betas_onsets_only_bis(computerRoot,...
     study_nm, subject_id, condition);
 
-%% define task (physical/mental/both)
-[task_to_look] = which_task_to_look;
-
 %% general parameters
 nRuns = 4;
 nTrialsPerRun = 54;
@@ -161,10 +158,7 @@ for iS = 1:NS
         end
         
         %% extract fMRI ROI mediator
-        if strcmp(task_to_look,'EpEmPool') ||...
-                (strcmp(task_to_look, task_nm_tmp))
-            ROI_activity.allTrials(runTrials_idx, iS) = ROI_trial_b_trial.(ROI_nm{1}).(task_nm_tmp).(run_nm_bis).(timePeriod_nm)(:, iS);
-        end
+        ROI_activity.allTrials(runTrials_idx, iS) = ROI_trial_b_trial.(ROI_nm{1}).(task_nm_tmp).(run_nm_bis).(timePeriod_nm)(:, iS);
     end % run loop
     
     %% split data by effort levels and effort chosen and ROI activity
