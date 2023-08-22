@@ -1087,7 +1087,7 @@ for iEpm = 1:length(Epm)
                 
                 % reward chosen option
                 switch GLMprm.chosen.(task_id_nm).(RP_dispChosen_nm).(splitE_dispChosen_nm).R_chosen
-                        case 0
+                    case 0
                     case 1
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                         reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG chosen ',RP_dispChosen_nm,' ',splitE_dispChosen_nm,': R amount chosen'];
