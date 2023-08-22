@@ -65,6 +65,23 @@ GLMprm = which_GLM(GLM);
 %% define runs based on current subject
 runs = runs_definition(study_nm, sub_nm, condition);
 
+%% general parameters
+timePeriod = {'choice','chosen','Eperf','fbk'};
+n_timePeriods = length(timePeriod);
+timePeriod_names = {'choice','chosen','effort','feedback'};
+regTypes = {'ONSET','REG'};
+nRegTypes = length(regTypes);
+tasks = {'Ep','Em'};Epm = {'Ep','Em'};
+nTasks = length(tasks);
+tasks_bis = {'Ep','Em','Ep+Em'};
+nTasks_bis = length(tasks_bis);
+RP_cond = {'R','P','RP'};
+nRP = length(RP_cond);
+Esplit_cond = {'E','E1','E2','E3',...
+    'Ech0','Ech1','Ech2','Ech3',...
+    'lEch','hEch'};
+nE_conds = length(Esplit_cond);
+
 %% initialize variables of interest
 con_names = {};
 con_vector = [];
@@ -252,6 +269,134 @@ if runs.nb_runs.Em > 0
     end % loop through mental effort regressors
 end % mental effort performed at least in one full run?
 
+%% pool Reward and Punishment regressors if modeled separately
+for iTP = 1:n_timePeriods
+    period_nm = timePeriod{iTP};
+    for iTask = 1:nTasks
+        Epm_nm = tasks{iTask};
+        for iRP = 1:nRP
+            RP_nm = RP_cond{iRP};
+            for iE = 1:nE_conds
+                E_nm = Esplit_cond{iE};
+
+                % R/P variable option (high effort)
+                if GLMprm.(period_nm).(Epm_nm).(RP_nm).(E_nm).R_varOption ~= 0 &&...
+                        GLMprm.(period_nm).(Epm_nm).(RP_nm).(E_nm).P_varOption ~= 0
+                    if GLMprm.(period_nm).(Epm_nm).(RP_nm).(E_nm).R_varOption == 1 &&...
+                            GLMprm.(period_nm).(Epm_nm).(RP_nm).(E_nm).P_varOption == 1
+                        jReg_Rvar = strcmp(reg_names.(Epm_nm),['REG ',period_nm,' ',RP_nm,' ',E_nm,': R amount highE']);
+                        jReg_Pvar = strcmp(reg_names.(Epm_nm),['REG ',period_nm,' ',RP_nm,' ',E_nm,': P amount highE']);
+                        RPvar_name = ['REG ',period_nm,' ',RP_nm,' ',E_nm,': R+P amount highE'];
+                    elseif GLMprm.(period_nm).(Epm_nm).(RP_nm).(E_nm).R_varOption == 2 &&...
+                            GLMprm.(period_nm).(Epm_nm).(RP_nm).(E_nm).P_varOption == 2
+                        jReg_Rvar = strcmp(reg_names.(Epm_nm),['REG ',period_nm,' ',RP_nm,' ',E_nm,': R level highE']);
+                        jReg_Pvar = strcmp(reg_names.(Epm_nm),['REG ',period_nm,' ',RP_nm,' ',E_nm,': P level highE']);
+                        RPvar_name = ['REG ',period_nm,' ',RP_nm,' ',E_nm,': R+P level highE'];
+                    end % incentive variable option
+                    % extract each task
+                    con_vec_Rvar_tmp = con_vector(jReg_Rvar, :);
+                    con_vec_Pvar_tmp = con_vector(jReg_Pvar, :);
+                    % pool the two contrasts
+                    con_vec_RP_tmp = (con_vec_Rvar_tmp + con_vec_Pvar_tmp)./2;
+                    
+
+                    % positive contrast
+                    jReg = jReg + 1;
+                    con_names{jReg} = [Epm_nm,' ',RPvar_name];
+                    con_vector(jReg, 1:n_totalRegs) = con_vec_RP_tmp;
+
+                    % negative contrast
+                    jReg = jReg + 1;
+                    con_names{jReg} = [Epm_nm,' -',RPvar_name];
+                    con_vector(jReg, 1:n_totalRegs) = -con_vec_RP_tmp;
+                end
+
+                % R/P chosen
+                if GLMprm.(period_nm).(Epm_nm).(RP_nm).(E_nm).R_chosen ~= 0 &&...
+                        GLMprm.(period_nm).(Epm_nm).(RP_nm).(E_nm).P_chosen ~= 0
+                    if GLMprm.(period_nm).(Epm_nm).(RP_nm).(E_nm).R_chosen == 1 &&...
+                            GLMprm.(period_nm).(Epm_nm).(RP_nm).(E_nm).P_chosen == 1
+                        jReg_Rch = strcmp(reg_names.(Epm_nm),['REG ',period_nm,' ',RP_nm,' ',E_nm,': R amount chosen']);
+                        jReg_Pch = strcmp(reg_names.(Epm_nm),['REG ',period_nm,' ',RP_nm,' ',E_nm,': P amount chosen']);
+                        RPvar_name = ['REG ',period_nm,' ',RP_nm,' ',E_nm,': R+P amount chosen'];
+                    elseif GLMprm.(period_nm).(Epm_nm).(RP_nm).(E_nm).R_chosen == 2 &&...
+                            GLMprm.(period_nm).(Epm_nm).(RP_nm).(E_nm).P_chosen == 2
+                        jReg_Rch = strcmp(reg_names.(Epm_nm),['REG ',period_nm,' ',RP_nm,' ',E_nm,': R level chosen']);
+                        jReg_Pch = strcmp(reg_names.(Epm_nm),['REG ',period_nm,' ',RP_nm,' ',E_nm,': P level chosen']);
+                        RPvar_name = ['REG ',period_nm,' ',RP_nm,' ',E_nm,': R+P level chosen'];
+                    end % incentive variable option
+                    % extract each task
+                    con_vec_Rch_tmp = con_vector(jReg_Rch, :);
+                    con_vec_Pch_tmp = con_vector(jReg_Pch, :);
+                    % pool the two contrasts
+                    con_vec_RPch_tmp = (con_vec_Rch_tmp + con_vec_Pch_tmp)./2;
+
+                    % positive contrast
+                    jReg = jReg + 1;
+                    con_names{jReg} = [Epm_nm,' ',RPvar_name];
+                    con_vector(jReg, 1:n_totalRegs) = con_vec_RPch_tmp;
+
+                    % negative contrast
+                    jReg = jReg + 1;
+                    con_names{jReg} = [Epm_nm,' -',RPvar_name];
+                    con_vector(jReg, 1:n_totalRegs) = -con_vec_RPch_tmp;
+                end % incentive chosen option
+
+                % incentive*effort variable option
+                if GLMprm.(period_nm).(Epm_nm).(RP_nm).(E_nm).R_level_x_E_varOption ~= 0 &&...
+                        GLMprm.(period_nm).(Epm_nm).(RP_nm).(E_nm).P_level_x_E_varOption ~= 0
+                    if GLMprm.(period_nm).(Epm_nm).(RP_nm).(E_nm).R_level_x_E_varOption == 1 &&...
+                            GLMprm.(period_nm).(Epm_nm).(RP_nm).(E_nm).P_level_x_E_varOption == 1
+                        jReg_REvar = strcmp(reg_names.(Epm_nm),['REG ',period_nm,' ',RP_nm,' ',E_nm,': R x E non-default']);
+                        jReg_PEvar = strcmp(reg_names.(Epm_nm),['REG ',period_nm,' ',RP_nm,' ',E_nm,': P x E non-default']);
+                        REPEvar_name = ['REG ',period_nm,' ',RP_nm,' ',E_nm,': (R x E)+(P x E) non-default'];
+                    end % incentive variable option
+                    % extract each task
+                    con_vec_REvar_tmp = con_vector(jReg_REvar, :);
+                    con_vec_PEvar_tmp = con_vector(jReg_PEvar, :);
+                    % pool the two contrasts
+                    con_vec_REPEvar_tmp = (con_vec_REvar_tmp + con_vec_PEvar_tmp)./2;
+
+                    % positive contrast
+                    jReg = jReg + 1;
+                    con_names{jReg} = [Epm_nm,' ',REPEvar_name];
+                    con_vector(jReg, 1:n_totalRegs) = con_vec_REPEvar_tmp;
+
+                    % negative contrast
+                    jReg = jReg + 1;
+                    con_names{jReg} = [Epm_nm,' -',REPEvar_name];
+                    con_vector(jReg, 1:n_totalRegs) = -con_vec_REPEvar_tmp;
+                end % incentive*effort variable option
+
+                % incentive*effort chosen option
+                if GLMprm.(period_nm).(Epm_nm).(RP_nm).(E_nm).R_level_x_E_chosen ~= 0 &&...
+                        GLMprm.(period_nm).(Epm_nm).(RP_nm).(E_nm).P_level_x_E_chosen ~= 0
+                    if GLMprm.(period_nm).(Epm_nm).(RP_nm).(E_nm).R_level_x_E_chosen == 1 &&...
+                            GLMprm.(period_nm).(Epm_nm).(RP_nm).(E_nm).P_level_x_E_chosen == 1
+                        jReg_REch = strcmp(reg_names.(Epm_nm),['REG ',period_nm,' ',RP_nm,' ',E_nm,': R x E chosen']);
+                        jReg_PEch = strcmp(reg_names.(Epm_nm),['REG ',period_nm,' ',RP_nm,' ',E_nm,': P x E chosen']);
+                        REPEch_name = ['REG ',period_nm,' ',RP_nm,' ',E_nm,': (R x E)+(P x E) chosen'];
+                    end % incentive variable option
+                    % extract each task
+                    con_vec_REch_tmp = con_vector(jReg_REch, :);
+                    con_vec_PEch_tmp = con_vector(jReg_PEch, :);
+                    % pool the two contrasts
+                    con_vec_REPEch_tmp = (con_vec_REch_tmp + con_vec_PEch_tmp)./2;
+
+                    % positive contrast
+                    jReg = jReg + 1;
+                    con_names{jReg} = [Epm_nm,' ',REPEch_name];
+                    con_vector(jReg, 1:n_totalRegs) = con_vec_REPEch_tmp;
+
+                    % negative contrast
+                    jReg = jReg + 1;
+                    con_names{jReg} = [Epm_nm,' -',REPEch_name];
+                    con_vector(jReg, 1:n_totalRegs) = -con_vec_REPEch_tmp;
+                end % incentive*effort chosen option
+            end % loop over effort conditions
+        end % loop over R/P/RP
+    end % loop over task
+end % loop over trial period
 %% pool contrasts across both tasks
 if runs.nb_runs.Em > 0 && runs.nb_runs.Ep > 0
     
@@ -283,13 +428,6 @@ if runs.nb_runs.Em > 0 && runs.nb_runs.Ep > 0
 end % at least one run of each task has been performed?
 
 %% pool contrasts across R and P trials if have been modelled separately
-timePeriod = {'choice','chosen','Eperf','fbk'};
-n_timePeriods = length(timePeriod);
-timePeriod_names = {'choice','chosen','effort','feedback'};
-regTypes = {'ONSET','REG'};
-nRegTypes = length(regTypes);
-tasks = {'Ep','Em','Ep+Em'};
-nTasks = length(tasks);
 % loop through time periods
 for iTimePeriod = 1:n_timePeriods
     timePhase_nm = timePeriod{iTimePeriod};
@@ -417,22 +555,14 @@ for iTimePeriod = 1:n_timePeriods
 end % time loop
 
 %% pool regressors depending on effort condition
-tasks = {'Ep','Em','Ep+Em'};
-nTasks = length(tasks);
-timePeriod = {'choice','chosen','Eperf','fbk'};
-n_timePeriods = length(timePeriod);
-timePeriod_names = {'choice','chosen','effort','feedback'};
-regTypes = {'ONSET','REG'};
-nRegTypes = length(regTypes);
-RP_cond = {'R','P','RP'};
 % loop through time periods
 for iTimePeriod = 1:n_timePeriods
     timePhase_nm = timePeriod{iTimePeriod};
     timePhase_nm_bis = timePeriod_names{iTimePeriod};
     
     % loop through tasks (including tasks pooled)
-    for iTask = 1:nTasks
-        task_nm = tasks{iTask};
+    for iTask = 1:nTasks_bis
+        task_nm = tasks_bis{iTask};
         
         % loop through R/P/RP conditions
         for iRP = 1:length(RP_cond)
@@ -708,18 +838,12 @@ for iTimePeriod = 1:n_timePeriods
 end % time period
 
 %% compare Vchosen - Vunchosen if Vch and Vunch have been modelled separately
-Epm = {'Ep','Em'};
-RP_cond = {'R','P','RP'};
-Esplit_cond = {'E','E1','E2','E3',...
-    'Ech0','Ech1','Ech2','Ech3',...
-    'lEch','hEch'};
-task_phases = {'choice','chosen','effort'};
 for iTaskPhase = 1:length(task_phases)
     taskPhase_nm = task_phases{iTaskPhase};
     for iRP = 1:length(RP_cond)
         RP_nm = RP_cond{iRP};
         
-        for iE = length(Esplit_cond)
+        for iE = 1:nE_conds
             Esplit_nm = Esplit_cond{iE};
             
             % money chosen - money unchosen
