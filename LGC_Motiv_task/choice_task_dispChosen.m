@@ -15,7 +15,7 @@ function[onset_dispChoice] = choice_task_dispChosen(scr, stim, choice, R_chosen,
 %
 % R_chosen: reward amount of the chosen option
 %
-% E_chosen: effort level of the chosen option
+% E_chosen: effort level of the chosen option (0/1/2/3)
 %
 % R_or_P: character indicating the nature of the current trial
 % 'R': reward trial
