@@ -1,5 +1,7 @@
-function[betas_struct, Y_fit, betas] = glmfit_adapted_for_runConstants(r1_cstt, r2_cstt, X_regs_bf_r_cstt, Y_var, x_reg_bf_r_cstt_names, modelType)
-% [betas_struct, Y_fit, betas] = glmfit_adapted_for_runConstants(r1_cstt, r2_cstt, X_regs_bf_r_cstt, Y_var, x_reg_bf_r_cstt_names, modelType)
+function[betas_struct, Y_fit, betas] = glmfit_adapted_for_runConstants(r1_cstt, r2_cstt,...
+    X_regs_bf_r_cstt, Y_var, x_reg_bf_r_cstt_names, modelType)
+% [betas_struct, Y_fit, betas] = glmfit_adapted_for_runConstants(r1_cstt, r2_cstt,...
+%   X_regs_bf_r_cstt, Y_var, x_reg_bf_r_cstt_names, modelType)
 % glmfit_adapted_for_runConstants will perform a glmfit between variable X
 % and Y for the current task (physical or mental) but after taking into 
 % account that for the current subject maybe not all runs are included
@@ -38,9 +40,9 @@ function[betas_struct, Y_fit, betas] = glmfit_adapted_for_runConstants(r1_cstt, 
 
 %% check if runs are ok
 r1_ok = sum(r1_cstt,'omitnan') > 0;
-r2_ok = sum(r1_cstt,'omitnan') > 0;
+r2_ok = sum(r2_cstt,'omitnan') > 0;
 
-%% build regressors based on that
+%% build regressors based on that + extract index for the fit
 if r1_ok == 1 && r2_ok == 1
     x_regs = [r1_cstt, r2_cstt, X_regs_bf_r_cstt];
 elseif r1_ok == 1 && r2_ok == 0
@@ -67,7 +69,7 @@ else
 end
 
 %% perform glmfit + corresponding fit
-betas = glmfit(x_regs, Y_var,modelType,'Constant','off');
+betas = glmfit(x_regs, Y_var, modelType,'Constant','off');
 Y_fit = glmval(betas, x_regs, modelType_for_glmval,'Constant','off');
 
 %% distribute betas according to how many runs were used
