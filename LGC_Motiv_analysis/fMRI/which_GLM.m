@@ -4076,7 +4076,7 @@ switch GLM
             % feedback
             GLMprm.model_onset.(Epm_nm).fbk = 'stick';
         end % physical/mental loop
-    case 149 % (Kurniawan et al, 2021)-like GLM wihtout temporal derivative
+    case 149 % (Kurniawan et al, 2021)-like GLM without temporal derivative
         % R/P/E for high E option + Ech + RT + choice
         % general parameters
         GLMprm.gal.orth_vars = 0;
@@ -4423,6 +4423,26 @@ switch GLM
             GLMprm.choice.(Epm_nm).RP.E.R_level_x_E_chosen = 1;
             GLMprm.choice.(Epm_nm).RP.E.P_level_x_E_chosen = 1;
             GLMprm.choice.(Epm_nm).RP.E.RT = 2;
+            % effort perf (effort execution)
+            GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
+            % feedback
+            GLMprm.model_onset.(Epm_nm).fbk = 'stick';
+        end % physical/mental loop
+        
+    case 165 % dR/dP/dE; like GLM 155 without E chosen
+        % general parameters
+        GLMprm.gal.orth_vars = 0;
+        GLMprm.gal.zPerRun = 0;
+        GLMprm.gal.grey_mask = 7;
+        GLMprm.gal.mask_probaThreshold = 5;
+        % loop per task
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'stick';
+            GLMprm.choice.(Epm_nm).RP.E.R_varOption = 2;
+            GLMprm.choice.(Epm_nm).RP.E.P_varOption = 2;
+            GLMprm.choice.(Epm_nm).RP.E.E_varOption = 1;
             % effort perf (effort execution)
             GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
             % feedback
