@@ -149,6 +149,15 @@ for iROI = 1:nROIs
     % combination Asp+Lac
     metabolites.(ROI_nm).Asp_plus_Lac = metabolites.(ROI_nm).Asp + metabolites.(ROI_nm).Lac;
     metabolites.(ROI_nm).zAsp_plus_zLac = nanzscore(metabolites.(ROI_nm).Asp) + nanzscore(metabolites.(ROI_nm).Lac);
+    
+    % Glu U-shape, GSH U-shape, (Glu U-shape)/GSH, Glu/(GSH U-shape), (Glu
+    % U-shape)/(GSH U-shape) and (Glu/GSH) U-shape
+    metabolites.(ROI_nm).Glu_Ushape = (metabolites.(ROI_nm).Glu - mean(metabolites.(ROI_nm).Glu,'omitnan')).^2;
+    metabolites.(ROI_nm).GSH_Ushape = (metabolites.(ROI_nm).GSH - mean(metabolites.(ROI_nm).GSH,'omitnan')).^2;
+    metabolites.(ROI_nm).Glu_Ushape_div_GSH = metabolites.(ROI_nm).Glu_Ushape./metabolites.(ROI_nm).GSH;
+    metabolites.(ROI_nm).Glu_div_GSH_Ushape = metabolites.(ROI_nm).Glu./metabolites.(ROI_nm).GSH_Ushape;
+    metabolites.(ROI_nm).Glu_Ushape_div_GSH_Ushape = metabolites.(ROI_nm).Glu_Ushape./metabolites.(ROI_nm).GSH_Ushape;
+    metabolites.(ROI_nm).Glu_div_GSH_ratio_Ushape = (metabolites.(ROI_nm).Glu_div_GSH - mean(metabolites.(ROI_nm).Glu_div_GSH,'omitnan')).^2;
 end % ROI loop
 
 %% go back to root
