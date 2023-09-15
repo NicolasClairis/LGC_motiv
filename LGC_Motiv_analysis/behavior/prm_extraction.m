@@ -45,26 +45,27 @@ bayesian_root = fullfile(gitRoot,'GitHub',...
 NS = length(subject_id);
 
 %% bayesian across tasks or simple model each task separately?
-if ~exist('mdlType','var') || isempty(mdlType)
-    listPossibleModels = {'bayesian','simple'};
-    mdlType_idx = listdlg('promptstring','Which model type?',...
-        'ListString',listPossibleModels);
-    mdlType = listPossibleModels{mdlType_idx};
-end
+% if ~exist('mdlType','var') || isempty(mdlType)
+%     listPossibleModels = {'bayesian','simple'};
+%     mdlType_idx = listdlg('promptstring','Which model type?',...
+%         'ListString',listPossibleModels);
+%     mdlType = listPossibleModels{mdlType_idx};
+% end
+mdlType = 'bayesian';
 
 %% which model number to use?
-if ~exist('mdlN','var') || isempty(mdlN)
-    switch mdlType
-        case 'bayesian'
-            listPossibleModelNumbers = {'3'};
-        case 'simple'
-            listPossibleModelNumbers = {'1','2','3','4'};
-    end
-    mdlN_idx = listdlg('promptstring','Which model number?',...
-        'ListString',listPossibleModelNumbers);
-    mdlN = listPossibleModelNumbers{mdlN_idx};
-end
-
+% if ~exist('mdlN','var') || isempty(mdlN)
+%     switch mdlType
+%         case 'bayesian'
+%             listPossibleModelNumbers = {'3'};
+%         case 'simple'
+%             listPossibleModelNumbers = {'1','2','3','4'};
+%     end
+%     mdlN_idx = listdlg('promptstring','Which model number?',...
+%         'ListString',listPossibleModelNumbers);
+%     mdlN = listPossibleModelNumbers{mdlN_idx};
+% end
+mdlN = '3';
 %% extract parameters of the selected model
 switch mdlType
     case 'bayesian'
