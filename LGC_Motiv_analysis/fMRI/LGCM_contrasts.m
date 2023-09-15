@@ -58,7 +58,7 @@ end
 
 %% extract GLM informations
 dispGLM = 0;
-disp(['GLM',num2str(GLM),' launching contrasts']);
+% disp(['GLM',num2str(GLM),' launching contrasts']);
 [reg_names, n_regsPerTask] = GLM_details(GLM, dispGLM);
 GLMprm = which_GLM(GLM);
 
@@ -98,8 +98,8 @@ if n_1stLevelBetas ~= n_totalRegs
     error(['Problem: number of regressors predicted by contrasts = ',num2str(n_totalRegs),...
         ' while number of betas produced by 1st level = ',num2str(n_1stLevelBetas),...
         ' for subject ',sub_nm]);
-else
-    disp(['CID',sub_nm,' number of regressors and number of betas produced in 1st level - ok'])
+% else
+%     disp(['CID',sub_nm,' number of regressors and number of betas produced in 1st level - ok'])
 end
 
 %% extract run informations (to know which run corresponds to which task)

@@ -79,6 +79,10 @@ if ~exist('subject_id','var') || ~exist('NS','var') ||...
         isempty(subject_id) || isempty(NS)
     [subject_id, NS] = LGCM_subject_selection(study_nm, condition, gender);
 end
+
+%% indication of GLM
+disp(['GLM',num2str(GLM),' launching contrasts']);
+
 %% loop through subjects to extract all the regressors
 matlabbatch = cell(NS,1);
 
