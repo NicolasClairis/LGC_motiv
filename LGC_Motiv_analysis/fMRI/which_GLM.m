@@ -4449,7 +4449,7 @@ switch GLM
             GLMprm.model_onset.(Epm_nm).fbk = 'stick';
         end % physical/mental loop
         
-    case 166 % Rch/Pch/Ech/Fp-Fm/Conf/RT/p(hE) with zscore
+    case 166 % Rch/Pch/Ech/Fp-Fm/Conf/RT with zscore
         % general parameters
         GLMprm.gal.orth_vars = 0;
         GLMprm.gal.zPerRun = 1;
