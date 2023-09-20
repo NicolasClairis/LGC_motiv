@@ -427,8 +427,8 @@ if runs.nb_runs.Em > 0 && runs.nb_runs.Ep > 0
                 jReg = jReg + 1;
                 con_names{jReg} = ['Ep+Em -',reg_nm];
                 con_vector(jReg, 1:n_totalRegs) = -con_vec_EpEm_tmp;
-            elseif (strcmp(reg_nm((end-14):end),'effort integral') ||...
-                    strcmp(reg_nm((end-24):end),'effort integral overshoot')) % pool effort between two tasks
+            elseif ((length(reg_nm) > 14) && strcmp(reg_nm((end-14):end),'effort integral')) ||...
+                    ((length(reg_nm) > 24) && strcmp(reg_nm((end-24):end),'effort integral overshoot')) % pool effort between two tasks
                 
                 % extract physical effort perf index
                 jReg_Ep_perf = strcmp(con_names_v0,['Ep ',reg_nm]);
