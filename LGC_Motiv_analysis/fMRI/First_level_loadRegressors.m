@@ -724,7 +724,7 @@ end
 
 %% choice period
 choiceModel = GLMprm.model_onset.(task_id).choice;
-if ismember(choiceModel,{'stick','boxcar'})
+if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
     
     for iRP_choice = 1:length(RPchoiceCond)
         RP_dispChoice_nm = RPchoiceCond{iRP_choice};
@@ -816,6 +816,8 @@ if ismember(choiceModel,{'stick','boxcar'})
                     modelChoiceDur = 0;
                 case 'boxcar'
                     modelChoiceDur = dispChoiceOptionsDur(choice_trial_idx);
+                case 'boxcar_bis'
+                    modelChoiceDur = dispChoiceOptionsDur(choice_trial_idx) + dispChosenDur(choice_trial_idx);
             end
             
             %% choice modulators

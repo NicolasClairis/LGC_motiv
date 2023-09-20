@@ -50,6 +50,7 @@ function [GLMprm] = which_GLM(GLM)
 %           - 'boxcar_bis': entails fixation cross and display of the two
 %           options until the choice is done
 %       .choice: choice period (when options are displayed on screen)
+%           - 'boxcar_bis': entails choice + chosen periods
 %       .chosen: moment when the chosen option is displayed on screen
 %           - 'boxcar_bis': entails chosen option display until the end of
 %           the effort exertion period (effort preparation and execution period)
