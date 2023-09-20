@@ -1,4 +1,4 @@
-%% script performing the mediation between brain metabolites and 
+%% script performing the mediation between brain metabolites and
 % behavioural parameters through BOLD regression estimates of specific
 % regions.
 % You need to define all participants of the mediation (which GLM for fMRI, which
@@ -8,41 +8,47 @@
 % mediation_metabolites_fMRI_behavPrm.m is targeted to one single
 % metabolite.
 
-%% define subjects to include
-study_nm = 'study1';
-condition = subject_condition();
-[subject_id, NS] = LGCM_subject_selection(study_nm, condition, 'all');
+%% did you already launch the ROI extraction (1) or not (0)?
+ROI_already_launched = 0;
 
-%% load metabolites for all individuals and all brain areas
-[metabolites] = metabolite_load(subject_id);
-switch study_nm
-    case 'study1'
-        MRS_ROIs = {'dmPFC','aIns'};
-    case 'study2'
-        error('not ready yet');
-end
-nROIs = length(MRS_ROIs);
-for iROI = 1:nROIs
-    metabolite_names.(MRS_ROIs{iROI}) = fieldnames(metabolites.(MRS_ROIs{iROI}));
-    n_metabolites.(MRS_ROIs{iROI}) = length(metabolite_names.(MRS_ROIs{iROI}));
-end % roi loop
-
-%% define fMRI GLM to work on
-GLM_str = inputdlg('Which fMRI GLM?');
-GLM = str2double(GLM_str);
-
-%% define fMRI ROI to use
-[con_vec_all,...
-    ~, ~, ~,...
-    con_names,...
-    ROI_coords, ttest_ROI] = ROI_extraction_group('study1', GLM,...
-    subject_id, condition, 0);
-n_cons = size(con_vec_all, 1);
-n_ROIs = size(con_vec_all,3);
-if n_ROIs > 1
-    error(['more than 1 ROI selected, mediation script cannot work that way',...
-        'please focus on one and do it again.']);
-end
+if ROI_already_launched == 0
+    %% define subjects to include
+    study_nm = 'study1';
+    condition = subject_condition();
+    [subject_id, NS] = LGCM_subject_selection(study_nm, condition, 'all');
+    
+    %% load metabolites for all individuals and all brain areas
+    [metabolites] = metabolite_load(subject_id);
+    switch study_nm
+        case 'study1'
+            MRS_ROIs = {'dmPFC','aIns'};
+        case 'study2'
+            error('not ready yet');
+    end
+    nROIs = length(MRS_ROIs);
+    for iROI = 1:nROIs
+        metabolite_names.(MRS_ROIs{iROI}) = fieldnames(metabolites.(MRS_ROIs{iROI}));
+        n_metabolites.(MRS_ROIs{iROI}) = length(metabolite_names.(MRS_ROIs{iROI}));
+    end % roi loop
+    
+    %% define fMRI GLM to work on
+    GLM_str = inputdlg('Which fMRI GLM?');
+    GLM = str2double(GLM_str);
+    
+    %% define fMRI ROI to use
+    [con_vec_all,...
+        ~, ~, ~,...
+        con_names,...
+        ROI_coords, ttest_ROI] = ROI_extraction_group('study1', GLM,...
+        subject_id, condition, 0);
+    n_cons = size(con_vec_all, 1);
+    n_ROIs = size(con_vec_all,3);
+    if n_ROIs > 1
+        error(['more than 1 ROI selected, mediation script cannot work that way',...
+            'please focus on one and do it again.']);
+    end
+    
+end % ROI already launched
 
 %% define regression estimate to look for in the fMRI GLM
 con_idx = listdlg('promptstring','Which contrast?',...
