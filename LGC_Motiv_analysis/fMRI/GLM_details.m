@@ -1598,7 +1598,7 @@ for iEpm = 1:length(Epm)
                     end
                     
                     % (effort chosen)*(efficacy during the previous trial)
-                    switch GLMprm.chosen.(task_id_nm).(RP_dispChosen_nm).(splitE_dispChosen_nm).prevEfficacy
+                    switch GLMprm.chosen.(task_id_nm).(RP_dispChosen_nm).(splitE_dispChosen_nm).Ech_x_prevEfficacy
                         case 0
                         case {1,2,3,4}
                             n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
