@@ -9,7 +9,7 @@
 % metabolite.
 
 %% did you already launch the ROI extraction (1) or not (0)?
-ROI_already_launched = 0;
+ROI_already_launched = 1;
 
 if ROI_already_launched == 0
     %% define subjects to include
