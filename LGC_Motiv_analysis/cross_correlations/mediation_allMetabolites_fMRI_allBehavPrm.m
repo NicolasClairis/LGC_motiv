@@ -198,27 +198,30 @@ M_nm='dmPFC=f(Ech)';
 % kEp
 prm_nm='kEp';
 behavPrm = prm.(prm_nm);
+% boxcox kEp
+prm_nm = 'kEp';
+behavPrm_boxcox = (boxcox(prm.(prm_nm)'))';
 Y_nm = prm_nm;
 [~, ~, metabolite_clean] = rmv_outliers_3sd(metabolite_allSubs);
 [~, ~, con_data_clean] = rmv_outliers_3sd(con_data);
-[~, ~, behavPrm_clean] = rmv_outliers_3sd(behavPrm);
+[~, ~, behavPrm_clean] = rmv_outliers_3sd(behavPrm_boxcox);
 goodSubs_bis = ~isnan(metabolite_clean).*~isnan(con_data_clean).*~isnan(behavPrm_clean) == 1;
 
 mediation(metabolite_allSubs(goodSubs_bis),...
     con_data(goodSubs_bis),...
-    behavPrm(goodSubs_bis),...
+    behavPrm_boxcox(goodSubs_bis),...
     X_nm, M_nm, Y_nm, dispMed);
 
-% kEm
+% boxcox kEm
 prm_nm='kEm';
-behavPrm = prm.(prm_nm);
+behavPrm_boxcox = (boxcox(prm.(prm_nm)'))';
 Y_nm = prm_nm;
 [~, ~, metabolite_clean] = rmv_outliers_3sd(metabolite_allSubs);
 [~, ~, con_data_clean] = rmv_outliers_3sd(con_data);
-[~, ~, behavPrm_clean] = rmv_outliers_3sd(behavPrm);
+[~, ~, behavPrm_clean] = rmv_outliers_3sd(behavPrm_boxcox);
 goodSubs_bis = ~isnan(metabolite_clean).*~isnan(con_data_clean).*~isnan(behavPrm_clean) == 1;
 
 mediation(metabolite_allSubs(goodSubs_bis),...
     con_data(goodSubs_bis),...
-    behavPrm(goodSubs_bis),...
+    behavPrm_boxcox(goodSubs_bis),...
     X_nm, M_nm, Y_nm, dispMed);
