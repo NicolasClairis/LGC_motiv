@@ -4797,6 +4797,35 @@ switch GLM
             % feedback
             GLMprm.model_onset.(Epm_nm).fbk = 'stick';
         end % physical/mental loop
+        
+        %% new series of GLM include performance during performance
+    case 179 % Rch/Pch/Ech with boxcars + zscore variables
+        % general parameters
+        GLMprm.gal.orth_vars = 0;
+        GLMprm.gal.zPerRun = 1;
+        GLMprm.gal.grey_mask = 7;
+        GLMprm.gal.mask_probaThreshold = 5;
+        % loop per task
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'boxcar';
+            GLMprm.choice.(Epm_nm).RP.E.R_chosen = 1;
+            GLMprm.choice.(Epm_nm).RP.E.P_chosen = 1;
+            GLMprm.choice.(Epm_nm).RP.E.E_chosen = 1;
+            % effort perf (effort execution)
+            GLMprm.model_onset.(Epm_nm).Eperf = 'boxcar';
+            switch Epm_nm
+                case 'Ep'
+                    GLMprm.Eperf.(Epm_nm).RP.E.F_integral = 3;
+                    GLMprm.Eperf.(Epm_nm).RP.E.fatigue = 1;
+                case 'Em'
+                    GLMprm.Eperf.(Epm_nm).RP.E.efficacy = 1;
+                    GLMprm.Eperf.(Epm_nm).RP.E.prevEfficacy = 3;
+            end
+            % feedback
+            GLMprm.model_onset.(Epm_nm).fbk = 'boxcar';
+        end % physical/mental loop
 end % GLM number
 %% warnings: check compatibility of the GLM parameters entered
 isGLMokCheck(GLMprm);
