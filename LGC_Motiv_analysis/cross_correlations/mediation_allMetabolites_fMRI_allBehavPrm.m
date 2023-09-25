@@ -187,13 +187,13 @@ end % ROI loop
 % clear('mediation_path','pval','N_goodSubs');
 
 %% lines to launch to display metabolite of interest
-MRS_ROI_nm='dmPFC';
-metabolite_nm='Glu_div_GSH';
+MRS_ROI_nm = 'dmPFC';
+metabolite_nm = 'Glu_div_GSH';
 [metabolite_nm_bis] = metab_div_rnm(metabolite_nm);
 metabolite_allSubs = metabolites.(MRS_ROI_nm).(metabolite_nm);
 dispMed = 1;
 X_nm = [MRS_ROI_nm,'-',metabolite_nm_bis];
-M_nm='dmPFC=f(Ech)';
+M_nm = 'dmPFC=f(Ech)';
 
 % kEp
 prm_nm='kEp';
