@@ -220,7 +220,7 @@ if NS >= 1
         matlabbatch{segm_step}.spm.spatial.preproc.warp.affreg = 'mni';
         matlabbatch{segm_step}.spm.spatial.preproc.warp.fwhm = 0;
         matlabbatch{segm_step}.spm.spatial.preproc.warp.samp = 3;
-        matlabbatch{segm_step}.spm.spatial.preproc.warp.write = [1 1];
+        matlabbatch{segm_step}.spm.spatial.preproc.warp.write = [1 1]; % record inverse and forward deformation fields
         %% normalization
         preproc_step = 4;
         normf_step = nb_preprocessingSteps*(iS-1) + preproc_step;
