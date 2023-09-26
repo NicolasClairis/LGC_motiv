@@ -64,6 +64,7 @@ end
 GLMprm = which_GLM(GLM);
 add_drv = GLMprm.gal.add_drv;
 grey_mask = GLMprm.gal.grey_mask;
+autocorrel = GLMprm.gal.autocorrel;
 
 % value of the smoothing during preprocessing?
 preproc_sm_kernel = 8;
@@ -307,7 +308,13 @@ for iS = 1:NS
             end
     end
     
-    matlabbatch{sub_idx}.spm.stats.fmri_spec.cvi = 'AR(1)';
+    %% temporal autocorrelation
+    switch autocorrel
+        case 0
+            matlabbatch{sub_idx}.spm.stats.fmri_spec.cvi = 'AR(1)';
+        case 1
+            matlabbatch{sub_idx}.spm.stats.fmri_spec.cvi = 'FAST';
+    end
     
     %% estimate model
     estimate_mdl_rtg_idx = nb_batch_per_subj*iS;

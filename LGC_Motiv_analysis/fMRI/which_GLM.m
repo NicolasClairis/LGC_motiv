@@ -41,6 +41,12 @@ function [GLMprm] = which_GLM(GLM)
 %       (0) regular GLM (by default)
 %       (1) extract 1 beta/trial/condition
 %
+%       .autocorrel: which method to use for 1st level temporal
+%       autocorrelation of fMRI time series
+%       (0) default AR algorithm for temporal autocorrelation
+%       (1) FAST algorithm. Better suited for short TR and generally said
+%       to bring more accurate results (see (Olszowy et al, 2019))
+%
 %   .model_onset: indicate for each task (Ep/Em: physical/mental) for each
 %   event (preChoiceCross/choice/chosen/preEffortCross/Eperf/fbk) if it should be modelled as a
 %   stick ('stick') as a boxcar ('boxcar') or not included in the GLM
@@ -481,7 +487,8 @@ function [GLMprm] = which_GLM(GLM)
     GLMprm.gal.mask_probaThreshold,...
     GLMprm.gal.zPerRun,...
     GLMprm.gal.orth_vars,...
-    GLMprm.gal.onsets_only] = deal(0);
+    GLMprm.gal.onsets_only,...
+    GLMprm.gal.autocorrel] = deal(0);
 
 % onsets: not modelled (none), modelled as stick function (stick) or as
 % boxcar function (boxcar)
