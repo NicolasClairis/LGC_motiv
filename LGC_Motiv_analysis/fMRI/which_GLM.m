@@ -45,7 +45,9 @@ function [GLMprm] = which_GLM(GLM)
 %       autocorrelation of fMRI time series
 %       (0) default AR algorithm for temporal autocorrelation
 %       (1) FAST algorithm. Better suited for short TR and generally said
-%       to bring more accurate results (see (Olszowy et al, 2019))
+%       to bring more accurate results (see (Olszowy et al, 2019)) but
+%       first test (GLM182) not super conclusive. Some maps look the same
+%       and others just look uglier. Probably better suited for short TR.
 %
 %   .model_onset: indicate for each task (Ep/Em: physical/mental) for each
 %   event (preChoiceCross/choice/chosen/preEffortCross/Eperf/fbk) if it should be modelled as a
