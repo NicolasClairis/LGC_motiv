@@ -196,6 +196,8 @@ absMoneyChosen_min_moneyUnchosen_level = abs_money_level_chosen - abs_money_leve
 moneyChosen_min_moneyFixed_level = money_level_chosen - money_level_fixedOption;
 R_level_chosen = (money_level_left.*choice_left + money_level_right.*choice_right).*R_trials;
 P_level_chosen = (money_level_left.*choice_left + money_level_right.*choice_right).*P_trials;
+R_level_unchosen = (money_level_left.*choice_right + money_level_right.*choice_left).*R_trials;
+P_level_unchosen = (money_level_left.*choice_right + money_level_right.*choice_left).*P_trials;
 
 % amount variables
 money_amount_chosen = behavioralDataStruct.(task_behavioral_id).R_chosen.*RP_var;
@@ -447,6 +449,8 @@ if sum(choiceMissedTrials) > 0
     money_level_chosen(choiceMissedTrials) = [];
     R_level_chosen(choiceMissedTrials) = [];
     P_level_chosen(choiceMissedTrials) = [];
+    R_level_unchosen(choiceMissedTrials) = [];
+    P_level_unchosen(choiceMissedTrials) = [];
     money_amount_left(choiceMissedTrials) = [];
     money_amount_right(choiceMissedTrials) = [];
     money_amount_sum(choiceMissedTrials) = [];
