@@ -74,9 +74,9 @@ for iS = 1:NS
     if ~exist(sub_MRS_MRI_folder,'dir')
         mkdir(sub_MRS_MRI_folder);
     end
-    sub_MRS_nativeSpace_folder = fullfile(sub_MRS_folder,'voxel_nativeSpace');
-    if ~exist(sub_MRS_nativeSpace_folder,'dir')
-        mkdir(sub_MRS_nativeSpace_folder);
+    sub_MRS_voxels_folder = fullfile(sub_MRS_folder,'MRS_voxels');
+    if ~exist(sub_MRS_voxels_folder,'dir')
+        mkdir(sub_MRS_voxels_folder);
     end
     
     %% copy data
@@ -84,18 +84,18 @@ for iS = 1:NS
     switch sub_nm
         case {'021','056','088'} % different anatomy for ai and dmPFC for those subjects
             % dmPFC
-            sub_MRS_nativeSpace_folder_dmPFC = [sub_MRS_MRI_folder,filesep,'dmPFC_MRI'];
-            if ~exist(sub_MRS_nativeSpace_folder_dmPFC,'dir')
-                mkdir(sub_MRS_nativeSpace_folder_dmPFC);
+            sub_MRS_voxels_folder_dmPFC = [sub_MRS_MRI_folder,filesep,'dmPFC_MRI'];
+            if ~exist(sub_MRS_voxels_folder_dmPFC,'dir')
+                mkdir(sub_MRS_voxels_folder_dmPFC);
             end
-            copyfile(anat_file_dmPFC, sub_MRS_nativeSpace_folder_dmPFC);
+            copyfile(anat_file_dmPFC, sub_MRS_voxels_folder_dmPFC);
             
             % anterior insula
-            sub_MRS_nativeSpace_folder_ai = [sub_MRS_MRI_folder,filesep,'ai_MRI'];
-            if ~exist(sub_MRS_nativeSpace_folder_ai,'dir')
-                mkdir(sub_MRS_nativeSpace_folder_ai);
+            sub_MRS_voxels_folder_ai = [sub_MRS_MRI_folder,filesep,'ai_MRI'];
+            if ~exist(sub_MRS_voxels_folder_ai,'dir')
+                mkdir(sub_MRS_voxels_folder_ai);
             end
-            copyfile(anat_file_ai, sub_MRS_nativeSpace_folder_ai);
+            copyfile(anat_file_ai, sub_MRS_voxels_folder_ai);
         otherwise
             if exist(anat_file,'file')
                 copyfile(anat_file, sub_MRS_MRI_folder);
@@ -107,7 +107,7 @@ for iS = 1:NS
     
     % anterior insula file
     if exist(aINS_file,'file')
-        copyfile(aINS_file, sub_MRS_nativeSpace_folder);
+        copyfile(aINS_file, sub_MRS_voxels_folder);
     else
         disp([sub_fullNm,' aINS file not found']);
         aINS_missing = [aINS_missing, sub_nm];
@@ -115,7 +115,7 @@ for iS = 1:NS
     
     % dmPFC file
     if exist(dmPFC_file,'file')
-        copyfile(dmPFC_file, sub_MRS_nativeSpace_folder);
+        copyfile(dmPFC_file, sub_MRS_voxels_folder);
     else
         disp([sub_fullNm,' dmPFC file not found']);
         dmPFC_missing = [dmPFC_missing, sub_nm];

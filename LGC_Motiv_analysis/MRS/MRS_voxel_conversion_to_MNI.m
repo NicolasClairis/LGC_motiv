@@ -57,7 +57,7 @@ for iS = 1:NS
         forward_defField_file = ls([sub_MRI_folder,'y_CID*UNI-DEN.nii']);
         
         %% extract MRS ROI
-        sub_ROI_folder = [fullfile(study_path, sub_fullNm,'MRS','voxel_nativeSpace'),filesep];
+        sub_ROI_folder = [fullfile(study_path, sub_fullNm,'MRS','MRS_voxels'),filesep];
         switch MRS_ROI_nm
             case 'dmPFC'
                 ROI_file = 'dmpfc.nii';
