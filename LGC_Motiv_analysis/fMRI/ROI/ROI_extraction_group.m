@@ -79,7 +79,22 @@ else
 end
 
 %% select the ROI to use
-[ ROI_xyz, ~, ROI_nm, n_ROIs ] = ROI_selection(gitFolder);
+% do you want to use the MRS ROI or a literature/GLM-fMRI-based ROI?
+ROI_type = spm_input('ROI category?',1,'m',...
+    ['literature/fMRI-based ROI |'...
+    'dmPFC MRS voxel |'...
+    'AI MRS voxel'], ...
+    1:3, 1);
+switch ROI_type
+    case 1 % literature/fMRI-based ROI => need to select
+        [ ROI_xyz, ~, ROI_nm, n_ROIs ] = ROI_selection(gitFolder);
+    case 2 % MRS dmPFC voxel
+        ROI_nm = 'MRS_dmPFC';
+        n_ROIs = 1;
+    case 3 % MRS anterior insula voxel
+        ROI_nm = 'MRS_aINS';
+        n_ROIs = 1;
+end
 
 %% which GLM
 if ~exist('GLM','var') || isempty(GLM)
@@ -170,7 +185,10 @@ con_vec_all = NaN(n_max_con, NS, n_ROIs);
 for iROI = 1:n_ROIs
     fprintf('Region %d\n',iROI);
     
-    sxyz_ROI = ROI_xyz.(['ROI_',num2str(iROI)]);
+    % load ROI coordinates
+    if ROI_type == 1
+        sxyz_ROI = ROI_xyz.(['ROI_',num2str(iROI)]);
+    end
     %% loop through subjects for each study
     for iS = 1:NS
         sub_nm = subject_id{iS};
@@ -189,22 +207,36 @@ for iROI = 1:n_ROIs
         [con_names_currSub] = LGCM_contrasts(study_nm, sub_nm, GLM,...
             computerRoot, preproc_sm_kernel, condition, biasFieldCorr);
         
-        % extract contrast for the current subject in the current ROI
-        % for each contrast
-        for iCon = 1:n_max_con
-            jCon = find(strcmp(con_names(iCon), con_names_currSub));
-            if ~isempty(jCon) % if participant doesn't have the corresponding contrast, just ignore this subject
-                [ con_value ] = ROI_extraction( '', jCon, sub_fMRI_path, sxyz_ROI, beta_or_t_value );
-                con_vec_all(iCon, iS, iROI) = con_value; % save mean beta for the selected ROI inside the big resulting matrix
+        % load individual ROI coordinates when MRS voxel was selected
+        if ismember(ROI_type,[2,3])
+            sxyz_ROI = load_MRS_ROI_coords(study_nm, sub_nm, ROI_nm);
+        end
+        
+        if ismember(ROI_type,[1,2]) || (ROI_type == 3 && ~isempty(sxyz_ROI))
+            % extract contrast for the current subject in the current ROI
+            % for each contrast
+            for iCon = 1:n_max_con
+                jCon = find(strcmp(con_names(iCon), con_names_currSub));
+                if ~isempty(jCon) % if participant doesn't have the corresponding contrast, just ignore this subject
+                    [ con_value ] = ROI_extraction( '', jCon, sub_fMRI_path, sxyz_ROI, beta_or_t_value );
+                    con_vec_all(iCon, iS, iROI) = con_value; % save mean beta for the selected ROI inside the big resulting matrix
+                end
+            end % contrast
+            
+            % store individual coordinates
+            if ismember(ROI_type,[2,3]) % one different coordinate for each subject
+                ROI_coords.(['ROI_',num2str(iROI)]).xyz.(['CID',sub_nm]) = sxyz_ROI;
             end
-        end % contrast
+        end % filter for anterior insula MRS voxel which was not extracted in all participants
         
         %% indicator subject done
         disp(['Subject ',num2str(iS),'/',num2str(NS),' extracted']);
     end % subject loop
     
     %% extract coordinates informations
-    ROI_coords.(['ROI_',num2str(iROI)]).xyz = sxyz_ROI;
+    if ROI_type == 1 % one coordinate for all
+        ROI_coords.(['ROI_',num2str(iROI)]).xyz = sxyz_ROI;
+    end
     ROI_coords.ROI_nm = ROI_nm;
     ROI_coords.n_ROIs = n_ROIs;
 end % roi loop
