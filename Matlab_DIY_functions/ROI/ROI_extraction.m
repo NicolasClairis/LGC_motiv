@@ -25,11 +25,10 @@ function [ con_value ] = ROI_extraction( s_con, iCon, path, sxyz_ROI, beta_or_t_
 % beta_or_t_value: extract beta ('beta_value') or t.value ('t_value') for the ROI
 %
 % OUTPUTS
-% con_value:
-% 1 number corresponding to the average of the betas inside the ROI of
+% con_value: 1 number corresponding to the average of the betas inside the ROI of
 % interest for the contrast selected in the input.
 %
-% See also ROI_selection
+% See also ROI_selection.m
 %
 % Written by N.Clairis - june 2018 (adapted from J.Geerts 2016)
 
