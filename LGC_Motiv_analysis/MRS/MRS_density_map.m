@@ -1,4 +1,22 @@
 function[] = MRS_density_map(study_nm, condition)
+% MRS_density_map(study_nm, condition)
+% MRS_density_map will compute the percentage of subjects present within
+% each voxel for each of the voxels included in the study selected within
+% the MNI space.
+%
+% INPUTS
+% study_nm: study name ('study1' by default if left empty)
+%
+% condition: indicates which subjects to include in the analysis (will be
+% asked if left empty). This will determine how many subjects are included
+% in the final analysis.
+% Note that sometimes some subjects could not be acquired in the anterior
+% insula for study 1 so that the final number of subjects may be slightly
+% lower than the number of subjects corresponding to the condition entered
+% in input.
+%
+% See also MRS_voxel_conversion_to_MNI.m
+
 
 %% subject selection
 % condition
