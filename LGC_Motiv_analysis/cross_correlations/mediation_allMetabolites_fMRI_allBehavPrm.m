@@ -50,13 +50,13 @@ if ROI_already_launched == 0
     
 end % ROI already launched
 
-%% define regression estimate to look for in the fMRI GLM
-con_idx = listdlg('promptstring','Which contrast?',...
-    'ListString',con_names);
-% con_nm = con_names{con_idx};
-con_nm = inputdlg('Contrast short name?');
-con_data = NaN(1,NS);
-con_data(:) = con_vec_all(con_idx, :, 1);
+% %% define regression estimate to look for in the fMRI GLM
+% con_idx = listdlg('promptstring','Which contrast?',...
+%     'ListString',con_names);
+% % con_nm = con_names{con_idx};
+% con_nm = inputdlg('Contrast short name?');
+% con_data = NaN(1,NS);
+% con_data(:) = con_vec_all(con_idx, :, 1);
 
 %% extract behavioural parameters
 [prm] = prm_extraction(study_nm, subject_id);
