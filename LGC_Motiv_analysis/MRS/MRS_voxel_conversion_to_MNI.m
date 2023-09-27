@@ -8,10 +8,6 @@ function[] = MRS_voxel_conversion_to_MNI(condition, study_nm)
 % empty)
 %
 % study_nm: which study? ('study1' by default)
-%
-% See also MRS_voxel_conversion_to_MNI2 for a different way to get the
-% conversion
-
 
 %% subject selection
 % condition
