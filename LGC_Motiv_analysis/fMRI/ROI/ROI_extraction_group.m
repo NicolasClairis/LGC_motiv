@@ -1,12 +1,12 @@
 function[con_vec_all,...
     con_avg, con_sem, con_sd,...
     con_names,...
-    ROI_coords, ttest_ROI, subject_id] = ROI_extraction_group(study_nm, GLM,...
+    ROI_coords, ttest_ROI, subject_id, GLM] = ROI_extraction_group(study_nm, GLM,...
     subject_id, condition, fig_disp, biasFieldCorr)
 % [con_vec_all,...
 %     con_avg, con_sem, con_sd,...
 %     con_names,...
-%     ROI_coords, ttest_ROI, subject_id] = ROI_extraction_group(study_nm, GLM,...
+%     ROI_coords, ttest_ROI, subject_id, GLM] = ROI_extraction_group(study_nm, GLM,...
 %     subject_id, condition, fig_disp, biasFieldCorr)
 % ROI_extraction_group will serve to extract the ROI data across all
 % participants for a given GLM number.
@@ -46,6 +46,8 @@ function[con_vec_all,...
 % ttest_ROI: structure with summary statistics over ROI
 %
 % subject_id: list of subjects
+%
+% GLM: GLM number used for the current extraction
 
 
 %% extract working directories
@@ -89,10 +91,14 @@ switch ROI_type
     case 1 % literature/fMRI-based ROI => need to select
         [ ROI_xyz, ~, ROI_nm, n_ROIs ] = ROI_selection(gitFolder);
     case 2 % MRS dmPFC voxel
-        ROI_nm = 'MRS_dmPFC';
+        ROI_nm.ROI_1_shortName = 'MRS_dmPFC';
+        ROI_nm.ROI_1 = 'MRS_dmPFC';
+        ROI_nm.fullpath.ROI_1 = 'subject_specific';
         n_ROIs = 1;
     case 3 % MRS anterior insula voxel
-        ROI_nm = 'MRS_aINS';
+        ROI_nm.ROI_1_shortName = 'MRS_aINS';
+        ROI_nm.ROI_1 = 'MRS_aINS';
+        ROI_nm.fullpath.ROI_1 = 'subject_specific';
         n_ROIs = 1;
 end
 
@@ -209,7 +215,7 @@ for iROI = 1:n_ROIs
         
         % load individual ROI coordinates when MRS voxel was selected
         if ismember(ROI_type,[2,3])
-            sxyz_ROI = load_MRS_ROI_coords(study_nm, sub_nm, ROI_nm);
+            sxyz_ROI = load_MRS_ROI_coords(study_nm, sub_nm, ROI_nm.ROI_1);
         end
         
         if ismember(ROI_type,[1,2]) || (ROI_type == 3 && ~isempty(sxyz_ROI))
