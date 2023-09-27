@@ -1,12 +1,16 @@
 function[] = MRS_voxel_conversion_to_MNI(condition, study_nm)
 % MRS_voxel_conversion_to_MNI converts MRS voxel from native space to MNI
-% space
+% space using SPM normalisation batch with MRS MRI deformation field and
+% MRS voxel as input.
 %
 % INPUTS
 % condition: to know which subjects to include (will be asked if left
 % empty)
 %
 % study_nm: which study? ('study1' by default)
+%
+% See also MRS_voxel_conversion_to_MNI2 for a different way to get the
+% conversion
 
 
 %% subject selection
@@ -31,6 +35,8 @@ spm_jobman('initcfg');
 %% main parameters
 MRS_ROIs = {'dmPFC','ai'};
 nROIs = length(MRS_ROIs);
+% binarization threshold
+bThreshold = 0.1;
 % initialize batch
 matlabbatch = cell(1,1);
 
@@ -65,9 +71,11 @@ for iS = 1:NS
                 ROI_file = 'ai.nii';
         end
         ROI_fullfile = [sub_ROI_folder, ROI_file];
+        ROI_binary_file = [sub_ROI_folder, 'bw',ROI_file];
         
-        %% launch normalization if the voxel exists
+        %% filter case when ROI not extracted (because signal too bad or else)
         if exist(ROI_fullfile,'file')
+            %% launch normalization if the voxel exists
             jStep = jStep + 1;
             matlabbatch{jStep}.spm.spatial.normalise.write.subj.def(1) = {[sub_MRI_folder,forward_defField_file]};
             matlabbatch{jStep}.spm.spatial.normalise.write.subj.resample(1) = {ROI_fullfile};
@@ -76,6 +84,19 @@ for iS = 1:NS
             matlabbatch{jStep}.spm.spatial.normalise.write.woptions.vox = [2 2 2];
             matlabbatch{jStep}.spm.spatial.normalise.write.woptions.interp = 4;
             matlabbatch{jStep}.spm.spatial.normalise.write.woptions.prefix = 'w';
+            
+            %% binarize mask
+            jStep = jStep + 1;
+            matlabbatch{jStep}.spm.util.imcalc.input(1) = cfg_dep('Image Calculator: ImCalc Computed Image: output',...
+                substruct('.','val', '{}',{jStep-1}, '.','val', '{}',{1}, '.','val', '{}',{1}), substruct('.','files'));
+            matlabbatch{jStep}.spm.util.imcalc.output           = ROI_binary_file;
+            matlabbatch{jStep}.spm.util.imcalc.outdir           = {sub_ROI_folder};
+            matlabbatch{jStep}.spm.util.imcalc.expression       = ['i1>',num2str(bThreshold)]; % keep only voxels with signal intensity higher than bThreshold
+            matlabbatch{jStep}.spm.util.imcalc.var              = struct('name', {}, 'value', {});
+            matlabbatch{jStep}.spm.util.imcalc.options.dmtx     = 0;
+            matlabbatch{jStep}.spm.util.imcalc.options.mask     = 0;
+            matlabbatch{jStep}.spm.util.imcalc.options.interp   = 1;
+            matlabbatch{jStep}.spm.util.imcalc.options.dtype    = 4;
         end
     end % ROI loop
 end % subject loop
