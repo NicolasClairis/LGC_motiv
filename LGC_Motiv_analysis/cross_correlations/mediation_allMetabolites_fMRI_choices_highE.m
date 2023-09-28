@@ -181,7 +181,7 @@ end % ROI loop
 % current BOLD contrast but the information from the previous test was kept
 % clear('mediation_path','pval','N_goodSubs');
 
-%% lines to launch to display metabolite of interest
+%% lines to launch to display metabolite of interest without outliers (but without boxcox transformation)
 MRS_ROI_nm='dmPFC';
 metabolite_nm='Glu_div_GSH';
 [metabolite_nm_bis] = metab_div_rnm(metabolite_nm);
