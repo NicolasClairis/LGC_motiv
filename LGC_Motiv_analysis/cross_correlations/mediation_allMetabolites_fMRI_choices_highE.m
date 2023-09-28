@@ -59,8 +59,8 @@ con_data(:) = con_vec_all(con_idx, :, 1);
 %% extract proportion of choices across individuals and tasks
 fig_disp = 0;
 [choice_hE] = choice_hE_proportion(study_nm, condition, subject_id, fig_disp);
-parameter_names = {'Ep','Em','EpEm'};
-nPrm = length(parameter_names);
+task_names = {'Ep','Em','EpEm'};
+nTasks = length(task_names);
 
 %% launch this before to avoid case where nothing is significant for the
 % current BOLD contrast but the information from the previous test was kept
@@ -77,8 +77,8 @@ for iROI = 1:nROIs
         metabolite_allSubs = metabolites.(MRS_ROI_nm).(metabolite_nm);
         goodSubs = ~isnan(metabolite_allSubs);
         
-        for iPrm = 1:nPrm
-            prm_nm = parameter_names{iPrm};
+        for iPrm = 1:nTasks
+            prm_nm = task_names{iPrm};
             behavPrm = choice_hE.(prm_nm);
             
             X_nm = [MRS_ROI_nm,'-',metabolite_nm_bis];
