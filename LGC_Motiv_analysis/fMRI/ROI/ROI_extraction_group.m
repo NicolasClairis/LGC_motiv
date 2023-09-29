@@ -218,7 +218,7 @@ for iROI = 1:n_ROIs
             sxyz_ROI = load_MRS_ROI_coords(study_nm, sub_nm, ROI_nm.ROI_1);
         end
         
-        if ismember(ROI_type,[1,2]) || (ROI_type == 3 && ~isempty(sxyz_ROI))
+        if ismember(ROI_type,[1,2]) || (ROI_type == 3 && ~isempty(sxyz_ROI)) % filter case where no insula could be extracted in MRS
             % extract contrast for the current subject in the current ROI
             % for each contrast
             for iCon = 1:n_max_con
