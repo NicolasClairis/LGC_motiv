@@ -250,7 +250,7 @@ for iS = 1:NS
         'Color',[0 153/255 1-0.01*iS], 'LineWidth',1)
 end
 % ylim([0 100]);
-ylim([40 100]);
+ylim([50 85]);
 xlim([1 n_bins]);
 xticks(1:n_bins);
 xLabelNames = cell(1,n_bins);
@@ -259,8 +259,9 @@ for iBin = 1:n_bins
     xLabelNames{iBin} = [num2str( 1 + nTrialsPerBin*(iBin-1)),'-',num2str(nTrialsPerBin*iBin)];
 end
 xticklabels(xLabelNames);
-xlabel('trial number');
+xlabel('Trial');
 ylabel('Choice high effort (%)');
+ylabel('Choice (%)');
 legend_size(pSize);
 %% check choices = f(fatigue)
 fig;
