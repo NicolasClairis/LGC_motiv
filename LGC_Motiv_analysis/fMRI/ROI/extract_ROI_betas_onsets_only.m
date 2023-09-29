@@ -59,7 +59,26 @@ ROI_trial_b_trial.subject_id = subject_id;
 
 %% select the ROI to use
 if ~exist('ROI_infos','var') || isempty(ROI_infos)
-    [ ROI_xyz, ~, ROI_names, n_ROIs ] = ROI_selection(gitFolder);
+    % do you want to use the MRS ROI or a literature/GLM-fMRI-based ROI?
+    ROI_type = spm_input('ROI category?',1,'m',...
+        ['literature/fMRI-based ROI |'...
+        'dmPFC MRS voxel |'...
+        'AI MRS voxel'], ...
+        1:3, 1);
+    switch ROI_type
+        case 1 % literature/fMRI-based ROI => need to select
+            [ ROI_xyz, ~, ROI_names, n_ROIs ] = ROI_selection(gitFolder);
+        case 2 % MRS dmPFC voxel
+            ROI_names.ROI_1_shortName = 'MRS_dmPFC';
+            ROI_names.ROI_1 = 'MRS_dmPFC';
+            ROI_names.fullpath.ROI_1 = 'subject_specific';
+            n_ROIs = 1;
+        case 3 % MRS anterior insula voxel
+            ROI_names.ROI_1_shortName = 'MRS_aINS';
+            ROI_names.ROI_1 = 'MRS_aINS';
+            ROI_names.fullpath.ROI_1 = 'subject_specific';
+            n_ROIs = 1;
+    end
 else
     ROI_xyz = ROI_infos.ROI_xyz;
     ROI_names = ROI_infos.ROI_nm;
@@ -68,7 +87,9 @@ end
 
 %% which GLM
 if ~exist('GLM','var') || isempty(GLM)
-    listOfAllOnsetsOnlyGLM = [64, 65, 70, 90, 93, 94, 95, 128, 129, 158];
+    listOfAllOnsetsOnlyGLM = [64, 65, 70,...
+        90, 93, 94, 95, 128, 129,...
+        158, 186];
     nPossibleGLMs = size(listOfAllOnsetsOnlyGLM, 2);
     listGLM = ['GLM',num2str(listOfAllOnsetsOnlyGLM(1))];
     if nPossibleGLMs > 1
@@ -113,7 +134,7 @@ nPotentialTimePeriods = length(potentialTimePeriods);
 tasks = {'Ep','Em'}; nTasks = length(tasks);
 nRunsPerTask = 2;
 for iROI = 1:n_ROIs
-    ROI_nm = ROI_names.(['ROI_',num2str(iROI)]);
+    ROI_nm1 = ROI_names.(['ROI_',num2str(iROI)]);
     for iTask = 1:nTasks
         task_nm = tasks{iTask};
         for iRun = 1:nRunsPerTask
@@ -122,7 +143,7 @@ for iROI = 1:n_ROIs
                 timePeriod_nm = potentialTimePeriods{iTperiod};
                 curr_onset_nm = GLMprm.model_onset.(task_nm).(timePeriod_nm);
                 if ~strcmp(curr_onset_nm,'none') && ismember(curr_onset_nm,{'stick','boxcar'})
-                    ROI_trial_b_trial.(ROI_nm).(task_nm).(run_str).(timePeriod_nm) = NaN(nTrialsPerRun, NS);
+                    ROI_trial_b_trial.(ROI_nm1).(task_nm).(run_str).(timePeriod_nm) = NaN(nTrialsPerRun, NS);
                 elseif ~ismember(curr_onset_nm,{'none','stick','boxcar'})
                     error(['problem with time modulation = ',curr_onset_nm])
                 end
@@ -149,27 +170,39 @@ end % time period
 for iROI = 1:n_ROIs
     disp(['starting ROI ',num2str(iROI),'/',num2str(n_ROIs)]);
     ROI_nb_nm = ['ROI_',num2str(iROI)];
-    ROI_nm = ROI_names.(ROI_nb_nm);
-    sxyz_ROI = ROI_xyz.(ROI_nb_nm);
+    ROI_nm2 = ROI_names.(ROI_nb_nm);
+    % load ROI coordinates
+    if ROI_type == 1
+        sxyz_ROI = ROI_xyz.(ROI_nb_nm);
+    end
     
     for iS = 1:NS
         sub_nm = subject_id{iS};
-%         if ~strcmp(sub_nm,'036')
-            subj_folder = [fullfile(dataRoot, ['CID',sub_nm]),filesep];
-            switch biasFieldCorr
-                case 0
-                    sub_folderName = [fullfile(subj_folder, 'fMRI_analysis','functional',...
-                        ['preproc_sm_',num2str(preproc_sm_kernel),'mm']),filesep];
-                case 1
-                    sub_folderName = [fullfile(subj_folder, 'fMRI_analysis','functional',...
-                        ['preproc_sm_',num2str(preproc_sm_kernel),'mm_with_BiasFieldCorrection']),filesep];
-            end
-            sub_fMRI_path = fMRI_subFolder(sub_folderName, GLM, condition);
-            if ~exist(sub_fMRI_path,'dir')
-                error(['ROI extraction not ready for ',condition,' yet.']);
-            end
-            subj_behavior_folder = [subj_folder, 'behavior' filesep];
-            [subRuns, n_subRuns] = runs_definition(study_nm, sub_nm, condition);
+        sub_fullNm = ['CID',sub_nm];
+        %         if ~strcmp(sub_nm,'036')
+        subj_folder = [fullfile(dataRoot, sub_fullNm),filesep];
+        switch biasFieldCorr
+            case 0
+                sub_folderName = [fullfile(subj_folder, 'fMRI_analysis','functional',...
+                    ['preproc_sm_',num2str(preproc_sm_kernel),'mm']),filesep];
+            case 1
+                sub_folderName = [fullfile(subj_folder, 'fMRI_analysis','functional',...
+                    ['preproc_sm_',num2str(preproc_sm_kernel),'mm_with_BiasFieldCorrection']),filesep];
+        end
+        sub_fMRI_path = fMRI_subFolder(sub_folderName, GLM, condition);
+        if ~exist(sub_fMRI_path,'dir')
+            error(['ROI extraction not ready for ',condition,' yet.']);
+        end
+        subj_behavior_folder = [subj_folder, 'behavior' filesep];
+        [subRuns, n_subRuns] = runs_definition(study_nm, sub_nm, condition);
+        
+        % load individual ROI coordinates when MRS voxel was selected
+        if ismember(ROI_type,[2,3])
+            sxyz_ROI = load_MRS_ROI_coords(study_nm, sub_nm, ROI_nm2);
+            ROI_xyz.(ROI_nb_nm).(sub_fullNm) = sxyz_ROI;
+        end
+        
+        if ismember(ROI_type,[1,2]) || (ROI_type == 3 && ~isempty(sxyz_ROI)) % filter case where no insula could be extracted in MRS
             
             %% extract index of runs and trials that were included in the GLM
             totalTrials_idx = []; % index of trials kept
@@ -281,15 +314,17 @@ for iROI = 1:n_ROIs
                     vxyz        = unique(floor((inv(betaVol.mat) * sxyz_ROI')'), 'rows'); % converts from MNI (mm) to voxel-space
                     vi          = sub2ind(betaVol.dim, vxyz(:, 1), vxyz(:, 2), vxyz(:, 3)); % extracts coordinates of the sphere in the con (voxel-space)
                     beta_value  = mean(betadata(vi),'omitnan'); % extracts mean beta for the selected ROI sphere/mask
-                    ROI_trial_b_trial.(ROI_nm).(task_nm).(run_nm).(timePeriod_nm)(jRunTrial, iS) = beta_value; % save mean beta for the selected ROI inside the big resulting matrix
+                    ROI_trial_b_trial.(ROI_nm2).(task_nm).(run_nm).(timePeriod_nm)(jRunTrial, iS) = beta_value; % save mean beta for the selected ROI inside the big resulting matrix
                 else % skip movement regressors from beta extraction
                     beta_idx = beta_idx + 1;
                     
                 end % ignore mvmt and run cstt
             end % trial number loop
-%         else
-%             warning('check 036 with last upgrades.');
-%         end % filter subject 036 who for some reason doesn't work
+            %         else
+            %             warning('check 036 with last upgrades.');
+            %         end % filter subject 036 who for some reason doesn't work
+        end % filter for anterior insula MRS voxel which was not extracted in all participants
+        
         %% indicator subject done
         disp(['Subject ',num2str(iS),'/',num2str(NS),' extracted']);
     end % subject loop
