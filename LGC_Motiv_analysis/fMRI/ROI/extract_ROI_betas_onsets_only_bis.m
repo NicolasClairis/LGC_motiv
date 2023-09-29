@@ -49,6 +49,8 @@ else
 end
 ROI_short_nm = inputdlg('ROI short name?');
 ROI_short_nm = ROI_short_nm{1};
+% in case spaces were entered, replace them by '_'
+ROI_short_nm = strrep(ROI_short_nm,' ','_');
 
 %% define time period (depends on GLM selected)
 timePeriods = fieldnames(ROI_trial_b_trial.(ROI_nm{1}).Ep.run1);
