@@ -181,56 +181,66 @@ end % ROI loop
 % current BOLD contrast but the information from the previous test was kept
 % clear('mediation_path','pval','N_goodSubs');
 
-%% lines to launch to display metabolite of interest without outliers (but without boxcox transformation)
-MRS_ROI_nm='dmPFC';
-metabolite_nm='Glu_div_GSH';
-[metabolite_nm_bis] = metab_div_rnm(metabolite_nm);
-metabolite_allSubs = metabolites.(MRS_ROI_nm).(metabolite_nm);
-dispMed = 1;
-X_nm = [MRS_ROI_nm,'-',metabolite_nm_bis];
-M_nm='dmPFC=f(Ech)';
+% %% lines to launch to display metabolite of interest without outliers (but without boxcox transformation)
+% MRS_ROI_nm='dmPFC';
+% metabolite_nm='Glu_div_GSH';
+% [metabolite_nm_bis] = metab_div_rnm(metabolite_nm);
+% metabolite_allSubs = metabolites.(MRS_ROI_nm).(metabolite_nm);
+% dispMed = 1;
+% X_nm = [MRS_ROI_nm,'-',metabolite_nm_bis];
+% M_nm='dmPFC=f(Ech)';
+% 
+% % Ep
+% prm_nm='Ep';
+% behavPrm = choice_hE.(prm_nm);
+% Y_nm = ['choices ',prm_nm,' (%)'];
+% 
+% [~, ~, metabolite_clean] = rmv_outliers_3sd(metabolite_allSubs);
+% [~, ~, con_data_clean] = rmv_outliers_3sd(con_data);
+% [~, ~, behavPrm_clean] = rmv_outliers_3sd(behavPrm);
+% goodSubs_bis = ~isnan(metabolite_clean).*~isnan(con_data_clean).*~isnan(behavPrm_clean) == 1;
+% 
+% mediation(metabolite_allSubs(goodSubs_bis),...
+%     con_data(goodSubs_bis),...
+%     behavPrm(goodSubs_bis),...
+%     X_nm, M_nm, Y_nm, dispMed);
+% 
+% % Em
+% prm_nm='Em';
+% behavPrm = choice_hE.(prm_nm);
+% Y_nm = ['choices ',prm_nm,' (%)'];
+% 
+% [~, ~, metabolite_clean] = rmv_outliers_3sd(metabolite_allSubs);
+% [~, ~, con_data_clean] = rmv_outliers_3sd(con_data);
+% [~, ~, behavPrm_clean] = rmv_outliers_3sd(behavPrm);
+% goodSubs_bis = ~isnan(metabolite_clean).*~isnan(con_data_clean).*~isnan(behavPrm_clean) == 1;
+% 
+% mediation(metabolite_allSubs(goodSubs_bis),...
+%     con_data(goodSubs_bis),...
+%     behavPrm(goodSubs_bis),...
+%     X_nm, M_nm, Y_nm, dispMed);
+% 
+% % pool Ep+Em
+% prm_nm='EpEm';
+% behavPrm = choice_hE.(prm_nm);
+% Y_nm = ['choices ',prm_nm,' (%)'];
+% 
+% [~, ~, metabolite_clean] = rmv_outliers_3sd(metabolite_allSubs);
+% [~, ~, con_data_clean] = rmv_outliers_3sd(con_data);
+% [~, ~, behavPrm_clean] = rmv_outliers_3sd(behavPrm);
+% goodSubs_bis = ~isnan(metabolite_clean).*~isnan(con_data_clean).*~isnan(behavPrm_clean) == 1;
+% 
+% mediation(metabolite_allSubs(goodSubs_bis),...
+%     con_data(goodSubs_bis),...
+%     behavPrm(goodSubs_bis),...
+%     X_nm, M_nm, Y_nm, dispMed);
 
-% Ep
-prm_nm='Ep';
-behavPrm = choice_hE.(prm_nm);
-Y_nm = ['choices ',prm_nm,' (%)'];
-
-[~, ~, metabolite_clean] = rmv_outliers_3sd(metabolite_allSubs);
-[~, ~, con_data_clean] = rmv_outliers_3sd(con_data);
-[~, ~, behavPrm_clean] = rmv_outliers_3sd(behavPrm);
-goodSubs_bis = ~isnan(metabolite_clean).*~isnan(con_data_clean).*~isnan(behavPrm_clean) == 1;
-
-mediation(metabolite_allSubs(goodSubs_bis),...
-    con_data(goodSubs_bis),...
-    behavPrm(goodSubs_bis),...
-    X_nm, M_nm, Y_nm, dispMed);
-
-% Em
-prm_nm='Em';
-behavPrm = choice_hE.(prm_nm);
-Y_nm = ['choices ',prm_nm,' (%)'];
-
-[~, ~, metabolite_clean] = rmv_outliers_3sd(metabolite_allSubs);
-[~, ~, con_data_clean] = rmv_outliers_3sd(con_data);
-[~, ~, behavPrm_clean] = rmv_outliers_3sd(behavPrm);
-goodSubs_bis = ~isnan(metabolite_clean).*~isnan(con_data_clean).*~isnan(behavPrm_clean) == 1;
-
-mediation(metabolite_allSubs(goodSubs_bis),...
-    con_data(goodSubs_bis),...
-    behavPrm(goodSubs_bis),...
-    X_nm, M_nm, Y_nm, dispMed);
-
-% pool Ep+Em
-prm_nm='EpEm';
-behavPrm = choice_hE.(prm_nm);
-Y_nm = ['choices ',prm_nm,' (%)'];
-
-[~, ~, metabolite_clean] = rmv_outliers_3sd(metabolite_allSubs);
-[~, ~, con_data_clean] = rmv_outliers_3sd(con_data);
-[~, ~, behavPrm_clean] = rmv_outliers_3sd(behavPrm);
-goodSubs_bis = ~isnan(metabolite_clean).*~isnan(con_data_clean).*~isnan(behavPrm_clean) == 1;
-
-mediation(metabolite_allSubs(goodSubs_bis),...
-    con_data(goodSubs_bis),...
-    behavPrm(goodSubs_bis),...
-    X_nm, M_nm, Y_nm, dispMed);
+disp(['dmPFC Glu/GSH Ep (no outliers): p = ',...
+    num2str(max(pval.no_outliers.dmPFC.Glu_div_GSH.Ep.a,...
+    pval.no_outliers.dmPFC.Glu_div_GSH.Ep.b))]);
+disp(['dmPFC Glu/GSH Em (no outliers): p = ',...
+    num2str(max(pval.no_outliers.dmPFC.Glu_div_GSH.Em.a,...
+    pval.no_outliers.dmPFC.Glu_div_GSH.Em.b))]);
+disp(['dmPFC Glu/GSH Ep+Em (no outliers): p = ',...
+    num2str(max(pval.no_outliers.dmPFC.Glu_div_GSH.EpEm.a,...
+    pval.no_outliers.dmPFC.Glu_div_GSH.EpEm.b))]);

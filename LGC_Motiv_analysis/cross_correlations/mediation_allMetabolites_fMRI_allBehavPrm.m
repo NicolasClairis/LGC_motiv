@@ -186,15 +186,15 @@ end % ROI loop
 % current BOLD contrast but the information from the previous test was kept
 % clear('mediation_path','pval','N_goodSubs');
 
-%% lines to launch to display metabolite of interest
-MRS_ROI_nm = 'dmPFC';
-metabolite_nm = 'Glu_div_GSH';
-[metabolite_nm_bis] = metab_div_rnm(metabolite_nm);
-metabolite_allSubs = metabolites.(MRS_ROI_nm).(metabolite_nm);
-dispMed = 1;
-X_nm = [MRS_ROI_nm,'-',metabolite_nm_bis];
-M_nm = 'dmPFC=f(Ech)';
-
+% %% lines to launch to display metabolite of interest
+% MRS_ROI_nm = 'dmPFC';
+% metabolite_nm = 'Glu_div_GSH';
+% [metabolite_nm_bis] = metab_div_rnm(metabolite_nm);
+% metabolite_allSubs = metabolites.(MRS_ROI_nm).(metabolite_nm);
+% dispMed = 1;
+% X_nm = [MRS_ROI_nm,'-',metabolite_nm_bis];
+% M_nm = 'dmPFC=f(Ech)';
+% 
 % % kEp
 % prm_nm='kEp';
 % behavPrm = prm.(prm_nm);
@@ -222,31 +222,38 @@ M_nm = 'dmPFC=f(Ech)';
 %     con_data(goodSubs_bis),...
 %     behavPrm(goodSubs_bis),...
 %     X_nm, M_nm, Y_nm, dispMed);
+% 
+% % boxcox kEp
+% prm_nm = 'kEp';
+% behavPrm_boxcox = (boxcox(prm.(prm_nm)'))';
+% Y_nm = prm_nm;
+% [~, ~, metabolite_clean] = rmv_outliers_3sd(metabolite_allSubs);
+% [~, ~, con_data_clean] = rmv_outliers_3sd(con_data);
+% [~, ~, behavPrm_clean] = rmv_outliers_3sd(behavPrm_boxcox);
+% goodSubs_bis = ~isnan(metabolite_clean).*~isnan(con_data_clean).*~isnan(behavPrm_clean) == 1;
+% 
+% mediation(metabolite_allSubs(goodSubs_bis),...
+%     con_data(goodSubs_bis),...
+%     behavPrm_boxcox(goodSubs_bis),...
+%     X_nm, M_nm, Y_nm, dispMed);
+% 
+% % boxcox kEm
+% prm_nm='kEm';
+% behavPrm_boxcox = (boxcox(prm.(prm_nm)'))';
+% Y_nm = prm_nm;
+% [~, ~, metabolite_clean] = rmv_outliers_3sd(metabolite_allSubs);
+% [~, ~, con_data_clean] = rmv_outliers_3sd(con_data);
+% [~, ~, behavPrm_clean] = rmv_outliers_3sd(behavPrm_boxcox);
+% goodSubs_bis = ~isnan(metabolite_clean).*~isnan(con_data_clean).*~isnan(behavPrm_clean) == 1;
+% 
+% mediation(metabolite_allSubs(goodSubs_bis),...
+%     con_data(goodSubs_bis),...
+%     behavPrm_boxcox(goodSubs_bis),...
+%     X_nm, M_nm, Y_nm, dispMed);
 
-% boxcox kEp
-prm_nm = 'kEp';
-behavPrm_boxcox = (boxcox(prm.(prm_nm)'))';
-Y_nm = prm_nm;
-[~, ~, metabolite_clean] = rmv_outliers_3sd(metabolite_allSubs);
-[~, ~, con_data_clean] = rmv_outliers_3sd(con_data);
-[~, ~, behavPrm_clean] = rmv_outliers_3sd(behavPrm_boxcox);
-goodSubs_bis = ~isnan(metabolite_clean).*~isnan(con_data_clean).*~isnan(behavPrm_clean) == 1;
-
-mediation(metabolite_allSubs(goodSubs_bis),...
-    con_data(goodSubs_bis),...
-    behavPrm_boxcox(goodSubs_bis),...
-    X_nm, M_nm, Y_nm, dispMed);
-
-% boxcox kEm
-prm_nm='kEm';
-behavPrm_boxcox = (boxcox(prm.(prm_nm)'))';
-Y_nm = prm_nm;
-[~, ~, metabolite_clean] = rmv_outliers_3sd(metabolite_allSubs);
-[~, ~, con_data_clean] = rmv_outliers_3sd(con_data);
-[~, ~, behavPrm_clean] = rmv_outliers_3sd(behavPrm_boxcox);
-goodSubs_bis = ~isnan(metabolite_clean).*~isnan(con_data_clean).*~isnan(behavPrm_clean) == 1;
-
-mediation(metabolite_allSubs(goodSubs_bis),...
-    con_data(goodSubs_bis),...
-    behavPrm_boxcox(goodSubs_bis),...
-    X_nm, M_nm, Y_nm, dispMed);
+disp(['dmPFC Glu/GSH kEp (no outliers): p = ',...
+    num2str(max(pval.no_outliers.dmPFC.Glu_div_GSH.kEp.a,...
+    pval.no_outliers.dmPFC.Glu_div_GSH.kEp.b))]);
+disp(['dmPFC Glu/GSH kEm (no outliers): p = ',...
+    num2str(max(pval.no_outliers.dmPFC.Glu_div_GSH.kEm.a,...
+    pval.no_outliers.dmPFC.Glu_div_GSH.kEm.b))]);
