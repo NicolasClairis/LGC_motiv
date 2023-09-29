@@ -1,5 +1,5 @@
-function[choiceND_percentage_perRun, choiceND_perRun] = choiceNDproportion_perRun(sub_nm, figDisp)
-%[choiceND_percentage_perRun, choiceND_perRun] = choiceNDproportion_perRun(sub_nm, figDisp)
+function[choiceND_percentage_perRun, choiceND_perRun] = choiceNDproportion_perRun(sub_nm, figDisp, sub_folder)
+%[choiceND_percentage_perRun, choiceND_perRun] = choiceNDproportion_perRun(sub_nm, figDisp, sub_folder)
 % choiceNDproportion_perRun = function to check the proportion of 
 % non-default choices in each run
 %
@@ -7,6 +7,9 @@ function[choiceND_percentage_perRun, choiceND_perRun] = choiceNDproportion_perRu
 % sub_nm: subject name
 %
 % figDisp: figure display (1) or not (0)
+%
+% sub_folder: subject behavior folder. If left empty, script will consider
+% that it's the current (pwd) folder by default.
 %
 % OUTPUTS
 % choiceND_percentage_perRun: structure with indication about the proportion of
@@ -22,6 +25,13 @@ if ~exist('study_nm','var')
     %     study_nm_idx = listdlg('ListString',study_names);
     %     study_nm = study_names{study_nm_idx};
     study_nm = 'study1'; % by default
+end
+
+%% path check
+if ~exist('sub_folder', 'var') || isempty(sub_folder)
+    sub_folder = [pwd, filesep];
+elseif ~strcmp(sub_folder(end),filesep)
+    sub_folder = [sub_folder,filesep];
 end
 
 %% extract information about runs
@@ -55,8 +65,8 @@ for iRun = 1:nRuns
             jRun = 2;
     end
     run_nm_bis = ['run',num2str(jRun)];
-    filenm = ls(['CID',sub_nm,'_session',num2str(iRun),'_*_task_messyAllStuff.mat']);
-    runData = load(filenm);
+    filenm = ls([sub_folder,'CID',sub_nm,'_session',num2str(iRun),'_*_task_messyAllStuff.mat']);
+    runData = load([sub_folder,filenm]);
     % side of default option
     defaultSide_tmp = runData.choiceOptions.default_LR;
     % side of chosen option
