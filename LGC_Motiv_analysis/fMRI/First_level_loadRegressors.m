@@ -2098,6 +2098,7 @@ if ismember(preEffortCrossModel,{'stick','boxcar','boxcar_bis'})
                     preEcrossModel_F_peak           = GLMprm.preEffortCross.(task_id).(RP_preEcross_nm).(splitE_preEcross_nm).F_peak;
                     preEcrossModel_F_integral       = GLMprm.preEffortCross.(task_id).(RP_preEcross_nm).(splitE_preEcross_nm).F_integral;
                     preEcrossModel_RT_avg = 0;
+                    preEcrossModel_n_correct = 0;
                     preEcrossModel_n_errors = 0;
                 case 'Em'
                     preEcrossModel_F_peak = 0;
