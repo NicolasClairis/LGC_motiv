@@ -17,7 +17,7 @@ pSize = 30;
 lWidth = 3;
 
 %% marker size
-mSize = 20;
+mSize = 10;
 
 %% initialize colours
 col.white = [1 1 1];
@@ -25,7 +25,7 @@ col.black = [0 0 0];
 col.grey = [174 174 174]./255;
 % 4 colours compatible with daltonian perception
 % based on https://colorbrewer2.org/#type=diverging&scheme=Spectral&n=4
-col.red = [215 48 39]./255;
+col.red = [215 25 28]./255;
 col.orange = [253 174 97]./255;
 col.orange_light = [254 224 144]./255;
 col.green = [171 221 164]./255;
