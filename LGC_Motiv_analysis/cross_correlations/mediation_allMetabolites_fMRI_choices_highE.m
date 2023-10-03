@@ -10,6 +10,10 @@
 
 %% did you already launch the ROI extraction (1) or not (0)?
 ROI_already_launched = 0;
+if ~exist('con_vec_all','var') && ROI_already_launched ~= 0
+    error(['ROI_already_launched = ',num2str(ROI_already_launched),...
+        ' while data not in workspace. Please fix it.']);
+end
 
 if ROI_already_launched == 0
     %% define subjects to include
