@@ -85,6 +85,15 @@ for iEpm = 1:length(Epm)
             dispRegFn('** Mental effort design **',dispRegs);
     end
     
+    %% all fixation crosses (pool of pre-choice and pre-effort cross)
+    if ~strcmp(GLMprm.model_onset.(task_id_nm).allCrosses,'none')
+        n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+        reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'ONSET fixation cross';
+        dispRegFn([num2str(n_regs.(task_id_nm)),') ONSET fixation cross: ',GLMprm.model_onset.(task_id_nm).allCrosses,' '],dispRegs);
+        % if derivative added => add derivatives
+        n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+    end
+    
     %% pre-choice fixation cross
     if ~strcmp(GLMprm.model_onset.(task_id_nm).preChoiceCross,'none')
         n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;

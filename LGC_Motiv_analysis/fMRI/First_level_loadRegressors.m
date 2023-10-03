@@ -61,10 +61,12 @@ if strcmp(study_nm,'fMRI_pilots') && ismember(subBehaviorFolder((end-30):end),..
     % for pilots s1 & s2 where there was only 1 fixation cross before
     % choice, no cross before effort
     preChoiceCrossOnsets    = behavioralDataStruct.(task_behavioral_id).onsets.cross - T0; % only cross appearing BEFORE the start of each trial
+    preEffortCrossOnsets = [];
 else% for all other subjects
     preChoiceCrossOnsets    = behavioralDataStruct.(task_behavioral_id).onsets.preChoiceCross - T0; % only cross appearing BEFORE the start of each trial
     preEffortCrossOnsets    = behavioralDataStruct.(task_behavioral_id).onsets.preEffortCross - T0;
 end
+[allCrossesOnsets, allCrossesIdx] = sort([preChoiceCrossOnsets, preEffortCrossOnsets]);
 whiteCrossOnsets        = [preChoiceCrossOnsets, behavioralDataStruct.onsets.finalCross - T0]; % add final cross (at the end of the experiment)
 dispChoiceOptionOnsets  = behavioralDataStruct.(task_behavioral_id).onsets.dispChoiceOptions - T0;
 choiceOnsets            = behavioralDataStruct.(task_behavioral_id).onsets.choice - T0;
@@ -116,6 +118,8 @@ else
     EperfDur = behavioralDataStruct.(task_behavioral_id).durations.effortPeriod;
     fbkDur = behavioralDataStruct.(task_behavioral_id).durations.fbk;
 end
+allCrossesDur = [preChoiceCrossDur, preEffortCrossDur];
+allCrossesDur = allCrossesDur(allCrossesIdx);
 choice_RT = choiceOnsets - dispChoiceOptionOnsets;
 
 %% extract regressors of interest
@@ -411,6 +415,9 @@ trialN_dEnonDef = trialN.*E_varOption;
 
 %% remove trials where no choice was performed
 if sum(choiceMissedTrials) > 0
+    % note: allCross not cleaned from missed choices on purpose as it would
+    % make no sense
+    
     % extract onsets and durations of missed trials
     preChoiceCrossOnsets_missedOnsets = preChoiceCrossOnsets(choiceMissedTrials);
     dispChoiceOption_missedOnsets = dispChoiceOptionOnsets(choiceMissedTrials);
@@ -649,6 +656,29 @@ end
 
 %% initialize conditions
 iCond = 0;
+
+%% all fixation cross
+allCrossesModel = GLMprm.model_onset.(task_id).allCrosses;
+if ismember(allCrossesModel,{'stick','boxcar'})
+    iCond = iCond + 1;
+    switch allCrossesModel
+        case 'stick'
+            modelAllCrossesdur = 0;
+        case 'boxcar'
+            modelAllCrossesdur = allCrossesDur;
+    end
+    
+    %% pre-choice cross modulators
+    n_allCrossesMods = 0;
+    allCrosses_modNames = cell(1,1);
+    allCrosses_modVals = [];
+    
+    %% load all
+    [matlabbatch] = First_level_loadEachCondition(matlabbatch, sub_idx, iRun, iCond,...
+        'fixation cross', allCrossesOnsets, modelAllCrossesdur,...
+        n_allCrossesMods, allCrosses_modNames, allCrosses_modVals,...
+        orth_vars, onsets_only_GLM);
+end
 
 %% fixation cross before choice
 preChoiceCrossModel = GLMprm.model_onset.(task_id).preChoiceCross;
