@@ -51,8 +51,7 @@ if ~exist('dispMoneyOrLevels','var') || isempty(dispMoneyOrLevels)
 end
 
 %% extract runs
-[runsStruct] = runs_definition(study_nm, sub_nm, condition);
-nRuns = length(runsStruct.tasks);
+[runsStruct, nRuns] = runs_definition(study_nm, sub_nm, condition);
 runs_Ep = strcmp(runsStruct.tasks,'Ep');
 runs_Em = strcmp(runsStruct.tasks,'Em');
 
