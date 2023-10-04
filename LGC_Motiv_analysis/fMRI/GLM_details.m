@@ -16,6 +16,13 @@ function [reg_names, n_regs] = GLM_details(GLM, dispRegs)
 % n_regs: structure with number of regressors for each physical (Ep) and
 % each mental (Em) run
 
+%% display parameters by default if dispRegs left empty
+if ~exist('dispRegs','var') ||...
+        isempty(dispRegs) ||...
+        ~ismember(dispRegs,[0,1])
+    dispRegs = 1;
+end
+
 %% load GLM parameters
 GLMprm = which_GLM(GLM);
 % check if onsets only GLM do not perform this
