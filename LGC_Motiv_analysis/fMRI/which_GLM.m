@@ -5211,7 +5211,7 @@ switch GLM
             % feedback
             GLMprm.model_onset.(Epm_nm).fbk = 'boxcar';
         end % physical/mental loop
-    case 196 % similar to GLM 195 but adding time component
+    case 196 % similar to GLM 195 but adding time regressor
         % general parameters
         GLMprm.gal.orth_vars = 0;
         GLMprm.gal.zPerRun = 1;
