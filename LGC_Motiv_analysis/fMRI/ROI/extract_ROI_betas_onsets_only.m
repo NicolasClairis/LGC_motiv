@@ -89,7 +89,7 @@ end
 if ~exist('GLM','var') || isempty(GLM)
     listOfAllOnsetsOnlyGLM = [64, 65, 70,...
         90, 93, 94, 95, 128, 129,...
-        158, 186];
+        158, 186, 201];
     nPossibleGLMs = size(listOfAllOnsetsOnlyGLM, 2);
     listGLM = ['GLM',num2str(listOfAllOnsetsOnlyGLM(1))];
     if nPossibleGLMs > 1
