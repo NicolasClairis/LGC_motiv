@@ -288,8 +288,14 @@ for iS = 1:NS
                         'bgrey_10perc_SPM_template.nii'];
                     error('copy-paste SPM template file first and then remove this line');
                 case 3 %  grey matter filter across subs
-                    mask_file_path = [root, filesep, 'grey_matter_mask', filesep,...
-                        'bmean_greyM_',num2str(NS),'_subjects_',condition,'_',maskProbaThreshold_nm,'percentGreyM.nii'];
+                    switch checking
+                        case 0
+                            mask_file_path = [root, filesep, 'grey_matter_mask', filesep,...
+                                'bmean_greyM_',num2str(NS),'_subjects_',condition,'_',maskProbaThreshold_nm,'percentGreyM.nii'];
+                        case 1 % to avoid bugs when checking
+                            mask_file_path = [root, filesep, 'grey_matter_mask', filesep,...
+                                'bmean_greyM_63_subjects_',condition,'_',maskProbaThreshold_nm,'percentGreyM.nii'];
+                    end
                 case 7 % grey + white matter filter across subs
                     switch checking
                         case 0
