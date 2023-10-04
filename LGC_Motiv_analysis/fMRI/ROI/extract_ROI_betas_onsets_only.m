@@ -233,6 +233,10 @@ for iROI = 1:n_ROIs
                 T0 = behavioralDataStruct.onsets.T0;
                 choiceOnsets = behavioralDataStruct.(task_behavioral_id_bis).onsets.choice - T0;
                 choiceMissedTrials = isnan(choiceOnsets);
+                if sum(choiceMissedTrials) > 0
+                    %                     warning('careful cause 1st level has been changed and missed trials are now included => just be careful to match');
+                    choiceMissedTrials = zeros(size(choiceOnsets));
+                end
                 
                 % trialN: index of the trials
                 trialN = 1:nTrialsPerRun;
