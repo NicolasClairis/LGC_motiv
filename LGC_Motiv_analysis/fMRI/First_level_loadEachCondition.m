@@ -36,6 +36,11 @@ function[matlabbatch] = First_level_loadEachCondition(matlabbatch,...
 % matlabbatch: updated structure with each condition
 %
 
+%% round onsets and duration to ms cause below does not really makes sense
+cond_onsets = round(cond_onsets,3);
+cond_dur = round(cond_dur,3);
+
+%% fill the different fields depending on if onsets-only GLM or not
 switch onsets_only_GLM
     case 0 % regular GLM
         
