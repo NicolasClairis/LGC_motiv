@@ -5267,6 +5267,7 @@ switch GLM
             GLMprm.model_onset.(Epm_nm).fbk = 'boxcar';
         end % physical/mental loop
         
+        %% from here and on using grey matter mask (5%) instead of grey + white matter
         %% GLM with stick + all trial periods
     case 198 % Rch/Pch/Ech/RT
         % general parameters
@@ -5285,8 +5286,6 @@ switch GLM
             GLMprm.choice.(Epm_nm).RP.E.P_chosen = 1;
             GLMprm.choice.(Epm_nm).RP.E.E_chosen = 1;
             GLMprm.choice.(Epm_nm).RP.E.RT = 1;
-            % chosen
-            GLMprm.chosen.(Epm_nm).RP.E.chosen = 'stick';
             % effort perf (effort execution)
             GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
             % feedback
@@ -5315,8 +5314,6 @@ switch GLM
                     GLMprm.choice.(Epm_nm).RP.E.prevEfficacy = 3;
             end
             GLMprm.choice.(Epm_nm).RP.E.RT = 1;
-            % chosen
-            GLMprm.chosen.(Epm_nm).RP.E.chosen = 'stick';
             % effort perf (effort execution)
             GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
             % feedback
