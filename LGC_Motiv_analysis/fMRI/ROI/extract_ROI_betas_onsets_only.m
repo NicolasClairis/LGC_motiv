@@ -235,7 +235,7 @@ for iROI = 1:n_ROIs
                 
                 choiceMissedTrials = isnan(choiceOnsets);
 %                 warning('careful cause 1st level has been changed and missed trials are now included => just be careful to match');
-                choiceMissedTrials = false(size(choiceOnsets));
+%                 choiceMissedTrials = false(size(choiceOnsets));
                 
                 % trialN: index of the trials
                 trialN = 1:nTrialsPerRun;

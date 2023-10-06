@@ -121,7 +121,8 @@ end
 allCrossesDur = [preChoiceCrossDur, preEffortCrossDur];
 allCrossesDur = allCrossesDur(allCrossesIdx);
 choice_RT = choiceOnsets - dispChoiceOptionOnsets;
-choice_RT(isnan(choice_RT))=5;
+% choice_RT(isnan(choice_RT))=5;
+
 %% extract regressors of interest
 % loading R vs P trial
 RP_var_binary = strcmp( behavioralDataStruct.(task_behavioral_id).choiceOptions.R_or_P, 'R');
@@ -414,137 +415,137 @@ trialN_dEnonDef_min_Edef = trialN.*(E_varOption - E_fixedOption);
 trialN_dEnonDef = trialN.*E_varOption;
 
 %% remove trials where no choice was performed
-% if sum(choiceMissedTrials) > 0
-%     % note: allCross not cleaned from missed choices on purpose as it would
-%     % make no sense
-%     
-%     % extract onsets and durations of missed trials
-%     preChoiceCrossOnsets_missedOnsets = preChoiceCrossOnsets(choiceMissedTrials);
-%     dispChoiceOption_missedOnsets = dispChoiceOptionOnsets(choiceMissedTrials);
-%     choice_missedOnsets = choiceOnsets(choiceMissedTrials);
-%     dispChosen_missedOnsets = dispChosenOnsets(choiceMissedTrials);
-%     preEffortCross_missedOnsets = preEffortCrossOnsets(choiceMissedTrials);
-%     Eperf_missedOnsets = EperfOnsets(choiceMissedTrials);
-%     fbk_missedOnsets = fbkOnsets(choiceMissedTrials);
-%     % durations
-%     preChoiceCross_missedDur = preChoiceCrossDur(choiceMissedTrials);
-%     dispChoiceOptions_missedDur = dispChoiceOptionsDur(choiceMissedTrials);
-%     dispChosen_missedDur = dispChosenDur(choiceMissedTrials);
-%     preEffortCross_missedDur = preEffortCrossDur(choiceMissedTrials);
-%     Eperf_missedDur = EperfDur(choiceMissedTrials);
-%     fbk_missedDur = fbkDur(choiceMissedTrials);
-%     
-%     % onsets
-%     preChoiceCrossOnsets(choiceMissedTrials) = [];
-%     dispChoiceOptionOnsets(choiceMissedTrials) = [];
-%     choiceOnsets(choiceMissedTrials) = [];
-%     dispChosenOnsets(choiceMissedTrials) = [];
-%     preEffortCrossOnsets(choiceMissedTrials) = [];
-%     EperfOnsets(choiceMissedTrials) = [];
-%     fbkOnsets(choiceMissedTrials) = [];
-%     % durations
-%     preChoiceCrossDur(choiceMissedTrials) = [];
-%     dispChoiceOptionsDur(choiceMissedTrials) = [];
-%     dispChosenDur(choiceMissedTrials) = [];
-%     preEffortCrossDur(choiceMissedTrials) = [];
-%     EperfDur(choiceMissedTrials) = [];
-%     fbkDur(choiceMissedTrials) = [];
-%     % regressors
-%     defaultSide(choiceMissedTrials) = [];
-%     RP_var_binary(choiceMissedTrials) = [];
-%     choice_hE(choiceMissedTrials) = [];
-%     money_level_chosen(choiceMissedTrials) = [];
-%     R_level_chosen(choiceMissedTrials) = [];
-%     P_level_chosen(choiceMissedTrials) = [];
-%     R_level_unchosen(choiceMissedTrials) = [];
-%     P_level_unchosen(choiceMissedTrials) = [];
-%     money_amount_left(choiceMissedTrials) = [];
-%     money_amount_right(choiceMissedTrials) = [];
-%     money_amount_sum(choiceMissedTrials) = [];
-%     money_amount_varOption(choiceMissedTrials) = [];
-%     R_amount_varOption(choiceMissedTrials) = [];
-%     P_amount_varOption(choiceMissedTrials) = [];
-%     money_amount_fixedOption(choiceMissedTrials) = [];
-%     money_level_left(choiceMissedTrials) = [];
-%     money_level_right(choiceMissedTrials) = [];
-%     money_level_varOption(choiceMissedTrials) = [];
-%     R_level_varOption(choiceMissedTrials) = [];
-%     P_level_varOption(choiceMissedTrials) = [];
-%     abs_money_amount_varOption(choiceMissedTrials) = [];
-%     abs_money_level_varOption(choiceMissedTrials) = [];
-%     E_left(choiceMissedTrials) = [];
-%     E_right(choiceMissedTrials) = [];
-%     E_sum(choiceMissedTrials) = [];
-%     E_varOption(choiceMissedTrials) = [];
-%     money_level_x_E_varOption(choiceMissedTrials) = [];
-%     money_level_x_E_chosen(choiceMissedTrials) = [];
-%     R_level_x_E_varOption(choiceMissedTrials) = [];
-%     R_level_x_E_chosen(choiceMissedTrials) = [];
-%     P_level_x_E_varOption(choiceMissedTrials) = [];
-%     P_level_x_E_chosen(choiceMissedTrials) = [];
-%     choice_LRandConf(choiceMissedTrials) = [];
-%     choice_LR(choiceMissedTrials) = [];
-%     if exist('confidence','var') && ~isempty(confidence)
-%         confidence(choiceMissedTrials) = [];
-%     end
-%     E_chosen(choiceMissedTrials) = [];
-%     E_unchosen(choiceMissedTrials) = [];
-%     E_chosen_min_E_unchosen(choiceMissedTrials) = [];
-%     Ech_min_Efixed(choiceMissedTrials) = [];
-%     money_amount_chosen(choiceMissedTrials) = [];
-%     R_amount_chosen(choiceMissedTrials) = [];
-%     P_amount_chosen(choiceMissedTrials) = [];
-%     abs_money_amount_chosen(choiceMissedTrials) = [];
-%     abs_money_level_chosen(choiceMissedTrials) = [];
-%     abs_money_amount_unchosen(choiceMissedTrials) = [];
-%     abs_money_level_unchosen(choiceMissedTrials) = [];
-%     money_amount_unchosen(choiceMissedTrials) = [];
-%     money_level_unchosen(choiceMissedTrials) = [];
-%     moneyChosen_min_moneyUnchosen_amount(choiceMissedTrials) = [];
-%     absMoneyChosen_min_moneyUnchosen_amount(choiceMissedTrials) = [];
-%     moneyChosen_min_moneyUnchosen_level(choiceMissedTrials) = [];
-%     absMoneyChosen_min_moneyUnchosen_level(choiceMissedTrials) = [];
-%     moneyChosen_min_moneyFixed_amount(choiceMissedTrials) = [];
-%     moneyChosen_min_moneyFixed_level(choiceMissedTrials) = [];
-%     money_amount_obtained(choiceMissedTrials) = [];
-%     win_vs_loss_fbk(choiceMissedTrials) = [];
-%     choice_RT(choiceMissedTrials) = [];
-%     if exist('NV_mdl_nm','var') &&...
-%             (strcmp(NV_mdl_nm(1:4),'mdl_') ||...
-%             strcmp(NV_mdl_nm(1:14),'bayesianModel_'))
-%         NV_chosen(choiceMissedTrials) = [];
-%         NV_varOption(choiceMissedTrials) = [];
-%         pChoice_hE(choiceMissedTrials) = [];
-%         pChosen(choiceMissedTrials) = [];
-%     end
-%     trialN(choiceMissedTrials) = [];
-%     trialN_dEch(choiceMissedTrials) = [];
-%     trialN_dEnonDef_min_Edef(choiceMissedTrials) = [];
-%     trialN_dEnonDef(choiceMissedTrials) = [];
-%     switch task_fullName
-%         case 'physical'
-%             AUC(choiceMissedTrials) = [];
-%             forcePeak(choiceMissedTrials) = [];
-%             AUC_overshoot(choiceMissedTrials) = [];
-%             AUC_N(choiceMissedTrials) = [];
-%             forcePeak_N(choiceMissedTrials) = [];
-%             AUC_overshoot_N(choiceMissedTrials) = [];
-%             fatigue(choiceMissedTrials) = [];
-%         case 'mental'
-%             n_correct(choiceMissedTrials) = [];
-%             n_errors(choiceMissedTrials) = [];
-%             RT_avg(choiceMissedTrials) = [];
-%             efficacy_with2first(choiceMissedTrials) = [];
-%             efficacy_pureNback(choiceMissedTrials) = [];
-%             efficacy_bis_with2first(choiceMissedTrials) = [];
-%             efficacy_bis_pureNback(choiceMissedTrials) = [];
-%             prevEfficacy_with2first(choiceMissedTrials) = [];
-%             prevEfficacy_pureNback(choiceMissedTrials) = [];
-%             prevEfficacy_bis_with2first(choiceMissedTrials) = [];
-%             prevEfficacy_bis_pureNback(choiceMissedTrials) = [];
-%     end
-%     latency(choiceMissedTrials) = [];
-% end
+if sum(choiceMissedTrials) > 0
+    % note: allCross not cleaned from missed choices on purpose as it would
+    % make no sense
+    
+    % extract onsets and durations of missed trials
+    preChoiceCrossOnsets_missedOnsets = preChoiceCrossOnsets(choiceMissedTrials);
+    dispChoiceOption_missedOnsets = dispChoiceOptionOnsets(choiceMissedTrials);
+    choice_missedOnsets = choiceOnsets(choiceMissedTrials);
+    dispChosen_missedOnsets = dispChosenOnsets(choiceMissedTrials);
+    preEffortCross_missedOnsets = preEffortCrossOnsets(choiceMissedTrials);
+    Eperf_missedOnsets = EperfOnsets(choiceMissedTrials);
+    fbk_missedOnsets = fbkOnsets(choiceMissedTrials);
+    % durations
+    preChoiceCross_missedDur = preChoiceCrossDur(choiceMissedTrials);
+    dispChoiceOptions_missedDur = dispChoiceOptionsDur(choiceMissedTrials);
+    dispChosen_missedDur = dispChosenDur(choiceMissedTrials);
+    preEffortCross_missedDur = preEffortCrossDur(choiceMissedTrials);
+    Eperf_missedDur = EperfDur(choiceMissedTrials);
+    fbk_missedDur = fbkDur(choiceMissedTrials);
+    
+    % onsets
+    preChoiceCrossOnsets(choiceMissedTrials) = [];
+    dispChoiceOptionOnsets(choiceMissedTrials) = [];
+    choiceOnsets(choiceMissedTrials) = [];
+    dispChosenOnsets(choiceMissedTrials) = [];
+    preEffortCrossOnsets(choiceMissedTrials) = [];
+    EperfOnsets(choiceMissedTrials) = [];
+    fbkOnsets(choiceMissedTrials) = [];
+    % durations
+    preChoiceCrossDur(choiceMissedTrials) = [];
+    dispChoiceOptionsDur(choiceMissedTrials) = [];
+    dispChosenDur(choiceMissedTrials) = [];
+    preEffortCrossDur(choiceMissedTrials) = [];
+    EperfDur(choiceMissedTrials) = [];
+    fbkDur(choiceMissedTrials) = [];
+    % regressors
+    defaultSide(choiceMissedTrials) = [];
+    RP_var_binary(choiceMissedTrials) = [];
+    choice_hE(choiceMissedTrials) = [];
+    money_level_chosen(choiceMissedTrials) = [];
+    R_level_chosen(choiceMissedTrials) = [];
+    P_level_chosen(choiceMissedTrials) = [];
+    R_level_unchosen(choiceMissedTrials) = [];
+    P_level_unchosen(choiceMissedTrials) = [];
+    money_amount_left(choiceMissedTrials) = [];
+    money_amount_right(choiceMissedTrials) = [];
+    money_amount_sum(choiceMissedTrials) = [];
+    money_amount_varOption(choiceMissedTrials) = [];
+    R_amount_varOption(choiceMissedTrials) = [];
+    P_amount_varOption(choiceMissedTrials) = [];
+    money_amount_fixedOption(choiceMissedTrials) = [];
+    money_level_left(choiceMissedTrials) = [];
+    money_level_right(choiceMissedTrials) = [];
+    money_level_varOption(choiceMissedTrials) = [];
+    R_level_varOption(choiceMissedTrials) = [];
+    P_level_varOption(choiceMissedTrials) = [];
+    abs_money_amount_varOption(choiceMissedTrials) = [];
+    abs_money_level_varOption(choiceMissedTrials) = [];
+    E_left(choiceMissedTrials) = [];
+    E_right(choiceMissedTrials) = [];
+    E_sum(choiceMissedTrials) = [];
+    E_varOption(choiceMissedTrials) = [];
+    money_level_x_E_varOption(choiceMissedTrials) = [];
+    money_level_x_E_chosen(choiceMissedTrials) = [];
+    R_level_x_E_varOption(choiceMissedTrials) = [];
+    R_level_x_E_chosen(choiceMissedTrials) = [];
+    P_level_x_E_varOption(choiceMissedTrials) = [];
+    P_level_x_E_chosen(choiceMissedTrials) = [];
+    choice_LRandConf(choiceMissedTrials) = [];
+    choice_LR(choiceMissedTrials) = [];
+    if exist('confidence','var') && ~isempty(confidence)
+        confidence(choiceMissedTrials) = [];
+    end
+    E_chosen(choiceMissedTrials) = [];
+    E_unchosen(choiceMissedTrials) = [];
+    E_chosen_min_E_unchosen(choiceMissedTrials) = [];
+    Ech_min_Efixed(choiceMissedTrials) = [];
+    money_amount_chosen(choiceMissedTrials) = [];
+    R_amount_chosen(choiceMissedTrials) = [];
+    P_amount_chosen(choiceMissedTrials) = [];
+    abs_money_amount_chosen(choiceMissedTrials) = [];
+    abs_money_level_chosen(choiceMissedTrials) = [];
+    abs_money_amount_unchosen(choiceMissedTrials) = [];
+    abs_money_level_unchosen(choiceMissedTrials) = [];
+    money_amount_unchosen(choiceMissedTrials) = [];
+    money_level_unchosen(choiceMissedTrials) = [];
+    moneyChosen_min_moneyUnchosen_amount(choiceMissedTrials) = [];
+    absMoneyChosen_min_moneyUnchosen_amount(choiceMissedTrials) = [];
+    moneyChosen_min_moneyUnchosen_level(choiceMissedTrials) = [];
+    absMoneyChosen_min_moneyUnchosen_level(choiceMissedTrials) = [];
+    moneyChosen_min_moneyFixed_amount(choiceMissedTrials) = [];
+    moneyChosen_min_moneyFixed_level(choiceMissedTrials) = [];
+    money_amount_obtained(choiceMissedTrials) = [];
+    win_vs_loss_fbk(choiceMissedTrials) = [];
+    choice_RT(choiceMissedTrials) = [];
+    if exist('NV_mdl_nm','var') &&...
+            (strcmp(NV_mdl_nm(1:4),'mdl_') ||...
+            strcmp(NV_mdl_nm(1:14),'bayesianModel_'))
+        NV_chosen(choiceMissedTrials) = [];
+        NV_varOption(choiceMissedTrials) = [];
+        pChoice_hE(choiceMissedTrials) = [];
+        pChosen(choiceMissedTrials) = [];
+    end
+    trialN(choiceMissedTrials) = [];
+    trialN_dEch(choiceMissedTrials) = [];
+    trialN_dEnonDef_min_Edef(choiceMissedTrials) = [];
+    trialN_dEnonDef(choiceMissedTrials) = [];
+    switch task_fullName
+        case 'physical'
+            AUC(choiceMissedTrials) = [];
+            forcePeak(choiceMissedTrials) = [];
+            AUC_overshoot(choiceMissedTrials) = [];
+            AUC_N(choiceMissedTrials) = [];
+            forcePeak_N(choiceMissedTrials) = [];
+            AUC_overshoot_N(choiceMissedTrials) = [];
+            fatigue(choiceMissedTrials) = [];
+        case 'mental'
+            n_correct(choiceMissedTrials) = [];
+            n_errors(choiceMissedTrials) = [];
+            RT_avg(choiceMissedTrials) = [];
+            efficacy_with2first(choiceMissedTrials) = [];
+            efficacy_pureNback(choiceMissedTrials) = [];
+            efficacy_bis_with2first(choiceMissedTrials) = [];
+            efficacy_bis_pureNback(choiceMissedTrials) = [];
+            prevEfficacy_with2first(choiceMissedTrials) = [];
+            prevEfficacy_pureNback(choiceMissedTrials) = [];
+            prevEfficacy_bis_with2first(choiceMissedTrials) = [];
+            prevEfficacy_bis_pureNback(choiceMissedTrials) = [];
+    end
+    latency(choiceMissedTrials) = [];
+end
 
 % extract trials where no performance was achieved
 perfOkTrials = ~isnan(latency);
