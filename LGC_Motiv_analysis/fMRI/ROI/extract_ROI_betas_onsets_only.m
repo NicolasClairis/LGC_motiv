@@ -136,14 +136,14 @@ nRunsPerTask = 2;
 for iROI = 1:n_ROIs
     ROI_nm1 = ROI_names.(['ROI_',num2str(iROI)]);
     for iTask = 1:nTasks
-        task_nm = tasks{iTask};
+        task_nm1 = tasks{iTask};
         for iRun = 1:nRunsPerTask
             run_str = ['run',num2str(iRun)];
             for iTperiod = 1:nPotentialTimePeriods
-                timePeriod_nm = potentialTimePeriods{iTperiod};
-                curr_onset_nm = GLMprm.model_onset.(task_nm).(timePeriod_nm);
+                timePeriod_nm1 = potentialTimePeriods{iTperiod};
+                curr_onset_nm = GLMprm.model_onset.(task_nm1).(timePeriod_nm1);
                 if ~strcmp(curr_onset_nm,'none') && ismember(curr_onset_nm,{'stick','boxcar'})
-                    ROI_trial_b_trial.(ROI_nm1).(task_nm).(run_str).(timePeriod_nm) = NaN(nTrialsPerRun, NS);
+                    ROI_trial_b_trial.(ROI_nm1).(task_nm1).(run_str).(timePeriod_nm1) = NaN(nTrialsPerRun, NS);
                 elseif ~ismember(curr_onset_nm,{'none','stick','boxcar'})
                     error(['problem with time modulation = ',curr_onset_nm])
                 end
@@ -155,14 +155,14 @@ end % ROI loop
 nTimePeriods = 0;
 timePeriods = {};
 for iTperiod = 1:nPotentialTimePeriods
-    timePeriod_nm = potentialTimePeriods{iTperiod};
-    curr_onset_nm_Ep = GLMprm.model_onset.Ep.(timePeriod_nm);
-    curr_onset_nm_Em = GLMprm.model_onset.Em.(timePeriod_nm);
+    timePeriod_nm2 = potentialTimePeriods{iTperiod};
+    curr_onset_nm_Ep = GLMprm.model_onset.Ep.(timePeriod_nm2);
+    curr_onset_nm_Em = GLMprm.model_onset.Em.(timePeriod_nm2);
     if strcmp(curr_onset_nm_Ep, curr_onset_nm_Em) &&...
             ismember(curr_onset_nm_Ep,{'stick','boxcar'}) &&...
             ismember(curr_onset_nm_Em,{'stick','boxcar'})
         nTimePeriods = nTimePeriods + 1;
-        timePeriods = [timePeriods, timePeriod_nm];
+        timePeriods = [timePeriods, timePeriod_nm2];
     end
 end % time period
 
@@ -293,7 +293,7 @@ for iROI = 1:n_ROIs
                         kRun = kRun + 1;
                         jTimePhase = 1;
                     end
-                    task_nm = subRuns.tasks{kRun};
+                    task_nm2 = subRuns.tasks{kRun};
                     timePeriod_nm = timePeriods{jTimePhase};
                     
                     % extract con/scon files
@@ -317,7 +317,7 @@ for iROI = 1:n_ROIs
                     vxyz        = unique(floor((inv(betaVol.mat) * sxyz_ROI')'), 'rows'); % converts from MNI (mm) to voxel-space
                     vi          = sub2ind(betaVol.dim, vxyz(:, 1), vxyz(:, 2), vxyz(:, 3)); % extracts coordinates of the sphere in the con (voxel-space)
                     beta_value  = mean(betadata(vi),'omitnan'); % extracts mean beta for the selected ROI sphere/mask
-                    ROI_trial_b_trial.(ROI_nm2).(task_nm).(run_nm).(timePeriod_nm)(jRunTrial, iS) = beta_value; % save mean beta for the selected ROI inside the big resulting matrix
+                    ROI_trial_b_trial.(ROI_nm2).(task_nm2).(run_nm).(timePeriod_nm)(jRunTrial, iS) = beta_value; % save mean beta for the selected ROI inside the big resulting matrix
                 else % skip movement regressors from beta extraction
                     beta_idx = beta_idx + 1;
                     
@@ -326,11 +326,23 @@ for iROI = 1:n_ROIs
             %         else
             %             warning('check 036 with last upgrades.');
             %         end % filter subject 036 who for some reason doesn't work
+            
+            %% filter trials which have weird values by removing outliers based on median +/-3*SD for each period (will replace values by NaN instead)
+            for iTask3 = 1:nTasks
+                task_nm3 = tasks{iTask3};
+                for iTimePeriod3 = 1:length(timePeriods)
+                    timePeriod_nm3 = timePeriods{iTimePeriod3};
+                    [~,~,ROI_trial_b_trial.(ROI_nm2).(task_nm3).run1.(timePeriod_nm3)(:,iS)] = rmv_outliers_3sd(ROI_trial_b_trial.(ROI_nm2).(task_nm3).run1.(timePeriod_nm3)(:,iS));
+                    [~,~,ROI_trial_b_trial.(ROI_nm2).(task_nm3).run2.(timePeriod_nm3)(:,iS)] = rmv_outliers_3sd(ROI_trial_b_trial.(ROI_nm2).(task_nm3).run2.(timePeriod_nm3)(:,iS));
+                end % loop over time period
+            end % task loop
         end % filter for anterior insula MRS voxel which was not extracted in all participants
         
         %% indicator subject done
         disp(['Subject ',num2str(iS),'/',num2str(NS),' extracted']);
     end % subject loop
+    
+    %% display message ok
     disp(['ROI ',num2str(iROI),'/',num2str(n_ROIs),' done']);
 end % ROI loop
 
