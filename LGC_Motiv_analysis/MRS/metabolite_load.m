@@ -10,7 +10,7 @@ function[metabolites] = metabolite_load(subject_id)
 % metabolites: structure with all the metabolites
 
 %% working directory
-root = pwd;
+% root = pwd;
 list_pcs = {'Lab','Home'};
 % which_pc_idx = listdlg('PromptString',{'Lab or home pc?'},...
 %     'SelectionMode','single','ListString',list_pcs);
@@ -21,7 +21,7 @@ switch list_pcs{which_pc_idx}
     case 'Home'
         metaboliteFolder = fullfile('L:','human_data_private','analyzed_data','study1');
 end
-cd(metaboliteFolder);
+% cd(metaboliteFolder);
 %% define subject list
 if ~exist('subject_id','var') || isempty(subject_id)
     condition = subject_condition;
@@ -67,7 +67,8 @@ for iROI = 1:nROIs
         metabolites.(ROI_nm).Glu_div_GSH,...
         metabolites.(ROI_nm).Glu_div_Tau,...
         metabolites.(ROI_nm).Glu_div_antiox,...
-        metabolites.(ROI_nm).Glu_div_z_antiox] = deal(NaN(1,NS));
+        metabolites.(ROI_nm).Glu_div_z_antiox,...
+        metabolites.(ROI_nm).Glu_div_GABA_div_GSH] = deal(NaN(1,NS));
     
     %% load the data
     switch ROI_nm
@@ -137,8 +138,10 @@ for iROI = 1:nROIs
     metabolites.(ROI_nm).z_antiox = nanzscore(nanzscore(metabolites.(ROI_nm).GSH) +...
         nanzscore(metabolites.(ROI_nm).Tau));
     
-    % perform also division Glu/GABA
+    % perform also division Glu/GABA (known as Excitation/Inhibition (E-I) ratio)
     metabolites.(ROI_nm).Glu_div_GABA = metabolites.(ROI_nm).Glu./metabolites.(ROI_nm).GABA;
+    % perform (Glu/GABA)/GSH ((E-I) ratio divided by GSH)
+    metabolites.(ROI_nm).Glu_div_GABA_div_GSH = metabolites.(ROI_nm).Glu_div_GABA./metabolites.(ROI_nm).GSH;
     
     % Glu/antioxidants
     metabolites.(ROI_nm).Glu_div_GSH = metabolites.(ROI_nm).Glu./metabolites.(ROI_nm).GSH;
@@ -160,7 +163,7 @@ for iROI = 1:nROIs
     metabolites.(ROI_nm).Glu_div_GSH_ratio_Ushape = (metabolites.(ROI_nm).Glu_div_GSH - mean(metabolites.(ROI_nm).Glu_div_GSH,'omitnan')).^2;
 end % ROI loop
 
-%% go back to root
-cd(root);
+% %% go back to root
+% cd(root);
 
 end % function
