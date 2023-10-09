@@ -73,7 +73,7 @@ nPrm = length(parameter_names);
 
 %% launch this before to avoid case where nothing is significant for the
 % current BOLD contrast but the information from the previous test was kept
-clear('mediation_path','pval','N_goodSubs');
+clear('mediation_path','pval','N_goodSubs','stats');
 %% perform the mediation
 pval.signif = struct;
 dispMed = 0; % do not display mediation (too many plots)
