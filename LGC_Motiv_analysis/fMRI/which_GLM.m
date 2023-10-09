@@ -5508,7 +5508,7 @@ switch GLM
             GLMprm.model_onset.(Epm_nm).fbk = 'stick';
         end % physical/mental loop
         
-    case 208 % like GLM 150
+    case 208 % like GLM 150 but with grey matter
         % general parameters
         GLMprm.gal.orth_vars = 0;
         GLMprm.gal.zPerRun = 0;
@@ -5522,6 +5522,27 @@ switch GLM
             GLMprm.choice.(Epm_nm).RP.E.R_chosen = 2;
             GLMprm.choice.(Epm_nm).RP.E.P_chosen = 2;
             GLMprm.choice.(Epm_nm).RP.E.E_chosen = 1;
+            % effort perf (effort execution)
+            GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
+            % feedback
+            GLMprm.model_onset.(Epm_nm).fbk = 'stick';
+        end % physical/mental loop
+        
+    case 209 % like GLM 208 but adding RT
+        % general parameters
+        GLMprm.gal.orth_vars = 0;
+        GLMprm.gal.zPerRun = 0;
+        GLMprm.gal.grey_mask = 3;
+        GLMprm.gal.mask_probaThreshold = 5;
+        % loop per task
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'stick';
+            GLMprm.choice.(Epm_nm).RP.E.R_chosen = 2;
+            GLMprm.choice.(Epm_nm).RP.E.P_chosen = 2;
+            GLMprm.choice.(Epm_nm).RP.E.E_chosen = 1;
+            GLMprm.choice.(Epm_nm).RP.E.RT = 2;
             % effort perf (effort execution)
             GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
             % feedback
