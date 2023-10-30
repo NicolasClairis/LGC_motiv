@@ -77,6 +77,13 @@ function[subject_id, NS] = LGCM_subject_selection(study_nm, condition, genderFil
 %
 % NS: number of subjects included in the final list
 
+%% check inputs
+if ~exist('study_nm','var') || isempty(study_nm)
+    error('You need to enter study_nm in the inputs');
+end
+if ~exist('condition','var') || isempty(condition)
+    condition = subject_condition;
+end
 % by default include all subjects
 if ~exist('genderFilter','var') || isempty(genderFilter)
     genderFilter = 'all';
@@ -87,7 +94,7 @@ else
     end
 end
 
-% extract list of subjects
+%% extract list of subjects
 switch study_nm
     case 'fMRI_pilots'
         subject_id = {'pilot_s1','pilot_s2','pilot_s3'};
