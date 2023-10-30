@@ -92,7 +92,7 @@ function [GLMprm] = which_GLM(GLM)
 %           or per effort chosen (Ech0/Ech/Ech1/Ech2/Ech3) (splitPerE=2)
 %           or per choice (low vs high E choice) made (lEch/hEch) (splitPerE=3)
 %               
-%
+%% choice/chosen period regressors
 %       .(choice/chosen).(Ep/Em).RPpool:
 %       (0) split rewards and punishments as separate events
 %       (1) pool reward and punishment trials
@@ -235,6 +235,28 @@ function [GLMprm] = which_GLM(GLM)
 %       based on the model defined in .(choice/chosen).(Ep.Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).NV_mdl (='mdl_X' or 'bayesianModel_X')
 %       This is relatively similar to (2) but will include the motivational
 %       bias and the sigmoid transformation
+%       (4) difference between net value of the high effort option
+%       and low effort option based on the model defined in .(choice/chosen).(Ep.Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).NV_mdl (='mdl_X' or 'bayesianModel_X')
+%       This is basically like (3) but before the sigmoid transformation
+%       (5) absolute difference between net value of the high effort option
+%       and low effort option based on the model defined in .(choice/chosen).(Ep.Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).NV_mdl (='mdl_X' or 'bayesianModel_X')
+%       This is basically like (2) but including the bias.
+%
+%       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).NV_varOption_bis
+%       (1) difference between net value of the high effort option and low effort options based on the model defined in
+%       .(choice/chosen).(Ep.Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).NV_mdl (='mdl_X' or 'bayesianModel_X')
+%       (2) absolute difference between net value of the high effort option
+%       and low effort option based on the model defined in .(choice/chosen).(Ep.Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).NV_mdl (='mdl_X' or 'bayesianModel_X')
+%       (3) p(choice = hE) = probability of choosing the high effort option
+%       based on the model defined in .(choice/chosen).(Ep.Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).NV_mdl (='mdl_X' or 'bayesianModel_X')
+%       This is relatively similar to (2) but will include the motivational
+%       bias and the sigmoid transformation
+%       (4) difference between net value of the high effort option
+%       and low effort option based on the model defined in .(choice/chosen).(Ep.Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).NV_mdl (='mdl_X' or 'bayesianModel_X')
+%       This is basically like (3) but before the sigmoid transformation
+%       (5) absolute difference between net value of the high effort option
+%       and low effort option based on the model defined in .(choice/chosen).(Ep.Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).NV_mdl (='mdl_X' or 'bayesianModel_X')
+%       This is basically like (2) but including the bias.
 %
 %       .(choice/chosen).Ep.(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).F_integral: physical effort only: 
 %       force integral for the performance of the current trial
@@ -311,7 +333,101 @@ function [GLMprm] = which_GLM(GLM)
 %       (3) reaction time zscored per subject across all runs
 %       (4-6) same as (1-3) but with RT as first regressor instead of last
 %
+%% pre-effort cross period regressors
+%       .preEffortCross.(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).choiceHighE
+%       (1) 0 when low effort/default option is selected and 1 when high
+%       effort/non-default option is selected
 %
+%       .preEffortCross.(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).money_chosen:
+%       (1) money chosen amount
+%       (2) |money chosen amount|
+%       (3) money levels (-4/-3/-2/-1/1/2/3/4) chosen from highest loss
+%       until highest gain
+%       (4) |money levels (1/2/3/4) chosen|
+%
+%       .preEffortCross.(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).E_chosen
+%       (1) effort level (0/1/2/3) associated to chosen option
+%       (2) effort difficulty associated to chosen option (Ep: duration to hold; Em: nb answers to give)
+%
+%       .preEffortCross.Ep.(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).F_peak: physical effort only: force peak
+%       (1) force peak in voltage
+%       (2) force peak in newtons
+%
+%       .preEffortCross.Ep.(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).F_integral: physical effort only: force integral
+%       (1) integral of effort performed during the effort period
+%       (2) integral of effort performed during the effort period
+%       considering only the overshoot (force produced above the red
+%       threshold)
+%       (3) integral of effort performed during the effort period with
+%       force in newtons
+%       (4) integral of effort performed during the effort period
+%       considering only the overshoot (force produced above the red
+%       threshold) with force in newtons
+%
+%       .preEffortCross.Em.(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).RT_avg: mental effort only: average reaction
+%       time for answering N-back task
+%       (1) average reaction time for answering to questions (in seconds)
+%
+%       .preEffortCross.Em.(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).n_correct:
+%       mental effort only: number of correct answers made per trial
+%       (1) number of correct answers provided (ignoring the two first
+%       useless digits)
+%
+%       .preEffortCross.Em.(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).n_errors: mental effort only: number of errors
+%       made per trial
+%       (1) number of errors made
+%
+%       .preEffortCross.(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).NV_chosen
+%       (1) net value of the chosen option based on the model defined in
+%       .(choice/chosen).(Ep.Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).NV_mdl (='mdl_X' or 'bayesianModel_X')
+%       (2) p(choice = hE) = probability of choosing the chosen option
+%       based on the model defined in .(choice/chosen).(Ep.Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).NV_mdl (='mdl_X' or 'bayesianModel_X')
+%       This is relatively similar to (1) but will include the motivational
+%       bias and the sigmoid transformation
+%
+%       .preEffortCross.(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).NV_varOption
+%       (1) delta of the net value of the high E - low E based on the model defined in
+%       .Eperf.(Ep.Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).NV_mdl (='mdl_X' or 'bayesianModel_X')
+%       (2) absolute difference between net value of the high effort option
+%       and low effort option based on the model defined in .(choice/chosen).(Ep.Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).NV_mdl (='mdl_X' or 'bayesianModel_X')
+%       (3) p(choice = hE) = probability of choosing the high effort option
+%       based on the model defined in .Eperf.(Ep.Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).NV_mdl (='mdl_X' or 'bayesianModel_X')
+%       This is relatively similar to (2) but will include the motivational
+%       bias and the sigmoid transformation
+%       (4) difference between net value of the high effort option
+%       and low effort option based on the model defined in .(choice/chosen).(Ep.Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).NV_mdl (='mdl_X' or 'bayesianModel_X')
+%       This is basically like (3) but before the sigmoid transformation
+%       (5) absolute difference between net value of the high effort option
+%       and low effort option based on the model defined in .(choice/chosen).(Ep.Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).NV_mdl (='mdl_X' or 'bayesianModel_X')
+%       This is basically like (2) but including the bias.
+%
+%       .preEffortCross.(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).NV_varOption_bis
+%       (1) difference between net value of the high effort option and low effort options based on the model defined in
+%       .(choice/chosen).(Ep.Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).NV_mdl (='mdl_X' or 'bayesianModel_X')
+%       (2) absolute difference between net value of the high effort option
+%       and low effort option based on the model defined in .(choice/chosen).(Ep.Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).NV_mdl (='mdl_X' or 'bayesianModel_X')
+%       (3) p(choice = hE) = probability of choosing the high effort option
+%       based on the model defined in .(choice/chosen).(Ep.Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).NV_mdl (='mdl_X' or 'bayesianModel_X')
+%       This is relatively similar to (2) but will include the motivational
+%       bias and the sigmoid transformation
+%       (4) difference between net value of the high effort option
+%       and low effort option based on the model defined in .(choice/chosen).(Ep.Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).NV_mdl (='mdl_X' or 'bayesianModel_X')
+%       This is basically like (3) but before the sigmoid transformation
+%       (5) absolute difference between net value of the high effort option
+%       and low effort option based on the model defined in .(choice/chosen).(Ep.Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).NV_mdl (='mdl_X' or 'bayesianModel_X')
+%       This is basically like (2) but including the bias.
+%
+%       .preEffortCross.Eperf.(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).RT_1stAnswer
+%       (1) raw reaction time for first answer (force above threshold for Ep 
+%       and first answer to first digit for Em)
+%
+%       .preEffortCross.(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).trialN
+%       (1) trial number
+%       (2) (trial number)*(E chosen - E non-chosen option)
+%       (3) (trial number)*(E non-default - E default option)
+%       (4) (trial number)*(E non-default)
+%
+%% Effort period regressors
 %       .Eperf.(Ep/Em).RPpool
 %       (0) split rewards and punishments as separate events
 %       (1) pool reward and punishment trials
@@ -391,6 +507,28 @@ function [GLMprm] = which_GLM(GLM)
 %       based on the model defined in .Eperf.(Ep.Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).NV_mdl (='mdl_X' or 'bayesianModel_X')
 %       This is relatively similar to (2) but will include the motivational
 %       bias and the sigmoid transformation
+%       (4) difference between net value of the high effort option
+%       and low effort option based on the model defined in .(choice/chosen).(Ep.Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).NV_mdl (='mdl_X' or 'bayesianModel_X')
+%       This is basically like (3) but before the sigmoid transformation
+%       (5) absolute difference between net value of the high effort option
+%       and low effort option based on the model defined in .(choice/chosen).(Ep.Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).NV_mdl (='mdl_X' or 'bayesianModel_X')
+%       This is basically like (2) but including the bias.
+%
+%       .Eperf.(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).NV_varOption_bis
+%       (1) difference between net value of the high effort option and low effort options based on the model defined in
+%       .(choice/chosen).(Ep.Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).NV_mdl (='mdl_X' or 'bayesianModel_X')
+%       (2) absolute difference between net value of the high effort option
+%       and low effort option based on the model defined in .(choice/chosen).(Ep.Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).NV_mdl (='mdl_X' or 'bayesianModel_X')
+%       (3) p(choice = hE) = probability of choosing the high effort option
+%       based on the model defined in .(choice/chosen).(Ep.Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).NV_mdl (='mdl_X' or 'bayesianModel_X')
+%       This is relatively similar to (2) but will include the motivational
+%       bias and the sigmoid transformation
+%       (4) difference between net value of the high effort option
+%       and low effort option based on the model defined in .(choice/chosen).(Ep.Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).NV_mdl (='mdl_X' or 'bayesianModel_X')
+%       This is basically like (3) but before the sigmoid transformation
+%       (5) absolute difference between net value of the high effort option
+%       and low effort option based on the model defined in .(choice/chosen).(Ep.Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).NV_mdl (='mdl_X' or 'bayesianModel_X')
+%       This is basically like (2) but including the bias.
 %
 %       .Eperf.(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).RT_1stAnswer
 %       (1) raw reaction time for first answer (force above threshold for Ep 
@@ -440,7 +578,7 @@ function [GLMprm] = which_GLM(GLM)
 %       (3) confidence inferred by the model (p(left)-0.5)² for the model
 %       defined in .Eperf.(Ep.Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).conf_mdl (='mdl_X' or 'bayesianModel_X')
 %
-%
+%% feedback period regressors
 %       .fbk.(Ep/Em).RPpool
 %       (0) split rewards and punishments as separate events
 %       (1) pool reward and punishment trials
@@ -582,6 +720,7 @@ for iEpm = 1:length(Ep_Em)
                 GLMprm.choice.(EpEm_nm).(RP_nm).(Econd_nm).P_level_x_E_chosen,...
                 GLMprm.choice.(EpEm_nm).(RP_nm).(Econd_nm).NV_chosen,...
                 GLMprm.choice.(EpEm_nm).(RP_nm).(Econd_nm).NV_varOption,...
+                GLMprm.choice.(EpEm_nm).(RP_nm).(Econd_nm).NV_varOption_bis,...
                 GLMprm.choice.Ep.(RP_nm).(Econd_nm).F_integral,...
                 GLMprm.choice.Em.(RP_nm).(Econd_nm).efficacy,...
                 GLMprm.choice.Ep.(RP_nm).(Econd_nm).fatigue,...
@@ -626,6 +765,7 @@ for iEpm = 1:length(Ep_Em)
                 GLMprm.chosen.(EpEm_nm).(RP_nm).(Econd_nm).P_level_x_E_chosen,...
                 GLMprm.chosen.(EpEm_nm).(RP_nm).(Econd_nm).NV_chosen,...
                 GLMprm.chosen.(EpEm_nm).(RP_nm).(Econd_nm).NV_varOption,...
+                GLMprm.chosen.(EpEm_nm).(RP_nm).(Econd_nm).NV_varOption_bis,...
                 GLMprm.chosen.Ep.(RP_nm).(Econd_nm).F_integral,...
                 GLMprm.chosen.Em.(RP_nm).(Econd_nm).efficacy,...
                 GLMprm.chosen.Ep.(RP_nm).(Econd_nm).fatigue,...
@@ -645,6 +785,7 @@ for iEpm = 1:length(Ep_Em)
                 GLMprm.preEffortCross.(EpEm_nm).(RP_nm).(Econd_nm).E_chosen,...
                 GLMprm.preEffortCross.(EpEm_nm).(RP_nm).(Econd_nm).NV_chosen,...
                 GLMprm.preEffortCross.(EpEm_nm).(RP_nm).(Econd_nm).NV_varOption,...
+                GLMprm.preEffortCross.(EpEm_nm).(RP_nm).(Econd_nm).NV_varOption_bis,...
                 GLMprm.preEffortCross.(EpEm_nm).(RP_nm).(Econd_nm).RT_1stAnswer,...
                 GLMprm.preEffortCross.(EpEm_nm).(RP_nm).(Econd_nm).trialN,...
                 GLMprm.preEffortCross.(EpEm_nm).(RP_nm).(Econd_nm).confidence] = deal(0);
@@ -678,6 +819,7 @@ for iEpm = 1:length(Ep_Em)
                 GLMprm.Eperf.(EpEm_nm).(RP_nm).(Econd_nm).P_level_x_E_chosen,...
                 GLMprm.Eperf.(EpEm_nm).(RP_nm).(Econd_nm).NV_chosen,...
                 GLMprm.Eperf.(EpEm_nm).(RP_nm).(Econd_nm).NV_varOption,...
+                GLMprm.Eperf.(EpEm_nm).(RP_nm).(Econd_nm).NV_varOption_bis,...
                 GLMprm.Eperf.(EpEm_nm).(RP_nm).(Econd_nm).RT_1stAnswer,...
                 GLMprm.Eperf.(EpEm_nm).(RP_nm).(Econd_nm).trialN,...
                 GLMprm.Eperf.(EpEm_nm).(RP_nm).(Econd_nm).confidence,...

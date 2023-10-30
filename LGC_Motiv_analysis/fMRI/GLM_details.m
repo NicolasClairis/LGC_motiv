@@ -832,6 +832,55 @@ for iEpm = 1:length(Epm)
                         dispRegFn([num2str(n_regs.(task_id_nm)),') choice: p(choice = high E) '],dispRegs);
                         % if derivative added => add derivatives
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                    case 4 % NV(high E) - NV(low E) + bias
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                        reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG choice ',RP_dispChoice_nm,' ',splitE_dispChoice_nm,': net value high E - low E + bias'];
+                        dispRegFn([num2str(n_regs.(task_id_nm)),') choice: net value high E - low E + bias '],dispRegs);
+                        % if derivative added => add derivatives
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                    case 5 % |NV(high E) - NV(low E) + bias|
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                        reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG choice ',RP_dispChoice_nm,' ',splitE_dispChoice_nm,': |net value high E - low E + bias|'];
+                        dispRegFn([num2str(n_regs.(task_id_nm)),') choice: |net value high E - low E + bias| '],dispRegs);
+                        % if derivative added => add derivatives
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                    otherwise
+                        error('not ready yet');
+                end
+                
+                % net value variable option bis
+                switch GLMprm.choice.(task_id_nm).(RP_dispChoice_nm).(splitE_dispChoice_nm).NV_varOption_bis
+                    case 0
+                    case 1 % NV(high E) - NV(low E)
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                        reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG choice ',RP_dispChoice_nm,' ',splitE_dispChoice_nm,': net value high E - low E'];
+                        dispRegFn([num2str(n_regs.(task_id_nm)),') choice: net value high E - low E '],dispRegs);
+                        % if derivative added => add derivatives
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                    case 2 % |NV(high E) - NV(low E)|
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                        reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG choice ',RP_dispChoice_nm,' ',splitE_dispChoice_nm,': |net value high E - low E|'];
+                        dispRegFn([num2str(n_regs.(task_id_nm)),') choice: |net value high E - low E| '],dispRegs);
+                        % if derivative added => add derivatives
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                    case 3 % p(choice = high E)
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                        reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG choice ',RP_dispChoice_nm,' ',splitE_dispChoice_nm,': p(choice = high E)'];
+                        dispRegFn([num2str(n_regs.(task_id_nm)),') choice: p(choice = high E) '],dispRegs);
+                        % if derivative added => add derivatives
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                    case 4 % NV(high E) - NV(low E) + bias
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                        reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG choice ',RP_dispChoice_nm,' ',splitE_dispChoice_nm,': net value high E - low E + bias'];
+                        dispRegFn([num2str(n_regs.(task_id_nm)),') choice: net value high E - low E + bias '],dispRegs);
+                        % if derivative added => add derivatives
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                    case 5 % |NV(high E) - NV(low E) + bias|
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                        reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG choice ',RP_dispChoice_nm,' ',splitE_dispChoice_nm,': |net value high E - low E + bias|'];
+                        dispRegFn([num2str(n_regs.(task_id_nm)),') choice: |net value high E - low E + bias| '],dispRegs);
+                        % if derivative added => add derivatives
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
                     otherwise
                         error('not ready yet');
                 end
@@ -1528,7 +1577,7 @@ for iEpm = 1:length(Epm)
                 
                 % net value variable option
                 switch GLMprm.chosen.(task_id_nm).(RP_dispChosen_nm).(splitE_dispChosen_nm).NV_varOption
-                        case 0
+                    case 0
                     case 1 % NV(high E) - NV(low E)
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                         reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG chosen ',RP_dispChosen_nm,' ',splitE_dispChosen_nm,': net value high E - low E'];
@@ -1545,6 +1594,53 @@ for iEpm = 1:length(Epm)
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                         reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG chosen ',RP_dispChosen_nm,' ',splitE_dispChosen_nm,': p(choice = high E)'];
                         dispRegFn([num2str(n_regs.(task_id_nm)),') chosen: p(choice = high E) '],dispRegs);
+                        % if derivative added => add derivatives
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                    case 4 % NV(high E) - NV(low E) + bias
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                        reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG chosen ',RP_dispChosen_nm,' ',splitE_dispChosen_nm,': net value high E - low E + bias'];
+                        dispRegFn([num2str(n_regs.(task_id_nm)),') chosen: net value high E - low E + bias '],dispRegs);
+                        % if derivative added => add derivatives
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                    case 5 % |NV(high E) - NV(low E) + bias|
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                        reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG chosen ',RP_dispChosen_nm,' ',splitE_dispChosen_nm,': |net value high E - low E + bias|'];
+                        dispRegFn([num2str(n_regs.(task_id_nm)),') chosen: |net value high E - low E + bias| '],dispRegs);
+                        % if derivative added => add derivatives
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                end
+                
+                % net value variable option bis
+                switch GLMprm.chosen.(task_id_nm).(RP_dispChosen_nm).(splitE_dispChosen_nm).NV_varOption_bis
+                    case 0
+                    case 1 % NV(high E) - NV(low E)
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                        reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG chosen ',RP_dispChosen_nm,' ',splitE_dispChosen_nm,': net value high E - low E'];
+                        dispRegFn([num2str(n_regs.(task_id_nm)),') chosen: net value high E - low E '],dispRegs);
+                        % if derivative added => add derivatives
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                    case 2 % |NV(high E) - NV(low E)|
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                        reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG chosen ',RP_dispChosen_nm,' ',splitE_dispChosen_nm,': |net value high E - low E|'];
+                        dispRegFn([num2str(n_regs.(task_id_nm)),') chosen: |net value high E - low E| '],dispRegs);
+                        % if derivative added => add derivatives
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                    case 3 % p(choice = high E)
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                        reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG chosen ',RP_dispChosen_nm,' ',splitE_dispChosen_nm,': p(choice = high E)'];
+                        dispRegFn([num2str(n_regs.(task_id_nm)),') chosen: p(choice = high E) '],dispRegs);
+                        % if derivative added => add derivatives
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                    case 4 % NV(high E) - NV(low E) + bias
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                        reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG chosen ',RP_dispChosen_nm,' ',splitE_dispChosen_nm,': net value high E - low E + bias'];
+                        dispRegFn([num2str(n_regs.(task_id_nm)),') chosen: net value high E - low E + bias '],dispRegs);
+                        % if derivative added => add derivatives
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                    case 5 % |NV(high E) - NV(low E) + bias|
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                        reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG chosen ',RP_dispChosen_nm,' ',splitE_dispChosen_nm,': |net value high E - low E + bias|'];
+                        dispRegFn([num2str(n_regs.(task_id_nm)),') chosen: |net value high E - low E + bias| '],dispRegs);
                         % if derivative added => add derivatives
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
                 end
@@ -1876,6 +1972,52 @@ for iEpm = 1:length(Epm)
                         dispRegFn([num2str(n_regs.(task_id_nm)),') pre-effort cross: p(choice = high E) '],dispRegs);
                         % if derivative added => add derivatives
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                    case 4 % NV(high E) - NV(low E) + bias
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                        reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG effort ',RP_preEcross_nm,' ',splitE_preEcross_nm,': net value high E - low E + bias'];
+                        dispRegFn([num2str(n_regs.(task_id_nm)),') pre-effort cross: net value high E - low E + bias '],dispRegs);
+                        % if derivative added => add derivatives
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                    case 5 % |NV(high E) - NV(low E) + bias|
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                        reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG effort ',RP_preEcross_nm,' ',splitE_preEcross_nm,': |net value high E - low E + bias|'];
+                        dispRegFn([num2str(n_regs.(task_id_nm)),') pre-effort cross: |net value high E - low E + bias| '],dispRegs);
+                        % if derivative added => add derivatives
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                end
+                
+                % net value non-default option bis
+                switch GLMprm.preEffortCross.(task_id_nm).(RP_preEcross_nm).(splitE_preEcross_nm).NV_varOption_bis
+                    case 1 % NV(high E) - NV(low E)
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                        reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG effort ',RP_preEcross_nm,' ',splitE_preEcross_nm,': net value high E - low E'];
+                        dispRegFn([num2str(n_regs.(task_id_nm)),') pre-effort cross: net value high E - low E '],dispRegs);
+                        % if derivative added => add derivatives
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                    case 2 % |NV(high E) - NV(low E)|
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                        reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG effort ',RP_preEcross_nm,' ',splitE_preEcross_nm,': |net value high E - low E|'];
+                        dispRegFn([num2str(n_regs.(task_id_nm)),') pre-effort cross: |net value high E - low E| '],dispRegs);
+                        % if derivative added => add derivatives
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                    case 3 % p(choice = high E)
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                        reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG effort ',RP_preEcross_nm,' ',splitE_preEcross_nm,': p(choice = high E)'];
+                        dispRegFn([num2str(n_regs.(task_id_nm)),') pre-effort cross: p(choice = high E) '],dispRegs);
+                        % if derivative added => add derivatives
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                    case 4 % NV(high E) - NV(low E) + bias
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                        reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG effort ',RP_preEcross_nm,' ',splitE_preEcross_nm,': net value high E - low E + bias'];
+                        dispRegFn([num2str(n_regs.(task_id_nm)),') pre-effort cross: net value high E - low E + bias '],dispRegs);
+                        % if derivative added => add derivatives
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                    case 5 % |NV(high E) - NV(low E) + bias|
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                        reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG effort ',RP_preEcross_nm,' ',splitE_preEcross_nm,': |net value high E - low E + bias|'];
+                        dispRegFn([num2str(n_regs.(task_id_nm)),') pre-effort cross: |net value high E - low E + bias| '],dispRegs);
+                        % if derivative added => add derivatives
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
                 end
                 
                 % RT first answer
@@ -2126,6 +2268,52 @@ for iEpm = 1:length(Epm)
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                         reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG effort ',RP_Eperf_nm,' ',splitE_Eperf_nm,': p(choice = high E)'];
                         dispRegFn([num2str(n_regs.(task_id_nm)),') effort period: p(choice = high E) '],dispRegs);
+                        % if derivative added => add derivatives
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                    case 4 % NV(high E) - NV(low E) + bias
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                        reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG effort ',RP_Eperf_nm,' ',splitE_Eperf_nm,': net value high E - low E + bias'];
+                        dispRegFn([num2str(n_regs.(task_id_nm)),') effort period: net value high E - low E + bias '],dispRegs);
+                        % if derivative added => add derivatives
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                    case 5 % |NV(high E) - NV(low E) + bias|
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                        reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG effort ',RP_Eperf_nm,' ',splitE_Eperf_nm,': |net value high E - low E + bias|'];
+                        dispRegFn([num2str(n_regs.(task_id_nm)),') effort period: |net value high E - low E + bias| '],dispRegs);
+                        % if derivative added => add derivatives
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                end
+                
+                % net value non-default option bis
+                switch GLMprm.Eperf.(task_id_nm).(RP_Eperf_nm).(splitE_Eperf_nm).NV_varOption_bis
+                    case 1 % NV(high E) - NV(low E)
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                        reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG effort ',RP_Eperf_nm,' ',splitE_Eperf_nm,': net value high E - low E'];
+                        dispRegFn([num2str(n_regs.(task_id_nm)),') effort period: net value high E - low E '],dispRegs);
+                        % if derivative added => add derivatives
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                    case 2 % |NV(high E) - NV(low E)|
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                        reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG effort ',RP_Eperf_nm,' ',splitE_Eperf_nm,': |net value high E - low E|'];
+                        dispRegFn([num2str(n_regs.(task_id_nm)),') effort period: |net value high E - low E| '],dispRegs);
+                        % if derivative added => add derivatives
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                    case 3 % p(choice = high E)
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                        reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG effort ',RP_Eperf_nm,' ',splitE_Eperf_nm,': p(choice = high E)'];
+                        dispRegFn([num2str(n_regs.(task_id_nm)),') effort period: p(choice = high E) '],dispRegs);
+                        % if derivative added => add derivatives
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                    case 4 % NV(high E) - NV(low E) + bias
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                        reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG effort ',RP_Eperf_nm,' ',splitE_Eperf_nm,': net value high E - low E + bias'];
+                        dispRegFn([num2str(n_regs.(task_id_nm)),') effort period: net value high E - low E + bias '],dispRegs);
+                        % if derivative added => add derivatives
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                    case 5 % |NV(high E) - NV(low E) + bias|
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                        reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG effort ',RP_Eperf_nm,' ',splitE_Eperf_nm,': |net value high E - low E + bias|'];
+                        dispRegFn([num2str(n_regs.(task_id_nm)),') effort period: |net value high E - low E + bias| '],dispRegs);
                         % if derivative added => add derivatives
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
                 end

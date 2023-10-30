@@ -338,7 +338,7 @@ for iRP = 1:length(RPconds)
                 bayesianMdl_nm = strrep(NV_mdl_nm,'bayesianModel','mdl');
                 gitResultsFolder = [fullfile('C:','Users','clairis','Desktop',...
                     'GitHub','LGC_motiv','LGC_Motiv_results',study_nm,'bayesian_modeling'),filesep];
-                [NV_chosen, NV_varOption,~,pChoice_hE] = extract_bayesian_mdl(gitResultsFolder, subBehaviorFolder,...
+                [NV_chosen, NV_varOption,~,pChoice_hE, NV_varOption_plus_bias] = extract_bayesian_mdl(gitResultsFolder, subBehaviorFolder,...
                     sub_nm, run_nm, task_fullName, bayesianMdl_nm);
             else
                 error(['model with ',NV_mdl_nm,' not ready yet']);
@@ -515,6 +515,7 @@ if sum(choiceMissedTrials) > 0
             strcmp(NV_mdl_nm(1:14),'bayesianModel_'))
         NV_chosen(choiceMissedTrials) = [];
         NV_varOption(choiceMissedTrials) = [];
+        NV_varOption_plus_bias(choiceMissedTrials) = [];
         pChoice_hE(choiceMissedTrials) = [];
         pChosen(choiceMissedTrials) = [];
     end
@@ -795,6 +796,7 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
             choiceModel_P_level_x_E_chosen              = GLMprm.choice.(task_id).(RP_dispChoice_nm).(splitE_dispChoice_nm).P_level_x_E_chosen;
             choiceModel_NV_chosen                       = GLMprm.choice.(task_id).(RP_dispChoice_nm).(splitE_dispChoice_nm).NV_chosen;
             choiceModel_NV_varOption                    = GLMprm.choice.(task_id).(RP_dispChoice_nm).(splitE_dispChoice_nm).NV_varOption;
+            choiceModel_NV_varOption_bis                = GLMprm.choice.(task_id).(RP_dispChoice_nm).(splitE_dispChoice_nm).NV_varOption_bis;
             switch task_id
                 case 'Ep'
                     choiceModel_F_integral = GLMprm.choice.(task_id).(RP_dispChoice_nm).(splitE_dispChoice_nm).F_integral;
@@ -1270,6 +1272,36 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                     case 3
                         choice_modNames{n_choiceMods} = 'p(choice=hE)';
                         choice_modVals(n_choiceMods,:) = raw_or_z(pChoice_hE(choice_trial_idx));
+                    case 4
+                        choice_modNames{n_choiceMods} = 'delta NV high E - low E + bias';
+                        choice_modVals(n_choiceMods,:) = raw_or_z(NV_varOption_plus_bias(choice_trial_idx));
+                    case 5
+                        choice_modNames{n_choiceMods} = '|delta NV high E - low E + bias|';
+                        choice_modVals(n_choiceMods,:) = raw_or_z(abs(NV_varOption_plus_bias(choice_trial_idx)));
+                    otherwise
+                        error('not ready yet');
+                end
+            end
+            
+            % net value non-default option bis
+            if choiceModel_NV_varOption_bis > 0
+                n_choiceMods = n_choiceMods + 1;
+                switch choiceModel_NV_varOption_bis
+                    case 1
+                        choice_modNames{n_choiceMods} = 'delta NV high E - low E';
+                        choice_modVals(n_choiceMods,:) = raw_or_z(NV_varOption(choice_trial_idx));
+                    case 2
+                        choice_modNames{n_choiceMods} = '|delta NV high E - low E|';
+                        choice_modVals(n_choiceMods,:) = raw_or_z(abs(NV_varOption(choice_trial_idx)));
+                    case 3
+                        choice_modNames{n_choiceMods} = 'p(choice=hE)';
+                        choice_modVals(n_choiceMods,:) = raw_or_z(pChoice_hE(choice_trial_idx));
+                    case 4
+                        choice_modNames{n_choiceMods} = 'delta NV high E - low E + bias';
+                        choice_modVals(n_choiceMods,:) = raw_or_z(NV_varOption_plus_bias(choice_trial_idx));
+                    case 5
+                        choice_modNames{n_choiceMods} = '|delta NV high E - low E + bias|';
+                        choice_modVals(n_choiceMods,:) = raw_or_z(abs(NV_varOption_plus_bias(choice_trial_idx)));
                     otherwise
                         error('not ready yet');
                 end
@@ -1465,8 +1497,9 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
             chosenModel_R_level_x_E_chosen        = GLMprm.chosen.(task_id).(RP_dispChosen_nm).(splitE_dispChosen_nm).R_level_x_E_chosen;
             chosenModel_P_level_x_E_varOption     = GLMprm.chosen.(task_id).(RP_dispChosen_nm).(splitE_dispChosen_nm).P_level_x_E_varOption;
             chosenModel_P_level_x_E_chosen        = GLMprm.chosen.(task_id).(RP_dispChosen_nm).(splitE_dispChosen_nm).P_level_x_E_chosen;
-            chosenModel_NV_chosen       = GLMprm.chosen.(task_id).(RP_dispChosen_nm).(splitE_dispChosen_nm).NV_chosen;
-            chosenModel_NV_varOption    = GLMprm.chosen.(task_id).(RP_dispChosen_nm).(splitE_dispChosen_nm).NV_varOption;
+            chosenModel_NV_chosen           = GLMprm.chosen.(task_id).(RP_dispChosen_nm).(splitE_dispChosen_nm).NV_chosen;
+            chosenModel_NV_varOption        = GLMprm.chosen.(task_id).(RP_dispChosen_nm).(splitE_dispChosen_nm).NV_varOption;
+            chosenModel_NV_varOption_bis    = GLMprm.chosen.(task_id).(RP_dispChosen_nm).(splitE_dispChosen_nm).NV_varOption_bis;
             switch task_id
                 case 'Ep'
                     chosenModel_F_integral = GLMprm.chosen.(task_id).(RP_dispChosen_nm).(splitE_dispChosen_nm).F_integral;
@@ -1953,6 +1986,36 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                     case 3
                         chosen_modNames{n_chosenMods} = 'p(choice=hE)';
                         chosen_modVals(n_chosenMods,:) = raw_or_z(abs(pChoice_hE(chosen_trial_idx)));
+                    case 4
+                        chosen_modNames{n_chosenMods} = 'delta NV high E - low E + bias';
+                        chosen_modVals(n_chosenMods,:) = raw_or_z(NV_varOption_plus_bias(chosen_trial_idx));
+                    case 5
+                        chosen_modNames{n_chosenMods} = '|delta NV high E - low E + bias|';
+                        chosen_modVals(n_chosenMods,:) = raw_or_z(abs(NV_varOption_plus_bias(chosen_trial_idx)));
+                    otherwise
+                        error('not ready yet');
+                end
+            end
+            
+            % net value non-default option bis
+            if chosenModel_NV_varOption_bis > 0
+                n_chosenMods = n_chosenMods + 1;
+                switch chosenModel_NV_varOption_bis
+                    case 1
+                        chosen_modNames{n_chosenMods} = 'delta NV high E - low E';
+                        chosen_modVals(n_chosenMods,:) = raw_or_z(NV_varOption(chosen_trial_idx));
+                    case 2
+                        chosen_modNames{n_chosenMods} = '|delta NV high E - low E|';
+                        chosen_modVals(n_chosenMods,:) = raw_or_z(abs(NV_varOption(chosen_trial_idx)));
+                    case 3
+                        chosen_modNames{n_chosenMods} = 'p(choice=hE)';
+                        chosen_modVals(n_chosenMods,:) = raw_or_z(abs(pChoice_hE(chosen_trial_idx)));
+                    case 4
+                        chosen_modNames{n_chosenMods} = 'delta NV high E - low E + bias';
+                        chosen_modVals(n_chosenMods,:) = raw_or_z(NV_varOption_plus_bias(chosen_trial_idx));
+                    case 5
+                        chosen_modNames{n_chosenMods} = '|delta NV high E - low E + bias|';
+                        chosen_modVals(n_chosenMods,:) = raw_or_z(abs(NV_varOption_plus_bias(chosen_trial_idx)));
                     otherwise
                         error('not ready yet');
                 end
@@ -2140,6 +2203,7 @@ if ismember(preEffortCrossModel,{'stick','boxcar','boxcar_bis'})
             end
             preEcrossModel_NV_chosen        = GLMprm.preEffortCross.(task_id).(RP_preEcross_nm).(splitE_preEcross_nm).NV_chosen;
             preEcrossModel_NV_varOption     = GLMprm.preEffortCross.(task_id).(RP_preEcross_nm).(splitE_preEcross_nm).NV_varOption;
+            preEcrossModel_NV_varOption_bis = GLMprm.preEffortCross.(task_id).(RP_preEcross_nm).(splitE_preEcross_nm).NV_varOption_bis;
             preEcrossModel_RT1stAnswer      = GLMprm.preEffortCross.(task_id).(RP_preEcross_nm).(splitE_preEcross_nm).RT_1stAnswer;
             preEcrossModel_trialN           = GLMprm.preEffortCross.(task_id).(RP_preEcross_nm).(splitE_preEcross_nm).trialN;
             
@@ -2286,6 +2350,36 @@ if ismember(preEffortCrossModel,{'stick','boxcar','boxcar_bis'})
                     case 3
                         preEcross_modNames{n_preEcrossMods} = 'p(choice=hE)';
                         preEcross_modVals(n_preEcrossMods,:) = raw_or_z(abs(pChoice_hE(preEcross_trial_idx)));
+                    case 4
+                        preEcross_modNames{n_preEcrossMods} = 'delta NV high E - low E + bias';
+                        preEcross_modVals(n_preEcrossMods,:) = raw_or_z(NV_varOption_plus_bias(preEcross_trial_idx));
+                    case 5
+                        preEcross_modNames{n_preEcrossMods} = '|delta NV high E - low E + bias|';
+                        preEcross_modVals(n_preEcrossMods,:) = raw_or_z(abs(NV_varOption_plus_bias(preEcross_trial_idx)));
+                    otherwise
+                        error('not ready yet');
+                end
+            end
+            
+            % net value non-default option bis
+            if preEcrossModel_NV_varOption_bis > 0
+                n_preEcrossMods = n_preEcrossMods + 1;
+                switch preEcrossModel_NV_varOption_bis
+                    case 1
+                        preEcross_modNames{n_preEcrossMods} = 'delta NV high E - low E';
+                        preEcross_modVals(n_preEcrossMods,:) = raw_or_z(NV_varOption(preEcross_trial_idx));
+                    case 2
+                        preEcross_modNames{n_preEcrossMods} = '|delta NV high E - low E|';
+                        preEcross_modVals(n_preEcrossMods,:) = raw_or_z(abs(NV_varOption(preEcross_trial_idx)));
+                    case 3
+                        preEcross_modNames{n_preEcrossMods} = 'p(choice=hE)';
+                        preEcross_modVals(n_preEcrossMods,:) = raw_or_z(abs(pChoice_hE(preEcross_trial_idx)));
+                    case 4
+                        preEcross_modNames{n_preEcrossMods} = 'delta NV high E - low E + bias';
+                        preEcross_modVals(n_preEcrossMods,:) = raw_or_z(NV_varOption_plus_bias(preEcross_trial_idx));
+                    case 5
+                        preEcross_modNames{n_preEcrossMods} = '|delta NV high E - low E + bias|';
+                        preEcross_modVals(n_preEcrossMods,:) = raw_or_z(abs(NV_varOption_plus_bias(preEcross_trial_idx)));
                     otherwise
                         error('not ready yet');
                 end
@@ -2358,6 +2452,7 @@ if ismember(EperfModel,{'stick','boxcar'})
             end
             EperfModel_NV_chosen        = GLMprm.Eperf.(task_id).(RP_Eperf_nm).(splitE_Eperf_nm).NV_chosen;
             EperfModel_NV_varOption     = GLMprm.Eperf.(task_id).(RP_Eperf_nm).(splitE_Eperf_nm).NV_varOption;
+            EperfModel_NV_varOption_bis = GLMprm.Eperf.(task_id).(RP_Eperf_nm).(splitE_Eperf_nm).NV_varOption_bis;
             EperfModel_RT1stAnswer      = GLMprm.Eperf.(task_id).(RP_Eperf_nm).(splitE_Eperf_nm).RT_1stAnswer;
             EperfModel_trialN           = GLMprm.Eperf.(task_id).(RP_Eperf_nm).(splitE_Eperf_nm).trialN;
             
@@ -2570,6 +2665,36 @@ if ismember(EperfModel,{'stick','boxcar'})
                     case 3
                         Eperf_modNames{n_EperfMods} = 'p(choice=hE)';
                         Eperf_modVals(n_EperfMods,:) = raw_or_z(abs(pChoice_hE(Eperf_trial_idx)));
+                    case 4
+                        Eperf_modNames{n_EperfMods} = 'delta NV high E - low E + bias';
+                        Eperf_modVals(n_EperfMods,:) = raw_or_z(NV_varOption_plus_bias(Eperf_trial_idx));
+                    case 5
+                        Eperf_modNames{n_EperfMods} = '|delta NV high E - low E + bias|';
+                        Eperf_modVals(n_EperfMods,:) = raw_or_z(abs(NV_varOption_plus_bias(Eperf_trial_idx)));
+                    otherwise
+                        error('not ready yet');
+                end
+            end
+            
+            % net value non-default option bis
+            if EperfModel_NV_varOption_bis > 0
+                n_EperfMods = n_EperfMods + 1;
+                switch EperfModel_NV_varOption_bis
+                    case 1
+                        Eperf_modNames{n_EperfMods} = 'delta NV high E - low E';
+                        Eperf_modVals(n_EperfMods,:) = raw_or_z(NV_varOption(Eperf_trial_idx));
+                    case 2
+                        Eperf_modNames{n_EperfMods} = '|delta NV high E - low E|';
+                        Eperf_modVals(n_EperfMods,:) = raw_or_z(abs(NV_varOption(Eperf_trial_idx)));
+                    case 3
+                        Eperf_modNames{n_EperfMods} = 'p(choice=hE)';
+                        Eperf_modVals(n_EperfMods,:) = raw_or_z(abs(pChoice_hE(Eperf_trial_idx)));
+                    case 4
+                        Eperf_modNames{n_EperfMods} = 'delta NV high E - low E + bias';
+                        Eperf_modVals(n_EperfMods,:) = raw_or_z(NV_varOption_plus_bias(Eperf_trial_idx));
+                    case 5
+                        Eperf_modNames{n_EperfMods} = '|delta NV high E - low E + bias|';
+                        Eperf_modVals(n_EperfMods,:) = raw_or_z(abs(NV_varOption_plus_bias(Eperf_trial_idx)));
                     otherwise
                         error('not ready yet');
                 end
