@@ -400,6 +400,11 @@ for iRP = 1:length(RPconds)
                         GLMprm.fbk.(task_id).(RP_nm).(Esplit_nm).confidence == 3
                     confidence_left = (pChoice.*highE_on_the_left + (1 - pChoice).*highE_on_the_right - 0.5).^2;
                     confidence = confidence_left./0.25; % normalise to be between 0 and 1
+                elseif GLMprm.choice.(task_id).(RP_nm).(Esplit_nm).confidence == 4 ||...
+                        GLMprm.chosen.(task_id).(RP_nm).(Esplit_nm).confidence == 4 ||...
+                        GLMprm.Eperf.(task_id).(RP_nm).(Esplit_nm).confidence == 4 ||...
+                        GLMprm.fbk.(task_id).(RP_nm).(Esplit_nm).confidence == 4
+                    confidence = ((pChoice - 0.5).^2)./0.25;
                 end
                 
             end % which confidence to use
@@ -1432,7 +1437,7 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                 switch choiceModel_conf
                     case 1 % binary variable => no zscore
                         choice_modVals(n_choiceMods,:) = confidence(choice_trial_idx);
-                    case {2,3} % confidence inferred by the model => ok to zscore
+                    case {2,3,4} % confidence inferred by the model => ok to zscore
                         choice_modVals(n_choiceMods,:) = raw_or_z(confidence(choice_trial_idx));
                     otherwise
                         error('not ready yet');
@@ -2146,7 +2151,7 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                 switch chosenModel_confidence
                     case 1
                         chosen_modVals(n_chosenMods,:) = confidence(chosen_trial_idx); % binary variable => no zscore
-                    case {2,3}
+                    case {2,3,4}
                         chosen_modVals(n_chosenMods,:) = raw_or_z(confidence(chosen_trial_idx)); % confidence inferred by the model
                     otherwise
                         error('ready yet');
@@ -2206,6 +2211,7 @@ if ismember(preEffortCrossModel,{'stick','boxcar','boxcar_bis'})
             preEcrossModel_NV_varOption_bis = GLMprm.preEffortCross.(task_id).(RP_preEcross_nm).(splitE_preEcross_nm).NV_varOption_bis;
             preEcrossModel_RT1stAnswer      = GLMprm.preEffortCross.(task_id).(RP_preEcross_nm).(splitE_preEcross_nm).RT_1stAnswer;
             preEcrossModel_trialN           = GLMprm.preEffortCross.(task_id).(RP_preEcross_nm).(splitE_preEcross_nm).trialN;
+            preEcrossModel_conf             = GLMprm.preEffortCross.(task_id).(RP_preEcross_nm).(splitE_preEcross_nm).confidence;
             
             % extract trial index for the current loop
             switch RP_preEcross_nm
@@ -2416,6 +2422,20 @@ if ismember(preEffortCrossModel,{'stick','boxcar','boxcar_bis'})
                 end
             end
             
+            % choice confidence
+            if preEcrossModel_conf > 0
+                n_preEcrossMods = n_preEcrossMods + 1;
+                preEcross_modNames{n_preEcrossMods} = 'confidence';
+                switch preEcrossModel_conf
+                    case 1 % binary variable => no zscore
+                        preEcross_modVals(n_preEcrossMods,:) = confidence(preEcross_trial_idx);
+                    case {2,3,4} % confidence inferred by the model => ok to zscore
+                        preEcross_modVals(n_preEcrossMods,:) = raw_or_z(confidence(preEcross_trial_idx));
+                    otherwise
+                        error('not ready yet');
+                end
+            end
+            
             [matlabbatch] = First_level_loadEachCondition(matlabbatch, sub_idx, iRun, iCond,...
                 ['preEffort fixation cross',RP_preEcross_nm,'_',splitE_preEcross_nm], modelpreEcrossOnset, modelPreEffortCrossdur,...
                 n_preEcrossMods, preEcross_modNames, preEcross_modVals,...
@@ -2455,6 +2475,7 @@ if ismember(EperfModel,{'stick','boxcar'})
             EperfModel_NV_varOption_bis = GLMprm.Eperf.(task_id).(RP_Eperf_nm).(splitE_Eperf_nm).NV_varOption_bis;
             EperfModel_RT1stAnswer      = GLMprm.Eperf.(task_id).(RP_Eperf_nm).(splitE_Eperf_nm).RT_1stAnswer;
             EperfModel_trialN           = GLMprm.Eperf.(task_id).(RP_Eperf_nm).(splitE_Eperf_nm).trialN;
+            EperfModel_conf             = GLMprm.Eperf.(task_id).(RP_Eperf_nm).(splitE_Eperf_nm).confidence;
             
             % extract trial index for the current loop
             switch RP_Eperf_nm
@@ -2794,6 +2815,20 @@ if ismember(EperfModel,{'stick','boxcar'})
                 end
             end
             
+            % choice confidence
+            if EperfModel_conf > 0
+                n_EperfMods = n_EperfMods + 1;
+                Eperf_modNames{n_EperfMods} = 'confidence';
+                switch EperfModel_conf
+                    case 1 % binary variable => no zscore
+                        Eperf_modVals(n_EperfMods,:) = confidence(Eperf_trial_idx);
+                    case {2,3,4} % confidence inferred by the model => ok to zscore
+                        Eperf_modVals(n_EperfMods,:) = raw_or_z(confidence(Eperf_trial_idx));
+                    otherwise
+                        error('not ready yet');
+                end
+            end
+            
             [matlabbatch] = First_level_loadEachCondition(matlabbatch, sub_idx, iRun, iCond,...
                 ['Eperf_',RP_Eperf_nm,'_',splitE_Eperf_nm], modelEperfOnset, modelEperfDur,...
                 n_EperfMods, Eperf_modNames, Eperf_modVals,...
@@ -2940,9 +2975,10 @@ if ismember(fbkModel,{'stick','boxcar'})
                 n_fbkMods = n_fbkMods + 1;
                 fbk_modNames{n_fbkMods} = 'confidence';
                 switch fbkModel_confidence
-                    case 1
-                        error('not ready yet');
-                        %             fbk_modVals(n_fbkMods,:) = ;
+                    case 1 % binary variable => no zscore
+                        fbk_modVals(n_choiceMods,:) = confidence(fbk_trial_idx);
+                    case {2,3,4} % confidence inferred by the model => ok to zscore
+                        fbk_modVals(n_choiceMods,:) = raw_or_z(confidence(fbk_trial_idx));
                     otherwise
                         error('not ready yet');
                 end
