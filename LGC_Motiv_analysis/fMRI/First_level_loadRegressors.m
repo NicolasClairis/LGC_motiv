@@ -331,14 +331,15 @@ for iRP = 1:length(RPconds)
                 % load net value
                 [~, modelledDataStruct] = logitfit_choices(computerRoot, study_nm, sub_nm,...
                     0, 'levels', 6, 6);
-                NV_chosen = modelledDataStruct.NV_chosen.(task_id).(NV_mdl_nm).(run_nm_bis);
+                NV_ch_min_unch = modelledDataStruct.NV_chosen.(task_id).(NV_mdl_nm).(run_nm_bis);
                 NV_varOption = modelledDataStruct.NV_varOption.(task_id).(NV_mdl_nm).(run_nm_bis);
                 pChoice_hE = modelledDataStruct.pChoice_hE.(task_id).(NV_mdl_nm).(run_nm_bis);
             elseif strcmp(NV_mdl_nm(1:14),'bayesianModel_') % bayesian model
                 bayesianMdl_nm = strrep(NV_mdl_nm,'bayesianModel','mdl');
                 gitResultsFolder = [fullfile('C:','Users','clairis','Desktop',...
                     'GitHub','LGC_motiv','LGC_Motiv_results',study_nm,'bayesian_modeling'),filesep];
-                [NV_chosen, NV_varOption,~,pChoice_hE, NV_varOption_plus_bias] = extract_bayesian_mdl(gitResultsFolder, subBehaviorFolder,...
+                [NV_ch_min_unch, NV_varOption,~,pChoice_hE,...
+                    NV_varOption_plus_bias, NV_ch_min_unch_with_bias] = extract_bayesian_mdl(gitResultsFolder, subBehaviorFolder,...
                     sub_nm, run_nm, task_fullName, bayesianMdl_nm);
             else
                 error(['model with ',NV_mdl_nm,' not ready yet']);
@@ -518,7 +519,8 @@ if sum(choiceMissedTrials) > 0
     if exist('NV_mdl_nm','var') &&...
             (strcmp(NV_mdl_nm(1:4),'mdl_') ||...
             strcmp(NV_mdl_nm(1:14),'bayesianModel_'))
-        NV_chosen(choiceMissedTrials) = [];
+        NV_ch_min_unch(choiceMissedTrials) = [];
+        NV_ch_min_unch_with_bias(choiceMissedTrials) = [];
         NV_varOption(choiceMissedTrials) = [];
         NV_varOption_plus_bias(choiceMissedTrials) = [];
         pChoice_hE(choiceMissedTrials) = [];
@@ -1254,11 +1256,14 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                 n_choiceMods = n_choiceMods + 1;
                 switch choiceModel_NV_chosen
                     case 1
-                        choice_modNames{n_choiceMods} = 'NV chosen';
-                        choice_modVals(n_choiceMods,:) = raw_or_z(NV_chosen(choice_trial_idx));
+                        choice_modNames{n_choiceMods} = 'NVch-NVunch';
+                        choice_modVals(n_choiceMods,:) = raw_or_z(NV_ch_min_unch(choice_trial_idx));
                     case 2
                         choice_modNames{n_choiceMods} = 'p(chosen)';
                         choice_modVals(n_choiceMods,:) = raw_or_z(pChosen(choice_trial_idx));
+                    case 3
+                        choice_modNames{n_choiceMods} = 'NVch-NVunch';
+                        choice_modVals(n_choiceMods,:) = raw_or_z(NV_ch_min_unch_with_bias(choice_trial_idx));
                     otherwise
                         error('not ready yet');
                 end
@@ -1968,11 +1973,14 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                 n_chosenMods = n_chosenMods + 1;
                 switch chosenModel_NV_chosen
                     case 1
-                        chosen_modNames{n_chosenMods} = 'NV chosen';
-                        chosen_modVals(n_chosenMods,:) = raw_or_z(NV_chosen(chosen_trial_idx));
+                        chosen_modNames{n_chosenMods} = 'NVch-NVunch';
+                        chosen_modVals(n_chosenMods,:) = raw_or_z(NV_ch_min_unch(chosen_trial_idx));
                     case 2
                         chosen_modNames{n_chosenMods} = 'p(chosen)';
                         chosen_modVals(n_chosenMods,:) = raw_or_z(pChosen(chosen_trial_idx));
+                    case 3
+                        chosen_modNames{n_chosenMods} = 'NVch-NVunch';
+                        chosen_modVals(n_chosenMods,:) = raw_or_z(NV_ch_min_unch_with_bias(chosen_trial_idx));
                     otherwise
                         error('not ready yet');
                 end
@@ -2333,11 +2341,14 @@ if ismember(preEffortCrossModel,{'stick','boxcar','boxcar_bis'})
                 n_preEcrossMods = n_preEcrossMods + 1;
                 switch preEcrossModel_NV_chosen
                     case 1
-                        preEcross_modNames{n_preEcrossMods} = 'NV chosen';
-                        preEcross_modVals(n_preEcrossMods,:) = raw_or_z(NV_chosen(preEcross_trial_idx));
+                        preEcross_modNames{n_preEcrossMods} = 'NVch-NVunch';
+                        preEcross_modVals(n_preEcrossMods,:) = raw_or_z(NV_ch_min_unch(preEcross_trial_idx));
                     case 2
                         preEcross_modNames{n_preEcrossMods} = 'p(chosen)';
                         preEcross_modVals(n_preEcrossMods,:) = raw_or_z(pChosen(preEcross_trial_idx));
+                    case 3
+                        preEcross_modNames{n_preEcrossMods} = 'NVch-NVunch';
+                        preEcross_modVals(n_preEcrossMods,:) = raw_or_z(NV_ch_min_unch_with_bias(preEcross_trial_idx));
                     otherwise
                         error('not ready yet');
                 end
@@ -2664,10 +2675,13 @@ if ismember(EperfModel,{'stick','boxcar'})
                 switch EperfModel_NV_chosen
                     case 1
                         Eperf_modNames{n_EperfMods} = 'NV chosen';
-                        Eperf_modVals(n_EperfMods,:) = raw_or_z(NV_chosen(Eperf_trial_idx));
+                        Eperf_modVals(n_EperfMods,:) = raw_or_z(NV_ch_min_unch(Eperf_trial_idx));
                     case 2
                         Eperf_modNames{n_EperfMods} = 'p(chosen)';
                         Eperf_modVals(n_EperfMods,:) = raw_or_z(pChosen(Eperf_trial_idx));
+                    case 3
+                        Eperf_modNames{n_EperfMods} = 'NVch-NVunch';
+                        Eperf_modVals(n_EperfMods,:) = raw_or_z(NV_ch_min_unch_with_bias(Eperf_trial_idx));
                     otherwise
                         error('not ready yet');
                 end
