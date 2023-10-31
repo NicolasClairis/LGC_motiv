@@ -46,6 +46,9 @@ if ~exist('GLM','var') || isempty(GLM)
    GLM_cell = inputdlg('GLM number?');
    GLM = str2double(GLM_cell{1});
 end
+if ~exist('biasFieldCorr','var') || isempty(biasFieldCorr) || ~ismember(biasFieldCorr,[0,1])
+    biasFieldCorr = 0;
+end
 switch biasFieldCorr
     case 0
         GLM_folder = [filesep, 'fMRI_analysis',filesep,'functional',filesep,...
