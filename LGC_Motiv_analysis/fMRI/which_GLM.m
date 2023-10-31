@@ -219,12 +219,15 @@ function [GLMprm] = which_GLM(GLM)
 %       (1) (P 1 to 4)*(E 1 to 4) for chosen option (0 for reward trials)
 %
 %       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).NV_chosen
-%       (1) net value of the chosen option based on the model defined in
+%       (1) net value of the chosen-unchosen option based on the model defined in
 %       .(choice/chosen).(Ep.Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).NV_mdl (='mdl_X' or 'bayesianModel_X')
 %       (2) p(choice = hE) = probability of choosing the chosen option
 %       based on the model defined in .(choice/chosen).(Ep.Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).NV_mdl (='mdl_X' or 'bayesianModel_X')
 %       This is relatively similar to (1) but will include the motivational
 %       bias and the sigmoid transformation
+%       (3) net value of the chosen-unchosen option based on the model defined in
+%       .(choice/chosen).(Ep.Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).NV_mdl (='mdl_X' or 'bayesianModel_X')
+%       Same as (1) but will also include the bias
 %
 %       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).NV_varOption
 %       (1) difference between net value of the high effort option and low effort options based on the model defined in
@@ -386,6 +389,9 @@ function [GLMprm] = which_GLM(GLM)
 %       based on the model defined in .(choice/chosen).(Ep.Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).NV_mdl (='mdl_X' or 'bayesianModel_X')
 %       This is relatively similar to (1) but will include the motivational
 %       bias and the sigmoid transformation
+%       (3) net value of the chosen-unchosen option based on the model defined in
+%       .(preEffortCross).(Ep.Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).NV_mdl (='mdl_X' or 'bayesianModel_X')
+%       Same as (1) but will also include the bias
 %
 %       .preEffortCross.(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).NV_varOption
 %       (1) delta of the net value of the high E - low E based on the model defined in
@@ -499,6 +505,9 @@ function [GLMprm] = which_GLM(GLM)
 %       based on the model defined in .Eperf.(Ep.Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).NV_mdl (='mdl_X' or 'bayesianModel_X')
 %       This is relatively similar to (1) but will include the motivational
 %       bias and the sigmoid transformation
+%       (3) net value of the chosen-unchosen option based on the model defined in
+%       .(preEffortCross).(Ep.Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).NV_mdl (='mdl_X' or 'bayesianModel_X')
+%       Same as (1) but will also include the bias
 %
 %       .Eperf.(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).NV_varOption
 %       (1) delta of the net value of the high E - low E based on the model defined in
@@ -5787,6 +5796,133 @@ switch GLM
             GLMprm.choice.(Epm_nm).RP.E.E_chosen = 1;
             GLMprm.choice.(Epm_nm).RP.E.confidence = 4;
             GLMprm.choice.(Epm_nm).RP.E.conf_mdl = 'bayesianModel_3';
+            switch Epm_nm
+                case 'Ep'
+                    GLMprm.choice.(Epm_nm).RP.E.fatigue = 1;
+                case 'Em'
+                    GLMprm.choice.(Epm_nm).RP.E.prevEfficacy = 3;
+            end
+            GLMprm.choice.(Epm_nm).RP.E.RT = 1;
+            % chosen
+            GLMprm.model_onset.(Epm_nm).chosen = 'stick';
+            % effort perf (effort execution)
+            GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
+            % feedback
+            GLMprm.model_onset.(Epm_nm).fbk = 'stick';
+        end % physical/mental loop
+        
+    case 213 % variant of GLM 210-212: Val(chosen)/Saliency/RT/Fp-Fm/Ech (no confidence)
+        % bug for some subjects due to high correlation between Val(chosen)
+        % and saliency
+        % general parameters
+        GLMprm.gal.orth_vars = 0;
+        GLMprm.gal.zPerRun = 1;
+        GLMprm.gal.grey_mask = 3;
+        GLMprm.gal.mask_probaThreshold = 5;
+        % loop per task
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % fixation crosses
+            GLMprm.model_onset.(Epm_nm).allCrosses = 'stick';
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'stick';
+            GLMprm.choice.(Epm_nm).RP.E.NV_mdl = 'bayesianModel_3';
+            GLMprm.choice.(Epm_nm).RP.E.NV_chosen = 3;
+            GLMprm.choice.(Epm_nm).RP.E.NV_varOption = 5;
+            GLMprm.choice.(Epm_nm).RP.E.E_chosen = 1;
+            switch Epm_nm
+                case 'Ep'
+                    GLMprm.choice.(Epm_nm).RP.E.fatigue = 1;
+                case 'Em'
+                    GLMprm.choice.(Epm_nm).RP.E.prevEfficacy = 3;
+            end
+            GLMprm.choice.(Epm_nm).RP.E.RT = 1;
+            % chosen
+            GLMprm.model_onset.(Epm_nm).chosen = 'stick';
+            % effort perf (effort execution)
+            GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
+            % feedback
+            GLMprm.model_onset.(Epm_nm).fbk = 'stick';
+        end % physical/mental loop
+        
+    case 214 % same as GLM 213 but without saliency
+        % general parameters
+        GLMprm.gal.orth_vars = 0;
+        GLMprm.gal.zPerRun = 1;
+        GLMprm.gal.grey_mask = 3;
+        GLMprm.gal.mask_probaThreshold = 5;
+        % loop per task
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % fixation crosses
+            GLMprm.model_onset.(Epm_nm).allCrosses = 'stick';
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'stick';
+            GLMprm.choice.(Epm_nm).RP.E.NV_mdl = 'bayesianModel_3';
+            GLMprm.choice.(Epm_nm).RP.E.NV_chosen = 3;
+            GLMprm.choice.(Epm_nm).RP.E.E_chosen = 1;
+            switch Epm_nm
+                case 'Ep'
+                    GLMprm.choice.(Epm_nm).RP.E.fatigue = 1;
+                case 'Em'
+                    GLMprm.choice.(Epm_nm).RP.E.prevEfficacy = 3;
+            end
+            GLMprm.choice.(Epm_nm).RP.E.RT = 1;
+            % chosen
+            GLMprm.model_onset.(Epm_nm).chosen = 'stick';
+            % effort perf (effort execution)
+            GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
+            % feedback
+            GLMprm.model_onset.(Epm_nm).fbk = 'stick';
+        end % physical/mental loop
+        
+    case 215 % same as GLM 203 but adding time effect (Fp/Fm)
+        % general parameters
+        GLMprm.gal.orth_vars = 0;
+        GLMprm.gal.zPerRun = 1;
+        GLMprm.gal.grey_mask = 3;
+        GLMprm.gal.mask_probaThreshold = 5;
+        % loop per task
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % fixation crosses
+            GLMprm.model_onset.(Epm_nm).allCrosses = 'stick';
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'stick';
+            GLMprm.choice.(Epm_nm).RP.E.R_chosen = 1;
+            GLMprm.choice.(Epm_nm).RP.E.P_chosen = 1;
+            GLMprm.choice.(Epm_nm).RP.E.E_chosen = 1;
+            switch Epm_nm
+                case 'Ep'
+                    GLMprm.choice.(Epm_nm).RP.E.fatigue = 1;
+                case 'Em'
+                    GLMprm.choice.(Epm_nm).RP.E.prevEfficacy = 3;
+            end
+            GLMprm.choice.(Epm_nm).RP.E.RT = 1;
+            % chosen
+            GLMprm.model_onset.(Epm_nm).chosen = 'stick';
+            % effort perf (effort execution)
+            GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
+            % feedback
+            GLMprm.model_onset.(Epm_nm).fbk = 'stick';
+        end % physical/mental loop
+        
+    case 216 % same as GLM 213 but without value
+        % general parameters
+        GLMprm.gal.orth_vars = 0;
+        GLMprm.gal.zPerRun = 1;
+        GLMprm.gal.grey_mask = 3;
+        GLMprm.gal.mask_probaThreshold = 5;
+        % loop per task
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % fixation crosses
+            GLMprm.model_onset.(Epm_nm).allCrosses = 'stick';
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'stick';
+            GLMprm.choice.(Epm_nm).RP.E.NV_mdl = 'bayesianModel_3';
+            GLMprm.choice.(Epm_nm).RP.E.NV_varOption = 5;
+            GLMprm.choice.(Epm_nm).RP.E.E_chosen = 1;
             switch Epm_nm
                 case 'Ep'
                     GLMprm.choice.(Epm_nm).RP.E.fatigue = 1;
