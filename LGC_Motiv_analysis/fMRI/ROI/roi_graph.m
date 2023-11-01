@@ -109,46 +109,12 @@ while scale_ok_idx == 0
                 violinplot(con_values);
         end
         
-        % add stars for significant differences
-        % put the p.value close to top of screen
-        for iCon = 1:n_cons
-            % adapt p.value position depending on number of contrasts and number of sequences
-            pval_xpos = xpos(iCon);
-            % disp p.value (above bar when positive contrast and below when
-            % negative)
-            switch graphType
-                case 'meanSem'
-                    maxYvalue_tmp = con_avg(selectedCon(iCon), iROI) + con_sem(selectedCon(iCon), iROI);
-                    minYvalue_tmp = con_avg(selectedCon(iCon), iROI) - con_sem(selectedCon(iCon), iROI);
-                case 'violin'
-                    maxYvalue_tmp = max(max(max(max(con_vec_all(selectedCon,:,iROI)))));
-                    minYvalue_tmp = min(min(min(min(con_vec_all(selectedCon,:,iROI)))));
-            end
-            if maxYvalue_tmp > 0
-                dYpos_yscale_tmp = abs(yscale(2) - maxYvalue_tmp);
-                pval_Ypos = maxYvalue_tmp + (1/3)*dYpos_yscale_tmp;
-            else
-                dYpos_yscale_tmp = abs(yscale(1) - minYvalue_tmp);
-                pval_Ypos = minYvalue_tmp - (1/3)*dYpos_yscale_tmp;
-            end
-
-            if ttest_pval(selectedCon(iCon), iROI) <= 0.05
-                if ttest_pval(selectedCon(iCon), iROI) <= 0.05 && ttest_pval(selectedCon(iCon), iROI) > 0.01
-                    text(pval_xpos, pval_Ypos, '*',...
-                        'HorizontalAlignment','center','VerticalAlignment', 'top', 'FontSize', 18)
-                elseif ttest_pval(selectedCon(iCon), iROI) <= 0.01 && ttest_pval(selectedCon(iCon), iROI) > 0.005
-                    text(pval_xpos, pval_Ypos, '**',...
-                        'HorizontalAlignment', 'center','VerticalAlignment', 'top', 'FontSize', 18)
-                elseif ttest_pval(selectedCon(iCon), iROI) <= 0.005 && ttest_pval(selectedCon(iCon), iROI) > 0.001
-                    text(pval_xpos, pval_Ypos, '***',...
-                        'HorizontalAlignment', 'center','VerticalAlignment', 'top', 'FontSize', 18)
-                elseif ttest_pval(selectedCon(iCon), iROI) <= 0.001
-                    text(pval_xpos, pval_Ypos, '****',...
-                        'HorizontalAlignment', 'center','VerticalAlignment', 'top', 'FontSize', 18)
-                end % how many stars for p.value?
-            end % is p.value significant?
-        end % contrast loop
+        %% add stars for significant effects
+        stars_signif_display(iROI, n_cons, xpos, yscale,...
+                con_avg, con_sem, con_vec_all, ttest_pval,...
+                selectedCon, graphType);
         
+        %% other display parameters
         % define graph limits
         xlim([0.5 n_cons+0.5]);
         ylim(yscale);
@@ -183,6 +149,67 @@ while scale_ok_idx == 0
     end
     close(scale_fig);
     
+    %% replace stars for significant effects if scale was modified
+    if scale_ok == 2
+        for iROI = 1:n_ROIs
+            stars_signif_display(iROI, n_cons, xpos, yscale,...
+                con_avg, con_sem, con_vec_all, ttest_pval,...
+                selectedCon, graphType);
+        end % ROI loop
+    end % scale modified
+    
 end % scale
     
 end % function
+
+%% function to display stars above significant effects
+function[] = stars_signif_display(iROI, n_cons, xpos, yscale,...
+    con_avg, con_sem, con_vec_all, ttest_pval, selectedCon, graphType)
+% stars_signif_display will display the stars above the significant
+% regressors.
+% INPUTS: all required information to know where to place the stars (x
+% location (xpos), yscale information (yscale), contrast values (con_avg, con_sem,
+% con_vec_all), significant or not (ttest_pval), index of contrasts to
+% check (selectedCon), number of total contrasts displayed, index of the
+% current ROI (iROI) and information regarding figure type
+% (graphType: meanSem= mean and SEM bars; while violin = violinplots).
+
+% put the p.value close to top of screen
+for iCon = 1:n_cons
+    % adapt p.value position depending on number of contrasts and number of sequences
+    pval_xpos = xpos(iCon);
+    % disp p.value (above bar when positive contrast and below when
+    % negative)
+    switch graphType
+        case 'meanSem'
+            maxYvalue_tmp = con_avg(selectedCon(iCon), iROI) + con_sem(selectedCon(iCon), iROI);
+            minYvalue_tmp = con_avg(selectedCon(iCon), iROI) - con_sem(selectedCon(iCon), iROI);
+        case 'violin'
+            maxYvalue_tmp = min([max(max(max(con_vec_all(selectedCon,:,iROI)))),yscale(2)]);
+            minYvalue_tmp = max([min(min(min(con_vec_all(selectedCon,:,iROI)))),yscale(1)]);
+    end
+    if maxYvalue_tmp > 0
+        dYpos_yscale_tmp = abs(yscale(2) - maxYvalue_tmp);
+        pval_Ypos = maxYvalue_tmp + (1/3)*dYpos_yscale_tmp;
+    else
+        dYpos_yscale_tmp = abs(yscale(1) - minYvalue_tmp);
+        pval_Ypos = minYvalue_tmp - (1/3)*dYpos_yscale_tmp;
+    end
+    
+    if ttest_pval(selectedCon(iCon), iROI) <= 0.05
+        if ttest_pval(selectedCon(iCon), iROI) <= 0.05 && ttest_pval(selectedCon(iCon), iROI) > 0.01
+            text(pval_xpos, pval_Ypos, '*',...
+                'HorizontalAlignment','center','VerticalAlignment', 'top', 'FontSize', 18)
+        elseif ttest_pval(selectedCon(iCon), iROI) <= 0.01 && ttest_pval(selectedCon(iCon), iROI) > 0.005
+            text(pval_xpos, pval_Ypos, '**',...
+                'HorizontalAlignment', 'center','VerticalAlignment', 'top', 'FontSize', 18)
+        elseif ttest_pval(selectedCon(iCon), iROI) <= 0.005 && ttest_pval(selectedCon(iCon), iROI) > 0.001
+            text(pval_xpos, pval_Ypos, '***',...
+                'HorizontalAlignment', 'center','VerticalAlignment', 'top', 'FontSize', 18)
+        elseif ttest_pval(selectedCon(iCon), iROI) <= 0.001
+            text(pval_xpos, pval_Ypos, '****',...
+                'HorizontalAlignment', 'center','VerticalAlignment', 'top', 'FontSize', 18)
+        end % how many stars for p.value?
+    end % is p.value significant?
+end % contrast loop
+end % sub-function
