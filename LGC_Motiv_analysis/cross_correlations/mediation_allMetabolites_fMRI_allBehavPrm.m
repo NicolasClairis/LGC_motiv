@@ -104,13 +104,17 @@ for iROI = 1:nROIs
             % store how many subjects were kept
             N_goodSubs.(MRS_ROI_nm).(metabolite_nm) = sum(goodSubs);
             
-            % store when significant
+            % store when mediation is significant
             if pval.(MRS_ROI_nm).(metabolite_nm).(prm_nm).a < 0.05 &&...
                     pval.(MRS_ROI_nm).(metabolite_nm).(prm_nm).b < 0.05
                 pval.signif.([MRS_ROI_nm,'_',metabolite_nm]).(prm_nm) = max(pval.(MRS_ROI_nm).(metabolite_nm).(prm_nm).a,...
                     pval.(MRS_ROI_nm).(metabolite_nm).(prm_nm).b);
             end
             
+            % store when direct path is significant
+            if pval.(MRS_ROI_nm).(metabolite_nm).(prm_nm).c < 0.05
+                pval.direct_path.signif.([MRS_ROI_nm,'_',metabolite_nm]).(prm_nm) = pval.(MRS_ROI_nm).(metabolite_nm).(prm_nm).c;
+            end
             
             %% perform the same but removing "outliers" (><mean*3SD)
             [~, ~, metabolite_clean] = rmv_outliers_3sd(metabolite_allSubs);
@@ -130,11 +134,16 @@ for iROI = 1:nROIs
             % store how many subjects were kept
             N_goodSubs.no_outliers.(MRS_ROI_nm).(metabolite_nm).(prm_nm) = sum(goodSubs_bis);
             
-            % store when significant
+            % store when mediation is significant
             if pval.no_outliers.(MRS_ROI_nm).(metabolite_nm).(prm_nm).a < 0.05 &&...
                     pval.no_outliers.(MRS_ROI_nm).(metabolite_nm).(prm_nm).b < 0.05
                 pval.no_outliers.signif.([MRS_ROI_nm,'_',metabolite_nm]).(prm_nm) = max(pval.no_outliers.(MRS_ROI_nm).(metabolite_nm).(prm_nm).a,...
                     pval.no_outliers.(MRS_ROI_nm).(metabolite_nm).(prm_nm).b);
+            end
+            
+            % store when direct path is significant
+            if pval.no_outliers.(MRS_ROI_nm).(metabolite_nm).(prm_nm).c < 0.05
+                pval.direct_path.no_outliers.signif.([MRS_ROI_nm,'_',metabolite_nm]).(prm_nm) = pval.no_outliers.(MRS_ROI_nm).(metabolite_nm).(prm_nm).c;
             end
             
             %% same but with boxcox transformation of behavioral parameters
@@ -152,11 +161,16 @@ for iROI = 1:nROIs
                 % store how many subjects were kept
                 N_goodSubs.boxcox.(MRS_ROI_nm).(metabolite_nm) = sum(goodSubs);
                 
-                % store when significant
+                % store when mediation is significant
                 if pval.boxcox.(MRS_ROI_nm).(metabolite_nm).(prm_nm).a < 0.05 &&...
                         pval.boxcox.(MRS_ROI_nm).(metabolite_nm).(prm_nm).b < 0.05
                     pval.boxcox.signif.([MRS_ROI_nm,'_',metabolite_nm]).(prm_nm) = max(pval.boxcox.(MRS_ROI_nm).(metabolite_nm).(prm_nm).a,...
                         pval.boxcox.(MRS_ROI_nm).(metabolite_nm).(prm_nm).b);
+                end
+                
+                % store when direct path is significant
+                if pval.boxcox.(MRS_ROI_nm).(metabolite_nm).(prm_nm).c < 0.05
+                    pval.direct_path.boxcox.signif.([MRS_ROI_nm,'_',metabolite_nm]).(prm_nm) = pval.boxcox.(MRS_ROI_nm).(metabolite_nm).(prm_nm).c;
                 end
                 
                 %% perform the same but removing "outliers" (><mean*3SD)
@@ -175,11 +189,16 @@ for iROI = 1:nROIs
                 % store how many subjects were kept
                 N_goodSubs.boxcox.no_outliers.(MRS_ROI_nm).(metabolite_nm).(prm_nm) = sum(goodSubs_ter);
                 
-                % store when significant
+                % store when mediation is significant
                 if pval.boxcox.no_outliers.(MRS_ROI_nm).(metabolite_nm).(prm_nm).a < 0.05 &&...
                         pval.boxcox.no_outliers.(MRS_ROI_nm).(metabolite_nm).(prm_nm).b < 0.05
                     pval.boxcox.no_outliers.signif.([MRS_ROI_nm,'_',metabolite_nm]).(prm_nm) = max(pval.boxcox.no_outliers.(MRS_ROI_nm).(metabolite_nm).(prm_nm).a,...
                         pval.boxcox.no_outliers.(MRS_ROI_nm).(metabolite_nm).(prm_nm).b);
+                end
+                
+                % store when direct path is significant
+                if pval.boxcox.no_outliers.(MRS_ROI_nm).(metabolite_nm).(prm_nm).c < 0.05
+                    pval.direct_path.boxcox.no_outliers.signif.([MRS_ROI_nm,'_',metabolite_nm]).(prm_nm) = pval.boxcox.no_outliers.(MRS_ROI_nm).(metabolite_nm).(prm_nm).c;
                 end
             end % filter bias parameter because bias is both negative and positive + already follows normal distribution
         end % parameter loop
@@ -256,9 +275,30 @@ end % ROI loop
 %     behavPrm_boxcox(goodSubs_bis),...
 %     X_nm, M_nm, Y_nm, dispMed);
 
-disp(['dmPFC Glu/GSH => fMRI ',con_nm,'=> kEp (no outliers): p = ',...
-    num2str(max(pval.no_outliers.dmPFC.Glu_div_GSH.kEp.a,...
-    pval.no_outliers.dmPFC.Glu_div_GSH.kEp.b))]);
-disp(['dmPFC Glu/GSH => fMRI ',con_nm,'=> kEm (no outliers): p = ',...
-    num2str(max(pval.no_outliers.dmPFC.Glu_div_GSH.kEm.a,...
-    pval.no_outliers.dmPFC.Glu_div_GSH.kEm.b))]);
+% disp(['dmPFC Glu/GSH => fMRI ',con_nm,'=> kEp (no outliers): p = ',...
+%     num2str(max(pval.no_outliers.dmPFC.Glu_div_GSH.kEp.a,...
+%     pval.no_outliers.dmPFC.Glu_div_GSH.kEp.b))]);
+% disp(['dmPFC Glu/GSH => fMRI ',con_nm,'=> kEm (no outliers): p = ',...
+%     num2str(max(pval.no_outliers.dmPFC.Glu_div_GSH.kEm.a,...
+%     pval.no_outliers.dmPFC.Glu_div_GSH.kEm.b))]);
+
+% kEp
+disp(['kEp dmPFC-Glu/GSH: ',...
+    'r(a) = ',num2str(round(stats.no_outliers.dmPFC.Glu_div_GSH.kEp.r.a,3)),...
+    '; p(a) =  ',num2str(round(pval.no_outliers.dmPFC.Glu_div_GSH.kEp.a,3))]);
+disp(['kEp dmPFC-Glu/GSH: ',...
+    'r(b) = ',num2str(round(stats.no_outliers.dmPFC.Glu_div_GSH.kEp.r.b,3)),...
+    '; p(b) =  ',num2str(round(pval.no_outliers.dmPFC.Glu_div_GSH.kEp.b,3))]);
+disp(['kEp dmPFC-Glu/GSH: ',...
+    'r(c) = ',num2str(round(stats.no_outliers.dmPFC.Glu_div_GSH.kEp.r.c,3)),...
+    '; p(c) =  ',num2str(round(pval.no_outliers.dmPFC.Glu_div_GSH.kEp.c,3))]);
+% kEm
+disp(['kEm dmPFC-Glu/GSH: ',...
+    'r(a) = ',num2str(round(stats.no_outliers.dmPFC.Glu_div_GSH.kEm.r.a,3)),...
+    '; p(a) =  ',num2str(round(pval.no_outliers.dmPFC.Glu_div_GSH.kEm.a,3))]);
+disp(['kEm dmPFC-Glu/GSH: ',...
+    'r(b) = ',num2str(round(stats.no_outliers.dmPFC.Glu_div_GSH.kEm.r.b,3)),...
+    '; p(b) =  ',num2str(round(pval.no_outliers.dmPFC.Glu_div_GSH.kEm.b,3))]);
+disp(['kEm dmPFC-Glu/GSH: ',...
+    'r(c) = ',num2str(round(stats.no_outliers.dmPFC.Glu_div_GSH.kEm.r.c,3)),...
+    '; p(c) =  ',num2str(round(pval.no_outliers.dmPFC.Glu_div_GSH.kEm.c,3))]);
