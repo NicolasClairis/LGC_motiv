@@ -25,6 +25,9 @@ nTrials = nTrialsPerRun.*nRuns;
 [beta_SV_f_saliency, beta_SV_f_conf_rtg,...
     beta_SV_f_conf_inferred, beta_saliency_f_conf_rtg,...
     beta_saliency_f_conf_inferred, beta_conf_rtg_f_conf_inferred] = deal(NaN(nRuns+1,NS));
+[r_correl.SV_f_saliency, r_correl.SV_f_conf_rtg,...
+    r_correl.SV_f_conf_inferred, r_correl.saliency_f_conf_rtg,...
+    r_correl.saliency_f_conf_inferred, r_correl.conf_rtg_f_conf_inferred] = deal(NaN(nRuns+1,NS));
 nBins = 6;
 [SV_f_saliency, saliency_f_saliency, SV_f_saliency_fit,...
     SV_f_conf_rtg, conf_rtg_f_conf_rtg, SV_f_conf_rtg_fit,...
@@ -101,6 +104,13 @@ for iS = 1:NS
     [beta_saliency_f_conf_rtg(:,iS), saliency_f_conf_rtg_fit_tmp] = glmfit_across_multiple_runs(run_cstt_tmp, conf_rtg(:,iS), saliency(:,iS), nRuns);
     [beta_saliency_f_conf_inferred(:,iS), saliency_f_conf_inferred_fit_tmp] = glmfit_across_multiple_runs(run_cstt_tmp, conf_inferred(:,iS), saliency(:,iS), nRuns);
     [beta_conf_rtg_f_conf_inferred(:,iS), conf_rtg_f_conf_inferred_fit_tmp] = glmfit_across_multiple_runs(run_cstt_tmp, conf_inferred(:,iS), conf_rtg(:,iS), nRuns);
+    % same with zscored data to obtain R
+    [r_correl.SV_f_saliency(:,iS)] = glmfit_across_multiple_runs(run_cstt_tmp, nanzscore(saliency(:,iS)), nanzscore(SV(:,iS)), nRuns);
+    [r_correl.SV_f_conf_rtg(:,iS)] = glmfit_across_multiple_runs(run_cstt_tmp, nanzscore(conf_rtg(:,iS)), nanzscore(SV(:,iS)), nRuns);
+    [r_correl.SV_f_conf_inferred(:,iS)] = glmfit_across_multiple_runs(run_cstt_tmp, nanzscore(conf_inferred(:,iS)), nanzscore(SV(:,iS)), nRuns);
+    [r_correl.saliency_f_conf_rtg(:,iS),] = glmfit_across_multiple_runs(run_cstt_tmp, nanzscore(conf_rtg(:,iS)), nanzscore(saliency(:,iS)), nRuns);
+    [r_correl.saliency_f_conf_inferred(:,iS)] = glmfit_across_multiple_runs(run_cstt_tmp, nanzscore(conf_inferred(:,iS)), nanzscore(saliency(:,iS)), nRuns);
+    [r_correl.conf_rtg_f_conf_inferred(:,iS)] = glmfit_across_multiple_runs(run_cstt_tmp, nanzscore(conf_inferred(:,iS)), nanzscore(conf_rtg(:,iS)), nRuns);
     
     %% perform split with bins
     [SV_f_saliency(:,iS), saliency_f_saliency(:,iS)] = do_bin2(SV(:,iS), saliency(:,iS), nBins, 0);
@@ -128,33 +138,39 @@ end % subject loop
 [m_saliency_f_saliency, sem_saliency_f_saliency] = mean_sem_sd(saliency_f_saliency,2);
 [m_SV_f_saliency_fit, sem_SV_f_saliency_fit] = mean_sem_sd(SV_f_saliency_fit,2);
 [~,pval.SV_f_saliency] = ttest(beta_SV_f_saliency(5,:));
+r_correl.mean.SV_f_saliency = mean(r_correl.SV_f_saliency(5,:),2,'omitnan');
 
 % SV = f(confidence rating)
 [m_SV_f_conf_rtg, sem_SV_f_conf_rtg] = mean_sem_sd(SV_f_conf_rtg,2);
 [m_conf_rtg_f_conf_rtg, sem_conf_rtg_f_conf_rtg] = mean_sem_sd(conf_rtg_f_conf_rtg,2);
 [m_SV_f_conf_rtg_fit, sem_SV_f_conf_rtg_fit] = mean_sem_sd(SV_f_conf_rtg_fit,2);
 [~,pval.SV_f_conf_rtg] = ttest(beta_SV_f_conf_rtg(5,:));
+r_correl.mean.SV_f_conf_rtg = mean(r_correl.SV_f_conf_rtg(5,:),2,'omitnan');
 
 % SV = f(confidence inferred)
 [m_SV_f_conf_inferred, sem_SV_f_conf_inferred] = mean_sem_sd(SV_f_conf_inferred,2);
 [m_conf_inferred_f_conf_inferred, sem_conf_inferred_f_conf_inferred] = mean_sem_sd(conf_inferred_f_conf_inferred,2);
 [m_SV_f_conf_inferred_fit, sem_SV_f_conf_inferred_fit] = mean_sem_sd(SV_f_conf_inferred_fit,2);
 [~,pval.SV_f_conf_inferred] = ttest(beta_SV_f_conf_inferred(5,:));
+r_correl.mean.SV_f_conf_inferred = mean(r_correl.SV_f_conf_inferred(5,:),2,'omitnan');
 
 % saliency = f(confidence rating)
 [m_saliency_f_conf_rtg, sem_saliency_f_conf_rtg] = mean_sem_sd(saliency_f_conf_rtg,2);
 [m_saliency_f_conf_rtg_fit, sem_saliency_f_conf_rtg_fit] = mean_sem_sd(saliency_f_conf_rtg_fit,2);
 [~,pval.saliency_f_conf_rtg] = ttest(beta_saliency_f_conf_rtg(5,:));
+r_correl.mean.saliency_f_conf_rtg = mean(r_correl.saliency_f_conf_rtg(5,:),2,'omitnan');
 
 % saliency = f(confidence inferred)
 [m_saliency_f_conf_inferred, sem_saliency_f_conf_inferred] = mean_sem_sd(saliency_f_conf_inferred,2);
 [m_saliency_f_conf_inferred_fit, sem_saliency_f_conf_inferred_fit] = mean_sem_sd(saliency_f_conf_inferred_fit,2);
 [~,pval.saliency_f_conf_inferred] = ttest(beta_saliency_f_conf_inferred(5,:));
+r_correl.mean.saliency_f_conf_inferred = mean(r_correl.saliency_f_conf_inferred(5,:),2,'omitnan');
 
 % confidence rating = f(confidence inferred)
 [m_conf_rtg_f_conf_inferred, sem_conf_rtg_f_conf_inferred] = mean_sem_sd(conf_rtg_f_conf_inferred,2);
 [m_conf_rtg_f_conf_inferred_fit, sem_conf_rtg_f_conf_inferred_fit] = mean_sem_sd(conf_rtg_f_conf_inferred_fit,2);
 [~,pval.conf_rtg_f_conf_inferred] = ttest(beta_conf_rtg_f_conf_inferred(5,:));
+r_correl.mean.conf_rtg_f_conf_inferred = mean(r_correl.conf_rtg_f_conf_inferred(5,:),2,'omitnan');
 
 %% figures with global results
 [pSize, lWidth, col, mSize] = general_fig_prm;
