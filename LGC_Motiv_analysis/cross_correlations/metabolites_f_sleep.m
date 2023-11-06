@@ -1,14 +1,16 @@
-function[betas, pval] = metabolites_f_sleep()
+function[betas, pval, r_corr] = metabolites_f_sleep()
+% [betas, pval, r_corr] = metabolites_f_sleep()
 % check correlation between level of metabolites in a given brain area and
 % sleep previous day of the experiment.
 %
 % INPUTS
 %
 % OUTPUTS
-% betas, pval: structure with betas and p.values for GLM testing
-% correlation between levels of metabolites (as Y variable) and average
-% sleep/sleep the previous day of the experiment/difference between sleep
-% previous day of the experiment and average amount of sleep
+% betas, pval, r_corr: structure with betas, p.values and correlation 
+% coefficients r_corr for GLM testing correlation between levels of 
+% metabolites (as Y variable) and average sleep/sleep the previous day of 
+% the experiment/difference between sleep previous day of the experiment 
+% and average amount of sleep.
 %
 % See also metabolite_load, load_gal_data
 
@@ -57,6 +59,11 @@ goodSubjects = (~isnan(avgSleep).*~isnan(metabolite_allSubs)) == true;
 pval.met_f_avgSleep = stats_met_f_avgSleep.p(2);
 metabolite_fit_avgSleep = glmval(betas.met_f_avgSleep,...
     avgSleep(goodSubjects), 'identity');
+% extract also correlation coefficient
+[r_corr.met_f_avgSleep] =...
+    glmfit(nanzscore(avgSleep(goodSubjects)),...
+    nanzscore(metabolite_allSubs(goodSubjects)), 'normal');
+
 % metabolites = b0+b1*previous day sleep
 goodSubjects = (~isnan(prevDaySleep).*~isnan(metabolite_allSubs)) == true;
 [betas.met_f_prevDaySleep, ~, stats_met_f_prevDaySleep] =...
@@ -64,6 +71,11 @@ goodSubjects = (~isnan(prevDaySleep).*~isnan(metabolite_allSubs)) == true;
 pval.met_f_prevDaySleep = stats_met_f_prevDaySleep.p(2);
 metabolite_fit_prevDaySleep = glmval(betas.met_f_prevDaySleep,...
     prevDaySleep(goodSubjects), 'identity');
+% extract also correlation coefficient
+[r_corr.met_f_prevDaySleep] =...
+    glmfit(nanzscore(prevDaySleep(goodSubjects)),...
+    nanzscore(metabolite_allSubs(goodSubjects)), 'normal');
+
 % metabolites = b0+b1*(previous day sleep - average sleep)
 goodSubjects = (~isnan(delta_PrevDay_AvgSleep).*~isnan(metabolite_allSubs)) == true;
 [betas.met_f_delta_PrevDay_AvgSleep, ~, stats_met_f_delta_PrevDay_AvgSleep] =...
@@ -71,7 +83,10 @@ goodSubjects = (~isnan(delta_PrevDay_AvgSleep).*~isnan(metabolite_allSubs)) == t
 pval.met_f_delta_PrevDay_AvgSleep = stats_met_f_delta_PrevDay_AvgSleep.p(2);
 metabolite_fit_delta_PrevDay_AvgSleep = glmval(betas.met_f_delta_PrevDay_AvgSleep,...
     delta_PrevDay_AvgSleep(goodSubjects), 'identity');
-
+% extract also correlation coefficient
+[r_corr.met_f_delta_PrevDay_AvgSleep] =...
+    glmfit(nanzscore(delta_PrevDay_AvgSleep(goodSubjects)),...
+    nanzscore(metabolite_allSubs(goodSubjects)), 'normal');
 
 %% display figures
 mSize = 100;
