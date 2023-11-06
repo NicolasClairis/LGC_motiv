@@ -161,6 +161,9 @@ for iROI = 1:nROIs
     metabolites.(ROI_nm).Glu_div_GSH_Ushape = metabolites.(ROI_nm).Glu./metabolites.(ROI_nm).GSH_Ushape;
     metabolites.(ROI_nm).Glu_Ushape_div_GSH_Ushape = metabolites.(ROI_nm).Glu_Ushape./metabolites.(ROI_nm).GSH_Ushape;
     metabolites.(ROI_nm).Glu_div_GSH_ratio_Ushape = (metabolites.(ROI_nm).Glu_div_GSH - mean(metabolites.(ROI_nm).Glu_div_GSH,'omitnan')).^2;
+    
+    % add Glu/Asp based on Arthur's results with ML on mental effort
+    metabolites.(ROI_nm).Glu_div_Asp = metabolites.(ROI_nm).Glu./metabolites.(ROI_nm).Asp;
 end % ROI loop
 
 % %% go back to root
