@@ -163,11 +163,18 @@ legend_size(pSize);
 fig;
 hold on;
 % low Ep
-violinplot([deltaFatiguePrePostExp_metSplit.low', deltaFatiguePrePostExp_metSplit.high'])
+if sum(low_met_subs) == sum(high_met_subs) % even number
+    violinplot([deltaFatiguePrePostExp_metSplit.low',...
+        deltaFatiguePrePostExp_metSplit.high']);
+elseif sum(low_met_subs) == sum(high_met_subs) + 1
+    violinplot([deltaFatiguePrePostExp_metSplit.low',...
+        [deltaFatiguePrePostExp_metSplit.high,NaN]'])
+end
 
 % add infos
 xticks([1, 2]);
-xticklabels({['l',mSplit_metabolite_nm_bis],['h',mSplit_metabolite_nm_bis]});
+xticklabels({['l',mSplit_metabolite_nm_bis],...
+    ['h',mSplit_metabolite_nm_bis]});
 ylabel('subjective fatigue end - start');
 legend_size(pSize);
 
@@ -238,3 +245,25 @@ fit_hdl.LineStyle = '--';
 xlabel([MRS_ROI_nm,' - ',linear_metabolite_nm_bis]);
 ylabel('subjective fatigue end - start');
 legend_size(pSize);
+
+
+
+%% try to do mixed-effects GLM to check for repeated measures ANOVA (based on chatgpt)
+dataTable = table([subject_id';subject_id';subject_id';subject_id'],...
+    [ones(NS,1); ones(NS,1)*2; ones(NS,1)*3; ones(NS,1)*4],...
+    [preMRS_fatigue'; postMRS_fatigue'; prefMRI_fatigue'; postfMRI_fatigue'],...
+    [metabolite_allSubs';metabolite_allSubs';metabolite_allSubs';metabolite_allSubs';],...
+    'VariableNames', {'SubjectID', 'TimePoint', 'SubjectiveFatigue', linear_metabolite_nm});
+
+% Define the mixed-effects model formula
+formula = ['SubjectiveFatigue ~ 1 + ',linear_metabolite_nm,' + TimePoint + (1|SubjectID)'];
+
+% Fit the mixed-effects model using fitlme
+mdl = fitlme(dataTable, formula);
+
+% Display the results
+disp(mdl);
+
+% You can also inspect fixed effects and random effects
+disp(fixedEffects(mdl));
+disp(randomEffects(mdl));
