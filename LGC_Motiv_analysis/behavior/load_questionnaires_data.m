@@ -19,7 +19,7 @@ switch list_pcs{which_pc_idx}
 end
 pcPath = fullfile(hardDisk,'human_data_private',...
     'raw_data_subject','study1');
-cd(pcPath);
+% cd(pcPath);
 
 %% extract the data
 excelReadQuestionnairesFile = readtable([pcPath,filesep,'Questionnaire-scores-final.xlsx'],...
