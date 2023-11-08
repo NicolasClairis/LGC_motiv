@@ -11,4 +11,5 @@ function [metabolite_nm_bis] = metab_div_rnm(metabolite_nm)
 % metabolite_nm_bis: metabolite name with / if based on ratio
 
 metabolite_nm_bis = strrep(metabolite_nm,'_div_','/');
+metabolite_nm_bis = strrep(metabolite_nm_bis,'_plus_','+');
 end % function

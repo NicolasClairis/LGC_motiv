@@ -164,6 +164,12 @@ for iROI = 1:nROIs
     
     % add Glu/Asp based on Arthur's results with ML on mental effort
     metabolites.(ROI_nm).Glu_div_Asp = metabolites.(ROI_nm).Glu./metabolites.(ROI_nm).Asp;
+    % add Lac/GSH, Lac/(GSH+Tau), (Glu+Lac)/(GSH) and
+    % (Glu+Lac)/(GSH+Tau) considering Glu+Lac = "toxic" and GSH+Tau prevent
+    metabolites.(ROI_nm).Lac_div_GSH = metabolites.(ROI_nm).Lac./metabolites.(ROI_nm).GSH;
+    metabolites.(ROI_nm).Lac_div_antiox = metabolites.(ROI_nm).Lac./(metabolites.(ROI_nm).GSH + metabolites.(ROI_nm).Tau);
+    metabolites.(ROI_nm).Glu_plus_Lac_div_GSH = (metabolites.(ROI_nm).Glu+metabolites.(ROI_nm).Lac)./metabolites.(ROI_nm).GSH;
+    metabolites.(ROI_nm).Glu_plus_Lac_div_antiox = (metabolites.(ROI_nm).Glu + metabolites.(ROI_nm).Lac)./(metabolites.(ROI_nm).GSH + metabolites.(ROI_nm).Tau);
 end % ROI loop
 
 % %% go back to root
