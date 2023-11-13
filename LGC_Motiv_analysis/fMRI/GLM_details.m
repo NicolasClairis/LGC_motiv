@@ -261,13 +261,13 @@ for iEpm = 1:length(Epm)
                 % reward variable option
                 switch GLMprm.choice.(task_id_nm).(RP_dispChoice_nm).(splitE_dispChoice_nm).R_varOption
                     case 0
-                    case 1
+                    case {1,3}
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                         reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG choice ',RP_dispChoice_nm,' ',splitE_dispChoice_nm,': R amount highE'];
                         dispRegFn([num2str(n_regs.(task_id_nm)),') choice: R amount hE '],dispRegs);
                         % if derivative added => add derivatives
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
-                    case 2
+                    case {2,4}
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                         reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG choice ',RP_dispChoice_nm,' ',splitE_dispChoice_nm,': R level highE'];
                         dispRegFn([num2str(n_regs.(task_id_nm)),') choice: R level hE '],dispRegs);
@@ -280,13 +280,13 @@ for iEpm = 1:length(Epm)
                 % reward chosen option
                 switch GLMprm.choice.(task_id_nm).(RP_dispChoice_nm).(splitE_dispChoice_nm).R_chosen
                     case 0
-                    case 1
+                    case {1,3}
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                         reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG choice ',RP_dispChoice_nm,' ',splitE_dispChoice_nm,': R amount chosen'];
                         dispRegFn([num2str(n_regs.(task_id_nm)),') choice: R amount chosen '],dispRegs);
                         % if derivative added => add derivatives
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
-                    case 2
+                    case {2,4}
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                         reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG choice ',RP_dispChoice_nm,' ',splitE_dispChoice_nm,': R level chosen'];
                         dispRegFn([num2str(n_regs.(task_id_nm)),') choice: R level chosen '],dispRegs);
@@ -299,13 +299,13 @@ for iEpm = 1:length(Epm)
                 % punishment variable option
                 switch GLMprm.choice.(task_id_nm).(RP_dispChoice_nm).(splitE_dispChoice_nm).P_varOption
                     case 0
-                    case 1
+                    case {1,3}
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                         reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG choice ',RP_dispChoice_nm,' ',splitE_dispChoice_nm,': P amount highE'];
                         dispRegFn([num2str(n_regs.(task_id_nm)),') choice: P amount hE '],dispRegs);
                         % if derivative added => add derivatives
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
-                    case 2
+                    case {2,4}
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                         reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG choice ',RP_dispChoice_nm,' ',splitE_dispChoice_nm,': P level highE'];
                         dispRegFn([num2str(n_regs.(task_id_nm)),') choice: P level hE '],dispRegs);
@@ -318,13 +318,13 @@ for iEpm = 1:length(Epm)
                 % punishment chosen option
                 switch GLMprm.choice.(task_id_nm).(RP_dispChoice_nm).(splitE_dispChoice_nm).P_chosen
                     case 0
-                    case 1
+                    case {1,3}
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                         reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG choice ',RP_dispChoice_nm,' ',splitE_dispChoice_nm,': P amount chosen'];
                         dispRegFn([num2str(n_regs.(task_id_nm)),') choice: P amount chosen '],dispRegs);
                         % if derivative added => add derivatives
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
-                    case 2
+                    case {2,4}
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                         reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG choice ',RP_dispChoice_nm,' ',splitE_dispChoice_nm,': P level chosen'];
                         dispRegFn([num2str(n_regs.(task_id_nm)),') choice: P level chosen '],dispRegs);
@@ -891,13 +891,13 @@ for iEpm = 1:length(Epm)
                     % area under the curve of the force that is gonna be produced
                     switch GLMprm.choice.(task_id_nm).(RP_dispChoice_nm).(splitE_dispChoice_nm).F_integral
                         case 0
-                        case {1,3}
+                        case {1,3,5,7}
                             n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                             reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG choice ',RP_dispChoice_nm,' ',splitE_dispChoice_nm,': effort integral'];
                             dispRegFn([num2str(n_regs.(task_id_nm)),') choice: effort integral '],dispRegs);
                             % if derivative added => add derivatives
                             n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
-                        case {2,4}
+                        case {2,4,6,8}
                             n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                             reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG choice ',RP_dispChoice_nm,' ',splitE_dispChoice_nm,': effort integral overshoot'];
                             dispRegFn([num2str(n_regs.(task_id_nm)),') choice: effort integral overshoot '],dispRegs);
@@ -910,7 +910,7 @@ for iEpm = 1:length(Epm)
                     % fatigue
                     switch GLMprm.choice.(task_id_nm).(RP_dispChoice_nm).(splitE_dispChoice_nm).fatigue
                         case 0
-                        case 1
+                        case {1,2}
                             n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                             reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG choice ',RP_dispChoice_nm,' ',splitE_dispChoice_nm,': fatigue'];
                             dispRegFn([num2str(n_regs.(task_id_nm)),') choice: fatigue '],dispRegs);
@@ -938,7 +938,7 @@ for iEpm = 1:length(Epm)
                     % efficacy of the next trial
                     switch GLMprm.choice.(task_id_nm).(RP_dispChoice_nm).(splitE_dispChoice_nm).efficacy
                         case 0
-                        case {1,2,3,4}
+                        case {1,2,3,4,5,6,7,8}
                             n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                             reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG choice ',RP_dispChoice_nm,' ',splitE_dispChoice_nm,': efficacy'];
                             dispRegFn([num2str(n_regs.(task_id_nm)),') choice: efficacy '],dispRegs);
@@ -951,7 +951,7 @@ for iEpm = 1:length(Epm)
                     % efficacy during the previous trial
                     switch GLMprm.choice.(task_id_nm).(RP_dispChoice_nm).(splitE_dispChoice_nm).prevEfficacy
                         case 0
-                        case {1,2,3,4}
+                        case {1,2,3,4,5,6,7,8}
                             n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                             reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG choice ',RP_dispChoice_nm,' ',splitE_dispChoice_nm,': previous efficacy'];
                             dispRegFn([num2str(n_regs.(task_id_nm)),') choice: previous efficacy '],dispRegs);
@@ -1135,14 +1135,14 @@ for iEpm = 1:length(Epm)
                 
                 % reward variable option
                 switch GLMprm.chosen.(task_id_nm).(RP_dispChosen_nm).(splitE_dispChosen_nm).R_varOption
-                        case 0
-                    case 1
+                    case 0
+                    case {1,3}
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                         reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG chosen ',RP_dispChosen_nm,' ',splitE_dispChosen_nm,': R amount highE'];
                         dispRegFn([num2str(n_regs.(task_id_nm)),') chosen: R amount hE '],dispRegs);
                         % if derivative added => add derivatives
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
-                    case 2
+                    case {2,4}
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                         reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG chosen ',RP_dispChosen_nm,' ',splitE_dispChosen_nm,': R level highE'];
                         dispRegFn([num2str(n_regs.(task_id_nm)),') chosen: R level hE '],dispRegs);
@@ -1155,13 +1155,13 @@ for iEpm = 1:length(Epm)
                 % reward chosen option
                 switch GLMprm.chosen.(task_id_nm).(RP_dispChosen_nm).(splitE_dispChosen_nm).R_chosen
                     case 0
-                    case 1
+                    case {1,3}
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                         reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG chosen ',RP_dispChosen_nm,' ',splitE_dispChosen_nm,': R amount chosen'];
                         dispRegFn([num2str(n_regs.(task_id_nm)),') chosen: R amount chosen '],dispRegs);
                         % if derivative added => add derivatives
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
-                    case 2
+                    case {2,4}
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                         reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG chosen ',RP_dispChosen_nm,' ',splitE_dispChosen_nm,': R level chosen'];
                         dispRegFn([num2str(n_regs.(task_id_nm)),') chosen: R level chosen '],dispRegs);
@@ -1174,13 +1174,13 @@ for iEpm = 1:length(Epm)
                 % punishment variable option
                 switch GLMprm.chosen.(task_id_nm).(RP_dispChosen_nm).(splitE_dispChosen_nm).P_varOption
                         case 0
-                    case 1
+                    case {1,3}
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                         reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG chosen ',RP_dispChosen_nm,' ',splitE_dispChosen_nm,': P amount highE'];
                         dispRegFn([num2str(n_regs.(task_id_nm)),') chosen: P amount hE '],dispRegs);
                         % if derivative added => add derivatives
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
-                    case 2
+                    case {2,4}
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                         reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG chosen ',RP_dispChosen_nm,' ',splitE_dispChosen_nm,': P level highE'];
                         dispRegFn([num2str(n_regs.(task_id_nm)),') chosen: P level hE '],dispRegs);
@@ -1192,14 +1192,14 @@ for iEpm = 1:length(Epm)
                 
                 % punishment chosen option
                 switch GLMprm.chosen.(task_id_nm).(RP_dispChosen_nm).(splitE_dispChosen_nm).P_chosen
-                        case 0
-                    case 1
+                    case 0
+                    case {1,3}
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                         reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG chosen ',RP_dispChosen_nm,' ',splitE_dispChosen_nm,': P amount chosen'];
                         dispRegFn([num2str(n_regs.(task_id_nm)),') chosen: P amount chosen '],dispRegs);
                         % if derivative added => add derivatives
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
-                    case 2
+                    case {2,4}
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                         reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG chosen ',RP_dispChosen_nm,' ',splitE_dispChosen_nm,': P level chosen'];
                         dispRegFn([num2str(n_regs.(task_id_nm)),') chosen: P level chosen '],dispRegs);
@@ -1211,7 +1211,7 @@ for iEpm = 1:length(Epm)
                 
                 % money left
                 switch GLMprm.chosen.(task_id_nm).(RP_dispChosen_nm).(splitE_dispChosen_nm).money_left
-                        case 0
+                    case 0
                     case 1
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                         reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG chosen ',RP_dispChosen_nm,' ',splitE_dispChosen_nm,': money left'];
@@ -1240,7 +1240,7 @@ for iEpm = 1:length(Epm)
                 
                 % money right
                 switch GLMprm.chosen.(task_id_nm).(RP_dispChosen_nm).(splitE_dispChosen_nm).money_right
-                        case 0
+                    case 0
                     case 1
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                         reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG chosen ',RP_dispChosen_nm,' ',splitE_dispChosen_nm,': money right'];
@@ -1269,7 +1269,7 @@ for iEpm = 1:length(Epm)
                 
                 % money chosen
                 switch GLMprm.chosen.(task_id_nm).(RP_dispChosen_nm).(splitE_dispChosen_nm).money_chosen
-                        case 0
+                    case 0
                     case 1
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                         reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG chosen ',RP_dispChosen_nm,' ',splitE_dispChosen_nm,': money chosen'];
@@ -1328,7 +1328,7 @@ for iEpm = 1:length(Epm)
                 % money associated to the option which varies (the non-default
                 % option)
                 switch GLMprm.chosen.(task_id_nm).(RP_dispChosen_nm).(splitE_dispChosen_nm).money_varOption
-                        case 0
+                    case 0
                     case 1
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                         reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG chosen ',RP_dispChosen_nm,' ',splitE_dispChosen_nm,': money non-default option'];
@@ -1357,7 +1357,7 @@ for iEpm = 1:length(Epm)
                 
                 % money chosen - money unchosen
                 switch GLMprm.chosen.(task_id_nm).(RP_dispChosen_nm).(splitE_dispChosen_nm).money_ch_min_unch
-                        case 0
+                    case 0
                     case 1
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                         reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG chosen ',RP_dispChosen_nm,' ',splitE_dispChosen_nm,': money ch-unch'];
@@ -1368,7 +1368,7 @@ for iEpm = 1:length(Epm)
                 
                 % money chosen - money default
                 switch GLMprm.chosen.(task_id_nm).(RP_dispChosen_nm).(splitE_dispChosen_nm).money_ch_min_fixOption
-                        case 0
+                    case 0
                     case 1
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                         reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG chosen ',RP_dispChosen_nm,' ',splitE_dispChosen_nm,': money ch-def'];
@@ -1385,7 +1385,7 @@ for iEpm = 1:length(Epm)
                 
                 % money sum of both options
                 switch GLMprm.chosen.(task_id_nm).(RP_dispChosen_nm).(splitE_dispChosen_nm).money_sum
-                        case 0
+                    case 0
                     case 1
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                         reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG chosen ',RP_dispChosen_nm,' ',splitE_dispChosen_nm,': money sum'];
@@ -1396,7 +1396,7 @@ for iEpm = 1:length(Epm)
                 
                 % effort chosen
                 switch GLMprm.chosen.(task_id_nm).(RP_dispChosen_nm).(splitE_dispChosen_nm).E_chosen
-                        case 0
+                    case 0
                     case 1
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                         reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG chosen ',RP_dispChosen_nm,' ',splitE_dispChosen_nm,': effort chosen'];
@@ -1407,7 +1407,7 @@ for iEpm = 1:length(Epm)
                 
                 % effort unchosen
                 switch GLMprm.chosen.(task_id_nm).(RP_dispChosen_nm).(splitE_dispChosen_nm).E_unchosen
-                        case 0
+                    case 0
                     case 1
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                         reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG chosen ',RP_dispChosen_nm,' ',splitE_dispChosen_nm,': effort unchosen'];
@@ -1418,7 +1418,7 @@ for iEpm = 1:length(Epm)
                 
                 % effort non-default option
                 switch GLMprm.chosen.(task_id_nm).(RP_dispChosen_nm).(splitE_dispChosen_nm).E_varOption
-                        case 0
+                    case 0
                     case 1
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                         reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG chosen ',RP_dispChosen_nm,' ',splitE_dispChosen_nm,': effort non-default option'];
@@ -1429,7 +1429,7 @@ for iEpm = 1:length(Epm)
                 
                 % effort chosen - effort unchosen
                 switch GLMprm.chosen.(task_id_nm).(RP_dispChosen_nm).(splitE_dispChosen_nm).E_ch_min_unch
-                        case 0
+                    case 0
                     case 1
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                         reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG chosen ',RP_dispChosen_nm,' ',splitE_dispChosen_nm,': effort ch-unch'];
@@ -1451,7 +1451,7 @@ for iEpm = 1:length(Epm)
                 
                 % effort chosen - fixed low effort option
                 switch GLMprm.chosen.(task_id_nm).(RP_dispChosen_nm).(splitE_dispChosen_nm).E_ch_min_fixOption
-                        case 0
+                    case 0
                     case 1
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                         reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG chosen ',RP_dispChosen_nm,' ',splitE_dispChosen_nm,': effort ch-def'];
@@ -1462,7 +1462,7 @@ for iEpm = 1:length(Epm)
                 
                 % effort sum of both options
                 switch GLMprm.chosen.(task_id_nm).(RP_dispChosen_nm).(splitE_dispChosen_nm).E_sum
-                        case 0
+                    case 0
                     case 1
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                         reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG chosen ',RP_dispChosen_nm,' ',splitE_dispChosen_nm,': effort sum'];
@@ -1651,13 +1651,13 @@ for iEpm = 1:length(Epm)
                     % area under the curve of the force that is gonna be produced
                     switch GLMprm.chosen.(task_id_nm).(RP_dispChosen_nm).(splitE_dispChosen_nm).F_integral
                         case 0
-                        case {1,3}
+                        case {1,3,5,7}
                             n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                             reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG chosen ',RP_dispChosen_nm,' ',splitE_dispChosen_nm,': force integral'];
                             dispRegFn([num2str(n_regs.(task_id_nm)),') chosen: effort integral '],dispRegs);
                             % if derivative added => add derivatives
                             n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
-                        case {2,4}
+                        case {2,4,6,8}
                             n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                             reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG chosen ',RP_dispChosen_nm,' ',splitE_dispChosen_nm,': force integral overshoot'];
                             dispRegFn([num2str(n_regs.(task_id_nm)),') chosen: effort integral overshoot '],dispRegs);
@@ -1668,7 +1668,7 @@ for iEpm = 1:length(Epm)
                     % fatigue
                     switch GLMprm.chosen.(task_id_nm).(RP_dispChosen_nm).(splitE_dispChosen_nm).fatigue
                         case 0
-                        case 1
+                        case {1,2}
                             n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                             reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG chosen ',RP_dispChosen_nm,' ',splitE_dispChosen_nm,': fatigue'];
                             dispRegFn([num2str(n_regs.(task_id_nm)),') chosen: fatigue '],dispRegs);
@@ -1692,7 +1692,7 @@ for iEpm = 1:length(Epm)
                     % efficacy of the next trial
                     switch GLMprm.chosen.(task_id_nm).(RP_dispChosen_nm).(splitE_dispChosen_nm).efficacy
                         case 0
-                        case {1,2,3,4}
+                        case {1,2,3,4,5,6,7,8}
                             n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                             reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG chosen ',RP_dispChosen_nm,' ',splitE_dispChosen_nm,': efficacy'];
                             dispRegFn([num2str(n_regs.(task_id_nm)),') chosen: efficacy '],dispRegs);
@@ -1703,7 +1703,7 @@ for iEpm = 1:length(Epm)
                     % efficacy during the previous trial
                     switch GLMprm.chosen.(task_id_nm).(RP_dispChosen_nm).(splitE_dispChosen_nm).prevEfficacy
                         case 0
-                        case {1,2,3,4}
+                        case {1,2,3,4,5,6,7,8}
                             n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                             reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG chosen ',RP_dispChosen_nm,' ',splitE_dispChosen_nm,': previous efficacy'];
                             dispRegFn([num2str(n_regs.(task_id_nm)),') chosen: previous efficacy '],dispRegs);
@@ -1886,7 +1886,7 @@ for iEpm = 1:length(Epm)
                 switch task_id_nm
                     case 'Ep'
                         switch GLMprm.preEffortCross.(task_id_nm).(RP_preEcross_nm).(splitE_preEcross_nm).F_peak
-                            case {1,2}
+                            case {1,2,3,4}
                                 n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                                 reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG preEffort cross ',RP_preEcross_nm,' ',splitE_preEcross_nm,': force peak'];
                                 dispRegFn([num2str(n_regs.(task_id_nm)),') pre-effort cross: force peak '],dispRegs);
@@ -1896,13 +1896,13 @@ for iEpm = 1:length(Epm)
                         
                         % force integral
                         switch GLMprm.preEffortCross.(task_id_nm).(RP_preEcross_nm).(splitE_preEcross_nm).F_integral
-                            case {1,3}
+                            case {1,3,5,7}
                                 n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                                 reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG preEffort cross ',RP_preEcross_nm,' ',splitE_preEcross_nm,': force integral'];
                                 dispRegFn([num2str(n_regs.(task_id_nm)),') pre-effort cross: force integral '],dispRegs);
                                 % if derivative added => add derivatives
                                 n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
-                            case {2,4}
+                            case {2,4,6,8}
                                 error('please update');
                         end
                         
@@ -2173,7 +2173,7 @@ for iEpm = 1:length(Epm)
                     case 'Ep'
                         % force peak
                         switch GLMprm.Eperf.(task_id_nm).(RP_Eperf_nm).(splitE_Eperf_nm).F_peak
-                            case {1,2}
+                            case {1,2,3,4}
                                 n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                                 reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG effort ',RP_Eperf_nm,' ',splitE_Eperf_nm,': force peak'];
                                 dispRegFn([num2str(n_regs.(task_id_nm)),') effort period: force peak '],dispRegs);
@@ -2183,13 +2183,13 @@ for iEpm = 1:length(Epm)
                         
                         % force integral
                         switch GLMprm.Eperf.(task_id_nm).(RP_Eperf_nm).(splitE_Eperf_nm).F_integral
-                            case {1,3}
+                            case {1,3,5,7}
                                 n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                                 reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG effort ',RP_Eperf_nm,' ',splitE_Eperf_nm,': force integral'];
                                 dispRegFn([num2str(n_regs.(task_id_nm)),') effort period: force integral '],dispRegs);
                                 % if derivative added => add derivatives
                                 n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
-                            case {2,4}
+                            case {2,4,6,8}
                                 n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                                 reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG effort ',RP_Eperf_nm,' ',splitE_Eperf_nm,': force integral overshoot'];
                                 dispRegFn([num2str(n_regs.(task_id_nm)),') effort period: force integral overshoot '],dispRegs);
@@ -2200,7 +2200,7 @@ for iEpm = 1:length(Epm)
                     case 'Em'
                         % efficacy
                         switch GLMprm.Eperf.(task_id_nm).(RP_Eperf_nm).(splitE_Eperf_nm).efficacy
-                            case {1,2,3,4}
+                            case {1,2,3,4,5,6,7,8}
                                 n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                                 reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG effort ',RP_Eperf_nm,' ',splitE_Eperf_nm,': efficacy'];
                                 dispRegFn([num2str(n_regs.(task_id_nm)),') effort period: efficacy '],dispRegs);
@@ -2338,7 +2338,7 @@ for iEpm = 1:length(Epm)
                     case 'Ep'
                         % fatigue
                         switch GLMprm.Eperf.(task_id_nm).(RP_Eperf_nm).(splitE_Eperf_nm).fatigue
-                            case 1
+                            case {1,2}
                                 n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                                 reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG effort ',RP_Eperf_nm,' ',splitE_Eperf_nm,': fatigue'];
                                 dispRegFn([num2str(n_regs.(task_id_nm)),') effort period: fatigue '],dispRegs);
@@ -2359,7 +2359,7 @@ for iEpm = 1:length(Epm)
                     case 'Em'
                         % efficacy during the previous trial (learning boost)
                         switch GLMprm.Eperf.(task_id_nm).(RP_Eperf_nm).(splitE_Eperf_nm).prevEfficacy
-                            case {1,2,3,4}
+                            case {1,2,3,4,5,6,7,8}
                                 n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                                 reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG effort ',RP_Eperf_nm,' ',splitE_Eperf_nm,': previous efficacy'];
                                 dispRegFn([num2str(n_regs.(task_id_nm)),') effort period: previous efficacy '],dispRegs);

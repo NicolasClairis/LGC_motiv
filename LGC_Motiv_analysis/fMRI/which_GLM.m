@@ -113,18 +113,26 @@ function [GLMprm] = which_GLM(GLM)
 %       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).R_varOption
 %       (1) reward amount for the high effort option (zeros for punishment)
 %       (2) reward level for the high effort option (zeros for punishment)
+%       (3) zscored reward amount for the high effort option (zeros for punishment)
+%       (4) zscored reward level for the high effort option (zeros for punishment)
 %
 %       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).R_chosen
 %       (1) reward amount for the chosen option (zeros for punishment)
 %       (2) reward level for the chosen option (zeros for punishment)
+%       (3) zscored reward amount for the chosen option (zeros for punishment)
+%       (4) zscored reward level for the chosen option (zeros for punishment)
 %
 %       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).P_varOption
 %       (1) punishment amount for the high effort option (zeros for rewards)
 %       (2) punishment level for the high effort option (zeros for rewards)
+%       (3) zscored punishment amount for the high effort option (zeros for rewards)
+%       (4) zscored punishment level for the high effort option (zeros for rewards)
 %
 %       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).P_chosen
 %       (1) punishment amount for the chosen option (zeros for rewards)
 %       (2) punishment level for the chosen option (zeros for rewards)
+%       (3) zscored punishment amount for the chosen option (zeros for rewards)
+%       (4) zscored punishment level for the chosen option (zeros for rewards)
 %
 %       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).money_left
 %       (1) money amount associated to left option
@@ -273,6 +281,7 @@ function [GLMprm] = which_GLM(GLM)
 %       (4) integral of effort performed during the effort period
 %       considering only the overshoot (force produced above the red
 %       threshold) with force in newtons
+%       (5-8) same as (1-4) but zscored
 %
 %       .(choice/chosen).Em.(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).efficacy:
 %       mental effort only: efficacy for the performance of the current trial
@@ -284,10 +293,12 @@ function [GLMprm] = which_GLM(GLM)
 %       (3) nb correct answers/total time of effort period
 %       (4) nb correct answers/time spent between answer of second useless 
 %       number and end of the trial
+%       (5-8) same as (1-4) but zscored
 %
 %       .(choice/chosen).Ep.(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).fatigue:
 %       physical effort only:
 %       (1) sum of previous AUC of force produced
+%       (2) same as (1) but zscored)
 %
 %       .(choice/chosen).Em.(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).prevEfficacy:
 %       mental effort only:
@@ -300,6 +311,7 @@ function [GLMprm] = which_GLM(GLM)
 %       (4) efficacy of previous trial computed as (nb correct
 %       answers)/total time of effort period (no errors) between answer
 %       of second useless number and end of the trial
+%       (5-8) same as (1-4) but zscored
 %
 %       .(choice/chosen).Ep.(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).Ech_x_fatigue:
 %       physical effort only:
@@ -357,6 +369,7 @@ function [GLMprm] = which_GLM(GLM)
 %       .preEffortCross.Ep.(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).F_peak: physical effort only: force peak
 %       (1) force peak in voltage
 %       (2) force peak in newtons
+%       (3-4) like (1-2) but zscored
 %
 %       .preEffortCross.Ep.(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).F_integral: physical effort only: force integral
 %       (1) integral of effort performed during the effort period
@@ -368,6 +381,7 @@ function [GLMprm] = which_GLM(GLM)
 %       (4) integral of effort performed during the effort period
 %       considering only the overshoot (force produced above the red
 %       threshold) with force in newtons
+%       (5-8) same as (1-4) but zscored
 %
 %       .preEffortCross.Em.(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).RT_avg: mental effort only: average reaction
 %       time for answering N-back task
@@ -463,6 +477,7 @@ function [GLMprm] = which_GLM(GLM)
 %       .Eperf.Ep.(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).F_peak: physical effort only: force peak
 %       (1) force peak in voltage
 %       (2) force peak in newtons
+%       (3-4) same as (1-2) but zscored
 %
 %       .Eperf.Ep.(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).F_integral: physical effort only: force integral
 %       (1) integral of effort performed during the effort period
@@ -474,6 +489,7 @@ function [GLMprm] = which_GLM(GLM)
 %       (4) integral of effort performed during the effort period
 %       considering only the overshoot (force produced above the red
 %       threshold) with force in newtons
+%       (5-8) same as (1-4) but zscored
 %
 %       .Eperf.Em.(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).efficacy:
 %       mental effort only: efficacy defined as:
@@ -484,6 +500,7 @@ function [GLMprm] = which_GLM(GLM)
 %       (3) nb correct answers/total time of effort period
 %       (4) nb correct answers/time spent between answer of second useless 
 %       number and end of the trial
+%       (5-8) same as (1-4) but zscored
 %
 %       .Eperf.Em.(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).RT_avg: mental effort only: average reaction
 %       time for answering N-back task
@@ -548,6 +565,7 @@ function [GLMprm] = which_GLM(GLM)
 %       .Eperf.Ep.(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).fatigue:
 %       physical effort only:
 %       (1) sum of previous AUC of force produced
+%       (2) same as (1) but zscored
 %
 %       .Eperf.Em.(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).prevEfficacy:
 %       mental effort only:
@@ -559,6 +577,7 @@ function [GLMprm] = which_GLM(GLM)
 %       period
 %       (4) efficacy of previous trial computed  as nb correct answers/time spent between answer
 %       of second useless number and end of the trial
+%       (5-8) same as (1-4) but zscored
 %
 %       .Eperf.Ep.(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).Ech_x_fatigue:
 %       physical effort only:
