@@ -282,7 +282,7 @@ end % ROI loop
 %     num2str(max(pval.no_outliers.dmPFC.Glu_div_GSH.kEm.a,...
 %     pval.no_outliers.dmPFC.Glu_div_GSH.kEm.b))]);
 
-metab_nm = 'antiox'; % 'Glu_div_GSH'
+metab_nm = 'Glu_div_GSH'; % 'Glu_div_GSH'
 metab_nm_bis = strrep(metab_nm,'_div_','/');
 % kEp
 disp(['kEp dmPFC-',metab_nm_bis,': ',...
