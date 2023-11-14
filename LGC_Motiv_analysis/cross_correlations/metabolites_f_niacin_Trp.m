@@ -4,10 +4,13 @@
 if ~exist('figDisp','var') || isempty(figDisp)
     figDisp = 0;
 end
-%% working directories
-root = LGCM_root_paths;
+%% subject identification
 % study
 study_nm = 'study1';
+condition = subject_condition;
+[subject_id, NS] = LGCM_subject_selection(study_nm, condition);
+%% working directories
+root = LGCM_root_paths;
 studyPath = [root, filesep, study_nm, filesep];
 % nutrition data
 switch root
@@ -21,9 +24,7 @@ switch root
 end
 nutritionPath = [fullfile(gitPath,'GitHub','LGC_motiv',...
     'LGC_Motiv_results',study_nm,'nutrition'),filesep];
-% condition
-condition = subject_condition;
-[subject_id, NS] = LGCM_subject_selection(study_nm, condition);
+
 %% initialize variables of interest
 [nutri.niacin, nutri.Trp, nutri.niacinEquiv, nutri.niacinPlusTrp,...
     nutri.calories,...
@@ -112,7 +113,7 @@ for iMRS_ROI = 1:nROIs
             % filter bad subjects
             subs_ok = (~isnan(nutri.(nutri_nm)).*~isnan(ROI_mb_var)) == 1;
             if sum(subs_ok) > 0
-                % perform glm brain GSH = b0 + b1*nutrition variable
+                % perform glm brain metabolite = b0 + b1*nutrition variable
                 [betas.(ROI_mb_nm).(['f_',nutri_nm]),~,stats_tmp] = glmfit(nutri.(nutri_nm)(subs_ok), ROI_mb_var(subs_ok),'normal');
                 [r_corr.(ROI_mb_nm).(['f_',nutri_nm])] = glmfit(zscore(nutri.(nutri_nm)(subs_ok)), zscore(ROI_mb_var(subs_ok)),'normal');
                 % extract p.value
