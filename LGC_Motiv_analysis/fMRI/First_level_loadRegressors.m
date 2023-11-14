@@ -479,8 +479,6 @@ if sum(choiceMissedTrials) > 0
     money_level_varOption(choiceMissedTrials) = [];
     R_level_varOption(choiceMissedTrials) = [];
     P_level_varOption(choiceMissedTrials) = [];
-    z_R_level_varOption(choiceMissedTrials) = [];
-    z_P_level_varOption(choiceMissedTrials) = [];
     abs_money_amount_varOption(choiceMissedTrials) = [];
     abs_money_level_varOption(choiceMissedTrials) = [];
     E_left(choiceMissedTrials) = [];
@@ -563,6 +561,7 @@ end
 [z_R_level_chosen, z_P_level_chosen,...
     z_R_level_unchosen, z_P_level_unchosen,...
     z_R_amount_chosen, z_P_amount_chosen,...
+    z_R_level_varOption, z_P_level_varOption,...
     z_R_amount_varOption, z_P_amount_varOption] = deal(zeros(size(R_level_chosen)));
 z_R_level_chosen(R_trials) = zscore(R_level_chosen(R_trials));
 z_P_level_chosen(P_trials) = zscore(P_level_chosen(P_trials));
