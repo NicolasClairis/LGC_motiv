@@ -120,7 +120,13 @@ switch study_nm
                 fullSubList(bad_subs1) = [];
 
                 %% also remove outlier subject who has bad brain image + weird behavior in all tasks
-                bad_subs1b = ismember(fullSubList,{'054','090'}); % remove also 019 if you split R and P trials because saturated P trials
+%                 bad_subs1b = ismember(fullSubList,{'054','090'});
+%                 bad_subs1b = ismember(fullSubList,{'039','054','090'});
+                bad_subs1b = ismember(fullSubList,{'054'});
+                % 054 and 090 removed to have a better MRI image and
+                % because 054 had a very weird behavior
+                % remove also 019 if you split R and P trials because saturated P trials
+                % and 039 bugs with boxcar
                 fullSubList(bad_subs1b) = [];
         end
         %% initialize the list of subjects to consider
