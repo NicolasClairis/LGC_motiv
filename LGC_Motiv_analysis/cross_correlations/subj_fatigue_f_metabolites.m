@@ -6,21 +6,10 @@ condition = subject_condition();
 [subject_id, NS] = LGCM_subject_selection(study_nm, condition);
 
 %% extract fatigue levels
-[preMRS_fatigue, postMRS_fatigue,...
+[~,...
+    preMRS_fatigue, postMRS_fatigue,...
     prefMRI_fatigue, postfMRI_fatigue,...
-    deltaFatiguePrePostExp] = deal(NaN(1,NS));
-% load fatigue
-[excelReadGeneralFile] = load_gal_data_bis(study_nm);
-for iS = 1:NS
-    sub_nm = ['CID',subject_id{iS}];
-    fatigue_sub_idx = strcmp(sub_nm, excelReadGeneralFile.CID);
-    
-    preMRS_fatigue(iS)          = excelReadGeneralFile.FatiguePr__MRS(fatigue_sub_idx);
-    postMRS_fatigue(iS)          = excelReadGeneralFile.FatiguePost_MRS(fatigue_sub_idx);
-    prefMRI_fatigue(iS)          = excelReadGeneralFile.FatiguePr__fMRI(fatigue_sub_idx);
-    postfMRI_fatigue(iS)          = excelReadGeneralFile.FatiguePost_fMRI(fatigue_sub_idx);
-    deltaFatiguePrePostExp(iS)  = postfMRI_fatigue(iS) - preMRS_fatigue(iS);
-end
+    deltaFatiguePrePostExp] = extract_subjective_fatigue_ratings(study_nm, subject_id, NS);
 %% define metabolite and ROI you want to focus on and extract subjects accordingly
 [low_met_subs, high_met_subs, mSplit_metabolite_nm] = medSplit_metabolites(study_nm,subject_id);
 [metabolite_allSubs, MRS_ROI_nm, linear_metabolite_nm] = metabolite_extraction(study_nm, subject_id);
