@@ -6368,9 +6368,45 @@ switch GLM
             GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
         end % physical/mental loop
         
-    case 232 % same as GLM 230 but without boxcar (or like GLM 212 without SV)
+    case 232 % same as GLM 230 but without boxcar (or like GLM 231 without SV)
         % general parameters
         GLMprm.gal.add_drv = 1; % temporal derivative
+        GLMprm.gal.orth_vars = 0;
+        GLMprm.gal.zPerRun = 1;
+        GLMprm.gal.grey_mask = 3;
+        GLMprm.gal.mask_probaThreshold = 5;
+        % loop per task
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'stick';
+            GLMprm.choice.(Epm_nm).RP.E.E_chosen = 1;
+            GLMprm.choice.(Epm_nm).RP.E.RT = 1;
+            % effort perf (effort execution)
+            GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
+        end % physical/mental loop
+        
+    case 233 % same as GLM 231 but without temporal derivative
+        % general parameters
+        GLMprm.gal.orth_vars = 0;
+        GLMprm.gal.zPerRun = 1;
+        GLMprm.gal.grey_mask = 3;
+        GLMprm.gal.mask_probaThreshold = 5;
+        % loop per task
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'stick';
+            GLMprm.choice.(Epm_nm).RP.E.NV_mdl = 'bayesianModel_3';
+            GLMprm.choice.(Epm_nm).RP.E.NV_chosen = 3;
+            GLMprm.choice.(Epm_nm).RP.E.E_chosen = 1;
+            GLMprm.choice.(Epm_nm).RP.E.RT = 1;
+            % effort perf (effort execution)
+            GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
+        end % physical/mental loop
+        
+    case 234 % same as GLM 230 but without temporal derivative (or like GLM 233 without SV)
+        % general parameters
         GLMprm.gal.orth_vars = 0;
         GLMprm.gal.zPerRun = 1;
         GLMprm.gal.grey_mask = 3;
