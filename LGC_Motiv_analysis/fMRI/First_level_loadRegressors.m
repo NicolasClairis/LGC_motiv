@@ -749,6 +749,7 @@ if ismember(preChoiceCrossModel,{'stick','boxcar','boxcar_bis'})
     
     % choice = high effort
     switch preChoiceCrossModel_choiceHighE
+        case 0
         case 1
             n_preChoiceCrossMods = n_preChoiceCrossMods + 1;
             preChoiceCross_modNames{n_preChoiceCrossMods} = 'choice = high effort';
@@ -762,10 +763,11 @@ if ismember(preChoiceCrossModel,{'stick','boxcar','boxcar_bis'})
     end
     
     % effort chosen
-    if preChoiceCrossModel_E_chosen == 1
+    if preChoiceCrossModel_E_chosen > 0
         n_preChoiceCrossMods = n_preChoiceCrossMods + 1;
         preChoiceCross_modNames{n_preChoiceCrossMods} = 'effort chosen';
         switch preChoiceCrossModel_E_chosen
+            case 0
             case 1
                 preChoiceCross_modVals(n_preChoiceCrossMods,:) = raw_or_z(E_chosen);
             case 3
