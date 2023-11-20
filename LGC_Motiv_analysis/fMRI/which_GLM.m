@@ -81,6 +81,8 @@ function [GLMprm] = which_GLM(GLM)
 %       .preChoiceCross.(Ep/Em).choiceHighE
 %       (1) 0 when low effort/default option is selected and 1 when high
 %       effort/non-default option is selected
+%       (2) (-1) when low effort/default option is selected and (+1) when high
+%       effort/non-default option is selected
 %
 %   .choice/chosen/preEffortCross/Eperf/fbk: for each event, for each task (Ep/Em) and 
 %   for each condition (R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch) indicate if a given regressor should be 
@@ -108,6 +110,8 @@ function [GLMprm] = which_GLM(GLM)
 %
 %       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).choiceHighE
 %       (1) 0 when low effort/default option is selected and 1 when high
+%       effort/non-default option is selected
+%       (2) (-1) when low effort/default option is selected and (+1) when high
 %       effort/non-default option is selected
 %
 %       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).R_varOption
@@ -186,13 +190,15 @@ function [GLMprm] = which_GLM(GLM)
 %       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).E_chosen
 %       (1) effort level (0/1/2/3) associated to chosen option
 %       (2) effort difficulty associated to chosen option (Ep: duration to hold; Em: nb answers to give)
+%       (3) effort level of the high effort option (1/2/3)*choice (-1/+1)
+%       => Ech between (-3/-2/-1/1/2/3)
 %
 %       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).E_unchosen
 %       (1) effort level (0/1/2/3) associated to unchosen option
 %       (2) effort difficulty associated to unchosen option (Ep: duration to hold; Em: nb answers to give)
 %
 %       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).E_varOption
-%       (1) effort level (0/1/2/3) associated to the non-default option
+%       (1) effort level (1/2/3) associated to the non-default option
 %       (2) effort difficulty associated to the non-default option (Ep: duration to hold; Em: nb answers to give)
 %
 %       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).E_ch_min_unch
@@ -354,6 +360,8 @@ function [GLMprm] = which_GLM(GLM)
 %       .preEffortCross.(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).choiceHighE
 %       (1) 0 when low effort/default option is selected and 1 when high
 %       effort/non-default option is selected
+%       (2) (-1) when low effort/default option is selected and (+1) when high
+%       effort/non-default option is selected
 %
 %       .preEffortCross.(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).money_chosen:
 %       (1) money chosen amount
@@ -365,6 +373,8 @@ function [GLMprm] = which_GLM(GLM)
 %       .preEffortCross.(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).E_chosen
 %       (1) effort level (0/1/2/3) associated to chosen option
 %       (2) effort difficulty associated to chosen option (Ep: duration to hold; Em: nb answers to give)
+%       (3) effort level of the high effort option (1/2/3)*choice (-1/+1)
+%       => Ech between (-3/-2/-1/1/2/3)
 %
 %       .preEffortCross.Ep.(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).F_peak: physical effort only: force peak
 %       (1) force peak in voltage
@@ -463,6 +473,8 @@ function [GLMprm] = which_GLM(GLM)
 %       .Eperf.(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).choiceHighE
 %       (1) 0 when low effort/default option is selected and 1 when high
 %       effort/non-default option is selected
+%       (2) (-1) when low effort/default option is selected and (+1) when high
+%       effort/non-default option is selected
 %
 %       .Eperf.(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).money_chosen
 %       (1) money chosen amount
@@ -473,6 +485,8 @@ function [GLMprm] = which_GLM(GLM)
 %       .Eperf.(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).E_chosen
 %       (1) effort level (0/1/2/3) associated to chosen option
 %       (2) effort difficulty associated to chosen option (Ep: duration to hold; Em: nb answers to give)
+%       (3) effort level of the high effort option (1/2/3)*choice (-1/+1)
+%       => Ech between (-3/-2/-1/1/2/3)
 %
 %       .Eperf.Ep.(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).F_peak: physical effort only: force peak
 %       (1) force peak in voltage
@@ -626,6 +640,8 @@ function [GLMprm] = which_GLM(GLM)
 %
 %       .fbk.(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).choiceHighE
 %       (1) 0 when low effort/default option is selected and 1 when high
+%       effort/non-default option is selected
+%       (2) (-1) when low effort/default option is selected and (+1) when high
 %       effort/non-default option is selected
 %
 %       .fbk.(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).money_obtained

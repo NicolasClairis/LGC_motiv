@@ -134,21 +134,34 @@ for iEpm = 1:length(Epm)
         end
         
         % binary variable indicating when choice = high effort option
-        if GLMprm.preChoiceCross.(task_id_nm).choiceHighE == 1
-            n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
-            reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG preChoice Cross RP E: choice = highE';
-            dispRegFn([num2str(n_regs.(task_id_nm)),') preChoice Cross: choice hE '],dispRegs);
-            % if derivative added => add derivatives
-            n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+        switch GLMprm.preChoiceCross.(task_id_nm).choiceHighE
+            case 0
+            case {1,2}
+                n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG preChoice Cross RP E: choice = highE';
+                dispRegFn([num2str(n_regs.(task_id_nm)),') preChoice Cross: choice hE '],dispRegs);
+                % if derivative added => add derivatives
+                n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+            otherwise
+                error('not ready yet');
         end
         
         % effort chosen
-        if GLMprm.preChoiceCross.(task_id_nm).E_chosen == 1
-            n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
-            reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG preChoice Cross RP E: effort chosen';
-            dispRegFn([num2str(n_regs.(task_id_nm)),') preChoice Cross: effort chosen (levels) '],dispRegs);
-            % if derivative added => add derivatives
-            n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+        switch GLMprm.preChoiceCross.(task_id_nm).E_chosen 
+            case 1
+                n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG preChoice Cross RP E: effort chosen';
+                dispRegFn([num2str(n_regs.(task_id_nm)),') preChoice Cross: effort chosen (levels) '],dispRegs);
+                % if derivative added => add derivatives
+                n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+            case 2
+                error('case not ready yet');
+            case 3
+                n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG preChoice Cross RP E: effort-by-choice';
+                dispRegFn([num2str(n_regs.(task_id_nm)),') preChoice Cross: effort-by-choice '],dispRegs);
+                % if derivative added => add derivatives
+                n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
         end
         
         % RT (last regressor)
@@ -250,12 +263,16 @@ for iEpm = 1:length(Epm)
                 end
                 
                 % binary variable indicating when choice = high effort option
-                if GLMprm.choice.(task_id_nm).(RP_dispChoice_nm).(splitE_dispChoice_nm).choiceHighE == 1
-                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
-                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG choice ',RP_dispChoice_nm,' ',splitE_dispChoice_nm,': choice = highE'];
-                    dispRegFn([num2str(n_regs.(task_id_nm)),') choice: choice hE '],dispRegs);
-                    % if derivative added => add derivatives
-                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                switch GLMprm.choice.(task_id_nm).(RP_dispChoice_nm).(splitE_dispChoice_nm).choiceHighE
+                    case 0
+                    case {1,2}
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                        reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG choice ',RP_dispChoice_nm,' ',splitE_dispChoice_nm,': choice = highE'];
+                        dispRegFn([num2str(n_regs.(task_id_nm)),') choice: choice hE '],dispRegs);
+                        % if derivative added => add derivatives
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                    otherwise
+                        error('not ready yet');
                 end
                 
                 % reward variable option
@@ -464,26 +481,26 @@ for iEpm = 1:length(Epm)
                     case 0
                     case 1
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
-                        reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG choice ',RP_dispChoice_nm,' ',splitE_dispChoice_nm,': money non-default option'];
-                        dispRegFn([num2str(n_regs.(task_id_nm)),') choice: money non-default option (amount) '],dispRegs);
+                        reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG choice ',RP_dispChoice_nm,' ',splitE_dispChoice_nm,': money hE'];
+                        dispRegFn([num2str(n_regs.(task_id_nm)),') choice: money hE (amount) '],dispRegs);
                         % if derivative added => add derivatives
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
                     case 2
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
-                        reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG choice ',RP_dispChoice_nm,' ',splitE_dispChoice_nm,': money non-default option'];
-                        dispRegFn([num2str(n_regs.(task_id_nm)),') choice: |money| non-default option (amount) '],dispRegs);
+                        reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG choice ',RP_dispChoice_nm,' ',splitE_dispChoice_nm,': money hE'];
+                        dispRegFn([num2str(n_regs.(task_id_nm)),') choice: |money| hE (amount) '],dispRegs);
                         % if derivative added => add derivatives
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
                     case 3
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
-                        reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG choice ',RP_dispChoice_nm,' ',splitE_dispChoice_nm,': money non-default option'];
-                        dispRegFn([num2str(n_regs.(task_id_nm)),') choice: money non-default option (level) '],dispRegs);
+                        reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG choice ',RP_dispChoice_nm,' ',splitE_dispChoice_nm,': money hE'];
+                        dispRegFn([num2str(n_regs.(task_id_nm)),') choice: money hE (level) '],dispRegs);
                         % if derivative added => add derivatives
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
                     case 4
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
-                        reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG choice ',RP_dispChoice_nm,' ',splitE_dispChoice_nm,': money non-default option'];
-                        dispRegFn([num2str(n_regs.(task_id_nm)),') choice: |money| non-default option (level) '],dispRegs);
+                        reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG choice ',RP_dispChoice_nm,' ',splitE_dispChoice_nm,': money hE'];
+                        dispRegFn([num2str(n_regs.(task_id_nm)),') choice: |money| hE (level) '],dispRegs);
                         % if derivative added => add derivatives
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
                     otherwise
@@ -603,6 +620,12 @@ for iEpm = 1:length(Epm)
                         end
                         % if derivative added => add derivatives
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                    case 3
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                        reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG choice ',RP_dispChoice_nm,' ',splitE_dispChoice_nm,': effort-by-choice'];
+                        dispRegFn([num2str(n_regs.(task_id_nm)),') choice: effort-by-choice '],dispRegs);
+                        % if derivative added => add derivatives
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
                     otherwise
                         error('not ready yet');
                 end
@@ -631,23 +654,23 @@ for iEpm = 1:length(Epm)
                         error('not ready yet');
                 end
                 
-                % effort non-default option
+                % effort level hE
                 switch GLMprm.choice.(task_id_nm).(RP_dispChoice_nm).(splitE_dispChoice_nm).E_varOption
                     case 0
                     case 1
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
-                        reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG choice ',RP_dispChoice_nm,' ',splitE_dispChoice_nm,': effort non-default option'];
-                        dispRegFn([num2str(n_regs.(task_id_nm)),') choice: effort non-default option (levels) '],dispRegs);
+                        reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG choice ',RP_dispChoice_nm,' ',splitE_dispChoice_nm,': effort level hE'];
+                        dispRegFn([num2str(n_regs.(task_id_nm)),') choice: effort level hE '],dispRegs);
                         % if derivative added => add derivatives
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
                     case 2
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
-                        reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG choice ',RP_dispChoice_nm,' ',splitE_dispChoice_nm,': effort non-default option'];
+                        reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG choice ',RP_dispChoice_nm,' ',splitE_dispChoice_nm,': effort amount hE'];
                         switch task_id_nm
                             case 'Ep'
-                                dispRegFn([num2str(n_regs.(task_id_nm)),') choice: effort non-default option (durations) '],dispRegs);
+                                dispRegFn([num2str(n_regs.(task_id_nm)),') choice: effort amount hE (durations) '],dispRegs);
                             case 'Em'
-                                dispRegFn([num2str(n_regs.(task_id_nm)),') choice: effort non-default option (nb answers to give) '],dispRegs);
+                                dispRegFn([num2str(n_regs.(task_id_nm)),') choice: effort amount hE (nb answers to give) '],dispRegs);
                         end
                         % if derivative added => add derivatives
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
@@ -721,8 +744,8 @@ for iEpm = 1:length(Epm)
                     case 0
                     case 1 % (money level)*(effort level) high E option
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
-                        reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG choice ',RP_dispChoice_nm,' ',splitE_dispChoice_nm,': money x effort non-default'];
-                        dispRegFn([num2str(n_regs.(task_id_nm)),') choice: money x effort non-default option '],dispRegs);
+                        reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG choice ',RP_dispChoice_nm,' ',splitE_dispChoice_nm,': money x effort hE'];
+                        dispRegFn([num2str(n_regs.(task_id_nm)),') choice: money x effort hE '],dispRegs);
                         % if derivative added => add derivatives
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
                     otherwise
@@ -747,8 +770,8 @@ for iEpm = 1:length(Epm)
                     case 0
                     case 1 % (R level)*(effort level) high E option
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
-                        reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG choice ',RP_dispChoice_nm,' ',splitE_dispChoice_nm,': R x E non-default'];
-                        dispRegFn([num2str(n_regs.(task_id_nm)),') choice: R x E non-default option '],dispRegs);
+                        reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG choice ',RP_dispChoice_nm,' ',splitE_dispChoice_nm,': R x E hE'];
+                        dispRegFn([num2str(n_regs.(task_id_nm)),') choice: R x E hE '],dispRegs);
                         % if derivative added => add derivatives
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
                     otherwise
@@ -773,8 +796,8 @@ for iEpm = 1:length(Epm)
                     case 0
                     case 1 % (P level)*(effort level) high E option
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
-                        reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG choice ',RP_dispChoice_nm,' ',splitE_dispChoice_nm,': P x E non-default'];
-                        dispRegFn([num2str(n_regs.(task_id_nm)),') choice: P x E non-default option '],dispRegs);
+                        reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG choice ',RP_dispChoice_nm,' ',splitE_dispChoice_nm,': P x E hE'];
+                        dispRegFn([num2str(n_regs.(task_id_nm)),') choice: P x E hE '],dispRegs);
                         % if derivative added => add derivatives
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
                     otherwise
@@ -1125,12 +1148,16 @@ for iEpm = 1:length(Epm)
                 end
                 
                 % binary variable indicating when choice = high effort option
-                if GLMprm.chosen.(task_id_nm).(RP_dispChosen_nm).(splitE_dispChosen_nm).choiceHighE == 1
-                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
-                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG chosen ',RP_dispChosen_nm,' ',splitE_dispChosen_nm,': choice = highE'];
-                    dispRegFn([num2str(n_regs.(task_id_nm)),') chosen: choice hE '],dispRegs);
-                    % if derivative added => add derivatives
-                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                switch GLMprm.chosen.(task_id_nm).(RP_dispChosen_nm).(splitE_dispChosen_nm).choiceHighE
+                    case 0
+                    case {1,2}
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                        reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG chosen ',RP_dispChosen_nm,' ',splitE_dispChosen_nm,': choice = highE'];
+                        dispRegFn([num2str(n_regs.(task_id_nm)),') chosen: choice hE '],dispRegs);
+                        % if derivative added => add derivatives
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                    otherwise
+                        error('not ready yet');
                 end
                 
                 % reward variable option
@@ -1331,26 +1358,26 @@ for iEpm = 1:length(Epm)
                     case 0
                     case 1
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
-                        reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG chosen ',RP_dispChosen_nm,' ',splitE_dispChosen_nm,': money non-default option'];
-                        dispRegFn([num2str(n_regs.(task_id_nm)),') chosen: money non-default option (amount) '],dispRegs);
+                        reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG chosen ',RP_dispChosen_nm,' ',splitE_dispChosen_nm,': money hE'];
+                        dispRegFn([num2str(n_regs.(task_id_nm)),') chosen: money hE option (amount) '],dispRegs);
                         % if derivative added => add derivatives
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
                     case 2
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
-                        reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG chosen ',RP_dispChosen_nm,' ',splitE_dispChosen_nm,': money non-default option'];
-                        dispRegFn([num2str(n_regs.(task_id_nm)),') chosen: |money| non-default option (amount) '],dispRegs);
+                        reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG chosen ',RP_dispChosen_nm,' ',splitE_dispChosen_nm,': money hE'];
+                        dispRegFn([num2str(n_regs.(task_id_nm)),') chosen: |money| hE (amount) '],dispRegs);
                         % if derivative added => add derivatives
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
                     case 3
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
-                        reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG chosen ',RP_dispChosen_nm,' ',splitE_dispChosen_nm,': money non-default option'];
-                        dispRegFn([num2str(n_regs.(task_id_nm)),') chosen: money non-default option (level) '],dispRegs);
+                        reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG chosen ',RP_dispChosen_nm,' ',splitE_dispChosen_nm,': money hE'];
+                        dispRegFn([num2str(n_regs.(task_id_nm)),') chosen: money hE (level) '],dispRegs);
                         % if derivative added => add derivatives
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
                     case 4
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
-                        reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG chosen ',RP_dispChosen_nm,' ',splitE_dispChosen_nm,': money non-default option'];
-                        dispRegFn([num2str(n_regs.(task_id_nm)),') chosen: |money| non-default option (level) '],dispRegs);
+                        reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG chosen ',RP_dispChosen_nm,' ',splitE_dispChosen_nm,': money hE'];
+                        dispRegFn([num2str(n_regs.(task_id_nm)),') chosen: |money| hE (level) '],dispRegs);
                         % if derivative added => add derivatives
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
                 end
@@ -1403,6 +1430,14 @@ for iEpm = 1:length(Epm)
                         dispRegFn([num2str(n_regs.(task_id_nm)),') chosen: effort chosen (levels) '],dispRegs);
                         % if derivative added => add derivatives
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                    case 2
+                        error('case not ready yet');
+                    case 3
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                        reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG chosen ',RP_dispChosen_nm,' ',splitE_dispChosen_nm,': effort-by-choice'];
+                        dispRegFn([num2str(n_regs.(task_id_nm)),') chosen: effort-by-choice '],dispRegs);
+                        % if derivative added => add derivatives
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
                 end
                 
                 % effort unchosen
@@ -1414,17 +1449,21 @@ for iEpm = 1:length(Epm)
                         dispRegFn([num2str(n_regs.(task_id_nm)),') chosen: effort unchosen (levels) '],dispRegs);
                         % if derivative added => add derivatives
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                    otherwise
+                        error('case not ready yet');
                 end
                 
-                % effort non-default option
+                % effort hE
                 switch GLMprm.chosen.(task_id_nm).(RP_dispChosen_nm).(splitE_dispChosen_nm).E_varOption
                     case 0
                     case 1
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
-                        reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG chosen ',RP_dispChosen_nm,' ',splitE_dispChosen_nm,': effort non-default option'];
-                        dispRegFn([num2str(n_regs.(task_id_nm)),') chosen: effort non-default option (levels) '],dispRegs);
+                        reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG chosen ',RP_dispChosen_nm,' ',splitE_dispChosen_nm,': effort level hE'];
+                        dispRegFn([num2str(n_regs.(task_id_nm)),') chosen: effort level hE '],dispRegs);
                         % if derivative added => add derivatives
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                    otherwise
+                        error('case not ready yet');
                 end
                 
                 % effort chosen - effort unchosen
@@ -1447,6 +1486,8 @@ for iEpm = 1:length(Epm)
                         end
                         % if derivative added => add derivatives
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                    otherwise
+                        error('case not ready yet');
                 end
                 
                 % effort chosen - fixed low effort option
@@ -1458,6 +1499,8 @@ for iEpm = 1:length(Epm)
                         dispRegFn([num2str(n_regs.(task_id_nm)),') chosen: effort ch-def (levels) '],dispRegs);
                         % if derivative added => add derivatives
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                    otherwise
+                        error('case not ready yet');
                 end
                 
                 % effort sum of both options
@@ -1480,6 +1523,8 @@ for iEpm = 1:length(Epm)
                         end
                         % if derivative added => add derivatives
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                    otherwise
+                        error('case not ready yet');
                 end
                 
                 % (money)*(effort) for high effort option
@@ -1488,7 +1533,7 @@ for iEpm = 1:length(Epm)
                     case 1 % (money level)*(effort level) high E option
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                         reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG chosen ',RP_dispChosen_nm,' ',splitE_dispChosen_nm,': money x effort non-default'];
-                        dispRegFn([num2str(n_regs.(task_id_nm)),') chosen: money x effort non-default option '],dispRegs);
+                        dispRegFn([num2str(n_regs.(task_id_nm)),') chosen: money x effort hE '],dispRegs);
                         % if derivative added => add derivatives
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
                     otherwise
@@ -1514,7 +1559,7 @@ for iEpm = 1:length(Epm)
                     case 1 % (R level)*(effort level) high E option
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                         reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG chosen ',RP_dispChosen_nm,' ',splitE_dispChosen_nm,': R x E non-default'];
-                        dispRegFn([num2str(n_regs.(task_id_nm)),') chosen: R x E non-default option '],dispRegs);
+                        dispRegFn([num2str(n_regs.(task_id_nm)),') chosen: R x E hE '],dispRegs);
                         % if derivative added => add derivatives
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
                     otherwise
@@ -1540,7 +1585,7 @@ for iEpm = 1:length(Epm)
                     case 1 % (P level)*(effort level) high E option
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                         reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG chosen ',RP_dispChosen_nm,' ',splitE_dispChosen_nm,': P x E non-default'];
-                        dispRegFn([num2str(n_regs.(task_id_nm)),') chosen: P x E non-default option '],dispRegs);
+                        dispRegFn([num2str(n_regs.(task_id_nm)),') chosen: P x E hE '],dispRegs);
                         % if derivative added => add derivatives
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
                     otherwise
@@ -1836,12 +1881,16 @@ for iEpm = 1:length(Epm)
                 
                 %% effort period regressors
                 % binary variable indicating when choice = high effort option
-                if GLMprm.preEffortCross.(task_id_nm).(RP_preEcross_nm).(splitE_preEcross_nm).choiceHighE == 1
-                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
-                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG preEffort cross ',RP_preEcross_nm,' ',splitE_preEcross_nm,': choice = highE'];
-                    dispRegFn([num2str(n_regs.(task_id_nm)),') pre-effort cross: choice hE '],dispRegs);
-                    % if derivative added => add derivatives
-                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                switch GLMprm.preEffortCross.(task_id_nm).(RP_preEcross_nm).(splitE_preEcross_nm).choiceHighE
+                    case 0
+                    case {1,2}
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                        reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG preEffort cross ',RP_preEcross_nm,' ',splitE_preEcross_nm,': choice = highE'];
+                        dispRegFn([num2str(n_regs.(task_id_nm)),') pre-effort cross: choice hE '],dispRegs);
+                        % if derivative added => add derivatives
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                    otherwise
+                        error('not ready yet');
                 end
                 
                 % money chosen
@@ -1878,6 +1927,14 @@ for iEpm = 1:length(Epm)
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                         reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG preEffort cross ',RP_preEcross_nm,' ',splitE_preEcross_nm,': effort chosen'];
                         dispRegFn([num2str(n_regs.(task_id_nm)),') pre-effort cross: effort chosen (levels) '],dispRegs);
+                        % if derivative added => add derivatives
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                    case 2
+                        error('case not ready yet');
+                    case 3
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                        reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG preEffort cross ',RP_preEcross_nm,' ',splitE_preEcross_nm,': effort-by-choice'];
+                        dispRegFn([num2str(n_regs.(task_id_nm)),') pre-effort cross: effort-by-choice '],dispRegs);
                         % if derivative added => add derivatives
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
                 end
@@ -1957,7 +2014,7 @@ for iEpm = 1:length(Epm)
                         error('problem with pre-E cross NV_chosen value');
                 end
                 
-                % net value non-default option
+                % net value hE
                 switch GLMprm.preEffortCross.(task_id_nm).(RP_preEcross_nm).(splitE_preEcross_nm).NV_varOption
                     case 1 % NV(high E) - NV(low E)
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
@@ -1991,7 +2048,7 @@ for iEpm = 1:length(Epm)
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
                 end
                 
-                % net value non-default option bis
+                % net value hE bis
                 switch GLMprm.preEffortCross.(task_id_nm).(RP_preEcross_nm).(splitE_preEcross_nm).NV_varOption_bis
                     case 1 % NV(high E) - NV(low E)
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
@@ -2122,12 +2179,16 @@ for iEpm = 1:length(Epm)
                 
                 %% effort period regressors
                 % binary variable indicating when choice = high effort option
-                if GLMprm.Eperf.(task_id_nm).(RP_Eperf_nm).(splitE_Eperf_nm).choiceHighE == 1
-                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
-                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG effort ',RP_Eperf_nm,' ',splitE_Eperf_nm,': choice = highE'];
-                    dispRegFn([num2str(n_regs.(task_id_nm)),') effort period: choice hE '],dispRegs);
-                    % if derivative added => add derivatives
-                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                switch GLMprm.Eperf.(task_id_nm).(RP_Eperf_nm).(splitE_Eperf_nm).choiceHighE
+                    case 0
+                    case {1,2}
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                        reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG effort ',RP_Eperf_nm,' ',splitE_Eperf_nm,': choice = highE'];
+                        dispRegFn([num2str(n_regs.(task_id_nm)),') effort period: choice hE '],dispRegs);
+                        % if derivative added => add derivatives
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                    otherwise
+                        error('not ready yet');
                 end
                 
                 % money chosen
@@ -2164,6 +2225,14 @@ for iEpm = 1:length(Epm)
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                         reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG effort ',RP_Eperf_nm,' ',splitE_Eperf_nm,': effort chosen'];
                         dispRegFn([num2str(n_regs.(task_id_nm)),') effort period: effort chosen (levels) '],dispRegs);
+                        % if derivative added => add derivatives
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                    case 2
+                        error('case not ready yet');
+                    case 3
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                        reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG effort ',RP_Eperf_nm,' ',splitE_Eperf_nm,': effort-by-choice'];
+                        dispRegFn([num2str(n_regs.(task_id_nm)),') effort period: effort-by-choice '],dispRegs);
                         % if derivative added => add derivatives
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
                 end
@@ -2255,7 +2324,7 @@ for iEpm = 1:length(Epm)
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
                 end
                 
-                % net value non-default option
+                % net value hE
                 switch GLMprm.Eperf.(task_id_nm).(RP_Eperf_nm).(splitE_Eperf_nm).NV_varOption
                     case 1 % NV(high E) - NV(low E)
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
@@ -2289,7 +2358,7 @@ for iEpm = 1:length(Epm)
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
                 end
                 
-                % net value non-default option bis
+                % net value hE bis
                 switch GLMprm.Eperf.(task_id_nm).(RP_Eperf_nm).(splitE_Eperf_nm).NV_varOption_bis
                     case 1 % NV(high E) - NV(low E)
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
@@ -2474,12 +2543,16 @@ for iEpm = 1:length(Epm)
                 end
                 
                 % binary variable indicating when choice = high effort option
-                if GLMprm.fbk.(task_id_nm).(RP_fbk_nm).(splitE_fbk_nm).choiceHighE == 1
-                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
-                    reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG feedback ',RP_fbk_nm,' ',splitE_fbk_nm,': choice = highE'];
-                    dispRegFn([num2str(n_regs.(task_id_nm)),') feedback: choice hE '],dispRegs);
-                    % if derivative added => add derivatives
-                    n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                switch GLMprm.fbk.(task_id_nm).(RP_fbk_nm).(splitE_fbk_nm).choiceHighE
+                    case 0
+                    case {1,2}
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                        reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG feedback ',RP_fbk_nm,' ',splitE_fbk_nm,': choice = highE'];
+                        dispRegFn([num2str(n_regs.(task_id_nm)),') feedback: choice hE '],dispRegs);
+                        % if derivative added => add derivatives
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                    otherwise
+                        error('not ready yet');
                 end
                 
                 % money obtained
