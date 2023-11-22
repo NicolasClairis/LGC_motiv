@@ -6591,6 +6591,315 @@ switch GLM
             % feedback
             GLMprm.model_onset.(Epm_nm).fbk = 'stick';
         end % physical/mental loop
+        
+    case 240 % simplest model: only choice + Echosen
+        % general parameters
+        GLMprm.gal.orth_vars = 0;
+        GLMprm.gal.zPerRun = 0;
+        GLMprm.gal.grey_mask = 3;
+        GLMprm.gal.mask_probaThreshold = 5;
+        % loop per task
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'stick';
+            GLMprm.choice.(Epm_nm).RP.E.E_chosen = 1;
+        end % physical/mental loop
+        
+    case 241 % "simple" model
+        % general parameters
+        GLMprm.gal.orth_vars = 0;
+        GLMprm.gal.zPerRun = 0;
+        GLMprm.gal.grey_mask = 3;
+        GLMprm.gal.mask_probaThreshold = 5;
+        % loop per task
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'boxcar';
+            GLMprm.choice.(Epm_nm).RP.E.E_chosen = 1;
+            % chosen
+            GLMprm.model_onset.(Epm_nm).chosen = 'boxcar';
+            % effort perf (effort execution)
+            GLMprm.model_onset.(Epm_nm).Eperf = 'boxcar';
+            % feedback
+            GLMprm.model_onset.(Epm_nm).fbk = 'boxcar';
+        end % physical/mental loop
+    case 242 % control for model parameters (1) (ref to high E)
+        % general parameters
+        GLMprm.gal.orth_vars = 0;
+        GLMprm.gal.zPerRun = 0;
+        GLMprm.gal.grey_mask = 3;
+        GLMprm.gal.mask_probaThreshold = 5;
+        % loop per task
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'boxcar';
+            GLMprm.choice.(Epm_nm).RP.E.R_varOption = 2;
+            GLMprm.choice.(Epm_nm).RP.E.P_varOption = 2;
+            GLMprm.choice.(Epm_nm).RP.E.E_varOption = 1;
+            GLMprm.choice.(Epm_nm).RP.E.E_chosen = 1;
+            switch Epm_nm
+                case 'Ep'
+                    GLMprm.choice.(Epm_nm).RP.E.fatigue = 2;
+                case 'Em'
+                    GLMprm.choice.(Epm_nm).RP.E.prevEfficacy = 7;
+            end
+            % chosen
+            GLMprm.model_onset.(Epm_nm).chosen = 'boxcar';
+            % effort perf (effort execution)
+            GLMprm.model_onset.(Epm_nm).Eperf = 'boxcar';
+            % feedback
+            GLMprm.model_onset.(Epm_nm).fbk = 'boxcar';
+        end % physical/mental loop
+    case 243 % control for model parameters (2) (ref to chosen option)
+        % general parameters
+        GLMprm.gal.orth_vars = 0;
+        GLMprm.gal.zPerRun = 0;
+        GLMprm.gal.grey_mask = 3;
+        GLMprm.gal.mask_probaThreshold = 5;
+        % loop per task
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'boxcar';
+            GLMprm.choice.(Epm_nm).RP.E.R_chosen = 2;
+            GLMprm.choice.(Epm_nm).RP.E.P_chosen = 2;
+            GLMprm.choice.(Epm_nm).RP.E.E_chosen = 1;
+            switch Epm_nm
+                case 'Ep'
+                    GLMprm.choice.(Epm_nm).RP.E.fatigue = 2;
+                case 'Em'
+                    GLMprm.choice.(Epm_nm).RP.E.prevEfficacy = 7;
+            end
+            % chosen
+            GLMprm.model_onset.(Epm_nm).chosen = 'boxcar';
+            % effort perf (effort execution)
+            GLMprm.model_onset.(Epm_nm).Eperf = 'boxcar';
+            % feedback
+            GLMprm.model_onset.(Epm_nm).fbk = 'boxcar';
+        end % physical/mental loop
+    case 244 % control for SV (ref to high E)/Fp/RT
+        % general parameters
+        GLMprm.gal.orth_vars = 0;
+        GLMprm.gal.zPerRun = 0;
+        GLMprm.gal.grey_mask = 3;
+        GLMprm.gal.mask_probaThreshold = 5;
+        % loop per task
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'boxcar';
+            GLMprm.choice.(Epm_nm).RP.E.NV_mdl = 'bayesianModel_3';
+            GLMprm.choice.(Epm_nm).RP.E.NV_varOption = 4;
+            GLMprm.choice.(Epm_nm).RP.E.E_chosen = 1;
+            switch Epm_nm
+                case 'Ep'
+                    GLMprm.choice.(Epm_nm).RP.E.fatigue = 2;
+                case 'Em'
+                    GLMprm.choice.(Epm_nm).RP.E.prevEfficacy = 7;
+            end
+            % chosen
+            GLMprm.model_onset.(Epm_nm).chosen = 'boxcar';
+            % effort perf (effort execution)
+            GLMprm.model_onset.(Epm_nm).Eperf = 'boxcar';
+            % feedback
+            GLMprm.model_onset.(Epm_nm).fbk = 'boxcar';
+        end % physical/mental loop
+    case 245 % control for SV (ref to choice)/Fp/RT
+        % general parameters
+        GLMprm.gal.orth_vars = 0;
+        GLMprm.gal.zPerRun = 0;
+        GLMprm.gal.grey_mask = 3;
+        GLMprm.gal.mask_probaThreshold = 5;
+        % loop per task
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'boxcar';
+            GLMprm.choice.(Epm_nm).RP.E.NV_mdl = 'bayesianModel_3';
+            GLMprm.choice.(Epm_nm).RP.E.NV_chosen = 3;
+            GLMprm.choice.(Epm_nm).RP.E.E_chosen = 1;
+            switch Epm_nm
+                case 'Ep'
+                    GLMprm.choice.(Epm_nm).RP.E.fatigue = 2;
+                case 'Em'
+                    GLMprm.choice.(Epm_nm).RP.E.prevEfficacy = 7;
+            end
+            % chosen
+            GLMprm.model_onset.(Epm_nm).chosen = 'boxcar';
+            % effort perf (effort execution)
+            GLMprm.model_onset.(Epm_nm).Eperf = 'boxcar';
+            % feedback
+            GLMprm.model_onset.(Epm_nm).fbk = 'boxcar';
+        end % physical/mental loop
+        
+        %% same as 241-245 but with temporal derivative
+    case 246 % "simple" model
+        % general parameters
+        GLMprm.gal.add_drv = 1; % temporal derivative
+        GLMprm.gal.orth_vars = 0;
+        GLMprm.gal.zPerRun = 0;
+        GLMprm.gal.grey_mask = 3;
+        GLMprm.gal.mask_probaThreshold = 5;
+        % loop per task
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'boxcar';
+            GLMprm.choice.(Epm_nm).RP.E.E_chosen = 1;
+            % chosen
+            GLMprm.model_onset.(Epm_nm).chosen = 'boxcar';
+            % effort perf (effort execution)
+            GLMprm.model_onset.(Epm_nm).Eperf = 'boxcar';
+            % feedback
+            GLMprm.model_onset.(Epm_nm).fbk = 'boxcar';
+        end % physical/mental loop
+    case 247 % control for model parameters (1) (ref to high E)
+        % general parameters
+        GLMprm.gal.add_drv = 1; % temporal derivative
+        GLMprm.gal.orth_vars = 0;
+        GLMprm.gal.zPerRun = 0;
+        GLMprm.gal.grey_mask = 3;
+        GLMprm.gal.mask_probaThreshold = 5;
+        % loop per task
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'boxcar';
+            GLMprm.choice.(Epm_nm).RP.E.R_varOption = 2;
+            GLMprm.choice.(Epm_nm).RP.E.P_varOption = 2;
+            GLMprm.choice.(Epm_nm).RP.E.E_varOption = 1;
+            GLMprm.choice.(Epm_nm).RP.E.E_chosen = 1;
+            switch Epm_nm
+                case 'Ep'
+                    GLMprm.choice.(Epm_nm).RP.E.fatigue = 2;
+                case 'Em'
+                    GLMprm.choice.(Epm_nm).RP.E.prevEfficacy = 7;
+            end
+            % chosen
+            GLMprm.model_onset.(Epm_nm).chosen = 'boxcar';
+            % effort perf (effort execution)
+            GLMprm.model_onset.(Epm_nm).Eperf = 'boxcar';
+            % feedback
+            GLMprm.model_onset.(Epm_nm).fbk = 'boxcar';
+        end % physical/mental loop
+    case 248 % control for model parameters (2) (ref to chosen option)
+        % general parameters
+        GLMprm.gal.add_drv = 1; % temporal derivative
+        GLMprm.gal.orth_vars = 0;
+        GLMprm.gal.zPerRun = 0;
+        GLMprm.gal.grey_mask = 3;
+        GLMprm.gal.mask_probaThreshold = 5;
+        % loop per task
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'boxcar';
+            GLMprm.choice.(Epm_nm).RP.E.R_chosen = 2;
+            GLMprm.choice.(Epm_nm).RP.E.P_chosen = 2;
+            GLMprm.choice.(Epm_nm).RP.E.E_chosen = 1;
+            switch Epm_nm
+                case 'Ep'
+                    GLMprm.choice.(Epm_nm).RP.E.fatigue = 2;
+                case 'Em'
+                    GLMprm.choice.(Epm_nm).RP.E.prevEfficacy = 7;
+            end
+            % chosen
+            GLMprm.model_onset.(Epm_nm).chosen = 'boxcar';
+            % effort perf (effort execution)
+            GLMprm.model_onset.(Epm_nm).Eperf = 'boxcar';
+            % feedback
+            GLMprm.model_onset.(Epm_nm).fbk = 'boxcar';
+        end % physical/mental loop
+    case 249 % control for SV (ref to high E)/Fp/RT
+        % general parameters
+        GLMprm.gal.add_drv = 1; % temporal derivative
+        GLMprm.gal.orth_vars = 0;
+        GLMprm.gal.zPerRun = 0;
+        GLMprm.gal.grey_mask = 3;
+        GLMprm.gal.mask_probaThreshold = 5;
+        % loop per task
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'boxcar';
+            GLMprm.choice.(Epm_nm).RP.E.NV_mdl = 'bayesianModel_3';
+            GLMprm.choice.(Epm_nm).RP.E.NV_varOption = 4;
+            GLMprm.choice.(Epm_nm).RP.E.E_chosen = 1;
+            switch Epm_nm
+                case 'Ep'
+                    GLMprm.choice.(Epm_nm).RP.E.fatigue = 2;
+                case 'Em'
+                    GLMprm.choice.(Epm_nm).RP.E.prevEfficacy = 7;
+            end
+            % chosen
+            GLMprm.model_onset.(Epm_nm).chosen = 'boxcar';
+            % effort perf (effort execution)
+            GLMprm.model_onset.(Epm_nm).Eperf = 'boxcar';
+            % feedback
+            GLMprm.model_onset.(Epm_nm).fbk = 'boxcar';
+        end % physical/mental loop
+    case 250 % control for SV (ref to choice)/Fp/RT
+        % general parameters
+        GLMprm.gal.add_drv = 1; % temporal derivative
+        GLMprm.gal.orth_vars = 0;
+        GLMprm.gal.zPerRun = 0;
+        GLMprm.gal.grey_mask = 3;
+        GLMprm.gal.mask_probaThreshold = 5;
+        % loop per task
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'boxcar';
+            GLMprm.choice.(Epm_nm).RP.E.NV_mdl = 'bayesianModel_3';
+            GLMprm.choice.(Epm_nm).RP.E.NV_chosen = 3;
+            GLMprm.choice.(Epm_nm).RP.E.E_chosen = 1;
+            switch Epm_nm
+                case 'Ep'
+                    GLMprm.choice.(Epm_nm).RP.E.fatigue = 2;
+                case 'Em'
+                    GLMprm.choice.(Epm_nm).RP.E.prevEfficacy = 7;
+            end
+            % chosen
+            GLMprm.model_onset.(Epm_nm).chosen = 'boxcar';
+            % effort perf (effort execution)
+            GLMprm.model_onset.(Epm_nm).Eperf = 'boxcar';
+            % feedback
+            GLMprm.model_onset.(Epm_nm).fbk = 'boxcar';
+        end % physical/mental loop
+        
+    case 251 % similar to GLM 214 but replace SVch by Rch/Pch and zscore each variable separately to avoid problem with Rch/Pch
+        % general parameters
+        GLMprm.gal.orth_vars = 0;
+        GLMprm.gal.zPerRun = 0;
+        GLMprm.gal.grey_mask = 3;
+        GLMprm.gal.mask_probaThreshold = 5;
+        % loop per task
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % fixation crosses
+            GLMprm.model_onset.(Epm_nm).allCrosses = 'stick';
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'stick';
+            GLMprm.choice.(Epm_nm).RP.E.R_chosen = 4;
+            GLMprm.choice.(Epm_nm).RP.E.P_chosen = 4;
+            GLMprm.choice.(Epm_nm).RP.E.E_chosen = 4;
+            switch Epm_nm
+                case 'Ep'
+                    GLMprm.choice.(Epm_nm).RP.E.fatigue = 2;
+                case 'Em'
+                    GLMprm.choice.(Epm_nm).RP.E.prevEfficacy = 7;
+            end
+            GLMprm.choice.(Epm_nm).RP.E.RT = 2;
+            % chosen
+            GLMprm.model_onset.(Epm_nm).chosen = 'stick';
+            % effort perf (effort execution)
+            GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
+            % feedback
+            GLMprm.model_onset.(Epm_nm).fbk = 'stick';
+        end % physical/mental loop
 end % GLM number
 %% warnings: check compatibility of the GLM parameters entered
 isGLMokCheck(GLMprm);
