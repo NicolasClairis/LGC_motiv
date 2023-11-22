@@ -147,8 +147,9 @@ for iEpm = 1:length(Epm)
         end
         
         % effort chosen
-        switch GLMprm.preChoiceCross.(task_id_nm).E_chosen 
-            case 1
+        switch GLMprm.preChoiceCross.(task_id_nm).E_chosen
+            case 0
+            case {1,4}
                 n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                 reg_names.(task_id_nm){n_regs.(task_id_nm)} = 'REG preChoice Cross RP E: effort chosen';
                 dispRegFn([num2str(n_regs.(task_id_nm)),') preChoice Cross: effort chosen (levels) '],dispRegs);
@@ -162,6 +163,8 @@ for iEpm = 1:length(Epm)
                 dispRegFn([num2str(n_regs.(task_id_nm)),') preChoice Cross: effort-by-choice '],dispRegs);
                 % if derivative added => add derivatives
                 n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+            otherwise
+                error('case not ready yet');
         end
         
         % RT (last regressor)
@@ -603,7 +606,7 @@ for iEpm = 1:length(Epm)
                 % effort chosen option
                 switch GLMprm.choice.(task_id_nm).(RP_dispChoice_nm).(splitE_dispChoice_nm).E_chosen
                     case 0
-                    case 1
+                    case {1,4}
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                         reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG choice ',RP_dispChoice_nm,' ',splitE_dispChoice_nm,': effort chosen'];
                         dispRegFn([num2str(n_regs.(task_id_nm)),') choice: effort chosen (levels) '],dispRegs);
@@ -1424,7 +1427,7 @@ for iEpm = 1:length(Epm)
                 % effort chosen
                 switch GLMprm.chosen.(task_id_nm).(RP_dispChosen_nm).(splitE_dispChosen_nm).E_chosen
                     case 0
-                    case 1
+                    case {1,4}
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                         reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG chosen ',RP_dispChosen_nm,' ',splitE_dispChosen_nm,': effort chosen'];
                         dispRegFn([num2str(n_regs.(task_id_nm)),') chosen: effort chosen (levels) '],dispRegs);
@@ -1923,7 +1926,8 @@ for iEpm = 1:length(Epm)
                 
                 % effort chosen
                 switch GLMprm.preEffortCross.(task_id_nm).(RP_preEcross_nm).(splitE_preEcross_nm).E_chosen
-                    case 1
+                    case 0
+                    case {1,4}
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                         reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG preEffort cross ',RP_preEcross_nm,' ',splitE_preEcross_nm,': effort chosen'];
                         dispRegFn([num2str(n_regs.(task_id_nm)),') pre-effort cross: effort chosen (levels) '],dispRegs);
@@ -1937,6 +1941,8 @@ for iEpm = 1:length(Epm)
                         dispRegFn([num2str(n_regs.(task_id_nm)),') pre-effort cross: effort-by-choice '],dispRegs);
                         % if derivative added => add derivatives
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                    otherwise
+                        error('case not ready yet');
                 end
                 
                 % force peak
@@ -2221,7 +2227,8 @@ for iEpm = 1:length(Epm)
                 
                 % effort chosen
                 switch GLMprm.Eperf.(task_id_nm).(RP_Eperf_nm).(splitE_Eperf_nm).E_chosen
-                    case 1
+                    case 0
+                    case {1,4}
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                         reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG effort ',RP_Eperf_nm,' ',splitE_Eperf_nm,': effort chosen'];
                         dispRegFn([num2str(n_regs.(task_id_nm)),') effort period: effort chosen (levels) '],dispRegs);
@@ -2235,6 +2242,8 @@ for iEpm = 1:length(Epm)
                         dispRegFn([num2str(n_regs.(task_id_nm)),') effort period: effort-by-choice '],dispRegs);
                         % if derivative added => add derivatives
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                    otherwise
+                        error('case not ready yet');
                 end
                 
                 % force peak

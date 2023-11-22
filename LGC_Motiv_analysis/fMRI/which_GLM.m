@@ -192,6 +192,7 @@ function [GLMprm] = which_GLM(GLM)
 %       (2) effort difficulty associated to chosen option (Ep: duration to hold; Em: nb answers to give)
 %       (3) effort level of the high effort option (1/2/3)*choice (-1/+1)
 %       => Ech between (-3/-2/-1/1/2/3)
+%       (4) zscored effort level (0/1/2/3) associated to chosen option
 %
 %       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).E_unchosen
 %       (1) effort level (0/1/2/3) associated to unchosen option
@@ -375,6 +376,7 @@ function [GLMprm] = which_GLM(GLM)
 %       (2) effort difficulty associated to chosen option (Ep: duration to hold; Em: nb answers to give)
 %       (3) effort level of the high effort option (1/2/3)*choice (-1/+1)
 %       => Ech between (-3/-2/-1/1/2/3)
+%       (4) zscored effort level (0/1/2/3) associated to chosen option
 %
 %       .preEffortCross.Ep.(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).F_peak: physical effort only: force peak
 %       (1) force peak in voltage
@@ -487,6 +489,7 @@ function [GLMprm] = which_GLM(GLM)
 %       (2) effort difficulty associated to chosen option (Ep: duration to hold; Em: nb answers to give)
 %       (3) effort level of the high effort option (1/2/3)*choice (-1/+1)
 %       => Ech between (-3/-2/-1/1/2/3)
+%       (4) zscored effort level (0/1/2/3) associated to chosen option
 %
 %       .Eperf.Ep.(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).F_peak: physical effort only: force peak
 %       (1) force peak in voltage

@@ -772,6 +772,8 @@ if ismember(preChoiceCrossModel,{'stick','boxcar','boxcar_bis'})
                 preChoiceCross_modVals(n_preChoiceCrossMods,:) = raw_or_z(E_chosen);
             case 3
                 preChoiceCross_modVals(n_preChoiceCrossMods,:) = raw_or_z(E_chosen_bis);
+            case 4
+                preChoiceCross_modVals(n_preChoiceCrossMods,:) = zscore(E_chosen);
             otherwise
                 error('not ready yet');
         end
@@ -1174,6 +1176,8 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                         choice_modVals(n_choiceMods,:) = raw_or_z(E_chosen(choice_trial_idx));
                     case 3
                         choice_modVals(n_choiceMods,:) = raw_or_z(E_chosen_bis(choice_trial_idx));
+                    case 4
+                        choice_modVals(n_choiceMods,:) = zscore(E_chosen(choice_trial_idx));
                     otherwise
                         error('not ready yet');
                 end
@@ -1943,6 +1947,8 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                         chosen_modVals(n_chosenMods,:) = raw_or_z(E_chosen(chosen_trial_idx));
                     case 3
                         chosen_modVals(n_chosenMods,:) = raw_or_z(E_chosen_bis(chosen_trial_idx));
+                    case 4
+                        chosen_modVals(n_chosenMods,:) = zscore(E_chosen(chosen_trial_idx));
                     otherwise
                         error('not ready yet');
                 end
@@ -2454,6 +2460,8 @@ if ismember(preEffortCrossModel,{'stick','boxcar','boxcar_bis'})
                         preEcross_modVals(n_preEcrossMods,:) = raw_or_z(E_chosen(preEcross_trial_idx));
                     case 3
                         preEcross_modVals(n_preEcrossMods,:) = raw_or_z(E_chosen_bis(preEcross_trial_idx));
+                    case 4
+                        preEcross_modVals(n_preEcrossMods,:) = zscore(E_chosen(preEcross_trial_idx));
                     otherwise
                         error('not ready yet');
                 end
@@ -2748,6 +2756,8 @@ if ismember(EperfModel,{'stick','boxcar'})
                         Eperf_modVals(n_EperfMods,:) = raw_or_z(E_chosen(Eperf_trial_idx));
                     case 3
                         Eperf_modVals(n_EperfMods,:) = raw_or_z(E_chosen_bis(Eperf_trial_idx));
+                    case 4
+                        Eperf_modVals(n_EperfMods,:) = zscore(E_chosen(Eperf_trial_idx));
                     otherwise
                         error('not ready yet');
                 end
