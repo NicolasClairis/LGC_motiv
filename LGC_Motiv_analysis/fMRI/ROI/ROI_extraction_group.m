@@ -319,4 +319,14 @@ if fig_disp == 1
     end % figure loop
 end % figure display
 
+%% to create your own figure with your own order:
+
+% selectedCon_b = [X1 X2]; % enter index here
+% var_of_interest = con_vec_all(selectedCon_b,:);
+% ttest_var_of_interest = ttest_pval(selectedCon_b,:);
+% var_names = {'X1_nm','X2_nm'}; % enter names here
+% [roi_fig] = roi_graph(1:size(var_of_interest,1), n_ROIs,...
+%             var_of_interest, [], [],...
+%             var_names, ttest_var_of_interest);
+        
 end % function
