@@ -2,6 +2,8 @@
 % (ie, subjects) effects based on chatgpt help.
 % This script requires the Statistics and Machine Learning Matlab Toolbox
 % which contains the fitlme.m function.
+%
+% Designed by N. Clairis - november 2023
 
 % pool data inside a table
 dataTable = table([subject_id';subject_id';subject_id';subject_id'],...
