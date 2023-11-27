@@ -10,7 +10,8 @@ computerRoot = LGCM_root_paths;
 studyFolder = [computerRoot, study_nm, filesep];
 
 %% load ROI
-[condition_for_fMRI_extraction] = condition_for_fMRI(condition);
+% [condition_for_fMRI_extraction] = condition_for_fMRI(condition);
+condition_for_fMRI_extraction = condition;
 [ROI_trial_b_trial, ROI_subList,...
     ROI_nm, ROI_short_nm,...
     timePeriod_nm] = extract_ROI_betas_onsets_only_bis(computerRoot,...
