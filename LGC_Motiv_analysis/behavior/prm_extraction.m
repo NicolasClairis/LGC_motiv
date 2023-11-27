@@ -92,6 +92,9 @@ switch mdlType
                 end
             end % filter if subject extracted by Arthur
         end % subject list
+        
+        % add kR/kP ratio
+        prm.kR_div_kP = prm.kR./prm.kP;
     case 'simple'
         %% perform behavioral model
         figDispGroup = 0;
