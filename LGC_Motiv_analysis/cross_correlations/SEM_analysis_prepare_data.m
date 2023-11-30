@@ -49,7 +49,7 @@ if n_ROIs > 1
     error(['more than 1 ROI selected, mediation script cannot work that way',...
         'please focus on one and do it again.']);
 end
-ROI_short_Nm = ROI_nm.ROI_1_shortName;
+ROI_short_Nm = ROI_coords.ROI_nm.ROI_1_shortName;
 
 % define regression estimate to look for in the fMRI GLM
 con_idx = listdlg('promptstring','Which contrast?',...
@@ -57,8 +57,7 @@ con_idx = listdlg('promptstring','Which contrast?',...
 % con_nm = con_names{con_idx};
 con_nm_str = inputdlg('Contrast short name?');
 con_nm = con_nm_str{1};
-con_data = NaN(NS,1);
-con_data(:) = con_vec_all(con_idx, :, 1);
+dmPFC_fMRI(:) = con_vec_all(con_idx, :, 1);
 
 %% load behavioral parameters (THE/PHE/MHE/kEp/kEm)
 % THE/PHE/MHE
@@ -70,14 +69,14 @@ MHE(:) = choice_hE.Em;
 % kEp/kEm
 [prm] = prm_extraction(study_nm, subject_id);
 for iS2 = 1:NS
-    sub_nm2 = subject_id{iS};
-    bhvPrm_CID_idx_tmp = strcmp(prm.CID,['CID',sub_nm2]);
-    kEp(iS) = prm.kEp(bhvPrm_CID_idx_tmp);
-    kEm(iS) = prm.kEm(bhvPrm_CID_idx_tmp);
+    sub_nm2 = subject_id{iS2};
+    bhvPrm_CID_idx_tmp = strcmp(prm.CID,sub_nm2);
+    kEp(iS2) = prm.kEp(bhvPrm_CID_idx_tmp);
+    kEm(iS2) = prm.kEm(bhvPrm_CID_idx_tmp);
 end % subject loop
 
 %% create matrix
-mtrx_THE = [blood_Lac, dmPFC_Lac, dmPFC_fMRI];
+mtrx_THE = [blood_Lac, dmPFC_Lac, dmPFC_fMRI, PHE];
 % save data to load in the SEM gui
-save([SEM_path,'bloodLac_dmPFCLac_',ROI_short_Nm,...
-    '_GLM',GLM_str,'_',con_nm_str,'_',num2str(NS),'subs.mat'],'mtrx_THE');
+save([SEM_path,filesep,'bloodLac_dmPFCLac_',ROI_short_Nm,...
+    '_GLM',GLM_str{1},'_',con_nm,'_',num2str(NS),'subs.mat'],'mtrx_THE');
