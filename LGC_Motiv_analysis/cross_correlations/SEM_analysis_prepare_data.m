@@ -76,7 +76,7 @@ for iS2 = 1:NS
 end % subject loop
 
 %% create matrix
-mtrx_THE = [blood_Lac, dmPFC_Lac, dmPFC_fMRI, PHE];
+mtrx_THE = [blood_Lac, dmPFC_Lac, dmPFC_fMRI, THE, PHE, MHE, kEp, kEm];
 % save data to load in the SEM gui
 save([SEM_path,filesep,'bloodLac_dmPFCLac_',ROI_short_Nm,...
     '_GLM',GLM_str{1},'_',con_nm,'_',num2str(NS),'subs.mat'],'mtrx_THE');
