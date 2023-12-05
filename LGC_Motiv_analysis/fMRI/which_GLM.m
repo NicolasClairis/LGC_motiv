@@ -6946,7 +6946,7 @@ switch GLM
             % choice
             GLMprm.model_onset.(Epm_nm).choice = 'stick';
             GLMprm.choice.(Epm_nm).RP.E.NV_mdl = 'bayesianModel_3';
-            GLMprm.choice.(Epm_nm).RP.E.NV_chosen = 3;
+            GLMprm.choice.(Epm_nm).RP.E.NV_chosen = 6;
             GLMprm.choice.(Epm_nm).RP.E.E_chosen = 1;
             GLMprm.choice.(Epm_nm).RP.E.RT = 4;
             % chosen
