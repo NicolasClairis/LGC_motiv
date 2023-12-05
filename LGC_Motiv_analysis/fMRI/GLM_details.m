@@ -233,6 +233,7 @@ for iEpm = 1:length(Epm)
                 
                 % RT (first regressor)
                 switch GLMprm.choice.(task_id_nm).(RP_dispChoice_nm).(splitE_dispChoice_nm).RT
+                    case {0,1,2,3}
                     case 4
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                         reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG choice ',...
@@ -254,6 +255,27 @@ for iEpm = 1:length(Epm)
                         dispRegFn([num2str(n_regs.(task_id_nm)),') choice: RT (zscored per subject ie across all runs) '],dispRegs);
                         % if derivative added => add derivatives
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                    otherwise
+                        error('not ready yet');
+                end
+                
+                % net value chosen option (first regressor)
+                switch GLMprm.choice.(task_id_nm).(RP_dispChoice_nm).(splitE_dispChoice_nm).NV_chosen
+                    case {0,1,2,3}
+                    case {4,6} % NV(chosen)-NV(unchosen)
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                        reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG choice ',RP_dispChoice_nm,' ',splitE_dispChoice_nm,': NVch-NVunch'];
+                        dispRegFn([num2str(n_regs.(task_id_nm)),') choice: NVch-NVunch '],dispRegs);
+                        % if derivative added => add derivatives
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                    case 5 % p(chosen)
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                        reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG choice ',RP_dispChoice_nm,' ',splitE_dispChoice_nm,': p(chosen)'];
+                        dispRegFn([num2str(n_regs.(task_id_nm)),') choice: p(chosen) '],dispRegs);
+                        % if derivative added => add derivatives
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                    otherwise
+                        error('not ready yet');
                 end
                 
                 % Reward > Punishment
@@ -822,7 +844,7 @@ for iEpm = 1:length(Epm)
                 
                 % net value chosen option
                 switch GLMprm.choice.(task_id_nm).(RP_dispChoice_nm).(splitE_dispChoice_nm).NV_chosen
-                    case 0
+                    case {0,4,5,6}
                     case {1,3} % NV(chosen)-NV(unchosen)
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                         reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG choice ',RP_dispChoice_nm,' ',splitE_dispChoice_nm,': NVch-NVunch'];
@@ -1053,6 +1075,7 @@ for iEpm = 1:length(Epm)
                 
                 % RT (last regressor)
                 switch GLMprm.choice.(task_id_nm).(RP_dispChoice_nm).(splitE_dispChoice_nm).RT
+                    case {0,4,5,6}
                     case 1
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                         reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG choice ',RP_dispChoice_nm,' ',splitE_dispChoice_nm,': RT'];
@@ -1071,6 +1094,8 @@ for iEpm = 1:length(Epm)
                         dispRegFn([num2str(n_regs.(task_id_nm)),') choice: RT (zscored per subject ie across all runs) '],dispRegs);
                         % if derivative added => add derivatives
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                    otherwise
+                        error('not ready yet');
                 end
             end % loop effort levels
         end % loop reward/punishment
@@ -1119,6 +1144,7 @@ for iEpm = 1:length(Epm)
                 
                 % RT (first regressor)
                 switch GLMprm.chosen.(task_id_nm).(RP_dispChosen_nm).(splitE_dispChosen_nm).RT
+                    case {0,1,2,3}
                     case 4
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                         reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG chosen ',RP_dispChosen_nm,' ',splitE_dispChosen_nm,': RT'];
@@ -1137,17 +1163,40 @@ for iEpm = 1:length(Epm)
                         dispRegFn([num2str(n_regs.(task_id_nm)),') chosen: RT (zscored per subject ie across all runs) '],dispRegs);
                         % if derivative added => add derivatives
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                    otherwise
+                        error('not ready yet');
+                end
+                
+                % net value chosen option (first regressor)
+                switch GLMprm.chosen.(task_id_nm).(RP_dispChosen_nm).(splitE_dispChosen_nm).NV_chosen
+                    case {0,1,2,3}
+                    case {4,6}
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                        reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG chosen ',RP_dispChosen_nm,' ',splitE_dispChosen_nm,': NVch-NVunch'];
+                        dispRegFn([num2str(n_regs.(task_id_nm)),') chosen: NVch-NVunch '],dispRegs);
+                        % if derivative added => add derivatives
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                    case 5 % p(chosen)
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
+                        reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG chosen ',RP_dispChosen_nm,' ',splitE_dispChosen_nm,': p(chosen)'];
+                        dispRegFn([num2str(n_regs.(task_id_nm)),') chosen: p(chosen) '],dispRegs);
+                        % if derivative added => add derivatives
+                        n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                    otherwise
+                        error('not ready yet');
                 end
                 
                 % reward/punishment trial
                 switch GLMprm.chosen.(task_id_nm).(RP_dispChosen_nm).(splitE_dispChosen_nm).R_vs_P
-                        case 0
+                    case 0
                     case 1
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                         reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG chosen ',RP_dispChosen_nm,' ',splitE_dispChosen_nm,': R-P'];
                         dispRegFn([num2str(n_regs.(task_id_nm)),') chosen: R vs P '],dispRegs);
                         % if derivative added => add derivatives
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                    otherwise
+                        error('not ready yet');
                 end
                 
                 % binary variable indicating when choice = high effort option
@@ -1266,6 +1315,8 @@ for iEpm = 1:length(Epm)
                         dispRegFn([num2str(n_regs.(task_id_nm)),') chosen: |money left| (levels) '],dispRegs);
                         % if derivative added => add derivatives
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                    otherwise
+                        error('not ready yet');
                 end
                 
                 % money right
@@ -1610,7 +1661,7 @@ for iEpm = 1:length(Epm)
                 
                 % net value chosen option
                 switch GLMprm.chosen.(task_id_nm).(RP_dispChosen_nm).(splitE_dispChosen_nm).NV_chosen
-                    case 0
+                    case {0,4,5,6}
                     case {1,3}
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                         reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG chosen ',RP_dispChosen_nm,' ',splitE_dispChosen_nm,': NVch-NVunch'];
@@ -1623,6 +1674,8 @@ for iEpm = 1:length(Epm)
                         dispRegFn([num2str(n_regs.(task_id_nm)),') chosen: p(chosen) '],dispRegs);
                         % if derivative added => add derivatives
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                    otherwise
+                        error('not ready yet');
                 end
                 
                 % net value variable option
@@ -1658,6 +1711,8 @@ for iEpm = 1:length(Epm)
                         dispRegFn([num2str(n_regs.(task_id_nm)),') chosen: |net value high E - low E + bias| '],dispRegs);
                         % if derivative added => add derivatives
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                    otherwise
+                        error('not ready yet');
                 end
                 
                 % net value variable option bis
@@ -1693,6 +1748,8 @@ for iEpm = 1:length(Epm)
                         dispRegFn([num2str(n_regs.(task_id_nm)),') chosen: |net value high E - low E + bias| '],dispRegs);
                         % if derivative added => add derivatives
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                    otherwise
+                        error('not ready yet');
                 end
                 
                 if strcmp(task_id_nm, 'Ep') % physical effort only
@@ -1711,6 +1768,8 @@ for iEpm = 1:length(Epm)
                             dispRegFn([num2str(n_regs.(task_id_nm)),') chosen: effort integral overshoot '],dispRegs);
                             % if derivative added => add derivatives
                             n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                        otherwise
+                            error('not ready yet');
                     end
                     
                     % fatigue
@@ -1722,6 +1781,8 @@ for iEpm = 1:length(Epm)
                             dispRegFn([num2str(n_regs.(task_id_nm)),') chosen: fatigue '],dispRegs);
                             % if derivative added => add derivatives
                             n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                        otherwise
+                            error('not ready yet');
                     end
                     
                     % Ech*fatigue
@@ -1733,6 +1794,8 @@ for iEpm = 1:length(Epm)
                             dispRegFn([num2str(n_regs.(task_id_nm)),') chosen: Ech_x_fatigue '],dispRegs);
                             % if derivative added => add derivatives
                             n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                        otherwise
+                            error('not ready yet');
                     end
                 end % physical effort filter
                 
@@ -1746,6 +1809,8 @@ for iEpm = 1:length(Epm)
                             dispRegFn([num2str(n_regs.(task_id_nm)),') chosen: efficacy '],dispRegs);
                             % if derivative added => add derivatives
                             n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                        otherwise
+                            error('not ready yet');
                     end
                     
                     % efficacy during the previous trial
@@ -1757,6 +1822,8 @@ for iEpm = 1:length(Epm)
                             dispRegFn([num2str(n_regs.(task_id_nm)),') chosen: previous efficacy '],dispRegs);
                             % if derivative added => add derivatives
                             n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                        otherwise
+                            error('not ready yet');
                     end
                     
                     % (effort chosen)*(efficacy during the previous trial)
@@ -1768,12 +1835,14 @@ for iEpm = 1:length(Epm)
                             dispRegFn([num2str(n_regs.(task_id_nm)),') chosen: (Ech)x(previous efficacy) '],dispRegs);
                             % if derivative added => add derivatives
                             n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                        otherwise
+                            error('not ready yet');
                     end
                 end % mental effort filter
                 
                 % trial number
                 switch GLMprm.chosen.(task_id_nm).(RP_dispChosen_nm).(splitE_dispChosen_nm).trialN
-                        case 0
+                    case 0
                     case 1
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                         reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG chosen ',RP_dispChosen_nm,' ',splitE_dispChosen_nm,': trial number'];
@@ -1798,11 +1867,13 @@ for iEpm = 1:length(Epm)
                         dispRegFn([num2str(n_regs.(task_id_nm)),') chosen: (trial number)x(effort non-default) (effort levels) '],dispRegs);
                         % if derivative added => add derivatives
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                    otherwise
+                        error('not ready yet');
                 end
                 
                 % confidence
                 switch GLMprm.chosen.(task_id_nm).(RP_dispChosen_nm).(splitE_dispChosen_nm).confidence
-                        case 0
+                    case 0
                     case 1 % confidence rating by the subjects
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                         reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG chosen ',RP_dispChosen_nm,' ',splitE_dispChosen_nm,': confidence'];
@@ -1815,11 +1886,13 @@ for iEpm = 1:length(Epm)
                         dispRegFn([num2str(n_regs.(task_id_nm)),') chosen: confidence (inferred by the model) '],dispRegs);
                         % if derivative added => add derivatives
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                    otherwise
+                        error('not ready yet');
                 end
                 
                 % RT (last regressor)
                 switch GLMprm.chosen.(task_id_nm).(RP_dispChosen_nm).(splitE_dispChosen_nm).RT
-                        case 0
+                    case {0,4,5,6}
                     case 1
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + 1;
                         reg_names.(task_id_nm){n_regs.(task_id_nm)} = ['REG chosen ',RP_dispChosen_nm,' ',splitE_dispChosen_nm,': RT'];
@@ -1838,6 +1911,8 @@ for iEpm = 1:length(Epm)
                         dispRegFn([num2str(n_regs.(task_id_nm)),') chosen: RT (zscored per subject ie across all runs) '],dispRegs);
                         % if derivative added => add derivatives
                         n_regs.(task_id_nm) = n_regs.(task_id_nm) + add_drv;
+                    otherwise
+                        error('not ready yet');
                 end
             end % loop effort level
         end % loop reward/punishment

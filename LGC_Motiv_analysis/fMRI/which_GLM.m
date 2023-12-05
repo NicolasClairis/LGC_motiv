@@ -243,6 +243,8 @@ function [GLMprm] = which_GLM(GLM)
 %       (3) net value of the chosen-unchosen option based on the model defined in
 %       .(choice/chosen).(Ep.Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).NV_mdl (='mdl_X' or 'bayesianModel_X')
 %       Same as (1) but will also include the bias
+%       (4-6) same as (1-3) but as first regressor (just after RT) instead
+%       of after Ech
 %
 %       .(choice/chosen).(Ep/Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).NV_varOption
 %       (1) difference between net value of the high effort option and low effort options based on the model defined in

@@ -906,7 +906,7 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
             choice_modVals = [];
             
             % RT (first regressor)
-            if choiceModel_RT > 0 && ismember(choiceModel_RT,[4,5,6])
+            if choiceModel_RT > 0 && ~ismember(choiceModel_RT,[1,2,3])
                 n_choiceMods = n_choiceMods + 1;
                 choice_modNames{n_choiceMods} = 'choice RT';
                 switch choiceModel_RT
@@ -914,6 +914,24 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                         choice_modVals(n_choiceMods,:) = raw_or_z(choice_RT(choice_trial_idx));
                     case 5
                         choice_modVals(n_choiceMods,:) = zscore(choice_RT(choice_trial_idx));
+                    otherwise
+                        error('not ready yet');
+                end
+            end
+            
+            % net value chosen (first regressor)
+            if choiceModel_NV_chosen > 0 && ~ismember(choiceModel_NV_chosen,[1,2,3])
+                n_choiceMods = n_choiceMods + 1;
+                switch choiceModel_NV_chosen
+                    case 4
+                        choice_modNames{n_choiceMods} = 'NVch-NVunch';
+                        choice_modVals(n_choiceMods,:) = raw_or_z(NV_ch_min_unch(choice_trial_idx));
+                    case 5
+                        choice_modNames{n_choiceMods} = 'p(chosen)';
+                        choice_modVals(n_choiceMods,:) = raw_or_z(pChosen(choice_trial_idx));
+                    case 6
+                        choice_modNames{n_choiceMods} = 'NVch-NVunch';
+                        choice_modVals(n_choiceMods,:) = raw_or_z(NV_ch_min_unch_with_bias(choice_trial_idx));
                     otherwise
                         error('not ready yet');
                 end
@@ -1316,7 +1334,7 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
             end
             
             % net value chosen
-            if choiceModel_NV_chosen > 0
+            if choiceModel_NV_chosen > 0 && ~ismember(choiceModel_NV_chosen,[4,5,6])
                 n_choiceMods = n_choiceMods + 1;
                 switch choiceModel_NV_chosen
                     case 1
@@ -1540,7 +1558,7 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
             end
             
             % RT (last regressor)
-            if choiceModel_RT > 0 && ismember(choiceModel_RT,[1,2,3])
+            if choiceModel_RT > 0 && ~ismember(choiceModel_RT,[4,5,6])
                 n_choiceMods = n_choiceMods + 1;
                 choice_modNames{n_choiceMods} = 'choice RT';
                 switch choiceModel_RT
@@ -1674,7 +1692,7 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
             chosen_modVals = [];
             
             % RT (first regressor)
-            if chosenModel_RT > 0 && ismember(chosenModel_RT,[4,5,6])
+            if chosenModel_RT > 0 && ~ismember(chosenModel_RT,[1,2,3])
                 n_chosenMods = n_chosenMods + 1;
                 chosen_modNames{n_chosenMods} = 'choice RT';
                 switch chosenModel_RT
@@ -1682,6 +1700,24 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                         chosen_modVals(n_chosenMods,:) = raw_or_z(choice_RT(chosen_trial_idx));
                     case 5
                         chosen_modVals(n_chosenMods,:) = zscore(choice_RT(chosen_trial_idx));
+                    otherwise
+                        error('not ready yet');
+                end
+            end
+            
+            % net value chosen (first regressor)
+            if chosenModel_NV_chosen > 0 && ~ismember(chosenModel_NV_chosen,[1,2,3])
+                n_chosenMods = n_chosenMods + 1;
+                switch chosenModel_NV_chosen
+                    case 4
+                        chosen_modNames{n_chosenMods} = 'NVch-NVunch';
+                        chosen_modVals(n_chosenMods,:) = raw_or_z(NV_ch_min_unch(chosen_trial_idx));
+                    case 5
+                        chosen_modNames{n_chosenMods} = 'p(chosen)';
+                        chosen_modVals(n_chosenMods,:) = raw_or_z(pChosen(chosen_trial_idx));
+                    case 6
+                        chosen_modNames{n_chosenMods} = 'NVch-NVunch';
+                        chosen_modVals(n_chosenMods,:) = raw_or_z(NV_ch_min_unch_with_bias(chosen_trial_idx));
                     otherwise
                         error('not ready yet');
                 end
@@ -2087,7 +2123,7 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
             end
             
             % net value chosen
-            if chosenModel_NV_chosen > 0
+            if chosenModel_NV_chosen > 0 && ~ismember(chosenModel_NV_chosen,[4,5,6])
                 n_chosenMods = n_chosenMods + 1;
                 switch chosenModel_NV_chosen
                     case 1
@@ -2311,7 +2347,7 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
             end
             
             % RT (last regressor)
-            if chosenModel_RT > 0 && ismember(chosenModel_RT,[1,2,3])
+            if chosenModel_RT > 0 && ~ismember(chosenModel_RT,[4,5,6])
                 n_chosenMods = n_chosenMods + 1;
                 chosen_modNames{n_chosenMods} = 'choice RT';
                 switch chosenModel_RT
