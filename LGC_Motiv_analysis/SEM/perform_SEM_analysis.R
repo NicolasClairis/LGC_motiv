@@ -40,7 +40,7 @@ fit_model <- sem(sem_model,data=df)
 # Summarize the results since it is degree of fred = 0, it is just identified, so fit.measures won't give more
 summary(fit_model, fit.measures=TRUE, standardized = TRUE, rsquare=TRUE)
 # make a nice display
-semPaths(fit, "std", edge.label.cex = 1.0, curvePivot = TRUE)
+semPaths(fit_model, "std", edge.label.cex = 1.0, curvePivot = TRUE)
 
 
 ## kEp
@@ -60,7 +60,7 @@ fit_model <- sem(sem_model,data=df)
 # Summarize the results since it is degree of fred = 0, it is just identified, so fit.measures won't give more
 summary(fit_model, fit.measures=TRUE, standardized = TRUE, rsquare=TRUE)
 # make a nice display
-semPaths(fit, "std", edge.label.cex = 1.0, curvePivot = TRUE)
+semPaths(fit_model, "std", edge.label.cex = 1.0, curvePivot = TRUE)
 
 
 ## MHE
@@ -80,4 +80,17 @@ fit_model <- sem(sem_model,data=df)
 # Summarize the results since it is degree of fred = 0, it is just identified, so fit.measures won't give more
 summary(fit_model, fit.measures=TRUE, standardized = TRUE, rsquare=TRUE)
 # make a nice display
-semPaths(fit, "std", edge.label.cex = 1.0, curvePivot = TRUE)
+semPaths(fit_model, "std", edge.label.cex = 1.0, curvePivot = TRUE)
+
+
+## playground
+#create data frame
+df = data.frame(blood_Lac, dmPFC_Lac, dmPFC_fMRI_GLM200, kEp)
+sem_model <- '
+dmPFC_Lac ~ blood_Lac
+dmPFC_fMRI_GLM200 ~ dmPFC_Lac + blood_Lac
+kEp ~ dmPFC_fMRI_GLM200 + dmPFC_Lac
+'
+fit_model <- sem(sem_model,data=df)
+summary(fit_model, fit.measures=TRUE, standardized = TRUE, rsquare=TRUE)
+semPaths(fit_model, "std", edge.label.cex = 1.0, curvePivot = TRUE)
