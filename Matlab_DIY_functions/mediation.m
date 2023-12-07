@@ -225,6 +225,7 @@ if dispResults == 1
     xlabel([X_nm,' -  path a']);
     ylabel(M_nm);
     legend_size(pSize);
+    [txt_hdl_a, txt_size] = place_r_and_pval(stats.r.a, pval.a);
     
     % M => Y path (after removing X => Y)
     subplot(2,2,2);
@@ -239,6 +240,7 @@ if dispResults == 1
     xlabel([M_nm,' -  path b']);
     ylabel(Y_nm);
     legend_size(pSize);
+    txt_hdl_b = place_r_and_pval(stats.r.b, pval.b);
     
     % X => Y direct path without mediation (c)
     subplot(2,2,3);
@@ -253,6 +255,7 @@ if dispResults == 1
     xlabel([X_nm,' - path c']);
     ylabel(Y_nm);
     legend_size(pSize);
+    txt_hdl_c = place_r_and_pval(stats.r.c, pval.c);
     
     % X => Y direct path competition with M (c')
     subplot(2,2,4);
@@ -267,6 +270,12 @@ if dispResults == 1
     xlabel([X_nm,' - path c''']);
     ylabel(Y_nm);
     legend_size(pSize);
+    place_r_and_pval(stats.r.c_prime, pval.c_prime);
+    
+    % re-shape text handle size
+    txt_hdl_a.FontSize = txt_size;
+    txt_hdl_b.FontSize = txt_size;
+    txt_hdl_c.FontSize = txt_size;
     
     %% X/M/Y mediation with zscored values
     % extract relevant data for fit with raw values
@@ -300,6 +309,7 @@ if dispResults == 1
     xlabel(['z(',X_nm,') -  path a']);
     ylabel(['z(',M_nm,')']);
     legend_size(pSize);
+    [txt_hdl_a, txt_size] = place_r_and_pval(stats.r.a, pval.a);
     
     % z(M) => z(Y) path (after removing z(X) => z(Y))
     subplot(2,2,2);
@@ -314,6 +324,7 @@ if dispResults == 1
     xlabel(['z(',M_nm,') -  path b']);
     ylabel(['z(',Y_nm,')']);
     legend_size(pSize);
+    txt_hdl_b = place_r_and_pval(stats.r.b, pval.b);
     
     % z(X) => z(Y) direct path without mediation (c)
     subplot(2,2,3);
@@ -328,6 +339,7 @@ if dispResults == 1
     xlabel(['z(',X_nm,') - path c']);
     ylabel(['z(',Y_nm,')']);
     legend_size(pSize);
+    txt_hdl_c = place_r_and_pval(stats.r.c, pval.c);
     
     % X => Y direct path competition with M (c')
     subplot(2,2,4);
@@ -342,6 +354,12 @@ if dispResults == 1
     xlabel(['z(',X_nm,') - path c''']);
     ylabel(['z(',Y_nm,')']);
     legend_size(pSize);
+    place_r_and_pval(stats.r.c_prime, pval.c_prime);
+    
+    % re-shape text handle size
+    txt_hdl_a.FontSize = txt_size;
+    txt_hdl_b.FontSize = txt_size;
+    txt_hdl_c.FontSize = txt_size;
 end
 
 end % function
