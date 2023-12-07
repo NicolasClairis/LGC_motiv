@@ -100,13 +100,14 @@ yLabeling = [MRS_ROI_nm,' - ',metabolite_nm_bis];
 % metabolite = f(avg sleep)
 fig;
 hold on;
-hdl = scatter(hours(minutes(avgSleep)), metabolite_allSubs,...
+scatter(hours(minutes(avgSleep)), metabolite_allSubs,...
     'SizeData',mSize,'LineWidth',lWidthScatter,...
     'MarkerEdgeColor',blackCol,'MarkerFaceColor',greyCol);
 plot(hours(minutes(avgSleep(goodSubjects))), metabolite_fit_avgSleep,...
     'LineWidth',lWidth,'LineStyle','-','Color',blackCol);
 ylabel(yLabeling);
 xlabel('average sleep (h)');
+place_r_and_pval(r_corr.met_f_avgSleep(2), pval.met_f_avgSleep);
 legend_size(pSize);
 
 % metabolite = f(previous day sleep)
@@ -120,6 +121,7 @@ plot(hours(minutes(prevDaySleep(goodSubjects))),...
     'LineWidth',lWidth,'LineStyle','-','Color',blackCol);
 ylabel(yLabeling);
 xlabel('previous day sleep (h)');
+place_r_and_pval(r_corr.met_f_prevDaySleep(2), pval.met_f_prevDaySleep);
 legend_size(pSize);
 
 % metabolite = f(avg sleep)
@@ -133,7 +135,7 @@ plot(hours(minutes(delta_PrevDay_AvgSleep(goodSubjects))),...
     'LineWidth',lWidth,'LineStyle','-','Color',blackCol);
 ylabel(yLabeling);
 xlabel('previous day - avg sleep (h)');
+place_r_and_pval(r_corr.met_f_delta_PrevDay_AvgSleep(2), pval.met_f_delta_PrevDay_AvgSleep);
 legend_size(pSize);
-
 
 end % function
