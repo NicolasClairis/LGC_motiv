@@ -10,13 +10,17 @@ library(semPlot)
 
 # read the data prepared for SEM
 setwd("P:/boulot/postdoc_CarmenSandi/results/SEM")
-data_for_SEM <- readMat("bloodLac_dmPFCLac_MRS_dmPFC_GLM200_EpEm_Ech_63subs.mat")
+#data_for_SEM <- readMat("bloodLac_dmPFCLac_MRS_dmPFC_GLM200_EpEm_Ech_63subs.mat")
+#data_for_SEM <- readMat("bloodLac_dmPFCLac_MRS_dmPFC_GLM232_EpEm_Ech_63subs.mat")
+data_for_SEM <- readMat("bloodLac_dmPFCLac_MRS_dmPFC_GLM235_EpEm_Ech_63subs.mat")
+#data_for_SEM <- readMat("bloodLac_dmPFCLac_MRS_dmPFC_GLM242_EpEm_Ech_63subs.mat")
+#data_for_SEM <- readMat("bloodLac_dmPFCLac_MRS_dmPFC_GLM244_EpEm_Ech_63subs.mat")
 mtrx_SEM = data_for_SEM$mtrx.THE
 
 # rename variables
 blood_Lac = data_for_SEM$mtrx.THE[,1]
 dmPFC_Lac = data_for_SEM$mtrx.THE[,2]
-dmPFC_fMRI_GLM200 = data_for_SEM$mtrx.THE[,3]
+dmPFC_fMRI = data_for_SEM$mtrx.THE[,3]
 THE = data_for_SEM$mtrx.THE[,4]
 PHE = data_for_SEM$mtrx.THE[,5]
 MHE = data_for_SEM$mtrx.THE[,6]
@@ -25,72 +29,101 @@ kEm = data_for_SEM$mtrx.THE[,8]
 
 ## PHE
 #create data frame
-df = data.frame(blood_Lac, dmPFC_Lac, dmPFC_fMRI_GLM200, PHE)
+df = data.frame(blood_Lac, dmPFC_Lac, dmPFC_fMRI, PHE)
 
 # define the SEM model to try (check https://bookdown.org/jdholster1/idsr/structural-equation-modeling.html for more details as well)
 # Specify model, can also write it in a single line
 sem_model <- '
 dmPFC_Lac ~ blood_Lac
-dmPFC_fMRI_GLM200 ~ dmPFC_Lac + blood_Lac
-PHE ~ dmPFC_fMRI_GLM200 + dmPFC_Lac + blood_Lac
+dmPFC_fMRI ~ dmPFC_Lac + blood_Lac
+PHE ~ dmPFC_fMRI + dmPFC_Lac + blood_Lac
 '
 
 # Estimate our model
 fit_model <- sem(sem_model,data=df)
 # Summarize the results since it is degree of fred = 0, it is just identified, so fit.measures won't give more
 summary(fit_model, fit.measures=TRUE, standardized = TRUE, rsquare=TRUE)
+# in case you need to extract p.value very low use the following lines:
+# details <- summary(fit_model, fit.measures=TRUE, standardized = TRUE, rsquare=TRUE)
+#details$pe
 # make a nice display
 semPaths(fit_model, "std", edge.label.cex = 1.0, curvePivot = TRUE)
 
 
 ## kEp
 #create data frame
-df = data.frame(blood_Lac, dmPFC_Lac, dmPFC_fMRI_GLM200, kEp)
+df = data.frame(blood_Lac, dmPFC_Lac, dmPFC_fMRI, kEp)
 
 # define the SEM model to try (check https://bookdown.org/jdholster1/idsr/structural-equation-modeling.html for more details as well)
 # Specify model, can also write it in a single line
 sem_model <- '
 dmPFC_Lac ~ blood_Lac
-dmPFC_fMRI_GLM200 ~ dmPFC_Lac + blood_Lac
-kEp ~ dmPFC_fMRI_GLM200 + dmPFC_Lac + blood_Lac
+dmPFC_fMRI ~ dmPFC_Lac + blood_Lac
+kEp ~ dmPFC_fMRI + dmPFC_Lac + blood_Lac
 '
 
 # Estimate our model
 fit_model <- sem(sem_model,data=df)
 # Summarize the results since it is degree of fred = 0, it is just identified, so fit.measures won't give more
 summary(fit_model, fit.measures=TRUE, standardized = TRUE, rsquare=TRUE)
+# in case you need to extract p.value very low use the following line:
+#details <- summary(fit_model, fit.measures=TRUE, standardized = TRUE, rsquare=TRUE)
+#details$pe
 # make a nice display
 semPaths(fit_model, "std", edge.label.cex = 1.0, curvePivot = TRUE)
 
 
 ## MHE
 #create data frame
-df = data.frame(blood_Lac, dmPFC_Lac, dmPFC_fMRI_GLM200, MHE)
+df = data.frame(blood_Lac, dmPFC_Lac, dmPFC_fMRI, MHE)
 
 # define the SEM model to try (check https://bookdown.org/jdholster1/idsr/structural-equation-modeling.html for more details as well)
 # Specify model, can also write it in a single line
 sem_model <- '
 dmPFC_Lac ~ blood_Lac
-dmPFC_fMRI_GLM200 ~ dmPFC_Lac + blood_Lac
-MHE ~ dmPFC_fMRI_GLM200 + dmPFC_Lac + blood_Lac
+dmPFC_fMRI ~ dmPFC_Lac + blood_Lac
+MHE ~ dmPFC_fMRI + dmPFC_Lac + blood_Lac
 '
 
 # Estimate our model
 fit_model <- sem(sem_model,data=df)
 # Summarize the results since it is degree of fred = 0, it is just identified, so fit.measures won't give more
 summary(fit_model, fit.measures=TRUE, standardized = TRUE, rsquare=TRUE)
+# in case you need to extract p.value very low use the following lines:
+#details <- summary(fit_model, fit.measures=TRUE, standardized = TRUE, rsquare=TRUE)
+#details$pe
 # make a nice display
 semPaths(fit_model, "std", edge.label.cex = 1.0, curvePivot = TRUE)
 
-
+######################################################
 ## playground
+
+## PHE
 #create data frame
-df = data.frame(blood_Lac, dmPFC_Lac, dmPFC_fMRI_GLM200, kEp)
+df = data.frame(blood_Lac, dmPFC_Lac, dmPFC_fMRI, PHE)
 sem_model <- '
 dmPFC_Lac ~ blood_Lac
-dmPFC_fMRI_GLM200 ~ dmPFC_Lac + blood_Lac
-kEp ~ dmPFC_fMRI_GLM200 + dmPFC_Lac
+dmPFC_fMRI ~ dmPFC_Lac + blood_Lac
+PHE ~ dmPFC_fMRI
 '
 fit_model <- sem(sem_model,data=df)
 summary(fit_model, fit.measures=TRUE, standardized = TRUE, rsquare=TRUE)
+# in case you need to extract p.value very low use the following lines:
+#details <- summary(fit_model, fit.measures=TRUE, standardized = TRUE, rsquare=TRUE)
+#details$pe
+semPaths(fit_model, "std", edge.label.cex = 1.0, curvePivot = TRUE)
+
+##kEp
+#create data frame
+df = data.frame(blood_Lac, dmPFC_Lac, dmPFC_fMRI, kEp)
+sem_model <- '
+dmPFC_Lac ~ blood_Lac
+dmPFC_fMRI ~ dmPFC_Lac + blood_Lac
+kEp ~ dmPFC_fMRI
+'
+fit_model <- sem(sem_model,data=df)
+summary(fit_model, fit.measures=TRUE, standardized = TRUE, rsquare=TRUE)
+# in case you need to extract p.value very low use the following line:
+#details <- summary(fit_model, fit.measures=TRUE, standardized = TRUE, rsquare=TRUE)
+#details$pe
 semPaths(fit_model, "std", edge.label.cex = 1.0, curvePivot = TRUE)
