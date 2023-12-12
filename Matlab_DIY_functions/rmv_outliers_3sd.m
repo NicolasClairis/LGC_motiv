@@ -15,6 +15,16 @@ function [cleaned_X, idx_badSubs, cleaned_X_bis] = rmv_outliers_3sd(variable_X)
 %
 % cleaned_X_bis: 1*n1 vector where any outlier is replaced by a NaN
 
+%% check that input is ok in terms of lines/columns and adapt it if not
+if size(variable_X,1) > 1 && size(variable_X,2) == 1
+    % need to flip X to be in the correct range
+    variable_X = variable_X';
+elseif size(variable_X,1) > 1 && size(variable_X,2) > 1
+    error('variable_X is not a vector but a matrix');
+elseif size(variable_X,1) == 0 && size(variable_X,2) == 0
+    error('variable_X is empty');
+end
+
 %% check if there are NaNs
 idx_badSubs = isnan(variable_X);
 
