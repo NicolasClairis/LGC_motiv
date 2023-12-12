@@ -49,13 +49,13 @@ xlim_dims = xlim_vals(2) - xlim_vals(1);
 x_val_txt = xlim_vals(2) - xlim_dims/7;
 
 %% define y coordinate depending on if correlation is negative or positive (to avoid overlapping relevant values)
-if r_corr < 0 % inverted correlation
+if r_corr < 0 % negative correlation (top right of the screen)
     ylim_vals = ylim();
     y_val_txt = ylim_vals(2);
-else
+elseif r_corr >= 0 % positive correlation (bottom right of the screen)
     ylim_vals = ylim();
     ylim_dims = ylim_vals(2) - ylim_vals(1);
-    y_val_txt = ylim_vals(2) - ylim_dims/7;
+    y_val_txt = ylim_vals(1) + ylim_dims/7;
 end
 
 %% text size
