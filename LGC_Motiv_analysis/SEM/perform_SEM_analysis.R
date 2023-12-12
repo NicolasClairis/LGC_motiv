@@ -20,6 +20,12 @@ setwd("P:/boulot/postdoc_CarmenSandi/results/SEM")
 #data_for_SEM <- readMat("bloodLac_dmPFCLac_MRS_dmPFC_GLM235_EpEm_Ech_63subs.mat")
 #data_for_SEM <- readMat("bloodLac_dmPFCLac_MRS_dmPFC_GLM242_EpEm_Ech_63subs.mat")
 #data_for_SEM <- readMat("bloodLac_dmPFCLac_MRS_dmPFC_GLM244_EpEm_Ech_63subs.mat")
+
+#data_for_SEM <- readMat("bloodLac_dmPFCLac_MRS_dmPFC_GLM200_EpEm_Ech_60subs_no_outliers.mat")
+#data_for_SEM <- readMat("bloodLac_dmPFCLac_MRS_dmPFC_GLM232_EpEm_Ech_60subs_no_outliers.mat")
+#data_for_SEM <- readMat("bloodLac_dmPFCLac_MRS_dmPFC_GLM235_EpEm_Ech_60subs_no_outliers.mat")
+#data_for_SEM <- readMat("bloodLac_dmPFCLac_MRS_dmPFC_GLM242_EpEm_Ech_60subs_no_outliers.mat")
+#data_for_SEM <- readMat("bloodLac_dmPFCLac_MRS_dmPFC_GLM244_EpEm_Ech_60subs_no_outliers.mat")
 mtrx_SEM = data_for_SEM$mtrx.THE
 
 # rename variables
