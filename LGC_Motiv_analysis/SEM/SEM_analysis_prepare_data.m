@@ -77,6 +77,47 @@ end % subject loop
 
 %% create matrix
 mtrx_THE = [blood_Lac, dmPFC_Lac, dmPFC_fMRI, THE, PHE, MHE, kEp, kEm];
-% save data to load in the SEM gui
+% save data to load in R
 save([SEM_path,filesep,'bloodLac_dmPFCLac_',ROI_short_Nm,...
     '_GLM',GLM_str{1},'_',con_nm,'_',num2str(NS),'subs.mat'],'mtrx_THE');
+
+% %% load
+% SEM_path = fullfile('P:','boulot','postdoc_CarmenSandi','results','SEM');
+% ROI_short_Nm = 'MRS_dmPFC';
+% GLM_str = inputdlg('Which fMRI GLM?');
+% GLM = str2double(GLM_str);
+% con_nm = 'EpEm_Ech';
+% NS = 63;
+% load([SEM_path,filesep,'bloodLac_dmPFCLac_',ROI_short_Nm,...
+%     '_GLM',GLM_str{1},'_',con_nm,'_',num2str(NS),'subs.mat'],'mtrx_THE');
+% blood_Lac=mtrx_THE(:,1);
+% dmPFC_Lac=mtrx_THE(:,2);
+% dmPFC_fMRI=mtrx_THE(:,3);
+% THE=mtrx_THE(:,4);
+% PHE=mtrx_THE(:,5);
+% MHE=mtrx_THE(:,6);
+% kEp=mtrx_THE(:,7);
+% kEm=mtrx_THE(:,8);
+%% create matrix bis but after outlier removal
+% remove "outliers" (><mean*3SD)
+[~, ~, blood_Lac_clean] = rmv_outliers_3sd(blood_Lac);
+[~, ~, dmPFC_Lac_clean] = rmv_outliers_3sd(dmPFC_Lac);
+[~, ~, dmPFC_fMRI_clean] = rmv_outliers_3sd(dmPFC_fMRI);
+[~, ~, PHE_clean] = rmv_outliers_3sd(PHE);
+[~, ~, kEp_clean] = rmv_outliers_3sd(kEp);
+goodSubs_bis = ~isnan(blood_Lac_clean).*~isnan(dmPFC_Lac_clean).*~isnan(dmPFC_fMRI_clean).*~isnan(PHE_clean).*~isnan(kEp_clean) == 1;
+boxcox_kEp_clean = boxcox(kEp);
+
+mtrx_THE_no_outliers = [blood_Lac(goodSubs_bis),...
+    dmPFC_Lac(goodSubs_bis),...
+    dmPFC_fMRI(goodSubs_bis),...
+    THE(goodSubs_bis),...
+    PHE(goodSubs_bis),...
+    MHE(goodSubs_bis),...
+    kEp(goodSubs_bis),...
+    kEm(goodSubs_bis),...
+    boxcox_kEp_clean(goodSubs_bis)];
+NS_no_outliers = sum(goodSubs_bis);
+% save data to load in R
+save([SEM_path,filesep,'bloodLac_dmPFCLac_',ROI_short_Nm,...
+    '_GLM',GLM_str{1},'_',con_nm,'_',num2str(NS_no_outliers),'subs_no_outliers.mat'],'mtrx_THE_no_outliers');
