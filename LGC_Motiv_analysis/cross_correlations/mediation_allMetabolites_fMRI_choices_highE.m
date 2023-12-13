@@ -208,30 +208,30 @@ end % ROI loop
 % current BOLD contrast but the information from the previous test was kept
 % clear('mediation_path','pval','N_goodSubs');
 
-% %% lines to launch to display metabolite of interest without outliers (but without boxcox transformation)
-% MRS_ROI_nm='dmPFC';
-% metabolite_nm='Glu_div_GSH';
-% [metabolite_nm_bis] = metab_div_rnm(metabolite_nm);
-% metabolite_allSubs = metabolites.(MRS_ROI_nm).(metabolite_nm);
-% dispMed = 1;
-% X_nm = [MRS_ROI_nm,'-',metabolite_nm_bis];
-% M_nm='dmPFC=f(Ech)';
-% 
-% % Ep
-% prm_nm='Ep';
-% behavPrm = choice_hE.(prm_nm);
-% Y_nm = ['choices ',prm_nm,' (%)'];
-% 
-% [~, ~, metabolite_clean] = rmv_outliers_3sd(metabolite_allSubs);
-% [~, ~, con_data_clean] = rmv_outliers_3sd(con_data);
-% [~, ~, behavPrm_clean] = rmv_outliers_3sd(behavPrm);
-% goodSubs_bis = ~isnan(metabolite_clean).*~isnan(con_data_clean).*~isnan(behavPrm_clean) == 1;
-% 
-% mediation(metabolite_allSubs(goodSubs_bis),...
-%     con_data(goodSubs_bis),...
-%     behavPrm(goodSubs_bis),...
-%     X_nm, M_nm, Y_nm, dispMed);
-% 
+%% lines to launch to display metabolite of interest without outliers (but without boxcox transformation)
+MRS_ROI_nm='dmPFC';
+metabolite_nm='Lac';
+[metabolite_nm_bis] = metab_div_rnm(metabolite_nm);
+metabolite_allSubs = metabolites.(MRS_ROI_nm).(metabolite_nm);
+dispMed = 1;
+X_nm = [MRS_ROI_nm,'-',metabolite_nm_bis];
+M_nm='dmPFC=f(Ech)';
+
+% Ep
+prm_nm='Ep';
+behavPrm = choice_hE.(prm_nm);
+Y_nm = ['choices ',prm_nm,' (%)'];
+
+[~, ~, metabolite_clean] = rmv_outliers_3sd(metabolite_allSubs);
+[~, ~, con_data_clean] = rmv_outliers_3sd(con_data);
+[~, ~, behavPrm_clean] = rmv_outliers_3sd(behavPrm);
+goodSubs_bis = ~isnan(metabolite_clean).*~isnan(con_data_clean).*~isnan(behavPrm_clean) == 1;
+
+mediation(metabolite_allSubs(goodSubs_bis),...
+    con_data(goodSubs_bis),...
+    behavPrm(goodSubs_bis),...
+    X_nm, M_nm, Y_nm, dispMed);
+
 % % Em
 % prm_nm='Em';
 % behavPrm = choice_hE.(prm_nm);
@@ -272,8 +272,8 @@ end % ROI loop
 %     num2str(max(pval.no_outliers.dmPFC.Glu_div_GSH.Em.a,...
 %     pval.no_outliers.dmPFC.Glu_div_GSH.Em.b))]);
 
-metab_nm = 'GSH'; % 'Glu_div_GSH'
-metab_nm_bis = strrep(metab_nm,'_div_','/');
+metab_nm = 'Lac'; % 'Glu_div_GSH'
+metab_nm_bis = metab_div_rnm(metabolite_nm);
 %% Ep+Em
 disp(['EpEm dmPFC-',metab_nm_bis,': ',...
     'c = ',num2str(round(stats.no_outliers.dmPFC.(metab_nm).EpEm.r.c,3)),...
@@ -323,3 +323,48 @@ file_nm = [savePath,filesep,'GLM',num2str(GLM),'_',...
 if ~exist(file_nm,'file')
     save(file_nm);
 end
+
+
+
+%% insula control
+%% Ep+Em
+disp(['EpEm aINS-',metab_nm_bis,': ',...
+    'c = ',num2str(round(stats.no_outliers.aIns.(metab_nm).EpEm.r.c,3)),...
+    '; p(c) =  ',num2str(round(pval.no_outliers.aIns.(metab_nm).EpEm.c,3))]);
+disp(['EpEm aIns-',metab_nm_bis,': ',...
+    'a = ',num2str(round(stats.no_outliers.aIns.(metab_nm).EpEm.r.a,3)),...
+    '; p(a) =  ',num2str(round(pval.no_outliers.aIns.(metab_nm).EpEm.a,3))]);
+disp(['EpEm aIns-',metab_nm_bis,': ',...
+    'b = ',num2str(round(stats.no_outliers.aIns.(metab_nm).EpEm.r.b,3)),...
+    '; p(b) =  ',num2str(round(pval.no_outliers.aIns.(metab_nm).EpEm.b,3))]);
+disp(['EpEm aIns-',metab_nm_bis,': ',...
+    'c'' = ',num2str(round(stats.no_outliers.aIns.(metab_nm).EpEm.r.c_prime,3)),...
+    '; p(c'') =  ',num2str(round(pval.no_outliers.aIns.(metab_nm).EpEm.c_prime,3))]);
+
+%% Ep
+disp(['Ep aIns-',metab_nm_bis,': ',...
+    'c = ',num2str(round(stats.no_outliers.aIns.(metab_nm).Ep.r.c,3)),...
+    '; p(c) =  ',num2str(round(pval.no_outliers.aIns.(metab_nm).Ep.c,3))]);
+disp(['Ep aIns-',metab_nm_bis,': ',...
+    'a = ',num2str(round(stats.no_outliers.aIns.(metab_nm).Ep.r.a,3)),...
+    '; p(a) =  ',num2str(round(pval.no_outliers.aIns.(metab_nm).Ep.a,3))]);
+disp(['Ep aIns-',metab_nm_bis,': ',...
+    'b = ',num2str(round(stats.no_outliers.aIns.(metab_nm).Ep.r.b,3)),...
+    '; p(b) =  ',num2str(round(pval.no_outliers.aIns.(metab_nm).Ep.b,3))]);
+disp(['Ep aIns-',metab_nm_bis,': ',...
+    'c'' = ',num2str(round(stats.no_outliers.aIns.(metab_nm).Ep.r.c_prime,3)),...
+    '; p(c'') =  ',num2str(round(pval.no_outliers.aIns.(metab_nm).Ep.c_prime,3))]);
+
+%% Em
+disp(['Em aIns-',metab_nm_bis,': ',...
+    'r(c) = ',num2str(round(stats.no_outliers.aIns.(metab_nm).Em.r.c,3)),...
+    '; p(c) =  ',num2str(round(pval.no_outliers.aIns.(metab_nm).Em.c,3))]);
+disp(['Em aIns-',metab_nm_bis,': ',...
+    'r(a) = ',num2str(round(stats.no_outliers.aIns.(metab_nm).Em.r.a,3)),...
+    '; p(a) =  ',num2str(round(pval.no_outliers.aIns.(metab_nm).Em.a,3))]);
+disp(['Em aIns-',metab_nm_bis,': ',...
+    'r(b) = ',num2str(round(stats.no_outliers.aIns.(metab_nm).Em.r.b,3)),...
+    '; p(b) =  ',num2str(round(pval.no_outliers.aIns.(metab_nm).Em.b,3))]);
+disp(['Em aIns-',metab_nm_bis,': ',...
+    'r(c'') = ',num2str(round(stats.no_outliers.aIns.(metab_nm).Em.r.c_prime,3)),...
+    '; p(c'') =  ',num2str(round(pval.no_outliers.aIns.(metab_nm).Em.c_prime,3))]);

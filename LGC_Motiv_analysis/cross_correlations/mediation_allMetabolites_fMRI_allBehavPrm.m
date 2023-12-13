@@ -210,28 +210,28 @@ end % ROI loop
 % current BOLD contrast but the information from the previous test was kept
 % clear('mediation_path','pval','N_goodSubs');
 
-% %% lines to launch to display metabolite of interest
-% MRS_ROI_nm = 'dmPFC';
-% metabolite_nm = 'Glu_div_GSH';
-% [metabolite_nm_bis] = metab_div_rnm(metabolite_nm);
-% metabolite_allSubs = metabolites.(MRS_ROI_nm).(metabolite_nm);
-% dispMed = 1;
-% X_nm = [MRS_ROI_nm,'-',metabolite_nm_bis];
-% M_nm = 'dmPFC=f(Ech)';
-% 
-% % kEp
-% prm_nm='kEp';
-% behavPrm = prm.(prm_nm);
-% Y_nm = prm_nm;
-% [~, ~, metabolite_clean] = rmv_outliers_3sd(metabolite_allSubs);
-% [~, ~, con_data_clean] = rmv_outliers_3sd(con_data);
-% [~, ~, behavPrm_clean] = rmv_outliers_3sd(behavPrm);
-% goodSubs_bis = ~isnan(metabolite_clean).*~isnan(con_data_clean).*~isnan(behavPrm_clean) == 1;
-% 
-% mediation(metabolite_allSubs(goodSubs_bis),...
-%     con_data(goodSubs_bis),...
-%     behavPrm(goodSubs_bis),...
-%     X_nm, M_nm, Y_nm, dispMed);
+%% lines to launch to display metabolite of interest
+MRS_ROI_nm = 'dmPFC';
+metabolite_nm = 'Lac';
+[metabolite_nm_bis] = metab_div_rnm(metabolite_nm);
+metabolite_allSubs = metabolites.(MRS_ROI_nm).(metabolite_nm);
+dispMed = 1;
+X_nm = [MRS_ROI_nm,'-',metabolite_nm_bis];
+M_nm = 'dmPFC=f(Ech)';
+
+% kEp
+prm_nm='kEp';
+behavPrm = prm.(prm_nm);
+Y_nm = prm_nm;
+[~, ~, metabolite_clean] = rmv_outliers_3sd(metabolite_allSubs);
+[~, ~, con_data_clean] = rmv_outliers_3sd(con_data);
+[~, ~, behavPrm_clean] = rmv_outliers_3sd(behavPrm);
+goodSubs_bis = ~isnan(metabolite_clean).*~isnan(con_data_clean).*~isnan(behavPrm_clean) == 1;
+
+mediation(metabolite_allSubs(goodSubs_bis),...
+    con_data(goodSubs_bis),...
+    behavPrm(goodSubs_bis),...
+    X_nm, M_nm, Y_nm, dispMed);
 % 
 % % kEm
 % prm_nm='kEm';
@@ -282,7 +282,7 @@ end % ROI loop
 %     num2str(max(pval.no_outliers.dmPFC.Glu_div_GSH.kEm.a,...
 %     pval.no_outliers.dmPFC.Glu_div_GSH.kEm.b))]);
 
-metab_nm = 'GSH'; % 'Glu_div_GSH'
+metab_nm = 'Lac'; % 'Glu_div_GSH'
 metab_nm_bis = strrep(metab_nm,'_div_','/');
 % kEp
 disp(['kEp dmPFC-',metab_nm_bis,': ',...
@@ -318,3 +318,32 @@ file_nm = [savePath,filesep,'GLM',num2str(GLM),'_',...
 if ~exist(file_nm,'file')
     save(file_nm);
 end
+
+
+%% control insula
+% kEp
+disp(['kEp aIns-',metab_nm_bis,': ',...
+    'r(c) = ',num2str(round(stats.no_outliers.aIns.(metab_nm).kEp.r.c,3)),...
+    '; p(c) =  ',num2str(round(pval.no_outliers.aIns.(metab_nm).kEp.c,3))]);
+disp(['kEp aIns-',metab_nm_bis,': ',...
+    'r(a) = ',num2str(round(stats.no_outliers.aIns.(metab_nm).kEp.r.a,3)),...
+    '; p(a) =  ',num2str(round(pval.no_outliers.aIns.(metab_nm).kEp.a,3))]);
+disp(['kEp aIns-',metab_nm_bis,': ',...
+    'r(b) = ',num2str(round(stats.no_outliers.aIns.(metab_nm).kEp.r.b,3)),...
+    '; p(b) =  ',num2str(round(pval.no_outliers.aIns.(metab_nm).kEp.b,3))]);
+disp(['kEp aIns-',metab_nm_bis,': ',...
+    'r(c'') = ',num2str(round(stats.no_outliers.aIns.(metab_nm).kEp.r.c_prime,3)),...
+    '; p(c'') =  ',num2str(round(pval.no_outliers.aIns.(metab_nm).kEp.c_prime,3))]);
+% kEm
+disp(['kEm aIns-',metab_nm_bis,': ',...
+    'r(c) = ',num2str(round(stats.no_outliers.aIns.(metab_nm).kEm.r.c,3)),...
+    '; p(c) =  ',num2str(round(pval.no_outliers.aIns.(metab_nm).kEm.c,3))]);
+disp(['kEm aIns-',metab_nm_bis,': ',...
+    'r(a) = ',num2str(round(stats.no_outliers.aIns.(metab_nm).kEm.r.a,3)),...
+    '; p(a) =  ',num2str(round(pval.no_outliers.aIns.(metab_nm).kEm.a,3))]);
+disp(['kEm aIns-',metab_nm_bis,': ',...
+    'r(b) = ',num2str(round(stats.no_outliers.aIns.(metab_nm).kEm.r.b,3)),...
+    '; p(b) =  ',num2str(round(pval.no_outliers.aIns.(metab_nm).kEm.b,3))]);
+disp(['kEm aIns-',metab_nm_bis,': ',...
+    'r(c'') = ',num2str(round(stats.no_outliers.aIns.(metab_nm).kEm.r.c_prime,3)),...
+    '; p(c'') =  ',num2str(round(pval.no_outliers.aIns.(metab_nm).kEm.c_prime,3))]);
