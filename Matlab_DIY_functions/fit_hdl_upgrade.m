@@ -13,7 +13,7 @@ function[] = fit_hdl_upgrade(fit_hdl, color_to_use)
 [~, lWidth, col] = general_fig_prm;
 
 %% improve display
-fit_hdl.LineStyle = '--';
+fit_hdl.LineStyle = '-';
 if ~exist('color_to_use','var') || isempty(color_to_use)
     fit_hdl.Color = col.grey;
 else
