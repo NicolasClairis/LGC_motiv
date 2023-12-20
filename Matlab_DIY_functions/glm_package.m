@@ -40,6 +40,26 @@ function[r_corr, betas, pval, y_fit, x_sorted, y_fit_xSorted] = glm_package(x_va
 % This script requires the Statistics and Machine Learning Toolbox
 % https://www.mathworks.com/products/statistics.html
 
+%% control for correct orientation of variables of interest
+% x_var should be also in the following format: nTrials*nVariables
+if isempty(x_var)
+    error('x_var is empty');
+elseif size(x_var,2) > size(x_var,1)
+    if  size(x_var,1) == 1 % flip X if entered as 1*nTrials instead of nTrials*1
+        x_var = x_var';
+    elseif  size(x_var,1) > 1 % ask the experimenter to modify X in that more complex case just to be sure all is good
+        error(['Careful X should be entered as nTrials*nVars ',...
+            'but it seems that there are more trials than variables ',...
+            'in the entered input.']);
+    end
+end
+
+% y_var has to be in the following format: nTrials*1
+if isempty(y_var)
+    error('y_var is empty');
+elseif size(y_var,1) == 1 && size(y_var,2) > size(y_var,1) % flip y if entered as 1*nTrials instead
+    y_var = y_var';
+end
 
 %% initialize inputs
 % distribution
@@ -61,7 +81,7 @@ end
 pval = stats.p;
 %% extract correlation coefficients
 if size(x_var,2) == 1
-    [r_corr] = glmfit(nanzscore(x_var), nanzscore(y_var),distrib);
+    [z_betas] = glmfit(nanzscore(x_var), nanzscore(y_var),distrib,'Constant',constant);
 elseif size(x_var,2) > 1
     % if more then 1 x.variables => need to zscore each independently
     z_x_var = NaN(size(x_var));
@@ -70,7 +90,13 @@ elseif size(x_var,2) > 1
         z_x_var(:,iX_var) = nanzscore(x_var(:,iX_var));
     end % loop through x_var variables
     
-    [r_corr] = glmfit(z_x_var, nanzscore(y_var),distrib,'Constant',constant);
+    [z_betas] = glmfit(z_x_var, nanzscore(y_var),distrib,'Constant',constant);
+end
+switch constant
+    case 'off'
+        r_corr = z_betas;
+    case 'on' % ignore constant
+        r_corr = z_betas(2:end);
 end
 
 %% extract corresponding fit
