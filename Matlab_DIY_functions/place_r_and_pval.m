@@ -25,13 +25,13 @@ end
 % include a number of stars depending on if pval significant or not
 if pval > 0.05
     pval_stars = '';
-elseif pval > 0.01 && pval < 0.05
+elseif pval > 0.01 && pval <= 0.05
     pval_stars = '*';
-elseif pval > 0.005 && pval < 0.01
+elseif pval > 0.005 && pval <= 0.01
     pval_stars = '**';
-elseif pval > 0.001 && pval < 0.005
+elseif pval > 0.001 && pval <= 0.005
     pval_stars = '***';
-elseif pval < 0.001
+elseif pval <= 0.001
     pval_stars = '****';
 end
 r_corr_str = [num2str(r_corr),pval_stars];
