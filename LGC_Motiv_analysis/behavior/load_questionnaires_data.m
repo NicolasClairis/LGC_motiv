@@ -15,7 +15,7 @@ switch list_pcs{which_pc_idx}
     case 'Lab'
         hardDisk = 'M:';
     case 'Home'
-        hardDisk = 'L:';
+        hardDisk = '\\sv-nas1.rcp.epfl.ch\Sandi-lab\';
 end
 pcPath = fullfile(hardDisk,'human_data_private',...
     'raw_data_subject','study1');
