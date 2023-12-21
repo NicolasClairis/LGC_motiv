@@ -64,13 +64,13 @@ end % question loop
 FFQ_results = table(subject_id);
 
 % extract name of all metabolites in the list
-metabolite_names = food_to_metabolites_conversion_table.Properties.VariableNames(5:end);
-n_mb = length(metabolite_names);
+metabolite_names_v0 = food_to_metabolites_conversion_table.Properties.VariableNames(5:end);
+n_mb = length(metabolite_names_v0);
 
 % loop through each metabolite to extract and convert the FFQ into a corresponding
 % concentration of metabolite
 for i_mb = 1:n_mb
-    mb_nm = metabolite_names{i_mb};
+    mb_nm = metabolite_names_v0{i_mb};
     mb_perSub_perWeek = zeros(NS,1);
     
     % loop through subjects
@@ -146,6 +146,10 @@ for i_mb = 1:n_mb
            FFQ_results.([mb_nm,'_PerWeek']) = mb_perSub_perWeek;
     end
 end % metabolite loop
+% re-extract labels
+metabolite_names = fieldnames(FFQ_results);
+% remove subjects and non-nutrient labels
+metabolite_names(ismember(metabolite_names,{'subject_id','Properties','Row','Variables'})) = [];
 % save all relevant data in mat format
 save([resultsPath,'FFQ_metabolites_extracted_results.mat'],'FFQ_results',...
     'energy_kcalPerWeek','fat_mgPerWeek','sugars_mgPerWeek',...
@@ -155,7 +159,8 @@ save([resultsPath,'FFQ_metabolites_extracted_results.mat'],'FFQ_results',...
     'Magnesium_mgPerWeek', 'Glc_mgPerWeek', 'Lactose_mgPerWeek',...
     'Lactose_mgPerWeek',...
     'FFQ_data','food_to_metabolites_conversion_table',...
-    'subject_id','metabolite_names','food_questions','n_mb','nFoodQuestions','NS');
+    'subject_id','metabolite_names_v0','metabolite_names',...
+    'food_questions','n_mb','nFoodQuestions','NS');
 
 % save data as excel file
 % careful git path may be blocked => you may need to write it elsewhere first and transfer it afterwards
