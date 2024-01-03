@@ -11,9 +11,10 @@ root = LGCM_root_paths;
 switch root
     case ['E:',filesep]
         gitPath = fullfile('C:','Users','clairis','Desktop');
-    case {[fullfile('C:','Users','Loco','Downloads'),filesep],...
+    case {[filesep,filesep,fullfile('sv-nas1.rcp.epfl.ch','Sandi-lab',...
+            'human_data_private','raw_data_subject'),filesep],...
             [fullfile('L:','human_data_private','raw_data_subject'),filesep]}
-        gitPath = fullfile('C:','Users','Loco','Downloads');
+        gitPath = fullfile('C:','Users','clairis','Documents');
     otherwise
         error('case not ready yet');
 end
@@ -23,14 +24,14 @@ plasmaPath = [fullfile('P:','boulot','postdoc_CarmenSandi','results',...
     'plasma'),filesep];
 
 %% load nutrition data
-Gly_table = readtable([nutritionPath, 'Glycine_scoring.xlsx'],...
-    'Sheet','Sheet1');
-Cys_table = readtable([nutritionPath, 'cystein_scoring.xlsx'],...
-    'Sheet','Sheet1');
-Glu_table = readtable([nutritionPath, 'Glutamate_scoring.xlsx'],...
-    'Sheet','Sheet1');
-calories_table = readtable([nutritionPath, 'calories_scoring.xlsx'],...
-    'Sheet','Sheet1');
+FFQ_struct = load([nutritionPath,'FFQ_metabolites_extracted_results.mat'],...
+    'FFQ_results',...
+    'energy_kcalPerWeek','metabolite_names',...
+    'subject_id');
+energy_kcalPerWeek = FFQ_struct.energy_kcalPerWeek;
+foodNutrient_names = FFQ_struct.metabolite_names;
+nNutrients = length(foodNutrient_names);
+FFQ_subject_id = FFQ_struct.subject_id;
 
 %% load plasma levels
 blood_AA_table = readtable([plasmaPath, 'Blood_AA.xlsx'],...
@@ -50,22 +51,13 @@ for iS = 1:NS
     sub_nm = subject_id{iS};
     
     %% load nutrition scores
-    sub_Gly_idx = find(strcmp(Gly_table.CID, sub_nm));
-    sub_Cys_idx = find(strcmp(Cys_table.CID, sub_nm));
-    sub_Glu_idx = find(strcmp(Glu_table.CID, sub_nm));
-    sub_calories_idx = find(strcmp(calories_table.CID, sub_nm));
+    sub_nutri_idx = find(strcmp(FFQ_subject_id, sub_nm));
     % extract nutrition intake values
-    if ~isempty(sub_Gly_idx) && size(sub_Gly_idx,1) == 1
-        nutri.Gly(iS) = Gly_table.GlyParSemaine_mg_(sub_Gly_idx);
-    end
-    if ~isempty(sub_Cys_idx) && size(sub_Cys_idx,1) == 1
-        nutri.Cys(iS) = Cys_table.CysteineParSemaine_mg_(sub_Cys_idx);
-    end
-    if ~isempty(sub_Glu_idx) && size(sub_Glu_idx,1) == 1
-        nutri.Glu(iS) = Glu_table.GlutamateParSemaine_mg_(sub_Glu_idx);
-    end
-    if ~isempty(sub_calories_idx) && size(sub_calories_idx,1) == 1
-        nutri.calories(iS) = calories_table.CaloriesParSemaine_kcal_(sub_calories_idx);
+    if ~isempty(sub_nutri_idx) && size(sub_nutri_idx,1) == 1
+        nutri.Gly(iS) = FFQ_struct.FFQ_results.Gly_mgPerWeek(sub_nutri_idx);
+        nutri.Cys(iS) = FFQ_struct.FFQ_results.Cys_mgPerWeek(sub_nutri_idx);
+        nutri.Glu(iS) = FFQ_struct.FFQ_results.Glu_mgPerWeek(sub_nutri_idx);
+        nutri.calories(iS) = FFQ_struct.FFQ_results.calories_kcalPerWeek(sub_nutri_idx);
     end
     
     % divide by calories
@@ -84,6 +76,8 @@ for iS = 1:NS
 end % subject loop
 
 %% correlate both
+
+% uncorrected nutritional metabolites
 [r_corr.Gly, betas.Gly, pval.Gly,...
     ~,...
     nutri_Gly_sorted, plasma_Gly_fit_nutriGlySorted] = glm_package(nutri.Gly', plasma.L_Gly', 'normal', 'on');
@@ -93,9 +87,23 @@ end % subject loop
 [r_corr.Gln_f_nutriGlu, betas.Gln_f_nutriGlu, pval.Gln_f_nutriGlu,...
     ~,...
     nutri_Glu_sorted, plasma_Gln_fit_nutriGluSorted] = glm_package(nutri.Glu', plasma.L_Gln', 'normal', 'on');
-[r_corr.Tau, betas.Tau, pval.Tau,...
+% [r_corr.Tau, betas.Tau, pval.Tau,...
+%     ~,...
+%     nutri_Tau_sorted, plasma_Tau_fit_nutriTauSorted] = glm_package(nutri.Tau', plasma.Tau', 'normal', 'on');
+
+% nutritional metabolites corrected by total caloric intake
+[r_corr.Gly_div_totalCal, betas.Gly_div_totalCal, pval.Gly_div_totalCal,...
     ~,...
-    nutri_Tau_sorted, plasma_Tau_fit_nutriTauSorted] = glm_package(nutri.Tau', plasma.Tau', 'normal', 'on');
+    nutri_Gly_div_totalCal_sorted, plasma_Gly_fit_nutriGly_div_totalCalSorted] = glm_package(nutri.Gly_div_totalCal', plasma.L_Gly', 'normal', 'on');
+[r_corr.Glu_div_totalCal, betas.Glu_div_totalCal, pval.Glu_div_totalCal,...
+    ~,...
+    nutri_Glu_div_totalCal_sorted, plasma_Glu_fit_nutriGlu_div_totalCalSorted] = glm_package(nutri.Glu_div_totalCal', plasma.L_Glu', 'normal', 'on');
+[r_corr.Gln_f_nutriGlu_div_totalCal, betas.Gln_f_nutriGlu_div_totalCal, pval.Gln_f_nutriGlu_div_totalCal,...
+    ~,...
+    nutri_Glu_div_totalCal_sorted, plasma_Gln_fit_nutriGlu_div_totalCalSorted] = glm_package(nutri.Glu_div_totalCal', plasma.L_Gln', 'normal', 'on');
+% [r_corr.Tau_div_totalCal, betas.Tau_div_totalCal, pval.Tau_div_totalCal,...
+%     ~,...
+%     nutri_Tau_div_totalCal_sorted, plasma_Tau_fit_nutriTau_div_totalCalSorted] = glm_package(nutri.Tau_div_totalCal', plasma.Tau', 'normal', 'on');
 
 %% display figures
 [pSize, lWidth, col, mSize] = general_fig_prm;
@@ -133,15 +141,64 @@ ylabel('Plasma Glutamine (μM)');
 place_r_and_pval(r_corr.Gln_f_nutriGlu, pval.Gln_f_nutriGlu(2));
 legend_size(pSize);
 
-%% Taurine
+% %% Taurine (nothing yet, as the BLS 3.02 doesn't contain any information
+% regarding the nutritional intake of Taurine)
+
+% fig;
+% Tau_scat_hdl = scatter(nutri.Tau./1000, plasma.L_Tau);
+% Tau_fit_hdl = plot(nutri_Tau_sorted./1000, plasma_Tau_fit_nutriTauSorted);
+% scat_hdl_upgrade(Tau_scat_hdl);
+% fit_hdl_upgrade(Tau_fit_hdl);
+% xlabel('Nutrition Taurine (g/week)');
+% ylabel('Plasma Taurine (μM)');
+% place_r_and_pval(r_corr.Tau, pval.Tau(2));
+% legend_size(pSize);
+
+%% same but for nutrition corrected by total caloric intake
+%% Gly
 fig;
-Tau_scat_hdl = scatter(nutri.Tau./1000, plasma.L_Tau);
-Tau_fit_hdl = plot(nutri_Tau_sorted./1000, plasma_Tau_fit_nutriTauSorted);
-scat_hdl_upgrade(Tau_scat_hdl);
-fit_hdl_upgrade(Tau_fit_hdl);
-xlabel('Nutrition Taurine (g/week)');
-ylabel('Plasma Taurine (μM)');
-place_r_and_pval(r_corr.Tau, pval.Tau(2));
+Gly_div_totalCal_scat_hdl = scatter(nutri.Gly_div_totalCal./1000, plasma.L_Gly);
+Gly_div_totalCal_fit_hdl = plot(nutri_Gly_div_totalCal_sorted./1000, plasma_Gly_fit_nutriGly_div_totalCalSorted);
+scat_hdl_upgrade(Gly_div_totalCal_scat_hdl);
+fit_hdl_upgrade(Gly_div_totalCal_fit_hdl);
+xlabel('Nutrition Glycine (g/week)');
+ylabel('Plasma Glycine (μM)');
+place_r_and_pval(r_corr.Gly_div_totalCal, pval.Gly_div_totalCal(2));
 legend_size(pSize);
+
+%% Glu
+fig;
+Glu_div_totalCal_scat_hdl = scatter(nutri.Glu_div_totalCal./1000, plasma.L_Glu);
+Glu_div_totalCal_fit_hdl = plot(nutri_Glu_div_totalCal_sorted./1000, plasma_Glu_fit_nutriGlu_div_totalCalSorted);
+scat_hdl_upgrade(Glu_div_totalCal_scat_hdl);
+fit_hdl_upgrade(Glu_div_totalCal_fit_hdl);
+xlabel('Nutrition Glutamate (g/week)');
+ylabel('Plasma Glutamate (μM)');
+place_r_and_pval(r_corr.Glu_div_totalCal, pval.Glu_div_totalCal(2));
+legend_size(pSize);
+
+%% plasmaGln = f(nutri Glu)
+fig;
+Gln_div_totalCal_scat_hdl = scatter(nutri.Glu_div_totalCal./1000, plasma.L_Gln);
+Gln_div_totalCal_fit_hdl = plot(nutri_Glu_div_totalCal_sorted./1000, plasma_Gln_fit_nutriGlu_div_totalCalSorted);
+scat_hdl_upgrade(Gln_div_totalCal_scat_hdl);
+fit_hdl_upgrade(Gln_div_totalCal_fit_hdl);
+xlabel('Nutrition Glutamate (g/week)');
+ylabel('Plasma Glutamine (μM)');
+place_r_and_pval(r_corr.Gln_f_nutriGlu_div_totalCal, pval.Gln_f_nutriGlu_div_totalCal(2));
+legend_size(pSize);
+
+% %% Taurine (nothing yet, as the BLS 3.02 doesn't contain any information
+% regarding the nutritional intake of Taurine)
+
+% fig;
+% Tau_div_totalCal_scat_hdl = scatter(nutri.Tau./1000, plasma.L_Tau);
+% Tau_div_totalCal_fit_hdl = plot(nutri_Tau_div_totalCal_sorted./1000, plasma_Tau_fit_nutriTau_div_totalCalSorted);
+% scat_hdl_upgrade(Tau_div_totalCal_scat_hdl);
+% fit_hdl_upgrade(Tau_div_totalCal_fit_hdl);
+% xlabel('Nutrition Taurine (g/week)');
+% ylabel('Plasma Taurine (μM)');
+% place_r_and_pval(r_corr.Tau_div_totalCal, pval.Tau_div_totalCal(2));
+% legend_size(pSize);
 
 % end % function
