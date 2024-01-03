@@ -14,7 +14,7 @@ root = LGCM_root_paths;
 % study
 study_nm = 'study1';
 switch root
-    case 'E:'
+    case ['E:',filesep]
         gitPath = fullfile('C:','Users','clairis','Desktop','GitHub');
     case [filesep,filesep,fullfile('sv-nas1.rcp.epfl.ch','Sandi-lab','human_data_private','raw_data_subject'),filesep]
         gitPath = fullfile('C:','Users','Nicolas Clairis','Documents','GitHub');
