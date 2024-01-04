@@ -36,7 +36,7 @@ for iQ1 = 1:nFoodQuestions
              case '1x par Sem.'
                  result_foodItem_freq = 1;
              case '2-4x par Sem.'
-                 % ~* 2.5 times/week
+                 % ~* 3 times/week
                  result_foodItem_freq = 3;
              case '5-6x par Sem.'
                  % 5-6 times per week ~= 5.5 times/week
