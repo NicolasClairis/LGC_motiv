@@ -7008,6 +7008,56 @@ switch GLM
             % feedback
             GLMprm.model_onset.(Epm_nm).fbk = 'stick';
         end % physical/mental loop
+        
+    case 256 % exactly the same as GLM 235 and 255 but allowing to have 3 separate versions
+        % one focused on NS = 63 subjects (GLM 235), the other including back
+        % subjects 054 and 090 in the analysis (GLM 255) and the last removing subject 054 but keeping 090
+        % to see if results are stable (GLM 256)
+        % general parameters
+        GLMprm.gal.orth_vars = 0;
+        GLMprm.gal.zPerRun = 1;
+        GLMprm.gal.grey_mask = 3;
+        GLMprm.gal.mask_probaThreshold = 5;
+        % loop per task
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % fixation crosses
+            GLMprm.model_onset.(Epm_nm).allCrosses = 'stick';
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'stick';
+            GLMprm.choice.(Epm_nm).RP.E.NV_mdl = 'bayesianModel_3';
+            GLMprm.choice.(Epm_nm).RP.E.NV_chosen = 3;
+            GLMprm.choice.(Epm_nm).RP.E.E_chosen = 1;
+            GLMprm.choice.(Epm_nm).RP.E.RT = 1;
+            % chosen
+            GLMprm.model_onset.(Epm_nm).chosen = 'stick';
+            % effort perf (effort execution)
+            GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
+            % feedback
+            GLMprm.model_onset.(Epm_nm).fbk = 'stick';
+        end % physical/mental loop
+        
+    case 257 % onsets-only GLM to match with GLM 235/255/256
+        % general parameters
+        GLMprm.gal.orth_vars = 0;
+        GLMprm.gal.zPerRun = 1;
+        GLMprm.gal.grey_mask = 3;
+        GLMprm.gal.mask_probaThreshold = 5;
+        GLMprm.gal.onsets_only = 1;
+        % loop per task
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % fixation crosses
+            GLMprm.model_onset.(Epm_nm).allCrosses = 'stick';
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'stick';
+            % chosen
+            GLMprm.model_onset.(Epm_nm).chosen = 'stick';
+            % effort perf (effort execution)
+            GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
+            % feedback
+            GLMprm.model_onset.(Epm_nm).fbk = 'stick';
+        end % physical/mental loop
 end % GLM number
 %% warnings: check compatibility of the GLM parameters entered
 isGLMokCheck(GLMprm);
