@@ -85,15 +85,17 @@ for iUncorrCorr = 1:length(subsIncluded)
             'p = ',num2str(stats_tmp.p(2))]);
         
         % display figure with correlation data
-        fig;
+        figure;
         hold on;
         scatter(ROI_beta_values(goodSubs), choice_hE_tmp(goodSubs),...
             'LineWidth',3,'MarkerEdgeColor','k');
         plot(ROI_b_ascOrder, fitted_prm_tmp,...
-            'LineStyle','--','LineWidth',lSize,'Color',grey);
-        xlabel([ROI_BOLD_short_nm,' ',con_nm]);
+            'LineStyle','-','LineWidth',lSize,'Color',grey);
+%         xlabel([ROI_BOLD_short_nm,' ',con_nm]);
+        xlabel([ROI_BOLD_short_nm,' slope']);
         %     xlabel('dmPFC fMRI');
-        ylabel(['Choices % ',task_nm]);
+%         ylabel(['Choices % ',task_nm]);
+        ylabel('Choices (%)');
         %     % if you want to check the bad subject id
         %     for iS = 1:length(goodSubs)
         %         if goodSubs(iS) == 1
@@ -104,5 +106,7 @@ for iUncorrCorr = 1:length(subsIncluded)
         %         end
         %     end
         legend_size(pSize);
+        [txt_hdl, txtSize] = place_r_and_pval(rho.(uncCorr_nm).(task_nm),...
+            pval.(uncCorr_nm).(task_nm)(2));
     end % parameter loop
 end % uncorr/corr for outliers loop
