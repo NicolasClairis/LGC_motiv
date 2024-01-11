@@ -6,6 +6,9 @@ function[beta, pval] = effortful_choices_f_fMRI(study_nm)
 % study_nm: study name ('study1'/'study2')
 
 %% subject selection
+if ~exist('study_nm','var') || isempty(study_nm)
+    study_nm = 'study1';
+end
 condition = subject_condition;
 [subject_id, NS] = LGCM_subject_selection(study_nm,condition);
 
@@ -77,7 +80,7 @@ hE_percentage_fit.Em = glmval(beta.Em, avg_fMRI_sorted.Em, 'identity');
 
 %% figure display
 [pSize, lWidth, col, mSize] = general_fig_prm;
-xlim_vals = [-15 36];
+xlim_vals = [-10 10];
 fig;
 
 % Physical + Mental
