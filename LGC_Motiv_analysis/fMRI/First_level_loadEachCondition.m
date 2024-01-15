@@ -50,7 +50,7 @@ switch onsets_only_GLM
         matlabbatch{sub_idx}.spm.stats.fmri_spec.sess(iRun).cond(iCond).tmod = 0;
         
         %% add parametric modulators (if there are some)
-        % pmod need to be initialized, otherwise SPM is not happy
+        % pmod needs to be initialized, otherwise SPM is not happy
         matlabbatch{sub_idx}.spm.stats.fmri_spec.sess(iRun).cond(iCond).pmod = struct('name',{''},'param',{},'poly',{});
         if n_mods > 0
             for iMod = 1:n_mods
@@ -92,8 +92,7 @@ switch onsets_only_GLM
             end
             matlabbatch{sub_idx}.spm.stats.fmri_spec.sess(iRun).cond(jSample).tmod = 0;
             
-            %% add parametric modulators (if there are some)
-            % pmod need to be initialized, otherwise SPM is not happy
+            %% initialize pmod even if empty, otherwise SPM is not happy
             matlabbatch{sub_idx}.spm.stats.fmri_spec.sess(iRun).cond(jSample).pmod = struct('name',{''},'param',{},'poly',{});
             if n_mods > 0
                 error('You should not add parametric modulators to the onsets-only GLM. Please fix that');
