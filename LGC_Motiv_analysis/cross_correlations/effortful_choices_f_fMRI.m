@@ -4,6 +4,11 @@ function[beta, pval] = effortful_choices_f_fMRI(study_nm)
 %
 % INPUTS
 % study_nm: study name ('study1'/'study2')
+%
+% OUTPUTS
+% beta: structure with regression estimates
+%
+% pval: p.value for regression estimates
 
 %% subject selection
 if ~exist('study_nm','var') || isempty(study_nm)
