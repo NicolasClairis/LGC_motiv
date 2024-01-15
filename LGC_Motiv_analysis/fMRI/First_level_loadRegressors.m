@@ -705,11 +705,13 @@ if ismember(allCrossesModel,{'stick','boxcar'})
     allCrosses_modNames = cell(1,1);
     allCrosses_modVals = [];
     
+    %% even if onsets-only GLM, remove all the events in one single regressor to clean the data
+    onsets_only_GLM_for_cross = 0;
     %% load all
     [matlabbatch] = First_level_loadEachCondition(matlabbatch, sub_idx, iRun, iCond,...
         'fixation cross', allCrossesOnsets, modelAllCrossesdur,...
         n_allCrossesMods, allCrosses_modNames, allCrosses_modVals,...
-        orth_vars, onsets_only_GLM);
+        orth_vars, onsets_only_GLM_for_cross);
 end
 
 %% fixation cross before choice
