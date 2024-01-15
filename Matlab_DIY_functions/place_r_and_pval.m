@@ -1,4 +1,5 @@
 function[txt_hdl, txtSize] = place_r_and_pval(r_corr, pval)
+%[txt_hdl, txtSize] = place_r_and_pval(r_corr, pval)
 % place_r_and_pval serves to display correlation info on graph for the
 % mediation script (but can also be used elsewhere)
 %
