@@ -24,29 +24,32 @@ aIns_Lac = metabolites.aIns.Lac';
     ~, Lac_sorted.dmPFC, Lac_fit_xSorted.dmPFC] = glm_package(Lac', dmPFC_Lac, 'normal', 'on');
 [r_corr.aIns, betas.aIns, pval.aIns,...
     ~, Lac_sorted.aIns, Lac_fit_xSorted.aIns] = glm_package(Lac', aIns_Lac, 'normal', 'on');
-
+[r_corr.dmPFC_vs_aIns, betas.dmPFC_vs_aIns, pval.dmPFC_vs_aIns,...
+    ~, Lac_sorted.dmPFC_vs_aIns, Lac_fit_xSorted.dmPFC_vs_aIns] = glm_package(Lac', dmPFC_Lac-aIns_Lac, 'normal', 'on');
 %% figure
 [pSize, lWidth, col, mSize] = general_fig_prm;
 
 fig;
 % dmPFC
-scat_dmPFC_hdl = scatter(Lac, dmPFC_Lac);
-scat_dmPFC_hdl.MarkerEdgeColor = col.green;
+scat_dmPFC_hdl = scatter(Lac./1000, dmPFC_Lac);
+scat_dmPFC_hdl.MarkerEdgeColor = col.black;
 scat_dmPFC_hdl.LineWidth = lWidth;
-plot_dmPFC_hdl = plot(Lac_sorted.dmPFC, Lac_fit_xSorted.dmPFC);
-plot_dmPFC_hdl.Color = col.green;
+scat_dmPFC_hdl.SizeData = 60;
+plot_dmPFC_hdl = plot(Lac_sorted.dmPFC./1000, Lac_fit_xSorted.dmPFC);
+plot_dmPFC_hdl.Color = col.black;
 plot_dmPFC_hdl.LineWidth = lWidth;
 plot_dmPFC_hdl.LineStyle = '-';
 % anterior insula
-scat_AI_hdl = scatter(Lac, aIns_Lac);
-scat_AI_hdl.MarkerEdgeColor = col.orange;
+scat_AI_hdl = scatter(Lac./1000, aIns_Lac);
+scat_AI_hdl.MarkerEdgeColor = col.grey;
 scat_AI_hdl.LineWidth = lWidth;
-plot_aIns_hdl = plot(Lac_sorted.aIns, Lac_fit_xSorted.aIns);
-plot_aIns_hdl.Color = col.orange;
+scat_AI_hdl.SizeData = 60;
+plot_aIns_hdl = plot(Lac_sorted.aIns./1000, Lac_fit_xSorted.aIns);
+plot_aIns_hdl.Color = col.grey;
 plot_aIns_hdl.LineWidth = lWidth;
 plot_aIns_hdl.LineStyle = '-';
-xlabel('plasma Lac (μM)');
-ylabel('brain Lac');
+xlabel('plasma Lac (mM)');
+ylabel('brain Lac (mM)');
 legend([plot_dmPFC_hdl, plot_aIns_hdl],{'dmPFC','aINS'})
 legend('boxoff');
-legend_size(pSize);
+legend_size(35);
