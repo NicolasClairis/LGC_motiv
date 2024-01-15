@@ -81,31 +81,57 @@ switch onsets_only_GLM
     case 1 % GLM with onsets_only
         
         nTrials_per_run = length( cond_onsets );
-        for iTrial = 1:nTrials_per_run
-            jSample = iTrial + nTrials_per_run*(iCond - 1);
-            matlabbatch{sub_idx}.spm.stats.fmri_spec.sess(iRun).cond(jSample).name = [cond_nm,'_sample_',num2str(iTrial)];
-            matlabbatch{sub_idx}.spm.stats.fmri_spec.sess(iRun).cond(jSample).onset = cond_onsets(iTrial);
-            if length(cond_dur) == 1 % stick function
-                matlabbatch{sub_idx}.spm.stats.fmri_spec.sess(iRun).cond(jSample).duration = 0;
-            elseif length(cond_dur) == nTrials_per_run % boxcar
-                matlabbatch{sub_idx}.spm.stats.fmri_spec.sess(iRun).cond(jSample).duration = cond_dur(iTrial);
-            end
-            matlabbatch{sub_idx}.spm.stats.fmri_spec.sess(iRun).cond(jSample).tmod = 0;
-            
-            %% initialize pmod even if empty, otherwise SPM is not happy
-            matlabbatch{sub_idx}.spm.stats.fmri_spec.sess(iRun).cond(jSample).pmod = struct('name',{''},'param',{},'poly',{});
-            if n_mods > 0
-                error('You should not add parametric modulators to the onsets-only GLM. Please fix that');
-            end
-            
-            %% no regressors for onsets-only, should not be orthogonalized
-            switch orth_vars
-                case 0
-                    matlabbatch{sub_idx}.spm.stats.fmri_spec.sess(iRun).cond(jSample).orth = 0;
-                case 1
-                    error('no sense to orthogonalize non-existant regressors');
-            end
-        end % loop through trials included in the model
+        switch cond_nm
+            case 'fixation cross' % group all events as in a regular GLM to denoise (not one/trial)
+                % extract index
+                jSample = 1; % fixation cross is always the first regressor
+                matlabbatch{sub_idx}.spm.stats.fmri_spec.sess(iRun).cond(jSample).name = cond_nm;
+                matlabbatch{sub_idx}.spm.stats.fmri_spec.sess(iRun).cond(jSample).onset = cond_onsets;
+                matlabbatch{sub_idx}.spm.stats.fmri_spec.sess(iRun).cond(jSample).duration = cond_dur;
+                matlabbatch{sub_idx}.spm.stats.fmri_spec.sess(iRun).cond(jSample).tmod = 0;
+                
+                %% add parametric modulators (if there are some)
+                % pmod needs to be initialized, otherwise SPM is not happy
+                matlabbatch{sub_idx}.spm.stats.fmri_spec.sess(iRun).cond(jSample).pmod = struct('name',{''},'param',{},'poly',{});
+                if n_mods > 0
+                    error('You should not add parametric modulators to the onsets-only GLM. Please fix that');
+                end
+                
+                %% no regressors for onsets-only, should not be orthogonalized
+                switch orth_vars
+                    case 0
+                        matlabbatch{sub_idx}.spm.stats.fmri_spec.sess(iRun).cond(jSample).orth = 0;
+                    case 1
+                        error('no sense to orthogonalize non-existant regressors');
+                end
+            otherwise % split events trial/trial
+                jSample = size(matlabbatch{sub_idx}.spm.stats.fmri_spec.sess(iRun).cond,2); % start at the last regressor
+                for iTrial = 1:nTrials_per_run
+                    jSample = jSample + 1;
+                    matlabbatch{sub_idx}.spm.stats.fmri_spec.sess(iRun).cond(jSample).name = [cond_nm,'_sample_',num2str(iTrial)];
+                    matlabbatch{sub_idx}.spm.stats.fmri_spec.sess(iRun).cond(jSample).onset = cond_onsets(iTrial);
+                    if length(cond_dur) == 1 % stick function
+                        matlabbatch{sub_idx}.spm.stats.fmri_spec.sess(iRun).cond(jSample).duration = 0;
+                    elseif length(cond_dur) == nTrials_per_run % boxcar
+                        matlabbatch{sub_idx}.spm.stats.fmri_spec.sess(iRun).cond(jSample).duration = cond_dur(iTrial);
+                    end
+                    matlabbatch{sub_idx}.spm.stats.fmri_spec.sess(iRun).cond(jSample).tmod = 0;
+                    
+                    %% initialize pmod even if empty, otherwise SPM is not happy
+                    matlabbatch{sub_idx}.spm.stats.fmri_spec.sess(iRun).cond(jSample).pmod = struct('name',{''},'param',{},'poly',{});
+                    if n_mods > 0
+                        error('You should not add parametric modulators to the onsets-only GLM. Please fix that');
+                    end
+                    
+                    %% no regressors for onsets-only, should not be orthogonalized
+                    switch orth_vars
+                        case 0
+                            matlabbatch{sub_idx}.spm.stats.fmri_spec.sess(iRun).cond(jSample).orth = 0;
+                        case 1
+                            error('no sense to orthogonalize non-existant regressors');
+                    end
+                end % loop through trials included in the model
+        end % allCrosses/other regressor
 end
 
 end % function
