@@ -68,7 +68,7 @@ for iUncorrCorr = 1:length(subsIncluded)
         choice_hE_tmp = choice_hE.(task_nm);
         switch iUncorrCorr
             case 1 % all subjects included as long as no-NaN values
-                goodSubs = ~isnan(choice_hE_tmp);
+                goodSubs = ~isnan(ROI_beta_values.*choice_hE_tmp);
             case 2 % remove any outlier in any measure
                 [~,~,ROI_beta_values_bis] = rmv_outliers_3sd(ROI_beta_values);
                 [~,~,choice_hE_tmp] = rmv_outliers_3sd(choice_hE_tmp);
@@ -81,20 +81,22 @@ for iUncorrCorr = 1:length(subsIncluded)
         ROI_b_ascOrder = sort(ROI_beta_values(goodSubs));
         fitted_prm_tmp = glmval(betas_tmp, ROI_b_ascOrder, 'identity');
         
-        disp([task_nm,'=f(',ROI_BOLD_short_nm,' ',con_names{selectedContrast},') ;',...
+        disp([task_nm,'=f(',ROI_BOLD_short_nm,' ',con_names{selectedContrast},'); ',...
+            'N = ',num2str(sum(goodSubs)),'; ',...
+            'r = ',num2str(round(rho.(uncCorr_nm).(task_nm),3)),'; ',...
             'p = ',num2str(stats_tmp.p(2))]);
         
         % display figure with correlation data
-        figure;
+        fig; subplot(1,3,1:2);
         hold on;
-        scatter(ROI_beta_values(goodSubs), choice_hE_tmp(goodSubs),...
-            'LineWidth',3,'MarkerEdgeColor','k');
-        plot(ROI_b_ascOrder, fitted_prm_tmp,...
-            'LineStyle','-','LineWidth',lSize,'Color',grey);
-%         xlabel([ROI_BOLD_short_nm,' ',con_nm]);
-        xlabel([ROI_BOLD_short_nm,' slope']);
-        %     xlabel('dmPFC fMRI');
-%         ylabel(['Choices % ',task_nm]);
+        scat_hdl = scatter(ROI_beta_values(goodSubs), choice_hE_tmp(goodSubs));
+        scat_hdl_upgrade(scat_hdl);
+        fit_hdl = plot(ROI_b_ascOrder, fitted_prm_tmp);
+        fit_hdl_upgrade(fit_hdl);
+        %         xlabel([ROI_BOLD_short_nm,' ',con_nm]);
+        %         xlabel([ROI_BOLD_short_nm,' slope']);
+        xlabel([ROI_BOLD_short_nm,' regression estimate']);
+        %         ylabel(['Choices % ',task_nm]);
         ylabel('Choices (%)');
         %     % if you want to check the bad subject id
         %     for iS = 1:length(goodSubs)
@@ -105,8 +107,8 @@ for iUncorrCorr = 1:length(subsIncluded)
         %                 'VerticalAlignment', 'top', 'FontSize', 18);
         %         end
         %     end
-        legend_size(pSize);
         [txt_hdl, txtSize] = place_r_and_pval(rho.(uncCorr_nm).(task_nm),...
             pval.(uncCorr_nm).(task_nm)(2));
-    end % parameter loop
+        legend_size(pSize);
+    end % task loop
 end % uncorr/corr for outliers loop
