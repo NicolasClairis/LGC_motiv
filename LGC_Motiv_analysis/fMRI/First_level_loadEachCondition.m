@@ -105,7 +105,12 @@ switch onsets_only_GLM
                         error('no sense to orthogonalize non-existant regressors');
                 end
             otherwise % split events trial/trial
-                jSample = size(matlabbatch{sub_idx}.spm.stats.fmri_spec.sess(iRun).cond,2); % start at the last regressor
+                if isfield(matlabbatch{sub_idx}.spm.stats.fmri_spec.sess(iRun),'cond')
+                    % start at the last regressor if already present
+                    jSample = size(matlabbatch{sub_idx}.spm.stats.fmri_spec.sess(iRun).cond,2);
+                else
+                    jSample = 0;
+                end
                 for iTrial = 1:nTrials_per_run
                     jSample = jSample + 1;
                     matlabbatch{sub_idx}.spm.stats.fmri_spec.sess(iRun).cond(jSample).name = [cond_nm,'_sample_',num2str(iTrial)];
