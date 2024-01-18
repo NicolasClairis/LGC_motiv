@@ -89,7 +89,7 @@ end
 if ~exist('GLM','var') || isempty(GLM)
     listOfAllOnsetsOnlyGLM = [64, 65, 70,...
         90, 93, 94, 95, 128, 129,...
-        158, 186, 201, 257];
+        158, 186, 201, 257, 258];
     nPossibleGLMs = size(listOfAllOnsetsOnlyGLM, 2);
     listGLM = ['GLM',num2str(listOfAllOnsetsOnlyGLM(1))];
     if nPossibleGLMs > 1
@@ -144,7 +144,12 @@ for iROI = 1:n_ROIs
                 timePeriod_nm1 = potentialTimePeriods{iTperiod};
                 curr_onset_nm = GLMprm.model_onset.(task_nm1).(timePeriod_nm1);
                 if ~strcmp(curr_onset_nm,'none') && ismember(curr_onset_nm,{'stick','boxcar'})
-                    ROI_trial_b_trial.(ROI_nm1).(task_nm1).(run_str).(timePeriod_nm1) = NaN(nTrialsPerRun, NS);
+                    switch timePeriod_nm1
+                        case 'allCrosses' % careful because every trial includes one cross for choice and one for effort => split the two
+                            ROI_trial_b_trial.(ROI_nm1).(task_nm1).(run_str).(timePeriod_nm1) = NaN(1, NS);
+                        otherwise
+                            ROI_trial_b_trial.(ROI_nm1).(task_nm1).(run_str).(timePeriod_nm1) = NaN(nTrialsPerRun, NS);
+                    end
                 elseif ~ismember(curr_onset_nm,{'none','stick','boxcar'})
                     error(['problem with time modulation = ',curr_onset_nm])
                 end
@@ -241,9 +246,22 @@ for iROI = 1:n_ROIs
                 % trialN: index of the trials
                 trialN = 1:nTrialsPerRun;
                 trialN(choiceMissedTrials) = [];
-                totalTrials_idx = [totalTrials_idx; repmat(trialN,1,nTimePeriods)']; % multiply vector by as many conditions
-                runPerTrial = [runPerTrial; repmat(jRun, 1, nTimePeriods*length(trialN))'];
-                % ignore movement
+                if ~ismember('allCrosses',timePeriods)
+                    totalTrials_idx = [totalTrials_idx; repmat(trialN,1,nTimePeriods)']; % multiply vector by as many conditions
+                    runPerTrial = [runPerTrial; repmat(jRun, 1, nTimePeriods*length(trialN))'];
+                    
+                elseif ismember('allCrosses',timePeriods) % all events are pooled in one single regressor for this one
+                    % add one nTrialsPerRun for the allCrosses regressor and remove
+                    % it from repmat
+                    totalTrials_idx = [totalTrials_idx;...
+                        nTrialsPerRun;...
+                        repmat(trialN,1,nTimePeriods-1)']; % multiply vector by as many conditions
+                    runPerTrial = [runPerTrial;...
+                        nTrialsPerRun;...
+                        repmat(jRun, 1, (nTimePeriods-1)*length(trialN))'];
+                end
+                
+                % ignore movement regressors at the end of each run
                 totalTrials_idx = [totalTrials_idx; NaN(n_mvmt,1)];
                 runPerTrial = [runPerTrial; NaN(n_mvmt,1)];
             end % run loop
@@ -267,30 +285,28 @@ for iROI = 1:n_ROIs
             
             %% extract beta values for each trial
             cd(sub_fMRI_path);
-            beta_idx    = 0;
             
             %% loop through trials
             kRun = 0;
             jTimePhase = 0;
-            for iTrial = 1:n_totalTrialsForFirstLevel
-                jRunTrial = totalTrials_idx(iTrial);
+            for iBeta = 1:n_totalTrialsForFirstLevel
+                jRunTrial = totalTrials_idx(iBeta);
                 % convert run number
-                switch runPerTrial(iTrial)
+                switch runPerTrial(iBeta)
                     case {1,2}
                         run_nm = 'run1';
                     case {3,4}
                         run_nm = 'run2';
                 end
                 if ~isnan(jRunTrial) % ignore movement and run constant regressors
-                    beta_idx = beta_idx + 1;
                     % identify which run and time period we are at now
-                    if iTrial == 1
+                    if iBeta == 1
                         kRun = 1;
                         jTimePhase = 1;
-                    elseif ~isnan(totalTrials_idx(iTrial-1)) && ~isnan(totalTrials_idx(iTrial)) &&...
-                            (totalTrials_idx(iTrial) - totalTrials_idx(iTrial-1)) < 0 % start of new task phase (trial number gets re-initialized)
+                    elseif ~isnan(totalTrials_idx(iBeta-1)) && ~isnan(totalTrials_idx(iBeta)) &&...
+                            (totalTrials_idx(iBeta) - totalTrials_idx(iBeta-1)) < 0 % start of new task phase (trial number gets re-initialized)
                         jTimePhase = jTimePhase + 1;
-                    elseif isnan(totalTrials_idx(iTrial-1)) && ~isnan(totalTrials_idx(iTrial)) % start of new run
+                    elseif isnan(totalTrials_idx(iBeta-1)) && ~isnan(totalTrials_idx(iBeta)) % start of new run (comes after movement regressor)
                         kRun = kRun + 1;
                         jTimePhase = 1;
                     end
@@ -298,17 +314,17 @@ for iROI = 1:n_ROIs
                     timePeriod_nm = timePeriods{jTimePhase};
                     
                     % extract con/scon files
-                    if beta_idx < 10
+                    if iBeta < 10
                         betaZeros = '000';
-                    elseif beta_idx >= 10 && beta_idx < 100
+                    elseif iBeta >= 10 && iBeta < 100
                         betaZeros = '00';
-                    elseif beta_idx >= 100 && beta_idx < 1000
+                    elseif iBeta >= 100 && iBeta < 1000
                         betaZeros = '0';
-                    elseif beta_idx >= 1000
+                    elseif iBeta >= 1000
                         betaZeros = '';
                     end
                     
-                    betaNum     = strcat(['beta_', betaZeros, num2str(beta_idx), '.nii']);
+                    betaNum     = strcat(['beta_', betaZeros, num2str(iBeta), '.nii']);
                     betaVol     = spm_vol(betaNum); % extracts header to read con file
                     betadata    = spm_read_vols(betaVol); % reads the con file
                     
@@ -318,10 +334,12 @@ for iROI = 1:n_ROIs
                     vxyz        = unique(floor((inv(betaVol.mat) * sxyz_ROI')'), 'rows'); % converts from MNI (mm) to voxel-space
                     vi          = sub2ind(betaVol.dim, vxyz(:, 1), vxyz(:, 2), vxyz(:, 3)); % extracts coordinates of the sphere in the con (voxel-space)
                     beta_value  = mean(betadata(vi),'omitnan'); % extracts mean beta for the selected ROI sphere/mask
-                    ROI_trial_b_trial.(ROI_nm2).(task_nm2).(run_nm).(timePeriod_nm)(jRunTrial, iS) = beta_value; % save mean beta for the selected ROI inside the big resulting matrix
-                else % skip movement regressors from beta extraction
-                    beta_idx = beta_idx + 1;
-                    
+                    switch timePeriod_nm
+                        case 'allCrosses'
+                            ROI_trial_b_trial.(ROI_nm2).(task_nm2).(run_nm).(timePeriod_nm)(1, iS) = beta_value; % save mean beta for the selected ROI inside the big resulting matrix
+                        otherwise
+                            ROI_trial_b_trial.(ROI_nm2).(task_nm2).(run_nm).(timePeriod_nm)(jRunTrial, iS) = beta_value; % save mean beta for the selected ROI inside the big resulting matrix
+                    end
                 end % ignore mvmt and run cstt
             end % trial number loop
             %         else
@@ -346,6 +364,7 @@ for iROI = 1:n_ROIs
     %% display message ok
     disp(['ROI ',num2str(iROI),'/',num2str(n_ROIs),' done']);
 end % ROI loop
+ROI_trial_b_trial.GLM = GLM;
 
 save([dataRoot,'results',filesep,'ROI',filesep,...
     'ROI_BOLDperTrial_GLM',GLMstr,'_',num2str(NS),'subs.mat'],...
