@@ -15,7 +15,7 @@ condition = subject_condition;
 [subject_id, NS] = LGCM_subject_selection(study_nm, condition);
 
 %% main variables
-[blood_Lac, dmPFC_Lac, dmPFC_fMRI,...
+[blood_Lac, aINS_Lac, aINS_fMRI,...
     THE,...
     PHE, kEp,...
     MHE, kEm] = deal(NaN(NS,1));
@@ -30,7 +30,7 @@ end % subject loop
 
 %% load brain metabolite
 [metabolites] = metabolite_load(subject_id);
-dmPFC_Lac(:) = metabolites.dmPFC.Lac;
+aINS_Lac(:) = metabolites.aIns.Lac;
 
 %% load fMRI
 % define fMRI GLM to work on
@@ -57,7 +57,7 @@ con_idx = listdlg('promptstring','Which contrast?',...
 % con_nm = con_names{con_idx};
 con_nm_str = inputdlg('Contrast short name?');
 con_nm = con_nm_str{1};
-dmPFC_fMRI(:) = con_vec_all(con_idx, :, 1);
+aINS_fMRI(:) = con_vec_all(con_idx, :, 1);
 
 %% load behavioral parameters (THE/PHE/MHE/kEp/kEm)
 % THE/PHE/MHE
@@ -76,23 +76,23 @@ for iS2 = 1:NS
 end % subject loop
 
 %% create matrix
-mtrx_THE = [blood_Lac, dmPFC_Lac, dmPFC_fMRI, THE, PHE, MHE, kEp, kEm];
+mtrx_THE = [blood_Lac, aINS_Lac, aINS_fMRI, THE, PHE, MHE, kEp, kEm];
 % save data to load in R
-save([SEM_path,filesep,'bloodLac_dmPFCLac_',ROI_short_Nm,...
+save([SEM_path,filesep,'bloodLac_aINSLac_',ROI_short_Nm,...
     '_GLM',GLM_str{1},'_',con_nm,'_',num2str(NS),'subs.mat'],'mtrx_THE');
 
 % %% load
 % SEM_path = fullfile('P:','boulot','postdoc_CarmenSandi','results','SEM');
-% ROI_short_Nm = 'MRS_dmPFC';
+% ROI_short_Nm = 'MRS_aINS';
 % GLM_str = inputdlg('Which fMRI GLM?');
 % GLM = str2double(GLM_str);
 % con_nm = 'EpEm_Ech';
 % NS = 63;
-% load([SEM_path,filesep,'bloodLac_dmPFCLac_',ROI_short_Nm,...
+% load([SEM_path,filesep,'bloodLac_aINSLac_',ROI_short_Nm,...
 %     '_GLM',GLM_str{1},'_',con_nm,'_',num2str(NS),'subs.mat'],'mtrx_THE');
 % blood_Lac=mtrx_THE(:,1);
-% dmPFC_Lac=mtrx_THE(:,2);
-% dmPFC_fMRI=mtrx_THE(:,3);
+% aINS_Lac=mtrx_THE(:,2);
+% aINS_fMRI=mtrx_THE(:,3);
 % THE=mtrx_THE(:,4);
 % PHE=mtrx_THE(:,5);
 % MHE=mtrx_THE(:,6);
@@ -101,33 +101,59 @@ save([SEM_path,filesep,'bloodLac_dmPFCLac_',ROI_short_Nm,...
 %% create matrix bis but after outlier removal
 % remove "outliers" (><mean*3SD)
 [~, ~, blood_Lac_clean] = rmv_outliers_3sd(blood_Lac);
-[~, ~, dmPFC_Lac_clean] = rmv_outliers_3sd(dmPFC_Lac);
-[~, ~, dmPFC_fMRI_clean] = rmv_outliers_3sd(dmPFC_fMRI);
+[~, ~, aINS_Lac_clean] = rmv_outliers_3sd(aINS_Lac);
+[~, ~, aINS_fMRI_clean] = rmv_outliers_3sd(aINS_fMRI);
+[~, ~, THE_clean] = rmv_outliers_3sd(THE);
+[~, ~, MHE_clean] = rmv_outliers_3sd(MHE);
 [~, ~, PHE_clean] = rmv_outliers_3sd(PHE);
 [~, ~, kEp_clean] = rmv_outliers_3sd(kEp);
 
+%% data optimized for THE
+goodSubs_bis = ~isnan(blood_Lac_clean).*~isnan(aINS_Lac_clean).*~isnan(aINS_fMRI_clean).*~isnan(THE_clean) == 1;
+
+mtrx_THE_no_outliers = [blood_Lac(goodSubs_bis),...
+    aINS_Lac(goodSubs_bis),...
+    aINS_fMRI(goodSubs_bis),...
+    THE(goodSubs_bis)];
+NS_no_outliers = sum(goodSubs_bis);
+% save data to load in R
+save([SEM_path,filesep,'bloodLac_aINSLac_',ROI_short_Nm,...
+    '_GLM',GLM_str{1},'_',con_nm,'_',num2str(NS_no_outliers),'subs_THE_no_outliers.mat'],'mtrx_THE_no_outliers');
+
 %% data optimized for PHE
-goodSubs_bis = ~isnan(blood_Lac_clean).*~isnan(dmPFC_Lac_clean).*~isnan(dmPFC_fMRI_clean).*~isnan(PHE_clean) == 1;
+goodSubs_bis = ~isnan(blood_Lac_clean).*~isnan(aINS_Lac_clean).*~isnan(aINS_fMRI_clean).*~isnan(PHE_clean) == 1;
 
 mtrx_PHE_no_outliers = [blood_Lac(goodSubs_bis),...
-    dmPFC_Lac(goodSubs_bis),...
-    dmPFC_fMRI(goodSubs_bis),...
+    aINS_Lac(goodSubs_bis),...
+    aINS_fMRI(goodSubs_bis),...
     PHE(goodSubs_bis)];
 NS_no_outliers = sum(goodSubs_bis);
 % save data to load in R
-save([SEM_path,filesep,'bloodLac_dmPFCLac_',ROI_short_Nm,...
+save([SEM_path,filesep,'bloodLac_aINSLac_',ROI_short_Nm,...
     '_GLM',GLM_str{1},'_',con_nm,'_',num2str(NS_no_outliers),'subs_PHE_no_outliers.mat'],'mtrx_PHE_no_outliers');
 
+%% data optimized for MHE
+goodSubs_bis = ~isnan(blood_Lac_clean).*~isnan(aINS_Lac_clean).*~isnan(aINS_fMRI_clean).*~isnan(MHE_clean) == 1;
+
+mtrx_MHE_no_outliers = [blood_Lac(goodSubs_bis),...
+    aINS_Lac(goodSubs_bis),...
+    aINS_fMRI(goodSubs_bis),...
+    MHE(goodSubs_bis)];
+NS_no_outliers = sum(goodSubs_bis);
+% save data to load in R
+save([SEM_path,filesep,'bloodLac_aINSLac_',ROI_short_Nm,...
+    '_GLM',GLM_str{1},'_',con_nm,'_',num2str(NS_no_outliers),'subs_MHE_no_outliers.mat'],'mtrx_MHE_no_outliers');
+
 %% data optimized for kEp
-goodSubs_bis = ~isnan(blood_Lac_clean).*~isnan(dmPFC_Lac_clean).*~isnan(dmPFC_fMRI_clean).*~isnan(kEp_clean) == 1;
+goodSubs_bis = ~isnan(blood_Lac_clean).*~isnan(aINS_Lac_clean).*~isnan(aINS_fMRI_clean).*~isnan(kEp_clean) == 1;
 boxcox_kEp_clean = boxcox(kEp);
 
 mtrx_kEp_no_outliers = [blood_Lac(goodSubs_bis),...
-    dmPFC_Lac(goodSubs_bis),...
-    dmPFC_fMRI(goodSubs_bis),...
+    aINS_Lac(goodSubs_bis),...
+    aINS_fMRI(goodSubs_bis),...
     kEp(goodSubs_bis),...
     boxcox_kEp_clean(goodSubs_bis)];
 NS_no_outliers = sum(goodSubs_bis);
 % save data to load in R
-save([SEM_path,filesep,'bloodLac_dmPFCLac_',ROI_short_Nm,...
+save([SEM_path,filesep,'bloodLac_aINSLac_',ROI_short_Nm,...
     '_GLM',GLM_str{1},'_',con_nm,'_',num2str(NS_no_outliers),'subs_kEp_no_outliers.mat'],'mtrx_kEp_no_outliers');

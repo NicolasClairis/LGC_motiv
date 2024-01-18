@@ -15,29 +15,25 @@ library(semPlot)
 
 # read the data prepared for SEM
 setwd("P:/boulot/postdoc_CarmenSandi/results/SEM")
-#data_for_SEM <- readMat("bloodLac_dmPFCLac_MRS_dmPFC_GLM200_EpEm_Ech_56subs_kEp_no_outliers.mat")
-#data_for_SEM <- readMat("bloodLac_dmPFCLac_MRS_dmPFC_GLM232_EpEm_Ech_57subs_kEp_no_outliers.mat")
-data_for_SEM <- readMat("bloodLac_dmPFCLac_MRS_dmPFC_GLM235_EpEm_Ech_57subs_kEp_no_outliers.mat")
-#data_for_SEM <- readMat("bloodLac_dmPFCLac_MRS_dmPFC_GLM242_EpEm_Ech_57subs_kEp_no_outliers.mat")
-#data_for_SEM <- readMat("bloodLac_dmPFCLac_MRS_dmPFC_GLM244_EpEm_Ech_56subs_kEp_no_outliers.mat")
+data_for_SEM <- readMat("bloodLac_aINSLac_MRS_aINS_GLM235_EpEm_Ech_42subs_THE_no_outliers.mat")
 
 # rename variables
-blood_Lac = data_for_SEM$mtrx.kEp.no.outliers[,1]
-dmPFC_Lac = data_for_SEM$mtrx.kEp.no.outliers[,2]
-dmPFC_fMRI = data_for_SEM$mtrx.kEp.no.outliers[,3]
-kEp = data_for_SEM$mtrx.kEp.no.outliers[,4]
+blood_Lac = data_for_SEM$mtrx.THE.no.outliers[,1]
+aINS_Lac = data_for_SEM$mtrx.THE.no.outliers[,2]
+aINS_fMRI = data_for_SEM$mtrx.THE.no.outliers[,3]
+THE = data_for_SEM$mtrx.THE.no.outliers[,4]
 #create data frame
-df = data.frame(blood_Lac, dmPFC_Lac, dmPFC_fMRI, kEp)
+df = data.frame(blood_Lac, aINS_Lac, aINS_fMRI, THE)
 
 ##############################################################################
-## test 1: kEp full path
+## test 1: THE full path
 
 # define the SEM model to try (check https://bookdown.org/jdholster1/idsr/structural-equation-modeling.html for more details as well)
 # Specify model, can also write it in a single line
 sem_model <- '
-dmPFC_Lac ~ blood_Lac
-dmPFC_fMRI ~ dmPFC_Lac + blood_Lac
-kEp ~ dmPFC_fMRI + dmPFC_Lac + blood_Lac
+aINS_Lac ~ blood_Lac
+aINS_fMRI ~ aINS_Lac + blood_Lac
+THE ~ aINS_fMRI + aINS_Lac + blood_Lac
 '
 
 # Estimate our model
@@ -52,13 +48,13 @@ semPaths(fit_model1, "std", edge.label.cex = 1.0, curvePivot = TRUE)
 
 
 ##############################################################################
-## test 2: blood=>dmPFC=>fMRI=>bhv + blood => fMRI
+## test 2: blood=>aINS=>fMRI=>bhv + blood => fMRI
 
-## kEp
+## THE
 sem_model <- '
-dmPFC_Lac ~ blood_Lac
-dmPFC_fMRI ~ dmPFC_Lac + blood_Lac
-kEp ~ dmPFC_fMRI
+aINS_Lac ~ blood_Lac
+aINS_fMRI ~ aINS_Lac + blood_Lac
+THE ~ aINS_fMRI
 '
 fit_model2 <- sem(sem_model,data=df)
 summary(fit_model2, fit.measures=TRUE, standardized = TRUE, rsquare=TRUE)
@@ -69,13 +65,13 @@ semPaths(fit_model2, "std", edge.label.cex = 1.0, curvePivot = TRUE)
 
 
 ##############################################################################
-## test 3: blood=>dmPFC=>fMRI=>bhv
+## test 3: blood=>aINS=>fMRI=>bhv
 
-## kEp
+## THE
 sem_model <- '
-dmPFC_Lac ~ blood_Lac
-dmPFC_fMRI ~ dmPFC_Lac
-kEp ~ dmPFC_fMRI + dmPFC_Lac
+aINS_Lac ~ blood_Lac
+aINS_fMRI ~ aINS_Lac
+THE ~ aINS_fMRI + aINS_Lac
 '
 fit_model3 <- sem(sem_model,data=df)
 summary(fit_model3, fit.measures=TRUE, standardized = TRUE, rsquare=TRUE)
@@ -86,13 +82,13 @@ semPaths(fit_model3, "std", edge.label.cex = 1.0, curvePivot = TRUE)
 
 
 ##############################################################################
-## test 4: blood=>dmPFC=>fMRI=>bhv (no direct path)
+## test 4: blood=>aINS=>fMRI=>bhv (no direct path)
 
-## kEp
+## THE
 sem_model <- '
-dmPFC_Lac ~ blood_Lac
-dmPFC_fMRI ~ dmPFC_Lac
-kEp ~ dmPFC_fMRI
+aINS_Lac ~ blood_Lac
+aINS_fMRI ~ aINS_Lac
+THE ~ aINS_fMRI
 '
 fit_model4 <- sem(sem_model,data=df)
 summary(fit_model4, fit.measures=TRUE, standardized = TRUE, rsquare=TRUE)
@@ -100,3 +96,18 @@ summary(fit_model4, fit.measures=TRUE, standardized = TRUE, rsquare=TRUE)
 #details <- summary(fit_model4, fit.measures=TRUE, standardized = TRUE, rsquare=TRUE)
 #details$pe
 semPaths(fit_model4, "std", edge.label.cex = 1.0, curvePivot = TRUE)
+
+##############################################################################
+## test 5: aINS=>fMRI=>bhv (basic mediation without blood)
+
+## THE
+sem_model <- '
+aINS_fMRI ~ aINS_Lac
+THE ~ aINS_fMRI + aINS_Lac
+'
+fit_model5 <- sem(sem_model,data=df)
+summary(fit_model5, fit.measures=TRUE, standardized = TRUE, rsquare=TRUE)
+# in case you need to extract p.value very low use the following lines:
+#details <- summary(fit_model5, fit.measures=TRUE, standardized = TRUE, rsquare=TRUE)
+#details$pe
+semPaths(fit_model5, "std", edge.label.cex = 1.0, curvePivot = TRUE)
