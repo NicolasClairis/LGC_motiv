@@ -116,7 +116,8 @@ end % subject loop
 [m_efficiency_fit.trial_bins,...
     sem_efficiency_fit.trial_bins] = mean_sem_sd(efficiency_fit.trial_bins, 2);
 [b.mean.efficiency_f_time,...
-    b.sem.efficiency_f_time] = mean_sem_sd(b.efficiency_f_time, 2);
+    b.sem.efficiency_f_time,...
+    b.sd.efficiency_f_time] = mean_sem_sd(b.efficiency_f_time, 2);
 
 %% figure
 [pSize, lWidth, col, mSize] = general_fig_prm;
