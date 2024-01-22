@@ -72,6 +72,7 @@ end % subject loop
 for iTask = 1:nTasks
     task_nm = task_names{iTask};
     [perf_avg.(task_nm).avg,...
-        perf_avg.(task_nm).sem] = mean_sem_sd(perf_avg.(task_nm).avg_perSub,2);
+        perf_avg.(task_nm).sem,...
+        perf_avg.(task_nm).sd] = mean_sem_sd(perf_avg.(task_nm).avg_perSub,2);
 end
 end % function
