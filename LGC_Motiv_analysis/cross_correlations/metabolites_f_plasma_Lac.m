@@ -32,24 +32,26 @@ NS_goodS.aINS = sum(~isnan(plasma_Lac.*aIns_Lac'));
     ~, Lac_sorted.dmPFC_vs_aIns, Lac_fit_xSorted.dmPFC_vs_aIns] = glm_package(plasma_Lac', dmPFC_Lac-aIns_Lac, 'normal', 'on');
 %% figure
 [pSize, lWidth, col, mSize] = general_fig_prm;
+dmPFC_col = col.red;
+aINS_col = col.blue_light;
 
 fig;
 % dmPFC
 scat_dmPFC_hdl = scatter(plasma_Lac./1000, dmPFC_Lac);
-scat_dmPFC_hdl.MarkerEdgeColor = col.black;
+scat_dmPFC_hdl.MarkerEdgeColor = dmPFC_col;
 scat_dmPFC_hdl.LineWidth = lWidth;
 scat_dmPFC_hdl.SizeData = 60;
 plot_dmPFC_hdl = plot(Lac_sorted.dmPFC./1000, Lac_fit_xSorted.dmPFC);
-plot_dmPFC_hdl.Color = col.black;
+plot_dmPFC_hdl.Color = dmPFC_col;
 plot_dmPFC_hdl.LineWidth = lWidth;
 plot_dmPFC_hdl.LineStyle = '-';
 % anterior insula
 scat_AI_hdl = scatter(plasma_Lac./1000, aIns_Lac);
-scat_AI_hdl.MarkerEdgeColor = col.grey;
+scat_AI_hdl.MarkerEdgeColor = aINS_col;
 scat_AI_hdl.LineWidth = lWidth;
 scat_AI_hdl.SizeData = 60;
 plot_aIns_hdl = plot(Lac_sorted.aIns./1000, Lac_fit_xSorted.aIns);
-plot_aIns_hdl.Color = col.grey;
+plot_aIns_hdl.Color = aINS_col;
 plot_aIns_hdl.LineWidth = lWidth;
 plot_aIns_hdl.LineStyle = '-';
 xlabel('plasma Lac (mM)');
