@@ -7,7 +7,7 @@ function[training_dur] = training_duration()
 % training_dur: structure will include mean, SEM, SD
 
 %% subject selection
-[study_nm, condition, gender, subject_id, NS] = sub_id;
+[study_nm, ~, ~, subject_id, NS] = sub_id;
 
 %% working directory
 training_folder = [fullfile('M:','human_data_private',...
