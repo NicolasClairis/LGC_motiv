@@ -1,5 +1,5 @@
-function[plasmaM] = load_plasma_metabolites(subject_id)
-% [plasmaM] = load_plasma_metabolites(subject_id)
+function[plasmaM, mb_names, n_mb] = load_plasma_metabolites(subject_id)
+% [plasmaM, mb_names, n_mb] = load_plasma_metabolites(subject_id)
 % load_plasma_metabolites will load all the metabolite concentrations
 % coming from the plasma (amino-acids + metabolic molecules).
 %
@@ -11,13 +11,25 @@ function[plasmaM] = load_plasma_metabolites(subject_id)
 % plasmaM: structure with metabolite data with the following subfields:
 %   .CID: subject identification number (NS subjects in total)
 %   .XXX: concentration of the corresponding metabolic molecule for each subject
+%   .filtered.(XXX).CID: list of subjects after filtering mean+3*SD
+%   .filtered.(XXX).(XXX): concentration of metabolites after filtering
+%   subjects with mean+3*SD
 %
-% Note: all amino-acids are present but Tryptophane.
+% mb_names: cell with list of all the metabolites extracted
+%
+% n_mb: number of metabolites
+%
+% Note: all amino-acids are present but Tryptophane (not analyzed by Nestlé).
 %
 % N. Clairis - january 2024
 
-%% extract number of subjects
-NS = length(subject_id);
+%% do not allow empty subject_id
+if ~exist('subject_id','var') || isempty(subject_id)
+    [~, ~, ~, subject_id, NS] = sub_id;
+else
+    % extract number of subjects
+    NS = length(subject_id);
+end
 
 %% working directories
 plasma_path = 'P:\boulot\postdoc_CarmenSandi\results\plasma';
@@ -160,13 +172,28 @@ for iAA = 1:nAAColumns
                 case 'CID' % avoid replacing by subject id from the excel file if subjects already entered in inputs
                 otherwise
                     plasmaM.(AA_nm)(iS) = AA_excelReadTable.(AA_nm)(sub_idx);
-            end
+            end % amino-acid name
         else
             error(['Problem with ',AA_nm,' extraction in subject ',sub_nm]);
         end
     end % subject loop
 end % loop through amino-acids
 
+%% prepare list of metabolites
+mb_names = fieldnames(plasmaM);
+mb_names(strcmp(mb_names,'CID')) = [];
+n_mb = length(mb_names);
+
 %% add filter for outliers
+for iM = 1:n_mb
+    mb_nm = mb_names{iM};
+    [~, ~,...
+        cleaned_plasmaM_tmp,...
+        idx_goodS] = rmv_outliers_3sd(plasmaM.(mb_nm));
+    plasmaM.filtered.(mb_nm).CID = plasmaM.CID(idx_goodS);
+    plasmaM.filtered.(mb_nm).(mb_nm) = cleaned_plasmaM_tmp;
+end % metabolite loop
+
+
 
 end % function
