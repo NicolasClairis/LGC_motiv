@@ -122,7 +122,8 @@ switch study_nm
                 %% also remove outlier subject who has bad brain image + weird behavior in all tasks
                 bad_subs1b = ismember(fullSubList,{'054','090'}); % remove for anatomical outliers
 %                 bad_subs1b = ismember(fullSubList,{'039','054','090'});
-%                 bad_subs1b = ismember(fullSubList,{'054'});
+%                 bad_subs1b = ismember(fullSubList,{'054'}); % remove outlier
+%                 bad_subs1b = []; % no further exclusion
                 % 054 and 090 removed to have a better MRI image and
                 % because 054 had a very weird behavior
                 % remove also 019 if you split R and P trials because saturated P trials
