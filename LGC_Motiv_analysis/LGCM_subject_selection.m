@@ -120,7 +120,7 @@ switch study_nm
                 fullSubList(bad_subs1) = [];
 
                 %% also remove outlier subject who has bad brain image + weird behavior in all tasks
-                bad_subs1b = ismember(fullSubList,{'054','090'});
+                bad_subs1b = ismember(fullSubList,{'054','090'}); % remove for anatomical outliers
 %                 bad_subs1b = ismember(fullSubList,{'039','054','090'});
 %                 bad_subs1b = ismember(fullSubList,{'054'});
                 % 054 and 090 removed to have a better MRI image and
