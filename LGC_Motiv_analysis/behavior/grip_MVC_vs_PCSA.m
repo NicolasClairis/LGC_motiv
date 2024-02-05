@@ -52,6 +52,14 @@ if ~exist('dispFig','var') || isempty(dispFig)
     dispFig = 1;
 end
 
+%% load subjects
+study_nm = 'study1';
+cond = 'behavior';
+[subject_id, NS] = LGCM_subject_selection(study_nm, cond);
+% check also gender to know who is who
+[sub_males, NS_m] = LGCM_subject_selection(study_nm, cond,'males');
+[sub_females, NS_f] = LGCM_subject_selection(study_nm, cond,'females');
+
 %% working directory
 list_pcs = {'Lab','Home'};
 which_pc_idx = listdlg('PromptString',{'Lab or home pc?'},...
@@ -67,17 +75,10 @@ switch curr_pc
             'LGC_motiv','LGC_Motiv_results'),filesep];
         dataRoot = [fullfile('L:','human_data_private','raw_data_subject'),filesep];
 end
-%% load subjects
-study_nm = 'study1';
-cond = 'behavior';
-[subject_id, NS] = LGCM_subject_selection(study_nm, cond);
-% check also gender to know who is who
-[sub_males, NS_m] = LGCM_subject_selection(study_nm, cond,'males');
-[sub_females, NS_f] = LGCM_subject_selection(study_nm, cond,'females');
 
 %% load infos (including info about maximal theoretical force)
 excelReadInfosFile = readtable([gitPath,study_nm,filesep,'summary_participants_infos.xlsx'],...
-    'Sheet','Sheet1');
+    'Sheet','all_subjects_no_pilots');
 
 %% loop through subjects
 [MVC_all, PCSA_all] = deal(NaN(1,NS));
