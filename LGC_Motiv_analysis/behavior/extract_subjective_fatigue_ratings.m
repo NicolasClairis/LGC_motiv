@@ -1,10 +1,10 @@
 function[fatigue,...
     preMRS_fatigue, postMRS_fatigue,...
     prefMRI_fatigue, postfMRI_fatigue,...
-    deltaFatiguePrePostExp] = extract_subjective_fatigue_ratings(study_nm, subject_id, NS)
+    deltaFatiguePrePostExp, deltaFatiguePrePostfMRI] = extract_subjective_fatigue_ratings(study_nm, subject_id, NS)
 % [fatigue, preMRS_fatigue, postMRS_fatigue,...
 %     prefMRI_fatigue, postfMRI_fatigue,...
-%     deltaFatiguePrePostExp] = extract_subjective_fatigue_ratings(study_nm, subject_id, NS)
+%     deltaFatiguePrePostExp, deltaFatiguePrePostfMRI] = extract_subjective_fatigue_ratings(study_nm, subject_id, NS)
 % extract_subjective_fatigue_ratings will extract the subjective fatigue
 % ratings (on a visual analogue scale from 1 to 10) for the subjecte
 % entered in input.
@@ -31,13 +31,16 @@ function[fatigue,...
 % deltaFatiguePrePostExp: difference between initial subjective fatigue
 % rating and final level of fatigue
 %
+% deltaFatiguePrePostfMRI: difference between subjective fatigue rating
+% before vs after the task in fMRI
+%
 % Designed by N.Clairis - november 2023
 
 
 %% extract fatigue levels
 [preMRS_fatigue, postMRS_fatigue,...
     prefMRI_fatigue, postfMRI_fatigue,...
-    deltaFatiguePrePostExp] = deal(NaN(1,NS));
+    deltaFatiguePrePostExp, deltaFatiguePrePostfMRI] = deal(NaN(1,NS));
 
 % load fatigue
 [excelReadGeneralFile] = load_gal_data_bis(study_nm);
@@ -51,6 +54,7 @@ for iS = 1:NS
     prefMRI_fatigue(iS)          = excelReadGeneralFile.FatiguePr__fMRI(fatigue_sub_idx);
     postfMRI_fatigue(iS)          = excelReadGeneralFile.FatiguePost_fMRI(fatigue_sub_idx);
     deltaFatiguePrePostExp(iS)  = postfMRI_fatigue(iS) - preMRS_fatigue(iS);
+    deltaFatiguePrePostfMRI(iS) = postfMRI_fatigue(iS) - prefMRI_fatigue(iS);
 end
 
 %% create structure containing all the previous data
@@ -59,5 +63,6 @@ fatigue.postMRS = postMRS_fatigue;
 fatigue.prefMRI = prefMRI_fatigue;
 fatigue.postfMRI = postfMRI_fatigue;
 fatigue.deltaPrePostExp = deltaFatiguePrePostExp;
+fatigue.deltaFatiguePrePostfMRI = deltaFatiguePrePostfMRI;
 
 end % function
