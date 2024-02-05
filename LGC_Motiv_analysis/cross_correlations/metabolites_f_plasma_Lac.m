@@ -35,8 +35,9 @@ NS_goodS.aINS = sum(~isnan(plasma_Lac.*aIns_Lac'));
 dmPFC_col = col.red;
 aINS_col = col.blue_light;
 
+%% both dmPFC/dACC and aIns in same graph
 fig;
-% dmPFC
+% dmPFC/dACC
 scat_dmPFC_hdl = scatter(plasma_Lac./1000, dmPFC_Lac);
 scat_dmPFC_hdl.MarkerEdgeColor = dmPFC_col;
 scat_dmPFC_hdl.LineWidth = lWidth;
@@ -59,3 +60,26 @@ ylabel('brain Lac (mM)');
 legend([plot_dmPFC_hdl, plot_aIns_hdl],{'dmPFC','aINS'})
 legend('boxoff');
 legend_size(35);
+
+%% split dmPFC/dACC and aIns in 2 separate graphs
+% dmPFC/dACC
+fig;
+scat_dmPFC_hdl = scatter(plasma_Lac./1000, dmPFC_Lac);
+fit_dmPFC_hdl = plot(Lac_sorted.dmPFC./1000, Lac_fit_xSorted.dmPFC);
+scat_hdl_upgrade(scat_dmPFC_hdl);
+fit_hdl_upgrade(fit_dmPFC_hdl);
+xlabel('plasma lactate (mM)');
+ylabel('dmPFC/dACC lactate (mM)');
+place_r_and_pval(r_corr.dmPFC, pval.dmPFC(2));
+legend_size(pSize);
+
+% anterior insula
+fig;
+scat_AI_hdl = scatter(plasma_Lac./1000, aIns_Lac);
+fit_aIns_hdl = plot(Lac_sorted.aIns./1000, Lac_fit_xSorted.aIns);
+scat_hdl_upgrade(scat_AI_hdl);
+fit_hdl_upgrade(fit_aIns_hdl);
+xlabel('plasma lactate (mM)');
+ylabel('aIns lactate (mM)');
+place_r_and_pval(r_corr.aIns, pval.aIns(2));
+legend_size(pSize);
