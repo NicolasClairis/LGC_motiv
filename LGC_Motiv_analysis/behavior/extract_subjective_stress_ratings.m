@@ -48,8 +48,8 @@ for iS = 1:NS
     
     preMRS_stress(iS)          = excelReadGeneralFile.StressPr__MRS(stress_sub_idx);
     postMRS_stress(iS)          = excelReadGeneralFile.StressPost_MRS(stress_sub_idx);
-    prefMRI_stress(iS)          = excelReadGeneralFile.StressPr__fMRI(stress_sub_idx);
-    postfMRI_stress(iS)          = excelReadGeneralFile.StressPost_fMRI(stress_sub_idx);
+    prefMRI_stress(iS)          = excelReadGeneralFile.StressPr__IRMf(stress_sub_idx);
+    postfMRI_stress(iS)          = excelReadGeneralFile.StressPost_IRMf(stress_sub_idx);
     deltaStressPrePostExp(iS)  = postfMRI_stress(iS) - preMRS_stress(iS);
 end
 
