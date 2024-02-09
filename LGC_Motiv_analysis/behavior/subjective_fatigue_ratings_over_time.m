@@ -28,8 +28,27 @@ end % subject loop
 [~,pval.global] = ttest(beta.global);
 
 %% stats
-[pval, tbl, stats] = anova1(fatigue');
+[pval.global, tbl, stats] = anova1(fatigue');
 [comparison,means,h,gnames] = multcompare(stats,'alpha',0.05,'ctype','bonferroni');
+
+% pre-MRS/post-MRS
+preMRS_vs_postMRS_idx = comparison(:,1) == 1 & comparison(:,2) == 2;
+pval.preMRS_vs_postMRS = comparison(preMRS_vs_postMRS_idx,6);
+% pre-MRS/pre-fMRI
+preMRS_vs_prefMRI_idx = comparison(:,1) == 1 & comparison(:,2) == 3;
+pval.preMRS_vs_prefMRI = comparison(preMRS_vs_prefMRI_idx,6);
+% pre-MRS/post-fMRI
+preMRS_vs_postfMRI_idx = comparison(:,1) == 1 & comparison(:,2) == 4;
+pval.preMRS_vs_postfMRI = comparison(preMRS_vs_postfMRI_idx,6);
+% post-MRS/pre-fMRI
+postMRS_vs_prefMRI_idx = comparison(:,1) == 2 & comparison(:,2) == 3;
+pval.postMRS_vs_prefMRI = comparison(postMRS_vs_prefMRI_idx,6);
+% post-MRS/post-fMRI
+postMRS_vs_postfMRI_idx = comparison(:,1) == 2 & comparison(:,2) == 4;
+pval.postMRS_vs_postfMRI = comparison(postMRS_vs_postfMRI_idx,6);
+% pre-fMRI/post-fMRI
+prefMRI_vs_postfMRI_idx = comparison(:,1) == 3 & comparison(:,2) == 4;
+pval.prefMRI_vs_postfMRI = comparison(prefMRI_vs_postfMRI_idx,6);
 
 %% display figure
 pSize = general_fig_prm;
