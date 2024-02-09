@@ -1,4 +1,4 @@
-%% script to correlate brain metabolites with behavioral scores
+%% script to correlate brain metabolites with behavioral parameters
 %
 % designed by N.Clairis - 2022
 
