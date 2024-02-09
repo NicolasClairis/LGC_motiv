@@ -1,5 +1,5 @@
-function[maxPerf, pval] = maxPerfEvolutionAcrossRuns_group(computerRoot, study_nm, figGroupDisp, figIndivDisp)
-% [maxPerf, pval] = maxPerfEvolutionAcrossRuns_group(computerRoot, study_nm, figGroupDisp, figIndivDisp)
+function[maxPerf, pval] = maxPerfEvolutionAcrossRuns_group(computerRoot, figGroupDisp, figIndivDisp)
+% [maxPerf, pval] = maxPerfEvolutionAcrossRuns_group(computerRoot, figGroupDisp, figIndivDisp)
 % maxPerfEvolutionAcrossRuns_group will look at the average (across subjects)
 % maximal performance performed before and after each run.
 %
@@ -24,10 +24,8 @@ if ~exist('computerRoot','var') || isempty(computerRoot)
     computerRoot = LGCM_root_paths;
 end
 
-%% study names
-if ~exist('study_nm','var') || isempty(study_nm)
-    study_nm = 'study1';
-end
+%% subject selection
+[study_nm, ~, ~, subject_id, NS] = sub_id;
 
 %% working directories
 studyBehaviorFolder = [computerRoot, filesep, study_nm, filesep];
@@ -39,9 +37,6 @@ resultFolder = [resultFolder_a,'figures',filesep];
 if ~exist(resultFolder,'dir')
     mkdir(resultFolder);
 end
-
-%% subject selection
-[subject_id, NS] = LGCM_subject_selection(study_nm, 'behavior');
 
 %% by default, display group figure
 if ~exist('figGroupDisp','var') || isempty(figGroupDisp)
@@ -107,7 +102,8 @@ for iPM = 1:2
         %% display figure
         if figGroupDisp == 1
             pSize = 30;
-            % display figure
+            
+            % display figure with barplots
             fig;
             bar(1:4, maxPerf.(task_id).mean);
             hold on;
@@ -116,6 +112,15 @@ for iPM = 1:2
             errorbarHdl.LineWidth = 3;
             errorbarHdl.Color = [0 0 0];
             ylim([0 110]);
+            ylabel(['Max Performance ',task_fullName, ' (%)']);
+            xticks(1:4);
+            xticklabels({'pre_R_1','post_R_1','pre_R_2','post_R_2'})
+            legend_size(pSize);
+            
+            % same but with violinplots
+            fig;
+            violinplot(maxPerf.(task_id).allData');
+            ylim([20 180]);
             ylabel(['Max Performance ',task_fullName, ' (%)']);
             xticks(1:4);
             xticklabels({'pre_R_1','post_R_1','pre_R_2','post_R_2'})
