@@ -1,5 +1,5 @@
-function[pSize, lWidth, col, mSize] = general_fig_prm
-% [pSize, lWidth, col, mSize] = general_fig_prm
+function[pSize, lWidth, col, mSize, fontName] = general_fig_prm
+% [pSize, lWidth, col, mSize, fontName] = general_fig_prm
 % general_fig_prm will set up general figure parameters
 %
 % OUTPUTS
@@ -10,9 +10,12 @@ function[pSize, lWidth, col, mSize] = general_fig_prm
 % col: structure with several colours
 %
 % mSize: size for markers in scatter plot
+%
+% fontName: font name of the police to use for the figure
 
 %% legend size
 pSize = 30;
+
 %% line width
 lWidth = 3;
 
@@ -32,5 +35,8 @@ col.green = [171 221 164]./255;
 col.green_light = [230 245 152]./255;
 col.blue = [69 117 180]./255;
 col.blue_light = [171 217 233]./255;
+
+%% police font name
+fontName = 'Calibri';
 
 end % function
