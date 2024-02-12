@@ -36,7 +36,8 @@ switch which_pc
     case 'lab'
         rootPath = [fullfile('E:',study_nm),filesep];
     case 'home'
-        rootPath = [fullfile('L:','human_data_private','raw_data_subject'),filesep];
+        serverRoot = fullfile(filesep,filesep,'sv-nas1.rcp.epfl.ch',filesep,'sandi-lab');
+        rootPath = [fullfile(serverRoot,'human_data_private','raw_data_subject',study_nm),filesep];
 end
 
 %% display figure = yes by default
