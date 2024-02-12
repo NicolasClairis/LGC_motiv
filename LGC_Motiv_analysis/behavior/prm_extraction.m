@@ -33,8 +33,8 @@ switch whichPc
         computerRoot = [fullfile('E:'),filesep];
     case 'home'
         gitRoot = fullfile('C:','Users','Nicolas Clairis','Documents');
-        computerRoot = [fullfile('L:','human_data_private',...
-            'raw_data_subject'),filesep];
+        serverRoot = fullfile(filesep,filesep,'sv-nas1.rcp.epfl.ch',filesep,'Sandi-lab');
+        computerRoot = [fullfile(serverRoot,'human_data_private','raw_data_subject'),filesep];
     otherwise
         error(['paths not ready yet for ',whichPc, 'pc']);
 end
