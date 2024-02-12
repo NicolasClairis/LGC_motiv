@@ -18,7 +18,7 @@ switch list_pcs{which_pc_idx}
     case 'Lab'
         gitPath = fullfile('C:','Users','clairis','Desktop');
     case 'Home'
-        gitPath = fullfile('C:','Users','Loco','Documents');
+        gitPath = fullfile('C:','Users','Nicolas Clairis','Documents');
 end
 pcPath = fullfile(gitPath,'Github',...
     'LGC_motiv','LGC_Motiv_results',study_nm);
