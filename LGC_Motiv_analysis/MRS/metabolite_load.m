@@ -19,7 +19,8 @@ switch list_pcs{which_pc_idx}
     case 'Lab'
         metaboliteFolder = fullfile('M:','human_data_private','analyzed_data','study1');
     case 'Home'
-        metaboliteFolder = fullfile('L:','human_data_private','analyzed_data','study1');
+        serverRoot = fullfile(filesep,filesep,'sv-nas1.rcp.epfl.ch',filesep,'Sandi-lab');
+        metaboliteFolder = fullfile(serverRoot,'human_data_private','analyzed_data','study1');
 end
 % cd(metaboliteFolder);
 %% define subject list
