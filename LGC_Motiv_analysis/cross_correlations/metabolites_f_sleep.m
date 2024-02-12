@@ -95,7 +95,9 @@ lWidthScatter = 1.5;
 blackCol = [0 0 0];
 greyCol = [143 143 143]./255;
 pSize = 30;
-yLabeling = [MRS_ROI_nm,' - ',metabolite_nm_bis];
+yLabeling = [MRS_ROI_nm,' ',metabolite_nm_bis];
+% yLabeling = 'dmPFC/dACC lactate (mM)';
+% yLabeling = 'aIns lactate (mM)';
 
 % metabolite = f(avg sleep)
 fig;
