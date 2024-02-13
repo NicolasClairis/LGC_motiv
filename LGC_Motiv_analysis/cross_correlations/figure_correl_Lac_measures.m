@@ -68,107 +68,34 @@ for iRawCorr = 1:2
     
     %% display correlation in a nice correlation matrix
     % assemble data in one correlation matrix:
-    %% first test: avoids redundant information and shows diagonal as one
-    plasma_r_vector1 = [1;...
+    % avoid redundant information and shows diagonal as one
+    plasma_r_vector = [1;...
         r_corr.(raw_or_corr_nm).dmPFC_f_plasma_Lac;...
         r_corr.(raw_or_corr_nm).aIns_f_plasma_Lac];
-    dmPFC_r_vector1 = [0;...
+    dmPFC_r_vector = [0;...
         1;...
         r_corr.(raw_or_corr_nm).dmPFC_f_aIns_Lac];
-    aIns_r_vector1 = [0;...
+    aIns_r_vector = [0;...
         0;...
         1];
-    corr_mtrx1 = [plasma_r_vector1, dmPFC_r_vector1, aIns_r_vector1];
+    corr_mtrx = [plasma_r_vector, dmPFC_r_vector, aIns_r_vector];
     
     % same but for p.value
-    plasma_pval_vector1 = [NaN;...
+    plasma_pval_vector = [NaN;...
         pval.(raw_or_corr_nm).dmPFC_f_plasma_Lac;...
         pval.(raw_or_corr_nm).aIns_f_plasma_Lac];
-    dmPFC_pval_vector1 = [NaN;...
+    dmPFC_pval_vector = [NaN;...
         NaN;...
         pval.(raw_or_corr_nm).dmPFC_f_aIns_Lac];
-    aIns_pval_vector1 = [NaN;...
+    aIns_pval_vector = [NaN;...
         NaN;...
         NaN];
-    pval_mtrx1 = [plasma_pval_vector1, dmPFC_pval_vector1, aIns_pval_vector1];
+    pval_mtrx = [plasma_pval_vector, dmPFC_pval_vector, aIns_pval_vector];
     
-    
-    %% second test shows symetry (redundant)
-    plasma_r_vector2 = [1;...
-        r_corr.(raw_or_corr_nm).dmPFC_f_plasma_Lac;...
-        r_corr.(raw_or_corr_nm).aIns_f_plasma_Lac];
-    dmPFC_r_vector2 = [r_corr.(raw_or_corr_nm).dmPFC_f_plasma_Lac;...
-        1;...
-        r_corr.(raw_or_corr_nm).dmPFC_f_aIns_Lac];
-    aIns_r_vector2 = [r_corr.(raw_or_corr_nm).aIns_f_plasma_Lac;...
-        r_corr.(raw_or_corr_nm).dmPFC_f_aIns_Lac;...
-        1];
-    corr_mtrx2 = [plasma_r_vector2, dmPFC_r_vector2, aIns_r_vector2];
-    
-    % same but for p.value
-    plasma_pval_vector2 = [0;...
-        pval.(raw_or_corr_nm).dmPFC_f_plasma_Lac;...
-        pval.(raw_or_corr_nm).aIns_f_plasma_Lac];
-    dmPFC_pval_vector2 = [pval.(raw_or_corr_nm).dmPFC_f_plasma_Lac;...
-        0;...
-        pval.(raw_or_corr_nm).dmPFC_f_aIns_Lac];
-    aIns_pval_vector2 = [pval.(raw_or_corr_nm).aIns_f_plasma_Lac;...
-        pval.(raw_or_corr_nm).dmPFC_f_aIns_Lac;...
-        0];
-    pval_mtrx2 = [plasma_pval_vector2, dmPFC_pval_vector2, aIns_pval_vector2];
-    
-    %% third test: like test 1 but without diagonal
-    plasma_r_vector3 = [0;...
-        r_corr.(raw_or_corr_nm).dmPFC_f_plasma_Lac;...
-        r_corr.(raw_or_corr_nm).aIns_f_plasma_Lac];
-    dmPFC_r_vector3 = [0;...
-        0;...
-        r_corr.(raw_or_corr_nm).dmPFC_f_aIns_Lac];
-    aIns_r_vector3 = [0;...
-        0;...
-        0];
-    corr_mtrx3 = [plasma_r_vector3, dmPFC_r_vector3, aIns_r_vector3];
-    
-    % same but for p.value
-    plasma_pval_vector3 = [NaN;...
-        pval.(raw_or_corr_nm).dmPFC_f_plasma_Lac;...
-        pval.(raw_or_corr_nm).aIns_f_plasma_Lac];
-    dmPFC_pval_vector3 = [NaN;...
-        NaN;...
-        pval.(raw_or_corr_nm).dmPFC_f_aIns_Lac];
-    aIns_pval_vector3 = [NaN;...
-        NaN;...
-        NaN];
-    pval_mtrx3 = [plasma_pval_vector3, dmPFC_pval_vector3, aIns_pval_vector3];
-    
-    %% fourth test: like test 2 but without diagonal
-    plasma_r_vector4 = [0;...
-        r_corr.(raw_or_corr_nm).dmPFC_f_plasma_Lac;...
-        r_corr.(raw_or_corr_nm).aIns_f_plasma_Lac];
-    dmPFC_r_vector4 = [r_corr.(raw_or_corr_nm).dmPFC_f_plasma_Lac;...
-        0;...
-        r_corr.(raw_or_corr_nm).dmPFC_f_aIns_Lac];
-    aIns_r_vector4 = [r_corr.(raw_or_corr_nm).aIns_f_plasma_Lac;...
-        r_corr.(raw_or_corr_nm).dmPFC_f_aIns_Lac;...
-        0];
-    corr_mtrx4 = [plasma_r_vector4, dmPFC_r_vector4, aIns_r_vector4];
-    
-    % same but for p.value
-    plasma_pval_vector4 = [NaN;...
-        pval.(raw_or_corr_nm).dmPFC_f_plasma_Lac;...
-        pval.(raw_or_corr_nm).aIns_f_plasma_Lac];
-    dmPFC_pval_vector4 = [pval.(raw_or_corr_nm).dmPFC_f_plasma_Lac;...
-        NaN;...
-        pval.(raw_or_corr_nm).dmPFC_f_aIns_Lac];
-    aIns_pval_vector4 = [pval.(raw_or_corr_nm).aIns_f_plasma_Lac;...
-        pval.(raw_or_corr_nm).dmPFC_f_aIns_Lac;...
-        NaN];
-    pval_mtrx4 = [plasma_pval_vector4, dmPFC_pval_vector4, aIns_pval_vector4];
-    
-    %% figure 1
+    %% figure
     fig;
     subplot_hdl = subplot(1,2,1);
-    imagesc(corr_mtrx1, corr_range);
+    imagesc(corr_mtrx, corr_range);
     colormap(subplot_hdl, color_range_choices);
     cbar = colorbar;
     cbar.Label.String = 'r';
@@ -177,110 +104,14 @@ for iRawCorr = 1:2
     yticks(1:3);
     yticklabels({'plasma','dmPFC/dACC','aIns'});
     % add stars in the graph if some correlations are significant
-    for iROI = 1:size(corr_mtrx1,2)
-        for iBhv = 1:size(corr_mtrx1,1)
-            if pval_mtrx1(iBhv, iROI) <= 0.05
-                if pval_mtrx1(iBhv, iROI) > 0.01 && pval_mtrx1(iBhv, iROI) <= 0.05
+    for iROI = 1:size(corr_mtrx,2)
+        for iBhv = 1:size(corr_mtrx,1)
+            if pval_mtrx(iBhv, iROI) <= 0.05
+                if pval_mtrx(iBhv, iROI) > 0.01 && pval_mtrx(iBhv, iROI) <= 0.05
                     pval_hdl = text(iROI, iBhv, '*');
-                elseif pval_mtrx1(iBhv, iROI) > 0.005 && pval_mtrx1(iBhv, iROI) <= 0.01
+                elseif pval_mtrx(iBhv, iROI) > 0.005 && pval_mtrx(iBhv, iROI) <= 0.01
                     pval_hdl = text(iROI, iBhv, '**');
-                elseif pval_mtrx1(iBhv, iROI) <= 0.005
-                    pval_hdl = text(iROI, iBhv, '***');
-                end % p.value
-                % adjust p.value parameters
-                pval_hdl.Color = col.white;
-                pval_hdl.FontSize = 70;
-                pval_hdl.FontWeight = 'bold';
-                pval_hdl.HorizontalAlignment = 'center'; % center text on x-axis
-                pval_hdl.VerticalAlignment = 'middle'; % center text on y-axis
-            end % when p.value is significant
-        end % loop over Y variables
-    end % loop over X variables
-    
-    %% figure 2
-    fig;
-    subplot_hdl = subplot(1,2,1);
-    imagesc(corr_mtrx2, corr_range);
-    colormap(subplot_hdl, color_range_choices);
-    cbar = colorbar;
-    cbar.Label.String = 'r';
-    xticks(1:3);
-    xticklabels({'plasma','dmPFC/dACC','aIns'});
-    yticks(1:3);
-    yticklabels({'plasma','dmPFC/dACC','aIns'});
-    % add stars in the graph if some correlations are significant
-    for iROI = 1:size(corr_mtrx2,2)
-        for iBhv = 1:size(corr_mtrx2,1)
-            if pval_mtrx2(iBhv, iROI) <= 0.05
-                if pval_mtrx2(iBhv, iROI) > 0.01 && pval_mtrx2(iBhv, iROI) <= 0.05
-                    pval_hdl = text(iROI, iBhv, '*');
-                elseif pval_mtrx2(iBhv, iROI) > 0.005 && pval_mtrx2(iBhv, iROI) <= 0.01
-                    pval_hdl = text(iROI, iBhv, '**');
-                elseif pval_mtrx2(iBhv, iROI) <= 0.005
-                    pval_hdl = text(iROI, iBhv, '***');
-                end % p.value
-                % adjust p.value parameters
-                pval_hdl.Color = col.white;
-                pval_hdl.FontSize = 70;
-                pval_hdl.FontWeight = 'bold';
-                pval_hdl.HorizontalAlignment = 'center'; % center text on x-axis
-                pval_hdl.VerticalAlignment = 'middle'; % center text on y-axis
-            end % when p.value is significant
-        end % loop over Y variables
-    end % loop over X variables
-    
-    %% figure 3
-    fig;
-    subplot_hdl = subplot(1,2,1);
-    imagesc(corr_mtrx3, corr_range);
-    colormap(subplot_hdl, color_range_choices);
-    cbar = colorbar;
-    cbar.Label.String = 'r';
-    xticks(1:3);
-    xticklabels({'plasma','dmPFC/dACC','aIns'});
-    yticks(1:3);
-    yticklabels({'plasma','dmPFC/dACC','aIns'});
-    % add stars in the graph if some correlations are significant
-    for iROI = 1:size(corr_mtrx3,2)
-        for iBhv = 1:size(corr_mtrx3,1)
-            if pval_mtrx3(iBhv, iROI) <= 0.05
-                if pval_mtrx3(iBhv, iROI) > 0.01 && pval_mtrx3(iBhv, iROI) <= 0.05
-                    pval_hdl = text(iROI, iBhv, '*');
-                elseif pval_mtrx3(iBhv, iROI) > 0.005 && pval_mtrx3(iBhv, iROI) <= 0.01
-                    pval_hdl = text(iROI, iBhv, '**');
-                elseif pval_mtrx3(iBhv, iROI) <= 0.005
-                    pval_hdl = text(iROI, iBhv, '***');
-                end % p.value
-                % adjust p.value parameters
-                pval_hdl.Color = col.white;
-                pval_hdl.FontSize = 70;
-                pval_hdl.FontWeight = 'bold';
-                pval_hdl.HorizontalAlignment = 'center'; % center text on x-axis
-                pval_hdl.VerticalAlignment = 'middle'; % center text on y-axis
-            end % when p.value is significant
-        end % loop over Y variables
-    end % loop over X variables
-    
-    %% figure 4
-    fig;
-    subplot_hdl = subplot(1,2,1);
-    imagesc(corr_mtrx4, corr_range);
-    colormap(subplot_hdl, color_range_choices);
-    cbar = colorbar;
-    cbar.Label.String = 'r';
-    xticks(1:3);
-    xticklabels({'plasma','dmPFC/dACC','aIns'});
-    yticks(1:3);
-    yticklabels({'plasma','dmPFC/dACC','aIns'});
-    % add stars in the graph if some correlations are significant
-    for iROI = 1:size(corr_mtrx4,2)
-        for iBhv = 1:size(corr_mtrx4,1)
-            if pval_mtrx4(iBhv, iROI) <= 0.05
-                if pval_mtrx4(iBhv, iROI) > 0.01 && pval_mtrx4(iBhv, iROI) <= 0.05
-                    pval_hdl = text(iROI, iBhv, '*');
-                elseif pval_mtrx4(iBhv, iROI) > 0.005 && pval_mtrx4(iBhv, iROI) <= 0.01
-                    pval_hdl = text(iROI, iBhv, '**');
-                elseif pval_mtrx4(iBhv, iROI) <= 0.005
+                elseif pval_mtrx(iBhv, iROI) <= 0.005
                     pval_hdl = text(iROI, iBhv, '***');
                 end % p.value
                 % adjust p.value parameters
