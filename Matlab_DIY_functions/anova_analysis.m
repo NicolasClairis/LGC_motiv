@@ -9,7 +9,7 @@ function[pval] = anova_analysis(datamatrix, column_labels)
 % post-hoc resulting table).
 % 
 % See also:
-%https://sites.duke.edu/adhoc_boss/files/2013/02/Detailed-Multicompare-MATLAB-Tutorial.pdf
+% https://sites.duke.edu/adhoc_boss/files/2013/02/Detailed-Multicompare-MATLAB-Tutorial.pdf
 % for more details
 % Requires the Statistics and Machine Learning matlab Toolbox
 
