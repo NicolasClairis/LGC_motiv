@@ -8,7 +8,7 @@ condition = subject_condition();
 [subject_id, NS] = LGCM_subject_selection(study_nm, condition);
 
 %% define metabolite and ROI you want to focus on
-[metabolite_allSubs, MRS_ROI_nm, mb_nm] = metabolite_extraction(study_nm, subject_id);
+[metabolite_allSubs_v0, MRS_ROI_nm, mb_nm] = metabolite_extraction(study_nm, subject_id);
 
 %% extract behavioral parameters
 prm = prm_extraction(study_nm, subject_id);
@@ -30,20 +30,21 @@ for iUncorrCorr = 1:length(subsIncluded)
             % filter subjects depending on situation
             switch iUncorrCorr
                 case 1 % all subjects included as long as no-NaN values
-                    goodSubs.(uncCorr_nm).(prm_nm) = ~isnan(metabolite_allSubs.*prm_tmp);
+                    metabolite_allSubs = metabolite_allSubs_v0;
+                    goodSubs.(uncCorr_nm).(prm_nm) = ~isnan(metabolite_allSubs_v0.*prm_tmp);
                 case 2 % remove any outlier in any measure
-                    [~,~,metabolite_allSubs] = rmv_outliers_3sd(metabolite_allSubs);
+                    [~,~,metabolite_allSubs] = rmv_outliers_3sd(metabolite_allSubs_v0);
                     [~,~,prm_tmp] = rmv_outliers_3sd(prm_tmp);
                     goodSubs.(uncCorr_nm).(prm_nm) = ~isnan(metabolite_allSubs.*prm_tmp);
             end
             
             NS_goodS.(uncCorr_nm).(prm_nm) = sum(goodSubs.(uncCorr_nm).(prm_nm));
             [r_corr.(uncCorr_nm).(prm_nm),pval_corr.(uncCorr_nm).(prm_nm)] = corr(prm_tmp(goodSubs.(uncCorr_nm).(prm_nm))',...
-                metabolite_allSubs(goodSubs.(uncCorr_nm).(prm_nm))');
+                metabolite_allSubs_v0(goodSubs.(uncCorr_nm).(prm_nm))');
             [~, betas.(uncCorr_nm).(prm_nm),...
                 pval.(uncCorr_nm).(prm_nm), ~,...
                 mb_sorted.(uncCorr_nm).(prm_nm),...
-                prm_fit_mbSorted.(uncCorr_nm).(prm_nm)] = glm_package(metabolite_allSubs(goodSubs.(uncCorr_nm).(prm_nm))',...
+                prm_fit_mbSorted.(uncCorr_nm).(prm_nm)] = glm_package(metabolite_allSubs_v0(goodSubs.(uncCorr_nm).(prm_nm))',...
                 prm_tmp(goodSubs.(uncCorr_nm).(prm_nm))', 'normal', 'on');
         end
     end % parameters loop
@@ -54,7 +55,7 @@ for iUncorrCorr = 1:length(subsIncluded)
         prm_nm = parameters{iPrm};
         if ~strcmp(prm_nm,'CID') % no sense in this case
             fig;
-            scat_hdl = scatter(metabolite_allSubs(goodSubs.(uncCorr_nm).(prm_nm))',...
+            scat_hdl = scatter(metabolite_allSubs_v0(goodSubs.(uncCorr_nm).(prm_nm))',...
                 prm.(prm_nm)(goodSubs.(uncCorr_nm).(prm_nm))');
             fit_hdl = plot(mb_sorted.(uncCorr_nm).(prm_nm),...
                 prm_fit_mbSorted.(uncCorr_nm).(prm_nm));
