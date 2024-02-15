@@ -20,7 +20,7 @@ function[r_corr, pval, NS_goodS] = figure_interindiv_correl_BOLD__vs__motivation
 GLM = spm_input('GLM number',1,'e');
 
 figure_folder = ['P:\boulot\postdoc_CarmenSandi\papers\Clairis_mediation_Lac\',...
-    'figures\fig3_dmPFCdACC_aINS_fMRI_intra-individual\'];
+    'figures\fig2_dmPFCdACC_aINS_fMRI_intra-individual\'];
 dmPFC_filepath = [figure_folder,'GLM',num2str(GLM),'_prm_f_MRS_dmPFC_ROI_',num2str(NS),'subs.mat'];
 aIns_filepath = [figure_folder,'GLM',num2str(GLM),'_prm_f_MRS_aINS_ROI_',num2str(NS),'subs.mat'];
 if exist(dmPFC_filepath,'file') && exist(aIns_filepath,'file')
