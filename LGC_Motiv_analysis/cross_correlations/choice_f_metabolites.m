@@ -19,6 +19,7 @@ nTasks = length(task_names);
 for iT = 1:nTasks
     task_nm = task_names{iT};
     goodSubs.(task_nm) = ~isnan(choice_hE.(task_nm).*metabolite_allSubs);
+    warning('careful, missing outlier removal here');
     NS_goodSubs.(task_nm) = sum(goodSubs.(task_nm));
     [r_corr.(task_nm),pval_corr.(task_nm)] = corr(choice_hE.(task_nm)(goodSubs.(task_nm))',...
         metabolite_allSubs(goodSubs.(task_nm))');
