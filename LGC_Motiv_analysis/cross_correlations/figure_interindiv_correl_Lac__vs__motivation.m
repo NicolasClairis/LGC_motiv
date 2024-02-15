@@ -57,43 +57,55 @@ for iRawCorr = 1:2
     
     % correlations with lactate
     % plasma lactate
+    % HE
     goodS.(raw_or_corr_nm).HE_f_plasma_Lac = filter_fn(raw_or_corr_nm, plasma_Lac, HE_ch);
     [r_corr.(raw_or_corr_nm).HE_f_plasma_Lac,...
         pval.(raw_or_corr_nm).HE_f_plasma_Lac] = corr(plasma_Lac(goodS.(raw_or_corr_nm).HE_f_plasma_Lac)', HE_ch(goodS.(raw_or_corr_nm).HE_f_plasma_Lac)');
+    % HPE
     goodS.(raw_or_corr_nm).HPE_f_plasma_Lac = filter_fn(raw_or_corr_nm, plasma_Lac, HPE_ch);
     [r_corr.(raw_or_corr_nm).HPE_f_plasma_Lac,...
         pval.(raw_or_corr_nm).HPE_f_plasma_Lac] = corr(plasma_Lac(goodS.(raw_or_corr_nm).HPE_f_plasma_Lac)', HPE_ch(goodS.(raw_or_corr_nm).HPE_f_plasma_Lac)');
+    % HME
     goodS.(raw_or_corr_nm).HME_f_plasma_Lac = filter_fn(raw_or_corr_nm, plasma_Lac, HME_ch);
     [r_corr.(raw_or_corr_nm).HME_f_plasma_Lac,...
         pval.(raw_or_corr_nm).HME_f_plasma_Lac] = corr(plasma_Lac(goodS.(raw_or_corr_nm).HME_f_plasma_Lac)', HME_ch(goodS.(raw_or_corr_nm).HME_f_plasma_Lac)');
+    % kEp
     goodS.(raw_or_corr_nm).kEp_f_plasma_Lac = filter_fn(raw_or_corr_nm, plasma_Lac, kEp);
     [r_corr.(raw_or_corr_nm).kEp_f_plasma_Lac,...
         pval.(raw_or_corr_nm).kEp_f_plasma_Lac] = corr(plasma_Lac(goodS.(raw_or_corr_nm).kEp_f_plasma_Lac)', kEp(goodS.(raw_or_corr_nm).kEp_f_plasma_Lac)');
     
     % dmPFC/dACC lactate
+    % HE
     goodS.(raw_or_corr_nm).HE_f_dmPFC_Lac = filter_fn(raw_or_corr_nm, dmPFC_Lac, HE_ch);
     [r_corr.(raw_or_corr_nm).HE_f_dmPFC_Lac,...
         pval.(raw_or_corr_nm).HE_f_dmPFC_Lac] = corr(dmPFC_Lac(goodS.(raw_or_corr_nm).HE_f_dmPFC_Lac)', HE_ch(goodS.(raw_or_corr_nm).HE_f_dmPFC_Lac)');
+    % HPE
     goodS.(raw_or_corr_nm).HPE_f_dmPFC_Lac = filter_fn(raw_or_corr_nm, dmPFC_Lac, HPE_ch);
     [r_corr.(raw_or_corr_nm).HPE_f_dmPFC_Lac,...
         pval.(raw_or_corr_nm).HPE_f_dmPFC_Lac] = corr(dmPFC_Lac(goodS.(raw_or_corr_nm).HPE_f_dmPFC_Lac)', HPE_ch(goodS.(raw_or_corr_nm).HPE_f_dmPFC_Lac)');
+    % HME
     goodS.(raw_or_corr_nm).HME_f_dmPFC_Lac = filter_fn(raw_or_corr_nm, dmPFC_Lac, HME_ch);
     [r_corr.(raw_or_corr_nm).HME_f_dmPFC_Lac,...
         pval.(raw_or_corr_nm).HME_f_dmPFC_Lac] = corr(dmPFC_Lac(goodS.(raw_or_corr_nm).HME_f_dmPFC_Lac)', HME_ch(goodS.(raw_or_corr_nm).HME_f_dmPFC_Lac)');
+    % kEp
     goodS.(raw_or_corr_nm).kEp_f_dmPFC_Lac = filter_fn(raw_or_corr_nm, dmPFC_Lac, kEp);
     [r_corr.(raw_or_corr_nm).kEp_f_dmPFC_Lac,...
         pval.(raw_or_corr_nm).kEp_f_dmPFC_Lac] = corr(dmPFC_Lac(goodS.(raw_or_corr_nm).kEp_f_dmPFC_Lac)', kEp(goodS.(raw_or_corr_nm).kEp_f_dmPFC_Lac)');
     
     % aIns lactate
+    % HE
     goodS.(raw_or_corr_nm).HE_f_aIns_Lac = filter_fn(raw_or_corr_nm, aIns_Lac, HE_ch);
     [r_corr.(raw_or_corr_nm).HE_f_aIns_Lac,...
         pval.(raw_or_corr_nm).HE_f_aIns_Lac] = corr(aIns_Lac(goodS.(raw_or_corr_nm).HE_f_aIns_Lac)', HE_ch(goodS.(raw_or_corr_nm).HE_f_aIns_Lac)');
+    % HPE
     goodS.(raw_or_corr_nm).HPE_f_aIns_Lac = filter_fn(raw_or_corr_nm, aIns_Lac, HPE_ch);
     [r_corr.(raw_or_corr_nm).HPE_f_aIns_Lac,...
         pval.(raw_or_corr_nm).HPE_f_aIns_Lac] = corr(aIns_Lac(goodS.(raw_or_corr_nm).HPE_f_aIns_Lac)', HPE_ch(goodS.(raw_or_corr_nm).HPE_f_aIns_Lac)');
+    % HME
     goodS.(raw_or_corr_nm).HME_f_aIns_Lac = filter_fn(raw_or_corr_nm, aIns_Lac, HME_ch);
     [r_corr.(raw_or_corr_nm).HME_f_aIns_Lac,...
         pval.(raw_or_corr_nm).HME_f_aIns_Lac] = corr(aIns_Lac(goodS.(raw_or_corr_nm).HME_f_aIns_Lac)', HME_ch(goodS.(raw_or_corr_nm).HME_f_aIns_Lac)');
+    % kEp
     goodS.(raw_or_corr_nm).kEp_f_aIns_Lac = filter_fn(raw_or_corr_nm, aIns_Lac, kEp);
     [r_corr.(raw_or_corr_nm).kEp_f_aIns_Lac,...
         pval.(raw_or_corr_nm).kEp_f_aIns_Lac] = corr(aIns_Lac(goodS.(raw_or_corr_nm).kEp_f_aIns_Lac)', kEp(goodS.(raw_or_corr_nm).kEp_f_aIns_Lac)');
