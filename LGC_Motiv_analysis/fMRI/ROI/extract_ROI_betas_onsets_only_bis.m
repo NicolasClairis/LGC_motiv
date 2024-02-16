@@ -43,7 +43,7 @@ ROI_subList = ROI_trial_b_trial.subject_id;
 ROI_names(strcmp(ROI_names,'subject_id')) = [];
 if length(ROI_names) > 1
     which_ROI = listdlg('PromptString','Which ROI?','ListString',ROI_names);
-    ROI_nm = ROI_names{which_ROI};
+    ROI_nm = ROI_names(which_ROI);
 else
     ROI_nm = ROI_names;
 end
