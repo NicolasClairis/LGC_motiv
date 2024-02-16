@@ -16,13 +16,12 @@ if ~exist('condition','var') || ~isempty(condition)
     condition = subject_condition;
 end
 [subject_id, NS] = LGCM_subject_selection(study_nm,condition);
-[condition_for_fMRI_extraction] = condition_for_fMRI(condition);
 
 %% select and extract the ROI data
 [ROI_trial_b_trial, ROI_subList,...
     ROI_nm, ROI_short_nm,...
     timePeriod_nm] = extract_ROI_betas_onsets_only_bis(computerRoot,...
-    study_nm, subject_id, condition_for_fMRI_extraction);
+    study_nm, subject_id, condition);
 
 %% prepare output of interest
 task_names = {'Ep','Em'};
