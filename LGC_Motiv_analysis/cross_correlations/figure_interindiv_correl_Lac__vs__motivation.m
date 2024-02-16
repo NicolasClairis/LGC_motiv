@@ -165,9 +165,9 @@ for iRawCorr = 1:2
             if pval_mtrx(iBhv, iROI) <= 0.05
                 if pval_mtrx(iBhv, iROI) > 0.01 && pval_mtrx(iBhv, iROI) <= 0.05
                     pval_hdl = text(iROI, iBhv, '*');
-                elseif pval_mtrx(iBhv, iROI) > 0.005 && pval_mtrx(iBhv, iROI) <= 0.01
+                elseif pval_mtrx(iBhv, iROI) > 0.001 && pval_mtrx(iBhv, iROI) <= 0.01
                     pval_hdl = text(iROI, iBhv, '**');
-                elseif pval_mtrx(iBhv, iROI) <= 0.005
+                elseif pval_mtrx(iBhv, iROI) <= 0.001
                     pval_hdl = text(iROI, iBhv, '***');
                 end % p.value
                 % adjust p.value parameters
