@@ -1,5 +1,5 @@
-function[metabolites] = metabolite_load(subject_id)
-% [metabolites] = metabolite_load(subject_id)
+function[metabolites, CRLB] = metabolite_load(subject_id)
+% [metabolites, CRLB] = metabolite_load(subject_id)
 % metabolite_load will load the metabolite concentrations based on the
 % excel file prepared by Arthur Barakat.
 %
@@ -8,6 +8,10 @@ function[metabolites] = metabolite_load(subject_id)
 %
 % OUTPUTS
 % metabolites: structure with all the metabolites
+%
+% CRLB: structure with Cramér-Rao Lower Bound which gives a lower estimate
+% for the variance of an unbiased estimator for each single metabolite (not the
+% ratios)
 
 %% working directory
 % root = pwd;
@@ -57,9 +61,11 @@ for iROI = 1:nROIs
     for iMet = 1:n_metabolites
         switch all_metabolites{iMet}
             case 'Glu_Gln'
-                metabolites.(ROI_nm).Glx = NaN(1,NS);
+                [metabolites.(ROI_nm).Glx,...
+                    CRLB.(ROI_nm).Glx] = deal(NaN(1,NS));
             otherwise
-                metabolites.(ROI_nm).(all_metabolites{iMet}) = NaN(1,NS);
+                [metabolites.(ROI_nm).(all_metabolites{iMet}),...
+                    CRLB.(ROI_nm).(all_metabolites{iMet})] = deal(NaN(1,NS));
         end
     end % metabolite loop
     [metabolites.(ROI_nm).Gln_div_Glu,...
@@ -125,6 +131,7 @@ for iROI = 1:nROIs
                 % (>50%) and subjects which are clearly outliers because
                 % their values are too far from the others (>/< mean+3*SD)
                 metabolites.(ROI_nm).(met_nm_bis)(iS) = all_met_data(subj_line);
+                CRLB.(ROI_nm).(met_nm_bis)(iS) = CRLB_tmp;
             end
         end % subject loop
     end % metabolites loop
