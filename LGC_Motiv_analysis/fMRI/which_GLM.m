@@ -258,6 +258,7 @@ function [GLMprm] = which_GLM(GLM)
 %       (4) difference between net value of the high effort option
 %       and low effort option based on the model defined in .(choice/chosen).(Ep.Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).NV_mdl (='mdl_X' or 'bayesianModel_X')
 %       This is basically like (3) but before the sigmoid transformation
+%       i.e. it's also like (1) but including the bias term.
 %       (5) absolute difference between net value of the high effort option
 %       and low effort option based on the model defined in .(choice/chosen).(Ep.Em).(R/P/RP).(E/E1/E2/E3/Ech0/Ech1/Ech2/Ech3/lEch/hEch).NV_mdl (='mdl_X' or 'bayesianModel_X')
 %       This is basically like (2) but including the bias.
@@ -7095,6 +7096,39 @@ switch GLM
             GLMprm.choice.(Epm_nm).RP.E.NV_chosen = 3;
             GLMprm.choice.(Epm_nm).RP.E.E_chosen = 1;
             GLMprm.choice.(Epm_nm).RP.E.RT = 1;
+            % chosen
+            GLMprm.model_onset.(Epm_nm).chosen = 'stick';
+            % effort perf (effort execution)
+            GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
+            % feedback
+            GLMprm.model_onset.(Epm_nm).fbk = 'stick';
+        end % physical/mental loop
+        
+    case 260 % same as GLM 235 but splitting high-E and low-E choices
+        % => model high E instead of E chosen and high SV instead of SVch
+        % general parameters
+        GLMprm.gal.orth_vars = 0;
+        GLMprm.gal.zPerRun = 1;
+        GLMprm.gal.grey_mask = 3;
+        GLMprm.gal.mask_probaThreshold = 5;
+        % loop per task
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % fixation crosses
+            GLMprm.model_onset.(Epm_nm).allCrosses = 'stick';
+            % choice
+            GLMprm.choice.(Epm_nm).splitPerE = 3;
+            GLMprm.model_onset.(Epm_nm).choice = 'stick';
+            % low E chosen
+            GLMprm.choice.(Epm_nm).RP.lEch.NV_mdl = 'bayesianModel_3';
+            GLMprm.choice.(Epm_nm).RP.lEch.NV_varOption = 4;
+            GLMprm.choice.(Epm_nm).RP.lEch.E_varOption = 1;
+            GLMprm.choice.(Epm_nm).RP.lEch.RT = 1;
+            % high E chosen
+            GLMprm.choice.(Epm_nm).RP.hEch.NV_mdl = 'bayesianModel_3';
+            GLMprm.choice.(Epm_nm).RP.hEch.NV_varOption = 4;
+            GLMprm.choice.(Epm_nm).RP.hEch.E_varOption = 1;
+            GLMprm.choice.(Epm_nm).RP.hEch.RT = 1;
             % chosen
             GLMprm.model_onset.(Epm_nm).chosen = 'stick';
             % effort perf (effort execution)
