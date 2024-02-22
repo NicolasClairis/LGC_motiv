@@ -108,6 +108,10 @@ if ~exist('subject_id','var') || ~exist('NS','var') ||...
         isempty(subject_id) || isempty(NS)
     [subject_id, NS] = LGCM_subject_selection(study_nm, condition);
 end
+
+%% quick check condition and GLM are compatible
+isGLMok_bis(GLMprm, condition);
+
 %% loop through subjects
 matlabbatch = cell(nb_batch_per_subj*NS,1);
 for iS = 1:NS
