@@ -505,7 +505,7 @@ switch study_nm
                         runs.runsToIgnore = 4;
                     case '088'
                         runs.runsToKeep = [1,2,3];
-                        runs.runsToIgnore = 4;
+                        runs.runsToIgnore = 4; % saturated run
                     case '095'
                         runs.runsToKeep = 1;
                         runs.runsToIgnore = [2,3,4];
@@ -1255,7 +1255,7 @@ switch study_nm
                     case {'017','043','074'} % first run: fMRI crashed => we have the behavior but not enough trials for fMRI
                         runs.runsToKeep = 2:4;
                         runs.runsToIgnore = 1;
-                        case '047'
+                    case '047'
                         error(['subject ',sub_nm,' should not be included (saturated ALL tasks)']);
                     case {'008','022','024'}
                         error(['subject ',sub_nm,' should not be included (moved in ALL runs)']);
