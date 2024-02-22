@@ -404,9 +404,13 @@ switch study_nm
                     case {'017','043'} % first run: fMRI crashed => we have the behavior but not enough trials for fMRI
                         runs.runsToKeep = 2:4;
                         runs.runsToIgnore = 1;
-                    case '074' % first run: fMRI crashed => we have the behavior but not enough trials for fMRI
+                    case '074' % first run: fMRI crashed => we have the behavior but not enough trials for fMRI + run 3 saturation
                         runs.runsToKeep = [2,4];
                         runs.runsToIgnore = [1,3];
+                        
+                    case '001'
+                        runs.runsToKeep = [1,3,4];
+                        runs.runsToIgnore = 2;
                     case '002'
                         runs.runsToKeep = [1,2];
                         runs.runsToIgnore = [3,4];
@@ -436,7 +440,7 @@ switch study_nm
                         runs.runsToIgnore = 3;
                     case '027'
                         runs.runsToKeep = 1;
-                        runs.runsToIgnore = [2,4];
+                        runs.runsToIgnore = [2,3,4]; % r3 saturated
                     case '032'
                         runs.runsToKeep = [1,2,4];
                         runs.runsToIgnore = 3;
