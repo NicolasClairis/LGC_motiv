@@ -438,6 +438,9 @@ switch study_nm
                     case '020'
                         runs.runsToKeep = [1,2,4];
                         runs.runsToIgnore = 3;
+                    case '022'
+                        runs.runsToKeep = [1,2,4];
+                        runs.runsToIgnore = 3;
                     case '027'
                         runs.runsToKeep = 1;
                         runs.runsToIgnore = [2,3,4]; % r3 saturated
@@ -477,9 +480,15 @@ switch study_nm
                     case '055'
                         runs.runsToKeep = [1,2];
                         runs.runsToIgnore = [3,4];
+                    case '058'
+                        runs.runsToKeep = 1:3;
+                        runs.runsToIgnore = 4;
                     case '059'
                         runs.runsToKeep = [1,2,4];
                         runs.runsToIgnore = 3;
+                    case '061'
+                        runs.runsToKeep = 1;
+                        runs.runsToIgnore = 2:4;
                     case '062'
                         runs.runsToKeep = [1,2,4];
                         runs.runsToIgnore = 3;
@@ -502,8 +511,8 @@ switch study_nm
                         runs.runsToKeep = [1,2,4];
                         runs.runsToIgnore = 3;
                     case '082'
-                        runs.runsToKeep = [1,2,3];
-                        runs.runsToIgnore = 4;
+                        runs.runsToKeep = 1:2;
+                        runs.runsToIgnore = 3:4;
                     case '083'
                         runs.runsToKeep = [1,2,3];
                         runs.runsToIgnore = 4;
@@ -516,168 +525,14 @@ switch study_nm
                     case '097'
                         runs.runsToKeep = 2:4;
                         runs.runsToIgnore = 1;
-                    case '100'
-                        runs.runsToKeep = [1,2];
-                        runs.runsToIgnore = [3,4];
-                end
-            case 'fMRI_noSatRun_choiceSplit_Elvl_bis' % no saturation run + if trials are split according to choice made including a high effort regressor
-                switch sub_nm
-                    case '017' % first run: fMRI crashed => we have the behavior but not enough trials for fMRI
-                        runs.runsToKeep = [2,3];
-                        runs.runsToIgnore = [1,4];
-                    case '043' % first run: fMRI crashed => we have the behavior but not enough trials for fMRI
-                        runs.runsToKeep = 3;
-                        runs.runsToIgnore = [1,2,4];
-                    case '074' % first run: fMRI crashed => we have the behavior but not enough trials for fMRI
-                        runs.runsToKeep = 4;
-                        runs.runsToIgnore = [1,2,3];
-                    case {'012','032','039','047','055','073','095'}
-                        error(['Subject ',sub_nm,' should not be included']);
-                    case '001'
-                        runs.runsToKeep = [1,3];
-                        runs.runsToIgnore = [2,4];
-                    case '002'
-                        runs.runsToKeep = 1;
-                        runs.runsToIgnore = [2,3,4];
-                    case '003'
-                        runs.runsToKeep = [1,3];
-                        runs.runsToIgnore = [2,4];
-                    case '004'
-                        runs.runsToKeep = 2;
-                        runs.runsToIgnore = [1,3,4];
-                    case '005'
-                        runs.runsToKeep = [1,3];
-                        runs.runsToIgnore = [2,4];
-                    case '009'
-                        runs.runsToKeep = 1:3;
-                        runs.runsToIgnore = 4;
-                    case '013'
-                        runs.runsToKeep = [1,3];
-                        runs.runsToIgnore = [2,4];
-                    case '015'
-                        runs.runsToKeep = 3;
-                        runs.runsToIgnore = [1,2,4];
-                    case '018'
-                        runs.runsToKeep = [1,3];
-                        runs.runsToIgnore = [2,4];
-                    case '020'
-                        runs.runsToKeep = [1,2,4];
-                        runs.runsToIgnore = 3;
-                    case '021'
-                        runs.runsToKeep = 1;
-                        runs.runsToIgnore = [2,3,4];
-                    case '022'
-                        runs.runsToKeep = 1:3;
-                        runs.runsToIgnore = 4;
-                    case '027'
-                        runs.runsToKeep = 1;
-                        runs.runsToIgnore = [2,3,4];
-                    case '035'
-                        runs.runsToKeep = [1,2];
-                        runs.runsToIgnore = [3,4];
-                    case '036'
-                        runs.runsToKeep = 3;
-                        runs.runsToIgnore = [1,2,4];
-                    case '038'
-                        runs.runsToKeep = [1,3];
-                        runs.runsToIgnore = [2,4];
-                    case '040'
-                        runs.runsToKeep = 2;
-                        runs.runsToIgnore = [1,3,4];
-                    case '042'
-                        runs.runsToKeep = 2;
-                        runs.runsToIgnore = [1,3,4];
-                    case '044'
-                        runs.runsToKeep = [1,2];
-                        runs.runsToIgnore = [3,4];
-                    case '045'
-                        runs.runsToKeep = [1,2];
-                        runs.runsToIgnore = [3,4];
-                    case '046'
-                        runs.runsToKeep = [1,3];
-                        runs.runsToIgnore = [2,4];
-                    case '048'
-                        runs.runsToKeep = [1,3,4];
-                        runs.runsToIgnore = 2;
-                    case '052'
-                        runs.runsToKeep = [2,4];
-                        runs.runsToIgnore = [1,3];
-                    case '053'
-                        runs.runsToKeep = [1,3];
-                        runs.runsToIgnore = [2,4];
-                    case '054'
-                        runs.runsToKeep = 2:4;
-                        runs.runsToIgnore = 1;
-                    case '056'
-                        runs.runsToKeep = 2;
-                        runs.runsToIgnore = [1,3,4];
-                    case '058'
-                        runs.runsToKeep = [1,3];
-                        runs.runsToIgnore = [2,4];
-                    case '059'
-                        runs.runsToKeep = [2,4];
-                        runs.runsToIgnore = [1,3];
-                    case '060'
-                        runs.runsToKeep = [1,2,4];
-                        runs.runsToIgnore = 3;
-                    case '062'
-                        runs.runsToKeep = [1,2,4];
-                        runs.runsToIgnore = 3;
-                    case '065'
-                        runs.runsToKeep = 1;
-                        runs.runsToIgnore = [2,3,4];
-                    case '069'
-                        runs.runsToKeep = 1;
-                        runs.runsToIgnore = [2,3,4];
-                    case '072'
-                        runs.runsToKeep = [1,3];
-                        runs.runsToIgnore = [2,4];
-                    case '076'
-                        runs.runsToKeep = [1,3];
-                        runs.runsToIgnore = [2,4];
-                    case '078'
-                        runs.runsToKeep = [1,2];
-                        runs.runsToIgnore = [3,4];
-                    case '080'
-                        runs.runsToKeep = [1,3];
-                        runs.runsToIgnore = [2,4];
-                    case '081'
-                        runs.runsToKeep = 4;
-                        runs.runsToIgnore = [1,2,3];
-                    case '082'
-                        runs.runsToKeep = [1,2];
-                        runs.runsToIgnore = [3,4];
-                    case '083'
-                        runs.runsToKeep = 3;
-                        runs.runsToIgnore = [1,2,4];
-                    case '086'
-                        runs.runsToKeep = 1;
-                        runs.runsToIgnore = [2,3,4];
-                    case '087'
-                        runs.runsToKeep = [1,2];
-                        runs.runsToIgnore = [3,4];
-                    case '088'
-                        runs.runsToKeep = [1,2,3];
-                        runs.runsToIgnore = 4;
-                    case '091'
-                        runs.runsToKeep = [1,2];
-                        runs.runsToIgnore = [3,4];
-                    case '093'
-                        runs.runsToKeep = [2,3];
-                        runs.runsToIgnore = [1,4];
-                    case '094'
-                        runs.runsToKeep = 1:3;
-                        runs.runsToIgnore = 4;
-                    case '097'
-                        runs.runsToKeep = [2,4];
-                        runs.runsToIgnore = [1,3];
                     case '099'
-                        runs.runsToKeep = 2;
-                        runs.runsToIgnore = [1,3,4];
+                        runs.runsToKeep = [1,2,4];
+                        runs.runsToIgnore = 3;
                     case '100'
-                        runs.runsToKeep = 1;
-                        runs.runsToIgnore = [2,3,4];
+                        runs.runsToKeep = [1,2];
+                        runs.runsToIgnore = [3,4];
                 end
+                
                 %% too much movement cleaning
             case 'fMRI_noMove_bis'
                 switch sub_nm
