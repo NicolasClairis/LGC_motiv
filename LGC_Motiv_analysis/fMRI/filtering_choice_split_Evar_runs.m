@@ -24,6 +24,7 @@ rootPath = fullfile('E:',study_nm);
 
 %% initialize variable of interest
 outliers = struct;
+n_hE_levels = 3;
 
 %% loop over subjects
 for iS = 1:NS
@@ -63,5 +64,13 @@ for iS = 1:NS
         %% store data for all subjects
         allSubs.(CID_nm).(['run',run_nm]).n_hE_hEch = n_hE_hEch;
         allSubs.(CID_nm).(['run',run_nm]).n_hE_lEch = n_hE_lEch;
+        
+        %% also store the number of trials for each occurrence
+        [allSubs.(CID_nm).(['run',run_nm]).hE_hEch,...
+            allSubs.(CID_nm).(['run',run_nm]).hE_lEch] = deal(NaN(1,n_hE_levels));
+        for iE = 1:n_hE_levels
+            allSubs.(CID_nm).(['run',run_nm]).hE_hEch(iE) = sum(hE_hEch == iE);
+            allSubs.(CID_nm).(['run',run_nm]).hE_lEch(iE) = sum(hE_lEch == iE);
+        end
     end % run loop
 end % subject loop
