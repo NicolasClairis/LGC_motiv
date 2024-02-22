@@ -71,6 +71,9 @@ else
 end
 yscale = [minYscale,  maxYscale];
 
+%% ratio x/y/z axis
+ax_ratio = [1 1 1]; % all axis equal
+
 %% display figure
 scale_ok_idx = 0;
 while scale_ok_idx == 0
@@ -81,6 +84,7 @@ while scale_ok_idx == 0
         
         % create subplot containing data
         ROI_plot = subplot(nb_ROI_graph_lines, max_graph_per_line, iROI);
+        pbaspect(ax_ratio);
         
         %% loop through sequences
         xpos = (1:1:n_cons)';

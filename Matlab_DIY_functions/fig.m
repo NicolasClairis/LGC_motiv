@@ -29,6 +29,10 @@ set(0,'defaultLegendBox','off'); % remove legend box by default
 %% create figure + extract handle
 fig_hdl = figure;
 
+%% define default length of each axis to be equal
+ax_ratio = [1 1 1];
+pbaspect(ax_ratio);
+
 %% force "hold on" to add multiple plots eventually
 hold on;
 
