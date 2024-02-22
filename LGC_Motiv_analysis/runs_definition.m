@@ -398,7 +398,7 @@ switch study_nm
                         runs.runsToKeep = [1,2];
                         runs.runsToIgnore = [3,4];
                 end
-            case 'fMRI_noSatRun_choiceSplit_Elvl' % no saturation run + if trials are split according to choice made including a high effort regressor
+            case {'fMRI_noSatRun_choiceSplit_Elvl','fMRI_noSatTaskSub_noSatRun_choiceSplit_Elvl'} % no saturation run + if trials are split according to choice made including a high effort regressor
                 % => need to remove runs where high or low effort choice always go with the same effort level
                 switch sub_nm
                     case {'017','043'} % first run: fMRI crashed => we have the behavior but not enough trials for fMRI
