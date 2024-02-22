@@ -1362,6 +1362,15 @@ switch study_nm
         error('case not ready yet');
 end % study
 
+%% control that things were well defined
+for iR = 1:4
+    if ismember(iR, runs.runsToKeep) && ismember(iR, runs.runsToIgnore)
+        error(['run ',num2str(iR),' is in runs.runsToKeep AND in runs.runsToIgnore']);
+    elseif ~ismember(iR, runs.runsToKeep) && ~ismember(iR, runs.runsToIgnore)
+        error(['run ',num2str(iR),' is NOT in runs.runsToKeep NOR in runs.runsToIgnore => has to be included']);
+    end % filter
+end % run loop
+
 %% extract index for each task of run kept
 Ep_runsToKeep = strcmp(runs.tasks,'Ep').*ismember(1:4,runs.runsToKeep) == 1;
 Em_runsToKeep = strcmp(runs.tasks,'Em').*ismember(1:4,runs.runsToKeep) == 1;
