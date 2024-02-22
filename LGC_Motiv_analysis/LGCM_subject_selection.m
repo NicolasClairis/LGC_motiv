@@ -136,13 +136,13 @@ switch study_nm
         %% remove some subjects depending on the condition entered as input
         switch condition
             case {'behavior','fMRI',...
-                    'fMRI_noMove_bis','fMRI_noMove_ter',...
-                    'fMRI_noSatRun_choiceSplit_Elvl'} % all subjects
+                    'fMRI_noMove_bis','fMRI_noMove_ter'} % all subjects
                 % (but removing the bad runs if the condition requires it)
                 bad_subs = false(1,length(fullSubList));
             case {'behavior_noSatRun','behavior_noSatTask',...
                     'respiration_and_noSatRun',...
-                    'fMRI_noSatRun','fMRI_noSatTask','fMRI_noSatTask_noMove_bis'}
+                    'fMRI_noSatRun','fMRI_noSatTask','fMRI_noSatTask_noMove_bis',...
+                    'fMRI_noSatRun_choiceSplit_Elvl'}
                 % removing subjects where no run survives after removing
                 % runs with too much saturation
                 bad_subs = ismember(fullSubList,{'047'});
@@ -153,11 +153,6 @@ switch study_nm
                 % computational model (027, 052, 095) because one task was
                 % saturated
                 bad_subs = ismember(fullSubList,{'027','047','052','095'});
-            case 'fMRI_noSatRun_choiceSplit_Elvl_bis'
-                % removing subjects where no run survives after removing
-                % runs with too much saturation
-                bad_subs = ismember(fullSubList,{'012','032','039','047',...
-                    '055','073','095'});
             case 'fMRI_noSatRun_noMove_bis'
                 % removing subjects where no run survives after removing
                 % runs with too much movement or saturation
@@ -202,7 +197,9 @@ switch study_nm
                 % 097: run 1 ND for Ep task
                 % 099: run 3 ND for Em task
                 % 100: run 3 (Em) and run 4 (Ep) ND
-            case {'behavior_noSatTaskSub','fMRI_noSatTaskSub','fMRI_noSatTaskSub_noSatRun'}
+            case {'behavior_noSatTaskSub',...
+                    'fMRI_noSatTaskSub','fMRI_noSatTaskSub_noSatRun',...
+                    'fMRI_noSatTaskSub_noSatRun_choiceSplit_Elvl'}
                 % remove subjects for which either mental (Em) or physical
                 % (Ep) task was fully saturated during choices and remove
                 % runs that were saturating if only one saturated
