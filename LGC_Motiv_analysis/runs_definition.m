@@ -84,6 +84,7 @@ switch study_nm
         
         %% define subject runs to keep depending on condition
         switch condition
+            case {'behavior'} % nothing to change for those conditions
             %% for all fMRI conditions, need to remove run 1 from those subjects because of fMRI crash
             case {'fMRI','fMRI_noSatRunSub'}
                 switch sub_nm
@@ -1354,6 +1355,8 @@ switch study_nm
                         runs.runsToKeep = [1,2];
                         runs.runsToIgnore = [3,4];
                 end
+            otherwise % condition not ready
+                error(['condition ',condition,' is not ready yet for runs_definition.m']);
         end
     otherwise
         error('case not ready yet');
