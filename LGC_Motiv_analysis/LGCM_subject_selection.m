@@ -198,8 +198,7 @@ switch study_nm
                 % 099: run 3 ND for Em task
                 % 100: run 3 (Em) and run 4 (Ep) ND
             case {'behavior_noSatTaskSub',...
-                    'fMRI_noSatTaskSub','fMRI_noSatTaskSub_noSatRun',...
-                    'fMRI_noSatTaskSub_noSatRun_choiceSplit_Elvl'}
+                    'fMRI_noSatTaskSub','fMRI_noSatTaskSub_noSatRun'}
                 % remove subjects for which either mental (Em) or physical
                 % (Ep) task was fully saturated during choices and remove
                 % runs that were saturating if only one saturated
@@ -209,6 +208,21 @@ switch study_nm
                 % 047: all ND for all tasks
                 % 052: all ND for Em task (runs 1 and 3)
                 % 069: almost all ND for Em task (runs 2 and 4)
+                % 076: almost all ND for Em task (runs 2 and 4)
+                % 095: all ND for Ep task (runs 2 and 4)
+            case 'fMRI_noSatTaskSub_noSatRun_choiceSplit_Elvl'
+                % remove subjects for which either mental (Em) or physical
+                % (Ep) task was fully saturated during choices and remove
+                % runs that were saturating if only one saturated
+                bad_subs = ismember(fullSubList,{'012','027','036','047',...
+                    '052','069','074','076','095'});
+                % 012: all Ep task missing after choice hEch/lEch split (runs 1 and 3)
+                % 027: all ND for Em task (runs 2 and 4)
+                % 036: all Em task missing after choice hEch/lEch split (runs 2 and 4)
+                % 047: all ND for all tasks
+                % 052: all ND for Em task (runs 1 and 3)
+                % 069: almost all ND for Em task (runs 2 and 4)
+                % 074: all Ep task missing after choice hEch/lEch split (runs 1 and 3)
                 % 076: almost all ND for Em task (runs 2 and 4)
                 % 095: all ND for Ep task (runs 2 and 4)
             case 'fMRI_noMoveSub'
