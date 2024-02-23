@@ -110,7 +110,14 @@ while scale_ok_idx == 0
                     jCon = selectedCon(iC);
                     con_values(:, iC) = con_vec_all(jCon,:, iROI);
                 end
-                violinplot(con_values);
+                % filter NaN values
+                n_NaNs = sum(sum(isnan(con_values)));
+                if n_NaNs > 0
+                    error([num2str(n_NaNs),' NaN values are present. Cannot plot.']);
+                else
+                    con_values_violin = con_values;
+                end
+                violinplot(con_values_violin);
         end
         
         %% add stars for significant effects
