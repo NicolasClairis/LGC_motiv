@@ -487,8 +487,8 @@ switch study_nm
                         runs.runsToKeep = [1,2,4];
                         runs.runsToIgnore = 3;
                     case '061'
-                        runs.runsToKeep = 1;
-                        runs.runsToIgnore = 2:4;
+                        runs.runsToKeep = 2:4;
+                        runs.runsToIgnore = 1;
                     case '062'
                         runs.runsToKeep = [1,2,4];
                         runs.runsToIgnore = 3;
