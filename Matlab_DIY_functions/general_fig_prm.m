@@ -37,6 +37,6 @@ col.blue = [69 117 180]./255;
 col.blue_light = [171 217 233]./255;
 
 %% police font name
-fontName = 'Calibri';
+fontName = 'Arial';
 
 end % function
