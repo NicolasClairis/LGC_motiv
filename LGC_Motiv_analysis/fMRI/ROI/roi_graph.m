@@ -105,15 +105,27 @@ while scale_ok_idx == 0
             case 'violin'
                 % show violinplot
                 nCon = length(selectedCon);
-                con_values = NaN(NS, nCon);
+                [con_values,...
+                    idx_NaNs] = deal(NaN(NS, nCon));
+                n_NaNs = NaN(1, nCon);
                 for iC = 1:nCon
                     jCon = selectedCon(iC);
-                    con_values(:, iC) = con_vec_all(jCon,:, iROI);
+                    con_values(:, iC) = con_vec_all(jCon,:, iROI); % extract contrast
+                    idx_NaNs(:,iC) = isnan(con_values(:,iC)); % extract index of NaN subjects (if any) for current contrast
+                    n_NaNs(iC) = sum(idx_NaNs(:,iC)); % extract number of NaN subjects for current contrast
                 end
-                % filter NaN values
-                n_NaNs = sum(sum(isnan(con_values)));
-                if n_NaNs > 0
-                    error([num2str(n_NaNs),' NaN values are present. Cannot plot.']);
+                % filter NaN values because violin script bugs if number of NaNs
+                % is not equivalent for each contrast
+                if sum(n_NaNs) > 0
+                    warning([num2str(sum(n_NaNs)),' NaN values are present across the ',num2str(nCon),' contrasts.']);
+                    if size(unique(n_NaNs),2) == 1 % check if same number of NaN subjects across all contrasts
+                        con_values_violin = con_values;
+                        warning(['Same number of NaN/contrast: ',num2str(sum(n_NaNs)/nCon),' NaN values/contrast ',...
+                            '=> most likely coming from the same subjects => can plot.']);
+                    elseif size(unique(n_NaNs),2) > 1
+                        error(['Different NaN values are present for each contrast. ',...
+                            'Cannot plot.']);
+                    end
                 else
                     con_values_violin = con_values;
                 end
