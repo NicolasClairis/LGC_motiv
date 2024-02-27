@@ -49,6 +49,9 @@ aIns_BOLD(:) = aIns_BOLD_allCons(con_idx, :, 1);
 %% extract behavioral data (choices + parameters)
 [choice_hE] = choice_hE_proportion(study_nm, condition, subject_id, 0);
 [prm] = prm_extraction(study_nm, subject_id);
+prm_names = fieldnames(prm);
+prm_names(strcmp(prm_names,'CID')) = [];
+nPrm = length(prm_names);
 % create variables of interest
 HE_ch = choice_hE.EpEm;
 HPE_ch = choice_hE.Ep;
@@ -96,6 +99,18 @@ for iRawCorr = 1:2
     goodS.(raw_or_corr_nm).kEp_f_aIns = filter_fn(raw_or_corr_nm, aIns_BOLD, kEp);
     [r_corr.(raw_or_corr_nm).kEp_f_aIns, pval.(raw_or_corr_nm).kEp_f_aIns] = corr(aIns_BOLD(goodS.(raw_or_corr_nm).kEp_f_aIns)', kEp(goodS.(raw_or_corr_nm).kEp_f_aIns)');
 
+    % also check the other behavioral parameters
+    for iPrm = 1:nPrm
+        prm_nm = prm_names{iPrm};
+        % dmPFC/dACC
+        dmPFC_prm_nm = [prm_nm,'_f_dmPFC'];
+        goodS.(raw_or_corr_nm).(dmPFC_prm_nm) = filter_fn(raw_or_corr_nm, dmPFC_BOLD, prm.(prm_nm));
+        [r_corr.(raw_or_corr_nm).prm.(dmPFC_prm_nm), pval.(raw_or_corr_nm).prm.(dmPFC_prm_nm)] = corr(dmPFC_BOLD(goodS.(raw_or_corr_nm).(dmPFC_prm_nm))', prm.(prm_nm)(goodS.(raw_or_corr_nm).(dmPFC_prm_nm))');
+        % same for aIns
+        aIns_prm_nm = [prm_nm,'_f_aIns'];
+        goodS.(raw_or_corr_nm).(aIns_prm_nm) = filter_fn(raw_or_corr_nm, aIns_BOLD, prm.(prm_nm));
+        [r_corr.(raw_or_corr_nm).prm.(aIns_prm_nm), pval.(raw_or_corr_nm).prm.(aIns_prm_nm)] = corr(aIns_BOLD(goodS.(raw_or_corr_nm).(aIns_prm_nm))', prm.(prm_nm)(goodS.(raw_or_corr_nm).(aIns_prm_nm))');
+    end % prm loop
     %% extract number of good subject for each correlation
     fields_to_check = fieldnames(goodS.(raw_or_corr_nm));
     for iF = 1:length(fields_to_check)
