@@ -32,7 +32,7 @@ end
 idx_badSubs = isnan(variable_X);
 idx_goodSubs = ~isnan(variable_X);
 
-%% extract mean and SD
+%% extract median and SD
 mu_X = median(variable_X, 2, 'omitnan');
 std_X = std(variable_X, [],2, 'omitnan');
 
