@@ -1,4 +1,4 @@
-function[r_corr, pval, NS_goodS] = figure_interindiv_correl_Lac__vs__motivation()
+function[r_corr, pval, NS_goodS] = figure_interindiv_correl_Lac__vs__motivation
 % [r_corr, pval, NS_goodS] = figure_interindiv_correl_Lac__vs__motivation
 % figure_interindiv_correl_Lac__vs__motivation will create a heatmap
 % showing the correlation between high effort (HE), high physical effort
@@ -32,6 +32,7 @@ HE_ch = choice_hE.EpEm;
 HPE_ch = choice_hE.Ep;
 HME_ch = choice_hE.Em;
 kEp = prm.kEp;
+kEm = prm.kEm;
 
 %% figure parameters
 [pSize, ~, col] = general_fig_prm;
@@ -45,6 +46,9 @@ color_range_choices = redblue(45);
 
 % correlation range
 corr_range = [-0.65 0.65];
+
+% include kEm in the graph or not?
+include_kEm = 1;
 
 %% perform the correlations
 for iRawCorr = 1:2
@@ -73,6 +77,12 @@ for iRawCorr = 1:2
     goodS.(raw_or_corr_nm).kEp_f_plasma_Lac = filter_fn(raw_or_corr_nm, plasma_Lac, kEp);
     [r_corr.(raw_or_corr_nm).kEp_f_plasma_Lac,...
         pval.(raw_or_corr_nm).kEp_f_plasma_Lac] = corr(plasma_Lac(goodS.(raw_or_corr_nm).kEp_f_plasma_Lac)', kEp(goodS.(raw_or_corr_nm).kEp_f_plasma_Lac)');
+    % kEm
+    if include_kEm == 1
+        goodS.(raw_or_corr_nm).kEm_f_plasma_Lac = filter_fn(raw_or_corr_nm, plasma_Lac, kEm);
+        [r_corr.(raw_or_corr_nm).kEm_f_plasma_Lac,...
+            pval.(raw_or_corr_nm).kEm_f_plasma_Lac] = corr(plasma_Lac(goodS.(raw_or_corr_nm).kEm_f_plasma_Lac)', kEm(goodS.(raw_or_corr_nm).kEm_f_plasma_Lac)');
+    end
     
     % dmPFC/dACC lactate
     % HE
@@ -91,6 +101,12 @@ for iRawCorr = 1:2
     goodS.(raw_or_corr_nm).kEp_f_dmPFC_Lac = filter_fn(raw_or_corr_nm, dmPFC_Lac, kEp);
     [r_corr.(raw_or_corr_nm).kEp_f_dmPFC_Lac,...
         pval.(raw_or_corr_nm).kEp_f_dmPFC_Lac] = corr(dmPFC_Lac(goodS.(raw_or_corr_nm).kEp_f_dmPFC_Lac)', kEp(goodS.(raw_or_corr_nm).kEp_f_dmPFC_Lac)');
+    % kEm
+    if include_kEm == 1
+        goodS.(raw_or_corr_nm).kEm_f_dmPFC_Lac = filter_fn(raw_or_corr_nm, dmPFC_Lac, kEm);
+        [r_corr.(raw_or_corr_nm).kEm_f_dmPFC_Lac,...
+            pval.(raw_or_corr_nm).kEm_f_dmPFC_Lac] = corr(dmPFC_Lac(goodS.(raw_or_corr_nm).kEm_f_dmPFC_Lac)', kEm(goodS.(raw_or_corr_nm).kEm_f_dmPFC_Lac)');
+    end
     
     % aIns lactate
     % HE
@@ -109,6 +125,12 @@ for iRawCorr = 1:2
     goodS.(raw_or_corr_nm).kEp_f_aIns_Lac = filter_fn(raw_or_corr_nm, aIns_Lac, kEp);
     [r_corr.(raw_or_corr_nm).kEp_f_aIns_Lac,...
         pval.(raw_or_corr_nm).kEp_f_aIns_Lac] = corr(aIns_Lac(goodS.(raw_or_corr_nm).kEp_f_aIns_Lac)', kEp(goodS.(raw_or_corr_nm).kEp_f_aIns_Lac)');
+    % kEm
+    if include_kEm == 1
+        goodS.(raw_or_corr_nm).kEm_f_aIns_Lac = filter_fn(raw_or_corr_nm, aIns_Lac, kEm);
+        [r_corr.(raw_or_corr_nm).kEm_f_aIns_Lac,...
+            pval.(raw_or_corr_nm).kEm_f_aIns_Lac] = corr(aIns_Lac(goodS.(raw_or_corr_nm).kEm_f_aIns_Lac)', kEm(goodS.(raw_or_corr_nm).kEm_f_aIns_Lac)');
+    end
     
     %% extract number of good subject for each correlation
     fields_to_check = fieldnames(goodS.(raw_or_corr_nm));
@@ -118,67 +140,139 @@ for iRawCorr = 1:2
     end % loop over fields to check
     
     %% display correlation in a nice correlation matrix
-    % assemble data in one correlation matrix
-    dmPFC_r_vector = [r_corr.(raw_or_corr_nm).HE_f_dmPFC_Lac;...
-        r_corr.(raw_or_corr_nm).HPE_f_dmPFC_Lac;...
-        r_corr.(raw_or_corr_nm).HME_f_dmPFC_Lac;...
-        r_corr.(raw_or_corr_nm).kEp_f_dmPFC_Lac];
-    aIns_r_vector = [r_corr.(raw_or_corr_nm).HE_f_aIns_Lac;...
-        r_corr.(raw_or_corr_nm).HPE_f_aIns_Lac;...
-        r_corr.(raw_or_corr_nm).HME_f_aIns_Lac;...
-        r_corr.(raw_or_corr_nm).kEp_f_aIns_Lac];
-    plasma_r_vector = [r_corr.(raw_or_corr_nm).HE_f_plasma_Lac;...
-        r_corr.(raw_or_corr_nm).HPE_f_plasma_Lac;...
-        r_corr.(raw_or_corr_nm).HME_f_plasma_Lac;...
-        r_corr.(raw_or_corr_nm).kEp_f_plasma_Lac];
-    corr_mtrx = [dmPFC_r_vector, aIns_r_vector, plasma_r_vector];
-    
-    % same but for p.value
-    dmPFC_pval_vector = [pval.(raw_or_corr_nm).HE_f_dmPFC_Lac;...
-        pval.(raw_or_corr_nm).HPE_f_dmPFC_Lac;...
-        pval.(raw_or_corr_nm).HME_f_dmPFC_Lac;...
-        pval.(raw_or_corr_nm).kEp_f_dmPFC_Lac];
-    aIns_pval_vector = [pval.(raw_or_corr_nm).HE_f_aIns_Lac;...
-        pval.(raw_or_corr_nm).HPE_f_aIns_Lac;...
-        pval.(raw_or_corr_nm).HME_f_aIns_Lac;...
-        pval.(raw_or_corr_nm).kEp_f_aIns_Lac];
-    plasma_pval_vector = [pval.(raw_or_corr_nm).HE_f_plasma_Lac;...
-        pval.(raw_or_corr_nm).HPE_f_plasma_Lac;...
-        pval.(raw_or_corr_nm).HME_f_plasma_Lac;...
-        pval.(raw_or_corr_nm).kEp_f_plasma_Lac];
-    pval_mtrx = [dmPFC_pval_vector, aIns_pval_vector, plasma_pval_vector];
-    
-    %% correlation between lactate and motivation
-    fig;
-    subplot_hdl = subplot(1,2,1);
-    imagesc(corr_mtrx, corr_range);
-    colormap(subplot_hdl, color_range_choices);
-    cbar = colorbar;
-    cbar.Label.String = 'r';
-    xticks(1:3);
-    xticklabels({'dmPFC/dACC','aIns','plasma',});
-    yticks(1:size(corr_mtrx,1));
-    yticklabels({'HE','HPE','HME','kEp'});
-    % add stars in the graph if some correlations are significant
-    for iROI = 1:size(corr_mtrx,2)
-        for iBhv = 1:size(corr_mtrx,1)
-            if pval_mtrx(iBhv, iROI) <= 0.05
-                if pval_mtrx(iBhv, iROI) > 0.01 && pval_mtrx(iBhv, iROI) <= 0.05
-                    pval_hdl = text(iROI, iBhv, '*');
-                elseif pval_mtrx(iBhv, iROI) > 0.001 && pval_mtrx(iBhv, iROI) <= 0.01
-                    pval_hdl = text(iROI, iBhv, '**');
-                elseif pval_mtrx(iBhv, iROI) <= 0.001
-                    pval_hdl = text(iROI, iBhv, '***');
-                end % p.value
-                % adjust p.value parameters
-                pval_hdl.Color = col.white;
-                pval_hdl.FontSize = 70;
-                pval_hdl.FontWeight = 'bold';
-                pval_hdl.HorizontalAlignment = 'center'; % center text on x-axis
-                pval_hdl.VerticalAlignment = 'middle'; % center text on y-axis
-            end % when p.value is significant
-        end % loop over Y variables
-    end % loop over X variables
+    switch include_kEm
+        case 0
+            % assemble data in one correlation matrix
+            dmPFC_r_vector = [r_corr.(raw_or_corr_nm).HE_f_dmPFC_Lac;...
+                r_corr.(raw_or_corr_nm).HPE_f_dmPFC_Lac;...
+                r_corr.(raw_or_corr_nm).HME_f_dmPFC_Lac;...
+                r_corr.(raw_or_corr_nm).kEp_f_dmPFC_Lac];
+            aIns_r_vector = [r_corr.(raw_or_corr_nm).HE_f_aIns_Lac;...
+                r_corr.(raw_or_corr_nm).HPE_f_aIns_Lac;...
+                r_corr.(raw_or_corr_nm).HME_f_aIns_Lac;...
+                r_corr.(raw_or_corr_nm).kEp_f_aIns_Lac];
+            plasma_r_vector = [r_corr.(raw_or_corr_nm).HE_f_plasma_Lac;...
+                r_corr.(raw_or_corr_nm).HPE_f_plasma_Lac;...
+                r_corr.(raw_or_corr_nm).HME_f_plasma_Lac;...
+                r_corr.(raw_or_corr_nm).kEp_f_plasma_Lac];
+            corr_mtrx = [dmPFC_r_vector, aIns_r_vector, plasma_r_vector];
+            
+            % same but for p.value
+            dmPFC_pval_vector = [pval.(raw_or_corr_nm).HE_f_dmPFC_Lac;...
+                pval.(raw_or_corr_nm).HPE_f_dmPFC_Lac;...
+                pval.(raw_or_corr_nm).HME_f_dmPFC_Lac;...
+                pval.(raw_or_corr_nm).kEp_f_dmPFC_Lac];
+            aIns_pval_vector = [pval.(raw_or_corr_nm).HE_f_aIns_Lac;...
+                pval.(raw_or_corr_nm).HPE_f_aIns_Lac;...
+                pval.(raw_or_corr_nm).HME_f_aIns_Lac;...
+                pval.(raw_or_corr_nm).kEp_f_aIns_Lac];
+            plasma_pval_vector = [pval.(raw_or_corr_nm).HE_f_plasma_Lac;...
+                pval.(raw_or_corr_nm).HPE_f_plasma_Lac;...
+                pval.(raw_or_corr_nm).HME_f_plasma_Lac;...
+                pval.(raw_or_corr_nm).kEp_f_plasma_Lac];
+            pval_mtrx = [dmPFC_pval_vector, aIns_pval_vector, plasma_pval_vector];
+            
+            %% correlation between lactate and motivation
+            fig;
+            subplot_hdl = subplot(1,2,1);
+            imagesc(corr_mtrx, corr_range);
+            colormap(subplot_hdl, color_range_choices);
+            cbar = colorbar;
+            cbar.Label.String = 'r';
+            xticks(1:3);
+            xticklabels({'dmPFC/dACC','aIns','plasma',});
+            yticks(1:size(corr_mtrx,1));
+            yticklabels({'HE','HPE','HME','kEp'});
+            % add stars in the graph if some correlations are significant
+            for iROI = 1:size(corr_mtrx,2)
+                for iBhv = 1:size(corr_mtrx,1)
+                    if pval_mtrx(iBhv, iROI) <= 0.05
+                        if pval_mtrx(iBhv, iROI) > 0.01 && pval_mtrx(iBhv, iROI) <= 0.05
+                            pval_hdl = text(iROI, iBhv, '*');
+                        elseif pval_mtrx(iBhv, iROI) > 0.001 && pval_mtrx(iBhv, iROI) <= 0.01
+                            pval_hdl = text(iROI, iBhv, '**');
+                        elseif pval_mtrx(iBhv, iROI) <= 0.001
+                            pval_hdl = text(iROI, iBhv, '***');
+                        end % p.value
+                        % adjust p.value parameters
+                        pval_hdl.Color = col.white;
+                        pval_hdl.FontSize = 70;
+                        pval_hdl.FontWeight = 'bold';
+                        pval_hdl.HorizontalAlignment = 'center'; % center text on x-axis
+                        pval_hdl.VerticalAlignment = 'middle'; % center text on y-axis
+                    end % when p.value is significant
+                end % loop over Y variables
+            end % loop over X variables
+            
+        case 1 % include kEm
+            % assemble data in one correlation matrix
+            dmPFC_r_vector = [r_corr.(raw_or_corr_nm).HE_f_dmPFC_Lac;...
+                r_corr.(raw_or_corr_nm).HPE_f_dmPFC_Lac;...
+                r_corr.(raw_or_corr_nm).HME_f_dmPFC_Lac;...
+                r_corr.(raw_or_corr_nm).kEp_f_dmPFC_Lac;...
+                r_corr.(raw_or_corr_nm).kEm_f_dmPFC_Lac];
+            aIns_r_vector = [r_corr.(raw_or_corr_nm).HE_f_aIns_Lac;...
+                r_corr.(raw_or_corr_nm).HPE_f_aIns_Lac;...
+                r_corr.(raw_or_corr_nm).HME_f_aIns_Lac;...
+                r_corr.(raw_or_corr_nm).kEp_f_aIns_Lac;...
+                r_corr.(raw_or_corr_nm).kEm_f_aIns_Lac];
+            plasma_r_vector = [r_corr.(raw_or_corr_nm).HE_f_plasma_Lac;...
+                r_corr.(raw_or_corr_nm).HPE_f_plasma_Lac;...
+                r_corr.(raw_or_corr_nm).HME_f_plasma_Lac;...
+                r_corr.(raw_or_corr_nm).kEp_f_plasma_Lac;...
+                r_corr.(raw_or_corr_nm).kEm_f_plasma_Lac];
+            corr_mtrx = [dmPFC_r_vector, aIns_r_vector, plasma_r_vector];
+            
+            % same but for p.value
+            dmPFC_pval_vector = [pval.(raw_or_corr_nm).HE_f_dmPFC_Lac;...
+                pval.(raw_or_corr_nm).HPE_f_dmPFC_Lac;...
+                pval.(raw_or_corr_nm).HME_f_dmPFC_Lac;...
+                pval.(raw_or_corr_nm).kEp_f_dmPFC_Lac;...
+                pval.(raw_or_corr_nm).kEm_f_dmPFC_Lac];
+            aIns_pval_vector = [pval.(raw_or_corr_nm).HE_f_aIns_Lac;...
+                pval.(raw_or_corr_nm).HPE_f_aIns_Lac;...
+                pval.(raw_or_corr_nm).HME_f_aIns_Lac;...
+                pval.(raw_or_corr_nm).kEp_f_aIns_Lac;...
+                pval.(raw_or_corr_nm).kEm_f_aIns_Lac];
+            plasma_pval_vector = [pval.(raw_or_corr_nm).HE_f_plasma_Lac;...
+                pval.(raw_or_corr_nm).HPE_f_plasma_Lac;...
+                pval.(raw_or_corr_nm).HME_f_plasma_Lac;...
+                pval.(raw_or_corr_nm).kEp_f_plasma_Lac;...
+                pval.(raw_or_corr_nm).kEm_f_plasma_Lac];
+            pval_mtrx = [dmPFC_pval_vector, aIns_pval_vector, plasma_pval_vector];
+            
+            %% correlation between lactate and motivation
+            fig;
+            subplot_hdl = subplot(1,2,1);
+            imagesc(corr_mtrx, corr_range);
+            colormap(subplot_hdl, color_range_choices);
+            cbar = colorbar;
+            cbar.Label.String = 'r';
+            xticks(1:3);
+            xticklabels({'dmPFC/dACC','aIns','plasma',});
+            yticks(1:size(corr_mtrx,1));
+            yticklabels({'HE','HPE','HME','kEp','kEm'});
+            % add stars in the graph if some correlations are significant
+            for iROI = 1:size(corr_mtrx,2)
+                for iBhv = 1:size(corr_mtrx,1)
+                    if pval_mtrx(iBhv, iROI) <= 0.05
+                        if pval_mtrx(iBhv, iROI) > 0.01 && pval_mtrx(iBhv, iROI) <= 0.05
+                            pval_hdl = text(iROI, iBhv, '*');
+                        elseif pval_mtrx(iBhv, iROI) > 0.001 && pval_mtrx(iBhv, iROI) <= 0.01
+                            pval_hdl = text(iROI, iBhv, '**');
+                        elseif pval_mtrx(iBhv, iROI) <= 0.001
+                            pval_hdl = text(iROI, iBhv, '***');
+                        end % p.value
+                        % adjust p.value parameters
+                        pval_hdl.Color = col.white;
+                        pval_hdl.FontSize = 70;
+                        pval_hdl.FontWeight = 'bold';
+                        pval_hdl.HorizontalAlignment = 'center'; % center text on x-axis
+                        pval_hdl.VerticalAlignment = 'middle'; % center text on y-axis
+                    end % when p.value is significant
+                end % loop over Y variables
+            end % loop over X variables
+    end % include kEm
     
 end % loop over filter: raw vs 3*SD corrected data
 

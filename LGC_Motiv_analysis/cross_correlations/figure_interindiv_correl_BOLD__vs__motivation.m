@@ -1,4 +1,4 @@
-function[r_corr, pval, NS_goodS] = figure_interindiv_correl_BOLD__vs__motivation()
+function[r_corr, pval, NS_goodS] = figure_interindiv_correl_BOLD__vs__motivation
 % [r_corr, pval, NS_goodS] = figure_interindiv_correl_BOLD__vs__motivation
 % figure_interindiv_correl_BOLD__vs__motivation will create a heatmap
 % showing the correlation between high effort (HE), high physical effort
@@ -20,7 +20,7 @@ function[r_corr, pval, NS_goodS] = figure_interindiv_correl_BOLD__vs__motivation
 GLM = spm_input('GLM number',1,'e');
 
 figure_folder = ['P:\boulot\postdoc_CarmenSandi\papers\Clairis_mediation_Lac\',...
-    'figures\fig2_dmPFCdACC_aINS_fMRI_intra-individual\'];
+    'figures\fig2_dmPFCdACC_aINS_fMRI\'];
 dmPFC_filepath = [figure_folder,'GLM',num2str(GLM),'_prm_f_MRS_dmPFC_ROI_',num2str(NS),'subs.mat'];
 aIns_filepath = [figure_folder,'GLM',num2str(GLM),'_prm_f_MRS_aINS_ROI_',num2str(NS),'subs.mat'];
 if exist(dmPFC_filepath,'file') && exist(aIns_filepath,'file')
@@ -57,6 +57,7 @@ HE_ch = choice_hE.EpEm;
 HPE_ch = choice_hE.Ep;
 HME_ch = choice_hE.Em;
 kEp = prm.kEp;
+kEm = prm.kEm;
 
 %% figure parameters
 [pSize, ~, col] = general_fig_prm;
@@ -70,6 +71,9 @@ color_range_choices = redblue(45);
 
 % correlation range
 corr_range = [-0.65 0.65];
+
+% include kEm in the graph or not?
+include_kEm = 1;
 
 %% perform the correlations
 for iRawCorr = 1:2
@@ -89,6 +93,10 @@ for iRawCorr = 1:2
     [r_corr.(raw_or_corr_nm).HME_f_dmPFC, pval.(raw_or_corr_nm).HME_f_dmPFC] = corr(dmPFC_BOLD(goodS.(raw_or_corr_nm).HME_f_dmPFC)', HME_ch(goodS.(raw_or_corr_nm).HME_f_dmPFC)');
     goodS.(raw_or_corr_nm).kEp_f_dmPFC = filter_fn(raw_or_corr_nm, dmPFC_BOLD, kEp);
     [r_corr.(raw_or_corr_nm).kEp_f_dmPFC, pval.(raw_or_corr_nm).kEp_f_dmPFC] = corr(dmPFC_BOLD(goodS.(raw_or_corr_nm).kEp_f_dmPFC)', kEp(goodS.(raw_or_corr_nm).kEp_f_dmPFC)');
+    if include_kEm == 1
+        goodS.(raw_or_corr_nm).kEm_f_dmPFC = filter_fn(raw_or_corr_nm, dmPFC_BOLD, kEm);
+        [r_corr.(raw_or_corr_nm).kEm_f_dmPFC, pval.(raw_or_corr_nm).kEm_f_dmPFC] = corr(dmPFC_BOLD(goodS.(raw_or_corr_nm).kEm_f_dmPFC)', kEm(goodS.(raw_or_corr_nm).kEm_f_dmPFC)');
+    end
     % correlations with aIns BOLD
     goodS.(raw_or_corr_nm).HE_f_aIns = filter_fn(raw_or_corr_nm, aIns_BOLD, HE_ch);
     [r_corr.(raw_or_corr_nm).HE_f_aIns, pval.(raw_or_corr_nm).HE_f_aIns] = corr(aIns_BOLD(goodS.(raw_or_corr_nm).HE_f_aIns)', HE_ch(goodS.(raw_or_corr_nm).HE_f_aIns)');
@@ -98,18 +106,26 @@ for iRawCorr = 1:2
     [r_corr.(raw_or_corr_nm).HME_f_aIns, pval.(raw_or_corr_nm).HME_f_aIns] = corr(aIns_BOLD(goodS.(raw_or_corr_nm).HME_f_aIns)', HME_ch(goodS.(raw_or_corr_nm).HME_f_aIns)');
     goodS.(raw_or_corr_nm).kEp_f_aIns = filter_fn(raw_or_corr_nm, aIns_BOLD, kEp);
     [r_corr.(raw_or_corr_nm).kEp_f_aIns, pval.(raw_or_corr_nm).kEp_f_aIns] = corr(aIns_BOLD(goodS.(raw_or_corr_nm).kEp_f_aIns)', kEp(goodS.(raw_or_corr_nm).kEp_f_aIns)');
-
+    if include_kEm == 1
+        goodS.(raw_or_corr_nm).kEm_f_aIns = filter_fn(raw_or_corr_nm, aIns_BOLD, kEm);
+        [r_corr.(raw_or_corr_nm).kEm_f_aIns, pval.(raw_or_corr_nm).kEm_f_aIns] = corr(aIns_BOLD(goodS.(raw_or_corr_nm).kEm_f_aIns)', kEm(goodS.(raw_or_corr_nm).kEm_f_aIns)');
+    end
+    
     % also check the other behavioral parameters
     for iPrm = 1:nPrm
         prm_nm = prm_names{iPrm};
         % dmPFC/dACC
         dmPFC_prm_nm = [prm_nm,'_f_dmPFC'];
         goodS.(raw_or_corr_nm).(dmPFC_prm_nm) = filter_fn(raw_or_corr_nm, dmPFC_BOLD, prm.(prm_nm));
-        [r_corr.(raw_or_corr_nm).prm.(dmPFC_prm_nm), pval.(raw_or_corr_nm).prm.(dmPFC_prm_nm)] = corr(dmPFC_BOLD(goodS.(raw_or_corr_nm).(dmPFC_prm_nm))', prm.(prm_nm)(goodS.(raw_or_corr_nm).(dmPFC_prm_nm))');
+        [r_corr.(raw_or_corr_nm).prm.(dmPFC_prm_nm),...
+            pval.(raw_or_corr_nm).prm.(dmPFC_prm_nm)] = corr(dmPFC_BOLD(goodS.(raw_or_corr_nm).(dmPFC_prm_nm))',...
+            prm.(prm_nm)(goodS.(raw_or_corr_nm).(dmPFC_prm_nm))');
         % same for aIns
         aIns_prm_nm = [prm_nm,'_f_aIns'];
         goodS.(raw_or_corr_nm).(aIns_prm_nm) = filter_fn(raw_or_corr_nm, aIns_BOLD, prm.(prm_nm));
-        [r_corr.(raw_or_corr_nm).prm.(aIns_prm_nm), pval.(raw_or_corr_nm).prm.(aIns_prm_nm)] = corr(aIns_BOLD(goodS.(raw_or_corr_nm).(aIns_prm_nm))', prm.(prm_nm)(goodS.(raw_or_corr_nm).(aIns_prm_nm))');
+        [r_corr.(raw_or_corr_nm).prm.(aIns_prm_nm),...
+            pval.(raw_or_corr_nm).prm.(aIns_prm_nm)] = corr(aIns_BOLD(goodS.(raw_or_corr_nm).(aIns_prm_nm))',...
+            prm.(prm_nm)(goodS.(raw_or_corr_nm).(aIns_prm_nm))');
     end % prm loop
     %% extract number of good subject for each correlation
     fields_to_check = fieldnames(goodS.(raw_or_corr_nm));
@@ -119,58 +135,127 @@ for iRawCorr = 1:2
     end % loop over fields to check
     
     %% display correlation in a nice correlation matrix
-    % assemble data in one correlation matrix
-    dmPFC_r_vector = [r_corr.(raw_or_corr_nm).HE_f_dmPFC;...
-        r_corr.(raw_or_corr_nm).HPE_f_dmPFC;...
-        r_corr.(raw_or_corr_nm).HME_f_dmPFC;...
-        r_corr.(raw_or_corr_nm).kEp_f_dmPFC];
-    aIns_r_vector = [r_corr.(raw_or_corr_nm).HE_f_aIns;...
-        r_corr.(raw_or_corr_nm).HPE_f_aIns;...
-        r_corr.(raw_or_corr_nm).HME_f_aIns;...
-        r_corr.(raw_or_corr_nm).kEp_f_aIns];
-    corr_mtrx = [dmPFC_r_vector, aIns_r_vector];
-    % same but for p.value
-    dmPFC_pval_vector = [pval.(raw_or_corr_nm).HE_f_dmPFC;...
-        pval.(raw_or_corr_nm).HPE_f_dmPFC;...
-        pval.(raw_or_corr_nm).HME_f_dmPFC;...
-        pval.(raw_or_corr_nm).kEp_f_dmPFC];
-    aIns_pval_vector = [pval.(raw_or_corr_nm).HE_f_aIns;...
-        pval.(raw_or_corr_nm).HPE_f_aIns;...
-        pval.(raw_or_corr_nm).HME_f_aIns;...
-        pval.(raw_or_corr_nm).kEp_f_aIns];
-    pval_mtrx = [dmPFC_pval_vector, aIns_pval_vector];
     
+    switch include_kEm
+        case 0 % correlation matrix HE/HPE/HME/kEp
+            
+            % assemble data in one correlation matrix
+            dmPFC_r_vector = [r_corr.(raw_or_corr_nm).HE_f_dmPFC;...
+                r_corr.(raw_or_corr_nm).HPE_f_dmPFC;...
+                r_corr.(raw_or_corr_nm).HME_f_dmPFC;...
+                r_corr.(raw_or_corr_nm).kEp_f_dmPFC];
+            aIns_r_vector = [r_corr.(raw_or_corr_nm).HE_f_aIns;...
+                r_corr.(raw_or_corr_nm).HPE_f_aIns;...
+                r_corr.(raw_or_corr_nm).HME_f_aIns;...
+                r_corr.(raw_or_corr_nm).kEp_f_aIns];
+            corr_mtrx = [dmPFC_r_vector, aIns_r_vector];
+            % same but for p.value
+            dmPFC_pval_vector = [pval.(raw_or_corr_nm).HE_f_dmPFC;...
+                pval.(raw_or_corr_nm).HPE_f_dmPFC;...
+                pval.(raw_or_corr_nm).HME_f_dmPFC;...
+                pval.(raw_or_corr_nm).kEp_f_dmPFC];
+            aIns_pval_vector = [pval.(raw_or_corr_nm).HE_f_aIns;...
+                pval.(raw_or_corr_nm).HPE_f_aIns;...
+                pval.(raw_or_corr_nm).HME_f_aIns;...
+                pval.(raw_or_corr_nm).kEp_f_aIns];
+            pval_mtrx = [dmPFC_pval_vector, aIns_pval_vector];
+            
+            
+        case 1 % correlation matrix HE/HPE/HME/kEp/kEm
+            
+            % assemble data in one correlation matrix
+            dmPFC_r_vector = [r_corr.(raw_or_corr_nm).HE_f_dmPFC;...
+                r_corr.(raw_or_corr_nm).HPE_f_dmPFC;...
+                r_corr.(raw_or_corr_nm).HME_f_dmPFC;...
+                r_corr.(raw_or_corr_nm).kEp_f_dmPFC;...
+                r_corr.(raw_or_corr_nm).kEm_f_dmPFC];
+            aIns_r_vector = [r_corr.(raw_or_corr_nm).HE_f_aIns;...
+                r_corr.(raw_or_corr_nm).HPE_f_aIns;...
+                r_corr.(raw_or_corr_nm).HME_f_aIns;...
+                r_corr.(raw_or_corr_nm).kEp_f_aIns;...
+                r_corr.(raw_or_corr_nm).kEm_f_aIns];
+            corr_mtrx = [dmPFC_r_vector, aIns_r_vector];
+            % same but for p.value
+            dmPFC_pval_vector = [pval.(raw_or_corr_nm).HE_f_dmPFC;...
+                pval.(raw_or_corr_nm).HPE_f_dmPFC;...
+                pval.(raw_or_corr_nm).HME_f_dmPFC;...
+                pval.(raw_or_corr_nm).kEp_f_dmPFC;...
+                pval.(raw_or_corr_nm).kEm_f_dmPFC];
+            aIns_pval_vector = [pval.(raw_or_corr_nm).HE_f_aIns;...
+                pval.(raw_or_corr_nm).HPE_f_aIns;...
+                pval.(raw_or_corr_nm).HME_f_aIns;...
+                pval.(raw_or_corr_nm).kEp_f_aIns;...
+                pval.(raw_or_corr_nm).kEm_f_aIns];
+            pval_mtrx = [dmPFC_pval_vector, aIns_pval_vector];
+    end
     %% figure
-    fig;
-    subplot_hdl = subplot(1,2,1);
-    imagesc(corr_mtrx, corr_range);
-    colormap(subplot_hdl, color_range_choices);
-    cbar = colorbar;
-    cbar.Label.String = 'r';
-    xticks(1:2);
-    xticklabels({'dmPFC/dACC','aIns'});
-    yticks(1:size(corr_mtrx,1));
-    yticklabels({'HE','HPE','HME','kEp'});
-    % add stars in the graph if some correlations are significant
-    for iROI = 1:size(corr_mtrx,2)
-        for iBhv = 1:size(corr_mtrx,1)
-            if pval_mtrx(iBhv, iROI) <= 0.05
-                if pval_mtrx(iBhv, iROI) > 0.01 && pval_mtrx(iBhv, iROI) <= 0.05
-                    pval_hdl = text(iROI, iBhv, '*');
-                elseif pval_mtrx(iBhv, iROI) > 0.001 && pval_mtrx(iBhv, iROI) <= 0.01
-                    pval_hdl = text(iROI, iBhv, '**');
-                elseif pval_mtrx(iBhv, iROI) <= 0.001
-                    pval_hdl = text(iROI, iBhv, '***');
-                end % p.value
-                % adjust p.value parameters
-                pval_hdl.Color = col.white;
-                pval_hdl.FontSize = 70;
-                pval_hdl.FontWeight = 'bold';
-                pval_hdl.HorizontalAlignment = 'center'; % center text on x-axis
-                pval_hdl.VerticalAlignment = 'middle'; % center text on y-axis
-            end % when p.value is significant
-        end % loop over Y variables
-    end % loop over X variables
+    switch include_kEm
+        case 0 % correlation matrix HE/HPE/HME/kEp
+            fig;
+            subplot_hdl = subplot(1,2,1);
+            imagesc(corr_mtrx, corr_range);
+            colormap(subplot_hdl, color_range_choices);
+            cbar = colorbar;
+            cbar.Label.String = 'r';
+            xticks(1:2);
+            xticklabels({'dmPFC/dACC','aIns'});
+            yticks(1:size(corr_mtrx,1));
+            yticklabels({'HE','HPE','HME','kEp'});
+            % add stars in the graph if some correlations are significant
+            for iROI = 1:size(corr_mtrx,2)
+                for iBhv = 1:size(corr_mtrx,1)
+                    if pval_mtrx(iBhv, iROI) <= 0.05
+                        if pval_mtrx(iBhv, iROI) > 0.01 && pval_mtrx(iBhv, iROI) <= 0.05
+                            pval_hdl = text(iROI, iBhv, '*');
+                        elseif pval_mtrx(iBhv, iROI) > 0.001 && pval_mtrx(iBhv, iROI) <= 0.01
+                            pval_hdl = text(iROI, iBhv, '**');
+                        elseif pval_mtrx(iBhv, iROI) <= 0.001
+                            pval_hdl = text(iROI, iBhv, '***');
+                        end % p.value
+                        % adjust p.value parameters
+                        pval_hdl.Color = col.white;
+                        pval_hdl.FontSize = 70;
+                        pval_hdl.FontWeight = 'bold';
+                        pval_hdl.HorizontalAlignment = 'center'; % center text on x-axis
+                        pval_hdl.VerticalAlignment = 'middle'; % center text on y-axis
+                    end % when p.value is significant
+                end % loop over Y variables
+            end % loop over X variables
+            
+            
+        case 1 % correlation matrix HE/HPE/HME/kEp/kEm
+            fig;
+            subplot_hdl = subplot(1,2,1);
+            imagesc(corr_mtrx, corr_range);
+            colormap(subplot_hdl, color_range_choices);
+            cbar = colorbar;
+            cbar.Label.String = 'r';
+            xticks(1:2);
+            xticklabels({'dmPFC/dACC','aIns'});
+            yticks(1:size(corr_mtrx,1));
+            yticklabels({'HE','HPE','HME','kEp','kEm'});
+            % add stars in the graph if some correlations are significant
+            for iROI = 1:size(corr_mtrx,2)
+                for iBhv = 1:size(corr_mtrx,1)
+                    if pval_mtrx(iBhv, iROI) <= 0.05
+                        if pval_mtrx(iBhv, iROI) > 0.01 && pval_mtrx(iBhv, iROI) <= 0.05
+                            pval_hdl = text(iROI, iBhv, '*');
+                        elseif pval_mtrx(iBhv, iROI) > 0.001 && pval_mtrx(iBhv, iROI) <= 0.01
+                            pval_hdl = text(iROI, iBhv, '**');
+                        elseif pval_mtrx(iBhv, iROI) <= 0.001
+                            pval_hdl = text(iROI, iBhv, '***');
+                        end % p.value
+                        % adjust p.value parameters
+                        pval_hdl.Color = col.white;
+                        pval_hdl.FontSize = 70;
+                        pval_hdl.FontWeight = 'bold';
+                        pval_hdl.HorizontalAlignment = 'center'; % center text on x-axis
+                        pval_hdl.VerticalAlignment = 'middle'; % center text on y-axis
+                    end % when p.value is significant
+                end % loop over Y variables
+            end % loop over X variables
+            
+    end % include kEm or not?
 end % loop over filter: raw vs 3*SD corrected data
 
 end % function
