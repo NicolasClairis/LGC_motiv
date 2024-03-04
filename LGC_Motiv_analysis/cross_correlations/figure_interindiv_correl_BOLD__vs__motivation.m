@@ -72,6 +72,9 @@ color_range_choices = redblue(45);
 % correlation range
 corr_range = [-0.65 0.65];
 
+% x/y-axis ratio
+ax_ratio = [1.5 1 1];
+
 % include kEm in the graph or not?
 include_kEm = 1;
 
@@ -85,30 +88,69 @@ for iRawCorr = 1:2
     end
     
     % correlations with dmPFC/dACC BOLD
+    % HE = f(dmPFC/dACC)
     goodS.(raw_or_corr_nm).HE_f_dmPFC = filter_fn(raw_or_corr_nm, dmPFC_BOLD, HE_ch);
     [r_corr.(raw_or_corr_nm).HE_f_dmPFC, pval.(raw_or_corr_nm).HE_f_dmPFC] = corr(dmPFC_BOLD(goodS.(raw_or_corr_nm).HE_f_dmPFC)', HE_ch(goodS.(raw_or_corr_nm).HE_f_dmPFC)');
+    [~, ~, ~, ~, dmPFC_sorted.(raw_or_corr_nm).HE_f_dmPFC,...
+        HE_ch_fit_dmPFC_sorted.(raw_or_corr_nm).HE_f_dmPFC] = glm_package(dmPFC_BOLD(goodS.(raw_or_corr_nm).HE_f_dmPFC)', HE_ch(goodS.(raw_or_corr_nm).HE_f_dmPFC)','normal');
+    
+    % HPE = f(dmPFC/dACC)
     goodS.(raw_or_corr_nm).HPE_f_dmPFC = filter_fn(raw_or_corr_nm, dmPFC_BOLD, HPE_ch);
     [r_corr.(raw_or_corr_nm).HPE_f_dmPFC, pval.(raw_or_corr_nm).HPE_f_dmPFC] = corr(dmPFC_BOLD(goodS.(raw_or_corr_nm).HPE_f_dmPFC)', HPE_ch(goodS.(raw_or_corr_nm).HPE_f_dmPFC)');
+    [~, ~, ~, ~, dmPFC_sorted.(raw_or_corr_nm).HPE_f_dmPFC,...
+        HPE_ch_fit_dmPFC_sorted.(raw_or_corr_nm).HPE_f_dmPFC] = glm_package(dmPFC_BOLD(goodS.(raw_or_corr_nm).HPE_f_dmPFC)', HPE_ch(goodS.(raw_or_corr_nm).HPE_f_dmPFC)','normal');
+    
+    % HME = f(dmPFC/dACC)
     goodS.(raw_or_corr_nm).HME_f_dmPFC = filter_fn(raw_or_corr_nm, dmPFC_BOLD, HME_ch);
     [r_corr.(raw_or_corr_nm).HME_f_dmPFC, pval.(raw_or_corr_nm).HME_f_dmPFC] = corr(dmPFC_BOLD(goodS.(raw_or_corr_nm).HME_f_dmPFC)', HME_ch(goodS.(raw_or_corr_nm).HME_f_dmPFC)');
+    [~, ~, ~, ~, dmPFC_sorted.(raw_or_corr_nm).HME_f_dmPFC,...
+        HME_ch_fit_dmPFC_sorted.(raw_or_corr_nm).HME_f_dmPFC] = glm_package(dmPFC_BOLD(goodS.(raw_or_corr_nm).HME_f_dmPFC)', HME_ch(goodS.(raw_or_corr_nm).HME_f_dmPFC)','normal');
+    
+    % kEp = f(dmPFC/dACC)
     goodS.(raw_or_corr_nm).kEp_f_dmPFC = filter_fn(raw_or_corr_nm, dmPFC_BOLD, kEp);
     [r_corr.(raw_or_corr_nm).kEp_f_dmPFC, pval.(raw_or_corr_nm).kEp_f_dmPFC] = corr(dmPFC_BOLD(goodS.(raw_or_corr_nm).kEp_f_dmPFC)', kEp(goodS.(raw_or_corr_nm).kEp_f_dmPFC)');
+    [~, ~, ~, ~, dmPFC_sorted.(raw_or_corr_nm).kEp_f_dmPFC,...
+        kEp_fit_dmPFC_sorted.(raw_or_corr_nm).kEp_f_dmPFC] = glm_package(dmPFC_BOLD(goodS.(raw_or_corr_nm).kEp_f_dmPFC)', kEp(goodS.(raw_or_corr_nm).kEp_f_dmPFC)','normal');
+    
+    % kEm = f(dmPFC/dACC)
     if include_kEm == 1
         goodS.(raw_or_corr_nm).kEm_f_dmPFC = filter_fn(raw_or_corr_nm, dmPFC_BOLD, kEm);
         [r_corr.(raw_or_corr_nm).kEm_f_dmPFC, pval.(raw_or_corr_nm).kEm_f_dmPFC] = corr(dmPFC_BOLD(goodS.(raw_or_corr_nm).kEm_f_dmPFC)', kEm(goodS.(raw_or_corr_nm).kEm_f_dmPFC)');
+        [~, ~, ~, ~, dmPFC_sorted.(raw_or_corr_nm).kEm_f_dmPFC,...
+            kEm_fit_dmPFC_sorted.(raw_or_corr_nm).kEm_f_dmPFC] = glm_package(dmPFC_BOLD(goodS.(raw_or_corr_nm).kEm_f_dmPFC)', kEm(goodS.(raw_or_corr_nm).kEm_f_dmPFC)','normal');
     end
+    
     % correlations with aIns BOLD
+    % HE = f(aIns)
     goodS.(raw_or_corr_nm).HE_f_aIns = filter_fn(raw_or_corr_nm, aIns_BOLD, HE_ch);
     [r_corr.(raw_or_corr_nm).HE_f_aIns, pval.(raw_or_corr_nm).HE_f_aIns] = corr(aIns_BOLD(goodS.(raw_or_corr_nm).HE_f_aIns)', HE_ch(goodS.(raw_or_corr_nm).HE_f_aIns)');
+    [~, ~, ~, ~, aIns_sorted.(raw_or_corr_nm).HE_f_aIns,...
+        HE_ch_fit_aIns_sorted.(raw_or_corr_nm).HE_f_aIns] = glm_package(aIns_BOLD(goodS.(raw_or_corr_nm).HE_f_aIns)', HE_ch(goodS.(raw_or_corr_nm).HE_f_aIns)','normal');
+    
+    % HPE = f(aIns)
     goodS.(raw_or_corr_nm).HPE_f_aIns = filter_fn(raw_or_corr_nm, aIns_BOLD, HPE_ch);
     [r_corr.(raw_or_corr_nm).HPE_f_aIns, pval.(raw_or_corr_nm).HPE_f_aIns] = corr(aIns_BOLD(goodS.(raw_or_corr_nm).HPE_f_aIns)', HPE_ch(goodS.(raw_or_corr_nm).HPE_f_aIns)');
+    [~, ~, ~, ~, aIns_sorted.(raw_or_corr_nm).HPE_f_aIns,...
+        HPE_ch_fit_aIns_sorted.(raw_or_corr_nm).HPE_f_aIns] = glm_package(aIns_BOLD(goodS.(raw_or_corr_nm).HPE_f_aIns)', HPE_ch(goodS.(raw_or_corr_nm).HPE_f_aIns)','normal');
+    
+    % HME = f(aIns)
     goodS.(raw_or_corr_nm).HME_f_aIns = filter_fn(raw_or_corr_nm, aIns_BOLD, HME_ch);
     [r_corr.(raw_or_corr_nm).HME_f_aIns, pval.(raw_or_corr_nm).HME_f_aIns] = corr(aIns_BOLD(goodS.(raw_or_corr_nm).HME_f_aIns)', HME_ch(goodS.(raw_or_corr_nm).HME_f_aIns)');
+    [~, ~, ~, ~, aIns_sorted.(raw_or_corr_nm).HME_f_aIns,...
+        HME_ch_fit_aIns_sorted.(raw_or_corr_nm).HME_f_aIns] = glm_package(aIns_BOLD(goodS.(raw_or_corr_nm).HME_f_aIns)', HME_ch(goodS.(raw_or_corr_nm).HME_f_aIns)','normal');
+    
+    % kEp = f(aIns)
     goodS.(raw_or_corr_nm).kEp_f_aIns = filter_fn(raw_or_corr_nm, aIns_BOLD, kEp);
     [r_corr.(raw_or_corr_nm).kEp_f_aIns, pval.(raw_or_corr_nm).kEp_f_aIns] = corr(aIns_BOLD(goodS.(raw_or_corr_nm).kEp_f_aIns)', kEp(goodS.(raw_or_corr_nm).kEp_f_aIns)');
+    [~, ~, ~, ~, aIns_sorted.(raw_or_corr_nm).kEp_f_aIns,...
+        kEp_fit_aIns_sorted.(raw_or_corr_nm).kEp_f_aIns] = glm_package(aIns_BOLD(goodS.(raw_or_corr_nm).kEp_f_aIns)', kEp(goodS.(raw_or_corr_nm).kEp_f_aIns)','normal');
+    
+    % kEm = f(aIns)
     if include_kEm == 1
         goodS.(raw_or_corr_nm).kEm_f_aIns = filter_fn(raw_or_corr_nm, aIns_BOLD, kEm);
         [r_corr.(raw_or_corr_nm).kEm_f_aIns, pval.(raw_or_corr_nm).kEm_f_aIns] = corr(aIns_BOLD(goodS.(raw_or_corr_nm).kEm_f_aIns)', kEm(goodS.(raw_or_corr_nm).kEm_f_aIns)');
+        [~, ~, ~, ~, aIns_sorted.(raw_or_corr_nm).kEm_f_aIns,...
+        kEm_fit_aIns_sorted.(raw_or_corr_nm).kEm_f_aIns] = glm_package(aIns_BOLD(goodS.(raw_or_corr_nm).kEm_f_aIns)', kEm(goodS.(raw_or_corr_nm).kEm_f_aIns)','normal');
     end
     
     % also check the other behavioral parameters
@@ -256,6 +298,94 @@ for iRawCorr = 1:2
             end % loop over X variables
             
     end % include kEm or not?
+    
+    %% display figures with correlation plots
+    % dmPFC/dACC column figure
+    fig;
+    
+    % HE = f(dmPFC/dACC)
+    subplot(3,1,1); hold on;
+    pbaspect(ax_ratio);
+    HE_dmPFC_hdl = scatter(dmPFC_BOLD(goodS.(raw_or_corr_nm).HE_f_dmPFC)',...
+        HE_ch(goodS.(raw_or_corr_nm).HE_f_dmPFC));
+    HE_dmPFC_fit_hdl = plot(dmPFC_sorted.(raw_or_corr_nm).HE_f_dmPFC,...
+        HE_ch_fit_dmPFC_sorted.(raw_or_corr_nm).HE_f_dmPFC);
+    scat_hdl_upgrade(HE_dmPFC_hdl, col.grey);
+    fit_hdl_upgrade(HE_dmPFC_fit_hdl, col.black);
+    xlabel('dmPFC/dACC regression estimate');
+    ylabel('HE choices (%)');
+    legend_size(pSize);
+    
+    % HPE = f(dmPFC/dACC)
+    subplot(3,1,2); hold on;
+    pbaspect(ax_ratio);
+    HPE_dmPFC_hdl = scatter(dmPFC_BOLD(goodS.(raw_or_corr_nm).HPE_f_dmPFC)',...
+        HPE_ch(goodS.(raw_or_corr_nm).HPE_f_dmPFC));
+    HPE_dmPFC_fit_hdl = plot(dmPFC_sorted.(raw_or_corr_nm).HPE_f_dmPFC,...
+        HPE_ch_fit_dmPFC_sorted.(raw_or_corr_nm).HPE_f_dmPFC);
+    scat_hdl_upgrade(HPE_dmPFC_hdl, col.grey);
+    fit_hdl_upgrade(HPE_dmPFC_fit_hdl, col.black);
+    xlabel('dmPFC/dACC regression estimate');
+    ylabel('HPE choices (%)');
+    legend_size(pSize);
+    
+    % kEp = f(dmPFC/dACC)
+    subplot(3,1,3); hold on;
+    pbaspect(ax_ratio);
+    kEp_dmPFC_hdl = scatter(dmPFC_BOLD(goodS.(raw_or_corr_nm).kEp_f_dmPFC)',...
+        kEp(goodS.(raw_or_corr_nm).kEp_f_dmPFC));
+    kEp_dmPFC_fit_hdl = plot(dmPFC_sorted.(raw_or_corr_nm).kEp_f_dmPFC,...
+        kEp_fit_dmPFC_sorted.(raw_or_corr_nm).kEp_f_dmPFC);
+    scat_hdl_upgrade(kEp_dmPFC_hdl, col.grey);
+    fit_hdl_upgrade(kEp_dmPFC_fit_hdl, col.black);
+    xlabel('dmPFC/dACC regression estimate');
+    ylabel('kEp');
+    legend_size(pSize);
+    
+    
+    % aIns column figure
+    fig;
+    % HE = f(aIns)
+    subplot(3,1,1); hold on;
+    pbaspect(ax_ratio);
+    HE_aIns_hdl = scatter(aIns_BOLD(goodS.(raw_or_corr_nm).HE_f_aIns)',...
+        HE_ch(goodS.(raw_or_corr_nm).HE_f_aIns));
+    HE_aIns_fit_hdl = plot(aIns_sorted.(raw_or_corr_nm).HE_f_aIns,...
+        HE_ch_fit_aIns_sorted.(raw_or_corr_nm).HE_f_aIns);
+    scat_hdl_upgrade(HE_aIns_hdl, col.grey);
+    fit_hdl_upgrade(HE_aIns_fit_hdl, col.black);
+    xlabel('aIns regression estimate');
+    ylabel('HE choices (%)');
+    legend_size(pSize);
+    
+    % HPE = f(aIns)
+    subplot(3,1,2); hold on;
+    pbaspect(ax_ratio);
+    HPE_aIns_hdl = scatter(aIns_BOLD(goodS.(raw_or_corr_nm).HPE_f_aIns)',...
+        HPE_ch(goodS.(raw_or_corr_nm).HPE_f_aIns));
+    HPE_aIns_fit_hdl = plot(aIns_sorted.(raw_or_corr_nm).HPE_f_aIns,...
+        HPE_ch_fit_aIns_sorted.(raw_or_corr_nm).HPE_f_aIns);
+    scat_hdl_upgrade(HPE_aIns_hdl, col.grey);
+    fit_hdl_upgrade(HPE_aIns_fit_hdl, col.black);
+    xlabel('aIns regression estimate');
+    ylabel('HPE choices (%)');
+    legend_size(pSize);
+    
+    
+    
+    % kEp = f(aIns)
+    subplot(3,1,3); hold on;
+    pbaspect(ax_ratio);
+    kEp_aIns_hdl = scatter(aIns_BOLD(goodS.(raw_or_corr_nm).kEp_f_aIns)',...
+        kEp(goodS.(raw_or_corr_nm).kEp_f_aIns));
+    kEp_aIns_fit_hdl = plot(aIns_sorted.(raw_or_corr_nm).kEp_f_aIns,...
+        kEp_fit_aIns_sorted.(raw_or_corr_nm).kEp_f_aIns);
+    scat_hdl_upgrade(kEp_aIns_hdl, col.grey);
+    fit_hdl_upgrade(kEp_aIns_fit_hdl, col.black);
+    xlabel('aIns regression estimate');
+    ylabel('kEp');
+    legend_size(pSize);
+    
 end % loop over filter: raw vs 3*SD corrected data
 
 end % function
