@@ -2,20 +2,20 @@
 
 %% load data
 folderPath =  'P:\boulot\postdoc_CarmenSandi\papers\Clairis_mediation_Lac\figures\figS6_dmPFC_aIns_intraindiv';
-loadStruct = load([folderPath,filesep,'GLM260_dmPFCdACC_60subs.mat']);
-con_vec_all1 = loadStruct.con_vec_all;
-con_avg1 = loadStruct.con_avg;
-con_sem1 = loadStruct.con_sem;
-selectedCon = loadStruct.selectedCon;
-ttest_pval1 = loadStruct.ttest_ROI.p_value;
-con_names = loadStruct.con_names;
-n_ROIs = loadStruct.n_ROIs;
+dmPFC_loadStruct = load([folderPath,filesep,'GLM260_dmPFCdACC_60subs.mat']);
+con_vec_all1 = dmPFC_loadStruct.con_vec_all;
+con_avg1 = dmPFC_loadStruct.con_avg;
+con_sem1 = dmPFC_loadStruct.con_sem;
+selectedCon = dmPFC_loadStruct.selectedCon;
+ttest_pval1 = dmPFC_loadStruct.ttest_ROI.p_value;
+con_names = dmPFC_loadStruct.con_names;
+n_ROIs = dmPFC_loadStruct.n_ROIs;
 
 con_nms = {'lEch','hEch'};
-% display graph before outlier removal
-[roi_fig] = roi_graph(selectedCon, n_ROIs,...
-    con_vec_all1, con_avg1, con_sem1,...
-    con_nms, ttest_pval1);
+% % display graph before outlier removal
+% [roi_fig] = roi_graph(selectedCon, n_ROIs,...
+%     con_vec_all1, con_avg1, con_sem1,...
+%     con_nms, ttest_pval1);
 pval.raw.lEch = ttest_pval1(selectedCon(1));
 pval.raw.hEch = ttest_pval1(selectedCon(2));
 % compare the two:
