@@ -1,7 +1,7 @@
 function [avg_RT] = avg_RT_perSub(study_nm, sub_nm, condition)
 % [avg_RT] = avg_RT_perSub(study_nm, sub_nm, condition)
-% avg_RT_perSub will extract average reaction times (RT) for the subject 
-% defined in input. The average is extracted across all tasks and
+% avg_RT_perSub will extract average choice reaction times (RT) for the 
+% subject defined in input. The average is extracted across all tasks and
 % separately for each task as well.
 %
 % INPUTS
