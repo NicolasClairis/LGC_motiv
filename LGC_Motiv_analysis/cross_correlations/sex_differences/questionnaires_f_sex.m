@@ -274,6 +274,11 @@ for iCateg = 1:n_categ
         
         % add p.value if significant
         
+        
     end % questionnaire loop
+    ylabel('Scores');
+    xticks(1.5:2:n_quests*2);
+    xticklabels(quest_names);
+    title(categ_nm);
 end % loop over questionnaire categories
 % end % function
