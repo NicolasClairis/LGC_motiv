@@ -22,7 +22,7 @@ for iSex = 1:2
     end
     
     %% prepare variables of interest
-    [n_children.(sex_nm), n_covid.(sex_nm), ISCE.(sex_nm),...
+    [n_covid.(sex_nm), ISCE.(sex_nm),...
         money.(sex_nm), age.(sex_nm), weight.(sex_nm), height.(sex_nm), BMI.(sex_nm),...
         avg_sleep.(sex_nm), prevDay_sleep.(sex_nm), avg_min_prevDay_sleep.(sex_nm),...
         STAI_T.(sex_nm), SIAS.(sex_nm), PSS14.(sex_nm),...
@@ -41,6 +41,11 @@ for iSex = 1:2
         hexaco1_HonestyHumility.(sex_nm), hexaco2_emotion.(sex_nm), hexaco3_extraversion.(sex_nm),...
         hexaco4_agreeableness.(sex_nm), hexaco5_consciousness.(sex_nm), hexaco6_openness.(sex_nm)] = deal(NaN(1,NS));
     
+    % extract sleep
+    [avg_sleep.(sex_nm),...
+        prevDay_sleep.(sex_nm),...
+        avg_min_prevDay_sleep.(sex_nm)] = extract_sleep(study_nm, subject_id, NS);
+    
     %% loop over subjects
     for iS = 1:NS
         sub_nm = subject_id{iS};
@@ -48,7 +53,6 @@ for iSex = 1:2
         sub_idx2 = strcmp(excelReadQuestionnairesFile2.CID, ['CID',sub_nm]);
         
         % general
-        n_children.(sex_nm)(iS) = excelReadQuestionnairesFile.CombienD_enfantsAvez_vousD_j_Eu__NombreD_enfants(sub_idx);
         n_covid.(sex_nm)(iS) = excelReadQuestionnairesFile.NombreD_infectionsAuCOVID(sub_idx);
         age.(sex_nm)(iS) = excelReadQuestionnairesFile2.Age_yearsOld_(sub_idx2);
         weight.(sex_nm)(iS) = excelReadQuestionnairesFile2.Weight(sub_idx2);
@@ -57,13 +61,8 @@ for iSex = 1:2
         
         % socio-economic status (education, money, etc.)
         ISCE.(sex_nm)(iS) = excelReadQuestionnairesFile.niveauD__ducation_bas_SurISCE_(sub_idx);
-        money.(sex_nm)(iS) = str2double(excelReadQuestionnairesFile.moyenneRevenuBrutAnnuel(sub_idx));
+        money.(sex_nm)(iS) = str2double(excelReadQuestionnairesFile.moyenneRevenuBrutAnnuel(sub_idx))./1000;
         socialLadder.(sex_nm)(iS) = excelReadQuestionnairesFile2.SocialComparisonLadder(sub_idx2);
-        
-        % sleep
-        avg_sleep.(sex_nm)(iS) = str2double(excelReadQuestionnairesFile2.HeuresDeSommeil_enMoyenne_(sub_idx2));
-        prevDay_sleep.(sex_nm)(iS) = str2double(excelReadQuestionnairesFile2.HeuresDeSommeilLaVeilleDeL_exp_rience(sub_idx2));
-        avg_min_prevDay_sleep.(sex_nm)(iS) = avg_sleep.(sex_nm)(iS) - prevDay_sleep.(sex_nm)(iS);
         
         % stress/anxiety questionnaires
         STAI_T.(sex_nm)(iS) = excelReadQuestionnairesFile.STAITraitScore(sub_idx);
@@ -120,7 +119,6 @@ end % loop over sex
 
 %% regroup questionnaires by category
 % general
-questionnaires.general.n_children = n_children;
 questionnaires.general.n_covid = n_covid;
 questionnaires.general.age = age;
 questionnaires.general.weight = weight;
@@ -196,8 +194,9 @@ corr_method = 'bonferroni';
 corr_method_nm = ['corr_',corr_method];
 
 %% colour code
-female_col = [215 25 28]./255;
-male_col = [44 123 182]./255;
+[pSize, lW, col, mSize] = general_fig_prm;
+female_col = col.red;
+male_col = col.blue_dark;
 
 %% perform test for each questionnaire
 for iCateg = 1:n_categ
@@ -272,9 +271,33 @@ for iCateg = 1:n_categ
         female_violin = Violin({questionnaires.(categ_nm).(quest_nm).female(ok_females)},jPos_female,...
             'ViolinColor',{female_col});
         
-        % add p.value if significant
+        warning('consider also case where range between different questionnaires is completely different');
         
-        
+        % add p.value indication if differnece is significant
+        pval_tmp = pval.(corr_method_nm).(categ_nm).(quest_nm);
+        if pval_tmp < 0.05
+            y_val = max( [questionnaires.(categ_nm).(quest_nm).male,...
+                questionnaires.(categ_nm).(quest_nm).female(ok_females)], [],2,'omitnan');
+            l_hdl = line([jPos_male jPos_female],...
+                [y_val y_val],...
+                'LineWidth',lW,'LineStyle','-','Color','k');
+            pval_xpos = mean([jPos_male jPos_female]);
+            yscale = ylim;
+            size_y = abs(yscale(2) - yscale(1));
+            pval_Ypos = y_val + size_y/20;
+            % add stars
+            if pval_tmp < 0.05 && pval_tmp > 0.01
+                text(pval_xpos, pval_Ypos, '*',...
+                'HorizontalAlignment','center','VerticalAlignment', 'top', 'FontSize', 18)
+            elseif pval_tmp < 0.01 && pval_tmp > 0.001
+                text(pval_xpos, pval_Ypos, '**',...
+                'HorizontalAlignment','center','VerticalAlignment', 'top', 'FontSize', 18)
+            elseif pval_tmp < 0.001
+                text(pval_xpos, pval_Ypos, '***',...
+                'HorizontalAlignment','center','VerticalAlignment', 'top', 'FontSize', 18)
+            end % pval threshold
+            
+        end % significant p.value
     end % questionnaire loop
     ylabel('Scores');
     xticks(1.5:2:n_quests*2);
