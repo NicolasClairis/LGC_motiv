@@ -1,5 +1,5 @@
-function[fillhandle,msg]=jbfill(xpoints,upper,lower,middle,color,edge,add,transparency)
-%USAGE: [fillhandle,msg]=jbfill(xpoints,upper,lower,middle,color,edge,add,transparency)
+function[fillhandle,msg,mean_handle]=jbfill(xpoints,upper,lower,middle,color,edge,add,transparency)
+%USAGE: [fillhandle,msg,mean_handle]=jbfill(xpoints,upper,lower,middle,color,edge,add,transparency)
 %This function will fill a region with a color between the two vectors provided
 %using the Matlab fill command.
 %
@@ -31,6 +31,8 @@ function[fillhandle,msg]=jbfill(xpoints,upper,lower,middle,color,edge,add,transp
 % plot(xpoints,middle,'Color',color) (line 61) to be able to define color
 % values
 %
+% (01/03/2024) added also extraction of mean handle to be able to modify it
+%
 if nargin<8;transparency=.5;end %default is to have a transparency of .5
 if nargin<7;add=1;end     %default is to add to current plot
 if nargin<6;edge='k';end  %dfault edge color is black
@@ -61,7 +63,7 @@ end
 
 if nargin >= 4
     hold on;
-    plot(xpoints,middle,'Color',color)
+    mean_handle = plot(xpoints,middle,'Color',color,'LineStyle','--');
 end
 
 end
