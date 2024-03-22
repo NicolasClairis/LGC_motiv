@@ -161,7 +161,7 @@ end
 female_col = col.red;
 male_col = col.blue_dark;
 
-% uncorrected + raw data
+%% uncorrected + raw data
 fig;
 jF = 0;
 fd_label = {};
@@ -182,7 +182,37 @@ for iF = 1:nNutrients
             signif.uncorr.raw.(fd_nm).pval, jF-1, jF, '');
         
         % extract name for labels
-        fd_nm_bis = fd_nm(1:4);
+        fd_nm_bis = strrep(fd_nm(1:4),'_','');
+        fd_label = [fd_label, fd_nm_bis];
+    end
+end % nutrient loop
+
+ylabel('Nutrient per week');
+xticks(1.5:2:length(fd_label)*2);
+xticklabels(fd_label);
+
+%% uncorrected + normalized by caloric intake data
+fig;
+jF = 0;
+fd_label = {};
+for iF = 1:nNutrients
+    fd_nm = foodNutrient_names{iF};
+    if isfield(signif.uncorr.norm_by_caloric_intake, fd_nm) % if nutrient is significant
+        jF = jF + 1;
+        ok_males = ~isnan(nutrition_f_calories.(fd_nm).male);
+        Violin({nutrition_f_calories.(fd_nm).male(ok_males)},jF,'ViolinColor',{male_col});
+        
+        jF = jF + 1;
+        ok_females = ~isnan(nutrition_f_calories.(fd_nm).female);
+        Violin({nutrition_f_calories.(fd_nm).female(ok_females)},jF,'ViolinColor',{female_col});
+        
+        %% add p.value
+        [l_hdl, star_hdl] = add_pval_comparison(nutrition_f_calories.(fd_nm).male,...
+            nutrition_f_calories.(fd_nm).female,...
+            signif.uncorr.norm_by_caloric_intake.(fd_nm).pval, jF-1, jF, '');
+        
+        % extract name for labels
+        fd_nm_bis = strrep(fd_nm(1:4),'_','');
         fd_label = [fd_label, fd_nm_bis];
     end
 end % nutrient loop
