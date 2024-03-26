@@ -1,10 +1,13 @@
-function[choices, parameters, RT] = decisionMaking_f_sex()
-% [choices, parameters, RT] = decisionMaking_f_sex()
+function[choices, parameters, RT] = decisionMaking_f_sex(fig_disp)
+% [choices, parameters, RT] = decisionMaking_f_sex(fig_disp)
 % decisionMaking_f_sex will compare all the variables related to the
 % decision-making process of the experiment between males and females.
 % Variables include the total proportion of choices (HE), the proportion of
 % physical (HPE) or mental (HME) choices, and all the parameters derived
 % from our computational model (kR, kP, kEp, kEm, kFp, kLm, bias).
+%
+% INPUTS
+% fig_disp: display figures? (1) yes (0) no
 %
 % OUTPUTS
 % choices: structure comparing choice-related variables between male and female
@@ -94,5 +97,105 @@ end % parameter loop
     RT.Em.sem_males] = mean_sem_sd(RT_summary_males.Em.mean_RT.allSubs.choice, 2);
 [RT.Em.m_females,...
     RT.Em.sem_females] = mean_sem_sd(RT_summary_females.Em.mean_RT.allSubs.choice, 2);
+
+%% figures
+if fig_disp == 1
+    %% general parameters for figures
+    [pSize, lW, col, mSize] = general_fig_prm;
+    female_col = col.red;
+    male_col = col.blue_dark;
+    tasks = {'EpEm','Ep','Em'};
+    nTasks = length(tasks);
+
+    %% choices
+    fig;
+    for iT = 1:nTasks
+        task_nm = tasks{iT};
+        % x coordinates
+        jPos_male = 1 + 2*(iT - 1);
+        jPos_female = 2 + 2*(iT - 1);
+
+        % show male vs female data
+        ok_males = ~isnan(choice_hE_males.(task_nm));
+        male_violin = Violin({choice_hE_males.(task_nm)(ok_males)},jPos_male,...
+            'ViolinColor',{male_col});
+        ok_females = ~isnan(choice_hE_females.(task_nm));
+        female_violin = Violin({choice_hE_females.(task_nm)(ok_females)},jPos_female,...
+            'ViolinColor',{female_col});
+
+        % add p.value indication if difference is significant
+        switch task_nm
+            case 'EpEm'
+                pval_tmp = choices.HE.pval;
+            case 'Ep'
+                pval_tmp = choices.HPE.pval;
+            case 'Em'
+                pval_tmp = choices.HME.pval;
+        end
+        [l_hdl, star_hdl] = add_pval_comparison(choice_hE_males.(task_nm),...
+            choice_hE_females.(task_nm),...
+            pval_tmp, jPos_male, jPos_female, 'NS');
+        ylim([0 100]);
+        ylabel('Choices (%)');
+        xticks(1.5:2:nTasks*2);
+        xticklabels({'HE','HPE','HME'});
+        legend_size(pSize);
+    end % task loop
+
+
+    %% behavioral parameters
+    fig;
+    for iP = 1:nPrm
+        prm_nm = prm_names{iP};
+        % x coordinates
+        jPos_male = 1 + 2*(iP - 1);
+        jPos_female = 2 + 2*(iP - 1);
+
+        % show male vs female data
+        ok_males = ~isnan(prm_males.(prm_nm));
+        male_violin = Violin({prm_males.(prm_nm)(ok_males)},jPos_male,...
+            'ViolinColor',{male_col});
+        ok_females = ~isnan(prm_females.(prm_nm));
+        female_violin = Violin({prm_females.(prm_nm)(ok_females)},jPos_female,...
+            'ViolinColor',{female_col});
+
+        % add p.value indication if difference is significant
+        [l_hdl, star_hdl] = add_pval_comparison(prm_males.(prm_nm),...
+            prm_females.(prm_nm),...
+            parameters.(prm_nm).pval, jPos_male, jPos_female, 'NS');
+        ylim([0 100]);
+        ylabel('Parameters');
+        xticks(1.5:2:nPrm*2);
+        xticklabels({prm_names});
+        legend_size(pSize);
+    end % task loop
+
+    %% RT
+    fig;
+    for iT = 1:nTasks
+        task_nm = tasks{iT};
+        % x coordinates
+        jPos_male = 1 + 2*(iT - 1);
+        jPos_female = 2 + 2*(iT - 1);
+
+        % show male vs female data
+        ok_males = ~isnan(RT_summary_males.(task_nm).mean_RT.allSubs.choice);
+        male_violin = Violin({RT_summary_males.(task_nm).mean_RT.allSubs.choice(ok_males)},jPos_male,...
+            'ViolinColor',{male_col});
+        ok_females = ~isnan(RT_summary_females.(task_nm).mean_RT.allSubs.choice);
+        female_violin = Violin({RT_summary_females.(task_nm).mean_RT.allSubs.choice(ok_females)},jPos_female,...
+            'ViolinColor',{female_col});
+
+        % add p.value indication if difference is significant
+        [l_hdl, star_hdl] = add_pval_comparison(RT_summary_males.(task_nm).mean_RT.allSubs.choice,...
+            RT_summary_females.(task_nm).mean_RT.allSubs.choice,...
+            RT.(task_nm).pval, jPos_male, jPos_female, 'NS');
+        ylim([0 100]);
+        ylabel('RT (s)');
+        xticks(1.5:2:nTasks*2);
+        xticklabels({'HE','HPE','HME'});
+        legend_size(pSize);
+    end % task loop
+end % figure
 
 end % function
