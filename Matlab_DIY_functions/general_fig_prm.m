@@ -35,6 +35,7 @@ col.green = [171 221 164]./255;
 col.green_light = [230 245 152]./255;
 col.blue = [69 117 180]./255;
 col.blue_light = [171 217 233]./255;
+col.blue_dark = [44 123 182]./255;
 
 %% police font name
 fontName = 'Arial';

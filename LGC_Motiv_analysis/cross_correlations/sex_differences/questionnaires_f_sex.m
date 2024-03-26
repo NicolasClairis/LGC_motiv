@@ -1,4 +1,7 @@
 % function[]= questionnaires_f_sex()
+% questionnaires_f_sex will compare the different questionnaires used in
+% the study between male and female, after grouping them by category.
+
 
 %% subject selection
 study_nm = 'study1';
@@ -7,6 +10,10 @@ study_nm = 'study1';
 %% extract questionnaires
 [excelReadQuestionnairesFile, sub_CID_list] = load_questionnaires_data;
 [excelReadQuestionnairesFile2] = load_gal_data_bis(study_nm);
+
+%% filter weird IPAQ values
+IPAQ_all = excelReadQuestionnairesFile.IPAQ;
+[~,~,cleaned_IPAQ] = rmv_outliers_3sd(IPAQ_all);
 
 %% extract relevant data
 for iSex = 1:2
@@ -22,7 +29,7 @@ for iSex = 1:2
     end
     
     %% prepare variables of interest
-    [n_children.(sex_nm), n_covid.(sex_nm), ISCE.(sex_nm),...
+    [n_covid.(sex_nm), ISCE.(sex_nm),...
         money.(sex_nm), age.(sex_nm), weight.(sex_nm), height.(sex_nm), BMI.(sex_nm),...
         avg_sleep.(sex_nm), prevDay_sleep.(sex_nm), avg_min_prevDay_sleep.(sex_nm),...
         STAI_T.(sex_nm), SIAS.(sex_nm), PSS14.(sex_nm),...
@@ -41,6 +48,11 @@ for iSex = 1:2
         hexaco1_HonestyHumility.(sex_nm), hexaco2_emotion.(sex_nm), hexaco3_extraversion.(sex_nm),...
         hexaco4_agreeableness.(sex_nm), hexaco5_consciousness.(sex_nm), hexaco6_openness.(sex_nm)] = deal(NaN(1,NS));
     
+    % extract sleep
+    [avg_sleep.(sex_nm),...
+        prevDay_sleep.(sex_nm),...
+        avg_min_prevDay_sleep.(sex_nm)] = extract_sleep(study_nm, subject_id, NS);
+    
     %% loop over subjects
     for iS = 1:NS
         sub_nm = subject_id{iS};
@@ -48,22 +60,16 @@ for iSex = 1:2
         sub_idx2 = strcmp(excelReadQuestionnairesFile2.CID, ['CID',sub_nm]);
         
         % general
-        n_children.(sex_nm)(iS) = excelReadQuestionnairesFile.CombienD_enfantsAvez_vousD_j_Eu__NombreD_enfants(sub_idx);
         n_covid.(sex_nm)(iS) = excelReadQuestionnairesFile.NombreD_infectionsAuCOVID(sub_idx);
         age.(sex_nm)(iS) = excelReadQuestionnairesFile2.Age_yearsOld_(sub_idx2);
         weight.(sex_nm)(iS) = excelReadQuestionnairesFile2.Weight(sub_idx2);
-        height.(sex_nm)(iS) = excelReadQuestionnairesFile2.Height(sub_idx2);
+        height.(sex_nm)(iS) = excelReadQuestionnairesFile2.Height(sub_idx2).*100; % convert in cm (instead of m)
         BMI.(sex_nm)(iS) = excelReadQuestionnairesFile2.BMI(sub_idx2);
         
         % socio-economic status (education, money, etc.)
         ISCE.(sex_nm)(iS) = excelReadQuestionnairesFile.niveauD__ducation_bas_SurISCE_(sub_idx);
-        money.(sex_nm)(iS) = str2double(excelReadQuestionnairesFile.moyenneRevenuBrutAnnuel(sub_idx));
+        money.(sex_nm)(iS) = str2double(excelReadQuestionnairesFile.moyenneRevenuBrutAnnuel(sub_idx))./1000; % convert in thousand CHF (not just CHF)
         socialLadder.(sex_nm)(iS) = excelReadQuestionnairesFile2.SocialComparisonLadder(sub_idx2);
-        
-        % sleep
-        avg_sleep.(sex_nm)(iS) = str2double(excelReadQuestionnairesFile2.HeuresDeSommeil_enMoyenne_(sub_idx2));
-        prevDay_sleep.(sex_nm)(iS) = str2double(excelReadQuestionnairesFile2.HeuresDeSommeilLaVeilleDeL_exp_rience(sub_idx2));
-        avg_min_prevDay_sleep.(sex_nm)(iS) = avg_sleep.(sex_nm)(iS) - prevDay_sleep.(sex_nm)(iS);
         
         % stress/anxiety questionnaires
         STAI_T.(sex_nm)(iS) = excelReadQuestionnairesFile.STAITraitScore(sub_idx);
@@ -100,7 +106,7 @@ for iSex = 1:2
         Lars_e_EmotResp.(sex_nm)(iS) = excelReadQuestionnairesFile.ER(sub_idx);
         Lars_e_SelfAwareness.(sex_nm)(iS) = excelReadQuestionnairesFile.SA(sub_idx);
         SHAP.(sex_nm)(iS) = excelReadQuestionnairesFile.SHAPScore(sub_idx);
-        IPAQ.(sex_nm)(iS) = excelReadQuestionnairesFile.IPAQ(sub_idx);
+        IPAQ.(sex_nm)(iS) = cleaned_IPAQ(sub_idx);
         IPAQinactivity.(sex_nm)(iS) = excelReadQuestionnairesFile.IPAQInactivity(sub_idx);
         
         % dominance/competition
@@ -120,7 +126,6 @@ end % loop over sex
 
 %% regroup questionnaires by category
 % general
-questionnaires.general.n_children = n_children;
 questionnaires.general.n_covid = n_covid;
 questionnaires.general.age = age;
 questionnaires.general.weight = weight;
@@ -129,8 +134,8 @@ questionnaires.general.BMI = BMI;
 
 % socio-economic status (education, money, etc.)
 questionnaires.SES.ISCE = ISCE;
-questionnaires.SES.money = money;
 questionnaires.SES.ladder = socialLadder;
+questionnaires.SES.money = money;
 
 % sleep
 questionnaires.sleep.avg = avg_sleep;
@@ -151,28 +156,29 @@ questionnaires.CTQ.emotionalNeglect = CTQ_emotionalN;
 questionnaires.CTQ.physicalNeglect = CTQ_physicalN;
 
 % motivation
-questionnaires.motiv.JPIR = JPIR;
-questionnaires.motiv.MPSTEFS_physical = MPSTEFS_physical;
-questionnaires.motiv.MPSTEFS_mental = MPSTEFS_mental;
-questionnaires.motiv.MADRS_S = MADRS_S;
-questionnaires.motiv.SPSRQ_R = SPSRQ_R;
-questionnaires.motiv.SPSRQ_P = SPSRQ_P;
-questionnaires.motiv.BIS_AI = BIS_AI;
-questionnaires.motiv.BIS_MI = BIS_MI;
-questionnaires.motiv.BIS_NPI = BIS_NPI;
-questionnaires.motiv.Lars_e_AI_EverydayProd = Lars_e_AI_EverydayProd;
-questionnaires.motiv.Lars_e_AI_Init = Lars_e_AI_Init;
-questionnaires.motiv.Lars_e_ActionInit = Lars_e_ActionInit;
-questionnaires.motiv.Lars_e_IC_Interest = Lars_e_IC_Interest;
-questionnaires.motiv.Lars_e_IC_Novelty = Lars_e_IC_Novelty;
-questionnaires.motiv.Lars_e_IC_Motiv = Lars_e_IC_Motiv;
-questionnaires.motiv.Lars_e_IC_Social = Lars_e_IC_Social;
-questionnaires.motiv.Lars_e_IntellectCuriosity = Lars_e_IntellectCuriosity;
-questionnaires.motiv.Lars_e_EmotResp = Lars_e_EmotResp;
-questionnaires.motiv.Lars_e_SelfAwareness = Lars_e_SelfAwareness;
-questionnaires.motiv.SHAP = SHAP;
-questionnaires.motiv.IPAQ = IPAQ;
-questionnaires.motiv.IPAQinactivity = IPAQinactivity;
+questionnaires.Motivation.JPIR = JPIR;
+questionnaires.Motivation.MPSTEFS_physical = MPSTEFS_physical;
+questionnaires.Motivation.MPSTEFS_mental = MPSTEFS_mental;
+questionnaires.Motivation.MADRS_S = MADRS_S;
+questionnaires.Motivation.SPSRQ_R = SPSRQ_R;
+questionnaires.Motivation.SPSRQ_P = SPSRQ_P;
+questionnaires.Motivation.BIS_AI = BIS_AI;
+questionnaires.Motivation.BIS_MI = BIS_MI;
+questionnaires.Motivation.BIS_NPI = BIS_NPI;
+questionnaires.Motivation.Lars_e_AI_EverydayProd = Lars_e_AI_EverydayProd;
+questionnaires.Motivation.Lars_e_AI_Init = Lars_e_AI_Init;
+questionnaires.Motivation.Lars_e_ActionInit = Lars_e_ActionInit;
+questionnaires.Motivation.Lars_e_IC_Interest = Lars_e_IC_Interest;
+questionnaires.Motivation.Lars_e_IC_Novelty = Lars_e_IC_Novelty;
+questionnaires.Motivation.Lars_e_IC_Motiv = Lars_e_IC_Motiv;
+questionnaires.Motivation.Lars_e_IC_Social = Lars_e_IC_Social;
+questionnaires.Motivation.Lars_e_IntellectCuriosity = Lars_e_IntellectCuriosity;
+questionnaires.Motivation.Lars_e_EmotResp = Lars_e_EmotResp;
+questionnaires.Motivation.Lars_e_SelfAwareness = Lars_e_SelfAwareness;
+questionnaires.Motivation.SHAP = SHAP;
+% questionnaires.Motivation.IPAQ = IPAQ; % remove IPAQ as too noisy (+ too
+% high range compared to others)
+questionnaires.Motivation.IPAQinactivity = IPAQinactivity;
 
 % dominance/competition
 questionnaires.dominance_compet.PRF_D = PRF_D;
@@ -196,8 +202,9 @@ corr_method = 'bonferroni';
 corr_method_nm = ['corr_',corr_method];
 
 %% colour code
-female_col = [215 25 28]./255;
-male_col = [44 123 182]./255;
+[pSize, lW, col, mSize] = general_fig_prm;
+female_col = col.red;
+male_col = col.blue_dark;
 
 %% perform test for each questionnaire
 for iCateg = 1:n_categ
@@ -264,6 +271,13 @@ for iCateg = 1:n_categ
         jPos_male = 1 + 2*(iQ - 1);
         jPos_female = 2 + 2*(iQ - 1);
         
+        if strcmp(categ_nm,'SES')
+            switch quest_nm
+                case 'money'
+                    yyaxis right;
+            end
+        end
+        
         % show male vs female data
         ok_males = ~isnan(questionnaires.(categ_nm).(quest_nm).male);
         male_violin = Violin({questionnaires.(categ_nm).(quest_nm).male(ok_males)},jPos_male,...
@@ -272,13 +286,34 @@ for iCateg = 1:n_categ
         female_violin = Violin({questionnaires.(categ_nm).(quest_nm).female(ok_females)},jPos_female,...
             'ViolinColor',{female_col});
         
-        % add p.value if significant
-        
-        
+        % add p.value indication if difference is significant        
+        [l_hdl, star_hdl] = add_pval_comparison(questionnaires.(categ_nm).(quest_nm).male,...
+            questionnaires.(categ_nm).(quest_nm).female,...
+            pval_tmp, jPos_male, jPos_female, '');
     end % questionnaire loop
-    ylabel('Scores');
+    switch categ_nm
+        case 'sleep'
+            ylabel('Time (min)');
+        case 'SES'
+            switch quest_nm
+                case 'money'
+                    yyaxis right;
+                    ylabel('Money (kCHF/year)');
+                otherwise
+                    ylabel('Scores');
+            end
+        otherwise
+            ylabel('Scores');
+    end
     xticks(1.5:2:n_quests*2);
     xticklabels(quest_names);
-    title(categ_nm);
+    switch categ_nm
+        case 'dominance_compet'
+            title('Dominance/Competitiveness');
+        case 'stress_anxiety'
+            title('Stress/Anxiety');
+        otherwise
+            title(categ_nm);
+    end
 end % loop over questionnaire categories
 % end % function
