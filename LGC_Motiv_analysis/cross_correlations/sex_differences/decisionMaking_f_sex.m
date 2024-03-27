@@ -18,23 +18,28 @@ function[choices, parameters, RT, deltaIP] = decisionMaking_f_sex(fig_disp)
 %
 % deltaIP: difference for indifference point between male and female
 
+%% display figure by default
+if ~exist('fig_disp','var') || isempty(fig_disp) || ~ismember(fig_disp,[0,1])
+    fig_disp = 1;
+end
+
 %% subject selection
 study_nm = 'study1';
 [male_CIDS, female_CIDS, male_NS, female_NS, condition] = subject_selection_per_sex;
 
 %% load variables of interest
 % load proportion of high-effort choices
-fig_disp = 0;
-[choice_hE_males] = choice_hE_proportion(study_nm, condition, male_CIDS, fig_disp);
-[choice_hE_females] = choice_hE_proportion(study_nm, condition, female_CIDS, fig_disp);
+fig_disp0 = 0;
+[choice_hE_males] = choice_hE_proportion(study_nm, condition, male_CIDS, fig_disp0);
+[choice_hE_females] = choice_hE_proportion(study_nm, condition, female_CIDS, fig_disp0);
 
 % load behavioral parameters
 [prm_males, mdlType, mdlN] = prm_extraction(study_nm, male_CIDS);
 [prm_females, ~, ~] = prm_extraction(study_nm, female_CIDS);
 
 % load RT
-[RT_summary_males] = RT_range(male_CIDS, condition, fig_disp);
-[RT_summary_females] = RT_range(female_CIDS, condition, fig_disp);
+[RT_summary_males] = RT_range(male_CIDS, condition, fig_disp0);
+[RT_summary_females] = RT_range(female_CIDS, condition, fig_disp0);
 
 % load indifference point
 [deltaIP_Ep_males,...
@@ -231,21 +236,23 @@ if fig_disp == 1
     female_violin = Violin({deltaIP_Ep_females(ok_Ep_females)},2,...
         'ViolinColor',{female_col});
     ok_Em_males = ~isnan(deltaIP_Em_males);
-    male_violin = Violin({deltaIP_Em_males(ok_Em_males)},1,...
+    male_violin = Violin({deltaIP_Em_males(ok_Em_males)},3,...
         'ViolinColor',{male_col});
     ok_Em_females = ~isnan(deltaIP_Em_females);
-    female_violin = Violin({deltaIP_Em_females(ok_Em_females)},2,...
+    female_violin = Violin({deltaIP_Em_females(ok_Em_females)},4,...
         'ViolinColor',{female_col});
 
     % add p.value indication if difference is significant
-    warning('ongoing')
     [l_hdl, star_hdl] = add_pval_comparison(deltaIP_Ep_males,...
         deltaIP_Ep_females,...
-        RT.(task_nm).pval, jPos_male, jPos_female, 'NS');
+        deltaIP.Ep.pval, 1, 2, 'NS');
+    [l_hdl, star_hdl] = add_pval_comparison(deltaIP_Em_males,...
+        deltaIP_Em_females,...
+        deltaIP.Em.pval, 3, 4, 'NS');
     ylim([0 100]);
-    ylabel('RT (s)');
-    xticks(1.5:2:nTasks*2);
-    xticklabels({'HE','HPE','HME'});
+    ylabel('δIP (CHF)');
+    xticks([1.5,3.5]);
+    xticklabels({'Ep','Em'});
     legend_size(pSize);
 end % figure
 
