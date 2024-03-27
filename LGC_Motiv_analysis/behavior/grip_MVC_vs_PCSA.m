@@ -2,13 +2,14 @@ function[study_nm, cond, subject_id, sub_males, sub_females,...
     MVC_all, PCSA_all,...
     MVC_m, PCSA_m,...
     MVC_f, PCSA_f,...
-    stats_all, stats_m, stats_f,...
-    b_all, b_m, b_f] = grip_MVC_vs_PCSA(dispFig)
+    pval_all, pval_m, pval_f,...
+    b_all, b_m, b_f, r_corr] = grip_MVC_vs_PCSA(dispFig)
 %[study_nm, cond, subject_id, sub_males, sub_females,...
 %     MVC_all, PCSA_all,...
 %     MVC_m, PCSA_m,...
 %     MVC_f, PCSA_f,...
-%     stats_all, stats_m, stats_f] = grip_MVC_vs_PCSA(dispFig)
+%     pval_all, pval_m, pval_f,...
+%     b_all, b_m, b_f, r_corr] = grip_MVC_vs_PCSA(dispFig)
 % grip_MVC_vs_PCSA.m will test how much the theoretical maximal voluntary
 % force inferred by measuring the forearm (PCSA) and the maximul voluntary
 % contraction (MVC) force performed by the subjects during calibration of
@@ -40,12 +41,15 @@ function[study_nm, cond, subject_id, sub_males, sub_females,...
 %
 % PCSA_f: maximum theoretical force for female subjects only
 %
-% stats_all: statistics for all subjects
-%
-% stats_m, stats_f: statistics for males (m) and females (f) only
+% pval_all, pval_m_, pval_f: p.value for correlation with all subjects,
+% male subjects and females respectively
 %
 % b_all, b_m, b_f: betas for the linear correlation for all, males (m) and
 % females (f)
+%
+% r_corr: structure with correlation coefficient for correlation between
+% theoretical Fmax and actual Fmax in all subjects, in males and in females
+% separately
 
 %% figure display
 if ~exist('dispFig','var') || isempty(dispFig)
@@ -114,18 +118,13 @@ end % subject loop
 
 %% perform correlation
 % all subjects
-[b_all,~,stats_all] = glmfit(PCSA_all, MVC_all, 'normal');
-PCSA_all_ascOrder = sort(PCSA_all);
-MVC_all_fit = glmval(b_all, PCSA_all_ascOrder, 'identity');
+[r_corr.all, b_all, pval_all, ~, PCSA_all_ascOrder, MVC_all_fit] = glm_package(PCSA_all, MVC_all,'normal');
+
 % males
-[b_m,~,stats_m] = glmfit(PCSA_m, MVC_m, 'normal');
-PCSA_m_ascOrder = sort(PCSA_m);
-MVC_m_fit = glmval(b_m, PCSA_m_ascOrder, 'identity');
+[r_corr.m, b_m, pval_m, ~, PCSA_m_ascOrder, MVC_m_fit] = glm_package(PCSA_m, MVC_m,'normal');
 
 % females
-[b_f,~,stats_f] = glmfit(PCSA_f, MVC_f, 'normal');
-PCSA_f_ascOrder = sort(PCSA_f);
-MVC_f_fit = glmval(b_all, PCSA_f_ascOrder, 'identity');
+[r_corr.f, b_f, pval_f, ~, PCSA_f_ascOrder, MVC_f_fit] = glm_package(PCSA_f, MVC_f,'normal');
 
 %% display result
 if dispFig == 1
@@ -149,6 +148,7 @@ if dispFig == 1
     fit_hdl.LineStyle = '--';
     xlabel('Theoretical maximal force (N)');
     ylabel('Calibrated force (N)');
+    place_r_and_pval(r_corr.all, pval_all(2));
     legend_size(pSize);
     
     % split by gender

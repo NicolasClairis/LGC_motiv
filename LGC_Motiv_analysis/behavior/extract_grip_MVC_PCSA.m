@@ -1,5 +1,5 @@
-function[MVC, PCSA] = extract_grip_MVC_PCSA(study_nm, subject_id, NS)
-% [MVC, PCSA] = extract_grip_MVC_PCSA(study_nm, subject_id, NS)
+function[MVC, predictedF] = extract_grip_MVC_PCSA(study_nm, subject_id, NS)
+% [MVC, predictedF] = extract_grip_MVC_PCSA(study_nm, subject_id, NS)
 % extract_grip_MVC_PCSA will extract the maximum voluntary contraction
 % (MVC) force and the Physiological Cross-sectional area (PCSA)
 %
@@ -13,8 +13,8 @@ function[MVC, PCSA] = extract_grip_MVC_PCSA(study_nm, subject_id, NS)
 % OUTPUTS
 % MVC: maximum voluntary contraction force (in Newtons)
 %
-% PCSA: physiological cros-sectional area (PCSA) giving the estimated
-% theoretical Fmax
+% predictedF: theoretical Fmax based on the physiological cros-sectional 
+% area (PCSA) measure of the forearm 
 
 %% working directory
 list_pcs = {'Lab','Home'};
@@ -37,7 +37,7 @@ excelReadInfosFile = readtable([gitPath,study_nm,filesep,'summary_participants_i
     'Sheet','all_subjects_no_pilots');
 
 %% extract data
-[MVC, PCSA] = deal(NaN(1,NS));
+[MVC, predictedF] = deal(NaN(1,NS));
 for iS = 1:NS
     sub_nm = subject_id{iS};
     
@@ -52,7 +52,7 @@ for iS = 1:NS
     pli_p = excelReadInfosFile.PliCutan_Post_rieur_mm_(sub_info_idx);
     circ = excelReadInfosFile.Circonf_renceDeL_avant_bras_mm_(sub_info_idx);
     armLength = excelReadInfosFile.LongeurDeL_avant_bras_mm_(sub_info_idx);
-    PCSA(iS) = Emax_morpho(pli_a, pli_p, circ, armLength);
+    predictedF(iS) = Emax_morpho(pli_a, pli_p, circ, armLength);
 end % subject loop
 
 end % function
