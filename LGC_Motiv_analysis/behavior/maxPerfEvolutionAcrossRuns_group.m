@@ -1,5 +1,5 @@
-function[maxPerf, pval] = maxPerfEvolutionAcrossRuns_group(computerRoot, figGroupDisp, figIndivDisp)
-% [maxPerf, pval] = maxPerfEvolutionAcrossRuns_group(computerRoot, figGroupDisp, figIndivDisp)
+function[maxPerf, pval] = maxPerfEvolutionAcrossRuns_group(computerRoot, figGroupDisp, figIndivDisp, study_nm, condition, subject_id, NS)
+% [maxPerf, pval] = maxPerfEvolutionAcrossRuns_group(computerRoot, figGroupDisp, figIndivDisp, study_nm, condition, subject_id, NS)
 % maxPerfEvolutionAcrossRuns_group will look at the average (across subjects)
 % maximal performance performed before and after each run.
 %
@@ -14,6 +14,14 @@ function[maxPerf, pval] = maxPerfEvolutionAcrossRuns_group(computerRoot, figGrou
 %
 % figIndivDisp: display individual figure (1) or not (0)
 %
+% study_nm: study name ('study1' by default)
+%
+% condition: condition for subjects to include
+% 
+% subject_id: subject list (asked if not filled)
+% 
+% NS: number of subjects (can be left empty)
+%
 % OUTPUTS
 % maxPerf: structure with maximal performance individually and averaged
 %
@@ -25,7 +33,22 @@ if ~exist('computerRoot','var') || isempty(computerRoot)
 end
 
 %% subject selection
-[study_nm, ~, ~, subject_id, NS] = sub_id;
+% study name
+if ~exist('study_nm','var') || isempty(study_nm)
+    study_nm = 'study1';
+end
+% condition
+if ~exist('condition','var') || isempty(condition)
+    condition = subject_condition;
+end
+% list of subjects
+if ~exist('subject_id','var') || isempty(subject_id)
+    [subject_id, NS] = LGCM_subject_selection(study_nm, condition);
+else
+    if ~exist('NS','var') || isempty(NS)
+        NS = length(subject_id);
+    end
+end
 
 %% working directories
 studyBehaviorFolder = [computerRoot, filesep, study_nm, filesep];
