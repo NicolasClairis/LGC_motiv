@@ -1,5 +1,5 @@
-function[choices, parameters, RT, deltaIP] = decisionMaking_f_sex(fig_disp)
-% [choices, parameters, RT, deltaIP] = decisionMaking_f_sex(fig_disp)
+function[choices, parameters, RT, deltaIP] = decisionMaking_f_sex(fig_disp, rmv_outliers_yn)
+% [choices, parameters, RT, deltaIP] = decisionMaking_f_sex(fig_disp, rmv_outliers_yn)
 % decisionMaking_f_sex will compare all the variables related to the
 % decision-making process of the experiment between males and females.
 % Variables include the total proportion of choices (HE), the proportion of
@@ -8,6 +8,9 @@ function[choices, parameters, RT, deltaIP] = decisionMaking_f_sex(fig_disp)
 %
 % INPUTS
 % fig_disp: display figures? (1) yes (0) no
+%
+% rmv_outliers_yn: remove median +/- 3*SD outliers yes (1) or no (0)? Yes by
+% default
 %
 % OUTPUTS
 % choices: structure comparing choice-related variables between male and female
@@ -18,9 +21,14 @@ function[choices, parameters, RT, deltaIP] = decisionMaking_f_sex(fig_disp)
 %
 % deltaIP: difference for indifference point between male and female
 
-%% display figure by default
+%% define inputs by default
+% display figure by default
 if ~exist('fig_disp','var') || isempty(fig_disp) || ~ismember(fig_disp,[0,1])
     fig_disp = 1;
+end
+% remove outliers by default
+if ~exist('rmv_outliers_yn','var') || isempty(rmv_outliers_yn) || ~ismember(rmv_outliers_yn,[0,1])
+    rmv_outliers_yn = 1;
 end
 
 %% subject selection
@@ -34,6 +42,9 @@ fig_disp0 = 0;
 [choice_hE_females] = choice_hE_proportion(study_nm, condition, female_CIDS, fig_disp0);
 
 % load behavioral parameters
+prm_names = {'kR','kP','kEp','kEm',...
+    'kBiasM','kFp','kLm'};
+nPrm = length(prm_names);
 [prm_males, mdlType, mdlN] = prm_extraction(study_nm, male_CIDS);
 [prm_females, ~, ~] = prm_extraction(study_nm, female_CIDS);
 
@@ -46,6 +57,44 @@ fig_disp0 = 0;
     deltaIP_Em_males] = extract_IP(male_CIDS, male_NS);
 [deltaIP_Ep_females,...
     deltaIP_Em_females] = extract_IP(female_CIDS, female_NS);
+
+%% remove outliers
+if rmv_outliers_yn == 1
+    % filter choices
+    % for males
+    [~,~,choice_hE_males.EpEm] = rmv_outliers_3sd(choice_hE_males.EpEm);
+    [~,~,choice_hE_males.Ep] = rmv_outliers_3sd(choice_hE_males.Ep);
+    [~,~,choice_hE_males.Em] = rmv_outliers_3sd(choice_hE_males.Em);
+    % same for females
+    [~,~,choice_hE_females.EpEm] = rmv_outliers_3sd(choice_hE_females.EpEm);
+    [~,~,choice_hE_females.Ep] = rmv_outliers_3sd(choice_hE_females.Ep);
+    [~,~,choice_hE_females.Em] = rmv_outliers_3sd(choice_hE_females.Em);
+    
+    % filter parameters
+    for iPrm = 1:nPrm
+        prm_nm = prm_names{iPrm};
+        [~,~,prm_males.(prm_nm)] = rmv_outliers_3sd(prm_males.(prm_nm));
+        [~,~,prm_females.(prm_nm)] = rmv_outliers_3sd(prm_females.(prm_nm));
+    end
+    
+    % filter RT
+    % males
+    [~,~,RT_summary_males.EpEm.mean_RT.allSubs.choice] = rmv_outliers_3sd(RT_summary_males.EpEm.mean_RT.allSubs.choice);
+    [~,~,RT_summary_males.Ep.mean_RT.allSubs.choice] = rmv_outliers_3sd(RT_summary_males.Ep.mean_RT.allSubs.choice);
+    [~,~,RT_summary_males.Em.mean_RT.allSubs.choice] = rmv_outliers_3sd(RT_summary_males.Em.mean_RT.allSubs.choice);
+    % females
+    [~,~,RT_summary_females.EpEm.mean_RT.allSubs.choice] = rmv_outliers_3sd(RT_summary_females.EpEm.mean_RT.allSubs.choice);
+    [~,~,RT_summary_females.Ep.mean_RT.allSubs.choice] = rmv_outliers_3sd(RT_summary_females.Ep.mean_RT.allSubs.choice);
+    [~,~,RT_summary_females.Em.mean_RT.allSubs.choice] = rmv_outliers_3sd(RT_summary_females.Em.mean_RT.allSubs.choice);
+    
+    % indifference point
+    % males
+    [~,~,deltaIP_Ep_males] = rmv_outliers_3sd(deltaIP_Ep_males);
+    [~,~,deltaIP_Em_males] = rmv_outliers_3sd(deltaIP_Em_males);
+    % females
+    [~,~,deltaIP_Ep_females] = rmv_outliers_3sd(deltaIP_Ep_females);
+    [~,~,deltaIP_Em_females] = rmv_outliers_3sd(deltaIP_Em_females);
+end % remove outliers
 
 %% compare data
 % HE choices
@@ -69,9 +118,6 @@ fig_disp0 = 0;
 
 
 % behavioral parameters
-prm_names = {'kR','kP','kEp','kEm',...
-    'kBiasM','kFp','kLm','kR_div_kP'};
-nPrm = length(prm_names);
 for iP = 1:nPrm
     prm_nm = prm_names{iP};
     [~,parameters.(prm_nm).pval] = ttest2(prm_males.(prm_nm),...
@@ -191,7 +237,6 @@ if fig_disp == 1
         [l_hdl, star_hdl] = add_pval_comparison(prm_males.(prm_nm),...
             prm_females.(prm_nm),...
             parameters.(prm_nm).pval, jPos_male, jPos_female, 'NS');
-        ylim([0 100]);
         ylabel('Parameters');
         xticks(1.5:2:nPrm*2);
         xticklabels(prm_names);
