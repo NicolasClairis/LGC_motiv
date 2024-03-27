@@ -1,6 +1,8 @@
+function[] = taskPerf_f_sex()
 % perf_f_sex will compare different variables related to performance
 % (maximal performance during calibration, average RT, difference in
 % accuracy, overshoot, etc.) between males and females
+
 
 %% subject selection
 study_nm = 'study1';
@@ -19,3 +21,5 @@ study_nm = 'study1';
 [~,pval.MVC] = ttest2(male_MVC, female_MVC);
 [~,pval.PCSA] = ttest2(male_PCSA, female_PCSA);
 [~,pval.NMP] = ttest2(male_NMP, female_NMP);
+
+end % function
