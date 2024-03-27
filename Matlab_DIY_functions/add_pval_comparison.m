@@ -78,9 +78,9 @@ else % no significant difference
             pval_xpos = mean([x1_pos x2_pos]);
             
             %% add stars on top of the trait
-            pval_Ypos = y_val + size_y/20;
+            pval_Ypos = y_val + size_y/80;
             star_hdl = text(pval_xpos, pval_Ypos, 'NS',...
-            'HorizontalAlignment','center','VerticalAlignment', 'top', 'FontSize', ftSize);
+            'HorizontalAlignment','center','VerticalAlignment', 'bottom', 'FontSize', ftSize);
     end
     
 end % significant p.value
