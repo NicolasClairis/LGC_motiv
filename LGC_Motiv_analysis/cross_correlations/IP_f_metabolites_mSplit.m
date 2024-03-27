@@ -10,14 +10,7 @@ condition = subject_condition();
 [subject_id, NS] = LGCM_subject_selection('study1', condition);
 
 %% extract indifference points
-[deltaIP.Ep, deltaIP.Em] = deal(NaN(1,NS));
-for iS = 1:NS
-   sub_nm = subject_id{iS};
-   subFolder = [studyFolder,filesep,'CID',sub_nm,filesep,'behavior',filesep];
-       IPdata_tmp = getfield(load([subFolder,'delta_IP_CID',sub_nm,'.mat'],'IP_variables'),'IP_variables');
-       deltaIP.Ep(iS) = IPdata_tmp.physicalDeltaIP;
-       deltaIP.Em(iS) = IPdata_tmp.mentalDeltaIP;
-end
+[deltaIP.Ep, deltaIP.Em] = extract_IP(subject_id, NS);
 %% define metabolite and ROI you want to focus on and extract subjects accordingly
 [low_met_subs, high_met_subs, metabolite_nm] = medSplit_metabolites(study_nm, subject_id);
 
