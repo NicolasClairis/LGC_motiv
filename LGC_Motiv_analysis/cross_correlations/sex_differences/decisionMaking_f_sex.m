@@ -163,7 +163,7 @@ if fig_disp == 1
         [l_hdl, star_hdl] = add_pval_comparison(choice_hE_males.(task_nm),...
             choice_hE_females.(task_nm),...
             pval_tmp, jPos_male, jPos_female, 'NS');
-        ylim([0 100]);
+        ylim([0 120]);
         ylabel('Choices (%)');
         xticks(1.5:2:nTasks*2);
         xticklabels({'HE','HPE','HME'});
@@ -194,7 +194,7 @@ if fig_disp == 1
         ylim([0 100]);
         ylabel('Parameters');
         xticks(1.5:2:nPrm*2);
-        xticklabels({prm_names});
+        xticklabels(prm_names);
         legend_size(pSize);
     end % task loop
 
@@ -218,7 +218,6 @@ if fig_disp == 1
         [l_hdl, star_hdl] = add_pval_comparison(RT_summary_males.(task_nm).mean_RT.allSubs.choice,...
             RT_summary_females.(task_nm).mean_RT.allSubs.choice,...
             RT.(task_nm).pval, jPos_male, jPos_female, 'NS');
-        ylim([0 100]);
         ylabel('RT (s)');
         xticks(1.5:2:nTasks*2);
         xticklabels({'HE','HPE','HME'});
@@ -249,7 +248,6 @@ if fig_disp == 1
     [l_hdl, star_hdl] = add_pval_comparison(deltaIP_Em_males,...
         deltaIP_Em_females,...
         deltaIP.Em.pval, 3, 4, 'NS');
-    ylim([0 100]);
     ylabel('δIP (CHF)');
     xticks([1.5,3.5]);
     xticklabels({'Ep','Em'});
