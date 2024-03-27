@@ -17,7 +17,7 @@ function[mean_deltaIP_perSub_Ep, mean_deltaIP_perSub_Em] = extract_IP(subject_id
 
 %% working directory
 study_nm = 'study1';
-dataRoot = fullfile('E:',study_nm);
+dataRoot = [fullfile('E:',study_nm),filesep];
 
 %% initialize variables
 [mean_deltaIP_perSub_Ep, mean_deltaIP_perSub_Em] = deal(NaN(1,NS));
