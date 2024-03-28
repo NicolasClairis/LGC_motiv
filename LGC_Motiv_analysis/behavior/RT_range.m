@@ -53,7 +53,7 @@ tasks = {'EpEm','Ep','Em'};
 nTasks = length(tasks);
 tasks_bis = {'Ep','Em'};
 nTasks_bis = length(tasks_bis);
-periods = {'choice','perf'};
+periods = {'choice','perf_latency','perf_speed'};
 nPeriods = length(periods);
 for iTask = 1:nTasks
     task_nm = tasks{iTask};
@@ -90,7 +90,8 @@ for iS = 1:NS
         nSubjectTotalTrials.(task_id) = nTrialsPerRun*nRuns.(task_id);
         % prepare data to be extracted across runs
         [RT_choice_perTrial_tmp.(task_id),...
-            RT_perf_perTrial_tmp.(task_id)] = deal(NaN(nSubjectTotalTrials.(task_id), 1));
+            RT_perf_latency_perTrial_tmp.(task_id),...
+            RT_perf_speed_perTrial_tmp.(task_id)] = deal(NaN(nSubjectTotalTrials.(task_id), 1));
         
         jRun = 0;
         for iRun = 1:nTotalRuns
@@ -110,11 +111,20 @@ for iS = 1:NS
                 %% load RT during perf
                 switch task_id
                     case 'Ep'
-                        latency_tmp = extract_grip_force(subBehaviorFolder, sub_nm, run_nm);
-                        RT_perf_perTrial_tmp.(task_id)(runTrials_idx) = latency_tmp.allTrials;
+                        [latency_tmp, ~, ~, ~,...
+                            ~, ~, ~, perf_duration_tmp] = extract_grip_force(subBehaviorFolder, sub_nm, run_nm);
+                        RT_perf_latency_perTrial_tmp.(task_id)(runTrials_idx) = latency_tmp.allTrials;
+                        RT_perf_speed_perTrial_tmp.(task_id)(runTrials_idx) = perf_duration_tmp.allTrials;
                     case 'Em'
-                        [~, ~, ~, RT_avg] = extract_mental_perf(subBehaviorFolder, sub_nm, run_nm);
-                        RT_perf_perTrial_tmp.(task_id)(runTrials_idx) = RT_avg.allTrials;
+                        [~, ~, ~, RT_avg,...
+                            ~,...
+                            ~,...
+                            ~,...
+                            ~,...
+                            ~,...
+                            ~, latency_tmp] = extract_mental_perf(subBehaviorFolder, sub_nm, run_nm);
+                        RT_perf_latency_perTrial_tmp.(task_id)(runTrials_idx) = latency_tmp.allTrials;
+                        RT_perf_speed_perTrial_tmp.(task_id)(runTrials_idx) = RT_avg.allTrials;
                 end
             end % run to include
         end % run loop
@@ -127,12 +137,21 @@ for iS = 1:NS
         RT_summary.(task_id).sd_RT.allSubs.choice(iS) = std(RT_choice_perTrial_tmp.(task_id),[],1,'omitnan');
         RT_summary.(task_id).min_RT.allSubs.choice(iS) = min(RT_choice_perTrial_tmp.(task_id),[],1,'omitnan');
         RT_summary.(task_id).max_RT.allSubs.choice(iS) = max(RT_choice_perTrial_tmp.(task_id),[],1,'omitnan');
-        % perf RT
-        RT_summary.(task_id).mean_RT.allSubs.perf(iS) = mean(RT_perf_perTrial_tmp.(task_id),1,'omitnan');
-        RT_summary.(task_id).median_RT.allSubs.perf(iS) = median(RT_perf_perTrial_tmp.(task_id),1,'omitnan');
-        RT_summary.(task_id).sd_RT.allSubs.perf(iS) = std(RT_perf_perTrial_tmp.(task_id),[],1,'omitnan');
-        RT_summary.(task_id).min_RT.allSubs.perf(iS) = min(RT_perf_perTrial_tmp.(task_id),[],1,'omitnan');
-        RT_summary.(task_id).max_RT.allSubs.perf(iS) = max(RT_perf_perTrial_tmp.(task_id),[],1,'omitnan');
+        % performance latency (physical: start squeezing; mental: start
+        % answering to first digit)
+        RT_summary.(task_id).mean_RT.allSubs.perf_latency(iS) = mean(RT_perf_latency_perTrial_tmp.(task_id),1,'omitnan');
+        RT_summary.(task_id).median_RT.allSubs.perf_latency(iS) = median(RT_perf_latency_perTrial_tmp.(task_id),1,'omitnan');
+        RT_summary.(task_id).sd_RT.allSubs.perf_latency(iS) = std(RT_perf_latency_perTrial_tmp.(task_id),[],1,'omitnan');
+        RT_summary.(task_id).min_RT.allSubs.perf_latency(iS) = min(RT_perf_latency_perTrial_tmp.(task_id),[],1,'omitnan');
+        RT_summary.(task_id).max_RT.allSubs.perf_latency(iS) = max(RT_perf_latency_perTrial_tmp.(task_id),[],1,'omitnan');
+        % performance speed
+        % physical: squeeze duration (start to end of performance);
+        % mental: average RT (except for 2 first digits)
+        RT_summary.(task_id).mean_RT.allSubs.perf_speed(iS) = mean(RT_perf_speed_perTrial_tmp.(task_id),1,'omitnan');
+        RT_summary.(task_id).median_RT.allSubs.perf_speed(iS) = median(RT_perf_speed_perTrial_tmp.(task_id),1,'omitnan');
+        RT_summary.(task_id).sd_RT.allSubs.perf_speed(iS) = std(RT_perf_speed_perTrial_tmp.(task_id),[],1,'omitnan');
+        RT_summary.(task_id).min_RT.allSubs.perf_speed(iS) = min(RT_perf_speed_perTrial_tmp.(task_id),[],1,'omitnan');
+        RT_summary.(task_id).max_RT.allSubs.perf_speed(iS) = max(RT_perf_speed_perTrial_tmp.(task_id),[],1,'omitnan');
     end % task loop
     
     % average RT across the two tasks
@@ -142,18 +161,25 @@ for iS = 1:NS
     RT_summary.EpEm.sd_RT.allSubs.choice(iS) = std([RT_choice_perTrial_tmp.Ep; RT_choice_perTrial_tmp.Em],[],1,'omitnan');
     RT_summary.EpEm.min_RT.allSubs.choice(iS) = min([RT_choice_perTrial_tmp.Ep; RT_choice_perTrial_tmp.Em],[],1,'omitnan');
     RT_summary.EpEm.max_RT.allSubs.choice(iS) = max([RT_choice_perTrial_tmp.Ep; RT_choice_perTrial_tmp.Em],[],1,'omitnan');
-    % perf RT
-    RT_summary.EpEm.mean_RT.allSubs.perf(iS) = mean([RT_perf_perTrial_tmp.Ep; RT_perf_perTrial_tmp.Em],1,'omitnan');
-    RT_summary.EpEm.median_RT.allSubs.perf(iS) = median([RT_perf_perTrial_tmp.Ep; RT_perf_perTrial_tmp.Em],1,'omitnan');
-    RT_summary.EpEm.sd_RT.allSubs.perf(iS) = std([RT_perf_perTrial_tmp.Ep; RT_perf_perTrial_tmp.Em],[],1,'omitnan');
-    RT_summary.EpEm.min_RT.allSubs.perf(iS) = min([RT_perf_perTrial_tmp.Ep; RT_perf_perTrial_tmp.Em],[],1,'omitnan');
-    RT_summary.EpEm.max_RT.allSubs.perf(iS) = max([RT_perf_perTrial_tmp.Ep; RT_perf_perTrial_tmp.Em],[],1,'omitnan');
+    % perf latency
+    RT_summary.EpEm.mean_RT.allSubs.perf_latency(iS) = mean([RT_perf_latency_perTrial_tmp.Ep; RT_perf_latency_perTrial_tmp.Em],1,'omitnan');
+    RT_summary.EpEm.median_RT.allSubs.perf_latency(iS) = median([RT_perf_latency_perTrial_tmp.Ep; RT_perf_latency_perTrial_tmp.Em],1,'omitnan');
+    RT_summary.EpEm.sd_RT.allSubs.perf_latency(iS) = std([RT_perf_latency_perTrial_tmp.Ep; RT_perf_latency_perTrial_tmp.Em],[],1,'omitnan');
+    RT_summary.EpEm.min_RT.allSubs.perf_latency(iS) = min([RT_perf_latency_perTrial_tmp.Ep; RT_perf_latency_perTrial_tmp.Em],[],1,'omitnan');
+    RT_summary.EpEm.max_RT.allSubs.perf_latency(iS) = max([RT_perf_latency_perTrial_tmp.Ep; RT_perf_latency_perTrial_tmp.Em],[],1,'omitnan');
+    % perf speed
+    RT_summary.EpEm.mean_RT.allSubs.perf_speed(iS) = mean([RT_perf_speed_perTrial_tmp.Ep; RT_perf_speed_perTrial_tmp.Em],1,'omitnan');
+    RT_summary.EpEm.median_RT.allSubs.perf_speed(iS) = median([RT_perf_speed_perTrial_tmp.Ep; RT_perf_speed_perTrial_tmp.Em],1,'omitnan');
+    RT_summary.EpEm.sd_RT.allSubs.perf_speed(iS) = std([RT_perf_speed_perTrial_tmp.Ep; RT_perf_speed_perTrial_tmp.Em],[],1,'omitnan');
+    RT_summary.EpEm.min_RT.allSubs.perf_speed(iS) = min([RT_perf_speed_perTrial_tmp.Ep; RT_perf_speed_perTrial_tmp.Em],[],1,'omitnan');
+    RT_summary.EpEm.max_RT.allSubs.perf_speed(iS) = max([RT_perf_speed_perTrial_tmp.Ep; RT_perf_speed_perTrial_tmp.Em],[],1,'omitnan');
 end % subject loop
 
 %% average the RT across trials and runs within each subject (for
 % each task separately)
 if fig_disp == 1
-    fig;
+    fig1_latency = fig;
+    fig2_speed = fig;
     pSize = 30;
 end
 for iT = 1:nTasks
@@ -164,20 +190,31 @@ for iT = 1:nTasks
     RT_summary.(task_nm).sd_RT.meanSubs.choice = std(RT_summary.(task_nm).sd_RT.allSubs.choice,[],2,'omitnan');
     RT_summary.(task_nm).min_RT.meanSubs.choice = min(RT_summary.(task_nm).min_RT.allSubs.choice,[],2,'omitnan');
     RT_summary.(task_nm).max_RT.meanSubs.choice = max(RT_summary.(task_nm).max_RT.allSubs.choice,[],2,'omitnan');
-    % perf RT
-    RT_summary.(task_nm).mean_RT.meanSubs.perf = mean(RT_summary.(task_nm).mean_RT.allSubs.perf,2,'omitnan');
-    RT_summary.(task_nm).median_RT.meanSubs.perf = median(RT_summary.(task_nm).median_RT.allSubs.perf,2,'omitnan');
-    RT_summary.(task_nm).sd_RT.meanSubs.perf = std(RT_summary.(task_nm).sd_RT.allSubs.perf,[],2,'omitnan');
-    RT_summary.(task_nm).min_RT.meanSubs.perf = min(RT_summary.(task_nm).min_RT.allSubs.perf,[],2,'omitnan');
-    RT_summary.(task_nm).max_RT.meanSubs.perf = max(RT_summary.(task_nm).max_RT.allSubs.perf,[],2,'omitnan');
+    % perf latency
+    RT_summary.(task_nm).mean_RT.meanSubs.perf_latency = mean(RT_summary.(task_nm).mean_RT.allSubs.perf_latency,2,'omitnan');
+    RT_summary.(task_nm).median_RT.meanSubs.perf_latency = median(RT_summary.(task_nm).median_RT.allSubs.perf_latency,2,'omitnan');
+    RT_summary.(task_nm).sd_RT.meanSubs.perf_latency = std(RT_summary.(task_nm).sd_RT.allSubs.perf_latency,[],2,'omitnan');
+    RT_summary.(task_nm).min_RT.meanSubs.perf_latency = min(RT_summary.(task_nm).min_RT.allSubs.perf_latency,[],2,'omitnan');
+    RT_summary.(task_nm).max_RT.meanSubs.perf_latency = max(RT_summary.(task_nm).max_RT.allSubs.perf_latency,[],2,'omitnan');
+    % perf speed
+    RT_summary.(task_nm).mean_RT.meanSubs.perf_speed = mean(RT_summary.(task_nm).mean_RT.allSubs.perf_speed,2,'omitnan');
+    RT_summary.(task_nm).median_RT.meanSubs.perf_speed = median(RT_summary.(task_nm).median_RT.allSubs.perf_speed,2,'omitnan');
+    RT_summary.(task_nm).sd_RT.meanSubs.perf_speed = std(RT_summary.(task_nm).sd_RT.allSubs.perf_speed,[],2,'omitnan');
+    RT_summary.(task_nm).min_RT.meanSubs.perf_speed = min(RT_summary.(task_nm).min_RT.allSubs.perf_speed,[],2,'omitnan');
+    RT_summary.(task_nm).max_RT.meanSubs.perf_speed = max(RT_summary.(task_nm).max_RT.allSubs.perf_speed,[],2,'omitnan');
     
     %% test correlation between choice and perf RT
-    [RT_summary.(task_nm).rho,...
-        RT_summary.(task_nm).pval.corr] = corr(RT_summary.(task_nm).mean_RT.allSubs.perf', RT_summary.(task_nm).mean_RT.allSubs.choice');
-    [~, RT_summary.(task_nm).betas, RT_summary.(task_nm).pval.glm, ~, RT_perf_tmp, RT_choice_tmp] = glm_package(RT_summary.(task_nm).mean_RT.allSubs.perf',...
+    %% correlation between choice RT and performance latency RT
+    [RT_summary.(task_nm).RT_choice_f_latency.rho,...
+        RT_summary.(task_nm).RT_choice_f_latency.pval.corr] = corr(RT_summary.(task_nm).mean_RT.allSubs.perf_latency',...
+        RT_summary.(task_nm).mean_RT.allSubs.choice');
+    [~, RT_summary.(task_nm).RT_choice_f_latency.betas,...
+        RT_summary.(task_nm).RT_choice_f_latency.pval.glm, ~,...
+        RT_perf_latency_tmp, RT_choice_tmp] = glm_package(RT_summary.(task_nm).mean_RT.allSubs.perf_latency',...
         RT_summary.(task_nm).mean_RT.allSubs.choice', 'normal', 'on');
     
     if fig_disp == 1
+        figure(fig1_latency);
         subplot(1,nTasks,iT);
         switch task_nm
             case 'EpEm'
@@ -188,17 +225,49 @@ for iT = 1:nTasks
                 title('Mental');
         end
         hold on;
-        scat_hdl = scatter(RT_summary.(task_nm).mean_RT.allSubs.perf',...
+        scat_hdl = scatter(RT_summary.(task_nm).mean_RT.allSubs.perf_latency',...
             RT_summary.(task_nm).mean_RT.allSubs.choice');
         scat_hdl_upgrade(scat_hdl);
-        fit_hdl = plot(RT_perf_tmp, RT_choice_tmp);
+        fit_hdl = plot(RT_perf_latency_tmp, RT_choice_tmp);
         fit_hdl_upgrade(fit_hdl);
         
-        legend_size(pSize);
-        xlabel('RT performance (s)');
+        xlabel('performance latency (s)');
         ylabel('RT choice (s)');
-        place_r_and_pval(RT_summary.(task_nm).rho,...
-            RT_summary.(task_nm).pval.corr);
+        place_r_and_pval(RT_summary.(task_nm).RT_choice_f_latency.rho,...
+            RT_summary.(task_nm).RT_choice_f_latency.pval.corr);
+    end % display figure
+    
+    %% correlation between choice RT and performance speed
+    [RT_summary.(task_nm).RT_choice_f_speed.rho,...
+        RT_summary.(task_nm).RT_choice_f_speed.pval.corr] = corr(RT_summary.(task_nm).mean_RT.allSubs.perf_speed',...
+        RT_summary.(task_nm).mean_RT.allSubs.choice');
+    [~, RT_summary.(task_nm).RT_choice_f_speed.betas,...
+        RT_summary.(task_nm).RT_choice_f_speed.pval.glm, ~,...
+        RT_perf_speed_tmp, RT_choice_tmp] = glm_package(RT_summary.(task_nm).mean_RT.allSubs.perf_speed',...
+        RT_summary.(task_nm).mean_RT.allSubs.choice', 'normal', 'on');
+    
+    if fig_disp == 1
+        figure(fig2_speed);
+        subplot(1,nTasks,iT);
+        switch task_nm
+            case 'EpEm'
+                title('General');
+            case 'Ep'
+                title('Physical');
+            case 'Em'
+                title('Mental');
+        end
+        hold on;
+        scat_hdl = scatter(RT_summary.(task_nm).mean_RT.allSubs.perf_speed',...
+            RT_summary.(task_nm).mean_RT.allSubs.choice');
+        scat_hdl_upgrade(scat_hdl);
+        fit_hdl = plot(RT_perf_speed_tmp, RT_choice_tmp);
+        fit_hdl_upgrade(fit_hdl);
+        
+        xlabel('performance speed (s)');
+        ylabel('RT choice (s)');
+        place_r_and_pval(RT_summary.(task_nm).RT_choice_f_speed.rho,...
+            RT_summary.(task_nm).RT_choice_f_speed.pval.corr);
     end % display figure
 end % loop over physical/mental tasks
 end % function

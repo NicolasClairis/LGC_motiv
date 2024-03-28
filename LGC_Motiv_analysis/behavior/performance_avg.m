@@ -22,10 +22,13 @@ if ~exist('condition','var') || isempty(condition)
 end
 if ~exist('subject_id','var') || isempty(subject_id)
     [subject_id, NS] = LGCM_subject_selection(study_nm, condition);
+else
+    NS = length(subject_id);
 end
 
 %% working directory
-pcRoot = LGCM_root_paths;
+% pcRoot = LGCM_root_paths;
+pcRoot = 'E:\';
 study_path = [pcRoot, study_nm, filesep];
 
 %% initialize variables of interest
@@ -35,7 +38,8 @@ n_maxRunsPerTask = 2;
 [perf_avg.Ep.avg_perSub_perRun,...
     perf_avg.Em.avg_perSub_perRun] = deal(NaN(n_maxRunsPerTask, NS));
 [perf_avg.Ep.avg_perSub,...
-    perf_avg.Em.avg_perSub] = deal(NaN(1, NS));
+    perf_avg.Em.avg_perSub,...
+    perf_avg.EpEm.avg_perSub] = deal(NaN(1, NS));
 
 %% loop through subjects
 for iS = 1:NS
@@ -63,16 +67,27 @@ for iS = 1:NS
         perf_avg.(task_run_id).avg_perSub_perRun(jRun, iS) = mean(perf_run_tmp,'omitnan');
     end % run loop
 
+    % average across runs
     for iTask = 1:nTasks
         task_nm = task_names{iTask};
         perf_avg.(task_nm).avg_perSub(iS) = mean(perf_avg.(task_nm).avg_perSub_perRun(:,iS),1,'omitnan');
     end
+    
+    % average performance across both tasks
+    perf_avg.EpEm.avg_perSub(iS) = mean([perf_avg.Ep.avg_perSub_perRun(:,iS);...
+        perf_avg.Em.avg_perSub_perRun(:,iS)],1,'omitnan');
 end % subject loop
 
+%% average across subjects
+% average per task
 for iTask = 1:nTasks
     task_nm = task_names{iTask};
     [perf_avg.(task_nm).avg,...
         perf_avg.(task_nm).sem,...
         perf_avg.(task_nm).sd] = mean_sem_sd(perf_avg.(task_nm).avg_perSub,2);
 end
+% average across both tasks and subjects
+[perf_avg.EpEm.avg,...
+        perf_avg.EpEm.sem,...
+        perf_avg.EpEm.sd] = mean_sem_sd(perf_avg.EpEm.avg_perSub,2);
 end % function
