@@ -53,7 +53,7 @@ if exist('subject_id','var') && ~isempty(subject_id)
     % apply filter on output
     IL_data.CID = IL_data.CID(sub_to_include);
     IL_data.IL1b = IL_data.IL1b(sub_to_include);
-    IL_data.IL6 = IL_data.IL6(:,sub_to_include);
-    IL_data.IL18 = IL_data.IL18(:,sub_to_include);
+    IL_data.IL6 = IL_data.IL6(sub_to_include);
+    IL_data.IL18 = IL_data.IL18(sub_to_include);
 end % subject filter
 end % function
