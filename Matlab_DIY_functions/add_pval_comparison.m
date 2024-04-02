@@ -4,9 +4,9 @@ function[l_hdl, star_hdl] = add_pval_comparison(x1_vals, x2_vals, pval, x1_pos, 
 % scatter plots which are significantly different
 %
 % INPUTS
-% x1_vals: values for x1 variable
+% x1_vals: 1*nx1 vector with values for x1 variable 
 %
-% x2_vals: values for x2 variable
+% x2_vals: 1*nx2 vector with values for x2 variable
 %
 % pval: p.value for the comparison between x1 and x2
 %
