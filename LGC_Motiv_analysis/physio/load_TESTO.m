@@ -10,11 +10,14 @@ function[TESTO_data] = load_TESTO(study_nm, subject_id)
 % OUTPUTS
 % TESTO_data: structure with testosterone data with the following subfields:
 %   .CID: subject identification number (NS subjects in total)
-%   .TESTO: 4*NS matrix with each timepoint for each subject
+%   .TESTO: 4*NS matrix with each timepoint for each subject (in pg/mL)
 %   .AUCg: 1xNS vector with area under the curve total testosterone during the
 %   experiment
 %   .timings: 4*NS matrix with timing of each timepoint for each subject
 %
+% Note: concentrations can be converted in nmol/L by multiplying the values
+% by the 3467.2 conversion factor (see https://unitslab.com/fr/node/136)
+% 
 % N. Clairis - april 2023
 
 %% working directories

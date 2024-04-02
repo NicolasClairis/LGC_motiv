@@ -10,10 +10,13 @@ function[CORT_data] = load_CORT(study_nm, subject_id)
 % OUTPUTS
 % CORT_data: structure with cortisol data with the following subfields:
 %   .CID: subject identification number (NS subjects in total)
-%   .CORT: 4*NS matrix with each timepoint for each subject
+%   .CORT: 4*NS matrix with each timepoint for each subject (μg/dL)
 %   .AUCg: 1xNS vector with area under the curve total cortisol during the
 %   experiment
 %   .timings: 4*NS matrix with timing of each timepoint for each subject
+%
+% Note: concentrations can be converted in nmol/L by multiplying the values
+% by the 27.5862 conversion factor (see https://unitslab.com/fr/node/110)
 %
 % N. Clairis - november 2022
 
