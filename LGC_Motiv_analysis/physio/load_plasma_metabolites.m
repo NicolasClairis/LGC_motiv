@@ -69,7 +69,7 @@ for iMb = 1:nMetaboColumns
                     plasmaM.(mb_nm)(iS) = metabo_excelReadTable.(mb_nm)(sub_idx);
             end
         else
-            error(['Problem with ',mb_nm,' extraction in subject ',sub_nm]);
+            warning(['Problem with ',mb_nm,' extraction in subject ',sub_nm]);
         end
     end % subject loop
 end % loop through metabolites
@@ -103,6 +103,8 @@ for iAA = 1:nAAColumns
             plasmaM.His = NaN(1,NS);
         case 'L_Isoleucine'
             plasmaM.Ile = NaN(1,NS);
+        case 'L_Leucine'
+            plasmaM.Leu = NaN(1,NS);
         case 'L_Lysine'
             plasmaM.Lys = NaN(1,NS);
         case 'L_Methionine'
@@ -151,6 +153,8 @@ for iAA = 1:nAAColumns
                     plasmaM.His(iS) = AA_excelReadTable.(AA_nm)(sub_idx);
                 case 'L_Isoleucine'
                     plasmaM.Ile(iS) = AA_excelReadTable.(AA_nm)(sub_idx);
+                case 'L_Leucine'
+                    plasmaM.Leu(iS) = AA_excelReadTable.(AA_nm)(sub_idx);
                 case 'L_Lysine'
                     plasmaM.Lys(iS) = AA_excelReadTable.(AA_nm)(sub_idx);
                 case 'L_Methionine'
@@ -174,7 +178,7 @@ for iAA = 1:nAAColumns
                     plasmaM.(AA_nm)(iS) = AA_excelReadTable.(AA_nm)(sub_idx);
             end % amino-acid name
         else
-            error(['Problem with ',AA_nm,' extraction in subject ',sub_nm]);
+            warning(['Problem with ',AA_nm,' extraction in subject ',sub_nm]);
         end
     end % subject loop
 end % loop through amino-acids
@@ -193,7 +197,5 @@ for iM = 1:n_mb
     plasmaM.filtered.(mb_nm).CID = plasmaM.CID(idx_goodS);
     plasmaM.filtered.(mb_nm).(mb_nm) = cleaned_plasmaM_tmp;
 end % metabolite loop
-
-
 
 end % function
