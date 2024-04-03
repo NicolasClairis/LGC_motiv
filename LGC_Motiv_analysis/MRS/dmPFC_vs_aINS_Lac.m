@@ -1,3 +1,4 @@
+% compare dmPFC/dACC to anterior insula (aINS) lactate concentration
 
 %% subjects selection
 [study_nm, condition, gender, subject_id, NS] = sub_id;
