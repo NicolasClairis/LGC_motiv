@@ -30,7 +30,7 @@ else
     Lac.Lac = NaN(1,NS);
     for iS = 1:NS
         sub_nm = subject_id{iS};
-        Lac.CID{iS} = sub_nm;
+        Lac.CID{iS} = ['CID',sub_nm];
         sub_idx = find(strcmp(excelReadTable.CID, ['CID',sub_nm]));
         if ~isempty(sub_idx) && size(sub_idx,2) == 1
             Lac.Lac(iS) = excelReadTable.LacticAcid(sub_idx);
