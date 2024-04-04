@@ -1,4 +1,4 @@
-% function[calib] = taskPerf_f_sex(fig_disp)
+function[calib] = taskPerf_f_sex(fig_disp)
 %[calib] = taskPerf_f_sex(fig_disp)
 % perf_f_sex will compare different variables related to performance
 % (maximal performance during calibration, average RT, difference in
@@ -490,4 +490,4 @@ if fig_disp == 1
     legend_size(pSize);
 end % figure display
 
-% end % function
+end % function
