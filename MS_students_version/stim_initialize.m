@@ -974,7 +974,7 @@ for iNber = [1:4, 6:9]
         'center', 'center', white);
     stim.Em.(['numberPerf_',n_str]).x = x_centerCoordinates(xScreenCenter, textSizeEmNumber);
     stim.Em.(['numberPerf_',n_str]).y = y_coordinates(upperBorder, visibleYsize, 3/4, textSizeEmNumber);
-    stim.Em.(['numberPerfLearning_',n_str]).y = y_coordinates(upperBorder, visibleYsize, 1/12, textSizeEmNumber);
+    stim.Em.(['numberPerfLearning_',n_str]).y = y_coordinates(upperBorder, visibleYsize, 1/10, textSizeEmNumber);
 end
 Screen('TextSize', window, scr.textSize.baseline);
 
