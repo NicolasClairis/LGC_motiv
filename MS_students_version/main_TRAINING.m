@@ -123,7 +123,7 @@ n_trialsPerSession = 5;
 [trainingTimes_Ep, calibTimes_Ep, learningTimes_Ep, taskTimes_Ep] = timings_definition({trainingRP_P_or_R}, n_trialsPerSession, n_trainingTrials, 'physical');
 
 
-n_sessions = 2;
+n_sessions = 1;
 
 % number of buttons to answer
 n_buttonsChoice = 2;
@@ -803,7 +803,7 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
     WaitSecs(t_endSession);
 end
 
-%% releyse buffer for key presses
+%% release buffer for key presses
 KbQueueStop;
 KbQueueRelease;
 
