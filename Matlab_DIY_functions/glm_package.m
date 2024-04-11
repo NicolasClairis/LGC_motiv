@@ -1,5 +1,5 @@
-function[r_corr, betas, pval, y_fit, x_sorted, y_fit_xSorted] = glm_package(x_var, y_var, distrib, constant)
-% [r_corr, betas, pval, y_fit, x_sorted, y_fit_xSorted] = glm_package(x_var, y_var, distrib, constant)
+function[r_corr, betas, pval, y_fit, x_sorted, y_fit_xSorted, z_pval_corr] = glm_package(x_var, y_var, distrib, constant)
+% [r_corr, betas, pval, y_fit, x_sorted, y_fit_xSorted, z_pval_corr] = glm_package(x_var, y_var, distrib, constant)
 % glm_package will perform all the package required by a classic GLM to
 % have all the data you may want in output. In other words, it will provide
 % you with correlation coefficients, betas, p.values and the corresponding
@@ -35,6 +35,8 @@ function[r_corr, betas, pval, y_fit, x_sorted, y_fit_xSorted] = glm_package(x_va
 %
 % y_fit_xSorted: corresponding fit for x_sorted (to make figure displays
 % easier) (only if there is only 1 variable in X)
+%
+% z_pval_corr: p.value for the correlation coefficients in r_corr
 %
 % See also glmfit.m and glmval.m
 % This script requires the Statistics and Machine Learning Toolbox
@@ -81,7 +83,7 @@ end
 pval = stats.p;
 %% extract correlation coefficients
 if size(x_var,2) == 1
-    [z_betas] = glmfit(nanzscore(x_var), nanzscore(y_var),distrib,'Constant',constant);
+    [z_betas,~,stats_z_vars] = glmfit(nanzscore(x_var), nanzscore(y_var),distrib,'Constant',constant);
 elseif size(x_var,2) > 1
     % if more then 1 x.variables => need to zscore each independently
     z_x_var = NaN(size(x_var));
@@ -90,13 +92,15 @@ elseif size(x_var,2) > 1
         z_x_var(:,iX_var) = nanzscore(x_var(:,iX_var));
     end % loop through x_var variables
     
-    [z_betas] = glmfit(z_x_var, nanzscore(y_var),distrib,'Constant',constant);
+    [z_betas,~,stats_z_vars] = glmfit(z_x_var, nanzscore(y_var),distrib,'Constant',constant);
 end
 switch constant
     case 'off'
         r_corr = z_betas;
+        z_pval_corr = stats_z_vars.p;
     case 'on' % ignore constant
         r_corr = z_betas(2:end);
+        z_pval_corr = stats_z_vars.p(2:end);
 end
 
 %% extract corresponding fit
