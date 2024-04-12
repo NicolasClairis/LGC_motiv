@@ -154,7 +154,7 @@ if fig_disp == 1
     xticks(1:3);
     xticklabels({'dmPFC/dACC','aIns','plasma'});
     yticks(1:size(corr_mtrx,1));
-    yticklabels({'F1','F2','F3','F4','dF1','dF2'});
+    yticklabels({'S1','S2','S3','S4','S4-S1','S4-S3'});
     % add stars in the graph if some correlations are significant
     for iLac_measure = 1:size(corr_mtrx,2)
         for iStressRtg = 1:size(corr_mtrx,1)
