@@ -297,6 +297,45 @@ if fig_disp == 1
     xticks([1.5,3.5]);
     xticklabels({'Ep','Em'});
     legend_size(pSize);
+    
+    %% focus on physical effort for lactate paper
+    fig;
+    colororder({'k','k'}); % force axes to remain black
+    % choices on the left
+    yyaxis left;
+    % show male vs female data
+    ok_males = ~isnan(choice_hE_males.Ep);
+    male_violin = Violin({choice_hE_males.Ep(ok_males)},1,...
+        'ViolinColor',{male_col});
+    ok_females = ~isnan(choice_hE_females.Ep);
+    female_violin = Violin({choice_hE_females.Ep(ok_females)},2,...
+        'ViolinColor',{female_col});
+    
+    % kEp on the right
+    yyaxis right;
+    % show male vs female data
+    ok_males = ~isnan(prm_males.kEp);
+    male_violin = Violin({prm_males.kEp(ok_males)},4,...
+        'ViolinColor',{male_col});
+    ok_females = ~isnan(prm_females.kEp);
+    female_violin = Violin({prm_females.kEp(ok_females)},5,...
+        'ViolinColor',{female_col});
+    
+    % add p.value indication if difference is significant
+    yyaxis left;
+    [l_hdl, star_hdl] = add_pval_comparison(choice_hE_males.Ep,...
+        choice_hE_females.Ep,...
+        choices.HPE.pval, 1, 2, 'NS');
+    ylim([0 105]);
+    ylabel('Choices (%)');
+    yyaxis right;
+    [l_hdl, star_hdl] = add_pval_comparison(prm_males.kEp,...
+            prm_females.kEp,...
+            parameters.kEp.pval, 4, 5, 'NS');
+    ylabel('Parameter');
+    
+    xticks([1.5 4.5]);
+    xticklabels({'HPE','kEp'});
 end % figure
 
 end % function
