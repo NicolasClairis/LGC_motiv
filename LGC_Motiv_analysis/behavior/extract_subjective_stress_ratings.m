@@ -1,10 +1,10 @@
 function[stress,...
     preMRS_stress, postMRS_stress,...
     prefMRI_stress, postfMRI_stress,...
-    deltaStressPrePostExp] = extract_subjective_stress_ratings(study_nm, subject_id, NS)
+    deltaStressPrePostExp, deltaStressPrePostfMRI] = extract_subjective_stress_ratings(study_nm, subject_id, NS)
 % [stress, preMRS_stress, postMRS_stress,...
 %     prefMRI_stress, postfMRI_stress,...
-%     deltaStressPrePostExp] = extract_subjective_stress_ratings(study_nm, subject_id, NS)
+%     deltaStressPrePostExp, deltaStressPrePostfMRI] = extract_subjective_stress_ratings(study_nm, subject_id, NS)
 % extract_subjective_stress_ratings will extract the subjective stress
 % ratings (on a visual analogue scale from 1 to 10) for the subjecte
 % entered in input.
@@ -31,13 +31,16 @@ function[stress,...
 % deltaStressPrePostExp: difference between initial subjective stress
 % rating and final level of stress
 %
+% deltaStressPrePostfMRI: difference between subjective stress rating
+% before vs after the task in fMRI
+%
 % Designed by N.Clairis - november 2023
 
 
 %% extract stress levels
 [preMRS_stress, postMRS_stress,...
     prefMRI_stress, postfMRI_stress,...
-    deltaStressPrePostExp] = deal(NaN(1,NS));
+    deltaStressPrePostExp, deltaStressPrePostfMRI] = deal(NaN(1,NS));
 
 % load stress
 [excelReadGeneralFile] = load_gal_data_bis(study_nm);
@@ -51,6 +54,7 @@ for iS = 1:NS
     prefMRI_stress(iS)          = excelReadGeneralFile.StressPr__IRMf(stress_sub_idx);
     postfMRI_stress(iS)          = excelReadGeneralFile.StressPost_IRMf(stress_sub_idx);
     deltaStressPrePostExp(iS)  = postfMRI_stress(iS) - preMRS_stress(iS);
+    deltaStressPrePostfMRI(iS) = postfMRI_stress(iS) - prefMRI_stress(iS);
 end
 
 %% create structure containing all the previous data
@@ -59,5 +63,6 @@ stress.postMRS = postMRS_stress;
 stress.prefMRI = prefMRI_stress;
 stress.postfMRI = postfMRI_stress;
 stress.deltaPrePostExp = deltaStressPrePostExp;
+stress.deltaStressPrePostfMRI = deltaStressPrePostfMRI;
 
 end % function
