@@ -34,6 +34,8 @@ elseif pval > 0.001 && pval <= 0.005
     pval_stars = '***';
 elseif pval <= 0.001
     pval_stars = '****';
+elseif strcmp(pval,'NaN')
+    pval_stars = 'NaN';
 end
 r_corr_str = [num2str(r_corr),pval_stars];
 
@@ -60,7 +62,7 @@ elseif r_corr >= 0 % positive correlation (bottom right of the screen)
 end
 
 %% text size
-txtSize = 17;
+txtSize = 30;
 
 %% add the text
 txt_hdl = text(x_val_txt,y_val_txt,...
