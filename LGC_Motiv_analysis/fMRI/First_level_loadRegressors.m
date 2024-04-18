@@ -35,6 +35,8 @@ function[matlabbatch] = First_level_loadRegressors(matlabbatch, GLMprm, study_nm
 % OUTPUTS
 % matlabbatch: structure updated with the regressors of interest depending
 % on GLMprm values
+%
+% See also First_level_batch.m
 
 %% is it a GLM for onsets-only?
 onsets_only_GLM = GLMprm.gal.onsets_only;
