@@ -21,7 +21,7 @@ gitPath = [gitRoot, filesep, 'GitHub',filesep,...
     'bayesian_modeling', filesep];
 
 %% extraction model 1
-model_NV_raw.mdl1 = load([gitPath,'net_values_biais.txt']);
+model_NV_raw.mdl1 = load([gitPath,'net_values_model_1.txt']); % (ex 'net_values_model_biais.txt')
 sub_id_line1 = model_NV_raw.mdl1(1,:);
 NV_data_mdl1 = model_NV_raw.mdl1(2:end,:);
 [bayesian_deltaNV.mdl_1.subject_id] = convert_sub_id_from_num_to_cell(sub_id_line1);
@@ -36,7 +36,7 @@ for iS = 1:NS
 end % subject loop
 
 %% extraction model 2
-model_NV_raw.mdl2 = load([gitPath,'net_values_classic.txt']);
+model_NV_raw.mdl2 = load([gitPath,'net_values_model_2.txt']); % (ex 'net_values_model_classic.txt')
 sub_id_line2 = model_NV_raw.mdl2(1,:);
 NV_data_mdl2 = model_NV_raw.mdl2(2:end,:);
 [bayesian_deltaNV.mdl_2.subject_id] = convert_sub_id_from_num_to_cell(sub_id_line2);
