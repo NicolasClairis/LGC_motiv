@@ -1,4 +1,10 @@
 % convert delta net value data sent by Arthur to homogenize with previous data
+%
+% CID_NV_PROBA:
+% line 1 = subject_id
+% lines 2-217 = deltaNV (SV high E - SV low E) across all trials and runs
+% lines 218-433 = p(choice = high E) across all trials and runs
+
 
 %% clear variables to avoid interference
 clear;
