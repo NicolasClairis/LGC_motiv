@@ -1,5 +1,5 @@
-function[meanVar, semVar, sdVar, medianVar]=mean_sem_sd(var, dim)
-% [meanVar, semVar, sdVar, medianVar]=mean_sem_sd(var, dim)
+function[meanVar, semVar, sdVar, medianVar] = mean_sem_sd(var, dim)
+% [meanVar, semVar, sdVar, medianVar] = mean_sem_sd(var, dim)
 % mean_sem_sd will get you the mean, the standard error of the mean, the
 % standard deviation and the median of the variable var along the dimension
 % specified in dim.
