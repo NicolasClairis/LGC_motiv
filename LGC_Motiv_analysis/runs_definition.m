@@ -17,6 +17,11 @@ function[runs, n_runs] = runs_definition(study_nm, sub_nm, condition)
 % OUTPUTS
 % runs: structure with number of runs for each task and also the order of
 % the runs
+%   runs.tasks: name for each run ('Ep': physical; 'Em': mental)
+%   runs.nb_runs.Ep/Em: number of runs for each task
+%   runs.Ep/Em.runsToKeep: index of the runs to keep per task
+%   runs.runsToKeep: index of the runs to keep (global)
+%   runs.runsToIgnore: index of the runs to ignore (global)
 %
 % n_runs: number of runs to include
 
