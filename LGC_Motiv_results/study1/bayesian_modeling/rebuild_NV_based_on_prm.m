@@ -26,13 +26,14 @@ bayesian_deltaNV = getfield(load([gitPath, 'bayesian_deltaNV_data.mat'],'bayesia
 bayesian_pChoice = getfield(load([gitPath, 'bayesian_pChoice_data.mat'],'bayesian_pChoice'),'bayesian_pChoice');
 
 %% load parameters
+mdl_nm = 'mdl_4';
 behavioral_prm_tmp = load([gitPath,'behavioral_prm.mat']);
 bayesian_mdl = behavioral_prm_tmp.bayesian_mdl;
-bhv_prm = bayesian_mdl.mdl_4;
-subject_id = bayesian_mdl.mdl_4.subject_id;
+bhv_prm = bayesian_mdl.(mdl_nm);
+subject_id = bayesian_mdl.(mdl_nm).subject_id;
 NS = length(subject_id);
-bayesian_deltaNV.mdl_4.subject_id = subject_id;
-bayesian_pChoice.mdl_4.subject_id = subject_id;
+bayesian_deltaNV.(mdl_nm).subject_id = subject_id;
+bayesian_pChoice.(mdl_nm).subject_id = subject_id;
 
 %% loop over subjects
 for iS = 1:NS
@@ -41,8 +42,8 @@ for iS = 1:NS
     sub_bhv_folder = [root, sub_nm_bis,filesep, 'behavior',filesep];
     % initialize data
     for iR = 1:nTotalRuns
-        [bayesian_deltaNV.mdl_4.(sub_nm_bis).(['run',num2str(iR)]),...
-            bayesian_pChoice.mdl_4.(sub_nm_bis).(['run',num2str(iR)])] = deal(NaN(nTrialsPerRun,1));
+        [bayesian_deltaNV.(mdl_nm).(sub_nm_bis).(['run',num2str(iR)]),...
+            bayesian_pChoice.(mdl_nm).(sub_nm_bis).(['run',num2str(iR)])] = deal(NaN(nTrialsPerRun,1));
     end % run loop
     
     [runs, n_runs] = runs_definition(study_nm, sub_nm, condition);
@@ -86,18 +87,19 @@ for iS = 1:NS
                     ~] = extract_mental_previous_efficacy(sub_bhv_folder, sub_nm, run_nm, task_fullName); % Arthur model: used n.correct/Time (with time starting after 2 first)
                 Fp = 0;
             case 'Ep'
-                [Fp] = extract_physical_fatigue(sub_bhv_folder, sub_nm, run_nm, task_fullName);
+                [~,Fp] = extract_physical_fatigue(sub_bhv_folder, sub_nm, run_nm, task_fullName); % extract AUC in Voltage
                 prevEfficacy = 0;
+                Fp = Fp./1000; % Arthur divided by 1000 to make variables in a more similar range
         end
         
         dNV_tmp = (kR.*deltaR_money + kP.*deltaP_money) +...
             -(Ep_task.*dE_tmp.*(kEp + kFp.*Fp) +...
             Em_task.*dE_tmp.*(kEm - kLm.*prevEfficacy)) +...
             kBiasM;
-        error('Need to check which fatigue measure Arthur used, now values are weird after trial 1 for Ep');
         pChoice_tmp = 1./(1 + exp(-dNV_tmp));
-        bayesian_deltaNV.mdl_4.(sub_nm_bis).(['run',num2str(iR)])(:) = dNV_tmp';
-        bayesian_pChoice.mdl_4.(sub_nm_bis).(['run',num2str(iR)])(:) = pChoice_tmp';
+        error('Something is weird');
+        bayesian_deltaNV.(mdl_nm).(sub_nm_bis).(['run',num2str(iR)])(:) = dNV_tmp';
+        bayesian_pChoice.(mdl_nm).(sub_nm_bis).(['run',num2str(iR)])(:) = pChoice_tmp';
     end % run loop
     
 end % subject loop
