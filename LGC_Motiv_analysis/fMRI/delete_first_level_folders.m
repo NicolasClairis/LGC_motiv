@@ -5,10 +5,24 @@ function[] = delete_first_level_folders(study_nm)
 
 baseline_folder = pwd;
 
-kernels = {'8','6','4'};
-sm_kernel_idx = listdlg('PromptString','What smoothing kernel do you want to delete?',...
-    'ListString',kernels);
-sm_kernel = str2double(kernels{sm_kernel_idx});
+%% which preprocessing smoothing?
+% kernels = {'8','6','4'};
+% sm_kernel_idx = listdlg('PromptString','What smoothing kernel do you want to delete?',...
+%     'ListString',kernels);
+% sm_kernel = str2double(kernels{sm_kernel_idx});
+sm_kernel = 8;
+
+%% with bias-field correction or not?
+bfieldCorr_or_raw = questdlg('With or without bias-field correction files?',...
+    'Bias-field',...
+    'raw','bias-field corrected',...
+    'raw');
+switch bfieldCorr_or_raw
+    case 'raw'
+        bField = '';
+    case 'bias-field corrected'
+        bField = '_with_BiasFieldCorrection';
+end
 
 %% GLM choice
 GLM_str = inputdlg('What First level GLM do you want to delete?');
@@ -53,7 +67,7 @@ for iS = 1:NS
     subFullNm = ['CID',sub_nm];
     subj_folder = [root, filesep, subFullNm];
     subj_analysis_folder = [subj_folder,filesep,'fMRI_analysis',filesep,...
-        'functional',filesep,'preproc_sm_',num2str(sm_kernel),'mm', filesep];
+        'functional',filesep,'preproc_sm_',num2str(sm_kernel),'mm',bField, filesep];
     if exist(subj_analysis_folder,'dir')
         cd(subj_analysis_folder);
         

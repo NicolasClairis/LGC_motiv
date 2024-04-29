@@ -16,14 +16,14 @@ spm('defaults','fmri');
 spm_jobman('initcfg');
 
 %% main parameters
-% define smoothing kernel for the last step
-sm_kernel = 8;
+% % define smoothing kernel for the last step
+% sm_kernel = 8;
 % define threshold to use for probability to be in the grey matter
-proba_threshold = 0.50;
+proba_threshold = 0.05; % for 10%, write 0.10
 %% check inputs
 if ~exist('study_nm','var') || isempty(study_nm)
-%    error('study name not defined');
-study_nm = 'study1';
+    %    error('study name not defined');
+    study_nm = 'study1';
 end
 
 if ~exist('condition','var') || isempty(condition)
@@ -31,6 +31,9 @@ if ~exist('condition','var') || isempty(condition)
 end
 rootPath = [fullfile('E:',study_nm),filesep];
 outDir = fullfile(rootPath,'grey_matter_mask');
+if ~exist(outDir,'dir')
+    mkdir(outDir);
+end
 
 %% select subjects
 [subject_id, NS] = LGCM_subject_selection(study_nm,condition);

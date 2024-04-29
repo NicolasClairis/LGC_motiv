@@ -1,10 +1,10 @@
 function[ROI_trial_b_trial, ROI_subList,...
     ROI_nm, ROI_short_nm,...
-    task_to_look, timePeriod_nm] = extract_ROI_betas_onsets_only_bis(computerRoot,...
+    timePeriod_nm] = extract_ROI_betas_onsets_only_bis(computerRoot,...
     study_nm, subject_id, condition)
 % [ROI_trial_b_trial, ROI_subList,...
 %     ROI_nm, ROI_short_nm,...
-%     task_to_look, timePeriod_nm] = extract_ROI_betas_onsets_only_bis(computerRoot,...
+%     timePeriod_nm] = extract_ROI_betas_onsets_only_bis(computerRoot,...
 %     study_nm, subject_id, condition)
 % extract_ROI_betas_onsets_only_bis calls extract_ROI_betas_onsets_only
 % to extract data trial by trial and then will ask you more specifically
@@ -30,8 +30,6 @@ function[ROI_trial_b_trial, ROI_subList,...
 %
 % ROI_short_nm: short name asked to facilitate figures and stuff
 %
-% task_to_look: which task was selected (physical/mental/both?)
-%
 % timePeriod_nm: time period where to look
 
 %% extract the data (slower part)
@@ -45,17 +43,14 @@ ROI_subList = ROI_trial_b_trial.subject_id;
 ROI_names(strcmp(ROI_names,'subject_id')) = [];
 if length(ROI_names) > 1
     which_ROI = listdlg('PromptString','Which ROI?','ListString',ROI_names);
-    ROI_nm = ROI_names{which_ROI};
+    ROI_nm = ROI_names(which_ROI);
 else
     ROI_nm = ROI_names;
 end
 ROI_short_nm = inputdlg('ROI short name?');
 ROI_short_nm = ROI_short_nm{1};
-
-%% define task (physical/mental/both)
-task_names = {'Ep','Em','EpEmPool'};
-which_task = listdlg('PromptString','Which task?','ListString',task_names);
-task_to_look = task_names{which_task};
+% in case spaces were entered, replace them by '_'
+ROI_short_nm = strrep(ROI_short_nm,' ','_');
 
 %% define time period (depends on GLM selected)
 timePeriods = fieldnames(ROI_trial_b_trial.(ROI_nm{1}).Ep.run1);

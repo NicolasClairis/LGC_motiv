@@ -15,11 +15,11 @@ switch list_pcs{which_pc_idx}
     case 'Lab'
         hardDisk = 'M:';
     case 'Home'
-        hardDisk = 'L:';
+        hardDisk = '\\sv-nas1.rcp.epfl.ch\Sandi-lab\';
 end
 pcPath = fullfile(hardDisk,'human_data_private',...
     'raw_data_subject','study1');
-cd(pcPath);
+% cd(pcPath);
 
 %% extract the data
 excelReadQuestionnairesFile = readtable([pcPath,filesep,'Questionnaire-scores-final.xlsx'],...

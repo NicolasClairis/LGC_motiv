@@ -32,9 +32,9 @@ switch whichPc
         gitRoot = fullfile('C:','Users','clairis','Desktop');
         computerRoot = [fullfile('E:'),filesep];
     case 'home'
-        gitRoot = fullfile('C:','Users','Loco','Documents');
-        computerRoot = [fullfile('L:','human_data_private',...
-            'raw_data_subject'),filesep];
+        gitRoot = fullfile('C:','Users','Nicolas Clairis','Documents');
+        serverRoot = fullfile(filesep,filesep,'sv-nas1.rcp.epfl.ch',filesep,'Sandi-lab');
+        computerRoot = [fullfile(serverRoot,'human_data_private','raw_data_subject'),filesep];
     otherwise
         error(['paths not ready yet for ',whichPc, 'pc']);
 end
@@ -45,26 +45,27 @@ bayesian_root = fullfile(gitRoot,'GitHub',...
 NS = length(subject_id);
 
 %% bayesian across tasks or simple model each task separately?
-if ~exist('mdlType','var') || isempty(mdlType)
-    listPossibleModels = {'bayesian','simple'};
-    mdlType_idx = listdlg('promptstring','Which model type?',...
-        'ListString',listPossibleModels);
-    mdlType = listPossibleModels{mdlType_idx};
-end
+% if ~exist('mdlType','var') || isempty(mdlType)
+%     listPossibleModels = {'bayesian','simple'};
+%     mdlType_idx = listdlg('promptstring','Which model type?',...
+%         'ListString',listPossibleModels);
+%     mdlType = listPossibleModels{mdlType_idx};
+% end
+mdlType = 'bayesian';
 
 %% which model number to use?
-if ~exist('mdlN','var') || isempty(mdlN)
-    switch mdlType
-        case 'bayesian'
-            listPossibleModelNumbers = {'3'};
-        case 'simple'
-            listPossibleModelNumbers = {'1','2','3','4'};
-    end
-    mdlN_idx = listdlg('promptstring','Which model number?',...
-        'ListString',listPossibleModelNumbers);
-    mdlN = listPossibleModelNumbers{mdlN_idx};
-end
-
+% if ~exist('mdlN','var') || isempty(mdlN)
+%     switch mdlType
+%         case 'bayesian'
+%             listPossibleModelNumbers = {'3'};
+%         case 'simple'
+%             listPossibleModelNumbers = {'1','2','3','4'};
+%     end
+%     mdlN_idx = listdlg('promptstring','Which model number?',...
+%         'ListString',listPossibleModelNumbers);
+%     mdlN = listPossibleModelNumbers{mdlN_idx};
+% end
+mdlN = '3';
 %% extract parameters of the selected model
 switch mdlType
     case 'bayesian'
@@ -91,6 +92,9 @@ switch mdlType
                 end
             end % filter if subject extracted by Arthur
         end % subject list
+        
+        % add kR/kP ratio
+        prm.kR_div_kP = prm.kR./prm.kP;
     case 'simple'
         %% perform behavioral model
         figDispGroup = 0;

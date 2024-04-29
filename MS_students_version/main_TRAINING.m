@@ -39,8 +39,9 @@ IRMbuttons = 1; % defines the buttons to use (1 = same as in fMRI)
 testing_script = 1; % use all computer resources (particularly for mental calibration)
 while isempty(iSubject) || length(iSubject) ~= 3
     % repeat until all questions are answered
-    info = inputdlg({'Subject CID (XXX)'});
-    [iSubject] = info{[1]};
+    %     info = inputdlg({'Subject CID (XXX)'});
+    %     [iSubject] = info{[1]};
+    iSubject = '000';
     %     warning('when real experiment starts, remember to block in french and IRM = 1');
 end
 p_or_m = 'p'; % start with physical effort
@@ -69,16 +70,16 @@ end
 %% general parameters
 % define subparts of the task to perform (on/off)
 taskToPerform.physical.calib = 'on';
-taskToPerform.physical.training = 'on';
+taskToPerform.physical.training = 'off';
 taskToPerform.mental.calib = 'on';
-taskToPerform.mental.training = 'on';
+taskToPerform.mental.training = 'off';
 
 % not for MS students
 taskToPerform.physical.learning = 'off';
-taskToPerform.physical.task = 'off';
+taskToPerform.physical.task = 'on';
 taskToPerform.mental.learning_1 = 'off';
 taskToPerform.mental.learning_2 = 'off';
-taskToPerform.mental.task = 'off';
+taskToPerform.mental.task = 'on';
 
 switch langue
     case 'f'
@@ -122,7 +123,7 @@ n_trialsPerSession = 5;
 [trainingTimes_Ep, calibTimes_Ep, learningTimes_Ep, taskTimes_Ep] = timings_definition({trainingRP_P_or_R}, n_trialsPerSession, n_trainingTrials, 'physical');
 
 
-n_sessions = 2;
+n_sessions = 1;
 
 % number of buttons to answer
 n_buttonsChoice = 2;
@@ -184,6 +185,14 @@ for i_pm = 1:2
                 MVC = mean(MVC_tmp.MVC); % expressed in Voltage
                 save(Ep_calib_filenm,'MVC');
             end
+            
+            %% indicate which occurrence was the best MVC
+            [~,idx_max_MVC] = max(MVC_tmp.MVC_perCalibSession,[],'omitnan');
+            DrawFormattedText(window,['Meilleure performance: essai n°',num2str(idx_max_MVC)],...
+                'center','center',scr.colours.white,scr.wrapat);
+            Screen('Flip',window);
+            WaitSecs(1);
+            waitSpace(scr, stim, window, key_Ep);
             
             %% learning physical (learn each level of force)
             if strcmp(taskToPerform.physical.learning,'on')
@@ -467,6 +476,15 @@ for i_pm = 1:2
                 calibSummary.n_mental_max_perTrial = NMP;
                 % record number of maximal performance (NMP)
                 save(Em_calib_filenm,'NMP');
+                
+                %% indicate which occurrence was the best MVC
+                [~,idx_max_NMP] = max(calib_summary.n_max_calibPerf_perTrial,[],'omitnan');
+                DrawFormattedText(window,['Meilleure performance: essai n°',num2str(idx_max_NMP)],...
+                    'center','center',scr.colours.white,scr.wrapat);
+                Screen('Flip',window);
+                WaitSecs(1);
+                waitSpace(scr, stim, window, key_Em);
+                
             elseif strcmp(taskToPerform.mental.calib,'off') &&...
                     ( strcmp(taskToPerform.mental.learning_1,'on') ||...
                     strcmp(taskToPerform.mental.learning_2,'on') ||...
@@ -563,7 +581,7 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
     
     % Number of repeats of the whole code (how many times will you measure
     % the IP?)
-    nbRepeat = 2;
+    nbRepeat = 1;
     % for how many levels of effort will you measure the IP?
     E_right = 2;
     E_left  = 0;
@@ -669,17 +687,15 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
                 end
             end % session loop
             % display feedback for the current session
-            finalGain_str = sprintf('%0.2f',sessionFinalGain);
+%             finalGain_str = sprintf('%0.2f',sessionFinalGain);
             switch langage
                 case 'fr'
                     DrawFormattedText(window,...
-                        ['Felicitations! Cette session est maintenant terminee.',...
-                        'Vous avez obtenu: ',finalGain_str,' chf au cours de cette session.'],...
+                        'Felicitations! Cette session est maintenant terminee.',...
                         'center', yScreenCenter*(5/3), scr.colours.white, scr.wrapat);
                 case 'engl'
                     DrawFormattedText(window,...
-                        ['Congratulations! This session is now completed.',...
-                        'You got: ',finalGain_str,' chf during this session.'],...
+                        'Congratulations! This session is now completed.',...
                         'center', yScreenCenter*(5/3), scr.colours.white, scr.wrapat);
             end
             Screen(window,'Flip');
@@ -776,20 +792,18 @@ if strcmp(taskToPerform.physical.task,'on') || strcmp(taskToPerform.mental.task,
     switch langage
         case 'fr'
             DrawFormattedText(window,...
-                ['Felicitations! Cette experience est maintenant terminee.',...
-                'Vous avez obtenu: ',totalGain_str,' chf au cours de cette session.'],...
+                'Felicitations! Cette experience est maintenant terminee.',...
                 'center', 'center', scr.colours.white, scr.wrapat);
         case 'engl'
             DrawFormattedText(window,...
-                ['Congratulations! This session is now completed.',...
-                'You got: ',totalGain_str,' chf during this session.'],...
+                'Congratulations! This session is now completed.',...
                 'center', 'center', scr.colours.white, scr.wrapat);
     end
     Screen(window,'Flip');
     WaitSecs(t_endSession);
 end
 
-%% releyse buffer for key presses
+%% release buffer for key presses
 KbQueueStop;
 KbQueueRelease;
 

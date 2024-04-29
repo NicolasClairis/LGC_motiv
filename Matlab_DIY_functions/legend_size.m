@@ -7,7 +7,7 @@ function [  ] = legend_size( pSize )
 % Originally written by N.Clairis - 31/01/2020
 
 % change font
-set(gca,'FontName','Calibri');
+set(gca,'FontName','Arial');
 set(gca,'fontsize',pSize,'FontWeight','normal');
 set(findall(gcf,'type','text'),'FontSize',pSize,'fontWeight','normal');
 

@@ -1,5 +1,10 @@
 function[deltaP_money] = extract_deltaP_money(subBehaviorFolder, sub_nm, run_nm, task_fullName)
-% [deltaP_money] = extract_deltaR_money(subBehaviorFolder, sub_nm, run_nm, task_fullName)
+% [deltaP_money] = extract_deltaP_money(subBehaviorFolder, sub_nm, run_nm, task_fullName)
+% extract_deltaP_money extracts the absolute difference in monetary amounts between
+% the high effort option and the low effort. Reward trials will be ignored
+% (and equal to 0).
+% Example: high effort punishment = -0.80 CHF vs low effort = -0.50 CHF
+% => deltaP_money = |(-0.80)-(-0.50)| = |-0.30| = +0.30
 %
 % INPUTS
 % subBehaviorFolder: folder where data is stored
@@ -32,7 +37,7 @@ lowI_level_v0 = (-choiceOptions.monetary_amount.left).*highE_right +...
     (-choiceOptions.monetary_amount.right).*highE_left;
 %% valence
 RP_var_tmp = extract_RP(subBehaviorFolder, sub_nm, run_nm, task_fullName);
-%% store and remove all punishment trials
+%% store and remove all reward trials
 deltaP_money = hI_level_v0 - lowI_level_v0;
 deltaP_money(RP_var_tmp == 1) = 0;
         

@@ -1,5 +1,7 @@
-function [ ROI_xyz, ROI_sphere_or_mask, ROI_nm, nb_ROIs, ROI_vol, ROI_mask ] = ROI_selection(roiFolder)
-%[ ROI_xyz, ROI_sphere_or_mask, ROI_nm, nb_ROIs, ROI_vol, ROI_mask ] = ROI_selection(roiFolder)
+function [ ROI_xyz, ROI_sphere_or_mask, ROI_nm,...
+    nb_ROIs, ROI_vol, ROI_mask ] = ROI_selection(roiFolder)
+%[ ROI_xyz, ROI_sphere_or_mask, ROI_nm,...
+%   nb_ROIs, ROI_vol, ROI_mask ] = ROI_selection(roiFolder)
 % proposes different ROI and asks you which one(s) you want to use.
 %
 % Note that this script requires the SPM toolbox (version 12 works,

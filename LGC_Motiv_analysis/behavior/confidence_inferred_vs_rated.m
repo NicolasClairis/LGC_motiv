@@ -1,6 +1,6 @@
-function [betas, conf_bins, pval] = confidence_inferred_vs_rated(study_nm, sub_nm,...
+function [betas, conf_bins, pval] = confidence_inferred_vs_rated(study_nm, sub_nm, condition,...
     n_conf_bins, figDisp, mdlType, mdl_nm)
-% [betas, conf_bins, pval] = confidence_inferred_vs_rated(study_nm, sub_nm,...
+% [betas, conf_bins, pval] = confidence_inferred_vs_rated(study_nm, sub_nm,condition,...
 %     n_conf_bins, figDisp, mdlType, mdl_nm)
 % confidence_inferred_vs_rated will compare confidence inferred by the
 % model for the subject sub_nm in the study study_nm and will
@@ -11,6 +11,8 @@ function [betas, conf_bins, pval] = confidence_inferred_vs_rated(study_nm, sub_n
 % 'study1': dmPFC/aINS MRS study
 %
 % sub_nm: subject name
+%
+% condition: string indicating which runs to include for each subject
 %
 % n_conf_bins: number of bins for confidence
 %
@@ -35,7 +37,7 @@ function [betas, conf_bins, pval] = confidence_inferred_vs_rated(study_nm, sub_n
 %% if root not defined => ask for it
 if ~exist('computerRoot','var') || isempty(computerRoot)
     computerRoot = 'E:\';
-%     computerRoot = LGCM_root_paths;
+    computerRoot = '\\svfas5\sandi-lab\human_data_private\raw_data_subject\';
 end
 
 %% working directories
@@ -50,7 +52,7 @@ if ~exist('figDisp','var') || isempty(figDisp)
 end
 
 %% extract runs
-[runsStruct] = runs_definition(study_nm, sub_nm, 'behavior');
+[runsStruct] = runs_definition(study_nm, sub_nm, condition);
 nRuns = length(runsStruct.tasks);
 nTrialsPerRun = 54;
 nTotalTrials = nRuns*nTrialsPerRun;
@@ -58,17 +60,20 @@ nTotalTrials = nRuns*nTrialsPerRun;
 %% extract confidence inferred
 switch mdlType
     case 'simple'
-        [~, dataInferred] = logitfit_choices(computerRoot, study_nm, sub_nm,...
+        [~, dataInferred] = logitfit_choices(computerRoot, study_nm, sub_nm, condition,...
             0, 'levels', 6, 6);
     case 'bayesian'
         gitResultsFolder = [fullfile('C:','Users','clairis','Desktop',...
+                'GitHub','LGC_motiv','LGC_Motiv_results',study_nm,'bayesian_modeling'),filesep];
+        gitResultsFolder = [fullfile('C:','Users','Nicolas Clairis','Documents',...
                 'GitHub','LGC_motiv','LGC_Motiv_results',study_nm,'bayesian_modeling'),filesep];
 end
 
 %% extract rated and inferred confidence
 [confRatedAllTrials, confInferredAllTrials] = deal(NaN(1,nTotalTrials));
 for iRun = 1:nRuns
-    run_nm = ['run',num2str(iRun)];
+    kRun = runsStruct.runsToKeep(iRun);
+    run_nm = ['run',num2str(kRun)];
     run_task_id = runsStruct.tasks{iRun};
     switch run_task_id
         case 'Ep'
@@ -78,28 +83,18 @@ for iRun = 1:nRuns
     end
     run_trials_idx = (1:nTrialsPerRun) + nTrialsPerRun*(iRun - 1);
     
+    %% load confidence inferred from the model
     switch mdlType
         case 'simple'
             confInferredAllTrials(run_trials_idx) = dataInferred.confidenceFitted.(mdl_nm).(run_nm);
         case 'bayesian'
             [~, ~, confMdl_tmp] = extract_bayesian_mdl(gitResultsFolder, subBehaviorFolder,...
-                sub_nm, num2str(iRun), task_fullName, mdl_nm);
+                sub_nm, num2str(kRun), task_fullName, mdl_nm);
             confInferredAllTrials(run_trials_idx) = confMdl_tmp;
     end
-    % load rated confidence
-    behaviorStruct_tmp = load([subBehaviorFolder,...
-        'CID',sub_nm,'_session',num2str(iRun),'_',task_fullName,...
-        '_task.mat']);
-    switch run_task_id
-        case 'Ep'
-            choice_LR_tmp = behaviorStruct_tmp.physicalPerf.choice;
-        case 'Em'
-            choice_LR_tmp = behaviorStruct_tmp.mentalE_perf.choice;
-    end
-    conf_tmp = choice_LR_tmp;
-    conf_tmp(abs(choice_LR_tmp) == 2) = 1;
-    conf_tmp(abs(choice_LR_tmp) == 1) = 0;
-    conf_tmp(abs(choice_LR_tmp) == 0) = NaN;
+
+    %% load rated confidence
+    [conf_tmp] = extract_confidence_rating(subBehaviorFolder, sub_nm, run_nm, task_fullName);
     confRatedAllTrials(run_trials_idx) = conf_tmp;
 end % run loop
 

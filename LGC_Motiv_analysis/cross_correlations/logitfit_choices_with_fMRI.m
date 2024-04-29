@@ -36,7 +36,7 @@ end
 %% define ROIs
 [VS_ROI_infos] = load_VS_ROI();
 [dmPFC_ROI_infos] = load_dmPFC_ROI();
-[aINS_ROI_infos] = load_aINS_ROI();
+% [aINS_ROI_infos] = load_aINS_ROI();
 
 %% load BOLD for each ROI of interest
 GLM = 94;

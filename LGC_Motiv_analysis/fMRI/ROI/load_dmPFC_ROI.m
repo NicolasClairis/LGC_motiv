@@ -6,7 +6,7 @@ function[dmPFC_ROI_infos] = load_dmPFC_ROI()
 % dmPFC_ROI_infos: big structure with all the relevant information
 
 %% define dmPFC sphere
-ROI_coord_center = [-3 18 45];
+ROI_coord_center = [-3 18 45]; % coordinates based on (Kurniawan et al, 2021)
 sphereRadius = 8;
 % create sphere with a given radius
 % first use ndgrid to create a cube from -radius to +radius around [0,0,0]

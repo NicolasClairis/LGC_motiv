@@ -44,7 +44,7 @@ switch effort_type % in case you use different numbers for each effort type
         calibTimes.instructions_bis = 6;
         calibTimes.effort_max = 5;% time to perform the task
         calibTimes.physicalReadWait = t_readWait; % Arthur manual definition
-        calibTimes.MVC_rest = 7; % rest after each MVC calibration
+        calibTimes.MVC_rest = 1; % rest after each MVC calibration
         calibTimes.ifi = t_ifi; % manual definition to match with read frame rate
 end
 calibTimes.fbk = 2;
@@ -149,7 +149,7 @@ trainingTimes.choice                = t_choice;
 trainingTimes.dispChoice            = t_dispChoice;
 trainingTimes.feedback              = t_fbk;
 trainingTimes.fail_and_repeat_fbk   = t_fail_and_repeat_fbk;
-trainingTimes.endSession            = 5;
+trainingTimes.endSession            = 1;
 
 %% time feedback end of a block
 mainTimes.endfMRI = 15; % to get end of fMRI response and avoid artifacts

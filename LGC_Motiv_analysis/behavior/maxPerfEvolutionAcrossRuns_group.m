@@ -1,5 +1,5 @@
-function[maxPerf, pval] = maxPerfEvolutionAcrossRuns_group(computerRoot, study_nm, figGroupDisp, figIndivDisp)
-% [maxPerf, pval] = maxPerfEvolutionAcrossRuns_group(computerRoot, study_nm, figGroupDisp, figIndivDisp)
+function[maxPerf, pval] = maxPerfEvolutionAcrossRuns_group(computerRoot, figGroupDisp, figIndivDisp, study_nm, condition, subject_id, NS)
+% [maxPerf, pval] = maxPerfEvolutionAcrossRuns_group(computerRoot, figGroupDisp, figIndivDisp, study_nm, condition, subject_id, NS)
 % maxPerfEvolutionAcrossRuns_group will look at the average (across subjects)
 % maximal performance performed before and after each run.
 %
@@ -14,6 +14,14 @@ function[maxPerf, pval] = maxPerfEvolutionAcrossRuns_group(computerRoot, study_n
 %
 % figIndivDisp: display individual figure (1) or not (0)
 %
+% study_nm: study name ('study1' by default)
+%
+% condition: condition for subjects to include
+% 
+% subject_id: subject list (asked if not filled)
+% 
+% NS: number of subjects (can be left empty)
+%
 % OUTPUTS
 % maxPerf: structure with maximal performance individually and averaged
 %
@@ -24,9 +32,22 @@ if ~exist('computerRoot','var') || isempty(computerRoot)
     computerRoot = LGCM_root_paths;
 end
 
-%% study names
+%% subject selection
+% study name
 if ~exist('study_nm','var') || isempty(study_nm)
     study_nm = 'study1';
+end
+% condition
+if ~exist('condition','var') || isempty(condition)
+    condition = subject_condition;
+end
+% list of subjects
+if ~exist('subject_id','var') || isempty(subject_id)
+    [subject_id, NS] = LGCM_subject_selection(study_nm, condition);
+else
+    if ~exist('NS','var') || isempty(NS)
+        NS = length(subject_id);
+    end
 end
 
 %% working directories
@@ -39,9 +60,6 @@ resultFolder = [resultFolder_a,'figures',filesep];
 if ~exist(resultFolder,'dir')
     mkdir(resultFolder);
 end
-
-%% subject selection
-[subject_id, NS] = LGCM_subject_selection(study_nm, 'behavior');
 
 %% by default, display group figure
 if ~exist('figGroupDisp','var') || isempty(figGroupDisp)
@@ -107,7 +125,8 @@ for iPM = 1:2
         %% display figure
         if figGroupDisp == 1
             pSize = 30;
-            % display figure
+            
+            % display figure with barplots
             fig;
             bar(1:4, maxPerf.(task_id).mean);
             hold on;
@@ -116,6 +135,15 @@ for iPM = 1:2
             errorbarHdl.LineWidth = 3;
             errorbarHdl.Color = [0 0 0];
             ylim([0 110]);
+            ylabel(['Max Performance ',task_fullName, ' (%)']);
+            xticks(1:4);
+            xticklabels({'pre_R_1','post_R_1','pre_R_2','post_R_2'})
+            legend_size(pSize);
+            
+            % same but with violinplots
+            fig;
+            violinplot(maxPerf.(task_id).allData');
+            ylim([20 180]);
             ylabel(['Max Performance ',task_fullName, ' (%)']);
             xticks(1:4);
             xticklabels({'pre_R_1','post_R_1','pre_R_2','post_R_2'})

@@ -1,5 +1,5 @@
-function[] = First_level_batch(GLM, checking, condition, study_nm, subject_id, NS)
-%[] = First_level_batch(GLM, checking, condition, study_nm, subject_id, NS)
+function[] = First_level_batch(GLM, checking, condition, study_nm, subject_id, NS, biasFieldCorr)
+%[] = First_level_batch(GLM, checking, condition, study_nm, subject_id, NS, biasFieldCorr)
 % First_level_batch will perform 1st level for LGC motivation fMRI studies.
 %
 % INPUTS
@@ -24,6 +24,9 @@ function[] = First_level_batch(GLM, checking, condition, study_nm, subject_id, N
 %
 % NS: number of subjects (determined automatically if not defined in
 % the inputs)
+%
+% biasFieldCorr: use bias-field corrected images (1) or not (0)? By default
+% will not use bias-field corrected images
 %
 % See also which_GLM.m, 
 % First_level_loadEachCondition.m, First_level_loadRegressors.m,
@@ -61,9 +64,21 @@ end
 GLMprm = which_GLM(GLM);
 add_drv = GLMprm.gal.add_drv;
 grey_mask = GLMprm.gal.grey_mask;
+autocorrel = GLMprm.gal.autocorrel;
 
 % value of the smoothing during preprocessing?
 preproc_sm_kernel = 8;
+
+% use bias-field corrected images or not?
+if ~exist('biasFieldCorr','var') || ~ismember(biasFieldCorr,[0,1])
+    biasFieldCorr = 0;
+end
+switch biasFieldCorr
+    case 0
+        prefix = 'swr';
+    case 1
+        prefix = 'swbr';
+end
 
 % repetition time for fMRI
 TR = 2.00;
@@ -93,6 +108,10 @@ if ~exist('subject_id','var') || ~exist('NS','var') ||...
         isempty(subject_id) || isempty(NS)
     [subject_id, NS] = LGCM_subject_selection(study_nm, condition);
 end
+
+%% quick check condition and GLM are compatible
+isGLMok_bis(GLMprm, condition);
+
 %% loop through subjects
 matlabbatch = cell(nb_batch_per_subj*NS,1);
 for iS = 1:NS
@@ -108,8 +127,14 @@ for iS = 1:NS
     subj_behavior_folder    = [subj_folder, filesep, 'behavior' filesep];
     
     % create folder to store the results for the current subject
-    sm_folderName = [subj_analysis_folder 'functional', filesep,...
-        'preproc_sm_',num2str(preproc_sm_kernel),'mm',filesep];
+    switch biasFieldCorr
+        case 0
+            sm_folderName = [subj_analysis_folder 'functional', filesep,...
+                'preproc_sm_',num2str(preproc_sm_kernel),'mm',filesep];
+        case 1
+            sm_folderName = [subj_analysis_folder 'functional', filesep,...
+                'preproc_sm_',num2str(preproc_sm_kernel),'mm_with_BiasFieldCorrection',filesep];
+    end
     if ~exist(sm_folderName,'dir')
         mkdir(sm_folderName);
     end
@@ -167,11 +192,18 @@ for iS = 1:NS
         end
         
         % load scans in the GLM
-        cd([subj_scans_folder filesep subj_runFoldername_tmp, filesep,'preproc_sm_',num2str(preproc_sm_kernel),'mm',filesep]); % go to run folder
-        preprocessed_filenames = cellstr(spm_select('ExtFPList',pwd,'^swr.*\.nii$')); % extracts all the preprocessed swrf files (smoothed, normalized, realigned)
+        switch biasFieldCorr
+            case 0
+                runPath = [subj_scans_folder filesep subj_runFoldername_tmp, filesep,...
+                    'preproc_sm_',num2str(preproc_sm_kernel),'mm',filesep]; % run folder
+            case 1
+                runPath = [subj_scans_folder filesep subj_runFoldername_tmp, filesep,...
+                    'preproc_sm_',num2str(preproc_sm_kernel),'mm_with_BiasFieldCorrection',filesep]; % run folder
+        end
+        preprocessed_filenames = cellstr(spm_select('ExtFPList',runPath,['^',prefix,'.*\.nii$'])); % extracts all the preprocessed swrf files (smoothed, normalized, realigned)
         % in case data is not in .nii but in .img & .hdr
         if isempty(preprocessed_filenames{1})
-            preprocessed_filenames = cellstr(spm_select('ExtFPList',pwd,'^swr.*\.img$')); % extracts all the preprocessed swrf files (smoothed, normalized, realigned)
+            preprocessed_filenames = cellstr(spm_select('ExtFPList',runPath,['^',prefix,'.*\.img$'])); % extracts all the preprocessed swrf files (smoothed, normalized, realigned)
         end
         % check if still empty => if yes, stop the script
         if isempty(preprocessed_filenames{1})
@@ -234,16 +266,23 @@ for iS = 1:NS
     switch grey_mask
         case 0 % filter with threshold here if no mask entered
             matlabbatch{sub_idx}.spm.stats.fmri_spec.mthresh = 0.8; % default value
-        case {1,2,3} % no filter here since the mask will do the job
+        case 4 % filter with threshold here if no mask entered
+            matlabbatch{sub_idx}.spm.stats.fmri_spec.mthresh = 0.5; % try lower value to include ventral striatum
+        case 5 % filter with threshold here if no mask entered
+            matlabbatch{sub_idx}.spm.stats.fmri_spec.mthresh = 0.3; % try lower value to include ventral striatum
+        case 6 % filter with threshold here if no mask entered
+            matlabbatch{sub_idx}.spm.stats.fmri_spec.mthresh = 0.1; % try lower value to include ventral striatum
+        case {1,2,3,7} % no filter here since the mask will do the job
             matlabbatch{sub_idx}.spm.stats.fmri_spec.mthresh = -Inf; % implicitly masks the first level depending on the probability that the voxel is "relevant"
     end
     
     
     %% add grey mask or not
     switch grey_mask
-        case 0
+        case {0,4,5,6}
             matlabbatch{sub_idx}.spm.stats.fmri_spec.mask = {''};
-        case {1,2,3}
+        case {1,2,3,7}
+            maskProbaThreshold_nm = num2str(GLMprm.gal.mask_probaThreshold);
             % find grey matter mask
             switch grey_mask
                 case 1 % grey mask per subject
@@ -253,8 +292,23 @@ for iS = 1:NS
                         'bgrey_10perc_SPM_template.nii'];
                     error('copy-paste SPM template file first and then remove this line');
                 case 3 %  grey matter filter across subs
-                    mask_file_path = [root, filesep, 'grey_matter_mask', filesep,...
-                        'bmean_greyM_',num2str(NS),'_subjects_',condition,'_50percentGreyM.nii'];
+                    switch checking
+                        case 0
+                            mask_file_path = [root, filesep, 'grey_matter_mask', filesep,...
+                                'bmean_greyM_',num2str(NS),'_subjects_',condition,'_',maskProbaThreshold_nm,'percentGreyM.nii'];
+                        case 1 % to avoid bugs when checking
+                            mask_file_path = [root, filesep, 'grey_matter_mask', filesep,...
+                                'bmean_greyM_63_subjects_',condition,'_',maskProbaThreshold_nm,'percentGreyM.nii'];
+                    end
+                case 7 % grey + white matter filter across subs
+                    switch checking
+                        case 0
+                            mask_file_path = [root, filesep, 'greyAndWhite_matter_mask', filesep,...
+                                'bmean_greyAndWhiteM_',num2str(NS),'_subjects_',condition,'_',maskProbaThreshold_nm,'percentM.nii'];
+                        case 1 % to avoid bugs when checking
+                            mask_file_path = [root, filesep, 'greyAndWhite_matter_mask', filesep,...
+                                'bmean_greyAndWhiteM_63_subjects_',condition,'_',maskProbaThreshold_nm,'percentM.nii'];
+                    end
             end
             % load grey mask (or check if file missing)
             if exist(mask_file_path,'file')
@@ -264,7 +318,13 @@ for iS = 1:NS
             end
     end
     
-    matlabbatch{sub_idx}.spm.stats.fmri_spec.cvi = 'AR(1)';
+    %% temporal autocorrelation
+    switch autocorrel
+        case 0
+            matlabbatch{sub_idx}.spm.stats.fmri_spec.cvi = 'AR(1)';
+        case 1
+            matlabbatch{sub_idx}.spm.stats.fmri_spec.cvi = 'FAST';
+    end
     
     %% estimate model
     estimate_mdl_rtg_idx = nb_batch_per_subj*iS;

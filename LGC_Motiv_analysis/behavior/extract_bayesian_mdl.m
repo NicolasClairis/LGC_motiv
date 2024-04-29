@@ -1,6 +1,9 @@
-function[NV_chosen, deltaNV_hE_min_lE, confidence_highE, pChoice] = extract_bayesian_mdl(resultsFolder, subBehaviorFolder,...
+function[NV_chosen_min_unch, deltaNV_hE_min_lE, confidence_highE, pChoice,...
+    deltaNV_hE_min_lE_plus_bias, NV_ch_min_unch_with_bias] = extract_bayesian_mdl(resultsFolder, subBehaviorFolder,...
     sub_nm, run_nm, task_fullName, mdl_nm)
-% [NV_chosen, deltaNV_hE_min_lE, confidence_highE, pChoice] = extract_bayesian_mdl(resultsFolder, sub_nm, run_nm, mdl_nm)
+% [NV_chosen_min_unch, deltaNV_hE_min_lE, confidence_highE, pChoice,...
+%     deltaNV_hE_min_lE_plus_bias, NV_ch_min_unch_with_bias] = extract_bayesian_mdl(resultsFolder, subBehaviorFolder,...
+%     sub_nm, run_nm, task_fullName, mdl_nm)
 % extract_bayesian_mdl will extract the different variables inferred thanks
 % to the bayesian modeling approach for the model and subjects and run
 % defined in the inputs.
@@ -20,8 +23,8 @@ function[NV_chosen, deltaNV_hE_min_lE, confidence_highE, pChoice] = extract_baye
 % the model number)
 %
 % OUTPUTS
-% NV_chosen: 1*nTrials vector with information about the net value of the 
-% chosen option for the current study, subject and run.
+% NV_chosen_min_unch: 1*nTrials vector with information about the net value of the 
+% chosen - unchosen option for the current study, subject and run.
 %
 % deltaNV_hE_min_lE: 1*nTrials vector with information about the net value of the 
 % high effort option - low effort option for the current study, subject and run.
@@ -32,6 +35,14 @@ function[NV_chosen, deltaNV_hE_min_lE, confidence_highE, pChoice] = extract_baye
 %
 % pChoice: 1*nTrials vector with information about the probability of
 % choosing the high effort option for the current study, subject and run.
+%
+% deltaNV_hE_min_lE_plus_bias: 1*nTrials vector with deltaNV_hE_min_lE + bias 
+% (ie everything used for p(choice) before softmax transformation.
+%
+% NV_ch_min_unch_with_bias: 1*nTrials vector with information about the net value of the 
+% chosen - unchosen option for the current study, subject and run. Same as
+% NV_chosen_min_unch, but also including bias (ie same as pChoice before
+% the sigmoid transformation)
 
 study_nm = 'study1';
 %% load data
@@ -40,6 +51,18 @@ pChoiceStruct = getfield(load([resultsFolder,'bayesian_pChoice_data.mat']),'baye
 run_nm_bis = ['run',run_nm];
 %% choice of low or high effort option?
 [choice_highE] = extract_choice_hE(subBehaviorFolder, sub_nm, run_nm, task_fullName);
+
+%% load model bias (if present in the model)
+mdl_nm_start = strfind(mdl_nm,'_') + 1;
+mdlN = mdl_nm(mdl_nm_start:end);
+prm = prm_extraction(study_nm, {sub_nm},...
+    'bayesian', mdlN);
+if ~isempty(strcmp(fieldnames(prm),'kBiasM'))
+    kBias = prm.kBiasM;
+else
+    kBias = 0;
+end
+    
 %% extract net value
 deltaNV_hE_min_lE = deltaNVstruct.(mdl_nm).(['CID',sub_nm]).(run_nm_bis);
 % in case of infinite values, replace with values giving a high probability
@@ -47,16 +70,7 @@ deltaNV_hE_min_lE = deltaNVstruct.(mdl_nm).(['CID',sub_nm]).(run_nm_bis);
 plus_inf_idx = find(deltaNV_hE_min_lE == Inf); % p(choice=hE) = 1
 minus_inf_idx = find(deltaNV_hE_min_lE == -Inf); % p(choice=hE) = 0
 if ~isempty(plus_inf_idx) || ~isempty(minus_inf_idx)
-    % load model bias (if present in the model)
-    mdl_nm_start = strfind(mdl_nm,'_') + 1;
-    mdlN = mdl_nm(mdl_nm_start:end);
-    prm = prm_extraction(study_nm, {sub_nm},...
-        'bayesian', mdlN);
-    if ~isempty(strcmp(fieldnames(prm),'kBiasM'))
-        kBias = prm.kBiasM;
-    else
-        kBias = 0;
-    end
+    
     % replace Inf value by value giving similar probability
     if ~isempty(plus_inf_idx) % p(choice=hE) = 1
         pc_high = 0.9999999999999999;
@@ -68,12 +82,17 @@ if ~isempty(plus_inf_idx) || ~isempty(minus_inf_idx)
     end
 end % filter Inf values
 % extract net value for chosen option
-NV_chosen = deltaNV_hE_min_lE.*(choice_highE' == 1) +...
-    -deltaNV_hE_min_lE.*(choice_highE' == 0);
-NV_chosen(isnan(choice_highE)) = NaN;
+choice_vector = (choice_highE' == 1) - (choice_highE' == 0);
+NV_chosen_min_unch = deltaNV_hE_min_lE.*choice_vector;
+NV_chosen_min_unch(isnan(choice_highE)) = NaN;
 
-%% confidence
+%% delta NV + bias (ie everything used to compute p(choice) before the softmax transformation)
+deltaNV_hE_min_lE_plus_bias = deltaNV_hE_min_lE + kBias;
+NV_ch_min_unch_with_bias = deltaNV_hE_min_lE_plus_bias.*choice_vector;
+
+%% p(choice)
 pChoice = pChoiceStruct.(mdl_nm).(['CID',sub_nm]).(run_nm_bis);
+%% confidence
 confidence_highE = (pChoice - 0.5).^2;
 % normalize confidence to make it between 0 and 1
 confidence_highE = confidence_highE./0.25;

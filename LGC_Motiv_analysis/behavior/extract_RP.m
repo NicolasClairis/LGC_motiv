@@ -19,7 +19,7 @@ behaviorStruct = load([subBehaviorFolder,...
     'CID',sub_nm,'_session',run_nm,'_',task_fullName,...
     '_task.mat']);
 choiceOptions = behaviorStruct.choice_opt;
-%% extract R/P
+%% extract R/P (R=+1; P=-1)
 RP_trial = strcmp(choiceOptions.R_or_P,'R') - strcmp(choiceOptions.R_or_P,'P');
 
 end % function

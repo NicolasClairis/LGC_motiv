@@ -1,6 +1,9 @@
 function[latency, AUC, forcePeak, AUC_overshoot,...
-    AUC_N, forcePeak_N, AUC_overshoot_N] = extract_grip_force(subBehaviorFolder, sub_nm, run_nm)
-% [latency, AUC, forcePeak, AUC_overshoot, AUC_N, forcePeak_N, AUC_overshoot_N] = extract_grip_force(subBehaviorFolder, sub_nm, run_nm)
+    AUC_N, forcePeak_N, AUC_overshoot_N,...
+    perf_duration, percTime_above_threshold, percTime_out_of_forceBox] = extract_grip_force(subBehaviorFolder, sub_nm, run_nm)
+% [latency, AUC, forcePeak, AUC_overshoot,...
+%   AUC_N, forcePeak_N, AUC_overshoot_N,...
+%   perf_duration, percTime_above_threshold, percTime_out_of_forceBox] = extract_grip_force(subBehaviorFolder, sub_nm, run_nm)
 % extract_grip_force will extract several parameters related to performance
 % in the phyical effort task, such as latency to squeeze, the area under
 % the curve (AUC) of effort performed, the peak of force reached during
@@ -35,6 +38,17 @@ function[latency, AUC, forcePeak, AUC_overshoot,...
 % "useless" force that was produced during the trial (i.e. force above the
 % required threshold indicated by the red zone on the screen) (in newtons)
 %
+% perf_duration: duration between start of squeeze above threshold (ie
+% latency) and end of the trial (ie when no more effort needs to be
+% exerted)
+%
+% percTime_above_threshold: percentage of time the force was above the 55%
+% threshold to reach
+%
+% percTime_out_of_forceBox: percentage of time the force was below or above
+% the red square of required force (ie spending either too much or too low
+% force compared to what is necessary)
+%
 % N. Clairis - november 2022
 
 %% general parameters
@@ -45,35 +59,46 @@ diffFStartThreshold = 2; % threshold percentage to consider a force is being exe
 Fthreshold = 55;
 F_tolerance = 2.5;
 F_upper_threshold = Fthreshold + F_tolerance;
+F_lower_threshold = Fthreshold - F_tolerance;
 
-[latency.allTrials] = deal(NaN(1,nTrialsPerRun));
+[latency.allTrials, perf_duration.allTrials] = deal(NaN(1,nTrialsPerRun));
 [AUC.allTrials,...
     forcePeak.allTrials,...
     AUC_overshoot.allTrials,...
     AUC_N.allTrials,...
     forcePeak_N.allTrials,...
-    AUC_overshoot_N.allTrials] = deal(zeros(1,nTrialsPerRun));
-[latency.per_Ech] = deal(NaN(1,n_Ech));
+    AUC_overshoot_N.allTrials,...
+    percTime_above_threshold.allTrials,...
+    percTime_out_of_forceBox.allTrials] = deal(zeros(1,nTrialsPerRun));
+[latency.per_Ech, perf_duration.per_Ech] = deal(NaN(1,n_Ech));
 [AUC.per_Ech,...
     forcePeak.per_Ech,...
     AUC_overshoot.per_Ech,...
     AUC_N.per_Ech,...
     forcePeak_N.per_Ech,...
-    AUC_overshoot_N.per_Ech] = deal(zeros(1,n_Ech));
+    AUC_overshoot_N.per_Ech,...
+    percTime_above_threshold.per_Ech,...
+    percTime_out_of_forceBox.per_Ech] = deal(zeros(1,n_Ech));
 [latency.per_hE.choice_lowE,...
-    latency.per_hE.choice_highE] = deal(NaN(1,n_hE_levels));
+    latency.per_hE.choice_highE,...
+    perf_duration.per_hE.choice_lowE,...
+    perf_duration.per_hE.choice_highE] = deal(NaN(1,n_hE_levels));
 [AUC.per_hE.choice_lowE,...
     forcePeak.per_hE.choice_lowE,...
     AUC_overshoot.per_hE.choice_lowE,...
     AUC_N.per_hE.choice_lowE,...
     forcePeak_N.per_hE.choice_lowE,...
     AUC_overshoot_N.per_hE.choice_lowE,...
+    percTime_above_threshold.per_hE.choice_lowE,...
+    percTime_out_of_forceBox.per_hE.choice_lowE,...
     AUC.per_hE.choice_highE,...
     forcePeak.per_hE.choice_highE,...
     AUC_overshoot.per_hE.choice_highE,...
     AUC_N.per_hE.choice_highE,...
     forcePeak_N.per_hE.choice_highE,...
-    AUC_overshoot_N.per_hE.choice_highE] = deal(zeros(1,n_hE_levels));
+    AUC_overshoot_N.per_hE.choice_highE,...
+    percTime_above_threshold.per_hE.choice_highE,...
+    percTime_out_of_forceBox.per_hE.choice_highE] = deal(zeros(1,n_hE_levels));
 %% load the data
 behaviorStruct = load([subBehaviorFolder,...
     'CID',sub_nm,'_session',run_nm,'_physical_task.mat']);
@@ -120,6 +145,11 @@ for iTrial = 1:nTrialsPerRun
         latency.allTrials(iTrial) = timeForce(latency_squeeze_idx);
     end
     
+    %% extract performance duration
+    if ~isempty(latency_squeeze_idx) % filter trials where some force was exerted
+        E_period_dur_tmp = behaviorStruct.physicalPerf.durations.effortPeriod(iTrial);
+        perf_duration.allTrials(iTrial) = E_period_dur_tmp - timeForce(latency_squeeze_idx);
+    end
     %% extract AUC for the whole trial
     rmv_AUC_NaNs = ~isnan(trialForceLevels_corrected);
     AUC.allTrials(iTrial) = trapz(timeForce(rmv_AUC_NaNs), trialForceLevels_corrected(rmv_AUC_NaNs));
@@ -155,6 +185,26 @@ for iTrial = 1:nTrialsPerRun
             end
         end % cluster loop
     end
+    
+    %% extract percentage of the effort period in which force was below the threshold
+    timeInfo_tmp = behaviorStruct.physicalPerf.perfSummary{1,iTrial}.force_levels(:,2) - behaviorStruct.physicalPerf.perfSummary{1,iTrial}.force_levels(1,2);
+    forceLevel_tmp = behaviorStruct.physicalPerf.perfSummary{1,iTrial}.force_levels(:,1);
+    trialDur_tmp = timeInfo_tmp(end) - timeInfo_tmp(1);
+    jTime_above_threshold = 0;
+    jTime_out_of_threshold_box = 0;
+    for iT = 2:length(timeInfo_tmp) % ignore the unusual case where subject would start above threshold (should not happen: script prevents this)
+        % time force above tolerance threshold
+        if forceLevel_tmp(iT) >= F_lower_threshold % force is above tolerance threshold
+            jTime_above_threshold = jTime_above_threshold + (timeInfo_tmp(iT) - timeInfo_tmp(iT-1));
+        end % lower force threshold
+        
+        % time force not within tolerance box
+        if (forceLevel_tmp(iT) < F_lower_threshold) || (forceLevel_tmp(iT) > F_upper_threshold)
+            jTime_out_of_threshold_box = jTime_out_of_threshold_box + (timeInfo_tmp(iT) - timeInfo_tmp(iT-1));
+        end % out of red box
+    end % time loop
+    percTime_above_threshold.allTrials(iTrial) = jTime_above_threshold/trialDur_tmp;
+    percTime_out_of_forceBox.allTrials(iTrial) = jTime_out_of_threshold_box/trialDur_tmp;
 end % trial loop
 
 %% split by effort level and effort chosen
@@ -169,20 +219,26 @@ for iEff = 1:n_hE_levels
     j_hE_hEChoice = (jEff_level.*choice_highE) == 1;
     % low effort chosen
     latency.per_hE.choice_lowE(iEff) = mean(latency.allTrials(j_hE_lowEChoice),2,'omitnan');
+    perf_duration.per_hE.choice_lowE(iEff) = mean(perf_duration.allTrials(j_hE_lowEChoice),2,'omitnan');
     AUC.per_hE.choice_lowE(iEff) = mean(AUC.allTrials(j_hE_lowEChoice),2,'omitnan');
     forcePeak.per_hE.choice_lowE(iEff) = mean(forcePeak.allTrials(j_hE_lowEChoice),2,'omitnan');
     AUC_overshoot.per_hE.choice_lowE(iEff) = mean(AUC_overshoot.allTrials(j_hE_lowEChoice),2,'omitnan');
     AUC_N.per_hE.choice_lowE(iEff) = mean(AUC_N.allTrials(j_hE_lowEChoice),2,'omitnan');
     forcePeak_N.per_hE.choice_lowE(iEff) = mean(forcePeak_N.allTrials(j_hE_lowEChoice),2,'omitnan');
     AUC_overshoot_N.per_hE.choice_lowE(iEff) = mean(AUC_overshoot_N.allTrials(j_hE_lowEChoice),2,'omitnan');
+    percTime_above_threshold.per_hE.choice_lowE(iEff) = mean(percTime_above_threshold.allTrials(j_hE_lowEChoice),2,'omitnan');
+    percTime_out_of_forceBox.per_hE.choice_lowE(iEff) = mean(percTime_out_of_forceBox.allTrials(j_hE_lowEChoice),2,'omitnan');
     % high effort chosen
     latency.per_hE.choice_highE(iEff) = mean(latency.allTrials(j_hE_hEChoice),2,'omitnan');
+    perf_duration.per_hE.choice_highE(iEff) = mean(perf_duration.allTrials(j_hE_hEChoice),2,'omitnan');
     AUC.per_hE.choice_highE(iEff) = mean(AUC.allTrials(j_hE_hEChoice),2,'omitnan');
     forcePeak.per_hE.choice_highE(iEff) = mean(forcePeak.allTrials(j_hE_hEChoice),2,'omitnan');
     AUC_overshoot.per_hE.choice_highE(iEff) = mean(AUC_overshoot.allTrials(j_hE_hEChoice),2,'omitnan');
     AUC_N.per_hE.choice_highE(iEff) = mean(AUC_N.allTrials(j_hE_hEChoice),2,'omitnan');
     forcePeak_N.per_hE.choice_highE(iEff) = mean(forcePeak_N.allTrials(j_hE_hEChoice),2,'omitnan');
     AUC_overshoot_N.per_hE.choice_highE(iEff) = mean(AUC_overshoot_N.allTrials(j_hE_hEChoice),2,'omitnan');
+    percTime_above_threshold.per_hE.choice_highE(iEff) = mean(percTime_above_threshold.allTrials(j_hE_hEChoice),2,'omitnan');
+    percTime_out_of_forceBox.per_hE.choice_highE(iEff) = mean(percTime_out_of_forceBox.allTrials(j_hE_hEChoice),2,'omitnan');
 end
 
 % split by effort chosen
@@ -190,11 +246,14 @@ E_chosen = behaviorStruct.physicalPerf.E_chosen;
 for iEch = 1:n_Ech
     jEch_trials = E_chosen == (iEch - 1);
     latency.per_Ech(iEch) = mean(latency.allTrials(jEch_trials),2,'omitnan');
+    perf_duration.per_Ech(iEch) = mean(perf_duration.allTrials(jEch_trials),2,'omitnan');
     AUC.per_Ech(iEch) = mean(AUC.allTrials(jEch_trials),2,'omitnan');
     forcePeak.per_Ech(iEch) = mean(forcePeak.allTrials(jEch_trials),2,'omitnan');
     AUC_overshoot.per_Ech(iEch) = mean(AUC_overshoot.allTrials(jEch_trials),2,'omitnan');
     AUC_N.per_Ech(iEch) = mean(AUC_N.allTrials(jEch_trials),2,'omitnan');
     forcePeak_N.per_Ech(iEch) = mean(forcePeak_N.allTrials(jEch_trials),2,'omitnan');
     AUC_overshoot_N.per_Ech(iEch) = mean(AUC_overshoot_N.allTrials(jEch_trials),2,'omitnan');
+    percTime_above_threshold.per_Ech(iEch) = mean(percTime_above_threshold.allTrials(jEch_trials),2,'omitnan');
+    percTime_out_of_forceBox.per_Ech(iEch) = mean(percTime_out_of_forceBox.allTrials(jEch_trials),2,'omitnan');
 end % effort chosen
 end % function

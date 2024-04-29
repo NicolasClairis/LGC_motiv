@@ -1,0 +1,46 @@
+## notes regarding fit of the data: 
+# CFI and TLI should be close to 1
+# RMSEA should be <= 0.08 (reasonable approximate fit) or better <= 0.05 (close-fit) while if >= 0.1
+# check https://stats.oarc.ucla.edu/r/seminars/rsem/ for more details also
+
+
+# download library allowing to read matlab files
+#install.packages("R.matlab")
+library(R.matlab)
+
+#install.packages("lavaan")
+library(lavaan)
+#install.packages('semPlot')
+library(semPlot)
+
+# read the data prepared for SEM
+setwd("P:/boulot/postdoc_CarmenSandi/results/SEM")
+data_for_SEM <- readMat("dmPFCLac_MRS_dmPFC_GLM235_EpEm_Ech_59subs_THE_no_outliers.mat")
+
+# rename variables
+dmPFC_Lac = data_for_SEM$mtrx.THE.no.outliers[,1]
+dmPFC_fMRI = data_for_SEM$mtrx.THE.no.outliers[,2]
+THE = data_for_SEM$mtrx.THE.no.outliers[,3]
+#create data frame
+df = data.frame(dmPFC_Lac, dmPFC_fMRI, THE)
+
+##############################################################################
+## test 1: basic mediation (to compare to Matlab version)
+
+# define the SEM model to try (check https://bookdown.org/jdholster1/idsr/structural-equation-modeling.html for more details as well)
+# Specify model, can also write it in a single line
+sem_model <- '
+dmPFC_fMRI ~ dmPFC_Lac
+THE ~ dmPFC_fMRI + dmPFC_Lac
+'
+
+# Estimate our model
+fit_model1 <- sem(sem_model,data=df)
+# Summarize the results since it is degree of fred = 0, it is just identified, so fit.measures won't give more
+summary(fit_model1, fit.measures=TRUE, standardized = TRUE, rsquare=TRUE)
+# in case you need to extract p.value very low use the following lines:
+# details <- summary(fit_model1, fit.measures=TRUE, standardized = TRUE, rsquare=TRUE)
+#details$pe
+# make a nice display
+semPaths(fit_model1, "std", edge.label.cex = 1.0, curvePivot = TRUE)
+

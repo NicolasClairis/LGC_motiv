@@ -1,8 +1,13 @@
-function[betas, pvalues] = logitfit_choices_group(subject_id, computerRoot, figDispGroup, dispMoneyOrLevels)
-% [betas, pvalues] = logitfit_choices_group(subject_id, computerRoot, figDispGroup, dispMoneyOrLevels)
+function[betas, pvalues] = logitfit_choices_group(study_nm, subject_id, condition, computerRoot, figDispGroup, dispMoneyOrLevels)
+% [betas, pvalues] = logitfit_choices_group(study_nm, subject_id, condition, computerRoot, figDispGroup, dispMoneyOrLevels)
 %
 % INPUTS
+% study_nm: study name ('study1'/'study2')
+%
 % subject_id: list of subjects to extract (will be asked if left empty)
+%
+% condition: condition to be used for the model (removing subjects and/or
+% runs)
 %
 % computerRoot: root where data is stored (will be asked if left empty)
 %
@@ -35,9 +40,9 @@ if ~exist('figDispGroup','var') || isempty(figDispGroup)
 end
 
 %% by default, do not display individual figures
-if ~exist('figDispIndiv','var') || isempty(figDispIndiv)
-    figDispIndiv = 0;
-end
+% if ~exist('figDispIndiv','var') || isempty(figDispIndiv)
+figDispIndiv = 0;
+% end
 %% by default, display monetary levels instead of actual monetary amounts
 if ~exist('dispMoneyOrLevels','var') || isempty(dispMoneyOrLevels)
     dispMoneyOrLevels = 'levels';
@@ -70,8 +75,10 @@ if ~exist(resultFolder,'dir')
 end
 
 %% subject selection
-if ~exist('subject_id','var') || isempty(subject_id)
+if ~exist('condition','var') || isempty(condition)
     [condition] = subject_condition();
+end
+if ~exist('subject_id','var') || isempty(subject_id)
     [subject_id, NS] = LGCM_subject_selection(study_nm, condition);
 else
     NS = length(subject_id);
@@ -135,7 +142,7 @@ for iS = 1:NS
     sub_nm = subject_id{iS};
     % load individual data
     [betas_tmp, choices_tmp] = logitfit_choices(computerRoot, study_nm, sub_nm,...
-        figDispIndiv, dispMoneyOrLevels, n_NV_bins, n_trialN_bins);
+        condition, figDispIndiv, dispMoneyOrLevels, n_NV_bins, n_trialN_bins);
     trialN_levels = choices_tmp.trialN_bins.Ep;
     
     % pool data across subjects

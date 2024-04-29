@@ -1,5 +1,5 @@
-function[badSubList] = find_bad_subs_for_GLM(GLM, condition)
-%[badSubList] = find_bad_subs_for_GLM(GLM, condition)
+function[badSubList] = find_bad_subs_for_GLM(GLM, condition, biasFieldCorr)
+%[badSubList] = find_bad_subs_for_GLM(GLM, condition, biasFieldCorr)
 % find_bad_subs_for_GLM aims at identifying the subjects for which the
 % first level and/or the contrasts failed for a given GLM (specified in the
 % inputs).
@@ -8,8 +8,8 @@ function[badSubList] = find_bad_subs_for_GLM(GLM, condition)
 % GLM: GLM number
 %
 % condition: define subjects and runs to include
-% 'fMRI': all subjects where fMRI ok
-% 'fMRI_no_move': remove runs with too much movement
+%
+% biasFieldCorr: check bias-field corrected data (1) or not (0)
 %
 % OUTPUTS
 % badSubList: structure with names of the subjects where the GLM was not
@@ -44,13 +44,23 @@ end
 %% extract GLM if not defined yet
 if ~exist('GLM','var') || isempty(GLM)
    GLM_cell = inputdlg('GLM number?');
-   GLM = str2num(GLM_cell{1});
+   GLM = str2double(GLM_cell{1});
 end
-GLM_folder = [filesep, 'fMRI_analysis',filesep,'functional',filesep,...
-    'preproc_sm_',num2str(preproc_sm_kernel),'mm',filesep];
+if ~exist('biasFieldCorr','var') || isempty(biasFieldCorr) || ~ismember(biasFieldCorr,[0,1])
+    biasFieldCorr = 0;
+end
+switch biasFieldCorr
+    case 0
+        GLM_folder = [filesep, 'fMRI_analysis',filesep,'functional',filesep,...
+            'preproc_sm_',num2str(preproc_sm_kernel),'mm',filesep];
+    case 1
+        GLM_folder = [filesep, 'fMRI_analysis',filesep,'functional',filesep,...
+            'preproc_sm_',num2str(preproc_sm_kernel),'mm_with_BiasFieldCorrection',filesep];
+end
 GLM_path = fMRI_subFolder(GLM_folder,GLM,condition);
 % extract regressors
-[~, n_regsPerTask] = GLM_details(GLM);
+dispGLM = 0;
+[~, n_regsPerTask] = GLM_details(GLM,dispGLM);
 
 %% get full subject list
 [subject_id, NS] = LGCM_subject_selection(study_nm, condition);
@@ -71,7 +81,7 @@ for iS = 1:NS
     else % first level folder exists => is there data? were contrasts performed?
         % get the theoretical number of contrasts
         con_names = LGCM_contrasts(study_nm, sub_nm, GLM,...
-            computerRoot, preproc_sm_kernel, condition);
+            computerRoot, preproc_sm_kernel, condition, biasFieldCorr);
         n_cons = size(con_names,2);
         
         % get number of regressors/task*number of runs/task + 1 constant/run

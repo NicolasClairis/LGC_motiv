@@ -33,6 +33,9 @@ GLM_str = num2str(GLM);
 preproc_sm_kernel = 8;
 % preproc_sm_kernel = spm_input('smoothing kernel to use?',1,'e','8');
 
+%% use bias-field corrected maps?
+biasFieldCorr = 0;
+
 %% extract subjects
 [condition] = subject_condition;
 [subject_id, NS] = LGCM_subject_selection(study_nm, condition);
@@ -42,10 +45,10 @@ NS_str = num2str(NS);
 switch condition
     case 'fMRI_noSatRun_choiceSplit_Elvl_bis' % in this case, subject_id{1} does not include Em => need to adapt to include Em
         con_names = LGCM_contrasts(study_nm, subject_id{16}, GLM,...
-            computerRoot, preproc_sm_kernel, condition);
+            computerRoot, preproc_sm_kernel, condition, biasFieldCorr);
     otherwise
         con_names = LGCM_contrasts(study_nm, subject_id{1}, GLM,...
-            computerRoot, preproc_sm_kernel, condition);
+            computerRoot, preproc_sm_kernel, condition, biasFieldCorr);
 end
 n_cons = length(con_names);
 
@@ -66,8 +69,14 @@ conj_name = [selectedConShortNames{1},'_CONJ_',selectedConShortNames{2}];
 conj_name = strrep(conj_name,' ','_');
 
 %% extract folder of interest
-resultsFolder = [studyRoot, filesep,'Second_level',filesep,...
-    'GLM', GLM_str,'_conjunction_',NS_str,'subs',filesep];
+switch biasFieldCorr
+    case 0
+        resultsFolder = [studyRoot, filesep,'Second_level',filesep,...
+            'GLM', GLM_str,'_conjunction_',NS_str,'subs',filesep];
+    case 1
+        resultsFolder = [studyRoot, filesep,'Second_level_with_BiasFieldCorrection',filesep,...
+            'GLM', GLM_str,'_conjunction_',NS_str,'subs',filesep];
+end
 if ~exist(resultsFolder,'dir')
     mkdir(resultsFolder);
 end
@@ -121,14 +130,21 @@ for iCon = 1:nConsForConj
     for iS = 1:NS
         sub_nm = subject_id{iS};
         % working directory
-        subfMRIPath = [studyRoot,filesep,'CID',sub_nm, filesep,...
-            'fMRI_analysis',filesep,'functional',filesep,...
-            'preproc_sm_',num2str(preproc_sm_kernel),'mm',filesep];
+        switch biasFieldCorr
+            case 0
+                subfMRIPath = [studyRoot,filesep,'CID',sub_nm, filesep,...
+                    'fMRI_analysis',filesep,'functional',filesep,...
+                    'preproc_sm_',num2str(preproc_sm_kernel),'mm',filesep];
+            case 1
+                subfMRIPath = [studyRoot,filesep,'CID',sub_nm, filesep,...
+                    'fMRI_analysis',filesep,'functional',filesep,...
+                    'preproc_sm_',num2str(preproc_sm_kernel),'mm_with_BiasFieldCorrection',filesep];
+        end
         subject_main_folder = fMRI_subFolder(subfMRIPath, GLM, condition);
         
         % extract contrast names for current subject
         con_names_perSub = LGCM_contrasts(study_nm, sub_nm, GLM,...
-            computerRoot, preproc_sm_kernel, condition);
+            computerRoot, preproc_sm_kernel, condition, biasFieldCorr);
         if sum(strcmp(current_con_nm, con_names_perSub)) > 0
             % extract index (for this subject) of the current contrast
             jCon = find(strcmp(current_con_nm, con_names_perSub));
@@ -146,6 +162,10 @@ for iS = 1:NS
     okSubs(iS) = (~isempty(conlist_allSubs{iS,1}).*~isempty(conlist_allSubs{iS,2})) == 1;
 end % loop through subjects
 conlist = conlist_allSubs(okSubs,:);
+NS_ok = sum(okSubs);
+if NS_ok < NS
+    warning(['Only ',num2str(NS_ok),'/',num2str(NS),' subjects with ok data for conjunction']);
+end
 
 %% Be careful t2.scans (for two-sample t.test)
 which_technique = 1;

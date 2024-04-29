@@ -29,18 +29,20 @@ switch condition
         resultsFolderShortName = ['GLM',GLM_nm];
     case {'fMRI_noSatTask','fMRI_noSatTask_bayesianMdl'} % saturation runs removed for the full saturated tasks
         resultsFolderShortName = ['GLM',GLM_nm,'_no_satTask'];
-    case {'fMRI_noSatRun','fMRI_noSatRun_bayesianMdl','fMRI_noSatTaskSub_noSatRun'} % saturation runs removed
+    case {'fMRI_noSatRun','fMRI_noSatRun_bayesianMdl',...
+            'fMRI_noSatTaskSub_noSatRun','fMRI_noSatTaskSub_noMoveSub_noSatRun'} % saturation runs removed
         resultsFolderShortName = ['GLM',GLM_nm,'_no_satRun'];
-    case 'fMRI_noSatRun_choiceSplit_Elvl' % saturation runs removed, including those where choice is 100% correlated with effort level
+    case {'fMRI_noSatRun_choiceSplit_Elvl',...
+            'fMRI_noSatTaskSub_noSatRun_choiceSplit_Elvl'} % saturation runs removed, including those where choice is 100% correlated with effort level
         resultsFolderShortName = ['GLM',GLM_nm,'_no_satRun_Elvl'];
-    case 'fMRI_noSatRun_choiceSplit_Elvl_bis' % saturation runs removed, including those where choice is 100% correlated with effort level
-        resultsFolderShortName = ['GLM',GLM_nm,'_no_satRun_Elvl_bis'];
     case 'fMRI_noMove_bis' % any run with movement removed (with some tolerance)
         resultsFolderShortName = ['GLM',GLM_nm,'_noMvmtRun_lenient'];
     case 'fMRI_noMove_ter' % any run with movement removed (even slightest movement removed)
         resultsFolderShortName = ['GLM',GLM_nm,'_noMmvmtRun_stringent'];
     case {'fMRI_noSatTask_noMove_bis','fMRI_noSatTask_noMove_bis_bayesianMdl'} % saturation runs removed for the full saturated tasks
         resultsFolderShortName = ['GLM',GLM_nm,'_no_satTask_noMmvmtRun'];
+    case 'fMRI_noSatTaskSub_noMoveSub_noSatRun_noMoveRun'
+        resultsFolderShortName = ['GLM',GLM_nm,'_no_satRun_noMmvmtRun'];
     otherwise
         error('problem with folder name');
 end

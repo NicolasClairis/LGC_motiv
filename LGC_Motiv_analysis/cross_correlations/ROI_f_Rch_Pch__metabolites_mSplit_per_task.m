@@ -83,7 +83,7 @@ n_hI_levels = length(hI_levels);
 [fMRI_ROI.Ep.Rch, fMRI_ROI.Em.Rch] = deal(NaN(n_Rch,NS));
 [fMRI_ROI.Ep.Pch, fMRI_ROI.Em.Pch] = deal(NaN(n_Pch,NS));
 [fMRI_ROI.Ep.Ich, fMRI_ROI.Em.Ich] = deal(NaN(n_Ich,NS));
-% data split by level of effort proposed for the high effort option
+% data split by level of incentive proposed for the high effort option
 [fMRI_ROI.Ep.hR_level, choice_hE.Ep.hR_level,...
     fMRI_ROI.Em.hR_level, choice_hE.Em.hR_level] = deal(NaN(n_hR_levels, NS));
 [fMRI_ROI.Ep.hP_level, choice_hE.Ep.hP_level,...
@@ -180,6 +180,7 @@ for iS = 1:NS
         fMRI_ROI.(task_nm_tmp).allTrials(runTrials_idx, iS) = ROI_trial_b_trial.(fMRI_ROI_nm{1}).(task_nm_tmp).(run_nm_bis).(timePeriod_nm)(:, iS);
     end % run loop
     
+    %% split the data
     for iT = 1:nTasks
         task_nm = task_names{iT};
         %% extract data per incentive level and effort chosen

@@ -1,5 +1,5 @@
-function[choice_hE] = choice_hE_proportion(study_nm, condition, fig_disp)
-% [choice_hE] = choice_hE_proportion(study_nm, condition, fig_disp)
+function[choice_hE] = choice_hE_proportion(study_nm, condition, subject_id, fig_disp)
+% [choice_hE] = choice_hE_proportion(study_nm, condition, subject_id, fig_disp)
 % choice_hE_proportion will extract the proportion of effortful choices per
 %individual and per task (physical/mental) and also across the two tasks.
 %
@@ -7,6 +7,8 @@ function[choice_hE] = choice_hE_proportion(study_nm, condition, fig_disp)
 % study_nm: study name 'study1'/'study2'
 %
 % condition: condition to use for filtering subjects and runs
+%
+% subject_id: subject identification list
 %
 % fig_disp: figure display (1) or not (0)?
 %
@@ -22,7 +24,11 @@ end
 if ~exist('condition','var') || isempty(condition)
     condition = subject_condition();
 end
-[subject_id, NS] = LGCM_subject_selection(study_nm, condition, 'all');
+if ~exist('subject_id','var') || isempty(subject_id)
+    [subject_id, NS] = LGCM_subject_selection(study_nm, condition, 'all');
+else
+    NS = length(subject_id);
+end
 
 %% working directories
 which_pc = 'lab';
@@ -30,7 +36,8 @@ switch which_pc
     case 'lab'
         rootPath = [fullfile('E:',study_nm),filesep];
     case 'home'
-        rootPath = [fullfile('L:','human_data_private','raw_data_subject'),filesep];
+        serverRoot = fullfile(filesep,filesep,'sv-nas1.rcp.epfl.ch',filesep,'sandi-lab');
+        rootPath = [fullfile(serverRoot,'human_data_private','raw_data_subject',study_nm),filesep];
 end
 
 %% display figure = yes by default
@@ -46,14 +53,14 @@ figDispIndiv = 0;
     choice_hE.EpEm] = deal(NaN(1,NS));
 for iS = 1:NS
     sub_nm = subject_id{iS};
-    cd([rootPath,'CID',sub_nm,filesep,'behavior']);
+    sub_folder = [rootPath,'CID',sub_nm,filesep,'behavior'];
     % select ok runs
     runs = runs_definition(study_nm, sub_nm, condition);
     runs_ok_Ep_tmp = run_conversion(runs.Ep.runsToKeep);
     runs_ok_Em_tmp = run_conversion(runs.Em.runsToKeep);
     
     [choiceND_percentage_perRun_tmp,...
-        ~] = choiceNDproportion_perRun(sub_nm, figDispIndiv);
+        ~] = choiceNDproportion_perRun(sub_nm, figDispIndiv, sub_folder);
     
     %% physical task
     if ismember(1,runs_ok_Ep_tmp)

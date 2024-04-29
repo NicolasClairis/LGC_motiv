@@ -1,5 +1,5 @@
-function[] = LGCM_contrasts_spm(GLM, checking, condition, study_nm, subject_id, NS)
-% [] = LGCM_contrasts_spm(GLM, checking, condition, study_nm, subject_id, NS)
+function[] = LGCM_contrasts_spm(GLM, checking, condition, study_nm, subject_id, NS, biasFieldCorr)
+% [] = LGCM_contrasts_spm(GLM, checking, condition, study_nm, subject_id, NS, biasFieldCorr)
 % LGCM_contrasts_spm prepares the batch for SPM to perform the first level
 % contrasts in each individual of the study
 %
@@ -21,6 +21,10 @@ function[] = LGCM_contrasts_spm(GLM, checking, condition, study_nm, subject_id, 
 % NS: number of subjects (determined automatically if not defined in
 % the inputs)
 %
+% biasFieldCorr: use bias-field corrected images (1) or not (0)? By default
+% will not use bias-field corrected images
+%
+
 close all; clc;
 
 %% working directories
@@ -50,6 +54,11 @@ end
 %% preprocessing smoothing kernel to consider
 preproc_sm_kernel = 8;
 
+%% use bias-field corrected files or not?
+if ~exist('biasFieldCorr','var') || ~ismember(biasFieldCorr,[0,1])
+    biasFieldCorr = 0;
+end
+
 %% checking by default the batch before launching it
 if ~exist('checking','var') ||...
         isempty(checking) ||...
@@ -70,6 +79,10 @@ if ~exist('subject_id','var') || ~exist('NS','var') ||...
         isempty(subject_id) || isempty(NS)
     [subject_id, NS] = LGCM_subject_selection(study_nm, condition, gender);
 end
+
+%% indication of GLM
+disp(['GLM',num2str(GLM),' launching contrasts']);
+
 %% loop through subjects to extract all the regressors
 matlabbatch = cell(NS,1);
 
@@ -79,12 +92,19 @@ for iSubject = 1:NS
     
     %% extract contrasts list (vectors + corresponding names
     [con_names, con_vector] = LGCM_contrasts(study_nm, sub_nm, GLM,...
-        computer_root, preproc_sm_kernel, condition);
+        computer_root, preproc_sm_kernel, condition, biasFieldCorr);
     
     %% define results directory
-    mainPath = [fullfile(root,['CID',sub_nm],...
+    switch biasFieldCorr
+        case 0
+            mainPath = [fullfile(root,['CID',sub_nm],...
                 'fMRI_analysis','functional',...
                 ['preproc_sm_',num2str(preproc_sm_kernel),'mm']), filesep];
+        case 1
+            mainPath = [fullfile(root,['CID',sub_nm],...
+                'fMRI_analysis','functional',...
+                ['preproc_sm_',num2str(preproc_sm_kernel),'mm_with_BiasFieldCorrection']), filesep];
+    end
     [resultsFolderName] = fMRI_subFolder(mainPath, GLM, condition);
     matlabbatch{iSubject}.spm.stats.con.spmmat = {fullfile(resultsFolderName,'SPM.mat')};
     %% add each contrast to the list

@@ -438,7 +438,7 @@ if dispFig == true
     legend('Location','NorthWest');
     legend('boxoff');
     xticks(hE_levels);
-    xlabel({'high Effort level';full_bhv_taskName});
+    xlabel({'high Effort';full_bhv_taskName});
     ylabel({[ROI_short_nm,' BOLD during ',timePeriod_nm];...
         full_ROI_taskName});
     legend_size(pSize);

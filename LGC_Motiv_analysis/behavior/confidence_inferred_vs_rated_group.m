@@ -28,12 +28,24 @@ function[betas, pval] = confidence_inferred_vs_rated_group(study_nm, condition, 
 
 
 %% define subjects
+if ~exist('study_nm','var') || isempty(study_nm)
+    study_nm = 'study1';
+end
+if ~exist('condition','var') || isempty(condition)
+    condition = subject_condition;
+end
 [subject_id, NS] = LGCM_subject_selection(study_nm, condition);
 
 %% define model to use
 [mdlType, mdlN] = behavioral_model_selection;
 mdl_nm = ['mdl_',mdlN];
 %% general parameters
+if ~exist('n_conf_bins','var') || isempty(n_conf_bins)
+    n_conf_bins = 6;
+end
+if ~exist('figGroupDisp','var') || isempty(figGroupDisp)
+    figGroupDisp = 1;
+end
 % avoid displaying individual figures
 figIndivDisp = 0;
 % betas to extract (where test will be applied)
@@ -46,7 +58,7 @@ figIndivDisp = 0;
 %% loop through subjects
 for iS = 1:NS
     sub_nm = subject_id{iS};
-    [betas_tmp, conf_bins] = confidence_inferred_vs_rated(study_nm, sub_nm,...
+    [betas_tmp, conf_bins] = confidence_inferred_vs_rated(study_nm, sub_nm, condition,...
         n_conf_bins, figIndivDisp, mdlType, mdl_nm);
     beta_zero(iS) = betas_tmp(1);
     beta_confInferred(iS) = betas_tmp(2);

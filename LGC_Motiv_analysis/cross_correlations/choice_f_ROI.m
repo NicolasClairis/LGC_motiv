@@ -107,7 +107,7 @@ choice_hE_fit_perElevel.EpEmPool = NaN(nTrials/n_E_levels, n_E_levels, NS);
     timePeriod_nm] = extract_ROI_betas_onsets_only_questInfos(ROI_trial_b_trial);
 
 %% fit parameters
-fitType = 'normal'; % binomial or normal
+fitType = 'binomial'; % binomial or normal
 switch fitType
     case 'binomial'
         fitType_glmval = 'logit';
@@ -278,7 +278,7 @@ for iT = 1:(nTasks+1)
         choice_fit_f_fMRI_hdl.Color = 'k';
         choice_fit_f_fMRI_hdl.LineStyle = '--';
         line([0 0],[0 100],'Color','k','LineStyle','-','LineWidth',lWidth);
-        ylim([0 100]);
+        ylim([30 80]);
         xlabel([fMRI_ROI_short_nm,' BOLD during ',timePeriod_nm,' - ',task_nm_tmp]);
         ylabel(['Choice (%) - ',task_nm_tmp]);
         legend_size(pSize);

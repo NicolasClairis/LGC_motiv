@@ -6,21 +6,10 @@ condition = subject_condition();
 [subject_id, NS] = LGCM_subject_selection(study_nm, condition);
 
 %% extract fatigue levels
-[preMRS_fatigue, postMRS_fatigue,...
+[~,...
+    preMRS_fatigue, postMRS_fatigue,...
     prefMRI_fatigue, postfMRI_fatigue,...
-    deltaFatiguePrePostExp] = deal(NaN(1,NS));
-% load fatigue
-[excelReadGeneralFile] = load_gal_data_bis(study_nm);
-for iS = 1:NS
-    sub_nm = ['CID',subject_id{iS}];
-    fatigue_sub_idx = strcmp(sub_nm, excelReadGeneralFile.CID);
-    
-    preMRS_fatigue(iS)          = excelReadGeneralFile.FatiguePr__MRS(fatigue_sub_idx);
-    postMRS_fatigue(iS)          = excelReadGeneralFile.FatiguePost_MRS(fatigue_sub_idx);
-    prefMRI_fatigue(iS)          = excelReadGeneralFile.FatiguePr__fMRI(fatigue_sub_idx);
-    postfMRI_fatigue(iS)          = excelReadGeneralFile.FatiguePost_fMRI(fatigue_sub_idx);
-    deltaFatiguePrePostExp(iS)  = postfMRI_fatigue(iS) - preMRS_fatigue(iS);
-end
+    deltaFatiguePrePostExp] = extract_subjective_fatigue_ratings(study_nm, subject_id, NS);
 %% define metabolite and ROI you want to focus on and extract subjects accordingly
 [low_met_subs, high_met_subs, mSplit_metabolite_nm] = medSplit_metabolites(study_nm,subject_id);
 [metabolite_allSubs, MRS_ROI_nm, linear_metabolite_nm] = metabolite_extraction(study_nm, subject_id);
@@ -163,11 +152,18 @@ legend_size(pSize);
 fig;
 hold on;
 % low Ep
-violinplot([deltaFatiguePrePostExp_metSplit.low', deltaFatiguePrePostExp_metSplit.high'])
+if sum(low_met_subs) == sum(high_met_subs) % even number
+    violinplot([deltaFatiguePrePostExp_metSplit.low',...
+        deltaFatiguePrePostExp_metSplit.high']);
+elseif sum(low_met_subs) == sum(high_met_subs) + 1
+    violinplot([deltaFatiguePrePostExp_metSplit.low',...
+        [deltaFatiguePrePostExp_metSplit.high,NaN]'])
+end
 
 % add infos
 xticks([1, 2]);
-xticklabels({['l',mSplit_metabolite_nm_bis],['h',mSplit_metabolite_nm_bis]});
+xticklabels({['l',mSplit_metabolite_nm_bis],...
+    ['h',mSplit_metabolite_nm_bis]});
 ylabel('subjective fatigue end - start');
 legend_size(pSize);
 
@@ -238,3 +234,25 @@ fit_hdl.LineStyle = '--';
 xlabel([MRS_ROI_nm,' - ',linear_metabolite_nm_bis]);
 ylabel('subjective fatigue end - start');
 legend_size(pSize);
+
+
+
+%% try to do mixed-effects GLM to check for repeated measures ANOVA (based on chatgpt)
+dataTable = table([subject_id';subject_id';subject_id';subject_id'],...
+    [ones(NS,1); ones(NS,1)*2; ones(NS,1)*3; ones(NS,1)*4],...
+    [preMRS_fatigue'; postMRS_fatigue'; prefMRI_fatigue'; postfMRI_fatigue'],...
+    [metabolite_allSubs';metabolite_allSubs';metabolite_allSubs';metabolite_allSubs';],...
+    'VariableNames', {'SubjectID', 'TimePoint', 'SubjectiveFatigue', linear_metabolite_nm});
+
+% Define the mixed-effects model formula
+formula = ['SubjectiveFatigue ~ 1 + ',linear_metabolite_nm,' + TimePoint + (1|SubjectID)'];
+
+% Fit the mixed-effects model using fitlme
+mdl = fitlme(dataTable, formula);
+
+% Display the results
+disp(mdl);
+
+% You can also inspect fixed effects and random effects
+disp(fixedEffects(mdl));
+disp(randomEffects(mdl));

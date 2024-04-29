@@ -250,7 +250,7 @@ for iS = 1:NS
         'Color',[0 153/255 1-0.01*iS], 'LineWidth',1)
 end
 % ylim([0 100]);
-ylim([40 100]);
+ylim([50 85]);
 xlim([1 n_bins]);
 xticks(1:n_bins);
 xLabelNames = cell(1,n_bins);
@@ -259,8 +259,9 @@ for iBin = 1:n_bins
     xLabelNames{iBin} = [num2str( 1 + nTrialsPerBin*(iBin-1)),'-',num2str(nTrialsPerBin*iBin)];
 end
 xticklabels(xLabelNames);
-xlabel('trial number');
+xlabel('Trial');
 ylabel('Choice high effort (%)');
+ylabel('Choice (%)');
 legend_size(pSize);
 %% check choices = f(fatigue)
 fig;
@@ -291,7 +292,7 @@ for iBin = 1:n_bins
 end
 xticklabels(xLabelNames);
 xlabel('trial number');
-ylabel('Choice non-default option (%)');
+ylabel('Choice high effort option (%)');
 legend([bar_hdl.Em, bar_hdl.Ep],'mental','physical');
 legend('boxoff');
 legend('Location','NorthWest');
@@ -324,7 +325,7 @@ xticks(1:4);
 xticklabels({'R','P','R','P'});
 ylim([0 100]);
 xlim([0 5]);
-ylabel('Choice non-default option (%)');
+ylabel('Choice high effort option (%)');
 legend([bar_hdl.Em, bar_hdl.Ep],'mental','physical');
 legend('boxoff');
 legend_size(pSize);
@@ -352,7 +353,7 @@ for iAbsMoney = 1:(n_R_levels - 1)
         'k','LineWidth',lWidth);
 end
 ylim([0 100]);
-ylabel('Choice non-default option (%)');
+ylabel('Choice high effort option (%)');
 ylabel('High effort choice (%)');
 xticks(1:3);
 xticklabels({'1','2','3'});
@@ -360,7 +361,7 @@ xlim([0 n_R_levels]);
 xlabel('|Δ money| level');
 legend_size(pSize);
 ylim([0 100]);
-ylabel('Choice non-default option (%)');
+ylabel('Choice high effort option (%)');
 legend([bar_hdl.Em, bar_hdl.Ep],'mental','physical');
 legend('boxoff');
 legend_size(pSize);
@@ -394,14 +395,14 @@ for iMoney = [-(n_R_levels-1):(-1), 1:(n_R_levels - 1)]
         'k','LineWidth',lWidth);
 end
 ylim([0 100]);
-ylabel('Choice non-default option (%)');
+ylabel('Choice high effort option (%)');
 xticks([-3:-(1), 1:3]);
 xticklabels({'-3','-2','-1','1','2','3'});
 xlim([-n_R_levels n_R_levels]);
 xlabel('Money level');
 legend_size(pSize);
 ylim([0 100]);
-ylabel('Choice non-default option (%)');
+ylabel('Choice high effort option (%)');
 legend([bar_hdl.Em, bar_hdl.Ep],'mental','physical');
 legend('boxoff');
 legend_size(pSize);
@@ -425,7 +426,7 @@ for iE = 1:(n_E_levels - 1)
         'k','LineWidth',lWidth);
 end
 ylim([0 100]);
-ylabel('Choice non-default option (%)');
+ylabel('Choice high effort option (%)');
 xticks(1:3);
 xticklabels({'1','2','3'});
 xlim([0 n_E_levels]);
@@ -523,7 +524,9 @@ bar_hdl.Ep = jbfill(1:n_bins,...
     Ep_col);
 ylim([0 100]);
 xlim([0 n_bins+1]);
-xlabel('trial bins');
+xticks(1:n_bins);
+xticklabels(xLabelNames);
+xlabel('Trial number');
 ylabel('Confidence (%)');
 legend([bar_hdl.Em, bar_hdl.Ep],'mental','physical');
 legend('boxoff');
@@ -607,7 +610,9 @@ bar_hdl.Ep = jbfill(1:n_bins,...
     Ep_col);
 ylim([1.8 2.5]);
 xlim([0 n_bins+1]);
-xlabel('trial bins');
+xticks(1:n_bins);
+xticklabels(xLabelNames);
+xlabel('Trial number');
 ylabel('RT (s)');
 legend([bar_hdl.Em, bar_hdl.Ep],'mental','physical');
 legend('boxoff');
@@ -719,9 +724,11 @@ bar_hdl.Ep = jbfill(1:n_bins,...
     (avg_Eperformance.Ep_f_time - sem_Eperformance.Ep_f_time)',...
     avg_Eperformance.Ep_f_time',...
     Ep_col);
-ylim([80 100]);
+ylim([90 100]);
 xlim([0 n_bins+1]);
-xlabel('trial bins');
+xticks(1:n_bins);
+xticklabels(xLabelNames);
+xlabel('Trial number');
 ylabel('Effort Performance (%)');
 legend([bar_hdl.Em, bar_hdl.Ep],'mental','physical');
 legend('boxoff');

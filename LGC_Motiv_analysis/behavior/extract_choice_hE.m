@@ -1,5 +1,7 @@
-function[choice_highE] = extract_choice_hE(subBehaviorFolder, sub_nm, run_nm, task_fullName)
-% [choice_highE] = extract_choice_hE(subBehaviorFolder, sub_nm, run_nm, task_fullName)
+function[choice_highE] = extract_choice_hE(subBehaviorFolder,...
+    sub_nm, run_nm, task_fullName)
+% [choice_highE] = extract_choice_hE(subBehaviorFolder,...
+%   sub_nm, run_nm, task_fullName)
 %
 % INPUTS
 % subBehaviorFolder: folder where data is stored

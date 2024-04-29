@@ -18,7 +18,7 @@ if ~exist('computerRoot','var') || isempty(computerRoot)
     computerRoot = LGCM_root_paths;
 end
 
-%% study names
+%% study name
 if ~exist('study_nm','var') || isempty(study_nm)
     study_nm = 'study1';
 end

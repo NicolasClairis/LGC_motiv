@@ -8,9 +8,10 @@ function [X1_orth] = mtrx_orthog(X1_to_orth, X0_to_orth_to)
 % of X1_to_orth to all the preceding columns.
 %
 % INPUTS
-% X1_to_orth: matrix where each column is a vector to be orthogonalized
-% to the vectors contained in X0_to_orth_to (or to the preceding columns
-% of X1_to_orth if X0_to_orth_to is empty)
+% X1_to_orth: nSamples*nVars matrix where each column is a vector of
+% nSamples samples to be orthogonalized to the vectors contained in 
+% X0_to_orth_to (or to the preceding columns of X1_to_orth if X0_to_orth_to
+% is empty)
 %
 % X0_to_orth_to: matrix where each vector is a column (or all empty).
 % You want to orthogonalize X1_to_orth to this matrix.

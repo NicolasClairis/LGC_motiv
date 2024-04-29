@@ -33,9 +33,10 @@ RP_var_tmp = extract_RP(subBehaviorFolder, sub_nm, run_nm, task_fullName);
 hP_level = hI_level_v0;
 % remove reward trials
 hP_level(RP_var_tmp == 1) = 0;
+
 % swap low and high punishment numbers to make it more similar to rewards
 % (P1 will now be the least motivating amount (ie worst punishment, closer 
-% the default option)
+% to the default option)
 % P3 will now be the more motivating amount (ie "best" punishment))
 hP_level((hI_level_v0 == 3).*(RP_var_tmp == -1) == 1) = 1;
 hP_level((hI_level_v0 == 1).*(RP_var_tmp == -1) == 1) = 3;

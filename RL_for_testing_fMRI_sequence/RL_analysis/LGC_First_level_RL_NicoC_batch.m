@@ -48,11 +48,23 @@ spm_jobman('initcfg');
 % number of subjects
 subject_id = {'fMRI_pilot1_AC'};
 NS = length(subject_id);
-preproc_folder = 'preproc_sm_8mm';
-if grey_mask == 0
-    maskThresh = 0.8; % 0.8 by default
-else
-    maskThresh = -Inf;
+
+% bias-field corrected preprocessing or not?
+biasFieldCorr = 1;
+
+switch biasFieldCorr
+    case 0
+        preproc_folder = 'preproc_sm_8mm';
+    case 1
+        preproc_folder = 'preproc_sm_8mm_with_BiasFieldCorrection';
+end
+switch grey_mask
+    case 0
+        maskThresh = 0.8; % 0.8 by default
+    case 2
+        maskThresh = 0.1; % lower threshold
+    otherwise
+        maskThresh = -Inf;
 end
 learningRuns    = 3;
 nbRuns = learningRuns;
@@ -79,15 +91,32 @@ for iSub = 1:NS
     subj_anat_folder = [subj_analysis_folder,filesep,'anatomical',filesep];
     subj_scans_folder       = [subj_folder, filesep, 'fMRI_scans' filesep];
     % folder names
-    subj_scan_folders_names = ls([subj_scans_folder, filesep, '*_run*']); % takes all functional runs folders (if TR = 1.10s, for multiband seq in particular)
+    subj_scan_folders_names = ls([subj_scans_folder, filesep, '*_run*']); % takes all functional runs folders
     
     % create folder for storing data for this subject
-    if grey_mask == 0
-        filename = [subj_analysis_folder 'functional', filesep,...
-            preproc_folder,filesep,'GLM',num2str(GLM),'_SPMmask',num2str(maskThresh*100),'percent'];
-    elseif grey_mask == 1
-        filename = [subj_analysis_folder 'functional', filesep,...
-            preproc_folder,filesep,'GLM',num2str(GLM),'_individualGreyMask'];
+    switch biasFieldCorr
+        case 0
+            switch grey_mask
+                case {0,2}
+                    filename = [subj_analysis_folder 'functional', filesep,...
+                        preproc_folder,filesep,...
+                        'GLM',num2str(GLM),'_SPMmask',num2str(maskThresh*100),'percent'];
+                case 1
+                    filename = [subj_analysis_folder 'functional', filesep,...
+                        preproc_folder,filesep,...
+                        'GLM',num2str(GLM),'_individualGreyMask'];
+            end
+        case 1 % bias-field corrected files
+            switch grey_mask
+                case {0,2}
+                    filename = [subj_analysis_folder 'functional', filesep,...
+                        preproc_folder,filesep,...
+                        'GLM',num2str(GLM),'_SPMmask',num2str(maskThresh*100),'percent_with_BiasFieldCorrection'];
+                case 1
+                    filename = [subj_analysis_folder 'functional', filesep,...
+                        preproc_folder,filesep,...
+                        'GLM',num2str(GLM),'_individualGreyMask_with_BiasFieldCorrection'];
+            end
     end
     mkdir(filename);
     
@@ -102,7 +131,7 @@ for iSub = 1:NS
     
     % loop through runs and tasks
     for iRun = 1:nbRuns
-        runname = num2str(iRun);
+%         runname = num2str(iRun);
         % erase useless spaces from folder with run name
         n_char = size(subj_scan_folders_names(iRun,:),2);
         for iLetter = 1:n_char
@@ -113,7 +142,12 @@ for iSub = 1:NS
         
         % load scans in the GLM
         cd([subj_scans_folder filesep subj_runFoldername, filesep, preproc_folder,filesep]); % go to run folder
-        preprocessed_filenames = cellstr(spm_select('ExtFPList',pwd,'^swr.*\.nii$')); % extracts all the preprocessed swrf files (smoothed, normalized, realigned)
+        switch biasFieldCorr
+            case 0
+                preprocessed_filenames = cellstr(spm_select('ExtFPList',pwd,'^swr.*\.nii$')); % extracts all the preprocessed swrf files (smoothed, normalized, realigned)
+            case 1
+                preprocessed_filenames = cellstr(spm_select('ExtFPList',pwd,'^swbr.*\.nii$')); % extracts all the preprocessed swrf files (smoothed, normalized, realigned)
+        end
         matlabbatch{sub_idx}.spm.stats.fmri_spec.sess(iRun).scans = preprocessed_filenames;
         
         % identify task corresponding to this run
@@ -142,13 +176,14 @@ for iSub = 1:NS
     matlabbatch{sub_idx}.spm.stats.fmri_spec.global = 'None';
     % no grey mask
     matlabbatch{sub_idx}.spm.stats.fmri_spec.mthresh = maskThresh; % default value
-    if grey_mask == 0
-        matlabbatch{sub_idx}.spm.stats.fmri_spec.mask = {''};
-    elseif grey_mask == 1
-        % find grey matter mask
-        mask = ls([subj_anat_folder,'bmwc1*']); % modulated grey matter mask
-        mask = [subj_anat_folder,mask];
-        matlabbatch{sub_idx}.spm.stats.fmri_spec.mask = {mask};
+    switch grey_mask
+        case {0,2}
+            matlabbatch{sub_idx}.spm.stats.fmri_spec.mask = {''};
+        case 1
+            % find grey matter mask
+            mask = ls([subj_anat_folder,'bmwc1*']); % modulated grey matter mask
+            mask = [subj_anat_folder,mask];
+            matlabbatch{sub_idx}.spm.stats.fmri_spec.mask = {mask};
     end
     matlabbatch{sub_idx}.spm.stats.fmri_spec.cvi = 'AR(1)';
     

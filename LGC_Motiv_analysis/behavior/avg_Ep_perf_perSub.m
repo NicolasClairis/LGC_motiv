@@ -1,5 +1,9 @@
-function [latency, AUC, forcePeak, AUC_overshoot, AUC_N, forcePeak_N, AUC_overshoot_N] = avg_Ep_perf_perSub(study_nm, sub_nm, condition)
-% [latency, AUC, forcePeak, AUC_overshoot, AUC_N, forcePeak_N, AUC_overshoot_N] = avg_Ep_perf_perSub(study_nm, sub_nm, condition)
+function [latency, AUC, forcePeak, AUC_overshoot,...
+    AUC_N, forcePeak_N, AUC_overshoot_N,...
+    percTime_above_threshold, percTime_out_of_forceBox] = avg_Ep_perf_perSub(study_nm, sub_nm, condition)
+% [latency, AUC, forcePeak, AUC_overshoot,...
+%   AUC_N, forcePeak_N, AUC_overshoot_N,...
+%   percTime_above_threshold, percTime_out_of_forceBox] = avg_Ep_perf_perSub(study_nm, sub_nm, condition)
 % avg_Ep_perf_perSub will extract average physical performance
 % characteristics for the subject defined in input. Each variable can then
 % be dissected according to effort level chosen, reward level chosen, run,
@@ -28,6 +32,13 @@ function [latency, AUC, forcePeak, AUC_overshoot, AUC_N, forcePeak_N, AUC_oversh
 %
 % AUC_overshoot_N: area under the curve overshoot above the threshold of 
 % force to produce to do the trial (based on force in Newtons)
+%
+% percTime_above_threshold: percentage of time the force was above the 55%
+% threshold to reach
+%
+% percTime_out_of_forceBox: percentage of time the force was below or above
+% the red square of required force (ie spending either too much or too low
+% force compared to what is necessary)
 
 %% working directories
 % computerRoot = LGCM_root_paths;
@@ -43,6 +54,7 @@ n_total_Ep_trials = nTrialsPerRun*n_Ep_runs;
 [latency_perTrial,...
     AUC_perTrial, forcePeak_perTrial, AUC_overshoot_perTrial,...
     AUC_N_perTrial, forcePeak_N_perTrial, AUC_overshoot_N_perTrial,...
+    percTime_above_threshold_perTrial, percTime_out_of_forceBox_perTrial,...
     RP_perTrial, monetary_inc_perTrial,...
     Ech_perTrial, hE_level_perTrial, choice_highE_perTrial] = deal(NaN(1,n_total_Ep_trials));
 
@@ -64,7 +76,8 @@ for iRun = 1:runs.nb_runs.Ep
     % extract force
     [latency_tmp,...
         AUC_tmp, forcePeak_tmp, AUC_overshoot_tmp,...
-        AUC_N_tmp, forcePeak_N_tmp, AUC_overshoot_N_tmp] = extract_grip_force(subBehaviorFolder, sub_nm, run_nm);
+        AUC_N_tmp, forcePeak_N_tmp, AUC_overshoot_N_tmp,...
+        ~, percTime_above_threshold_tmp, percTime_out_of_forceBox_tmp] = extract_grip_force(subBehaviorFolder, sub_nm, run_nm);
     % extract info for all trials across all runs
     latency_perTrial(run_trials_idx) = latency_tmp.allTrials;
     AUC_perTrial(run_trials_idx) = AUC_tmp.allTrials;
@@ -73,6 +86,8 @@ for iRun = 1:runs.nb_runs.Ep
     AUC_N_perTrial(run_trials_idx) = AUC_N_tmp.allTrials;
     forcePeak_N_perTrial(run_trials_idx) = forcePeak_N_tmp.allTrials;
     AUC_overshoot_N_perTrial(run_trials_idx) = AUC_overshoot_N_tmp.allTrials;
+    percTime_above_threshold_perTrial(run_trials_idx) = percTime_above_threshold_tmp.allTrials;
+    percTime_out_of_forceBox_perTrial(run_trials_idx) = percTime_out_of_forceBox_tmp.allTrials;
     % extract other variables of interest for spliting
     [Ech_perTrial(run_trials_idx)] = extract_E_chosen(subBehaviorFolder, sub_nm, run_nm, task_fullName);
     [~, monetary_inc_perTrial(run_trials_idx)] = extract_money_chosen(subBehaviorFolder, sub_nm, run_nm, task_fullName);
@@ -88,6 +103,8 @@ for iRun = 1:runs.nb_runs.Ep
     AUC_N.(run_nm_bis).allTrials = AUC_N_tmp.allTrials;
     forcePeak_N.(run_nm_bis).allTrials = forcePeak_N_tmp.allTrials;
     AUC_overshoot_N.(run_nm_bis).allTrials = AUC_overshoot_N_tmp.allTrials;
+    percTime_above_threshold.(run_nm_bis).allTrials = percTime_above_threshold_tmp.allTrials;
+    percTime_out_of_forceBox.(run_nm_bis).allTrials = percTime_out_of_forceBox_tmp.allTrials;
     % extract trials split
     latency.(run_nm_bis).per_Ech = latency_tmp.per_Ech;
     AUC.(run_nm_bis).per_Ech = AUC_tmp.per_Ech;
@@ -96,6 +113,8 @@ for iRun = 1:runs.nb_runs.Ep
     AUC_N.(run_nm_bis).per_Ech = AUC_N_tmp.per_Ech;
     forcePeak_N.(run_nm_bis).per_Ech = forcePeak_N_tmp.per_Ech;
     AUC_overshoot_N.(run_nm_bis).per_Ech = AUC_overshoot_N_tmp.per_Ech;
+    percTime_above_threshold.(run_nm_bis).per_Ech = percTime_above_threshold_tmp.per_Ech;
+    percTime_out_of_forceBox.(run_nm_bis).per_Ech = percTime_out_of_forceBox_tmp.per_Ech;
     % extract trials split per Effort level*choice
     latency.(run_nm_bis).per_hE.choice_lowE = latency_tmp.per_hE.choice_lowE;
     AUC.(run_nm_bis).per_hE.choice_lowE = AUC_tmp.per_hE.choice_lowE;
@@ -104,6 +123,8 @@ for iRun = 1:runs.nb_runs.Ep
     AUC_N.(run_nm_bis).per_hE.choice_lowE = AUC_N_tmp.per_hE.choice_lowE;
     forcePeak_N.(run_nm_bis).per_hE.choice_lowE = forcePeak_N_tmp.per_hE.choice_lowE;
     AUC_overshoot_N.(run_nm_bis).per_hE.choice_lowE = AUC_overshoot_N_tmp.per_hE.choice_lowE;
+    percTime_above_threshold.(run_nm_bis).per_hE.choice_lowE = percTime_above_threshold_tmp.per_hE.choice_lowE;
+    percTime_out_of_forceBox.(run_nm_bis).per_hE.choice_lowE = percTime_out_of_forceBox_tmp.per_hE.choice_lowE;
     latency.(run_nm_bis).per_hE.choice_highE = latency_tmp.per_hE.choice_highE;
     AUC.(run_nm_bis).per_hE.choice_highE = AUC_tmp.per_hE.choice_highE;
     forcePeak.(run_nm_bis).per_hE.choice_highE = forcePeak_tmp.per_hE.choice_highE;
@@ -111,17 +132,21 @@ for iRun = 1:runs.nb_runs.Ep
     AUC_N.(run_nm_bis).per_hE.choice_highE = AUC_N_tmp.per_hE.choice_highE;
     forcePeak_N.(run_nm_bis).per_hE.choice_highE = forcePeak_N_tmp.per_hE.choice_highE;
     AUC_overshoot_N.(run_nm_bis).per_hE.choice_highE = AUC_overshoot_N_tmp.per_hE.choice_highE;
+    percTime_above_threshold.(run_nm_bis).per_hE.choice_highE = percTime_above_threshold_tmp.per_hE.choice_highE;
+    percTime_out_of_forceBox.(run_nm_bis).per_hE.choice_highE = percTime_out_of_forceBox_tmp.per_hE.choice_highE;
     
 end % run loop
 
 %% average data per variable of interest
-latency.allRuns.allTrials           = mean(latency_perTrial,2,'omitnan');
-AUC.allRuns.allTrials               = mean(AUC_perTrial,2,'omitnan');
-forcePeak.allRuns.allTrials         = mean(forcePeak_perTrial,2,'omitnan');
-AUC_overshoot.allRuns.allTrials     = mean(AUC_overshoot_perTrial,2,'omitnan');
-AUC_N.allRuns.allTrials             = mean(AUC_N_perTrial,2,'omitnan');
-forcePeak_N.allRuns.allTrials       = mean(forcePeak_N_perTrial,2,'omitnan');
-AUC_overshoot_N.allRuns.allTrials   = mean(AUC_overshoot_N_perTrial,2,'omitnan');
+latency.allRuns.allTrials                   = mean(latency_perTrial,2,'omitnan');
+AUC.allRuns.allTrials                       = mean(AUC_perTrial,2,'omitnan');
+forcePeak.allRuns.allTrials                 = mean(forcePeak_perTrial,2,'omitnan');
+AUC_overshoot.allRuns.allTrials             = mean(AUC_overshoot_perTrial,2,'omitnan');
+AUC_N.allRuns.allTrials                     = mean(AUC_N_perTrial,2,'omitnan');
+forcePeak_N.allRuns.allTrials               = mean(forcePeak_N_perTrial,2,'omitnan');
+AUC_overshoot_N.allRuns.allTrials           = mean(AUC_overshoot_N_perTrial,2,'omitnan');
+percTime_above_threshold.allRuns.allTrials  = mean(percTime_above_threshold_perTrial,2,'omitnan');
+percTime_out_of_forceBox.allRuns.allTrials  = mean(percTime_out_of_forceBox_perTrial,2,'omitnan');
 
 %% split per effort chosen
 for iEch = Ech_levels
@@ -135,6 +160,8 @@ for iEch = Ech_levels
     AUC_N.allRuns.(Ech_nm) = mean(AUC_N_perTrial(Ech_idx),2,'omitnan');
     forcePeak_N.allRuns.(Ech_nm) = mean(forcePeak_N_perTrial(Ech_idx),2,'omitnan');
     AUC_overshoot_N.allRuns.(Ech_nm) = mean(AUC_overshoot_N_perTrial(Ech_idx),2,'omitnan');
+    percTime_above_threshold.allRuns.(Ech_nm) = mean(percTime_above_threshold_perTrial(Ech_idx),2,'omitnan');
+    percTime_out_of_forceBox.allRuns.(Ech_nm) = mean(percTime_out_of_forceBox_perTrial(Ech_idx),2,'omitnan');
 end % effort level chosen loop
 
 %% split per level of money chosen (pooling R and P)
@@ -150,6 +177,8 @@ for iInc = inc_ch_levels
     AUC_N.allRuns.(inc_nm) = mean(AUC_N_perTrial(inc_idx),2,'omitnan');
     forcePeak_N.allRuns.(inc_nm) = mean(forcePeak_N_perTrial(inc_idx),2,'omitnan');
     AUC_overshoot_N.allRuns.(inc_nm) = mean(AUC_overshoot_N_perTrial(inc_idx),2,'omitnan');
+    percTime_above_threshold.allRuns.(inc_nm) = mean(percTime_above_threshold_perTrial(inc_idx),2,'omitnan');
+    percTime_out_of_forceBox.allRuns.(inc_nm) = mean(percTime_out_of_forceBox_perTrial(inc_idx),2,'omitnan');
 end
 
 %% split per reward/punishment
@@ -169,6 +198,8 @@ for iRP = 1:2
     AUC_N.allRuns.(RP_nm) = mean(AUC_N_perTrial(RP_idx),2,'omitnan');
     forcePeak_N.allRuns.(RP_nm) = mean(forcePeak_N_perTrial(RP_idx),2,'omitnan');
     AUC_overshoot_N.allRuns.(RP_nm) = mean(AUC_overshoot_N_perTrial(RP_idx),2,'omitnan');
+    percTime_above_threshold.allRuns.(RP_nm) = mean(percTime_above_threshold_perTrial(RP_idx),2,'omitnan');
+    percTime_out_of_forceBox.allRuns.(RP_nm) = mean(percTime_out_of_forceBox_perTrial(RP_idx),2,'omitnan');
 end % R/P trials
 
 %% split per effort level proposed * choice made
@@ -187,7 +218,9 @@ choice_lE_idx = choice_highE_perTrial == 0;
     AUC_overshoot.allRuns.per_hE.choice_highE,...
     AUC_N.allRuns.per_hE.choice_highE,...
     forcePeak_N.allRuns.per_hE.choice_highE,...
-    AUC_overshoot_N.allRuns.per_hE.choice_highE] = deal(NaN(1,n_hE_levels));
+    AUC_overshoot_N.allRuns.per_hE.choice_highE,...
+    percTime_above_threshold.allRuns.per_hE.choice_highE,...
+    percTime_out_of_forceBox.allRuns.per_hE.choice_highE] = deal(NaN(1,n_hE_levels));
 for iE = 1:n_hE_levels
     hE_idx = hE_level_perTrial == iE;
     hEch_idx = (hE_idx.*choice_hE_idx) == 1;
@@ -201,6 +234,8 @@ for iE = 1:n_hE_levels
     AUC_N.allRuns.per_hE.choice_lowE(iE) = mean(AUC_N_perTrial(lEch_idx),2,'omitnan');
     forcePeak_N.allRuns.per_hE.choice_lowE(iE) = mean(forcePeak_N_perTrial(lEch_idx),2,'omitnan');
     AUC_overshoot_N.allRuns.per_hE.choice_lowE(iE) = mean(AUC_overshoot_N_perTrial(lEch_idx),2,'omitnan');
+    percTime_above_threshold.allRuns.per_hE.choice_lowE(iE) = mean(percTime_above_threshold_perTrial(lEch_idx),2,'omitnan');
+    percTime_out_of_forceBox.allRuns.per_hE.choice_lowE(iE) = mean(percTime_out_of_forceBox_perTrial(lEch_idx),2,'omitnan');
     % high effort chosen
     latency.allRuns.per_hE.choice_highE(iE) = mean(latency_perTrial(hEch_idx),2,'omitnan');
     AUC.allRuns.per_hE.choice_highE(iE) = mean(AUC_perTrial(hEch_idx),2,'omitnan');
@@ -209,6 +244,8 @@ for iE = 1:n_hE_levels
     AUC_N.allRuns.per_hE.choice_highE(iE) = mean(AUC_N_perTrial(hEch_idx),2,'omitnan');
     forcePeak_N.allRuns.per_hE.choice_highE(iE) = mean(forcePeak_N_perTrial(hEch_idx),2,'omitnan');
     AUC_overshoot_N.allRuns.per_hE.choice_highE(iE) = mean(AUC_overshoot_N_perTrial(hEch_idx),2,'omitnan');
+    percTime_above_threshold.allRuns.per_hE.choice_highE(iE) = mean(percTime_above_threshold_perTrial(hEch_idx),2,'omitnan');
+    percTime_out_of_forceBox.allRuns.per_hE.choice_highE(iE) = mean(percTime_out_of_forceBox_perTrial(hEch_idx),2,'omitnan');
 end % effort level
 
 %% extract intercept and slope for each variable
@@ -288,5 +325,27 @@ b_AUC_overshoot_N_lowE = glmfit(hE_level_perTrial(choice_lE_idx),...
     AUC_overshoot_N_perTrial(choice_lE_idx), 'normal');
 AUC_overshoot_N.intercept.choice_lowE = b_AUC_overshoot_N_lowE(1);
 AUC_overshoot_N.slope.choice_lowE = b_AUC_overshoot_N_lowE(2);
+
+% % time above threshold high effort choice
+b_percTime_above_threshold_highE = glmfit(hE_level_perTrial(choice_hE_idx),...
+    percTime_above_threshold_perTrial(choice_hE_idx), 'normal');
+percTime_above_threshold.intercept.choice_highE = b_percTime_above_threshold_highE(1);
+percTime_above_threshold.slope.choice_highE = b_percTime_above_threshold_highE(2);
+% % time above threshold low effort choice
+b_percTime_above_threshold_lowE = glmfit(hE_level_perTrial(choice_lE_idx),...
+    percTime_above_threshold_perTrial(choice_lE_idx), 'normal');
+percTime_above_threshold.intercept.choice_lowE = b_percTime_above_threshold_lowE(1);
+percTime_above_threshold.slope.choice_lowE = b_percTime_above_threshold_lowE(2);
+
+% % time below or above red box high effort choice
+b_percTime_out_of_forceBox_highE = glmfit(hE_level_perTrial(choice_hE_idx),...
+    percTime_out_of_forceBox_perTrial(choice_hE_idx), 'normal');
+percTime_out_of_forceBox.intercept.choice_highE = b_percTime_out_of_forceBox_highE(1);
+percTime_out_of_forceBox.slope.choice_highE = b_percTime_out_of_forceBox_highE(2);
+% % time below or above red box low effort choice
+b_percTime_out_of_forceBox_lowE = glmfit(hE_level_perTrial(choice_lE_idx),...
+    percTime_out_of_forceBox_perTrial(choice_lE_idx), 'normal');
+percTime_out_of_forceBox.intercept.choice_lowE = b_percTime_out_of_forceBox_lowE(1);
+percTime_out_of_forceBox.slope.choice_lowE = b_percTime_out_of_forceBox_lowE(2);
 
 end % function
