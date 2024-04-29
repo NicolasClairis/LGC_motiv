@@ -1,0 +1,6 @@
+- LGC_Motiv_task contains all the files and code required to launch the experiment (adapted for Windows with a 7T Siemens Magnetom MRI scanner + a handgrip from BioPac using a NI card + a response pad from Current Designs. The script may require some adaptation for the paths used + for the response devices (keyboard and grip) used + for the specific MRI used)
+- LGC_Motiv_analysis contains all the code used for the analysis of the behavioral, MRS, plasma, fMRI and path analysis data.
+- Matlad_DIY_functions contains functions by me or by others that I used across my different scripts.
+- MS_students_version is a very simplified version for demonstration of the task to Master Students.
+- CHUV_project is a separate project of mine trying to link pgACC-GSH to lack of motivation
+- study2_version contains all the files and code to launch the experiment for a different set-up of the task
