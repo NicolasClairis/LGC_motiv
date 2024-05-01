@@ -21,12 +21,13 @@ gitPath = [gitRoot, filesep, 'GitHub',filesep,...
     'bayesian_modeling', filesep];
 root = ['E:',filesep,study_nm,filesep];
 
-%%
+%% load data
 bayesian_deltaNV = getfield(load([gitPath, 'bayesian_deltaNV_data.mat'],'bayesian_deltaNV'),'bayesian_deltaNV');
 bayesian_pChoice = getfield(load([gitPath, 'bayesian_pChoice_data.mat'],'bayesian_pChoice'),'bayesian_pChoice');
 
 %% load parameters
-mdl_nm = 'mdl_4';
+mdl_nm = 'mdl_3';
+% mdl_nm = 'mdl_4';
 behavioral_prm_tmp = load([gitPath,'behavioral_prm.mat']);
 bayesian_mdl = behavioral_prm_tmp.bayesian_mdl;
 bhv_prm = bayesian_mdl.(mdl_nm);
@@ -59,52 +60,52 @@ for iS = 1:NS
     
     for iR = 1:n_runs
         jR = runs.runsToKeep(iR);
-        run_nm = num2str(jR);
-        run_task_nm = runs.tasks{iR};
-        switch run_task_nm
-            case 'Ep'
-                task_fullName = 'physical';
-            case 'Em'
-                task_fullName = 'mental';
-        end % task name
-        % load data
-        sub_loadStruct = load([sub_bhv_folder,...
-            sub_nm_bis,'_session',num2str(iR),...
-            '_',task_fullName,'_task.mat']);
-        choice_options = sub_loadStruct.choice_opt;
-        dMoney_tmp = abs(choice_options.monetary_amount.left - choice_options.monetary_amount.right);
-        dE_tmp = abs(choice_options.E.left - choice_options.E.right);
-        RP_tmp = strcmp(choice_options.R_or_P,'R');
-        [deltaR_money] = extract_deltaR_money(sub_bhv_folder, sub_nm, run_nm, task_fullName);
-        [deltaP_money] = extract_deltaP_money(sub_bhv_folder, sub_nm, run_nm, task_fullName);
-        Ep_task = strcmp(run_task_nm,'Ep');
-        Em_task = strcmp(run_task_nm,'Em');
-        switch run_task_nm
-            case 'Em'
-                [~,...
-                    ~,...
-                    prevEfficacy,...
-                    ~] = extract_mental_previous_efficacy(sub_bhv_folder, sub_nm, run_nm, task_fullName); % Arthur model: used n.correct/Time (with time starting after 2 first)
-                Fp = 0;
-            case 'Ep'
-                [~,Fp] = extract_physical_fatigue(sub_bhv_folder, sub_nm, run_nm, task_fullName); % extract AUC in Voltage
-                prevEfficacy = 0;
-                Fp = Fp./1000; % Arthur divided by 1000 to make variables in a more similar range
-        end
-        
-        dNV_tmp = (kR.*deltaR_money + kP.*deltaP_money) +...
-            -(Ep_task.*dE_tmp.*(kEp + kFp.*Fp) +...
-            Em_task.*dE_tmp.*(kEm - kLm.*prevEfficacy)) +...
-            kBiasM;
-        pChoice_tmp = 1./(1 + exp(-dNV_tmp));
-        error('Something is weird');
-        bayesian_deltaNV.(mdl_nm).(sub_nm_bis).(['run',num2str(iR)])(:) = dNV_tmp';
-        bayesian_pChoice.(mdl_nm).(sub_nm_bis).(['run',num2str(iR)])(:) = pChoice_tmp';
+        if ~isempty(jR)
+            run_nm = num2str(jR);
+            run_task_nm = runs.tasks{iR};
+            switch run_task_nm
+                case 'Ep'
+                    task_fullName = 'physical';
+                case 'Em'
+                    task_fullName = 'mental';
+            end % task name
+            % load data
+            [dE_tmp] = extract_hE_level(sub_bhv_folder, sub_nm, run_nm, task_fullName);
+            [deltaR_money_tmp] = extract_deltaR_money(sub_bhv_folder, sub_nm, run_nm, task_fullName);
+            [deltaP_money_tmp] = extract_deltaP_money(sub_bhv_folder, sub_nm, run_nm, task_fullName);
+            % amounts rescaled in cents for Arthur's model
+            deltaR_money_tmp = deltaR_money_tmp.*100;
+            deltaP_money_tmp = deltaP_money_tmp.*100;
+            % extract time-related variables (physical fatigue and mental
+            % previous efficiency)
+            is_Ep_task = strcmp(run_task_nm,'Ep');
+            is_Em_task = strcmp(run_task_nm,'Em');
+            switch run_task_nm
+                case 'Em'
+                    [~,...
+                        ~,...
+                        ~,...
+                        ~,...
+                        prevEfficacy] = extract_mental_previous_efficacy(sub_bhv_folder, sub_nm, run_nm, task_fullName); % Arthur model: used n.correct/Time (with time starting after 2 first)
+                    Fp = 0;
+                case 'Ep'
+                    prevEfficacy = 0;
+                    [~,Fp] = extract_physical_fatigue(sub_bhv_folder, sub_nm, run_nm, task_fullName); % extract AUC in Voltage
+                    Fp = Fp./1000; % Arthur divided by 1000 to make variables in a more similar range
+            end
+            
+            dNV_tmp = (kR.*deltaR_money_tmp + kP.*deltaP_money_tmp) +...
+                -(is_Ep_task.*dE_tmp.*(kEp + kFp.*Fp) +...
+                is_Em_task.*dE_tmp.*(kEm - kLm.*prevEfficacy));
+            pChoice_tmp = 1./(1 + exp(-(dNV_tmp + kBiasM)));
+            bayesian_deltaNV.(mdl_nm).(sub_nm_bis).(['run',num2str(iR)])(:) = dNV_tmp';
+            bayesian_pChoice.(mdl_nm).(sub_nm_bis).(['run',num2str(iR)])(:) = pChoice_tmp';
+        end % filter runs ok
     end % run loop
     
 end % subject loop
 
 
-% %% make one global save
+%% make one global save
 % save([gitPath, 'bayesian_deltaNV_data.mat'],'bayesian_deltaNV');
 % save([gitPath, 'bayesian_pChoice_data.mat'],'bayesian_pChoice');
