@@ -94,7 +94,7 @@ for iS = 1:NS
         switch run_task_nm
             case 'Ep'
                 [sumPrevAUC_N, sumPrevAUC] = extract_physical_fatigue(subBehaviorFolder, sub_nm, run_nm, task_fullName);
-                Fp(run_trial_idx) = sumPrevAUC_N;
+                Fp(run_trial_idx) = sumPrevAUC;
                 currEff(run_trial_idx) = 0;
                 prevEff(run_trial_idx) = 0;
             case 'Em'
