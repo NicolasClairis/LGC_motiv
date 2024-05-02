@@ -87,9 +87,9 @@ for iS = 1:NS
                         ~,...
                         ~,...
                         prevEfficacy] = extract_mental_previous_efficacy(sub_bhv_folder, sub_nm, run_nm, task_fullName); % Arthur model: used n.correct/Time (with time starting after 2 first)
-                    Fp = 0;
+                    Fp = zeros(1,nTrialsPerRun);
                 case 'Ep'
-                    prevEfficacy = 0;
+                    prevEfficacy = zeros(1,nTrialsPerRun);
                     [~,Fp] = extract_physical_fatigue(sub_bhv_folder, sub_nm, run_nm, task_fullName); % extract AUC in Voltage
                     Fp = Fp./1000; % Arthur divided by 1000 to make variables in a more similar range
             end
