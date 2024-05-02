@@ -1,22 +1,22 @@
 % script to compute behavioral sensitivities and select the best one
 
 %% clean workspace before starting
+
 clc;
 clearvars;
 close all;
 set(0,'defaultfigurecolor',[1 1 1])
 %% prepare paths and working directory
 % serverRoot = 'D:';
-serverRoot = 'M:';
+serverRoot = '\\sv-nas1.rcp.epfl.ch\Sandi-Lab\human_data_private\Summary\';
 % main_folder                 = [pwd]; % you have to be sure that you are in the correct path when you launch the script
 results_folder           = '\\sv-nas1.rcp.epfl.ch\Sandi-Lab\human_data_private\raw_data_subject\study1';
-code_folder              = [serverRoot,'\matlab_codes\Data_simulation\Extraction Sensitivities'];
+code_folder              = [serverRoot,'\matlab_codes\Data_simulation\Extraction Sensitivities\'];
 
 addpath(results_folder);
 addpath(code_folder);
 cd(results_folder)
 addpath([serverRoot,'\matlab_codes\Main_analysis_all_dataset_codes']);
-addpath(code_folder);
 
 %% set run parameters
 
@@ -146,7 +146,7 @@ rescale_choice = true;
 % do you want binary response from the model
 binary_answers = false; % make response binary from model prediction
 do_smooth = false;
-do_save = false; % transform parameters (if there was some positivity constraint) and save the corresponding results
+do_save = false; % save the corresponding results
 do_plot = true;
 do_kEc_plot = true;
 
@@ -192,7 +192,7 @@ for i_sub = 1:length(all_files)
     var_p_or_m(:,i_sub) = var(4,:);
     var_saved(:,:,i_sub) = var;
 	% choose how many models to test
-    for i_model=1:nb_functions
+    for i_model=5%1:nb_functions
         
         if i_model == 6
                 if var_p_or_m(1,i_sub) == 1
@@ -662,5 +662,27 @@ save_data(sensitivitiesPhi,sensitivitiesTheta,CID_nb,p,m,RTP,RTM,all_MVC,all_NMP
 % ratio_HE = nanmean(squeeze(nanmean(ratio_HE)),2);
 % ratio = [ratio_D,ratio_LE,ratio_ME,ratio_HE];
 % save('M_ratio_for_Simu.mat','ratio')
+else % transform parameters into correct space (for model 5)
+    
+    model_i = 5;
+    mod = [];
+    
+    for i = 1:length(sensitivitiesPhi)
+        mod.kR(i) =  log(1+exp(sensitivitiesPhi{model_i,i}(1)));
+        mod.kP(i) =  log(1+exp(sensitivitiesPhi{model_i,i}(2)));
+        mod.kEp(i) =  log(1+exp(sensitivitiesPhi{model_i,i}(3)));
+        mod.kEm(i) =  log(1+exp(sensitivitiesPhi{model_i,i}(4)));
+        mod.biais(i) = sensitivitiesPhi{model_i,i}(5);
+        mod.kFp(i) =  log(1+exp(sensitivitiesPhi{model_i,i}(6)));
+        mod.kFm(i) =  log(1+exp(sensitivitiesPhi{model_i,i}(7)));
+        %     mod.kR(i) =  sensitivitiesPhi{model_i,i}(1);
+        %     mod.kP(i) =  sensitivitiesPhi{model_i,i}(2);
+        %     mod.kEp(i) =  sensitivitiesPhi{model_i,i}(3);
+        %     mod.kEm(i) =  sensitivitiesPhi{model_i,i}(4);
+        %     mod.biais(i) = sensitivitiesPhi{model_i,i}(5);
+        %     mod.kFp(i) =  sensitivitiesPhi{model_i,i}(6);
+        %     mod.kFm(i) =  sensitivitiesPhi{model_i,i}(7);
+    end % loop over parameters
+    
 end
 cd(results_folder)
