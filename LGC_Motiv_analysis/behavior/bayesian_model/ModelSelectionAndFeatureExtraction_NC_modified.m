@@ -164,6 +164,10 @@ do_save = false; % save the corresponding results
 do_plot = true;
 do_kEc_plot = true;
 
+% include current efficiency or previous trial efficiency
+include_currEff = false;
+include_prevEff = true;
+
 %% extract behavioral data and put it in a struct
 % the list of saturators is updated by hand, as the end of the script gives the results
 % remove saturators, removes any participants which modeling saturates on 1 run
@@ -180,7 +184,7 @@ RT_phyiscal=NaN(54,72,2);
 for i_sub = 1:length(all_files)
     i_sub % plot at what subject we currently are.
     [var,all_choices,all_choices_rescaled,deltaRP_idx,deltaRP,deltaE,tmp1,tmp2,all_MVC(i_sub,:),all_NMP(i_sub,:),physical_IP(i_sub)...
-        ,mental_IP(i_sub),perf(i_sub),incentive_idx] = reshape_data(i_sub,all_data,rescale_choice,binary_answers,p_or_m);
+        ,mental_IP(i_sub),perf(i_sub),incentive_idx] = reshape_data_NC_modified(i_sub,all_data,rescale_choice,binary_answers,p_or_m, include_currEff, include_prevEff);
     % use the version rescaled as all_choices
     %     [var,~,all_choices,deltaRP_idx,deltaRP,deltaE,RT_physical,RT_mental,all_MVC(i_sub,:),all_NMP(i_sub,:),physical_IP(i_sub)...
     %         ,mental_IP(i_sub),perf(i_sub),incentive_idx] = reshape_data(i_sub,all_data,rescale_choice,binary_answers,p_or_m);
@@ -206,7 +210,7 @@ for i_sub = 1:length(all_files)
     var_p_or_m(:,i_sub) = var(4,:);
     var_saved(:,:,i_sub) = var;
 	% choose how many models to test
-    for i_model=5%1:nb_functions
+    for i_model=1:nb_functions
         
         if i_model == 6
                 if var_p_or_m(1,i_sub) == 1
@@ -258,38 +262,43 @@ for i_sub = 1:length(all_files)
         
         % Extract model predictions for each choice.
         y_hat(:,i_model,i_sub) = out.suffStat.gx;
-        NV(:,i_model,i_sub) = -posterior.muPhi(5) - log((1-out.suffStat.gx)./out.suffStat.gx);
+        switch i_model
+            case {1,2} % no bias
+                NV(:,i_model,i_sub) = -log((1-out.suffStat.gx)./out.suffStat.gx);
+            case {3,4,5} % bias to remove
+                NV(:,i_model,i_sub) = -posterior.muPhi(5) - log((1-out.suffStat.gx)./out.suffStat.gx);
+        end
         
         %% transform p(choice = high E) extracted from VBA into a binary or a four-level variable like the input VBA received
         % (but in general, what you want should be the probability
         % extracted from the model)
         for i_choice = 1:n_trialsPerSession*4
-%             % extract predictions as only 2 options.
-%             if binary_answers == true
-%                 if y_hat(i_choice,i_model,i_sub) >=0 && y_hat(i_choice,i_model,i_sub) < 0.25
-%                     y_hat(i_choice,i_model,i_sub) = 0;
-%                 elseif y_hat(i_choice,i_model,i_sub) >=0.25 && y_hat(i_choice,i_model,i_sub) < 0.5
-%                     y_hat(i_choice,i_model,i_sub) = 0;
-%                 elseif y_hat(i_choice,i_model,i_sub) >=0.5 && y_hat(i_choice,i_model,i_sub) <= 0.75
-%                     y_hat(i_choice,i_model,i_sub) = 1;
-%                 elseif y_hat(i_choice,i_model,i_sub) >0.75 && y_hat(i_choice,i_model,i_sub) <= 1
-%                     y_hat(i_choice,i_model,i_sub) = 1;
-%                 end
-%                 
-%             else
-                if do_smooth == true
-                    % smooth prediction choices in 4 category
-                    if y_hat(i_choice,i_model,i_sub) >=0 && y_hat(i_choice,i_model,i_sub) < 0.25
-                        y_hat(i_choice,i_model,i_sub) = 0;
-                    elseif y_hat(i_choice,i_model,i_sub) >=0.25 && y_hat(i_choice,i_model,i_sub) < 0.5
-                        y_hat(i_choice,i_model,i_sub) = 0.25;
-                    elseif y_hat(i_choice,i_model,i_sub) >=0.5 && y_hat(i_choice,i_model,i_sub) < 0.75
-                        y_hat(i_choice,i_model,i_sub) = 0.75;
-                    elseif y_hat(i_choice,i_model,i_sub) >=0.75 && y_hat(i_choice,i_model,i_sub) <= 1
-                        y_hat(i_choice,i_model,i_sub) = 1;
-                    end
+            %             % extract predictions as only 2 options.
+            %             if binary_answers == true
+            %                 if y_hat(i_choice,i_model,i_sub) >=0 && y_hat(i_choice,i_model,i_sub) < 0.25
+            %                     y_hat(i_choice,i_model,i_sub) = 0;
+            %                 elseif y_hat(i_choice,i_model,i_sub) >=0.25 && y_hat(i_choice,i_model,i_sub) < 0.5
+            %                     y_hat(i_choice,i_model,i_sub) = 0;
+            %                 elseif y_hat(i_choice,i_model,i_sub) >=0.5 && y_hat(i_choice,i_model,i_sub) <= 0.75
+            %                     y_hat(i_choice,i_model,i_sub) = 1;
+            %                 elseif y_hat(i_choice,i_model,i_sub) >0.75 && y_hat(i_choice,i_model,i_sub) <= 1
+            %                     y_hat(i_choice,i_model,i_sub) = 1;
+            %                 end
+            %
+            %             else
+            if do_smooth == true
+                % smooth prediction choices in 4 category
+                if y_hat(i_choice,i_model,i_sub) >=0 && y_hat(i_choice,i_model,i_sub) < 0.25
+                    y_hat(i_choice,i_model,i_sub) = 0;
+                elseif y_hat(i_choice,i_model,i_sub) >=0.25 && y_hat(i_choice,i_model,i_sub) < 0.5
+                    y_hat(i_choice,i_model,i_sub) = 0.25;
+                elseif y_hat(i_choice,i_model,i_sub) >=0.5 && y_hat(i_choice,i_model,i_sub) < 0.75
+                    y_hat(i_choice,i_model,i_sub) = 0.75;
+                elseif y_hat(i_choice,i_model,i_sub) >=0.75 && y_hat(i_choice,i_model,i_sub) <= 1
+                    y_hat(i_choice,i_model,i_sub) = 1;
                 end
-%             end
+            end
+            %             end
         end
         
         % compute RMSE or MAE depending on the treatment applied to the data.
@@ -314,18 +323,18 @@ for i_sub = 1:length(all_files)
                     MAE_physical(i_model,i_sub) = nansum(abs(all_choices(55:108)-y_hat(55:108,i_model,i_sub)')+abs(all_choices(163:216)-y_hat(163:216,i_model,i_sub)'))/108;
             end
         end
-
+        
         % extract all runs, and run 1 and 2 averaged together
         [nb_ND_physical(i_sub),nb_ND_mental(i_sub),bins_per_trial_choice_physical(:,i_sub),bins_per_trial_choice_mental(:,i_sub),...
-        bins_per_trial_pred_physical(:,i_model,i_sub),bins_per_trial_pred_mental(:,i_model,i_sub),grouped_choice_physical_run(:,i_sub),...
-        grouped_choice_mental_run(:,i_sub),grouped_pred_physical_run(:,i_model,i_sub),grouped_pred_mental_run(:,i_model,i_sub),...
-        saturates_choice_once_per_sub,saturates_choice_twice_per_sub,saturates_pred_per_sub] = extract_individual_sessions(all_choices,sub_i_choices(:,i_sub),y_hat(:,i_model,i_sub),p_or_m(i_sub));
-    
-    %save if participant saturated
-    idx_CID_saturates_choice_once(i_sub) = saturates_choice_once_per_sub;
-    idx_CID_saturates_choice_twice(i_sub) = saturates_choice_twice_per_sub;
-    idx_CID_saturates_pred(i_model,i_sub) = saturates_pred_per_sub;
-
+            bins_per_trial_pred_physical(:,i_model,i_sub),bins_per_trial_pred_mental(:,i_model,i_sub),grouped_choice_physical_run(:,i_sub),...
+            grouped_choice_mental_run(:,i_sub),grouped_pred_physical_run(:,i_model,i_sub),grouped_pred_mental_run(:,i_model,i_sub),...
+            saturates_choice_once_per_sub,saturates_choice_twice_per_sub,saturates_pred_per_sub] = extract_individual_sessions(all_choices,sub_i_choices(:,i_sub),y_hat(:,i_model,i_sub),p_or_m(i_sub));
+        
+        %save if participant saturated
+        idx_CID_saturates_choice_once(i_sub) = saturates_choice_once_per_sub;
+        idx_CID_saturates_choice_twice(i_sub) = saturates_choice_twice_per_sub;
+        idx_CID_saturates_pred(i_model,i_sub) = saturates_pred_per_sub;
+        
         % as parameters are not reset in the struct option, clear it and put new data within
         clear options
         % compute participants choices and prediction from the model in heatmaps
@@ -333,7 +342,7 @@ for i_sub = 1:length(all_files)
         [phys_choice_mat,ment_choice_mat,nb_trials_choice_mat_physical,nb_trials_choice_mat_mental] = create_choice_mat(y_hat(:,i_model,i_sub)',p_or_m(i_sub),deltaRP_idx,deltaRP,deltaE,prediction_or_choice);
         pred_mat_physical(:,:,i_sub,i_model) = phys_choice_mat;
         pred_mat_mental(:,:,i_sub,i_model) = ment_choice_mat;
-
+        
     end
     
 
@@ -428,7 +437,7 @@ end
 k_sub = 1;
 j_sub = 1;
 for i_sub = 1:length(perf)
-    kEc(i_sub) = sensitivitiesPhi{i_sub}(7);
+    kEc(i_sub) = sensitivitiesPhi{i_model,i_sub}(7);
     if kEc(i_sub) <= 1.7852
         low_kEc_efficiency(:,:,j_sub) = perf(i_sub).m_ratio;
         low_kEc_energization(:,:,j_sub) = perf(i_sub).m_ratio*kEc(i_sub);
@@ -663,19 +672,19 @@ plot(mdl)
 %% Save all computed datasets
 % do you want to save the results ?
 if do_save == true
-save_data(sensitivitiesPhi,sensitivitiesTheta,CID_nb,p,m,RTP,RTM,all_MVC,all_NMP,physical_IP,mental_IP)
-% for i_sub = 1:69
-%     ratio_D(i_sub,:,:) = perf(i_sub).ratio_simu.ratio_D;
-%     ratio_LE(i_sub,:,:) = perf(i_sub).ratio_simu.ratio_LE;
-%     ratio_ME(i_sub,:,:) = perf(i_sub).ratio_simu.ratio_ME;
-%     ratio_HE(i_sub,:,:) = perf(i_sub).ratio_simu.ratio_HE;
-% end
-% ratio_D = nanmean(squeeze(nanmean(ratio_D)),2);
-% ratio_LE = nanmean(squeeze(nanmean(ratio_LE)),2);
-% ratio_ME = nanmean(squeeze(nanmean(ratio_ME)),2);
-% ratio_HE = nanmean(squeeze(nanmean(ratio_HE)),2);
-% ratio = [ratio_D,ratio_LE,ratio_ME,ratio_HE];
-% save('M_ratio_for_Simu.mat','ratio')
+    save_data(sensitivitiesPhi,sensitivitiesTheta,CID_nb,p,m,RTP,RTM,all_MVC,all_NMP,physical_IP,mental_IP)
+    % for i_sub = 1:69
+    %     ratio_D(i_sub,:,:) = perf(i_sub).ratio_simu.ratio_D;
+    %     ratio_LE(i_sub,:,:) = perf(i_sub).ratio_simu.ratio_LE;
+    %     ratio_ME(i_sub,:,:) = perf(i_sub).ratio_simu.ratio_ME;
+    %     ratio_HE(i_sub,:,:) = perf(i_sub).ratio_simu.ratio_HE;
+    % end
+    % ratio_D = nanmean(squeeze(nanmean(ratio_D)),2);
+    % ratio_LE = nanmean(squeeze(nanmean(ratio_LE)),2);
+    % ratio_ME = nanmean(squeeze(nanmean(ratio_ME)),2);
+    % ratio_HE = nanmean(squeeze(nanmean(ratio_HE)),2);
+    % ratio = [ratio_D,ratio_LE,ratio_ME,ratio_HE];
+    % save('M_ratio_for_Simu.mat','ratio')
 else % transform parameters into correct space (for model 5)
     
     model_i = 5;
@@ -704,5 +713,6 @@ else % transform parameters into correct space (for model 5)
     
 end
 cd(results_folder);
+
 
 end % function
