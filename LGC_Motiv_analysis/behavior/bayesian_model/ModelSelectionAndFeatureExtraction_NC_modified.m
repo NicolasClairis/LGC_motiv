@@ -1,4 +1,18 @@
+function[CID_nb, mod, y_hat, NV, AIC, BIC, R2, free_energy_matrix, RMSE, MAE] = ModelSelectionAndFeatureExtraction_NC_modified()
 % script to compute behavioral sensitivities and select the best one
+%
+% OUTPUTS
+% CID_nb: list of subjects
+%
+% mod: structure with behavioral parameters
+%
+% y_hat: matrix with p(high E) for all subjects all trials all runs
+%
+% NV: matrix with net value for all subjects all trials all runs
+%
+% AIC, BIC, R2, free_energy_matrix: scores for each model
+%
+% RMSE, MAE: error for each model
 
 %% clean workspace before starting
 
@@ -675,7 +689,7 @@ else % transform parameters into correct space (for model 5)
         %     mod.kEm(i) =  sensitivitiesPhi{model_i,i}(4);
         %     mod.biais(i) = sensitivitiesPhi{model_i,i}(5);
         %     mod.kFp(i) =  sensitivitiesPhi{model_i,i}(6);
-        %     mod.kFm(i) =  sensitivitiesPhi{model_i,i}(7);
+        %     mod.kLm(i) =  sensitivitiesPhi{model_i,i}(7);
         
         % parameters with positivity constraint (need to be retransformed)
         mod.kR(i) =  log(1+exp(sensitivitiesPhi{model_i,i}(1)));
@@ -684,9 +698,11 @@ else % transform parameters into correct space (for model 5)
         mod.kEm(i) =  log(1+exp(sensitivitiesPhi{model_i,i}(4)));
         mod.biais(i) = sensitivitiesPhi{model_i,i}(5);
         mod.kFp(i) =  log(1+exp(sensitivitiesPhi{model_i,i}(6)));
-        mod.kFm(i) =  log(1+exp(sensitivitiesPhi{model_i,i}(7)));
+        mod.kLm(i) =  log(1+exp(sensitivitiesPhi{model_i,i}(7)));
         
     end % loop over parameters
     
 end
-cd(results_folder)
+cd(results_folder);
+
+end % function
