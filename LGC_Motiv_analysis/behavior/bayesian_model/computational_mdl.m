@@ -1,5 +1,5 @@
-function[] = computational_mdl(mdl_n)
-% [] = computational_mdl(mdl_n)
+function[prm, mdl_quality, subject_id, NS, choices_raw, choices_pred] = computational_mdl(mdl_n)
+% [prm, mdl_quality, subject_id, NS, choices_raw, choices_pred] = computational_mdl(mdl_n)
 % computational_mdl will extract the corresponding data for the model
 % defined in input. All the data will be saved in the following folder:
 % C:\Users\clairis\Desktop\GitHub\LGC_motiv\LGC_Motiv_results\study1\bayesian_modeling
@@ -7,7 +7,23 @@ function[] = computational_mdl(mdl_n)
 % and "behavioral_prm.mat".
 %
 % INPUTS
-% mdl_n: model number
+% mdl_n: model number (see computational_mdl_prm.m for actual model parameters corresponding to this model number)
+%
+% OUTPUTS
+% prm: structure with individual parameters for the model selected
+%
+% mdl_quality: structure with variables reflecting model quality (R², BIC,
+% AIC, free energy, etc.)
+%
+% subject_id: list of subjects included
+%
+% NS: total number of subjects
+%
+% choices_raw: nTrials*NS matrix with raw choices across sessions and
+% subjects
+%
+% choices_pred: nTrials*NS matrix with raw choices across sessions and
+% subjects
 
 
 %% check inputs
@@ -17,7 +33,8 @@ end
 
 %% define subjects
 study_nm = 'study1';
-[subject_id, NS] = LGCM_subject_selection(study_nm, 'behavior');
+condition = 'behavior'; % by default, include all behavioral sessions
+[subject_id, NS] = LGCM_subject_selection(study_nm, condition);
 
 %% define working directories
 root = 'E:';
@@ -26,7 +43,9 @@ root = 'E:';
 n_trialsPerSession = 54;
 nRuns = 4;
 n_totalTrials = n_trialsPerSession.*nRuns;
-% apply multisession to each block. 
+% apply multisession (ie VBA will allow different noise values in the 
+% estimation of the parameters for each block considering that some blocks 
+% may be more trustful than others for the estimation of the parameters)
 is_multisession = true;
 
 % load model parameters
@@ -39,36 +58,37 @@ n_F_prm = 0;
 n_hiddenStates = 0;
 f_function = [];
 
-% observation function
-switch mdl_n
-    case 1
-        g_function = @g_observation_mdl1;
-    case 2
-        g_function = @g_observation_mdl2;
-    case 3
-        g_function = @g_observation_mdl3;
-    case 4
-        g_function = @g_observation_mdl4;
-    case 5
-        g_function = @g_observation_mdl5;
-    case 6
-        g_function = @g_observation_mdl6;
-    otherwise
-        error(['Define g function for model ',num2str(mdl_nm)]);
+%% initialize variables of interest
+% model parameters
+G_parameters = mdl_prm.G_prm_names;
+n_G_prm = length(G_parameters);
+for iP = 1:n_G_prm
+    G_prm_nm = G_parameters{iP};
+    G_parameters.(G_prm_nm) = NaN(1,NS);
 end
 
-%% initialize variables of interest
-[] = deal(NaN());
+% model quality
+[mdl_quality.R2,...
+    mdl_quality.AIC,...
+    mdl_quality.BIC,...
+    mdl_quality.free_energy] = deal(NaN(1, NS));
+
+% output
+[choices_raw, choices_pred,...
+    dV_pred] = deal(NaN(n_totalTrials, NS));
+
 %% loop through subjects
 for iS = 1:NS
     sub_nm = subject_id{iS};
     subBehaviorFolder = [fullfile(root,['CID',sub_nm],'behavior'),filesep];
     
     % initialize variables of interest for this subject
+    options = struct;
     [deltaR, deltaP, deltaE,...
         Fp, currEff, prevEff,...
         choice_binary, choice_with_conf,...
         Ep_or_Em_trials] = deal(NaN(n_totalTrials,1));
+    options.isYout = ones(1,n_totalTrials); % indication of trials to exclude from the analysis (when no choice was made)
     
     % extract relevant runs
     [runs, n_runs] = runs_definition(study_nm, sub_nm, condition);
@@ -87,6 +107,8 @@ for iS = 1:NS
         end
         run_trial_idx = (1:n_trialsPerSession) + n_trialsPerSession.*(jR - 1);
         
+        % keep these trials
+        options.isYout(run_trial_idx) = 0;
         % extract variables of interest
         [deltaR(run_trial_idx)] = extract_deltaR_money(subBehaviorFolder, sub_nm, run_nm, task_fullName);
         [deltaP(run_trial_idx)] = extract_deltaP_money(subBehaviorFolder, sub_nm, run_nm, task_fullName);
@@ -133,6 +155,9 @@ for iS = 1:NS
         end % task
     end % run loop
     
+    % remove trials when no choice was made
+    options.isYout(isnan(choice_binary)) = 1;
+    
     %% adjustement of the variables to facilitate VBA modeling
     % monetary amounts in cents
     deltaR = deltaR.*100;
@@ -142,19 +167,114 @@ for iS = 1:NS
     
     %% pool everybody in var
     var = [deltaR, deltaP, deltaE, Ep_or_Em_trials, Fp, currEff, prevEff];
+    var_names = {'dR','dP','dE','EpEm','Fp','currEff','prevEff'};
+    % control no NaNs remaining as that would make VBA crash
+    if sum(sum(isnan(var))) > 0
+        iVar = 1;
+        while sum(isnan(var(:,iVar))) == 0 && iVar < size(var,2)
+            iVar = iVar + 1;
+            error(['var contains a NaN in trial ',num2str(find(isnan(var(:,iVar)))),' for the variable ',var_names{iVar}]);
+        end
+    end
     
     %% define if output is binary or 4-levels
     switch binary_answers
-        case false
+        case false % 4-level choices: 0/0.25/0.75/1
             all_choices = choice_with_conf;
-        case true
+        case true % binary choices: 0 = low E chosen/1 = high E chosen
             all_choices = choice_binary;
     end
+    choices_raw(:,iS) = all_choices; % store data for output
+    % since NaN makes the toolbox crash, and that we ignore NaN choices using isYout in the
+    % options, we redefine the no choice with a -1 idx, to take it into account later
+    all_choices(isnan(all_choices)) = -1;
+    
+    %% extract main informations regarding the model
+    options.DisplayWin = 0; % display window during inversion (general recommendation: avoid as it will take much time but good to try the first time to verify the data fits well)
+    options.verbose = 0; % display text during inversion (1) or not (0)
+    options.GnFigs = 0; % flag to display (=1) or not (=0) the Gauss-Newton inner loops display figures {0} by default
+    
+    switch binary_answers
+        case false
+            options.sources.type = 0; % output is not binary
+        case true
+            options.sources.type = 1; % output is binary
+    end
+    
+    % priors on the parameters
+    % no hidden states, nor F function => no priors
+    options.priors.muX0 = [];
+    options.priors.SigmaX0 = [];
+    options.priors.muTheta = [];
+    options.priors.SigmaTheta = [];
+    % all parameters are in G function with mean centered at 0 and sigma of
+    % 100 to have enough space
+    options.priors.muPhi = zeros(n_G_prm, 1);
+    options.priors.SigmaPhi = eye(n_G_prm).*100;
+    % summary for dim
+    dim = struct('n',n_hiddenStates,'n_t',n_totalTrials,...
+        'n_theta',n_F_prm,'n_phi',n_G_prm);
+    options.dim = dim;
+    % number of hidden states (n)
+    % nb of trials (n_t),
+    % nb of theta parameters in f function (n_theta)
+    % and nb of Phi parameters in G function (n_phi)
+    
+    % Arthur specific modifications:
+    % data to force the number of iteration of the model. seems ignored
+    options.MinIter = 3; % minimum number of VB iterations {1} by default
+%     options.MaxIter = 10; % maximum number of VB iterations {32} by default
+    options.TolFun  = 1e-7 ; % minimum absolute increase of the free energy {2e-2} by default
+    
+    % multisession
+    switch is_multisession
+        case true
+            options.multisession.split = repmat(n_trialsPerSession,1,nRuns); % split in 4 equal sessions
+            % fix the parameters to be equal across sessions
+            options.multisession.fixed.phi = 1:n_G_prm;
+        otherwise
+            error(['is_multisession = ',num2str(is_multisession),' not ready yet.']);
+    end
+    
+    % information about model parameters (positivity constraint, etc.)
+    options.inG.mdl_prm = mdl_prm;
     
     %% compute model for this subject
-    [posterior,out] = VBA_NLStateSpaceModel(all_choices, var, f_function, g_function, options.dim, options);
+    [posterior, out] = VBA_NLStateSpaceModel(all_choices, var, f_function, g_observation_mdl, dim, options);
+    
+    %% extract variables of interest
+    % model prediction for choices
+    choices_pred(:,iS) = out.suffStat.gx;
+    
+    % parameters
+    for iP = 1:n_G_prm
+        G_prm_nm = G_parameters{iP};
+        switch mdl_prm.pos.(G_prm_nm)
+            case false % no constraint on the parameter
+                prm.(G_prm_nm)(iS) = posterior.muPhi(iP);
+            case true % positivity constraint => transform parameter accordingly
+                prm.(G_prm_nm)(iS) = log(1 + exp(posterior.muPhi(iP)));
+        end
+    end
+    
+    % extract difference in net value
+    switch mdl_n
+        case {1,2} % no bias
+            dV_pred(:,iS) = -log((1-out.suffStat.gx)./out.suffStat.gx);
+        case {3,4,5,6} % choice bias
+            dV_pred(:,iS) = -prm.kBias(iS) - log((1-out.suffStat.gx)./out.suffStat.gx);
+    end
+    
+    % model quality
+    mdl_quality.R2(iS) = out.fit.R2;
+    mdl_quality.AIC(iS) = out.fit.AIC;
+    mdl_quality.BIC(iS) = out.fit.BIC;
+    mdl_quality.free_energy(iS) = out.F;
+    mdl_quality.RMSE(iS) = sqrt(mean( ((choices_raw(:,iS) - choices_pred(:,iS)).^2),'omitnan'));
+    mdl_quality.MAE(iS) = mean( abs(choices_raw(:,iS) - choices_pred(:,iS)),'omitnan');
+    
 end % subject loop
 
 %% save results
-
+warning('need to add a function here to save the output');
 end % function

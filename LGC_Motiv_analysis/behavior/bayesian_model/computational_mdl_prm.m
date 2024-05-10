@@ -9,7 +9,7 @@ function[mdl_prm] = computational_mdl_prm(mdl_n)
 % mdl_prm: structure containing the different model parameters to be used
 
 switch mdl_n
-    case 1
+    case 1 % simple model (only kR and kP)
         G_prm_names = {'kR','kP'};
         include_Inc = false;
         include_R = true;
@@ -20,7 +20,10 @@ switch mdl_n
         include_currEff = false;
         include_prevEff = false;
         binary_answers = false;
-    case 2
+        % positivity constraints
+        pos.kR = true;
+        pos.kP = true;
+    case 2 % simple model (no time effect + no bias)
         G_prm_names = {'kR','kP','kEp','kEm'};
         include_Inc = false;
         include_R = true;
@@ -31,7 +34,12 @@ switch mdl_n
         include_currEff = false;
         include_prevEff = false;
         binary_answers = false;
-    case 3
+        % positivity constraints
+        pos.kR = true;
+        pos.kP = true;
+        pos.kEp = true;
+        pos.kEm = true;
+    case 3 % Arthur's model: include current efficiency instead of previous
         G_prm_names = {'kR','kP','kEp','kEm','kBias','kFp','kLm'};
         include_Inc = false;
         include_R = true;
@@ -42,7 +50,15 @@ switch mdl_n
         include_currEff = true;
         include_prevEff = false;
         binary_answers = false;
-    case 4
+        % positivity constraints
+        pos.kR = true;
+        pos.kP = true;
+        pos.kEp = true;
+        pos.kEm = true;
+        pos.kFp = true;
+        pos.kLm = true;
+        pos.kBias = false;
+    case 4 % modified Arthur's model: binary output for choices (0/1) instead of 4-levels (0/0.25/0.75/1)
         G_prm_names = {'kR','kP','kEp','kEm','kBias','kFp','kLm'};
         include_Inc = false;
         include_R = true;
@@ -53,7 +69,15 @@ switch mdl_n
         include_currEff = true;
         include_prevEff = false;
         binary_answers = true;
-    case 5
+        % positivity constraints
+        pos.kR = true;
+        pos.kP = true;
+        pos.kEp = true;
+        pos.kEm = true;
+        pos.kFp = true;
+        pos.kLm = true;
+        pos.kBias = false;
+    case 5 % main model
         G_prm_names = {'kR','kP','kEp','kEm','kBias','kFp','kLm'};
         include_Inc = false;
         include_R = true;
@@ -64,7 +88,15 @@ switch mdl_n
         include_currEff = false;
         include_prevEff = true;
         binary_answers = false;
-    case 6
+        % positivity constraints
+        pos.kR = true;
+        pos.kP = true;
+        pos.kEp = true;
+        pos.kEm = true;
+        pos.kFp = true;
+        pos.kLm = true;
+        pos.kBias = false;
+    case 6 % model with binary output for choices (0/1) instead of 4-levels (0/0.25/0.75/1)
         G_prm_names = {'kR','kP','kEp','kEm','kBias','kFp','kLm'};
         include_Inc = false;
         include_R = true;
@@ -75,6 +107,14 @@ switch mdl_n
         include_currEff = false;
         include_prevEff = true;
         binary_answers = true;
+        % positivity constraints
+        pos.kR = true;
+        pos.kP = true;
+        pos.kEp = true;
+        pos.kEm = true;
+        pos.kFp = true;
+        pos.kLm = true;
+        pos.kBias = false;
     otherwise
         error(['no model ',num2str(mdl_n)]);
 end
@@ -82,6 +122,8 @@ end
 n_G_prm = length(G_prm_names);
 
 %% pool all parameters in output structure
+% model number
+mdl_prm.mdl_n = mdl_n;
 % global number of parameters
 mdl_prm.G_prm_names = G_prm_names;
 mdl_prm.n_G_prm = n_G_prm;
@@ -101,5 +143,7 @@ mdl_prm.include_prevEff = include_prevEff; % previous efficiency
 % choices: model as binary output (0=low E; 1=high E) or with confidence
 % (0/0.25/0.75/1, i.e. lowE high Conf, low E low conf, high E low conf, high E high conf)
 mdl_prm.binary_answers = binary_answers;
+% positivity constraints on the parameters?
+mdl_prm.pos = pos;
 
 end % function
