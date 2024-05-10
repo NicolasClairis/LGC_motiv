@@ -1,5 +1,5 @@
 function [gx] = g_observation66( x, phi, var, inG )
-% Currently the following parameters are described as 
+% Currently the following parameters are described as
 % phi is our parameters of interest, our sensitivities = [kR kP kEp kEm kFp kFm];
 % var is our variables = [deltaR; deltaE; RP_trials; Ep_or_Em_trials;T-1];
 % x is not used in our case as it would be our sensitivities from the last trial
