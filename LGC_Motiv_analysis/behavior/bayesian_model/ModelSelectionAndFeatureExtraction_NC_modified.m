@@ -165,8 +165,8 @@ do_plot = true;
 do_kEc_plot = true;
 
 % include current efficiency or previous trial efficiency
-include_currEff = false;
-include_prevEff = true;
+include_currEff = true;
+include_prevEff = false;
 
 %% extract behavioral data and put it in a struct
 % the list of saturators is updated by hand, as the end of the script gives the results
