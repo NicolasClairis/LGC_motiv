@@ -38,6 +38,8 @@ condition = 'behavior'; % by default, include all behavioral sessions
 
 %% define working directories
 root = 'E:';
+root_saveFolder = fullfile('C:','Users','clairis','Desktop'); % pc-specific pathway to update if script launched elsewhere
+saveFolder = fullfile(root_saveFolder,'GitHub','LGC_motiv','LGC_Motiv_results','study1','bayesian_modeling');
 
 %% main parameters
 n_trialsPerSession = 54;
@@ -64,7 +66,7 @@ G_parameters = mdl_prm.G_prm_names;
 n_G_prm = length(G_parameters);
 for iP = 1:n_G_prm
     G_prm_nm = G_parameters{iP};
-    G_parameters.(G_prm_nm) = NaN(1,NS);
+    prm.(G_prm_nm) = NaN(1,NS);
 end
 
 % model quality
@@ -80,7 +82,7 @@ end
 %% loop through subjects
 for iS = 1:NS
     sub_nm = subject_id{iS};
-    subBehaviorFolder = [fullfile(root,['CID',sub_nm],'behavior'),filesep];
+    subBehaviorFolder = [fullfile(root,study_nm,['CID',sub_nm],'behavior'),filesep];
     
     % initialize variables of interest for this subject
     options = struct;
@@ -130,7 +132,7 @@ for iS = 1:NS
                     efficacy_bis_pureNback, ~,...
                     efficacy_ter_with2first,...
                     efficacy_ter_pureNback] = extract_mental_perf(subBehaviorFolder, sub_nm, run_nm);
-                currEff(run_trial_idx) = efficacy_ter_with2first;
+                currEff(run_trial_idx) = efficacy_ter_with2first.allTrials;
                 [prevEfficacy_with2first,...
                     prevEfficacy_pureNback,...
                     prevEfficacy_bis_with2first,...
@@ -276,5 +278,6 @@ for iS = 1:NS
 end % subject loop
 
 %% save results
-warning('need to add a function here to save the output');
+save([saveFolder,filesep,'bayesian_model_',num2str(mdl_n),'_results.mat'],...
+    'prm', 'mdl_quality', 'subject_id', 'NS', 'choices_raw', 'choices_pred','dV_pred');
 end % function
