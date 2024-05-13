@@ -115,6 +115,23 @@ switch mdl_n
         pos.kFp = true;
         pos.kLm = true;
         pos.kBias = false;
+    case 7  % simple model like model 2 but including bias (no time effect)
+        G_prm_names = {'kR','kP','kEp','kEm','kBias'};
+        include_Inc = false;
+        include_R = true;
+        include_P = true;
+        include_Ep = true;
+        include_Em = true;
+        include_Fp = false;
+        include_currEff = false;
+        include_prevEff = false;
+        binary_answers = false;
+        % positivity constraints
+        pos.kR = true;
+        pos.kP = true;
+        pos.kEp = true;
+        pos.kEm = true;
+        pos.kBias = false;
     otherwise
         error(['no model ',num2str(mdl_n)]);
 end

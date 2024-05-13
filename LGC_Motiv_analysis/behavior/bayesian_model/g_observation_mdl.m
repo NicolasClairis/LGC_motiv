@@ -46,6 +46,12 @@ switch mdl_n
         [kP] = prm_input(phi(2), pos, 'kP'); % punishment sensitivity
         [kEp] = prm_input(phi(3), pos, 'kEp'); % physical effort sensitivity
         [kEm] = prm_input(phi(4), pos, 'kEm'); % mental effort sensitivity
+    case 7 % no time effect
+        [kR] = prm_input(phi(1), pos, 'kR'); % reward sensitivity
+        [kP] = prm_input(phi(2), pos, 'kP'); % punishment sensitivity
+        [kEp] = prm_input(phi(3), pos, 'kEp'); % physical effort sensitivity
+        [kEm] = prm_input(phi(4), pos, 'kEm'); % mental effort sensitivity
+        [kBias] = prm_input(phi(5), pos, 'kBias'); % bias for high effort
     case {3,4,5,6} % 7 parameters: kR, kP, kEp, kEm, kBias, kFp, kLm
         [kR] = prm_input(phi(1), pos, 'kR'); % reward sensitivity
         [kP] = prm_input(phi(2), pos, 'kP'); % punishment sensitivity
@@ -62,7 +68,7 @@ end
 switch mdl_n
     case 1
         dV = kR.*deltaR + kP.*deltaP;
-    case 2
+    case {2,7}
         dV = (kR.*deltaR + kP.*deltaP) - deltaE.*(Ep_trial.*kEp + Em_trial.*kEm);
     case {3,4}
         dV = (kR.*deltaR + kP.*deltaP) - deltaE.*(Ep_trial.*(kEp + kFp.*Fp) + Em_trial.*(kEm - kLm.*currEff));
@@ -76,7 +82,7 @@ end
 switch mdl_n
     case {1,2} % no bias
         gx = 1./(1 + exp(-dV));
-    case {3,4,5,6} % include the bias
+    case {3,4,5,6,7} % include the bias
         gx = 1./(1 + exp(-(dV + kBias)));
     otherwise
         error(['model ',num2str(mdl_n),' not ready yet']);
