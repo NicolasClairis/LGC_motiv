@@ -58,7 +58,8 @@ binary_answers = mdl_prm.binary_answers;
 % no evolution function with current models
 n_F_prm = 0;
 n_hiddenStates = 0;
-f_function = [];
+f_evol_function = [];
+g_obs_function = @g_observation_mdl;
 
 %% initialize variables of interest
 % model parameters
@@ -89,7 +90,7 @@ for iS = 1:NS
     [deltaR, deltaP, deltaE,...
         Fp, currEff, prevEff,...
         choice_binary, choice_with_conf,...
-        Ep_or_Em_trials] = deal(NaN(n_totalTrials,1));
+        Ep_or_Em_trials] = deal(NaN(1,n_totalTrials));
     options.isYout = ones(1,n_totalTrials); % indication of trials to exclude from the analysis (when no choice was made)
     
     % extract relevant runs
@@ -168,16 +169,21 @@ for iS = 1:NS
     Fp = Fp./1000;
     
     %% pool everybody in var
-    var = [deltaR, deltaP, deltaE, Ep_or_Em_trials, Fp, currEff, prevEff];
+    var = [deltaR; deltaP; deltaE; Ep_or_Em_trials; Fp; currEff; prevEff];
     var_names = {'dR','dP','dE','EpEm','Fp','currEff','prevEff'};
     % control no NaNs remaining as that would make VBA crash
     if sum(sum(isnan(var))) > 0
-        iVar = 1;
-        while sum(isnan(var(:,iVar))) == 0 && iVar < size(var,2)
-            iVar = iVar + 1;
-            error(['var contains a NaN in trial ',num2str(find(isnan(var(:,iVar)))),' for the variable ',var_names{iVar}]);
-        end
-    end
+        switch sub_nm
+            case '040' % run 3 and run 4 not executed => replace with zeros to avoid Matlab crash, but trials will be ignored through isYout
+                var(:,109:216) = 0;
+            otherwise % identify variable and trial which are problematic and report it
+                iVar = 1;
+                while sum(isnan(var(:,iVar))) == 0 && iVar < size(var,2)
+                    iVar = iVar + 1;
+                    error(['var contains a NaN in trial ',num2str(find(isnan(var(:,iVar)))),' for the variable ',var_names{iVar}]);
+                end
+        end % subject filter
+    end % NaN filter
     
     %% define if output is binary or 4-levels
     switch binary_answers
@@ -225,7 +231,9 @@ for iS = 1:NS
     % Arthur specific modifications:
     % data to force the number of iteration of the model. seems ignored
     options.MinIter = 3; % minimum number of VB iterations {1} by default
-%     options.MaxIter = 10; % maximum number of VB iterations {32} by default
+%     options.MaxIter = 10; % maximum number of VB iterations {32} by
+%     default, Arthur constrained it to 10, but I think it's better to
+%     leave the default option
     options.TolFun  = 1e-7 ; % minimum absolute increase of the free energy {2e-2} by default
     
     % multisession
@@ -242,7 +250,7 @@ for iS = 1:NS
     options.inG.mdl_prm = mdl_prm;
     
     %% compute model for this subject
-    [posterior, out] = VBA_NLStateSpaceModel(all_choices, var, f_function, g_observation_mdl, dim, options);
+    [posterior, out] = VBA_NLStateSpaceModel(all_choices, var, f_evol_function, g_obs_function, dim, options);
     
     %% extract variables of interest
     % model prediction for choices
@@ -275,6 +283,8 @@ for iS = 1:NS
     mdl_quality.RMSE(iS) = sqrt(mean( ((choices_raw(:,iS) - choices_pred(:,iS)).^2),'omitnan'));
     mdl_quality.MAE(iS) = mean( abs(choices_raw(:,iS) - choices_pred(:,iS)),'omitnan');
     
+    % display information about where the script is
+    disp(['Subject ',num2str(iS),'/',num2str(NS)]);
 end % subject loop
 
 %% save results
