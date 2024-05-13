@@ -21,6 +21,9 @@ function[subject_id, NS] = LGCM_subject_selection(study_nm, condition, genderFil
 %   removed from the subjects concerned
 % 'behavior_noSatTask': like 'behavior' list but saturation tasks will be
 %   removed from the subjects concerned
+% 'behavior_noSatTaskSub_noSatRun': all subjects but removing all subjects who saturated 
+%   completely any of the tasks (ie the two runs of a given task) and
+%   removing all the runs that were saturated
 % 'respiration_and_noSatRun': respiration ok and no saturation run
 % 'fMRI': all subjects who performed the behavioral task in the fMRI
 %   (removing only the runs where fMRI crashed)
@@ -326,7 +329,7 @@ switch study_nm
                 % too much movement:
                 % 008, 022 and 024
                 
-                case {'fMRI_noSatTaskSub_noMoveSub_noSatRun_noMoveRun'} % remove subjects who saturated one full task and/or who moved too much across all sessions
+            case {'fMRI_noSatTaskSub_noMoveSub_noSatRun_noMoveRun'} % remove subjects who saturated one full task and/or who moved too much across all sessions
                 bad_subs = ismember(fullSubList,{'008','022','024','027',...
                     '047','052','069','076','095','097'});
                 % saturators:
@@ -341,6 +344,8 @@ switch study_nm
                 % 008, 022 and 024
                 %
                 % '097': saturated r1 and moved too much in r2, r3 and r4
+            otherwise
+                error([condition,' not ready']);
         end
         %% split subjects based on gender
         males = {'002','004',...
