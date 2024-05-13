@@ -49,7 +49,7 @@ function[prevEfficacy_with2first,...
 if ~strcmp(task_fullName,'mental')
     error(['task_fullName = ',task_fullName,' instead of ''mental'' as it should']);
 end
-%% load data
+%% load data of current trial
 [~, ~, ~, ~,...
     ~,...
     ~,...
@@ -61,7 +61,7 @@ end
     efficacy_ter_with2first,...
     efficacy_ter_pureNback] = extract_mental_perf(subBehaviorFolder, sub_nm, run_nm);
 
-
+%% initialize variable of interest
 nTrialsPerRun = 54;
 [prevEfficacy_with2first,...
     prevEfficacy_pureNback,...
@@ -69,14 +69,16 @@ nTrialsPerRun = 54;
     prevEfficacy_bis_pureNback,...
     prevEfficacy_ter_with2first,...
     prevEfficacy_ter_pureNback] = deal(NaN(1,nTrialsPerRun));
-% initialize at zero for first trial
+
+%% initialize at zero for first trial
 prevEfficacy_with2first(1) = 0;
 prevEfficacy_pureNback(1) = 0;
 prevEfficacy_bis_with2first(1) = 0;
 prevEfficacy_bis_pureNback(1) = 0;
 prevEfficacy_ter_with2first(1) = 0;
 prevEfficacy_ter_pureNback(1) = 0;
-% fill next trials
+
+%% fill next trials with efficacy from previous trial
 for iTrial = 2:nTrialsPerRun
     prevEfficacy_with2first(iTrial) = efficacy_with2first.allTrials(iTrial - 1);
     prevEfficacy_pureNback(iTrial) = efficacy_pureNback.allTrials(iTrial - 1);
