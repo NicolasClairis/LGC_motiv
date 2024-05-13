@@ -33,7 +33,7 @@ end
 
 %% define subjects
 study_nm = 'study1';
-condition = 'behavior'; % by default, include all behavioral sessions
+condition = 'behavior_noSatTaskSub_noSatRun'; % by default, include all behavioral sessions except those where behavior was saturated
 [subject_id, NS] = LGCM_subject_selection(study_nm, condition);
 
 %% define working directories
@@ -174,14 +174,20 @@ for iS = 1:NS
     % control no NaNs remaining as that would make VBA crash
     if sum(sum(isnan(var))) > 0
         switch sub_nm
-            case '040' % run 3 and run 4 not executed => replace with zeros to avoid Matlab crash, but trials will be ignored through isYout
+            case '040' % run 3 and run 4 not executed => replace with zeros to avoid VBA crash, but trials will be ignored through isYout
                 var(:,109:216) = 0;
-            otherwise % identify variable and trial which are problematic and report it
-                iVar = 1;
-                while sum(isnan(var(:,iVar))) == 0 && iVar < size(var,2)
-                    iVar = iVar + 1;
-                    error(['var contains a NaN in trial ',num2str(find(isnan(var(:,iVar)))),' for the variable ',var_names{iVar}]);
-                end
+            otherwise
+%                 % identify variable and trial which are problematic and report it
+%                 iVar = 1;
+%                 while sum(isnan(var(:,iVar))) == 0 && iVar < size(var,2)
+%                     iVar = iVar + 1;
+%                     error(['var contains a NaN in trial ',num2str(find(isnan(var(:,iVar)))),' for the variable ',var_names{iVar}]);
+%                 end
+
+                % replace all NaN trials by zero for all variables to avoid
+                % VBA crash, trials should be ignored through isYout
+                % function anyway
+                var(isnan(var)) = 0;
         end % subject filter
     end % NaN filter
     
@@ -248,6 +254,7 @@ for iS = 1:NS
     
     % information about model parameters (positivity constraint, etc.)
     options.inG.mdl_prm = mdl_prm;
+    options.inG.var_names = var_names;
     
     %% compute model for this subject
     [posterior, out] = VBA_NLStateSpaceModel(all_choices, var, f_evol_function, g_obs_function, dim, options);

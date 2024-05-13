@@ -17,17 +17,19 @@ function [gx] = g_observation_mdl( x, phi, var, inG )
 
 %% load all input variables
 % Difference of incentive between the two choices
-deltaR = var(1);
-deltaP = var(2);
+deltaR = var(strcmp(inG.var_names,'dR'));
+deltaP = var(strcmp(inG.var_names,'dP'));
 % Difference of effort between the two choices
-deltaE = var(3);
+deltaE = var(strcmp(inG.var_names,'dE'));
 % Are we in a physical (1) or mental (0) block
-Ep_or_Em_trials = var(4);
+Ep_or_Em_trials = var(strcmp(inG.var_names,'EpEm'));
 Ep_trial = Ep_or_Em_trials == 1;
 Em_trial = Ep_or_Em_trials == 0;
-Fp = var(5);
-currEff = var(6);
-prevEff = var(7);
+% physical fatigue
+Fp = var(strcmp(inG.var_names,'Fp'));
+% current trial or previous trial efficiency in solving mental effort
+currEff = var(strcmp(inG.var_names,'currEff'));
+prevEff = var(strcmp(inG.var_names,'prevEff'));
 
 %% load model parameters
 mdl_prm = inG.mdl_prm;
