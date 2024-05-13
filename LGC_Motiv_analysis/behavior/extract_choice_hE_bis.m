@@ -33,8 +33,8 @@ function[choice_highE] = extract_choice_hE_bis(subBehaviorFolder,...
 
 % recompute choice with 4 levels
 choice_highE = choice_highE_binary;
-high_E_low_Conf_trials = (choice_highE_binary == 1).*(conf_rtg == 0);
-low_E_low_Conf_trials = (choice_highE_binary == 0).*(conf_rtg == 0);
+high_E_low_Conf_trials = (choice_highE_binary == 1).*(conf_rtg == 0) == 1;
+low_E_low_Conf_trials = (choice_highE_binary == 0).*(conf_rtg == 0) == 1;
 choice_highE(high_E_low_Conf_trials) = 0.75;
 choice_highE(low_E_low_Conf_trials) = 0.25;
 end % function
