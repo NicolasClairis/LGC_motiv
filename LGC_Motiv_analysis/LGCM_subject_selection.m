@@ -197,7 +197,7 @@ switch study_nm
                 % 097: run 1 ND for Ep task
                 % 099: run 3 ND for Em task
                 % 100: run 3 (Em) and run 4 (Ep) ND
-            case {'behavior_noSatTaskSub',...
+            case {'behavior_noSatTaskSub','behavior_noSatTaskSub_noSatRun',...
                     'fMRI_noSatTaskSub','fMRI_noSatTaskSub_noSatRun'}
                 % remove subjects for which either mental (Em) or physical
                 % (Ep) task was fully saturated during choices and remove
