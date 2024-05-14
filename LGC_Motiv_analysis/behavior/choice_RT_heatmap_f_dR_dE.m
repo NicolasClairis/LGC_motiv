@@ -34,13 +34,15 @@ nRunsPerTask = 2;
     choice_avg_perSubperRun.Em, choice_fit_avg_perSubperRun.Em,...
     RT_avg_perSubperRun.Em, RT_fit_avg_perSubperRun.Em] = deal(NaN(n_dInc, n_dE, NS, nRunsPerTask));
 RT_fit_GLM = 4; % GLM to use for RT fit extraction
-choice_fit_GLM = 3;
+
+% bayesian model number to use:
+choice_mdlN = input('which bayesian model number to use?');
 bayesian_choice_folder = [fullfile('C:','Users','clairis','Desktop',...
     'GitHub','LGC_motiv','LGC_Motiv_results',study_nm,...
     'bayesian_modeling'), filesep];
-bayesian_pChoice = getfield(load([bayesian_choice_folder,...
-    'bayesian_pChoice_data.mat'],'bayesian_pChoice'),'bayesian_pChoice');
-choice_fit_allSubs = bayesian_pChoice.(['mdl_',num2str(choice_fit_GLM)]);
+choice_fit_allSubs = getfield(load([bayesian_choice_folder,...
+    'bayesian_model_',num2str(choice_mdlN),'_results.mat'],...
+    'choices_pred_perSub_perRun'),'choices_pred_perSub_perRun');
 
 %% loop through subjects
 for iS = 1:NS
