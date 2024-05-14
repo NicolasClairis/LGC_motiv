@@ -35,6 +35,7 @@ end
 study_nm = 'study1';
 condition = 'behavior_noSatTaskSub_noSatRun'; % by default, include all behavioral sessions except those where behavior was saturated
 [subject_id, NS] = LGCM_subject_selection(study_nm, condition);
+condition2 = 'behavior_noSatTaskSub'; % this will allow to extract the information regarding the inputs for all trials, even though runs will be excluded from the analysis
 
 %% define working directories
 root = 'E:';
@@ -83,25 +84,33 @@ end
 %% loop through subjects
 for iS = 1:NS
     sub_nm = subject_id{iS};
+    sub_nm_bis = ['CID',sub_nm];
     subBehaviorFolder = [fullfile(root,study_nm,['CID',sub_nm],'behavior'),filesep];
     
     % initialize variables of interest for this subject
     options = struct;
+    % input variables
     [deltaR, deltaP, deltaE,...
         Fp, currEff, prevEff,...
         choice_binary, choice_with_conf,...
         Ep_or_Em_trials] = deal(NaN(1,n_totalTrials));
-    options.isYout = ones(1,n_totalTrials); % indication of trials to exclude from the analysis (when no choice was made)
+    % indication of trials to exclude from the analysis (when no choice was made)
+    options.isYout = ones(1,n_totalTrials);
+    
+    % extract data individually
+    [choices_raw_perSub.(sub_nm_bis), choices_pred_perSub.(sub_nm_bis),...
+        dV_pred_perSub.(sub_nm_bis)] = deal(NaN(n_totalTrials,1));
     
     % extract relevant runs
-    [runs, n_runs] = runs_definition(study_nm, sub_nm, condition);
+    [runs_ok, n_runs_ok] = runs_definition(study_nm, sub_nm, condition); % allows to identify runs saturated to remove from analysis
+    [allRuns, n_allRuns] = runs_definition(study_nm, sub_nm, condition2); % allows to extract all task inputs to still compute choice prediction
     % extract corresponding data for each run and pool all in one big
     % vector
-    for iR = 1:n_runs
+    for iR = 1:n_allRuns
         % run-related informations
-        jR = runs.runsToKeep(iR);
+        jR = allRuns.runsToKeep(iR);
         run_nm = num2str(jR);
-        run_task_nm = runs.tasks{iR};
+        run_task_nm = allRuns.tasks{iR};
         switch run_task_nm
             case 'Ep'
                 task_fullName = 'physical';
@@ -110,8 +119,12 @@ for iS = 1:NS
         end
         run_trial_idx = (1:n_trialsPerSession) + n_trialsPerSession.*(jR - 1);
         
-        % keep these trials
-        options.isYout(run_trial_idx) = 0;
+        % keep these trials if run not saturated, otherwise ignore it from
+        % the analysis (isYout = 1) to improve model estimation
+        if ismember(jR, runs_ok.runsToKeep)
+            options.isYout(run_trial_idx) = 0;
+        end
+
         % extract variables of interest
         [deltaR(run_trial_idx)] = extract_deltaR_money(subBehaviorFolder, sub_nm, run_nm, task_fullName);
         [deltaP(run_trial_idx)] = extract_deltaP_money(subBehaviorFolder, sub_nm, run_nm, task_fullName);
@@ -158,7 +171,7 @@ for iS = 1:NS
         end % task
     end % run loop
     
-    % remove trials when no choice was made
+    % remove trials where no choice was made
     options.isYout(isnan(choice_binary)) = 1;
     
     %% adjustement of the variables to facilitate VBA modeling
@@ -177,17 +190,19 @@ for iS = 1:NS
             case '040' % run 3 and run 4 not executed => replace with zeros to avoid VBA crash, but trials will be ignored through isYout
                 var(:,109:216) = 0;
             otherwise
-%                 % identify variable and trial which are problematic and report it
-%                 iVar = 1;
-%                 while sum(isnan(var(:,iVar))) == 0 && iVar < size(var,2)
-%                     iVar = iVar + 1;
-%                     error(['var contains a NaN in trial ',num2str(find(isnan(var(:,iVar)))),' for the variable ',var_names{iVar}]);
-%                 end
+                % identify variable and trial which are problematic and report it
+                iVar = 1;
+                while sum(isnan(var(:,iVar))) == 0 && iVar < size(var,2)
+                    iVar = iVar + 1;
+                    error(['var contains a NaN in trial ',num2str(find(isnan(var(:,iVar)))),' for the variable ',var_names{iVar}]);
+                end
 
-                % replace all NaN trials by zero for all variables to avoid
-                % VBA crash, trials should be ignored through isYout
-                % function anyway
-                var(isnan(var)) = 0;
+                % only in case where var is equal to NaN for saturated
+                % runs:
+                % % replace all NaN trials by zero for all variables to avoid
+                % % VBA crash, trials should be ignored through isYout
+                % % function anyway
+                % var(isnan(var)) = 0;
         end % subject filter
     end % NaN filter
     
@@ -195,15 +210,19 @@ for iS = 1:NS
     switch binary_answers
         case false % 4-level choices: 0/0.25/0.75/1
             all_choices = choice_with_conf;
-        case true % binary choices: 0 = low E chosen/1 = high E chosen
+        case true % binary choices: 0/1 = low/high E chosen
             all_choices = choice_binary;
     end
     choices_raw(:,iS) = all_choices; % store data for output
+    choices_raw_perSub.(sub_nm_bis)(:) = choices_raw(:,iS);
     % since NaN makes the toolbox crash, and that we ignore NaN choices using isYout in the
     % options, we redefine the no choice with a -1 idx, to take it into account later
     all_choices(isnan(all_choices)) = -1;
     
     %% extract main informations regarding the model
+    % unless you want to follow the evolution of the fit, avoid displaying
+    % VBA fitting procedure because it significantly slows down the whole
+    % procedure
     options.DisplayWin = 0; % display window during inversion (general recommendation: avoid as it will take much time but good to try the first time to verify the data fits well)
     options.verbose = 0; % display text during inversion (1) or not (0)
     options.GnFigs = 0; % flag to display (=1) or not (=0) the Gauss-Newton inner loops display figures {0} by default
@@ -262,7 +281,8 @@ for iS = 1:NS
     %% extract variables of interest
     % model prediction for choices
     choices_pred(:,iS) = out.suffStat.gx;
-    
+    choices_pred_perSub.(sub_nm_bis)(:) = choices_pred(:,iS);
+
     % parameters
     for iP = 1:n_G_prm
         G_prm_nm = G_parameters{iP};
@@ -273,7 +293,7 @@ for iS = 1:NS
                 prm.(G_prm_nm)(iS) = log(1 + exp(posterior.muPhi(iP)));
         end
     end
-    
+
     % extract difference in net value
     switch mdl_n
         case {1,2} % no bias
@@ -281,6 +301,16 @@ for iS = 1:NS
         case {3,4,5,6} % choice bias
             dV_pred(:,iS) = -prm.kBias(iS) - log((1-out.suffStat.gx)./out.suffStat.gx);
     end
+    dV_pred_perSub.(sub_nm_bis)(:) = dV_pred(:,iS);
+
+    % extract the data separately for each run
+    for iR = 1:nRuns
+        run_name = ['run',num2str(iR)];
+        run_trials_idx = (1:n_trialsPerSession) + n_trialsPerSession.*(iR - 1);
+        choices_raw_perSub_perRun.(sub_nm_bis).(run_name) = choices_raw_perSub.(sub_nm_bis)(run_trials_idx);
+        choices_pred_perSub_perRun.(sub_nm_bis).(run_name) = choices_pred_perSub.(sub_nm_bis)(run_trials_idx);
+        dV_pred_perSub_perRun.(sub_nm_bis).(run_name) = dV_pred_perSub.(sub_nm_bis)(run_trials_idx);
+    end % run loop
     
     % model quality
     mdl_quality.R2(iS) = out.fit.R2;
@@ -296,5 +326,8 @@ end % subject loop
 
 %% save results
 save([saveFolder,filesep,'bayesian_model_',num2str(mdl_n),'_results.mat'],...
-    'prm', 'mdl_quality', 'subject_id', 'NS', 'choices_raw', 'choices_pred','dV_pred');
+    'prm', 'mdl_quality', 'subject_id', 'NS',...
+    'choices_raw', 'choices_pred','dV_pred',...
+    'choices_raw_perSub','choices_pred_perSub','dV_pred_perSub',...
+    'choices_raw_perSub_perRun','choices_pred_perSub_perRun','dV_pred_perSub_perRun');
 end % function
