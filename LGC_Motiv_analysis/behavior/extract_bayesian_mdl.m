@@ -47,12 +47,13 @@ function[NV_chosen_min_unch, deltaNV_hE_min_lE, confidence_highE, pChoice,...
 %% load data
 mdlN = strrep(mdl_nm,'mdl_','');
 model_data_struct = load([resultsFolder,'bayesian_model_',mdlN,'_results.mat']);
+prm = model_data_struct.prm;
 
 %% choice of low or high effort option?
 [choice_highE] = extract_choice_hE(subBehaviorFolder, sub_nm, run_nm, task_fullName);
 
 %% load model bias (if present in the model)
-if ismember('kBias',fieldnames(model_data_struct.prm))
+if ismember('kBias',fieldnames(prm))
     kBias = prm.kBias;
 else
     kBias = 0;
