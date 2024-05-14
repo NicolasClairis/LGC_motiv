@@ -43,12 +43,17 @@ end
 
 %% working dir
 computerRoot = LGCM_root_paths;
-gitFolder = [fullfile('C:','Users','clairis','Desktop','GitHub',...
-    'LGC_motiv','LGC_Motiv_results','study1','bayesian_modeling'),filesep];
+switch computerRoot
+    case [fullfile('E:'),filesep] % lab
+        gitFolder = [fullfile('C:','Users','clairis','Desktop','GitHub',...
+            'LGC_motiv','LGC_Motiv_results','study1','bayesian_modeling'),filesep];
+    case [filesep,filesep,fullfile('sv-nas1.rcp.epfl.ch','Sandi-lab','human_data_private','raw_data_subject'),filesep] % home
+        gitFolder = [fullfile('C:','Users','Nicolas Clairis','Documents','GitHub',...
+            'LGC_motiv','LGC_Motiv_results','study1','bayesian_modeling'),filesep];
+end
 
 %% general parameters
-mdl_nm = 'mdl_3'; % temporary use of model 3 until Arthur sends the correct files
-% mdl_nm = 'mdl_4';
+mdl_nm = 'mdl_6';
 nTrialsPerRun = 54;
 n_totalRuns = 4;
 n_runsPerTask = 2;
