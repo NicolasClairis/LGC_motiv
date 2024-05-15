@@ -2,6 +2,9 @@
 %
 % designed by N.Clairis - 2022
 
+%% display correlations
+fig_disp = 0; % 1=yes, 0=no
+
 %% define all subjects
 study_nm = 'study1';
 condition = subject_condition();
@@ -50,22 +53,24 @@ for iUncorrCorr = 1:length(subsIncluded)
     end % parameters loop
     
     %% display results
-    pSize = 50;
-    for iPrm = 1:n_prm
-        prm_nm = parameters{iPrm};
-        if ~strcmp(prm_nm,'CID') % no sense in this case
-            fig;
-            scat_hdl = scatter(metabolite_allSubs_v0(goodSubs.(uncCorr_nm).(prm_nm))',...
-                prm.(prm_nm)(goodSubs.(uncCorr_nm).(prm_nm))');
-            fit_hdl = plot(mb_sorted.(uncCorr_nm).(prm_nm),...
-                prm_fit_mbSorted.(uncCorr_nm).(prm_nm));
-            scat_hdl_upgrade(scat_hdl);
-            fit_hdl_upgrade(fit_hdl);
-            xlabel([MRS_ROI_nm,' - ',mb_nm,' (mM)']);
-            ylabel(prm_nm);
-            place_r_and_pval(r_corr.(uncCorr_nm).(prm_nm), pval_corr.(uncCorr_nm).(prm_nm));
-            legend_size(pSize);
-        end
-    end % parameter loop
-    
+    if fig_disp == 1
+        pSize = 50;
+        for iPrm = 1:n_prm
+            prm_nm = parameters{iPrm};
+            if ~strcmp(prm_nm,'CID') % no sense in this case
+                fig;
+                scat_hdl = scatter(metabolite_allSubs_v0(goodSubs.(uncCorr_nm).(prm_nm))',...
+                    prm.(prm_nm)(goodSubs.(uncCorr_nm).(prm_nm))');
+                fit_hdl = plot(mb_sorted.(uncCorr_nm).(prm_nm),...
+                    prm_fit_mbSorted.(uncCorr_nm).(prm_nm));
+                scat_hdl_upgrade(scat_hdl);
+                fit_hdl_upgrade(fit_hdl);
+                xlabel([MRS_ROI_nm,' - ',mb_nm,' (mM)']);
+                ylabel(prm_nm);
+                place_r_and_pval(r_corr.(uncCorr_nm).(prm_nm),...
+                    pval_corr.(uncCorr_nm).(prm_nm));
+                legend_size(pSize);
+            end
+        end % parameter loop
+    end % figure display
 end % raw/outlier cleaned
