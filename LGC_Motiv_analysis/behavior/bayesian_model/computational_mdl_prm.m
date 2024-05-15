@@ -10,6 +10,7 @@ function[mdl_prm] = computational_mdl_prm(mdl_n)
 
 switch mdl_n
     case 1 % simple model (only kR and kP)
+        F_prm_names = {};
         G_prm_names = {'kR','kP'};
         include_Inc = false;
         include_R = true;
@@ -24,6 +25,7 @@ switch mdl_n
         pos.kR = true;
         pos.kP = true;
     case 2 % simple model (no time effect + no bias)
+        F_prm_names = {};
         G_prm_names = {'kR','kP','kEp','kEm'};
         include_Inc = false;
         include_R = true;
@@ -40,6 +42,7 @@ switch mdl_n
         pos.kEp = true;
         pos.kEm = true;
     case 3 % Arthur's model: include current efficiency instead of previous
+        F_prm_names = {};
         G_prm_names = {'kR','kP','kEp','kEm','kBias','kFp','kLm'};
         include_Inc = false;
         include_R = true;
@@ -59,6 +62,7 @@ switch mdl_n
         pos.kLm = true;
         pos.kBias = false;
     case 4 % modified Arthur's model: binary output for choices (0/1) instead of 4-levels (0/0.25/0.75/1)
+        F_prm_names = {};
         G_prm_names = {'kR','kP','kEp','kEm','kBias','kFp','kLm'};
         include_Inc = false;
         include_R = true;
@@ -78,6 +82,7 @@ switch mdl_n
         pos.kLm = true;
         pos.kBias = false;
     case 5 % main model
+        F_prm_names = {};
         G_prm_names = {'kR','kP','kEp','kEm','kBias','kFp','kLm'};
         include_Inc = false;
         include_R = true;
@@ -97,6 +102,7 @@ switch mdl_n
         pos.kLm = true;
         pos.kBias = false;
     case 6 % model with binary output for choices (0/1) instead of 4-levels (0/0.25/0.75/1)
+        F_prm_names = {};
         G_prm_names = {'kR','kP','kEp','kEm','kBias','kFp','kLm'};
         include_Inc = false;
         include_R = true;
@@ -116,6 +122,7 @@ switch mdl_n
         pos.kLm = true;
         pos.kBias = false;
     case 7  % simple model like model 2 but including bias (no time effect)
+        F_prm_names = {};
         G_prm_names = {'kR','kP','kEp','kEm','kBias'};
         include_Inc = false;
         include_R = true;
@@ -136,12 +143,15 @@ switch mdl_n
         error(['no model ',num2str(mdl_n)]);
 end
 % extract number of parameters
+n_F_prm = length(F_prm_names);
 n_G_prm = length(G_prm_names);
 
 %% pool all parameters in output structure
 % model number
 mdl_prm.mdl_n = mdl_n;
 % global number of parameters
+mdl_prm.F_prm_names = F_prm_names;
+mdl_prm.n_F_prm = n_F_prm;
 mdl_prm.G_prm_names = G_prm_names;
 mdl_prm.n_G_prm = n_G_prm;
 
