@@ -52,9 +52,12 @@ prm = model_data_struct.prm;
 %% choice of low or high effort option?
 [choice_highE] = extract_choice_hE(subBehaviorFolder, sub_nm, run_nm, task_fullName);
 
-%% load model bias (if present in the model)
+%% load model bias for the current subject (if parameter present in the model)
 if ismember('kBias',fieldnames(prm))
-    kBias = prm.kBias;
+    % extract subject index for parameter
+    sub_idx = strcmp(sub_nm, model_data_struct.subject_id);
+    % extract bias parameter value for the current subject
+    kBias = prm.kBias(sub_idx);
 else
     kBias = 0;
 end
