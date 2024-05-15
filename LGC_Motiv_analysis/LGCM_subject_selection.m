@@ -19,11 +19,15 @@ function[subject_id, NS] = LGCM_subject_selection(study_nm, condition, genderFil
 %   completely any of the tasks (ie the two runs of a given task)
 % 'behavior_noSatRun': like 'behavior' list but saturation runs will be
 %   removed from the subjects concerned
+% 'behavior_noSatRun_lenient': like 'behavior_noSatRun' list but saturation 
+% threshold set at 0/100% instead of 6/94%
 % 'behavior_noSatTask': like 'behavior' list but saturation tasks will be
 %   removed from the subjects concerned
 % 'behavior_noSatTaskSub_noSatRun': all subjects but removing all subjects who saturated 
 %   completely any of the tasks (ie the two runs of a given task) and
 %   removing all the runs that were saturated
+% 'behavior_noSatTaskSub_noSatRun_lenient': like 'behavior_noSatTaskSub_noSatRun' list but saturation 
+% threshold set at 0/100% instead of 6/94% 
 % 'respiration_and_noSatRun': respiration ok and no saturation run
 % 'fMRI': all subjects who performed the behavioral task in the fMRI
 %   (removing only the runs where fMRI crashed)
@@ -138,7 +142,7 @@ switch study_nm
         
         %% remove some subjects depending on the condition entered as input
         switch condition
-            case {'behavior','fMRI',...
+            case {'behavior','behavior_noSatRun_lenient','fMRI',...
                     'fMRI_noMove_bis','fMRI_noMove_ter'} % all subjects
                 % (but removing the bad runs if the condition requires it)
                 bad_subs = false(1,length(fullSubList));
@@ -201,6 +205,7 @@ switch study_nm
                 % 099: run 3 ND for Em task
                 % 100: run 3 (Em) and run 4 (Ep) ND
             case {'behavior_noSatTaskSub','behavior_noSatTaskSub_noSatRun',...
+                    'behavior_noSatTaskSub_noSatRun_lenient',...
                     'fMRI_noSatTaskSub','fMRI_noSatTaskSub_noSatRun'}
                 % remove subjects for which either mental (Em) or physical
                 % (Ep) task was fully saturated during choices and remove

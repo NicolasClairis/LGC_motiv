@@ -141,7 +141,7 @@ switch study_nm
                         runs.runsToKeep = [1,3];
                         runs.runsToIgnore = [2,4];
                 end % subject loop
-                %% removing any subject with saturation and any saturated run
+                %% removing any subject with saturation and any saturated run (based on 6%/94% threshold for saturation)
             case {'behavior_noSatTaskSub_noSatRun'}
                 switch sub_nm
                     case {'027','047','052','069','076','095'}
@@ -210,7 +210,7 @@ switch study_nm
                         runs.runsToKeep = [1,2];
                         runs.runsToIgnore = [3,4];
                 end
-                %% removing any run with saturation
+                %% removing any run with saturation (based on 6%/94% threshold for saturation)
             case {'behavior_noSatRun','behavior_noSatRun_bayesianMdl'}
                 switch sub_nm
                     case '002'
@@ -290,6 +290,69 @@ switch study_nm
                     case '099'
                         runs.runsToKeep = [1,2,4];
                         runs.runsToIgnore = 3;
+                    case '100'
+                        runs.runsToKeep = [1,2];
+                        runs.runsToIgnore = [3,4];
+                end
+                
+                %% removing any subject with saturation and any saturated run with more lenient threshold (based on 0%/100% threshold for saturation)
+            case {'behavior_noSatTaskSub_noSatRun_lenient'}
+                switch sub_nm
+                    case {'027','047','052','069','076','095'}
+                        error([sub_nm,' should not be included under the condition ',condition]);
+                    case '002'
+                        runs.runsToKeep = [1,2,4];
+                        runs.runsToIgnore = 3;
+                    case '005'
+                        runs.runsToKeep = 1:3;
+                        runs.runsToIgnore = 4;
+                    case '012'
+                        runs.runsToKeep = 1:3;
+                        runs.runsToIgnore = 4;
+                    case '032'
+                        runs.runsToKeep = [1,2,4];
+                        runs.runsToIgnore = 3;
+                    case '048'
+                        runs.runsToKeep = [1,3,4];
+                        runs.runsToIgnore = 2;
+                    case '100'
+                        runs.runsToKeep = [1,2];
+                        runs.runsToIgnore = [3,4];
+                end
+                
+                %% removing any run with saturation with more lenient threshold (based on 0%/100% threshold for saturation)
+            case {'behavior_noSatRun_lenient','behavior_noSatRun_bayesianMdl_lenient'}
+                switch sub_nm
+                    case '002'
+                        runs.runsToKeep = [1,2,4];
+                        runs.runsToIgnore = 3;
+                    case '005'
+                        runs.runsToKeep = 1:3;
+                        runs.runsToIgnore = 4;
+                    case '012'
+                        runs.runsToKeep = 1:3;
+                        runs.runsToIgnore = 4;
+                    case '027'
+                        runs.runsToKeep = 1;
+                        runs.runsToIgnore = [2,4];
+                    case '032'
+                        runs.runsToKeep = [1,2,4];
+                        runs.runsToIgnore = 3;
+                    case '047'
+                        runs.runsToKeep = 3;
+                        runs.runsToIgnore = [1,2,4];
+                    case '048'
+                        runs.runsToKeep = [1,3,4];
+                        runs.runsToIgnore = 2;
+                    case '052'
+                        runs.runsToKeep = [2,4];
+                        runs.runsToIgnore = [1,3];
+                    case '076'
+                        runs.runsToKeep = [1,2,3];
+                        runs.runsToIgnore = 4;
+                    case '095'
+                        runs.runsToKeep = [1,3];
+                        runs.runsToIgnore = [2,4];
                     case '100'
                         runs.runsToKeep = [1,2];
                         runs.runsToIgnore = [3,4];
