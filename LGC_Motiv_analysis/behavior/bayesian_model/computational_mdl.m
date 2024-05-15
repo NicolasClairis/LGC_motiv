@@ -27,8 +27,10 @@ function[prm, mdl_quality, subject_id, NS, choices_raw, choices_pred] = computat
 
 
 %% check inputs
-if ~exist('mdl_n','var') || isempty(mdl_n)
-    mdl_n = input('What is the model number?');
+if exist('mdl_n','var')
+    [mdl_n, mdl_n_nm] = which_bayesian_mdl_n(mdl_n);
+else
+    [mdl_n, mdl_n_nm] = which_bayesian_mdl_n;
 end
 
 %% define subjects
@@ -325,7 +327,7 @@ for iS = 1:NS
 end % subject loop
 
 %% save results
-save([saveFolder,filesep,'bayesian_model_',num2str(mdl_n),'_results.mat'],...
+save([saveFolder,filesep,'bayesian_model_',mdl_n_nm,'_results.mat'],...
     'prm', 'mdl_quality', 'subject_id', 'NS',...
     'choices_raw', 'choices_pred','dV_pred',...
     'choices_raw_perSub','choices_pred_perSub','dV_pred_perSub',...
