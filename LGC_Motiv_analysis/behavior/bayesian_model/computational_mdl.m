@@ -33,8 +33,8 @@ end
 
 %% define subjects
 study_nm = 'study1';
-condition = 'behavior_noSatTaskSub_noSatRun'; % by default, include all behavioral sessions except those where behavior was saturated
-[subject_id, NS] = LGCM_subject_selection(study_nm, condition);
+condition1 = 'behavior_noSatTaskSub_noSatRun'; % by default, include all behavioral sessions except those where behavior was saturated
+[subject_id, NS] = LGCM_subject_selection(study_nm, condition1);
 condition2 = 'behavior_noSatTaskSub'; % this will allow to extract the information regarding the inputs for all trials, even though runs will be excluded from the analysis
 
 %% define working directories
@@ -102,7 +102,7 @@ for iS = 1:NS
         dV_pred_perSub.(sub_nm_bis)] = deal(NaN(n_totalTrials,1));
     
     % extract relevant runs
-    [runs_ok, n_runs_ok] = runs_definition(study_nm, sub_nm, condition); % allows to identify runs saturated to remove from analysis
+    [runs_ok, n_runs_ok] = runs_definition(study_nm, sub_nm, condition1); % allows to identify runs saturated to remove from analysis
     [allRuns, n_allRuns] = runs_definition(study_nm, sub_nm, condition2); % allows to extract all task inputs to still compute choice prediction
     % extract corresponding data for each run and pool all in one big
     % vector
