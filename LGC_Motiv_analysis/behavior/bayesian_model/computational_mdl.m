@@ -149,6 +149,9 @@ for iS = 1:NS
                     efficacy_ter_with2first,...
                     efficacy_ter_pureNback] = extract_mental_perf(subBehaviorFolder, sub_nm, run_nm);
                 currEff(run_trial_idx) = efficacy_ter_with2first.allTrials;
+%                 % to reproduce Arthur's mistake:
+%                 currEff(run_trial_idx(1)) = 0;
+%                 currEff(run_trial_idx(2:end)) = efficacy_ter_with2first.allTrials(2:end);
                 [prevEfficacy_with2first,...
                     prevEfficacy_pureNback,...
                     prevEfficacy_bis_with2first,...
@@ -259,8 +262,8 @@ for iS = 1:NS
     % data to force the number of iteration of the model. seems ignored
     options.MinIter = 3; % minimum number of VB iterations {1} by default
 %     options.MaxIter = 10; % maximum number of VB iterations {32} by
-%     default, Arthur constrained it to 10, but I think it's better to
-%     leave the default option
+%     default, Arthur constrained it to 10 which allows to go faster during testing, but I think it's better to
+%     leave the default option as recommended by Jules.
     options.TolFun  = 1e-7 ; % minimum absolute increase of the free energy {2e-2} by default
     
     % multisession
