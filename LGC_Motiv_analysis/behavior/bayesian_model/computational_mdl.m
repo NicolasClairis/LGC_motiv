@@ -35,7 +35,7 @@ end
 
 %% define subjects
 study_nm = 'study1';
-condition1 = 'behavior_noSatTaskSub_noSatRun'; % by default, include all behavioral sessions except those where behavior was saturated
+condition1 = 'behavior_noSatTaskSub_noSatRun_lenient'; % by default, include all behavioral sessions except those where behavior was saturated
 [subject_id, NS] = LGCM_subject_selection(study_nm, condition1);
 condition2 = 'behavior_noSatTaskSub'; % this will allow to extract the information regarding the inputs for all trials, even though runs will be excluded from the analysis
 
