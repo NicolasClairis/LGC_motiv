@@ -68,8 +68,8 @@ for iP = 1:nPrm
     subplot(3,3,iP);
     scat_hdl = scatter(prm_v1.(prm_nm), prm_v2.(prm_nm));
     scat_hdl_upgrade(scat_hdl);
-    xlabel([prm_nm,' - Arthur version']);
-    ylabel([prm_nm,' - New version']);
+    xlabel(['Old ',prm_nm]);
+    ylabel(['New ',prm_nm]);
     place_r_and_pval(rho.(prm_nm), pval.(prm_nm));
 end % parameter loop
 
