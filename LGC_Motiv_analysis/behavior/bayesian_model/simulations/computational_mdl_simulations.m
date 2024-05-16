@@ -1,5 +1,5 @@
-function[r_identif, r_recover, condition, NS] = computational_mdl_simulations(mdl_n)
-% [r_identif, r_recover, condition, NS] = computational_mdl_simulations(mdl_n)
+function[r_identif, r_recover, condition, NS] = computational_mdl_simulations(mdl_n, priors_type)
+% [r_identif, r_recover, condition, NS] = computational_mdl_simulations(mdl_n, priors_type)
 % script for simulating computational model in order to extract confusion
 % matrix (i.e. autocorrelation matrix for measuring the identifiability of
 % the parameters) and a recoverability matrix (to test if simulated
@@ -11,6 +11,9 @@ function[r_identif, r_recover, condition, NS] = computational_mdl_simulations(md
 %
 % INPUTS
 % mdl_n: model number (will be asked if left empty)
+%
+% priors_type: use informed priors based on the actual data (1) or
+% uninformed priors (0)
 %
 % OUTPUTS
 % r_identif: structure with correlation coefficients (and associated
@@ -25,8 +28,10 @@ function[r_identif, r_recover, condition, NS] = computational_mdl_simulations(md
 %
 % NS: number of subjects included
 
-%% define subjects
-[study_nm, condition, ~, subject_id, NS] = sub_id;
+%% define subjects on which the simulations will be based
+if priors_type == 1
+    [study_nm, condition, ~, subject_id, NS] = sub_id;
+end
 
 %% define model
 [mdl_n, mdl_n_nm] = which_bayesian_mdl_n(mdl_n);
@@ -37,18 +42,30 @@ n_F_prm = mdl_prm.n_F_prm;
 n_G_prm = mdl_prm.n_G_prm;
 number_of_parameters = n_F_prm + n_G_prm;
 
-% extract mean and SD of parameters across subjects
-[muPhi, sigmaPhi_from_data] = avg_g_observation_mdl_prm(mdl_n, condition, NS);
+% check if there are F parameters for evolution function
+if n_F_prm == 0
+    % f function empty
+    theta = [];
+    f_fname = [];
+    % no hidden states
+    x0 = [];
+    n_hiddenStates = length(x0);
+else
+    error(['simulations not ready for model with ',num2str(n_F_prm),' yet.']);
+end
 
-show_plot = true;
-use_30ksim = true;
+% define g observation function
+g_fname = @g_observation_mdl;
+
+fig_disp = true; % display figure
+use_30ksim = true; % ?
 prior_type = 'adjusted'; %'adjusted'/'basic'
-nb_simulations = 5000;
+nb_simulations = 5000; % number of simulations to perform for each model considered
 
 % load variables used by the model
-var_saved = getfield(load('var.mat'),'var_saved');
-ratio = getfield(load('M_ratio_for_Simu.mat'),'ratio');
-% ratio = [mean(ratio,2) mean(ratio,2) mean(ratio,2) mean(ratio,2)];
+var_saved = getfield(load('var.mat'),'var_saved'); % average inputs utilized for actual participants
+% create function here to recreate var here
+ratio = getfield(load('M_ratio_for_Simu.mat'),'ratio'); % ?
 
 % define main parameters: number of trials, number of conditions and
 % parameters to simulate
@@ -56,70 +73,18 @@ n_trialsPerRun = 54;
 n_runs = 4;
 n_totalTrials = n_trialsPerRun*n_runs;
 
-f_fname = [];
-g_fname = @g_observation_mdl;
-
-% % define nb of parameters
-theta = [];
-
 % 1/sd noise for f_evolution and g_obs. Inf adds 0 noise
 alpha = Inf;
 sigma = Inf;
 
-% in case we have f_evaluation, it would be our fatigue param but not here.
-% (set initial physical and mental fatigue at zero (but could be higher depending on the baseline))
-x0 = [];
-n_hiddenStates = length(x0);
-
-% want to have variability as ''real'' datam, use mean of data over participants
-muPhi(1) = -0.68;
-muPhi(2) = -1.54;
-muPhi(3) = 1;
-muPhi(4) = 4;
-muPhi(5) = 2;
-muPhi(6) = -2.63;
-muPhi(7) = 4;
-
-% version where you use parameters uninformed on the data, v1 with eff = 10x learning and fatigue
-% muPhi(1) = log(exp(1)-1);
-% muPhi(2) = log(exp(1)-1);
-% muPhi(3) = log(exp(5/1.3)-1);
-% muPhi(4) = log(exp(500/92)-1);
-% muPhi(5) = 0;
-% muPhi(6) = log(exp(5/6)-1);
-% muPhi(7) = log(exp(50/92)-1);
-
-% version where you use parameters uninformed on the data, v1 with eff = 2x learning and fatigue
-% muPhi(1) = log(exp(1)-1);
-% muPhi(2) = log(exp(1)-1);
-% muPhi(3) = log(exp(2)-1);
-% muPhi(4) = log(exp(25/3)-1);
-% muPhi(5) = 0;
-% muPhi(6) = log(exp(1)-1);
-% muPhi(7) = log(exp(25/6)-1);
-
-% version where you use parameters uninformed on the data, v1 with eff = 4x learning and fatigue
-muPhi(1) = log(exp(1)-1);
-muPhi(2) = log(exp(1)-1);
-muPhi(3) = log(exp(20/7)-1);
-muPhi(4) = log(exp(25/4)-1);
-muPhi(5) = 0;
-muPhi(6) = log(exp(5/7)-1);
-muPhi(7) = log(exp(25/16)-1);
-
-
-% redefine the length number of parameters in this case
-n_G_prm = length(muPhi);
-
-% define sigma for each param
-sigmaPhi = zeros(n_G_prm);
-sigmaPhi(1,1) = 1;
-sigmaPhi(2,2) = 1;
-sigmaPhi(3,3) = 1;
-sigmaPhi(4,4) = 1;
-sigmaPhi(5,5) = 1;
-sigmaPhi(6,6) = 1;
-sigmaPhi(7,7) = 1;
+% extract mean and SD of parameters across subjects
+switch priors_type
+    case 0 % uniformed priors
+        muPhi = zeros(1, n_G_prm);
+        sigmaPhi = eye(n_G_prm);
+    case 1 % informed priors => load data
+        [muPhi, sigmaPhi_from_data] = avg_g_observation_mdl_prm(mdl_n, condition, NS);
+end
 
 % create normally distributed gaussian values supposed to be our participants real sensitivities.
 for i_param = 1:n_G_prm
@@ -130,14 +95,18 @@ for i_param = 1:n_G_prm
     parameterPhi(i_param,:) = randn(nb_simulations,1).*(sigmaPhi(i_param,i_param)*3) + muPhi(i_param);
 end
 
+posterior_session_run = NaN(nb_simulations, n_G_prm);
+
 %% perform simulations
 for i_simu = 1:nb_simulations
     
     %% load input for model with var
     %     DeltaI, avg over participant deltaE         RP_idx            Ep_or_Em          trial_idx               E_chosen            SUm_Echosen
-    var = [nanmean(var_saved(1,:,:),3);var_saved(2,:,1);var_saved(3,:,1);var_saved(4,:,1);var_saved(5,:,1);nanmean(var_saved(6,:,:),3);nanmean(var_saved(7,:,:),3);...
+    var = [mean(var_saved(1,:,:),3,'omitnan'); var_saved(2,:,1); var_saved(3,:,1);...
+        var_saved(4,:,1); var_saved(5,:,1); mean(var_saved(6,:,:),3,'omitnan');...
+        mean(var_saved(7,:,:),3,'omitnan');...
         %       SumAUC+SumNb_answer avg     SumAUC+ratio avg
-        mean(var_saved(8,:,:),3);nanmean(var_saved(9,:,:),3)];
+        mean(var_saved(8,:,:),3); mean(var_saved(9,:,:),3,'omitnan')];
     
     options.sources.type = 0; % binary data
     options.DisplayWin  = 0; % display figure during inversion
@@ -337,7 +306,7 @@ if use_30ksim == true
 end
 
 %% plot results
-if show_plot == true
+if fig_disp == true
     
     %% main figure with recoverability and identifiability matrices subplots
     fig;
