@@ -147,7 +147,7 @@ for iROI = 1:nROIs
             end
             
             %% same but with boxcox transformation of behavioral parameters
-            if ~strcmp(prm_nm,'kBiasM')
+            if ~strcmp(prm_nm,'kBias')
                 behavPrm_boxcox = (boxcox(prm.(prm_nm)'))';
                 [mediation_path.boxcox.(MRS_ROI_nm).(metabolite_nm).(prm_nm).a,...
                     mediation_path.boxcox.(MRS_ROI_nm).(metabolite_nm).(prm_nm).b,...
