@@ -53,7 +53,9 @@ switch computerRoot
 end
 
 %% general parameters
-mdl_nm = 'mdl_6';
+mdl_n = 6; % model without confidence
+[mdl_n, mdl_n_nm] = which_bayesian_mdl_n(mdl_n);
+mdl_nm = ['mdl_',mdl_n_nm];
 nTrialsPerRun = 54;
 n_totalRuns = 4;
 n_runsPerTask = 2;
