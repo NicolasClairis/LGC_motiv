@@ -123,14 +123,14 @@ switch study_nm
             case 'fullList'
                 bad_subs = false(1,length(fullSubList));
             otherwise
-                bad_subs1 = ismember(fullSubList,{'030','049'});
+                bad_subs1 = ismember(fullSubList,{'030','049'}); % 030 and 049 did not do the behavioral task
                 fullSubList(bad_subs1) = [];
 
                 %% also remove outlier subject who has bad brain image + weird behavior in all tasks
-                bad_subs1b = ismember(fullSubList,{'054','090'}); % remove for anatomical outliers
+%                 bad_subs1b = ismember(fullSubList,{'054','090'}); % remove for anatomical outliers
 %                 bad_subs1b = ismember(fullSubList,{'039','054','090'});
 %                 bad_subs1b = ismember(fullSubList,{'054'}); % remove outlier
-%                 bad_subs1b = []; % no further exclusion
+                bad_subs1b = []; % no further exclusion
                 % 054 and 090 removed to have a better MRI image and
                 % because 054 had a very weird behavior
                 % remove also 019 if you split R and P trials because saturated P trials
@@ -381,9 +381,12 @@ switch study_nm
             case 'females'
                 bad_subs(ismember(fullSubList, males)) = true;
         end
-        %% remove subjects who did behavior but not fMRI
+        %% remove subjects who did behavior but not fMRI or who had problematic fMRI
         if strcmp(condition(1:4),'fMRI')
-            bad_subs(ismember(fullSubList,{'034','091'})) = true;
+            bad_subs(ismember(fullSubList,{'034','091'})) = true; % 034 and 091: did the behavior, but the fMRI did not work
+            
+            % additional filter:
+            bad_subs(ismember(fullSubList,{'054','090'})) = true;% 054 and 090 occipital cortex is partly missing + 054 had a very weird behavior during training and the whole task
         end
         %% remove irrelevant subjects from the current analysis
         all_subs(bad_subs) = [];
