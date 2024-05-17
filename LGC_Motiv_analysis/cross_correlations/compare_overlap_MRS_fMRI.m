@@ -8,7 +8,13 @@ function[overlap] = compare_overlap_MRS_fMRI
 %
 % OUTPUTS
 % overlap: structure with the result for the fMRI and the MRS voxel
-% depending on the threshold used for the density map
+% depending on the threshold used for the density map (0% = all subjects,
+% if there is an overlap with any of the subjects, it will be counted; 90%
+% = at least 90% of the subjects have to be sampled in that MRS voxel so
+% that the overlap may be considered with the fMRI)
+
+%% which ROI?
+ROI_nm = 'aIns'; % 'dmPFC' or 'aIns'
 
 %% extract number of subjects
 [study_nm, ~, ~, ~, NS] = sub_id;
@@ -21,14 +27,31 @@ fMRI_folder = fullfile(gitFolder,'LGC_motiv','Matlab_DIY_functions',...
     'ROI','NicoC_masks','GLM-based_masks',['LGC_',study_nm]);
 
 %% load MRS mask
-dmPFC_MRS_mask_vol = spm_vol([MRS_folder,filesep,...
-    'density_map_dmPFC_MRS_voxel__fMRI_noSatTaskSub_noSatRun_',NS_str,'_subjects.nii']);
-dmPFC_MRS_mask_data = spm_read_vols(dmPFC_MRS_mask_vol);
+switch ROI_nm
+    case 'dmPFC'
+        MRS_mask_vol = spm_vol([MRS_folder,filesep,...
+            'density_map_dmPFC_MRS_voxel__fMRI_noSatTaskSub_noSatRun_',NS_str,'_subjects.nii']);
+    case 'aIns'
+        if strcmp(NS_str,'63')
+            NS_str_bis = '60'; % less subjects for aINS MRS
+        else
+            error('define manually N for aIns MRS');
+        end
+        MRS_mask_vol = spm_vol([MRS_folder,filesep,...
+            'density_map_ai_MRS_voxel__fMRI_noSatTaskSub_noSatRun_',NS_str_bis,'_subjects.nii']);
+end
+dmPFC_MRS_mask_data = spm_read_vols(MRS_mask_vol);
 %% load fMRI cluster
-GLM_str = 'GLM235';
-dmPFC_fMRI_cluster_vol = spm_vol([fMRI_folder,filesep,...
-    GLM_str,'_EpEm_dmPFC_Ech_pFWE005voxelCorr_',NS_str,'subs.nii']);
-dmPFC_fMRI_cluster_data = spm_read_vols(dmPFC_fMRI_cluster_vol);
+GLM_str = 'GLM263';
+switch ROI_nm
+    case 'dmPFC'
+        fMRI_cluster_vol = spm_vol([fMRI_folder,filesep,...
+            GLM_str,'_dmPFC_EpEm_Ech_pFWE0001VoxelCorr_',NS_str,'subs.nii']);
+    case 'aIns'
+        fMRI_cluster_vol = spm_vol([fMRI_folder,filesep,...
+            GLM_str,'_left_aIns_EpEm_Ech_pFWE005VoxelCorr_',NS_str,'subs.nii']);
+end
+dmPFC_fMRI_cluster_data = spm_read_vols(fMRI_cluster_vol);
 
 %% extract total number of voxels in each mask to compute percentage at the end
 % extract number of voxels depending on density map threshold
