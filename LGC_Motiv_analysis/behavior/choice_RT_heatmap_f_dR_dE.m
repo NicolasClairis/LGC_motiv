@@ -149,6 +149,8 @@ for iTask = 1:nTasks
     
     %% choice figure
     figure(choice_fig);
+    
+    %% actual data
     iChoiceLine = 1;
     choice_plot_hdl = subplot(nLines, nTasks, iTask + nTasks*(iChoiceLine - 1));
     imagesc(choice_avg.(task_nm3).*100, choice_range);
@@ -161,7 +163,7 @@ for iTask = 1:nTasks
     legend_size(pSize);
     colorbar;
     
-    % should add bayesian fit here
+    %% bayesian model
     iChoiceLine = 2;
     choice_fit_plot_hdl = subplot(nLines, nTasks, iTask + nTasks*(iChoiceLine - 1));
     imagesc(choice_fit_avg.(task_nm3).*100, choice_range);
@@ -182,6 +184,8 @@ for iTask = 1:nTasks
     task_nm4 = task_names{iTask};
     %% RT figures
     figure(RT_fig);
+    
+    %% actual RT
     iRTline = 1;
     RT_plot_hdl = subplot(nLines, nTasks, iTask +  + nTasks*(iRTline - 1));
     imagesc(RT_avg.(task_nm4), RT_range);
@@ -196,7 +200,7 @@ for iTask = 1:nTasks
     legend_size(pSize);
     colorbar;
     
-    % RT fit
+    %% RT fitted
     iRTline = 2;
     RT_fit_plot_hdl = subplot(nLines, nTasks, iTask +  + nTasks*(iRTline - 1));
     imagesc(RT_fit_avg.(task_nm4), RT_range);
