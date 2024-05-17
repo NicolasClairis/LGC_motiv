@@ -18,6 +18,10 @@ function[r_corr, pval, R2] = correl_Ech_SVch_DT(z_perRun)
 %% subject selection
 [study_nm, condition, ~, subject_id, NS] = sub_id;
 
+%% model selection
+[~, mdl_n_nm] = which_bayesian_mdl_n;
+bayesianMdl_nm = ['mdl_',mdl_n_nm];
+
 %% working directories
 % computerRoot = LGCM_root_paths();
 computerRoot = ['E:',filesep];
@@ -31,6 +35,8 @@ switch study_nm
     case 'study2'
         root = fullfile(computerRoot,'study2');
 end
+gitResultsFolder = [fullfile('C:','Users','clairis','Desktop',...
+            'GitHub','LGC_motiv','LGC_Motiv_results',study_nm,'bayesian_modeling'),filesep];
 
 %% initialize variables of interest
 nTrialsPerRun = 54;
@@ -97,9 +103,6 @@ for iS = 1:NS
         % load E chosen
         Ech_tmp = behavioralDataStruct.(task_behavioral_id).E_chosen; % 0 for low E chosen and 1/2/3 for high effort chosen
         % load SV chosen
-        gitResultsFolder = [fullfile('C:','Users','clairis','Desktop',...
-            'GitHub','LGC_motiv','LGC_Motiv_results',study_nm,'bayesian_modeling'),filesep];
-        bayesianMdl_nm = 'mdl_3';
         [~,~,~,~,...
             ~, SVch_tmp] = extract_bayesian_mdl(gitResultsFolder, subj_behavior_folder,...
             sub_nm, run_nm, run_task_fullName, bayesianMdl_nm);
