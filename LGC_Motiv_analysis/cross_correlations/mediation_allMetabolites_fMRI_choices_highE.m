@@ -216,8 +216,12 @@ metabolite_nm='Lac';
 metabolite_allSubs = metabolites.(MRS_ROI_nm).(metabolite_nm);
 dispMed = 1;
 X_nm = [MRS_ROI_nm,'-',metabolite_nm_bis];
-% M_nm='dmPFC=f(Ech)';
-M_nm='aIns=f(Ech)';
+switch MRS_ROI_nm
+    case 'dmPFC'
+        M_nm = 'dmPFC=f(Ech)';
+    case 'aIns'
+        M_nm = 'aIns=f(Ech)';
+end
 
 % Ep
 prm_nm='Ep';
