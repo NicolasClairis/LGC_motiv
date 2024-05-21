@@ -15,11 +15,14 @@ library(semPlot)
 
 # read the data prepared for SEM
 setwd("P:/boulot/postdoc_CarmenSandi/results/SEM")
+# old model
 #data_for_SEM <- readMat("bloodLac_dmPFCLac_MRS_dmPFC_GLM200_EpEm_Ech_58subs_PHE_no_outliers.mat")
 #data_for_SEM <- readMat("bloodLac_dmPFCLac_MRS_dmPFC_GLM232_EpEm_Ech_59subs_PHE_no_outliers.mat")
-data_for_SEM <- readMat("bloodLac_dmPFCLac_MRS_dmPFC_GLM235_EpEm_Ech_59subs_PHE_no_outliers.mat")
+#data_for_SEM <- readMat("bloodLac_dmPFCLac_MRS_dmPFC_GLM235_EpEm_Ech_59subs_PHE_no_outliers.mat")
 #data_for_SEM <- readMat("bloodLac_dmPFCLac_MRS_dmPFC_GLM242_EpEm_Ech_59subs_PHE_no_outliers.mat")
 #data_for_SEM <- readMat("bloodLac_dmPFCLac_MRS_dmPFC_GLM244_EpEm_Ech_58subs_PHE_no_outliers.mat")
+# current model
+data_for_SEM <- readMat("bloodLac_dmPFCLac_MRS_dmPFC_GLM263_EpEm_Ech_59subs_PHE_no_outliers.mat")
 
 # rename variables
 blood_Lac = data_for_SEM$mtrx.PHE.no.outliers[,1]
