@@ -20,24 +20,30 @@ function[r_corr, pval, NS_goodS] = figure_interindiv_correl_BOLD__vs__motivation
 GLM = spm_input('GLM number',1,'e');
 
 figure_folder = ['P:\boulot\postdoc_CarmenSandi\papers\Clairis_mediation_Lac\',...
-    'figures\fig2_dmPFCdACC_aINS_fMRI\'];
-dmPFC_filepath = [figure_folder,'GLM',num2str(GLM),'_prm_f_MRS_dmPFC_ROI_',num2str(NS),'subs.mat'];
-aIns_filepath = [figure_folder,'GLM',num2str(GLM),'_prm_f_MRS_aINS_ROI_',num2str(NS),'subs.mat'];
+    'figures\fig3_dmPFCdACC_aINS_fMRI\'];
+dmPFC_filepath = [figure_folder,'GLM',num2str(GLM),'_',num2str(NS),'subs_dmPFC_ROI.mat'];
+aIns_filepath = [figure_folder,'GLM',num2str(GLM),'_',num2str(NS),'subs_aIns_ROI.mat'];
 if exist(dmPFC_filepath,'file') && exist(aIns_filepath,'file')
     dmPFC_BOLD_struct = load(dmPFC_filepath);
     dmPFC_BOLD_allCons = dmPFC_BOLD_struct.con_vec_all;
     aIns_BOLD_struct = load(aIns_filepath);
     aIns_BOLD_allCons = aIns_BOLD_struct.con_vec_all;
     con_names = dmPFC_BOLD_struct.con_names;
+    close all; % in case some figures were saved as well
 else
-    % load both dmPFC and aIns here
-    [con_vec_all,...
+    % extract dmPFC and aIns here
+    % first dmPFC
+    [dmPFC_BOLD_allCons,...
         ~, ~, ~,...
         con_names,...
         ROI_coords] = ROI_extraction_group(study_nm, GLM,...
         subject_id, condition, 0);
-    dmPFC_BOLD_allCons = con_vec_all(:,:,1);
-    aIns_BOLD_allCons = con_vec_all(:,:,2);
+    % then aIns
+    [aIns_BOLD_allCons,...
+        ~, ~, ~,...
+        con_names,...
+        ROI_coords] = ROI_extraction_group(study_nm, GLM,...
+        subject_id, condition, 0);
 end
 % extract data for the contrast of interest
 con_idx = listdlg('promptstring','Which contrast?',...
