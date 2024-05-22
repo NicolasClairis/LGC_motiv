@@ -28,10 +28,24 @@ function[r_identif, r_recover, condition, NS] = computational_mdl_simulations(md
 %
 % NS: number of subjects included
 
+warning('!!! work in progress !!!');
+warning('script requires to know IP + Fp and Lm at each trial for simulation');
+warning('This can only be achieved by using the already acquired data');
+
+%% general parameters
+fig_disp = true; % display figure
+nb_simulations = 5000; % number of simulations to perform for each model considered
+
 %% define subjects on which the simulations will be based
 if priors_type == 1
     [study_nm, condition, ~, subject_id, NS] = sub_id;
 end
+
+%% working directories
+gitFolder = fullfile('C:','Users','clairis','Desktop');
+design_matrix_folder = fullfile(gitFolder,'GitHub','LGC_motiv','LGC_Motiv_task');
+design_matrix_filenm = [design_matrix_folder,filesep,'DaBestDesignMat.mat'];
+bestMatrix = getfield(load(design_matrix_filenm,'bestMatrix'),'bestMatrix');
 
 %% define model
 [mdl_n, mdl_n_nm] = which_bayesian_mdl_n(mdl_n);
@@ -42,36 +56,29 @@ n_F_prm = mdl_prm.n_F_prm;
 n_G_prm = mdl_prm.n_G_prm;
 number_of_parameters = n_F_prm + n_G_prm;
 
-% check if there are F parameters for evolution function
-if n_F_prm == 0
-    % f function empty
-    theta = [];
-    f_fname = [];
-    % no hidden states
-    x0 = [];
-    n_hiddenStates = length(x0);
-else
-    error(['simulations not ready for model with ',num2str(n_F_prm),' yet.']);
-end
-
-% define g observation function
-g_fname = @g_observation_mdl;
-
-fig_disp = true; % display figure
-use_30ksim = true; % ?
-prior_type = 'adjusted'; %'adjusted'/'basic'
-nb_simulations = 5000; % number of simulations to perform for each model considered
-
-% load variables used by the model
-var_saved = getfield(load('var.mat'),'var_saved'); % average inputs utilized for actual participants
-% create function here to recreate var here
-ratio = getfield(load('M_ratio_for_Simu.mat'),'ratio'); % ?
-
 % define main parameters: number of trials, number of conditions and
 % parameters to simulate
 n_trialsPerRun = 54;
-n_runs = 4;
-n_totalTrials = n_trialsPerRun*n_runs;
+nRuns = 4;
+n_totalTrials = n_trialsPerRun*nRuns;
+% apply multisession (ie VBA will allow different noise values in the 
+% estimation of the parameters for each block considering that some blocks 
+% may be more trustful than others for the estimation of the parameters)
+is_multisession = true;
+
+% extract info regarding the way choices are to be modeled
+binary_answers = mdl_prm.binary_answers;
+
+%% define bayesian evolution and observation functions
+% no evolution function with current models
+if n_F_prm == 0
+    n_hiddenStates = 0;
+    f_evol_function = [];
+else
+    error(['simulations not ready for model with ',num2str(n_F_prm),' yet.']);
+end
+g_obs_function = @g_observation_mdl;
+
 
 % 1/sd noise for f_evolution and g_obs. Inf adds 0 noise
 alpha = Inf;
@@ -97,18 +104,55 @@ end
 
 posterior_session_run = NaN(nb_simulations, n_G_prm);
 
+%% leftovers
+use_30ksim = true; % ?
+prior_type = 'adjusted'; %'adjusted'/'basic'
+
+% create function here to recreate var here
+ratio = getfield(load('M_ratio_for_Simu.mat'),'ratio'); % ?
+
+var_names = {'dR','dP','dE','EpEm','Fp','currEff','prevEff'};
+n_vars = length(var_names);
+
 %% perform simulations
 for i_simu = 1:nb_simulations
     
-    %% load input for model with var
-    %     DeltaI, avg over participant deltaE         RP_idx            Ep_or_Em          trial_idx               E_chosen            SUm_Echosen
-    var = [mean(var_saved(1,:,:),3,'omitnan'); var_saved(2,:,1); var_saved(3,:,1);...
-        var_saved(4,:,1); var_saved(5,:,1); mean(var_saved(6,:,:),3,'omitnan');...
-        mean(var_saved(7,:,:),3,'omitnan');...
-        %       SumAUC+SumNb_answer avg     SumAUC+ratio avg
-        mean(var_saved(8,:,:),3); mean(var_saved(9,:,:),3,'omitnan')];
+    %% load input for model
+    options = struct;
     
-    options.sources.type = 0; % binary data
+    % input variables
+    [deltaR, deltaP, deltaE, Ep_or_Em_trials,...
+        Fp, currEff, prevEff] = deal(NaN(1, n_totalTrials));
+    
+    for iRun = 1:nRuns
+        trials_idx = (1:n_trialsPerRun) + n_trialsPerRun*(iRun - 1);
+        deltaR(trials_idx) = ;
+        deltaP(trials_idx) = ;
+        deltaE(trials_idx) = ;
+        switch mod(i_simu,2)
+            case 0 % pair simulations => Ep/Em/Ep/Em order
+                switch iRun
+                    case {1,3} % run 1 & 3 = Ep
+                        Ep_or_Em_trials(trials_idx) = 1;
+                    case {2,4} % run 2 & 4 = Em
+                        Ep_or_Em_trials(trials_idx) = 0;
+                end
+            case 1 % impair simulations => Em/Ep/Em/Ep order
+                switch iRun
+                    case {1,3} % run 1 & 3 = Em
+                        Ep_or_Em_trials(trials_idx) = 0;
+                    case {2,4} % run 2 & 4 = Ep
+                        Ep_or_Em_trials(trials_idx) = 1;
+                end
+        end
+    end % run loop
+
+    switch binary_answers
+        case false
+            options.sources.type = 0; % 4-levels choices (0/0.25/0.75/1: low E + high Conf/low E + low Conf/high E + low Conf/high E + high Conf)
+        case true
+            options.sources.type = 1; % binary choices (0/1: low/high E choice)
+    end
     options.DisplayWin  = 0; % display figure during inversion
     options.verbose     = 0; % display text during inversion (1) or not (0)
     % define number of parameters to estimate
@@ -118,7 +162,7 @@ for i_simu = 1:nb_simulations
         'n_phi',n_G_prm); % number of observation parameters
     
     %% Launch VBA simulations
-    for iRun = 1:n_runs
+    for iRun = 1:nRuns
         sum_AUC = 0;
         m_ratio = 0;
         for trial_i = 1:54
@@ -130,7 +174,7 @@ for i_simu = 1:nb_simulations
             end
             save_var_i(trial_i+54*(iRun-1),i_simu) = var_i(9);
             options.dim.n_t = 1;
-            [choiceLeftOptionSimu(trial_i+54*(iRun-1),i_simu), ~, ~, ~, ~, ~] = VBA_simulate(1, f_fname, g_fname,...
+            [choiceLeftOptionSimu(trial_i+54*(iRun-1),i_simu), ~, ~, ~, ~, ~] = VBA_simulate(1, f_fname, g_obs_function,...
                 theta, parameterPhi(:,i_simu), var_i, alpha, sigma, options, x0);
             p(trial_i+54*(iRun-1),i_simu) = choiceLeftOptionSimu(trial_i+54*(iRun-1),i_simu);
             % create a thousand values, using the reported proba for the number of 1 in the vector
@@ -255,7 +299,7 @@ for i_simu = 1:nb_simulations
     end
     options.dim.n_t = 216;
     % compute posterior
-    [posterior,out] = VBA_NLStateSpaceModel(choiceLeftOptionSimu(:,i_simu)', var, f_fname, g_fname, options.dim, options);
+    [posterior,out] = VBA_NLStateSpaceModel(choiceLeftOptionSimu(:,i_simu)', var, f_fname, g_obs_function, options.dim, options);
     
     %% save the data
     run_nm = ['run_nb_',num2str(i_simu)];
@@ -272,6 +316,9 @@ for i_simu = 1:nb_simulations
     close all
     
     posterior_session_run(i_simu,:) = posterior;
+    
+    %% indicate where we are
+    disp(['Simulation ',num2str(i_simu),'/',num2str(nb_simulations)]);
 end % simulation loop
 
 
