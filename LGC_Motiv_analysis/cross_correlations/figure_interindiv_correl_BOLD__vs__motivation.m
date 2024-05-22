@@ -66,7 +66,8 @@ kEp = prm.kEp;
 kEm = prm.kEm;
 
 %% figure parameters
-[pSize, ~, col] = general_fig_prm;
+[~, ~, col] = general_fig_prm;
+pSize = 21;
 % define which colormap you want to use (see full list here if you are not
 % happy with the selection:
 % https://ch.mathworks.com/help/matlab/ref/colormap.html)
@@ -306,6 +307,8 @@ for iRawCorr = 1:2
     end % include kEm or not?
     
     %% display figures with correlation plots
+    
+    %% significant (HE, HPE, kEp) contrasts
     % dmPFC/dACC column figure
     fig;
     
@@ -390,6 +393,67 @@ for iRawCorr = 1:2
     fit_hdl_upgrade(kEp_aIns_fit_hdl, col.black);
     xlabel('aIns regression estimate');
     ylabel('kEp');
+    legend_size(pSize);
+    
+    
+    %% non-significant (HME, kEm) contrasts
+    % dmPFC/dACC column figure
+    fig;
+    
+    % HME = f(dmPFC/dACC)
+    subplot(3,1,1); hold on;
+    pbaspect(ax_ratio);
+    HME_dmPFC_hdl = scatter(dmPFC_BOLD(goodS.(raw_or_corr_nm).HME_f_dmPFC)',...
+        HME_ch(goodS.(raw_or_corr_nm).HME_f_dmPFC));
+    HME_dmPFC_fit_hdl = plot(dmPFC_sorted.(raw_or_corr_nm).HME_f_dmPFC,...
+        HME_ch_fit_dmPFC_sorted.(raw_or_corr_nm).HME_f_dmPFC);
+    scat_hdl_upgrade(HME_dmPFC_hdl, col.grey);
+    fit_hdl_upgrade(HME_dmPFC_fit_hdl, col.black);
+    xlabel('dmPFC/dACC regression estimate');
+    ylabel('HME choices (%)');
+    legend_size(pSize);
+    
+    % kEm = f(dmPFC/dACC)
+    subplot(3,1,2); hold on;
+    pbaspect(ax_ratio);
+    kEm_dmPFC_hdl = scatter(dmPFC_BOLD(goodS.(raw_or_corr_nm).kEm_f_dmPFC)',...
+        kEm(goodS.(raw_or_corr_nm).kEm_f_dmPFC));
+    kEm_dmPFC_fit_hdl = plot(dmPFC_sorted.(raw_or_corr_nm).kEm_f_dmPFC,...
+        kEm_fit_dmPFC_sorted.(raw_or_corr_nm).kEm_f_dmPFC);
+    scat_hdl_upgrade(kEm_dmPFC_hdl, col.grey);
+    fit_hdl_upgrade(kEm_dmPFC_fit_hdl, col.black);
+    xlabel('dmPFC/dACC regression estimate');
+    ylabel('kEm');
+    legend_size(pSize);
+    
+    
+    % aIns column figure
+    fig;
+    
+    % HME = f(aIns)
+    subplot(3,1,1); hold on;
+    pbaspect(ax_ratio);
+    HME_aIns_hdl = scatter(aIns_BOLD(goodS.(raw_or_corr_nm).HME_f_aIns)',...
+        HME_ch(goodS.(raw_or_corr_nm).HME_f_aIns));
+    HME_aIns_fit_hdl = plot(aIns_sorted.(raw_or_corr_nm).HME_f_aIns,...
+        HME_ch_fit_aIns_sorted.(raw_or_corr_nm).HME_f_aIns);
+    scat_hdl_upgrade(HME_aIns_hdl, col.grey);
+    fit_hdl_upgrade(HME_aIns_fit_hdl, col.black);
+    xlabel('aIns regression estimate');
+    ylabel('HME choices (%)');
+    legend_size(pSize);
+    
+    % kEm = f(aIns)
+    subplot(3,1,2); hold on;
+    pbaspect(ax_ratio);
+    kEm_aIns_hdl = scatter(aIns_BOLD(goodS.(raw_or_corr_nm).kEm_f_aIns)',...
+        kEm(goodS.(raw_or_corr_nm).kEm_f_aIns));
+    kEm_aIns_fit_hdl = plot(aIns_sorted.(raw_or_corr_nm).kEm_f_aIns,...
+        kEm_fit_aIns_sorted.(raw_or_corr_nm).kEm_f_aIns);
+    scat_hdl_upgrade(kEm_aIns_hdl, col.grey);
+    fit_hdl_upgrade(kEm_aIns_fit_hdl, col.black);
+    xlabel('aIns regression estimate');
+    ylabel('kEm');
     legend_size(pSize);
     
 end % loop over filter: raw vs 3*SD corrected data
