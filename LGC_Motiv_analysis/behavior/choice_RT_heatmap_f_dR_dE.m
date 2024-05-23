@@ -3,6 +3,11 @@ function[] = choice_RT_heatmap_f_dR_dE(study_nm, condition)
 % proportion of effortful choices and reaction times (RT) depending on the 
 % incentives and effort at stake for each effort type.
 %
+% INPUTS
+% study_nm: study name (study1 by default if left empty)
+%
+% condition: condition to use to filter subjects and sessions (will be
+% asked by default if left empty)
 
 %% working directory
 [computerRoot] = LGCM_root_paths();
@@ -33,15 +38,15 @@ nRunsPerTask = 2;
     RT_avg_perSubperRun.Ep, RT_fit_avg_perSubperRun.Ep,...
     choice_avg_perSubperRun.Em, choice_fit_avg_perSubperRun.Em,...
     RT_avg_perSubperRun.Em, RT_fit_avg_perSubperRun.Em] = deal(NaN(n_dInc, n_dE, NS, nRunsPerTask));
-RT_fit_GLM = 4; % GLM to use for RT fit extraction
+RT_fit_GLM = 5; % GLM to use for RT fit extraction
 
 % bayesian model number to use:
-choice_mdlN = input('which bayesian model number to use?');
+[~, mdl_n_nm] = which_bayesian_mdl_n;
 bayesian_choice_folder = [fullfile('C:','Users','clairis','Desktop',...
     'GitHub','LGC_motiv','LGC_Motiv_results',study_nm,...
     'bayesian_modeling'), filesep];
 choice_fit_allSubs = getfield(load([bayesian_choice_folder,...
-    'bayesian_model_',num2str(choice_mdlN),'_results.mat'],...
+    'bayesian_model_',mdl_n_nm,'_results.mat'],...
     'choices_pred_perSub_perRun'),'choices_pred_perSub_perRun');
 
 %% loop through subjects
