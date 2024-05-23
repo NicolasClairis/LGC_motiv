@@ -1,10 +1,13 @@
-function[r_corr, pval, NS_goodS] = figure_interindiv_correl_BOLD__vs__motivation
-% [r_corr, pval, NS_goodS] = figure_interindiv_correl_BOLD__vs__motivation
+function[r_corr, pval, NS_goodS] = figure_interindiv_correl_BOLD__vs__motivation(fig_disp)
+% [r_corr, pval, NS_goodS] = figure_interindiv_correl_BOLD__vs__motivation(fig_disp)
 % figure_interindiv_correl_BOLD__vs__motivation will create a heatmap
 % showing the correlation between high effort (HE), high physical effort
 % (HPE), high mental effort (HME) choices and the sensitivity to physical
 % effort (kEp) vs dmPFC/dACC and anterior insula (aIns) BOLD regression
 % estimate for the effort chosen.
+%
+% INPUTS
+% fig_disp: display (1) or not (0) the figure. Yes by default if left empty
 %
 % OUTPUTS
 % r_corr: structure with correlation coefficients for each correlation test
@@ -13,6 +16,10 @@ function[r_corr, pval, NS_goodS] = figure_interindiv_correl_BOLD__vs__motivation
 %
 % NS_goodS: number of good subjects included in each analysis
 
+%% define default input
+if ~exist('fig_disp','var') || isempty(fig_disp) || ~ismember(fig_disp,[0,1])
+    fig_disp = 1;
+end
 %% subject selection
 [study_nm, condition, ~, subject_id, NS] = sub_id;
 
@@ -157,7 +164,7 @@ for iRawCorr = 1:2
         goodS.(raw_or_corr_nm).kEm_f_aIns = filter_fn(raw_or_corr_nm, aIns_BOLD, kEm);
         [r_corr.(raw_or_corr_nm).kEm_f_aIns, pval.(raw_or_corr_nm).kEm_f_aIns] = corr(aIns_BOLD(goodS.(raw_or_corr_nm).kEm_f_aIns)', kEm(goodS.(raw_or_corr_nm).kEm_f_aIns)');
         [~, ~, ~, ~, aIns_sorted.(raw_or_corr_nm).kEm_f_aIns,...
-        kEm_fit_aIns_sorted.(raw_or_corr_nm).kEm_f_aIns] = glm_package(aIns_BOLD(goodS.(raw_or_corr_nm).kEm_f_aIns)', kEm(goodS.(raw_or_corr_nm).kEm_f_aIns)','normal');
+            kEm_fit_aIns_sorted.(raw_or_corr_nm).kEm_f_aIns] = glm_package(aIns_BOLD(goodS.(raw_or_corr_nm).kEm_f_aIns)', kEm(goodS.(raw_or_corr_nm).kEm_f_aIns)','normal');
     end
     
     % also check the other behavioral parameters
@@ -307,155 +314,155 @@ for iRawCorr = 1:2
     end % include kEm or not?
     
     %% display figures with correlation plots
-    
-    %% significant (HE, HPE, kEp) contrasts
-    % dmPFC/dACC column figure
-    fig;
-    
-    % HE = f(dmPFC/dACC)
-    subplot(3,1,1); hold on;
-    pbaspect(ax_ratio);
-    HE_dmPFC_hdl = scatter(dmPFC_BOLD(goodS.(raw_or_corr_nm).HE_f_dmPFC)',...
-        HE_ch(goodS.(raw_or_corr_nm).HE_f_dmPFC));
-    HE_dmPFC_fit_hdl = plot(dmPFC_sorted.(raw_or_corr_nm).HE_f_dmPFC,...
-        HE_ch_fit_dmPFC_sorted.(raw_or_corr_nm).HE_f_dmPFC);
-    scat_hdl_upgrade(HE_dmPFC_hdl, col.grey);
-    fit_hdl_upgrade(HE_dmPFC_fit_hdl, col.black);
-    xlabel('dmPFC/dACC regression estimate');
-    ylabel('HE choices (%)');
-    legend_size(pSize);
-    
-    % HPE = f(dmPFC/dACC)
-    subplot(3,1,2); hold on;
-    pbaspect(ax_ratio);
-    HPE_dmPFC_hdl = scatter(dmPFC_BOLD(goodS.(raw_or_corr_nm).HPE_f_dmPFC)',...
-        HPE_ch(goodS.(raw_or_corr_nm).HPE_f_dmPFC));
-    HPE_dmPFC_fit_hdl = plot(dmPFC_sorted.(raw_or_corr_nm).HPE_f_dmPFC,...
-        HPE_ch_fit_dmPFC_sorted.(raw_or_corr_nm).HPE_f_dmPFC);
-    scat_hdl_upgrade(HPE_dmPFC_hdl, col.grey);
-    fit_hdl_upgrade(HPE_dmPFC_fit_hdl, col.black);
-    xlabel('dmPFC/dACC regression estimate');
-    ylabel('HPE choices (%)');
-    legend_size(pSize);
-    
-    % kEp = f(dmPFC/dACC)
-    subplot(3,1,3); hold on;
-    pbaspect(ax_ratio);
-    kEp_dmPFC_hdl = scatter(dmPFC_BOLD(goodS.(raw_or_corr_nm).kEp_f_dmPFC)',...
-        kEp(goodS.(raw_or_corr_nm).kEp_f_dmPFC));
-    kEp_dmPFC_fit_hdl = plot(dmPFC_sorted.(raw_or_corr_nm).kEp_f_dmPFC,...
-        kEp_fit_dmPFC_sorted.(raw_or_corr_nm).kEp_f_dmPFC);
-    scat_hdl_upgrade(kEp_dmPFC_hdl, col.grey);
-    fit_hdl_upgrade(kEp_dmPFC_fit_hdl, col.black);
-    xlabel('dmPFC/dACC regression estimate');
-    ylabel('kEp');
-    legend_size(pSize);
-    
-    
-    % aIns column figure
-    fig;
-    % HE = f(aIns)
-    subplot(3,1,1); hold on;
-    pbaspect(ax_ratio);
-    HE_aIns_hdl = scatter(aIns_BOLD(goodS.(raw_or_corr_nm).HE_f_aIns)',...
-        HE_ch(goodS.(raw_or_corr_nm).HE_f_aIns));
-    HE_aIns_fit_hdl = plot(aIns_sorted.(raw_or_corr_nm).HE_f_aIns,...
-        HE_ch_fit_aIns_sorted.(raw_or_corr_nm).HE_f_aIns);
-    scat_hdl_upgrade(HE_aIns_hdl, col.grey);
-    fit_hdl_upgrade(HE_aIns_fit_hdl, col.black);
-    xlabel('aIns regression estimate');
-    ylabel('HE choices (%)');
-    legend_size(pSize);
-    
-    % HPE = f(aIns)
-    subplot(3,1,2); hold on;
-    pbaspect(ax_ratio);
-    HPE_aIns_hdl = scatter(aIns_BOLD(goodS.(raw_or_corr_nm).HPE_f_aIns)',...
-        HPE_ch(goodS.(raw_or_corr_nm).HPE_f_aIns));
-    HPE_aIns_fit_hdl = plot(aIns_sorted.(raw_or_corr_nm).HPE_f_aIns,...
-        HPE_ch_fit_aIns_sorted.(raw_or_corr_nm).HPE_f_aIns);
-    scat_hdl_upgrade(HPE_aIns_hdl, col.grey);
-    fit_hdl_upgrade(HPE_aIns_fit_hdl, col.black);
-    xlabel('aIns regression estimate');
-    ylabel('HPE choices (%)');
-    legend_size(pSize);
-    
-    
-    
-    % kEp = f(aIns)
-    subplot(3,1,3); hold on;
-    pbaspect(ax_ratio);
-    kEp_aIns_hdl = scatter(aIns_BOLD(goodS.(raw_or_corr_nm).kEp_f_aIns)',...
-        kEp(goodS.(raw_or_corr_nm).kEp_f_aIns));
-    kEp_aIns_fit_hdl = plot(aIns_sorted.(raw_or_corr_nm).kEp_f_aIns,...
-        kEp_fit_aIns_sorted.(raw_or_corr_nm).kEp_f_aIns);
-    scat_hdl_upgrade(kEp_aIns_hdl, col.grey);
-    fit_hdl_upgrade(kEp_aIns_fit_hdl, col.black);
-    xlabel('aIns regression estimate');
-    ylabel('kEp');
-    legend_size(pSize);
-    
-    
-    %% non-significant (HME, kEm) contrasts
-    % dmPFC/dACC column figure
-    fig;
-    
-    % HME = f(dmPFC/dACC)
-    subplot(3,1,1); hold on;
-    pbaspect(ax_ratio);
-    HME_dmPFC_hdl = scatter(dmPFC_BOLD(goodS.(raw_or_corr_nm).HME_f_dmPFC)',...
-        HME_ch(goodS.(raw_or_corr_nm).HME_f_dmPFC));
-    HME_dmPFC_fit_hdl = plot(dmPFC_sorted.(raw_or_corr_nm).HME_f_dmPFC,...
-        HME_ch_fit_dmPFC_sorted.(raw_or_corr_nm).HME_f_dmPFC);
-    scat_hdl_upgrade(HME_dmPFC_hdl, col.grey);
-    fit_hdl_upgrade(HME_dmPFC_fit_hdl, col.black);
-    xlabel('dmPFC/dACC regression estimate');
-    ylabel('HME choices (%)');
-    legend_size(pSize);
-    
-    % kEm = f(dmPFC/dACC)
-    subplot(3,1,2); hold on;
-    pbaspect(ax_ratio);
-    kEm_dmPFC_hdl = scatter(dmPFC_BOLD(goodS.(raw_or_corr_nm).kEm_f_dmPFC)',...
-        kEm(goodS.(raw_or_corr_nm).kEm_f_dmPFC));
-    kEm_dmPFC_fit_hdl = plot(dmPFC_sorted.(raw_or_corr_nm).kEm_f_dmPFC,...
-        kEm_fit_dmPFC_sorted.(raw_or_corr_nm).kEm_f_dmPFC);
-    scat_hdl_upgrade(kEm_dmPFC_hdl, col.grey);
-    fit_hdl_upgrade(kEm_dmPFC_fit_hdl, col.black);
-    xlabel('dmPFC/dACC regression estimate');
-    ylabel('kEm');
-    legend_size(pSize);
-    
-    
-    % aIns column figure
-    fig;
-    
-    % HME = f(aIns)
-    subplot(3,1,1); hold on;
-    pbaspect(ax_ratio);
-    HME_aIns_hdl = scatter(aIns_BOLD(goodS.(raw_or_corr_nm).HME_f_aIns)',...
-        HME_ch(goodS.(raw_or_corr_nm).HME_f_aIns));
-    HME_aIns_fit_hdl = plot(aIns_sorted.(raw_or_corr_nm).HME_f_aIns,...
-        HME_ch_fit_aIns_sorted.(raw_or_corr_nm).HME_f_aIns);
-    scat_hdl_upgrade(HME_aIns_hdl, col.grey);
-    fit_hdl_upgrade(HME_aIns_fit_hdl, col.black);
-    xlabel('aIns regression estimate');
-    ylabel('HME choices (%)');
-    legend_size(pSize);
-    
-    % kEm = f(aIns)
-    subplot(3,1,2); hold on;
-    pbaspect(ax_ratio);
-    kEm_aIns_hdl = scatter(aIns_BOLD(goodS.(raw_or_corr_nm).kEm_f_aIns)',...
-        kEm(goodS.(raw_or_corr_nm).kEm_f_aIns));
-    kEm_aIns_fit_hdl = plot(aIns_sorted.(raw_or_corr_nm).kEm_f_aIns,...
-        kEm_fit_aIns_sorted.(raw_or_corr_nm).kEm_f_aIns);
-    scat_hdl_upgrade(kEm_aIns_hdl, col.grey);
-    fit_hdl_upgrade(kEm_aIns_fit_hdl, col.black);
-    xlabel('aIns regression estimate');
-    ylabel('kEm');
-    legend_size(pSize);
-    
+    if fig_disp == 1
+        %% significant (HE, HPE, kEp) contrasts
+        % dmPFC/dACC column figure
+        fig;
+        
+        % HE = f(dmPFC/dACC)
+        subplot(3,1,1); hold on;
+        pbaspect(ax_ratio);
+        HE_dmPFC_hdl = scatter(dmPFC_BOLD(goodS.(raw_or_corr_nm).HE_f_dmPFC)',...
+            HE_ch(goodS.(raw_or_corr_nm).HE_f_dmPFC));
+        HE_dmPFC_fit_hdl = plot(dmPFC_sorted.(raw_or_corr_nm).HE_f_dmPFC,...
+            HE_ch_fit_dmPFC_sorted.(raw_or_corr_nm).HE_f_dmPFC);
+        scat_hdl_upgrade(HE_dmPFC_hdl, col.grey);
+        fit_hdl_upgrade(HE_dmPFC_fit_hdl, col.black);
+        xlabel('dmPFC/dACC regression estimate');
+        ylabel('HE choices (%)');
+        legend_size(pSize);
+        
+        % HPE = f(dmPFC/dACC)
+        subplot(3,1,2); hold on;
+        pbaspect(ax_ratio);
+        HPE_dmPFC_hdl = scatter(dmPFC_BOLD(goodS.(raw_or_corr_nm).HPE_f_dmPFC)',...
+            HPE_ch(goodS.(raw_or_corr_nm).HPE_f_dmPFC));
+        HPE_dmPFC_fit_hdl = plot(dmPFC_sorted.(raw_or_corr_nm).HPE_f_dmPFC,...
+            HPE_ch_fit_dmPFC_sorted.(raw_or_corr_nm).HPE_f_dmPFC);
+        scat_hdl_upgrade(HPE_dmPFC_hdl, col.grey);
+        fit_hdl_upgrade(HPE_dmPFC_fit_hdl, col.black);
+        xlabel('dmPFC/dACC regression estimate');
+        ylabel('HPE choices (%)');
+        legend_size(pSize);
+        
+        % kEp = f(dmPFC/dACC)
+        subplot(3,1,3); hold on;
+        pbaspect(ax_ratio);
+        kEp_dmPFC_hdl = scatter(dmPFC_BOLD(goodS.(raw_or_corr_nm).kEp_f_dmPFC)',...
+            kEp(goodS.(raw_or_corr_nm).kEp_f_dmPFC));
+        kEp_dmPFC_fit_hdl = plot(dmPFC_sorted.(raw_or_corr_nm).kEp_f_dmPFC,...
+            kEp_fit_dmPFC_sorted.(raw_or_corr_nm).kEp_f_dmPFC);
+        scat_hdl_upgrade(kEp_dmPFC_hdl, col.grey);
+        fit_hdl_upgrade(kEp_dmPFC_fit_hdl, col.black);
+        xlabel('dmPFC/dACC regression estimate');
+        ylabel('kEp');
+        legend_size(pSize);
+        
+        
+        % aIns column figure
+        fig;
+        % HE = f(aIns)
+        subplot(3,1,1); hold on;
+        pbaspect(ax_ratio);
+        HE_aIns_hdl = scatter(aIns_BOLD(goodS.(raw_or_corr_nm).HE_f_aIns)',...
+            HE_ch(goodS.(raw_or_corr_nm).HE_f_aIns));
+        HE_aIns_fit_hdl = plot(aIns_sorted.(raw_or_corr_nm).HE_f_aIns,...
+            HE_ch_fit_aIns_sorted.(raw_or_corr_nm).HE_f_aIns);
+        scat_hdl_upgrade(HE_aIns_hdl, col.grey);
+        fit_hdl_upgrade(HE_aIns_fit_hdl, col.black);
+        xlabel('aIns regression estimate');
+        ylabel('HE choices (%)');
+        legend_size(pSize);
+        
+        % HPE = f(aIns)
+        subplot(3,1,2); hold on;
+        pbaspect(ax_ratio);
+        HPE_aIns_hdl = scatter(aIns_BOLD(goodS.(raw_or_corr_nm).HPE_f_aIns)',...
+            HPE_ch(goodS.(raw_or_corr_nm).HPE_f_aIns));
+        HPE_aIns_fit_hdl = plot(aIns_sorted.(raw_or_corr_nm).HPE_f_aIns,...
+            HPE_ch_fit_aIns_sorted.(raw_or_corr_nm).HPE_f_aIns);
+        scat_hdl_upgrade(HPE_aIns_hdl, col.grey);
+        fit_hdl_upgrade(HPE_aIns_fit_hdl, col.black);
+        xlabel('aIns regression estimate');
+        ylabel('HPE choices (%)');
+        legend_size(pSize);
+        
+        
+        
+        % kEp = f(aIns)
+        subplot(3,1,3); hold on;
+        pbaspect(ax_ratio);
+        kEp_aIns_hdl = scatter(aIns_BOLD(goodS.(raw_or_corr_nm).kEp_f_aIns)',...
+            kEp(goodS.(raw_or_corr_nm).kEp_f_aIns));
+        kEp_aIns_fit_hdl = plot(aIns_sorted.(raw_or_corr_nm).kEp_f_aIns,...
+            kEp_fit_aIns_sorted.(raw_or_corr_nm).kEp_f_aIns);
+        scat_hdl_upgrade(kEp_aIns_hdl, col.grey);
+        fit_hdl_upgrade(kEp_aIns_fit_hdl, col.black);
+        xlabel('aIns regression estimate');
+        ylabel('kEp');
+        legend_size(pSize);
+        
+        
+        %% non-significant (HME, kEm) contrasts
+        % dmPFC/dACC column figure
+        fig;
+        
+        % HME = f(dmPFC/dACC)
+        subplot(3,1,1); hold on;
+        pbaspect(ax_ratio);
+        HME_dmPFC_hdl = scatter(dmPFC_BOLD(goodS.(raw_or_corr_nm).HME_f_dmPFC)',...
+            HME_ch(goodS.(raw_or_corr_nm).HME_f_dmPFC));
+        HME_dmPFC_fit_hdl = plot(dmPFC_sorted.(raw_or_corr_nm).HME_f_dmPFC,...
+            HME_ch_fit_dmPFC_sorted.(raw_or_corr_nm).HME_f_dmPFC);
+        scat_hdl_upgrade(HME_dmPFC_hdl, col.grey);
+        fit_hdl_upgrade(HME_dmPFC_fit_hdl, col.black);
+        xlabel('dmPFC/dACC regression estimate');
+        ylabel('HME choices (%)');
+        legend_size(pSize);
+        
+        % kEm = f(dmPFC/dACC)
+        subplot(3,1,2); hold on;
+        pbaspect(ax_ratio);
+        kEm_dmPFC_hdl = scatter(dmPFC_BOLD(goodS.(raw_or_corr_nm).kEm_f_dmPFC)',...
+            kEm(goodS.(raw_or_corr_nm).kEm_f_dmPFC));
+        kEm_dmPFC_fit_hdl = plot(dmPFC_sorted.(raw_or_corr_nm).kEm_f_dmPFC,...
+            kEm_fit_dmPFC_sorted.(raw_or_corr_nm).kEm_f_dmPFC);
+        scat_hdl_upgrade(kEm_dmPFC_hdl, col.grey);
+        fit_hdl_upgrade(kEm_dmPFC_fit_hdl, col.black);
+        xlabel('dmPFC/dACC regression estimate');
+        ylabel('kEm');
+        legend_size(pSize);
+        
+        
+        % aIns column figure
+        fig;
+        
+        % HME = f(aIns)
+        subplot(3,1,1); hold on;
+        pbaspect(ax_ratio);
+        HME_aIns_hdl = scatter(aIns_BOLD(goodS.(raw_or_corr_nm).HME_f_aIns)',...
+            HME_ch(goodS.(raw_or_corr_nm).HME_f_aIns));
+        HME_aIns_fit_hdl = plot(aIns_sorted.(raw_or_corr_nm).HME_f_aIns,...
+            HME_ch_fit_aIns_sorted.(raw_or_corr_nm).HME_f_aIns);
+        scat_hdl_upgrade(HME_aIns_hdl, col.grey);
+        fit_hdl_upgrade(HME_aIns_fit_hdl, col.black);
+        xlabel('aIns regression estimate');
+        ylabel('HME choices (%)');
+        legend_size(pSize);
+        
+        % kEm = f(aIns)
+        subplot(3,1,2); hold on;
+        pbaspect(ax_ratio);
+        kEm_aIns_hdl = scatter(aIns_BOLD(goodS.(raw_or_corr_nm).kEm_f_aIns)',...
+            kEm(goodS.(raw_or_corr_nm).kEm_f_aIns));
+        kEm_aIns_fit_hdl = plot(aIns_sorted.(raw_or_corr_nm).kEm_f_aIns,...
+            kEm_fit_aIns_sorted.(raw_or_corr_nm).kEm_f_aIns);
+        scat_hdl_upgrade(kEm_aIns_hdl, col.grey);
+        fit_hdl_upgrade(kEm_aIns_fit_hdl, col.black);
+        xlabel('aIns regression estimate');
+        ylabel('kEm');
+        legend_size(pSize);
+    end
 end % loop over filter: raw vs 3*SD corrected data
 
 end % function
