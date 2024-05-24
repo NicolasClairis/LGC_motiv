@@ -26,8 +26,8 @@ addpath('D:\Matlab codes\Data simulation');
 addpath('D:\Matlab codes\Main_analysis_all_dataset_codes');
 addpath ('D:\Matlab codes\Data simulation\Extraction Sensitivities');
 % load variables used by the model
-load('var.mat')
-load('M_ratio_for_Simu.mat')
+var_saved = getfield(load('var.mat'),'var_saved');
+ratio = getfield(load('M_ratio_for_Simu.mat'),'ratio');
 % ratio = [mean(ratio,2) mean(ratio,2) mean(ratio,2) mean(ratio,2)];
 % define main parameters: number of trials, number of conditions and
 % parameters to simulate
@@ -133,16 +133,12 @@ sigmaPhi(7,7) = 1;
         prefix_name = ['iteration_nb_',num2str(i_iteration),'_nb_param_',num2str(number_of_parameters),'_prior_',prior_type,'_model_nb_',num2str(model_nb)];
         
         %% compute choice_matrices, prepare the variables
-        
-        load('plan_B_bestMatrix_bis.mat')
-        choice_opt = bestMatrix;
-        
         n_sessions = 4;
         n_trials = n_trialsPerSession*n_sessions;
         
         % for each 'participant''
         for i_run = 1:nb_run
-            i_run
+            disp(i_run);
             % sequence name
             sequence_name = [prefix_name,'_run_',num2str(i_run)];
             
