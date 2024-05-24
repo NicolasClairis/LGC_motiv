@@ -1,5 +1,5 @@
-function[var, mean_var, var_names] = load_computational_mdl_input_across_subs()
-% [var, mean_var, var_names] = load_computational_mdl_input_across_subs()
+function[var, mean_var, var_names, AUC_perEch, currEff_perEch, mean_AUC_perEch, mean_currEff_perEch] = load_computational_mdl_input_across_subs()
+% [var, mean_var, var_names, AUC_perEch, currEff_perEch, mean_AUC_perEch, mean_currEff_perEch] = load_computational_mdl_input_across_subs()
 % load_computational_mdl_input_across_subs will go through all subjects of
 % the experiments defined in input and will extract their data in order to
 % build a mega var matrix and to average the inputs across subjects
@@ -13,6 +13,15 @@ function[var, mean_var, var_names] = load_computational_mdl_input_across_subs()
 %
 % var_names: list of the names corresponding to each of the 7 input
 % variables
+%
+% AUC_perEch: (n_Ech_levels*NS) matrix with integral of the force exerted
+% on each physical effort trial depending on the effort level and subject
+%
+% currEff_perEch: (n_Ech_levels*NS) matrix with efficiency on each mental
+% effort trial depending on the effort level and subject
+%
+% mean_AUC_perEch & mean_currEff_perEch: same as two previous variables
+% but averaged across subjects
 
 %% define subjects to consider (same as the ones included in computational_mdl)
 study_nm = 'study1';
@@ -31,6 +40,10 @@ var_names = {'dR','dP','dE','EpEm','Fp','currEff','prevEff'};
 n_vars = length(var_names);
 var = NaN(n_vars, nTotalTrials, NS);
 
+Ech_levels = 0:3;
+n_Ech = length(Ech_levels);
+[AUC_perEch, currEff_perEch] = deal(NaN(n_Ech, NS));
+
 %% loop through subjects to load the data
 for iS = 1:NS
     sub_nm = subject_id{iS};
@@ -38,8 +51,9 @@ for iS = 1:NS
     
     % input variables
     [deltaR, deltaP, deltaE,...
-        Fp, currEff, prevEff,...
-        Ep_or_Em_trials] = deal(NaN(1,nTotalTrials));
+        AUC, Fp, currEff, prevEff,...
+        Ep_or_Em_trials,...
+        choice_hE] = deal(NaN(1,nTotalTrials));
     ok_trials = true(1,nTotalTrials);
     
     % extract relevant runs
@@ -64,10 +78,13 @@ for iS = 1:NS
         [deltaR(run_trial_idx)] = extract_deltaR_money(subBehaviorFolder, sub_nm, run_nm, task_fullName);
         [deltaP(run_trial_idx)] = extract_deltaP_money(subBehaviorFolder, sub_nm, run_nm, task_fullName);
         [deltaE(run_trial_idx)] = extract_hE_level(subBehaviorFolder, sub_nm, run_nm, task_fullName);
+        [choice_hE(run_trial_idx)] = extract_choice_hE(subBehaviorFolder, sub_nm, run_nm, task_fullName);
         switch run_task_nm
             case 'Ep'
                 [sumPrevAUC_N, sumPrevAUC] = extract_physical_fatigue(subBehaviorFolder, sub_nm, run_nm, task_fullName);
                 Fp(run_trial_idx) = sumPrevAUC;
+                [~,AUC_tmp] = extract_grip_force(subBehaviorFolder, sub_nm, run_nm);
+                AUC(run_trial_idx) = AUC_tmp.allTrials;
                 currEff(run_trial_idx) = 0;
                 prevEff(run_trial_idx) = 0;
             case 'Em'
@@ -126,6 +143,23 @@ for iS = 1:NS
     % remove bad trials
     bad_trials = ok_trials == false;
     var(:,bad_trials,iS) = NaN;
+    
+    %% extract AUC and Efficiency per effort level
+    for iEch = Ech_levels
+        jEch = iEch + 1;
+        switch iEch
+            case 0 % low E chosen
+                Ech_trial_idx = choice_hE == 0;
+            otherwise % high E chosen
+                Ech_trial_idx = deltaE == iEch;
+        end
+        % physical force exerted
+        Ep_trials = (Ep_or_Em_trials == 1).*(Ech_trial_idx) == 1;
+        AUC_perEch(jEch,iS) = mean(AUC(Ep_trials),2,'omitnan');
+        % mental efficiency
+        Em_trials = (Ep_or_Em_trials == 0).*(Ech_trial_idx) == 1;
+        currEff_perEch(jEch,iS) = mean(currEff(Em_trials),2,'omitnan');
+    end
 end % subject loop
 
 %% average the data across subjects
@@ -133,5 +167,9 @@ mean_var = mean(var,3,'omitnan');
 % replace Ep_or_Em_trials to fix it (alternating between Ep and Em across
 % sessions) instead of weird average
 mean_var(strcmp(var_names,'EpEm'),:) = [ones(1,nTrialsPerRun), zeros(1,nTrialsPerRun), ones(1,nTrialsPerRun), zeros(1,nTrialsPerRun)];
+
+% average also AUC and currEff
+mean_AUC_perEch = mean(AUC_perEch,2,'omitnan');
+mean_currEff_perEch = mean(currEff_perEch,2,'omitnan');
 
 end % function
