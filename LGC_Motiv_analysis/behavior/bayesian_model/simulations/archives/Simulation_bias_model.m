@@ -347,7 +347,7 @@ if use_30ksim == true
     parameterPhi = [];
     param_per_run = [];
     for i = 1:6
-        load(strcat('non_specific_param_simu',num2str(i),'.mat'))
+        param_simu = getfield(load(strcat('non_specific_param_simu',num2str(i),'.mat')),'param_simu');
         parameterPhi = [parameterPhi;param_simu.fake_parameterPhi];
         param_per_run = [param_per_run;param_simu.true_parameterPhi];
     end
