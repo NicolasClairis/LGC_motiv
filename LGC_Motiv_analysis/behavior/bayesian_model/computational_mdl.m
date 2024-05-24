@@ -45,9 +45,9 @@ root_saveFolder = fullfile('C:','Users','clairis','Desktop'); % pc-specific path
 saveFolder = fullfile(root_saveFolder,'GitHub','LGC_motiv','LGC_Motiv_results','study1','bayesian_modeling');
 
 %% main parameters
-n_trialsPerSession = 54;
+nTrialsPerRun = 54;
 nRuns = 4;
-n_totalTrials = n_trialsPerSession.*nRuns;
+nTotalTrials = nTrialsPerRun.*nRuns;
 % apply multisession (ie VBA will allow different noise values in the 
 % estimation of the parameters for each block considering that some blocks 
 % may be more trustful than others for the estimation of the parameters)
@@ -81,7 +81,7 @@ end
 
 % output
 [choices_raw, choices_pred,...
-    dV_pred] = deal(NaN(n_totalTrials, NS));
+    dV_pred] = deal(NaN(nTotalTrials, NS));
 
 %% loop through subjects
 for iS = 1:NS
@@ -95,13 +95,13 @@ for iS = 1:NS
     [deltaR, deltaP, deltaE,...
         Fp, currEff, prevEff,...
         choice_binary, choice_with_conf,...
-        Ep_or_Em_trials] = deal(NaN(1,n_totalTrials));
+        Ep_or_Em_trials] = deal(NaN(1,nTotalTrials));
     % indication of trials to exclude from the analysis (when no choice was made)
-    options.isYout = ones(1,n_totalTrials);
+    options.isYout = ones(1,nTotalTrials);
     
     % extract data individually
     [choices_raw_perSub.(sub_nm_bis), choices_pred_perSub.(sub_nm_bis),...
-        dV_pred_perSub.(sub_nm_bis)] = deal(NaN(n_totalTrials,1));
+        dV_pred_perSub.(sub_nm_bis)] = deal(NaN(nTotalTrials,1));
     
     % extract relevant runs
     [runs_ok, n_runs_ok] = runs_definition(study_nm, sub_nm, condition1); % allows to identify runs saturated to remove from analysis
@@ -119,7 +119,7 @@ for iS = 1:NS
             case 'Em'
                 task_fullName = 'mental';
         end
-        run_trial_idx = (1:n_trialsPerSession) + n_trialsPerSession.*(jR - 1);
+        run_trial_idx = (1:nTrialsPerRun) + nTrialsPerRun.*(jR - 1);
         
         % keep these trials if run not saturated, otherwise ignore it from
         % the analysis (isYout = 1) to improve model estimation
@@ -250,7 +250,7 @@ for iS = 1:NS
     options.priors.muPhi = zeros(n_G_prm, 1);
     options.priors.SigmaPhi = eye(n_G_prm).*100;
     % summary for dim
-    dim = struct('n',n_hiddenStates,'n_t',n_totalTrials,...
+    dim = struct('n',n_hiddenStates,'n_t',nTotalTrials,...
         'n_theta',n_F_prm,'n_phi',n_G_prm);
     options.dim = dim;
     % number of hidden states (n)
@@ -269,7 +269,7 @@ for iS = 1:NS
     % multisession
     switch is_multisession
         case true
-            options.multisession.split = repmat(n_trialsPerSession,1,nRuns); % split in 4 equal sessions
+            options.multisession.split = repmat(nTrialsPerRun,1,nRuns); % split in 4 equal sessions
             % fix the parameters to be equal across sessions
             options.multisession.fixed.phi = 1:n_G_prm;
         otherwise
@@ -311,7 +311,7 @@ for iS = 1:NS
     % extract the data separately for each run
     for iR = 1:nRuns
         run_name = ['run',num2str(iR)];
-        run_trials_idx = (1:n_trialsPerSession) + n_trialsPerSession.*(iR - 1);
+        run_trials_idx = (1:nTrialsPerRun) + nTrialsPerRun.*(iR - 1);
         choices_raw_perSub_perRun.(sub_nm_bis).(run_name) = choices_raw_perSub.(sub_nm_bis)(run_trials_idx);
         choices_pred_perSub_perRun.(sub_nm_bis).(run_name) = choices_pred_perSub.(sub_nm_bis)(run_trials_idx);
         dV_pred_perSub_perRun.(sub_nm_bis).(run_name) = dV_pred_perSub.(sub_nm_bis)(run_trials_idx);
