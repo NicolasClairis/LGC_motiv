@@ -105,11 +105,11 @@ behaviorStruct = load([subBehaviorFolder,...
 %% extract grip force
 for iTrial = 1:nTrialsPerRun
     % extract force
-    trialForceLevels = behaviorStruct.physicalPerf.perfSummary{1,iTrial}.displayInformations.forceLevel;
+    trialForceLevels = behaviorStruct.physicalPerf.perfSummary{1,iTrial}.displayInformations.forceLevel; % extract (F/MVC)*100
     timeForce = behaviorStruct.physicalPerf.perfSummary{1,iTrial}.displayInformations.time +...
         -behaviorStruct.physicalPerf.onsets.effortPeriod{1,iTrial}.effort_phase;
     % remove baseline which seems to vary weirdly
-    trialForceLevels_corrected = trialForceLevels - trialForceLevels(1,1);
+    trialForceLevels_corrected = trialForceLevels - trialForceLevels(1,1); % remove baseline: F_corr = (F(t)/MVC)*100 - (F(1)/MVC)*100
     
     % extract force in newtons (instead of (F in volts)/MVC)
     timeForce_N = behaviorStruct.physicalPerf.perfSummary{1,iTrial}.force_levels(:,2) +...
