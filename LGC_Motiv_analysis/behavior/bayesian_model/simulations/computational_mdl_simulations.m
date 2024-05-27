@@ -32,6 +32,7 @@
 
 %% general parameters
 fig_disp = true; % display figure
+saveFolder = fullfile('P:','boulot','postdoc_CarmenSandi','results','behavior','simulations');
 
 %% define main parameters
 nTrialsPerRun = 54;
@@ -285,6 +286,9 @@ for iPrm = 1:n_G_prm
     [r_recover.r_corr(iPrm), r_recover.pval(iPrm)] = corr(parameterPhi_transfo(iPrm,:)', posteriorPhi_transfo(iPrm,:)');
     r_recover.var_nm{iPrm} = var_nm;
 end % loop over parameters
+% extract min recovery between simulated and recovered paramters to assess
+% recoverability
+r_recover.min = min(r_recover.r_corr,[],2,'omitnan');
 
 % identifiability matrix
 [r_identif.r_corr, r_identif.pval, corrmat, autocorrmat] = deal(NaN(n_G_prm));
@@ -302,7 +306,18 @@ for iPrm = 1:n_G_prm
         corrmat(iPrm,jPrm) = corrmat_real_tmp(1,2);
         autocorrmat(iPrm,jPrm) = autocorrmat_tmp(1,2);
     end % loop over parameters
-end % loop over parameters        
+end % loop over parameters
+% extract max confusion correlation between independent variables to assess
+% identifiability
+max_perLine = NaN(n_G_prm-1,1);
+for iG_prm = 2:n_G_prm
+   max_perLine(iG_prm - 1) = max(r_identif.r_corr(iG_prm,1:(iG_prm-1)),[],2,'omitnan'); 
+end
+r_identif.max_r_corr = max(max_perLine,[],1,'omitnan');
+% save the data
+save([saveFolder,filesep,...
+    'Simulations_model_',mdl_n_nm,'_',num2str(n_simulations),'simus.mat']);
+% indicate where we are to the user
 disp('Computation finished, now script will eventually display correlation matrices');
 
 %% figure display
