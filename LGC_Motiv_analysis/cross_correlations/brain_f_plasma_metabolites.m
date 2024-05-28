@@ -44,13 +44,22 @@ for iPlasma = 1:n_plasma_mb
         %% test significance
         [r_corr.(plasma_mb_nm).dmPFC.(brain_mb_nm),...
             betas.(plasma_mb_nm).dmPFC.(brain_mb_nm),...
-            pval.(plasma_mb_nm).dmPFC.(brain_mb_nm)] = glm_package(plasma_mb_tmp', dmPFC_mb_tmp, 'normal', 'on');
+            pval.(plasma_mb_nm).dmPFC.(brain_mb_nm),...
+            ~,...
+            plasma.(plasma_mb_nm).sorted,...
+            dmPFC.([brain_mb_nm,'_f_',plasma_mb_nm])] = glm_package(plasma_mb_tmp', dmPFC_mb_tmp, 'normal', 'on');
         [r_corr.(plasma_mb_nm).aIns.(brain_mb_nm),...
             betas.(plasma_mb_nm).aIns.(brain_mb_nm),...
-            pval.(plasma_mb_nm).aIns.(brain_mb_nm)] = glm_package(plasma_mb_tmp', aIns_mb_tmp, 'normal', 'on');
+            pval.(plasma_mb_nm).aIns.(brain_mb_nm),...
+            ~,...
+            ~,...
+            aIns.([brain_mb_nm,'_f_',plasma_mb_nm])] = glm_package(plasma_mb_tmp', aIns_mb_tmp, 'normal', 'on');
         [r_corr.(plasma_mb_nm).dmPFC_vs_aIns.(brain_mb_nm),...
             betas.(plasma_mb_nm).dmPFC_vs_aIns.(brain_mb_nm),...
-            pval.(plasma_mb_nm).dmPFC_vs_aIns.(brain_mb_nm)] = glm_package(plasma_mb_tmp', dmPFC_mb_tmp-aIns_mb_tmp, 'normal', 'on');
+            pval.(plasma_mb_nm).dmPFC_vs_aIns.(brain_mb_nm),...
+            ~,...
+            plasma.(plasma_mb_nm).sorted,...
+            dmPFC_vs_aIns.([brain_mb_nm,'_f_',plasma_mb_nm])] = glm_package(plasma_mb_tmp', dmPFC_mb_tmp-aIns_mb_tmp, 'normal', 'on');
         
         % load data in big matrix for correlation plot
         % dmPFC/dACC
@@ -153,3 +162,37 @@ for iPlasma = 1:size(aIns_corr_mtrx,2)
     end % loop over Y variables
 end % loop over X variables
 legend_size(15);
+
+%% display correlations for some specific metabolites between periphery and brain
+metabolites_to_disp = {'Gln','Glu'};
+n_mb_to_disp = length(metabolites_to_disp);
+
+for iMb = 1:n_mb_to_disp
+    mb_nm = metabolites_to_disp{iMb};
+    fig;
+    % dmPFC/dACC
+    subplot(1,2,1); hold on;
+    scat_dmPFC_hdl = scatter(plasmaM.(mb_nm), metabolites.dmPFC.(mb_nm));
+    scat_hdl_upgrade(scat_dmPFC_hdl);
+    % add fit
+    dmPFC_fit_hdl = plot(plasma.(mb_nm).sorted, dmPFC.([mb_nm,'_f_',mb_nm]));
+    fit_hdl_upgrade(dmPFC_fit_hdl);
+    % add correlation
+    place_r_and_pval(r_corr.(mb_nm).dmPFC.(mb_nm),...
+        pval.(mb_nm).dmPFC.(mb_nm)(2));
+    xlabel(['Plasma ',mb_nm,' (μM)']);
+    ylabel(['dmPFC/dACC ',mb_nm,' (mM)']);
+
+    % aIns
+    subplot(1,2,2); hold on;
+    scat_aIns_hdl = scatter(plasmaM.(mb_nm), metabolites.aIns.(mb_nm));
+    scat_hdl_upgrade(scat_aIns_hdl);
+    % add fit
+    aIns_fit_hdl = plot(plasma.(mb_nm).sorted, aIns.([mb_nm,'_f_',mb_nm]));
+    fit_hdl_upgrade(aIns_fit_hdl);
+    % add correlation
+    place_r_and_pval(r_corr.(mb_nm).aIns.(mb_nm),...
+        pval.(mb_nm).aIns.(mb_nm)(2));
+    xlabel(['Plasma ',mb_nm,' (μM)']);
+    ylabel(['aIns ',mb_nm,' (mM)']);
+end % metabolite loop
