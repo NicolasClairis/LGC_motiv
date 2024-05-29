@@ -79,8 +79,10 @@ switch study_nm
         %% remove subjects where behavior and fMRI could not be performed => remove runs independently of the condition
         switch sub_nm
             case {'030','049'}
-                error([sub_nm,' should not be included under the condition ''',condition,...
-                    ''' (tasks not performed).']);
+%                 error([sub_nm,' should not be included under the condition ''',condition,...
+%                     ''' (tasks not performed).']);
+                runs.runsToKeep = [];
+                runs.runsToIgnore = 1:4;
             case '040' % fMRI crashed during run 3 and subject was already stressing a lot
                 % => avoid including runs 3 and 4
                 runs.runsToKeep = [1,2];
@@ -89,7 +91,7 @@ switch study_nm
         
         %% define subject runs to keep depending on condition
         switch condition
-            case {'behavior'} % nothing to change for those conditions
+            case {'fullList','behavior'} % nothing to change for those conditions
             %% for all fMRI conditions, need to remove run 1 from those subjects because of fMRI crash
             case {'fMRI','fMRI_noSatRunSub'}
                 switch sub_nm

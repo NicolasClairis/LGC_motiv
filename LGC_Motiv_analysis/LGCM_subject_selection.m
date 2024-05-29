@@ -142,7 +142,7 @@ switch study_nm
         
         %% remove some subjects depending on the condition entered as input
         switch condition
-            case {'behavior','behavior_noSatRun_lenient','fMRI',...
+            case {'fullList','behavior','behavior_noSatRun_lenient','fMRI',...
                     'fMRI_noMove_bis','fMRI_noMove_ter'} % all subjects
                 % (but removing the bad runs if the condition requires it)
                 bad_subs = false(1,length(fullSubList));
