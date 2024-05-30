@@ -54,7 +54,7 @@ n_y_vars = size(corr_mtrx, 1);
 
 %% default inputs
 % x labels by default = numbers
-if ~exist('xlabels','var') || isempty(xlabels)
+if ~exist('xlabels','var')
     xlabels = cell(1,n_x_vars);
     for iX = 1:n_x_vars
         xlabels{iX} = num2str(iX);
@@ -62,7 +62,7 @@ if ~exist('xlabels','var') || isempty(xlabels)
 end
 
 % y labels by default = numbers
-if ~exist('ylabels','var') || isempty(ylabels)
+if ~exist('ylabels','var')
     ylabels = cell(1,n_y_vars);
     for iY = 1:n_y_vars
         ylabels{iY} = num2str(iY);
@@ -93,6 +93,11 @@ end
 %% mask non-significant boxes if asked in input
 if apply_pval_threshold == true
     corr_mtrx(pval_mtrx > pval_threshold) = 0;
+end
+
+%% mark r=NaN as r=0 because otherwise Matlab uses the lowest corr_range value by default which gives very misleading conclusions
+if sum(sum(isnan(corr_mtrx))) > 0
+    corr_mtrx(isnan(corr_mtrx)) = 0;
 end
 
 %% figure parameters
@@ -127,16 +132,20 @@ cbar = colorbar;
 cbar.Label.String = 'r';
 
 % x legends (columns) from left to right
-xticks(1:n_x_vars);
-xticklabels(xlabels);
+if ~isempty(xlabels)
+    xticks(1:n_x_vars);
+    xticklabels(xlabels);
+end
 % add global xlabel if entered in inputs (otherwise leave empty)
 if exist('xlabel_nm','var') && ~isempty(xlabel_nm)
     xlabel(xlabel_nm);
 end
 
 % y legends (lines) from top to bottom
-yticks(1:n_y_vars);
-yticklabels(ylabels);
+if ~isempty(ylabels)
+    yticks(1:n_y_vars);
+    yticklabels(ylabels);
+end
 % add global ylabel if entered in inputs (otherwise leave empty)
 if exist('ylabel_nm','var') && ~isempty(ylabel_nm)
     ylabel(ylabel_nm);
