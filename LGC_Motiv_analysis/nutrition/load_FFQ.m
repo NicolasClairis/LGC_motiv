@@ -211,8 +211,8 @@ for iS = 1:NS
     % fibers (kind of carbohydrates in fact, but with very different
     % nutritional properties)
     nutrition.raw.fibers.fibers(iS) = FFQ_struct.FFQ_results.ZB_fibres__mg_portion__PerWeek(sub_idx); % (ZB)
-    nutrition.raw.carbohydrates.solubleFibers(iS) = FFQ_struct.FFQ_results.KBW_fibresSolublesDansL_eau__mg_portion__PerWeek(sub_idx); % (KBW)
-    nutrition.raw.carbohydrates.insolubleFibers(iS) = FFQ_struct.FFQ_results.KBN_fibresInsolublesDansL_eau__mg_portion__PerWeek(sub_idx); % (KBN)
+    nutrition.raw.fibers.solubleFibers(iS) = FFQ_struct.FFQ_results.KBW_fibresSolublesDansL_eau__mg_portion__PerWeek(sub_idx); % (KBW)
+    nutrition.raw.fibers.insolubleFibers(iS) = FFQ_struct.FFQ_results.KBN_fibresInsolublesDansL_eau__mg_portion__PerWeek(sub_idx); % (KBN)
     nutrition.raw.fibers.cellulose(iS) = FFQ_struct.FFQ_results.KBC_cellulose__mg_portion__PerWeek(sub_idx); % (KBC)
     nutrition.raw.fibers.lignine(iS) = FFQ_struct.FFQ_results.KBL_mg_portion__PerWeek(sub_idx); % (KBL)
     
@@ -272,7 +272,7 @@ for iS = 1:NS
     nutrition.raw.other.alcohol(iS) = FFQ_struct.FFQ_results.ZA_alcool__mg_portion__PerWeek(sub_idx); % (ZA)
     nutrition.raw.other.uricA(iS) = FFQ_struct.FFQ_results.EH_mg_portion__PerWeek(sub_idx); % (EH)
     nutrition.raw.other.purin(iS) = FFQ_struct.FFQ_results.EP_mg_portion__PerWeek(sub_idx); % (EP)
-    nutrition.raw.bread(iS) = FFQ_struct.FFQ_results.GKB_pain__BE__PerWeek(sub_idx); % (GKB)
+    nutrition.raw.other.bread(iS) = FFQ_struct.FFQ_results.GKB_pain__BE__PerWeek(sub_idx); % (GKB)
     
 end % subject loop
 
