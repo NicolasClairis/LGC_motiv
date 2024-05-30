@@ -48,7 +48,7 @@ IPAQ_all = excelReadQuestionnairesFile.IPAQ;
 
 % prepare variables of interest
 [n_covid, ISCE,...
-    money, age, weight, height, BMI,...
+    money, age, sex, weight, height, BMI,...
     STAI_T, SIAS, PSS14,...
     CTQ_emotionalA, CTQ_physicalA,...
     CTQ_sexA, CTQ_minDenial,...
@@ -79,6 +79,7 @@ for iS = 1:NS
     % general
     n_covid(iS) = excelReadQuestionnairesFile.NombreD_infectionsAuCOVID(sub_idx);
     age(iS) = excelReadQuestionnairesFile2.Age_yearsOld_(sub_idx2);
+    sex(iS) = strcmp(excelReadQuestionnairesFile2.Sexe_femaleF_maleM_(sub_idx2),'F');
     weight(iS) = excelReadQuestionnairesFile2.Weight(sub_idx2);
     height(iS) = excelReadQuestionnairesFile2.Height(sub_idx2).*100; % convert in cm (instead of m)
     BMI(iS) = excelReadQuestionnairesFile2.BMI(sub_idx2);
@@ -144,6 +145,7 @@ end % subject loop
 % general
 questionnaires.general.n_covid = n_covid;
 questionnaires.general.age = age;
+questionnaires.general.sex = sex;
 questionnaires.general.weight = weight;
 questionnaires.general.height = height;
 questionnaires.general.BMI = BMI;
