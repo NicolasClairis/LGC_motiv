@@ -63,56 +63,62 @@ for iS = 1:NS
         ~] = choiceNDproportion_perRun(sub_nm, figDispIndiv, sub_folder);
     
     %% physical task
-    if ismember(1,runs_ok_Ep_tmp)
-        run1_Ep = choiceND_percentage_perRun_tmp.Ep.run1;
-    else
-        run1_Ep = [];
-    end
-    if ismember(2,runs_ok_Ep_tmp)
-        run2_Ep = choiceND_percentage_perRun_tmp.Ep.run2;
-    else
-        run2_Ep = [];
-    end
-    choice_hE.Ep(iS) = mean([run1_Ep, run2_Ep],2,'omitnan');
+    if ~isempty(runs_ok_Ep_tmp)
+        if ismember(1,runs_ok_Ep_tmp)
+            run1_Ep = choiceND_percentage_perRun_tmp.Ep.run1;
+        else
+            run1_Ep = [];
+        end
+        if ismember(2,runs_ok_Ep_tmp)
+            run2_Ep = choiceND_percentage_perRun_tmp.Ep.run2;
+        else
+            run2_Ep = [];
+        end
+        choice_hE.Ep(iS) = mean([run1_Ep, run2_Ep],2,'omitnan');
+    end % filter case where no physical effort run
     
     %% mental task
-    if ismember(1,runs_ok_Em_tmp)
-        run1_Em = choiceND_percentage_perRun_tmp.Em.run1;
-    else
-        run1_Em = [];
-    end
-    if ismember(2,runs_ok_Ep_tmp)
-        run2_Em = choiceND_percentage_perRun_tmp.Em.run2;
-    else
-        run2_Em = [];
-    end
-    choice_hE.Em(iS) = mean([run1_Em, run2_Em],2,'omitnan');
+    if ~isempty(runs_ok_Ep_tmp)
+        if ismember(1,runs_ok_Em_tmp)
+            run1_Em = choiceND_percentage_perRun_tmp.Em.run1;
+        else
+            run1_Em = [];
+        end
+        if ismember(2,runs_ok_Ep_tmp)
+            run2_Em = choiceND_percentage_perRun_tmp.Em.run2;
+        else
+            run2_Em = [];
+        end
+        choice_hE.Em(iS) = mean([run1_Em, run2_Em],2,'omitnan');
+    end % filter case where no mental effort run
     
     %% average across tasks
-    if ismember(1, runs.runsToKeep)
-        run1_data = choiceND_percentage_perRun_tmp.run1;
-    else
-        run1_data = [];
-    end
-    if ismember(2, runs.runsToKeep)
-        run2_data = choiceND_percentage_perRun_tmp.run2;
-    else
-        run2_data = [];
-    end
-    if ismember(3, runs.runsToKeep)
-        run3_data = choiceND_percentage_perRun_tmp.run3;
-    else
-        run3_data = [];
-    end
-    if ismember(4, runs.runsToKeep)
-        run4_data = choiceND_percentage_perRun_tmp.run4;
-    else
-        run4_data = [];
-    end
-    choice_hE.EpEm(iS) = mean([run1_data,...
-        run2_data,...
-        run3_data,...
-        run4_data],2,'omitnan');
+    if ~isempty(runs.runsToKeep)
+        if ismember(1, runs.runsToKeep)
+            run1_data = choiceND_percentage_perRun_tmp.run1;
+        else
+            run1_data = [];
+        end
+        if ismember(2, runs.runsToKeep)
+            run2_data = choiceND_percentage_perRun_tmp.run2;
+        else
+            run2_data = [];
+        end
+        if ismember(3, runs.runsToKeep)
+            run3_data = choiceND_percentage_perRun_tmp.run3;
+        else
+            run3_data = [];
+        end
+        if ismember(4, runs.runsToKeep)
+            run4_data = choiceND_percentage_perRun_tmp.run4;
+        else
+            run4_data = [];
+        end
+        choice_hE.EpEm(iS) = mean([run1_data,...
+            run2_data,...
+            run3_data,...
+            run4_data],2,'omitnan');
+    end % filter case where no run is to be kept (leave NaN for this subject)
 end % subject loop
 
 %% average and SEM
