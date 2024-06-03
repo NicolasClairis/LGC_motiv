@@ -1,9 +1,11 @@
 function[fig_hdl, subplot_hdl] = corr_plot(corr_mtrx, pval_mtrx,...
     corr_range, xlabels, ylabels, xlabel_nm, ylabel_nm,...
-    apply_pval_threshold, pval_threshold, disp_stars)
+    apply_pval_threshold, pval_threshold, disp_stars,...
+    fig_hdl, subplot_hdl)
 % [fig_hdl, subplot_hdl] = corr_plot(corr_mtrx, pval_mtrx,...
 %     corr_range, xlabels, ylabels, xlabel_nm, ylabel_nm,...
-%     apply_pval_threshold, pval_threshold, disp_stars)
+%     apply_pval_threshold, pval_threshold, disp_stars,...
+%     fig_hdl, subplot_hdl)
 % corr_plot will display a correlation plot with a color scale based on
 % correlation coefficients and p.values entered in inputs
 %
@@ -42,6 +44,10 @@ function[fig_hdl, subplot_hdl] = corr_plot(corr_mtrx, pval_mtrx,...
 % Thresholds being: * for p <= 0.05, **p<0.01, ***p<0.001
 % You may want to decide between pval_threshold and disp_stars what to use
 % as both might be partly redundant (both serve to highlight what is significant)
+%
+% fig_hdl: figure handle (will be created if left empty)
+%
+% subplot_hdl: subplot handle (will be created if left empty)
 %
 % OUTPUTS
 % fig_hdl: figure handle
@@ -118,11 +124,16 @@ n_totalBoxes = n_x_vars*n_y_vars;
 pval_star_min_fontSize = 10;
 pval_star_fontSize = pval_star_min_fontSize + exp(-log(n_totalBoxes/1000)); % adjust star size to the number of correlations displayed (smaller stars when boxes are bigger)
 
-
-%% create figure
-fig_hdl = fig;
-% create subplot (otherwise display looks strange)
-subplot_hdl = subplot(1,1,1);
+%% define figure
+% create figure (if not entered in input)
+if ~exist('fig_hdl','var') || isempty(fig_hdl)
+    fig_hdl = fig;
+end
+% create subplot (otherwise display looks strange) (unless subplot already
+% defined in input)
+if ~exist('subplot_hdl','var') || isempty(subplot_hdl)
+    subplot_hdl = subplot(1,1,1);
+end
 % display correlation matrix
 imagesc(corr_mtrx, corr_range);
 colormap(subplot_hdl, color_range_choices);
