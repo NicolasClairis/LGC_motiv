@@ -1508,7 +1508,7 @@ for iVar = 1:n_mega_mtrx_vars
             category{iVar} = 'stress_anxiety';
         case 'behavior_stress_ratings_S4_min_S1'
             mega_mtrx(iVar, :) = deltaStressPrePostExp;
-            category{iVar} = 'age';
+            category{iVar} = 'stress_anxiety';
         case 'behavior_stress_ratings_S4_min_S3'
             mega_mtrx(iVar, :) = deltaStressPrePostfMRI;
             category{iVar} = 'stress_anxiety';
@@ -1526,7 +1526,7 @@ for iVar = 1:n_mega_mtrx_vars
             category{iVar} = 'fatigue';
         case 'behavior_fatigue_ratings_F4_min_F1'
             mega_mtrx(iVar, :) = deltaFatiguePrePostExp;
-            category{iVar} = 'age';
+            category{iVar} = 'fatigue';
         case 'behavior_fatigue_ratings_F4_min_F3'
             mega_mtrx(iVar, :) = deltaFatiguePrePostfMRI;
             category{iVar} = 'fatigue';
@@ -1565,14 +1565,18 @@ end % variable loop
 
 %% perform correlation matrix between all variables
 [corr_mtrx, pval_mtrx] = deal(NaN(n_mega_mtrx_vars, n_mega_mtrx_vars));
-[mtrx_var_nm1, mtrx_var_nm2] =  deal(cell(n_mega_mtrx_vars, n_mega_mtrx_vars));
-for iVar = 1:n_mega_mtrx_vars
-    for jVar = 1:n_mega_mtrx_vars
+[mtrx_var_nm1, mtrx_var_nm2,...
+    mtrx_categ_nm1, mtrx_categ_nm2] =  deal(cell(n_mega_mtrx_vars, n_mega_mtrx_vars));
+for iVar = 1:n_mega_mtrx_vars % loop through rows (all variables)
+    for jVar = 1:n_mega_mtrx_vars % loop through columns (all variables)
         okSubs = ~isnan(mega_mtrx(iVar,:).*mega_mtrx(jVar,:));
         
         % extract variable name
         mtrx_var_nm1{iVar, jVar} = mega_mtrx_names{iVar};
         mtrx_var_nm2{iVar, jVar} = mega_mtrx_names{jVar};
+        % extract corresponding category of variable
+        mtrx_categ_nm1{iVar, jVar} = category{iVar};
+        mtrx_categ_nm2{iVar, jVar} = category{jVar};
         
         % perform correlation
         if sum(okSubs) > 0 % at least some subjects ok => matlab can perform the correlation
@@ -1603,60 +1607,50 @@ pval_mtrx_Bonferroni_corr = reshape(pval_corr_linear,[n_mega_mtrx_vars,n_mega_mt
     GLM_b_mtrx_sex, GLM_pval_mtrx_sex,...
     GLM_b_mtrx_vars, GLM_pval_mtrx_vars] = deal(NaN(n_mega_mtrx_vars, n_mega_mtrx_vars));
 % extract age and sex for each subject (co-variates)
-age = mega_mtrx(strcmp(mega_mtrx_names,'gal_age'),:);
-binary_var_sex = mega_mtrx(strcmp(mega_mtrx_names,'gal_sex'),:);
-% category_var_sex = cell(NS,1);
-% for iS = 1:NS
-%     switch binary_var_sex(iS)
-%         case 1
-%             category_var_sex{iS} = 'F';
-%         case 0
-%             category_var_sex{iS} = 'M';
-%     end
-% end % subject loop
+age = nanzscore(mega_mtrx(strcmp(mega_mtrx_names,'gal_age'),:))'; % zscore age to make beta comparable
+binary_var_sex = mega_mtrx(strcmp(mega_mtrx_names,'gal_sex'),:)';
 
 % perform LME test on each variable with each variable as requested...
-for iVar = 3:n_mega_mtrx_vars % loop through explained variable
+for iVar = 3:n_mega_mtrx_vars % loop through explained variables (except age and sex)
     explained_var_nm = mega_mtrx_names{iVar};
-    for jVar = (iVar + 1):n_mega_mtrx_vars % loop through explaining variable
+    for jVar = 3:n_mega_mtrx_vars % loop through explaining variables (except age and sex)
         explaining_var_nm = mega_mtrx_names{jVar};
         
         % name for storage
         curr_test_nm = [explained_var_nm,'_f_',explaining_var_nm];
         
-        %         %% table LME format
-        %         % initialize the table for each variable
-        %         tbl = table;
-        %         % extract age and sex first
-        %         tbl.(explained_var_nm) = mega_mtrx(iVar,:)';
-        %         tbl.age = age';
-        % %         tbl.sex = binary_var_sex';
-        %         tbl.sex = category_var_sex;
-        %         tbl.(explaining_var_nm) = mega_mtrx(jVar,:)';
-        %         formula = [explained_var_nm,...
-        %             ' ~ 1 + age + sex + ',...
-        %             '(',explaining_var_nm,' | age) + ',...
-        %             '(',explaining_var_nm,' | sex) + ',...
-        %             explaining_var_nm];
-        %         glme.(curr_test_nm) = fitglme(tbl, formula);
-        
-        % classic GLM
+        % zscore input and output to make betas comparable (unless data is
+        % binary)
+        % explaining variable
+        switch explaining_var_nm
+            case {'gal_sex'} % binary variables (no zscore)
+                explaining_var = mega_mtrx(jVar,:)';
+            otherwise % continuous variables (zscore)
+                explaining_var = nanzscore(mega_mtrx(jVar,:))';
+        end
+        % explained variable
+        switch explained_var_nm
+            case {'gal_sex'} % binary variables (no zscore)
+                explained_var = mega_mtrx(iVar,:)';
+            otherwise % continuous variables (zscore)
+                explained_var = nanzscore(mega_mtrx(iVar,:))';
+        end
         % perform GLM
-        [betas.(curr_test_nm),~,stats_tmp] = glmfit([age', binary_var_sex', mega_mtrx(iVar,:)'],mega_mtrx(jVar,:)','normal');
+        [betas.(curr_test_nm),~,stats_tmp] = glmfit([age, binary_var_sex, explaining_var], explained_var,'normal');
         pval.(curr_test_nm).age = stats_tmp.p(2);
         pval.(curr_test_nm).sex = stats_tmp.p(3);
         pval.(curr_test_nm).(explaining_var_nm) = stats_tmp.p(4);
         
         % store data in big matrices
         % age
-        GLM_b_mtrx_age(iVar, jVar) = betas.(curr_test_nm)(2);
-        GLM_pval_mtrx_age(iVar, jVar) = stats_tmp.p(2);
+        GLM_b_mtrx_age(jVar, iVar) = betas.(curr_test_nm)(2);
+        GLM_pval_mtrx_age(jVar, iVar) = stats_tmp.p(2);
         % sex
-        GLM_b_mtrx_sex(iVar, jVar) = betas.(curr_test_nm)(3);
-        GLM_pval_mtrx_sex(iVar, jVar) = stats_tmp.p(3);
+        GLM_b_mtrx_sex(jVar, iVar) = betas.(curr_test_nm)(3);
+        GLM_pval_mtrx_sex(jVar, iVar) = stats_tmp.p(3);
         % variable
-        GLM_b_mtrx_vars(iVar, jVar) = betas.(curr_test_nm)(4);
-        GLM_pval_mtrx_vars(iVar, jVar) = stats_tmp.p(4);
+        GLM_b_mtrx_vars(jVar, iVar) = betas.(curr_test_nm)(4);
+        GLM_pval_mtrx_vars(jVar, iVar) = stats_tmp.p(4);
     end % loop through explaining variables
 end % loop through explained variable
 
@@ -1679,7 +1673,7 @@ corr_range = [-1 1];
 apply_pval_threshold = false;
 pval_threshold = [];
 disp_signif_stars = false;
-[fig_hdl, subplot_hdl] = corr_plot(corr_mtrx, pval_mtrx,...
+corr_plot(corr_mtrx, pval_mtrx,...
     corr_range, [], [], [], [],...
     apply_pval_threshold, pval_threshold, disp_signif_stars);
 
@@ -1687,14 +1681,68 @@ disp_signif_stars = false;
 apply_pval_threshold = true;
 pval_threshold = 0.05;
 disp_signif_stars = false;
-[fig_hdl, subplot_hdl] = corr_plot(corr_mtrx, pval_mtrx_Bonferroni_corr,...
+corr_plot(corr_mtrx, pval_mtrx_Bonferroni_corr,...
     corr_range, [], [], [], [],...
     apply_pval_threshold, pval_threshold, disp_signif_stars);
 
-% %% circular correlation matrix
-% figure;
+%% GLM results after correcting for sex and age
+% show two figures, one with all tests and one with filtering on p.value
+for iFig = 1:2
+    switch iFig
+        case 1 % no filter
+            apply_pval_threshold = false;
+            pval_threshold = [];
+        case 2 % filter on p.value
+            apply_pval_threshold = true;
+            pval_threshold = 0.05;
+    end
+    disp_signif_stars = false; % do not show stars
+    fig_correl = fig;
+    
+    % age variable
+    subplot_age_hdl = subplot(1,3,1);
+    corr_plot(GLM_b_mtrx_age, GLM_pval_mtrx_age,...
+        corr_range, [], [], [], [],...
+        apply_pval_threshold, pval_threshold, disp_signif_stars,...
+        fig_correl, subplot_age_hdl);
+    
+    % sex variable
+    subplot_sex_hdl = subplot(1,3,2);
+    corr_plot(GLM_b_mtrx_sex, GLM_pval_mtrx_sex,...
+        corr_range, [], [], [], [],...
+        apply_pval_threshold, pval_threshold, disp_signif_stars,...
+        fig_correl, subplot_sex_hdl);
+    
+    % variable correlation
+    subplot_var_hdl = subplot(1,3,3);
+    corr_plot(GLM_b_mtrx_vars, GLM_pval_mtrx_vars,...
+        corr_range, [], [], [], [],...
+        apply_pval_threshold, pval_threshold, disp_signif_stars,...
+        fig_correl, subplot_var_hdl);
+end % loop through figures (with/without filtering on p.value)
+
+%% perform circular correlation matrices between specific parts
+
+% circulatory metabolites (whole-blood + plasma + salivary) and brain =
+% FFQ raw
+warning('to perform');
+% fig;
 % myColorMap = lines(length(corr_mtrx));
 % circularGraph(abs(corr_mtrx),'Colormap',myColorMap,'Label',mega_mtrx_names);
+
+% circulatory metabolites (whole-blood + plasma + salivary) and brain =
+% f(FFQ normalized by caloric intake)
+warning('to perform');
+
+% brain metabolites = f(circulatory metabolites (whole-blood + plasma +
+% salivary))
+fig;
+myColorMap = lines(length(corr_mtrx));
+circularGraph(abs(corr_mtrx),'Colormap',myColorMap,'Label',mega_mtrx_names);
+warning('to perform');
+
+% behavior = f(circulatory metabolites (whole-blood + plasma + salivary))
+warning('to perform');
 
 %% save excel file for Gephi
 % create one table for nodes
@@ -1715,3 +1763,72 @@ table_edges.weight2 = reshape(pval_mtrx,[n_corrs,1]);
 table_edges.Type = repmat('undirected',n_corrs,1);
 % save edges table
 writetable(table_edges,[saveFolder,filesep,'Edges_megamtrx_',num2str(NS),'subs.xlsx']);
+
+% create one table for Nestlé with main information of interest for
+% correlations (using absolute correlation coefficient as some softwares
+% cannot process negative values)
+n_corrs = n_mega_mtrx_vars*n_mega_mtrx_vars;
+table_correl = table;
+% variable names
+table_correl.var1 = reshape(mtrx_var_nm1,[n_corrs,1]);
+table_correl.category_var1 = reshape(mtrx_categ_nm1,[n_corrs,1]);
+table_correl.var2 = reshape(mtrx_var_nm2,[n_corrs,1]);
+table_correl.category_var2 = reshape(mtrx_categ_nm2,[n_corrs,1]);
+% regressors
+table_correl.r_corr = reshape(abs(corr_mtrx),[n_corrs,1]); % use |r|
+table_correl.pvalue = reshape(pval_mtrx,[n_corrs,1]);
+% save edges table
+writetable(table_correl,[saveFolder,filesep,'crosscorrel_abs_r_table_',num2str(NS),'subs.xlsx']);
+
+% create one table for Nestlé with main information of interest for
+% correlations (using signed correlation coefficients)
+n_corrs = n_mega_mtrx_vars*n_mega_mtrx_vars;
+table_correl = table;
+% variable names
+table_correl.var1 = reshape(mtrx_var_nm1,[n_corrs,1]);
+table_correl.category_var1 = reshape(mtrx_categ_nm1,[n_corrs,1]);
+table_correl.var2 = reshape(mtrx_var_nm2,[n_corrs,1]);
+table_correl.category_var2 = reshape(mtrx_categ_nm2,[n_corrs,1]);
+% regressors
+table_correl.r_corr = reshape(corr_mtrx,[n_corrs,1]); % use r
+table_correl.pvalue = reshape(pval_mtrx,[n_corrs,1]);
+% save edges table
+writetable(table_correl,[saveFolder,filesep,'crosscorrel_signed_r_table_',num2str(NS),'subs.xlsx']);
+
+% create second table for Nestlé with main information of interest for
+% GLM
+n_corrs = n_mega_mtrx_vars*n_mega_mtrx_vars;
+table_GLM = table;
+% variable names
+table_GLM.var1 = reshape(mtrx_var_nm1,[n_corrs,1]);
+table_GLM.category_var1 = reshape(mtrx_categ_nm1,[n_corrs,1]);
+table_GLM.var2 = reshape(mtrx_var_nm2,[n_corrs,1]);
+table_GLM.category_var2 = reshape(mtrx_categ_nm2,[n_corrs,1]);
+% regressors
+table_GLM.b_age = reshape(abs(GLM_b_mtrx_age),[n_corrs,1]);
+table_GLM.pvalue_age = reshape(GLM_pval_mtrx_age,[n_corrs,1]);
+table_GLM.b_sex = reshape(abs(GLM_b_mtrx_sex),[n_corrs,1]);
+table_GLM.pvalue_sex = reshape(GLM_pval_mtrx_sex,[n_corrs,1]);
+table_GLM.b_var = reshape(abs(GLM_b_mtrx_vars),[n_corrs,1]);
+table_GLM.pvalue_var = reshape(GLM_pval_mtrx_vars,[n_corrs,1]);
+% save edges table
+writetable(table_GLM,[saveFolder,filesep,'GLM_table_abs_betas_',num2str(NS),'subs.xlsx']);
+
+% create second table for Nestlé with main information of interest for
+% GLM
+n_corrs = n_mega_mtrx_vars*n_mega_mtrx_vars;
+table_GLM = table;
+% variable names
+table_GLM.var1 = reshape(mtrx_var_nm1,[n_corrs,1]);
+table_GLM.category_var1 = reshape(mtrx_categ_nm1,[n_corrs,1]);
+table_GLM.var2 = reshape(mtrx_var_nm2,[n_corrs,1]);
+table_GLM.category_var2 = reshape(mtrx_categ_nm2,[n_corrs,1]);
+% regressors
+table_GLM.b_age = reshape(GLM_b_mtrx_age,[n_corrs,1]);
+table_GLM.pvalue_age = reshape(GLM_pval_mtrx_age,[n_corrs,1]);
+table_GLM.b_sex = reshape(GLM_b_mtrx_sex,[n_corrs,1]);
+table_GLM.pvalue_sex = reshape(GLM_pval_mtrx_sex,[n_corrs,1]);
+table_GLM.b_var = reshape(GLM_b_mtrx_vars,[n_corrs,1]);
+table_GLM.pvalue_var = reshape(GLM_pval_mtrx_vars,[n_corrs,1]);
+% save edges table
+writetable(table_GLM,[saveFolder,filesep,'GLM_table_signed_betas_',num2str(NS),'subs.xlsx']);
