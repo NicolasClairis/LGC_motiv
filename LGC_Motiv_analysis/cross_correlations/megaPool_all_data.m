@@ -11,7 +11,8 @@ condition = 'fullList';
 [subject_id, NS] = LGCM_subject_selection(study_nm, condition);
 
 %% working directory
-saveFolder = fullfile('P:','boulot','postdoc_CarmenSandi','results');
+saveFolder = fullfile('P:','boulot','postdoc_CarmenSandi',...
+    'results','mega_correlation_matrix');
 
 %% extract all the relevant data
 
@@ -668,418 +669,418 @@ for iVar = 1:n_mega_mtrx_vars
             category{iVar} = 'dominance';
         case 'FFQ_raw_energy_kCal'
             mega_mtrx(iVar, :) = nutrition.raw.energy.kCal;
-            category{iVar} = 'FFQ_energy';
+            category{iVar} = 'FFQ_raw_energy';
         case 'FFQ_raw_energy_kJ'
             mega_mtrx(iVar, :) = nutrition.raw.energy.kJ;
-            category{iVar} = 'FFQ_energy';
+            category{iVar} = 'FFQ_raw_energy';
         case 'FFQ_raw_energy_kCalWithFibers'
             mega_mtrx(iVar, :) = nutrition.raw.energy.kCal_withFibers;
-            category{iVar} = 'FFQ_energy';
-        case 'kJ_withFibers'
+            category{iVar} = 'FFQ_raw_energy';
+        case 'FFQ_raw_energy_kJ_withFibers'
             mega_mtrx(iVar, :) = nutrition.raw.energy.kJ_withFibers;
-            category{iVar} = 'FFQ_energy';
+            category{iVar} = 'FFQ_raw_energy';
         case 'FFQ_raw_proteins_aa_proteins'
             mega_mtrx(iVar, :) = nutrition.raw.proteins_aa.proteins;
-            category{iVar} = 'FFQ_proteins_aa';
+            category{iVar} = 'FFQ_raw_proteins_aa';
         case 'FFQ_raw_proteins_aa_essentialAA'
             mega_mtrx(iVar, :) = nutrition.raw.proteins_aa.essentialAA;
-            category{iVar} = 'FFQ_proteins_aa';
+            category{iVar} = 'FFQ_raw_proteins_aa';
         case 'FFQ_raw_proteins_aa_nonEssentialAA'
             mega_mtrx(iVar, :) = nutrition.raw.proteins_aa.nonEssentialAA;
-            category{iVar} = 'FFQ_proteins_aa';
+            category{iVar} = 'FFQ_raw_proteins_aa';
         case 'FFQ_raw_proteins_aa_Ile'
             mega_mtrx(iVar, :) = nutrition.raw.proteins_aa.Ile;
-            category{iVar} = 'FFQ_proteins_aa';
+            category{iVar} = 'FFQ_raw_proteins_aa';
         case 'FFQ_raw_proteins_aa_Leu'
             mega_mtrx(iVar, :) = nutrition.raw.proteins_aa.Leu;
-            category{iVar} = 'FFQ_proteins_aa';
+            category{iVar} = 'FFQ_raw_proteins_aa';
         case 'FFQ_raw_proteins_aa_Lys'
             mega_mtrx(iVar, :) = nutrition.raw.proteins_aa.Lys;
-            category{iVar} = 'FFQ_proteins_aa';
+            category{iVar} = 'FFQ_raw_proteins_aa';
         case 'FFQ_raw_proteins_aa_Met'
             mega_mtrx(iVar, :) = nutrition.raw.proteins_aa.Met;
-            category{iVar} = 'FFQ_proteins_aa';
+            category{iVar} = 'FFQ_raw_proteins_aa';
         case 'FFQ_raw_proteins_aa_Cys'
             mega_mtrx(iVar, :) = nutrition.raw.proteins_aa.Cys;
-            category{iVar} = 'FFQ_proteins_aa';
+            category{iVar} = 'FFQ_raw_proteins_aa';
         case 'FFQ_raw_proteins_aa_Phe'
             mega_mtrx(iVar, :) = nutrition.raw.proteins_aa.Phe;
-            category{iVar} = 'FFQ_proteins_aa';
+            category{iVar} = 'FFQ_raw_proteins_aa';
         case 'FFQ_raw_proteins_aa_Tyr'
             mega_mtrx(iVar, :) = nutrition.raw.proteins_aa.Tyr;
-            category{iVar} = 'FFQ_proteins_aa';
+            category{iVar} = 'FFQ_raw_proteins_aa';
         case 'FFQ_raw_proteins_aa_Thr'
             mega_mtrx(iVar, :) = nutrition.raw.proteins_aa.Thr;
-            category{iVar} = 'FFQ_proteins_aa';
+            category{iVar} = 'FFQ_raw_proteins_aa';
         case 'FFQ_raw_proteins_aa_Trp'
             mega_mtrx(iVar, :) = nutrition.raw.proteins_aa.Trp;
-            category{iVar} = 'FFQ_proteins_aa';
+            category{iVar} = 'FFQ_raw_proteins_aa';
         case 'FFQ_raw_proteins_aa_Val'
             mega_mtrx(iVar, :) = nutrition.raw.proteins_aa.Val;
-            category{iVar} = 'FFQ_proteins_aa';
+            category{iVar} = 'FFQ_raw_proteins_aa';
         case 'FFQ_raw_proteins_aa_Arg'
             mega_mtrx(iVar, :) = nutrition.raw.proteins_aa.Arg;
-            category{iVar} = 'FFQ_proteins_aa';
+            category{iVar} = 'FFQ_raw_proteins_aa';
         case 'FFQ_raw_proteins_aa_His'
             mega_mtrx(iVar, :) = nutrition.raw.proteins_aa.His;
-            category{iVar} = 'FFQ_proteins_aa';
+            category{iVar} = 'FFQ_raw_proteins_aa';
         case 'FFQ_raw_proteins_aa_Ala'
             mega_mtrx(iVar, :) = nutrition.raw.proteins_aa.Ala;
-            category{iVar} = 'FFQ_proteins_aa';
+            category{iVar} = 'FFQ_raw_proteins_aa';
         case 'FFQ_raw_proteins_aa_Asp'
             mega_mtrx(iVar, :) = nutrition.raw.proteins_aa.Asp;
-            category{iVar} = 'FFQ_proteins_aa';
+            category{iVar} = 'FFQ_raw_proteins_aa';
         case 'FFQ_raw_proteins_aa_Glu'
             mega_mtrx(iVar, :) = nutrition.raw.proteins_aa.Glu;
-            category{iVar} = 'FFQ_proteins_aa';
+            category{iVar} = 'FFQ_raw_proteins_aa';
         case 'FFQ_raw_proteins_aa_Gly'
             mega_mtrx(iVar, :) = nutrition.raw.proteins_aa.Gly;
-            category{iVar} = 'FFQ_proteins_aa';
+            category{iVar} = 'FFQ_raw_proteins_aa';
         case 'FFQ_raw_proteins_aa_Pro'
             mega_mtrx(iVar, :) = nutrition.raw.proteins_aa.Pro;
-            category{iVar} = 'FFQ_proteins_aa';
+            category{iVar} = 'FFQ_raw_proteins_aa';
         case 'FFQ_raw_proteins_aa_Ser'
             mega_mtrx(iVar, :) = nutrition.raw.proteins_aa.Ser;
-            category{iVar} = 'FFQ_proteins_aa';
+            category{iVar} = 'FFQ_raw_proteins_aa';
         case 'FFQ_raw_vitamins_ARE'
             mega_mtrx(iVar, :) = nutrition.raw.vitamins.A_retinolEquivalent;
-            category{iVar} = 'FFQ_vitamins';
+            category{iVar} = 'FFQ_raw_vitamins';
         case 'FFQ_raw_vitamins_AR'
             mega_mtrx(iVar, :) = nutrition.raw.vitamins.A_retinol;
-            category{iVar} = 'FFQ_vitamins';
+            category{iVar} = 'FFQ_raw_vitamins';
         case 'FFQ_raw_vitamins_ABC'
             mega_mtrx(iVar, :) = nutrition.raw.vitamins.A_bCarotene;
-            category{iVar} = 'FFQ_vitamins';
+            category{iVar} = 'FFQ_raw_vitamins';
         case 'FFQ_raw_vitamins_D'
             mega_mtrx(iVar, :) = nutrition.raw.vitamins.D_calciferole;
-            category{iVar} = 'FFQ_vitamins';
+            category{iVar} = 'FFQ_raw_vitamins';
         case 'FFQ_raw_vitamins_ETE'
             mega_mtrx(iVar, :) = nutrition.raw.vitamins.E_tocopherolEquivalent;
-            category{iVar} = 'FFQ_vitamins';
+            category{iVar} = 'FFQ_raw_vitamins';
         case 'FFQ_raw_vitamins_EAT'
             mega_mtrx(iVar, :) = nutrition.raw.vitamins.E_alphaTocopherol;
-            category{iVar} = 'FFQ_vitamins';
+            category{iVar} = 'FFQ_raw_vitamins';
         case 'FFQ_raw_vitamins_K'
             mega_mtrx(iVar, :) = nutrition.raw.vitamins.K_phylloquinone;
-            category{iVar} = 'FFQ_vitamins';
+            category{iVar} = 'FFQ_raw_vitamins';
         case 'FFQ_raw_vitamins_B1'
             mega_mtrx(iVar, :) = nutrition.raw.vitamins.B1_thiamin;
-            category{iVar} = 'FFQ_vitamins';
+            category{iVar} = 'FFQ_raw_vitamins';
         case 'FFQ_raw_vitamins_B2'
             mega_mtrx(iVar, :) = nutrition.raw.vitamins.B2_riboflavin;
-            category{iVar} = 'FFQ_vitamins';
+            category{iVar} = 'FFQ_raw_vitamins';
         case 'FFQ_raw_vitamins_B3_niacin'
             mega_mtrx(iVar, :) = nutrition.raw.vitamins.B3_niacin;
-            category{iVar} = 'FFQ_vitamins';
+            category{iVar} = 'FFQ_raw_vitamins';
         case 'FFQ_raw_vitamins_B3_NE'
             mega_mtrx(iVar, :) = nutrition.raw.vitamins.B3_niacinEquivalents;
-            category{iVar} = 'FFQ_vitamins';
+            category{iVar} = 'FFQ_raw_vitamins';
         case 'FFQ_raw_vitamins_B5'
             mega_mtrx(iVar, :) = nutrition.raw.vitamins.B5_pantothenicA;
-            category{iVar} = 'FFQ_vitamins';
+            category{iVar} = 'FFQ_raw_vitamins';
         case 'FFQ_raw_vitamins_B6'
             mega_mtrx(iVar, :) = nutrition.raw.vitamins.B6_pyridoxin;
-            category{iVar} = 'FFQ_vitamins';
+            category{iVar} = 'FFQ_raw_vitamins';
         case 'FFQ_raw_vitamins_B7'
             mega_mtrx(iVar, :) = nutrition.raw.vitamins.B7_biotin;
-            category{iVar} = 'FFQ_vitamins';
+            category{iVar} = 'FFQ_raw_vitamins';
         case 'FFQ_raw_vitamins_B9'
             mega_mtrx(iVar, :) = nutrition.raw.vitamins.B9_folicA;
-            category{iVar} = 'FFQ_vitamins';
+            category{iVar} = 'FFQ_raw_vitamins';
         case 'FFQ_raw_vitamins_B12'
             mega_mtrx(iVar, :) = nutrition.raw.vitamins.B12_cobalamin;
-            category{iVar} = 'FFQ_vitamins';
+            category{iVar} = 'FFQ_raw_vitamins';
         case 'FFQ_raw_vitamins_C'
             mega_mtrx(iVar, :) = nutrition.raw.vitamins.C_ascorbicA;
-            category{iVar} = 'FFQ_vitamins';
+            category{iVar} = 'FFQ_raw_vitamins';
         case 'FFQ_raw_minerals_ashes'
             mega_mtrx(iVar, :) = nutrition.raw.minerals.minerals_ashes;
-            category{iVar} = 'FFQ_minerals';
+            category{iVar} = 'FFQ_raw_minerals';
         case 'FFQ_raw_minerals_Na'
             mega_mtrx(iVar, :) = nutrition.raw.minerals.Na;
-            category{iVar} = 'FFQ_minerals';
+            category{iVar} = 'FFQ_raw_minerals';
         case 'FFQ_raw_minerals_K'
             mega_mtrx(iVar, :) = nutrition.raw.minerals.K;
-            category{iVar} = 'FFQ_minerals';
+            category{iVar} = 'FFQ_raw_minerals';
         case 'FFQ_raw_minerals_Ca'
             mega_mtrx(iVar, :) = nutrition.raw.minerals.Ca;
-            category{iVar} = 'FFQ_minerals';
+            category{iVar} = 'FFQ_raw_minerals';
         case 'FFQ_raw_minerals_Mg'
             mega_mtrx(iVar, :) = nutrition.raw.minerals.Mg;
-            category{iVar} = 'FFQ_minerals';
+            category{iVar} = 'FFQ_raw_minerals';
         case 'FFQ_raw_minerals_P'
             mega_mtrx(iVar, :) = nutrition.raw.minerals.P;
-            category{iVar} = 'FFQ_minerals';
+            category{iVar} = 'FFQ_raw_minerals';
         case 'FFQ_raw_minerals_S'
             mega_mtrx(iVar, :) = nutrition.raw.minerals.S;
-            category{iVar} = 'FFQ_minerals';
+            category{iVar} = 'FFQ_raw_minerals';
         case 'FFQ_raw_minerals_Cl'
             mega_mtrx(iVar, :) = nutrition.raw.minerals.Cl;
-            category{iVar} = 'FFQ_minerals';
+            category{iVar} = 'FFQ_raw_minerals';
         case 'FFQ_raw_minerals_Fe'
             mega_mtrx(iVar, :) = nutrition.raw.minerals.Fe;
-            category{iVar} = 'FFQ_minerals';
+            category{iVar} = 'FFQ_raw_minerals';
         case 'FFQ_raw_minerals_Zn'
             mega_mtrx(iVar, :) = nutrition.raw.minerals.Zn;
-            category{iVar} = 'FFQ_minerals';
+            category{iVar} = 'FFQ_raw_minerals';
         case 'FFQ_raw_minerals_Cu'
             mega_mtrx(iVar, :) = nutrition.raw.minerals.Cu;
-            category{iVar} = 'FFQ_minerals';
+            category{iVar} = 'FFQ_raw_minerals';
         case 'FFQ_raw_minerals_Mn'
             mega_mtrx(iVar, :) = nutrition.raw.minerals.Mn;
-            category{iVar} = 'FFQ_minerals';
+            category{iVar} = 'FFQ_raw_minerals';
         case 'FFQ_raw_minerals_F'
             mega_mtrx(iVar, :) = nutrition.raw.minerals.F;
-            category{iVar} = 'FFQ_minerals';
+            category{iVar} = 'FFQ_raw_minerals';
         case 'FFQ_raw_minerals_I'
             mega_mtrx(iVar, :) = nutrition.raw.minerals.I;
-            category{iVar} = 'FFQ_minerals';
+            category{iVar} = 'FFQ_raw_minerals';
         case 'FFQ_raw_minerals_NaCl'
             mega_mtrx(iVar, :) = nutrition.raw.minerals.NaCl_salt;
-            category{iVar} = 'FFQ_minerals';
+            category{iVar} = 'FFQ_raw_minerals';
         case 'FFQ_raw_carbs_absorbableCarbohydrates'
             mega_mtrx(iVar, :) = nutrition.raw.carbohydrates.absorbableCarbohydrates;
-            category{iVar} = 'FFQ_carbs';
+            category{iVar} = 'FFQ_raw_carbs';
         case 'FFQ_raw_carbs_mannitol'
             mega_mtrx(iVar, :) = nutrition.raw.carbohydrates.mannitol;
-            category{iVar} = 'FFQ_carbs';
+            category{iVar} = 'FFQ_raw_carbs';
         case 'FFQ_raw_carbs_sorbitol'
             mega_mtrx(iVar, :) = nutrition.raw.carbohydrates.sorbitol;
-            category{iVar} = 'FFQ_carbs';
+            category{iVar} = 'FFQ_raw_carbs';
         case 'FFQ_raw_carbs_xylitol'
             mega_mtrx(iVar, :) = nutrition.raw.carbohydrates.xylitol;
-            category{iVar} = 'FFQ_carbs';
+            category{iVar} = 'FFQ_raw_carbs';
         case 'FFQ_raw_carbs_sugarAlcohols'
             mega_mtrx(iVar, :) = nutrition.raw.carbohydrates.sugarAlcohols;
-            category{iVar} = 'FFQ_carbs';
+            category{iVar} = 'FFQ_raw_carbs';
         case 'FFQ_raw_carbs_Glc'
             mega_mtrx(iVar, :) = nutrition.raw.carbohydrates.Glc;
-            category{iVar} = 'FFQ_carbs';
+            category{iVar} = 'FFQ_raw_carbs';
         case 'FFQ_raw_carbs_fructose'
             mega_mtrx(iVar, :) = nutrition.raw.carbohydrates.fructose;
-            category{iVar} = 'FFQ_carbs';
+            category{iVar} = 'FFQ_raw_carbs';
         case 'FFQ_raw_carbs_galactose'
             mega_mtrx(iVar, :) = nutrition.raw.carbohydrates.galactose;
-            category{iVar} = 'FFQ_carbs';
+            category{iVar} = 'FFQ_raw_carbs';
         case 'FFQ_raw_carbs_monosaccharides'
             mega_mtrx(iVar, :) = nutrition.raw.carbohydrates.monosaccharides;
-            category{iVar} = 'FFQ_carbs';
+            category{iVar} = 'FFQ_raw_carbs';
         case 'FFQ_raw_carbs_saccharose'
             mega_mtrx(iVar, :) = nutrition.raw.carbohydrates.saccharose;
-            category{iVar} = 'FFQ_carbs';
+            category{iVar} = 'FFQ_raw_carbs';
         case 'FFQ_raw_carbs_maltose'
             mega_mtrx(iVar, :) = nutrition.raw.carbohydrates.maltose;
-            category{iVar} = 'FFQ_carbs';
+            category{iVar} = 'FFQ_raw_carbs';
         case 'FFQ_raw_carbs_lactose'
             mega_mtrx(iVar, :) = nutrition.raw.carbohydrates.lactose;
-            category{iVar} = 'FFQ_carbs';
+            category{iVar} = 'FFQ_raw_carbs';
         case 'FFQ_raw_carbs_disaccharides'
             mega_mtrx(iVar, :) = nutrition.raw.carbohydrates.disaccharides;
-            category{iVar} = 'FFQ_carbs';
+            category{iVar} = 'FFQ_raw_carbs';
         case 'FFQ_raw_carbs_sugar'
             mega_mtrx(iVar, :) = nutrition.raw.carbohydrates.sugar;
-            category{iVar} = 'FFQ_carbs';
+            category{iVar} = 'FFQ_raw_carbs';
         case 'FFQ_raw_carbs_reabsorbableOligosaccharides'
             mega_mtrx(iVar, :) = nutrition.raw.carbohydrates.reabsorbableOligosaccharides;
-            category{iVar} = 'FFQ_carbs';
+            category{iVar} = 'FFQ_raw_carbs';
         case 'FFQ_raw_carbs_nonReabsorbableOligosaccharides'
             mega_mtrx(iVar, :) = nutrition.raw.carbohydrates.nonReabsorbableOligosaccharides;
-            category{iVar} = 'FFQ_carbs';
+            category{iVar} = 'FFQ_raw_carbs';
         case 'FFQ_raw_carbs_glycogen_animalStarch'
             mega_mtrx(iVar, :) = nutrition.raw.carbohydrates.glycogen_animalStarch;
-            category{iVar} = 'FFQ_carbs';
+            category{iVar} = 'FFQ_raw_carbs';
         case 'FFQ_raw_carbs_starch'
             mega_mtrx(iVar, :) = nutrition.raw.carbohydrates.starch;
-            category{iVar} = 'FFQ_carbs';
+            category{iVar} = 'FFQ_raw_carbs';
         case 'FFQ_raw_carbs_polysaccharides'
             mega_mtrx(iVar, :) = nutrition.raw.carbohydrates.polysaccharides;
-            category{iVar} = 'FFQ_carbs';
+            category{iVar} = 'FFQ_raw_carbs';
         case 'FFQ_raw_carbs_polypentoses'
             mega_mtrx(iVar, :) = nutrition.raw.carbohydrates.polypentoses;
-            category{iVar} = 'FFQ_carbs';
+            category{iVar} = 'FFQ_raw_carbs';
         case 'FFQ_raw_carbs_polyhexoses'
             mega_mtrx(iVar, :) = nutrition.raw.carbohydrates.polyhexoses;
-            category{iVar} = 'FFQ_carbs';
+            category{iVar} = 'FFQ_raw_carbs';
         case 'FFQ_raw_carbs_polyuronicA'
             mega_mtrx(iVar, :) = nutrition.raw.carbohydrates.polyuronicA;
-            category{iVar} = 'FFQ_carbs';
+            category{iVar} = 'FFQ_raw_carbs';
         case 'FFQ_raw_fibers_fibers'
             mega_mtrx(iVar, :) = nutrition.raw.fibers.fibers;
-            category{iVar} = 'FFQ_fibers';
+            category{iVar} = 'FFQ_raw_fibers';
         case 'FFQ_raw_fibers_solubleFibers'
             mega_mtrx(iVar, :) = nutrition.raw.fibers.solubleFibers;
-            category{iVar} = 'FFQ_fibers';
+            category{iVar} = 'FFQ_raw_fibers';
         case 'FFQ_raw_fibers_insolubleFibers'
             mega_mtrx(iVar, :) = nutrition.raw.fibers.insolubleFibers;
-            category{iVar} = 'FFQ_fibers';
+            category{iVar} = 'FFQ_raw_fibers';
         case 'FFQ_raw_fibers_cellulose'
             mega_mtrx(iVar, :) = nutrition.raw.fibers.cellulose;
-            category{iVar} = 'FFQ_fibers';
+            category{iVar} = 'FFQ_raw_fibers';
         case 'FFQ_raw_fibers_lignine'
             mega_mtrx(iVar, :) = nutrition.raw.fibers.lignine;
-            category{iVar} = 'FFQ_fibers';
+            category{iVar} = 'FFQ_raw_fibers';
         case 'FFQ_raw_fa_fat'
             mega_mtrx(iVar, :) = nutrition.raw.fa.fat;
-            category{iVar} = 'FFQ_fa';
+            category{iVar} = 'FFQ_raw_fa';
         case 'FFQ_raw_fa_monoInsaturated'
             mega_mtrx(iVar, :) = nutrition.raw.fa.fa_monoInsaturated;
-            category{iVar} = 'FFQ_fa';
+            category{iVar} = 'FFQ_raw_fa';
         case 'FFQ_raw_fa_polyInsaturated'
             mega_mtrx(iVar, :) = nutrition.raw.fa.fa_polyInsaturated;
-            category{iVar} = 'FFQ_fa';
+            category{iVar} = 'FFQ_raw_fa';
         case 'FFQ_raw_fa_shortChain'
             mega_mtrx(iVar, :) = nutrition.raw.fa.fa_shortChain;
-            category{iVar} = 'FFQ_fa';
+            category{iVar} = 'FFQ_raw_fa';
         case 'FFQ_raw_fa_mediumChain'
             mega_mtrx(iVar, :) = nutrition.raw.fa.fa_mediumChain;
-            category{iVar} = 'FFQ_fa';
+            category{iVar} = 'FFQ_raw_fa';
         case 'FFQ_raw_fa_longChain'
             mega_mtrx(iVar, :) = nutrition.raw.fa.fa_longChain;
-            category{iVar} = 'FFQ_fa';
+            category{iVar} = 'FFQ_raw_fa';
         case 'FFQ_raw_fa_butanoicA'
             mega_mtrx(iVar, :) = nutrition.raw.fa.butanoicA;
-            category{iVar} = 'FFQ_fa';
+            category{iVar} = 'FFQ_raw_fa';
         case 'FFQ_raw_fa_hexanoicA'
             mega_mtrx(iVar, :) = nutrition.raw.fa.hexanoicA;
-            category{iVar} = 'FFQ_fa';
+            category{iVar} = 'FFQ_raw_fa';
         case 'FFQ_raw_fa_octanoicA'
             mega_mtrx(iVar, :) = nutrition.raw.fa.octanoicA;
-            category{iVar} = 'FFQ_fa';
+            category{iVar} = 'FFQ_raw_fa';
         case 'FFQ_raw_fa_decanoicA_capricA'
             mega_mtrx(iVar, :) = nutrition.raw.fa.decanoicA_capricA;
-            category{iVar} = 'FFQ_fa';
+            category{iVar} = 'FFQ_raw_fa';
         case 'FFQ_raw_fa_dodecanoicA'
             mega_mtrx(iVar, :) = nutrition.raw.fa.dodecanoicA;
-            category{iVar} = 'FFQ_fa';
+            category{iVar} = 'FFQ_raw_fa';
         case 'FFQ_raw_fa_tetradecanoicA'
             mega_mtrx(iVar, :) = nutrition.raw.fa.tetradecanoicA;
-            category{iVar} = 'FFQ_fa';
+            category{iVar} = 'FFQ_raw_fa';
         case 'FFQ_raw_fa_pentadecanoicA'
             mega_mtrx(iVar, :) = nutrition.raw.fa.pentadecanoicA;
-            category{iVar} = 'FFQ_fa';
+            category{iVar} = 'FFQ_raw_fa';
         case 'FFQ_raw_fa_hexadecanoicA'
             mega_mtrx(iVar, :) = nutrition.raw.fa.hexadecanoicA;
-            category{iVar} = 'FFQ_fa';
+            category{iVar} = 'FFQ_raw_fa';
         case 'FFQ_raw_fa_heptadecanoicA'
             mega_mtrx(iVar, :) = nutrition.raw.fa.heptadecanoicA;
-            category{iVar} = 'FFQ_fa';
+            category{iVar} = 'FFQ_raw_fa';
         case 'FFQ_raw_fa_octadecanoicA'
             mega_mtrx(iVar, :) = nutrition.raw.fa.octadecanoicA;
-            category{iVar} = 'FFQ_fa';
+            category{iVar} = 'FFQ_raw_fa';
         case 'FFQ_raw_fa_eicosanoicA'
             mega_mtrx(iVar, :) = nutrition.raw.fa.eicosanoicA;
-            category{iVar} = 'FFQ_fa';
+            category{iVar} = 'FFQ_raw_fa';
         case 'FFQ_raw_fa_decanoicA_behenicA'
             mega_mtrx(iVar, :) = nutrition.raw.fa.decanoicA_behenicA;
-            category{iVar} = 'FFQ_fa';
+            category{iVar} = 'FFQ_raw_fa';
         case 'FFQ_raw_fa_tetracosanoicA'
             mega_mtrx(iVar, :) = nutrition.raw.fa.tetracosanoicA;
-            category{iVar} = 'FFQ_fa';
+            category{iVar} = 'FFQ_raw_fa';
         case 'FFQ_raw_fa_saturatedFA'
             mega_mtrx(iVar, :) = nutrition.raw.fa.saturatedFA;
-            category{iVar} = 'FFQ_fa';
+            category{iVar} = 'FFQ_raw_fa';
         case 'FFQ_raw_fa_tetradecenoicA'
             mega_mtrx(iVar, :) = nutrition.raw.fa.tetradecenoicA;
-            category{iVar} = 'FFQ_fa';
+            category{iVar} = 'FFQ_raw_fa';
         case 'FFQ_raw_fa_pentadecenoicA'
             mega_mtrx(iVar, :) = nutrition.raw.fa.pentadecenoicA;
-            category{iVar} = 'FFQ_fa';
+            category{iVar} = 'FFQ_raw_fa';
         case 'FFQ_raw_fa_hexadecenoicA'
             mega_mtrx(iVar, :) = nutrition.raw.fa.hexadecenoicA;
-            category{iVar} = 'FFQ_fa';
+            category{iVar} = 'FFQ_raw_fa';
         case 'FFQ_raw_fa_heptadecenoicA'
             mega_mtrx(iVar, :) = nutrition.raw.fa.heptadecenoicA;
-            category{iVar} = 'FFQ_fa';
+            category{iVar} = 'FFQ_raw_fa';
         case 'FFQ_raw_fa_octadecenoicA'
             mega_mtrx(iVar, :) = nutrition.raw.fa.octadecenoicA;
-            category{iVar} = 'FFQ_fa';
+            category{iVar} = 'FFQ_raw_fa';
         case 'FFQ_raw_fa_eicosenoicA'
             mega_mtrx(iVar, :) = nutrition.raw.fa.eicosenoicA;
-            category{iVar} = 'FFQ_fa';
+            category{iVar} = 'FFQ_raw_fa';
         case 'FFQ_raw_fa_decosenoicA'
             mega_mtrx(iVar, :) = nutrition.raw.fa.decosenoicA;
-            category{iVar} = 'FFQ_fa';
+            category{iVar} = 'FFQ_raw_fa';
         case 'FFQ_raw_fa_tetracosenoicA'
             mega_mtrx(iVar, :) = nutrition.raw.fa.tetracosenoicA;
-            category{iVar} = 'FFQ_fa';
+            category{iVar} = 'FFQ_raw_fa';
         case 'FFQ_raw_fa_hexadecadienoicA'
             mega_mtrx(iVar, :) = nutrition.raw.fa.hexadecadienoicA;
-            category{iVar} = 'FFQ_fa';
+            category{iVar} = 'FFQ_raw_fa';
         case 'FFQ_raw_fa_hexacedatetraenoicA'
             mega_mtrx(iVar, :) = nutrition.raw.fa.hexacedatetraenoicA;
-            category{iVar} = 'FFQ_fa';
+            category{iVar} = 'FFQ_raw_fa';
         case 'FFQ_raw_fa_octadecadienoicA_linoleicA'
             mega_mtrx(iVar, :) = nutrition.raw.fa.octadecadienoicA_linoleicA;
-            category{iVar} = 'FFQ_fa';
+            category{iVar} = 'FFQ_raw_fa';
         case 'FFQ_raw_fa_octadecatrienoicA_linolenicA'
             mega_mtrx(iVar, :) = nutrition.raw.fa.octadecatrienoicA_linolenicA;
-            category{iVar} = 'FFQ_fa';
+            category{iVar} = 'FFQ_raw_fa';
         case 'FFQ_raw_fa_octradecatetraenoicA'
             mega_mtrx(iVar, :) = nutrition.raw.fa.octradecatetraenoicA;
-            category{iVar} = 'FFQ_fa';
+            category{iVar} = 'FFQ_raw_fa';
         case 'FFQ_raw_fa_nonAdecatrienoicA'
             mega_mtrx(iVar, :) = nutrition.raw.fa.nonAdecatrienoicA;
-            category{iVar} = 'FFQ_fa';
+            category{iVar} = 'FFQ_raw_fa';
         case 'FFQ_raw_fa_eicosadienoicA'
             mega_mtrx(iVar, :) = nutrition.raw.fa.eicosadienoicA;
-            category{iVar} = 'FFQ_fa';
+            category{iVar} = 'FFQ_raw_fa';
         case 'FFQ_raw_fa_eicosatrienoicA'
             mega_mtrx(iVar, :) = nutrition.raw.fa.eicosatrienoicA;
-            category{iVar} = 'FFQ_fa';
+            category{iVar} = 'FFQ_raw_fa';
         case 'FFQ_raw_fa_eicosatetraenoicA_arachidonicA'
             mega_mtrx(iVar, :) = nutrition.raw.fa.eicosatetraenoicA_arachidonicA;
-            category{iVar} = 'FFQ_fa';
+            category{iVar} = 'FFQ_raw_fa';
         case 'FFQ_raw_fa_eicosapentaenoicA'
             mega_mtrx(iVar, :) = nutrition.raw.fa.eicosapentaenoicA;
-            category{iVar} = 'FFQ_fa';
+            category{iVar} = 'FFQ_raw_fa';
         case 'FFQ_raw_fa_docosadienoicA'
             mega_mtrx(iVar, :) = nutrition.raw.fa.docosadienoicA;
-            category{iVar} = 'FFQ_fa';
+            category{iVar} = 'FFQ_raw_fa';
         case 'FFQ_raw_fa_docosatrienoicA'
             mega_mtrx(iVar, :) = nutrition.raw.fa.docosatrienoicA;
-            category{iVar} = 'FFQ_fa';
+            category{iVar} = 'FFQ_raw_fa';
         case 'FFQ_raw_fa_docosatetraenoicA'
             mega_mtrx(iVar, :) = nutrition.raw.fa.docosatetraenoicA;
-            category{iVar} = 'FFQ_fa';
+            category{iVar} = 'FFQ_raw_fa';
         case 'FFQ_raw_fa_docosapentaenoicA'
             mega_mtrx(iVar, :) = nutrition.raw.fa.docosapentaenoicA;
-            category{iVar} = 'FFQ_fa';
+            category{iVar} = 'FFQ_raw_fa';
         case 'FFQ_raw_fa_docosahexaenoicA'
             mega_mtrx(iVar, :) = nutrition.raw.fa.docosahexaenoicA;
-            category{iVar} = 'FFQ_fa';
+            category{iVar} = 'FFQ_raw_fa';
         case 'FFQ_raw_fa_omegas3'
             mega_mtrx(iVar, :) = nutrition.raw.fa.omegas3;
-            category{iVar} = 'FFQ_fa';
+            category{iVar} = 'FFQ_raw_fa';
         case 'FFQ_raw_fa_omegas6'
             mega_mtrx(iVar, :) = nutrition.raw.fa.omegas6;
-            category{iVar} = 'FFQ_fa';
+            category{iVar} = 'FFQ_raw_fa';
         case 'FFQ_raw_fa_glycerine_lipids'
             mega_mtrx(iVar, :) = nutrition.raw.fa.glycerine_lipids;
-            category{iVar} = 'FFQ_fa';
+            category{iVar} = 'FFQ_raw_fa';
         case 'FFQ_raw_fa_cholesterol'
             mega_mtrx(iVar, :) = nutrition.raw.fa.cholesterol;
-            category{iVar} = 'FFQ_fa';
+            category{iVar} = 'FFQ_raw_fa';
         case 'FFQ_raw_fa_GFPS_PolyI_div_Sat_fa_ratio'
             mega_mtrx(iVar, :) = nutrition.raw.fa.GFPS_PolyI_div_Sat_fa_ratio;
-            category{iVar} = 'FFQ_fa';
+            category{iVar} = 'FFQ_raw_fa';
         case 'FFQ_raw_water'
             mega_mtrx(iVar, :) = nutrition.raw.other.water;
-            category{iVar} = 'FFQ_water';
+            category{iVar} = 'FFQ_raw_water';
         case 'FFQ_raw_organicA'
             mega_mtrx(iVar, :) = nutrition.raw.other.organicAcids;
-            category{iVar} = 'FFQ_organicA';
+            category{iVar} = 'FFQ_raw_organicA';
         case 'FFQ_raw_alcohol'
             mega_mtrx(iVar, :) = nutrition.raw.other.alcohol;
-            category{iVar} = 'FFQ_alcohol';
+            category{iVar} = 'FFQ_raw_alcohol';
         case 'FFQ_raw_uricA'
             mega_mtrx(iVar, :) = nutrition.raw.other.uricA;
-            category{iVar} = 'FFQ_uricA';
+            category{iVar} = 'FFQ_raw_uricA';
         case 'FFQ_raw_purin'
             mega_mtrx(iVar, :) = nutrition.raw.other.purin;
-            category{iVar} = 'FFQ_purin';
+            category{iVar} = 'FFQ_raw_purin';
         case 'FFQ_raw_bread'
             mega_mtrx(iVar, :) = nutrition.raw.other.bread;
-            category{iVar} = 'FFQ_bread';
+            category{iVar} = 'FFQ_raw_bread';
         case 'FFQ_norm_energy_kCal'
             mega_mtrx(iVar, :) = nutrition.norm_by_totalCal.energy.kCal;
             category{iVar} = 'FFQ_energy';
@@ -1563,6 +1564,39 @@ for iVar = 1:n_mega_mtrx_vars
     end
 end % variable loop
 
+%% create alternative category variable with very short name and even more general
+category_bis = category;
+category_bis = strrep(category_bis,'salivary_Testosterone','St');
+category_bis = strrep(category_bis,'salivary_Cortisol','Sc');
+category_bis = strrep(category_bis,'salivary_Testo_div_Cort','Stc');
+category_bis = strrep(category_bis,'salivary_IL','Sil');
+category_bis = strrep(category_bis,'wholeB_NADomics','WBn');
+category_bis = strrep(category_bis,'plasma_aa','Paa');
+category_bis = strrep(category_bis,'plasma_Lac','Plac');
+category_bis = strrep(category_bis,'plasma_fa','Pfa');
+category_bis = strrep(category_bis,'dmPFC_aa','D');
+category_bis = strrep(category_bis,'dmPFC_mb','D');
+category_bis = strrep(category_bis,'aIns_aa','A');
+category_bis = strrep(category_bis,'aIns_mb','A');
+category_bis = strrep(category_bis,'FFQ_raw_energy','FFQre');
+category_bis = strrep(category_bis,'FFQ_raw_proteins_aa','FFQraa');
+category_bis = strrep(category_bis,'FFQ_raw_vitamins','FFQrv');
+category_bis = strrep(category_bis,'FFQ_raw_minerals','FFQrm');
+category_bis = strrep(category_bis,'FFQ_raw_carbs','FFQrc');
+category_bis = strrep(category_bis,'FFQ_raw_fibers','FFQrf');
+category_bis = strrep(category_bis,'FFQ_raw_fa','FFQrfa');
+category_bis = strrep(category_bis,'FFQ_energy','FFQe');
+category_bis = strrep(category_bis,'FFQ_proteins_aa','FFQaa');
+category_bis = strrep(category_bis,'FFQ_vitamins','FFQv');
+category_bis = strrep(category_bis,'FFQ_minerals','FFQm');
+category_bis = strrep(category_bis,'FFQ_carbs','FFQc');
+category_bis = strrep(category_bis,'FFQ_fibers','FFQf');
+category_bis = strrep(category_bis,'FFQ_fa','FFQfa');
+category_bis = strrep(category_bis,'stress_anxiety','Bs');
+category_bis = strrep(category_bis,'motivation','Bm');
+category_bis = strrep(category_bis,'fatigue','Bf');
+category_bis = strrep(category_bis,'dominance','Bd');
+
 %% perform correlation matrix between all variables
 [corr_mtrx, pval_mtrx] = deal(NaN(n_mega_mtrx_vars, n_mega_mtrx_vars));
 [mtrx_var_nm1, mtrx_var_nm2,...
@@ -1641,18 +1675,76 @@ for iVar = 3:n_mega_mtrx_vars % loop through explained variables (except age and
         pval.(curr_test_nm).sex = stats_tmp.p(3);
         pval.(curr_test_nm).(explaining_var_nm) = stats_tmp.p(4);
         
-        % store data in big matrices
+        % store data in big matrices (with explained variable varying in
+        % the Y.axis (i.e. rows) and explaining variable varying in the
+        % X.axis (i.e. columns)
         % age
-        GLM_b_mtrx_age(jVar, iVar) = betas.(curr_test_nm)(2);
-        GLM_pval_mtrx_age(jVar, iVar) = stats_tmp.p(2);
+        GLM_b_mtrx_age(iVar, jVar) = betas.(curr_test_nm)(2);
+        GLM_pval_mtrx_age(iVar, jVar) = stats_tmp.p(2);
         % sex
-        GLM_b_mtrx_sex(jVar, iVar) = betas.(curr_test_nm)(3);
-        GLM_pval_mtrx_sex(jVar, iVar) = stats_tmp.p(3);
+        GLM_b_mtrx_sex(iVar, jVar) = betas.(curr_test_nm)(3);
+        GLM_pval_mtrx_sex(iVar, jVar) = stats_tmp.p(3);
         % variable
-        GLM_b_mtrx_vars(jVar, iVar) = betas.(curr_test_nm)(4);
-        GLM_pval_mtrx_vars(jVar, iVar) = stats_tmp.p(4);
+        GLM_b_mtrx_vars(iVar, jVar) = betas.(curr_test_nm)(4);
+        GLM_pval_mtrx_vars(iVar, jVar) = stats_tmp.p(4);
     end % loop through explaining variables
 end % loop through explained variable
+
+
+%% extract smaller correlation matrices
+
+% select relevant categories
+circulatory_mb_idx = ismember(category,{'salivary_Testosterone','salivary_Cortisol',...
+    'salivary_Testo_div_Cort','salivary_IL','wholeB_NADomics',...
+    'plasma_aa','plasma_Lac','plasma_fa'});
+brain_mb_idx = ismember(category,{'dmPFC_aa','dmPFC_mb','aIns_aa','aIns_mb'});
+bhv_idx = ismember(category,{'stress_anxiety','motivation','fatigue','dominance'});
+FFQ_raw_idx = ismember(category,{'FFQ_raw_energy','FFQ_raw_proteins_aa',...
+    'FFQ_raw_vitamins','FFQ_raw_minerals','FFQ_raw_carbs','FFQ_raw_fibers',...
+    'FFQ_raw_fa'});
+FFQ_norm_idx = ismember(category,{'FFQ_energy','FFQ_proteins_aa',...
+    'FFQ_vitamins','FFQ_minerals','FFQ_carbs','FFQ_fibers',...
+    'FFQ_fa'});
+% combinations
+circulatory_brain_mb_idx = circulatory_mb_idx | brain_mb_idx;
+% circulatory_brain_mb_FFQ_raw_idx = circulatory_brain_mb_idx | FFQ_raw_idx;
+% circulatory_brain_mb_FFQ_norm_idx = circulatory_brain_mb_idx | FFQ_norm_idx;
+% circulatory_brain_mb_bhv_idx = circulatory_brain_mb_idx | bhv_idx;
+circulatory_mb_bhv_idx = circulatory_mb_idx | bhv_idx;
+brain_mb_bhv_idx = brain_mb_idx | bhv_idx;
+
+% brain metabolites + circulatory metabolites (whole-blood + plasma + salivary)
+n_circulatory_brain_mb = sum(circulatory_brain_mb_idx);
+[brain_mb_circulatory_mb_corr_mtrx,...
+    brain_mb_circulatory_mb_pval_mtrx] = deal(NaN(n_circulatory_brain_mb));
+brain_mb_circulatory_mb_corr_mtrx(:,:) = corr_mtrx(circulatory_brain_mb_idx, circulatory_brain_mb_idx);
+brain_mb_circulatory_mb_pval_mtrx(:,:) = pval_mtrx(circulatory_brain_mb_idx, circulatory_brain_mb_idx);
+brain_mb_circulatory_mb_names = mega_mtrx_names(circulatory_brain_mb_idx);
+% create label for circular plot
+brain_mb_circulatory_mb_categ = category_bis(circulatory_brain_mb_idx);
+
+% behavior + circulatory metabolites (whole-blood + plasma + salivary))
+n_circulatory_mb_bhv = sum(circulatory_mb_bhv_idx);
+[circulatory_mb_bhv_corr_mtrx,...
+    circulatory_mb_bhv_pval_mtrx] = deal(NaN(n_circulatory_mb_bhv));
+circulatory_mb_bhv_corr_mtrx(:,:) = corr_mtrx(circulatory_mb_bhv_idx, circulatory_mb_bhv_idx);
+circulatory_mb_bhv_pval_mtrx(:,:) = pval_mtrx(circulatory_mb_bhv_idx, circulatory_mb_bhv_idx);
+circulatory_mb_bhv_names = mega_mtrx_names(circulatory_mb_bhv_idx);
+% create label for circular plot
+circulatory_mb_bhv_categ = category_bis(circulatory_mb_bhv_idx);
+
+% behavior + brain metabolites
+n_brain_mb_bhv = sum(brain_mb_bhv_idx);
+[brain_mb_bhv_corr_mtrx,...
+    brain_mb_bhv_pval_mtrx] = deal(NaN(n_brain_mb_bhv));
+brain_mb_bhv_corr_mtrx(:,:) = corr_mtrx(brain_mb_bhv_idx, brain_mb_bhv_idx);
+brain_mb_bhv_pval_mtrx(:,:) = pval_mtrx(brain_mb_bhv_idx, brain_mb_bhv_idx);
+brain_mb_bhv_names = mega_mtrx_names(brain_mb_bhv_idx);
+% create label for circular plot
+brain_mb_bhv_categ = category_bis(brain_mb_bhv_idx);
+
+%% save all the data to avoid relaunching everything every single time
+save([saveFolder,filesep,'mega_correlation_mtrx_data.mat']);
 
 %% display corresponding figures
 % figure parameters
@@ -1686,6 +1778,7 @@ corr_plot(corr_mtrx, pval_mtrx_Bonferroni_corr,...
     apply_pval_threshold, pval_threshold, disp_signif_stars);
 
 %% GLM results after correcting for sex and age
+GLM_range = [-2 2];
 % show two figures, one with all tests and one with filtering on p.value
 for iFig = 1:2
     switch iFig
@@ -1700,49 +1793,50 @@ for iFig = 1:2
     fig_correl = fig;
     
     % age variable
+%     GLM_age_range = [min(min(GLM_b_mtrx_age,[],'omitnan'),[],'omitnan'),...
+%         max(max(GLM_b_mtrx_age,[],'omitnan'),[],'omitnan')];
     subplot_age_hdl = subplot(1,3,1);
+    title('Age');
     corr_plot(GLM_b_mtrx_age, GLM_pval_mtrx_age,...
-        corr_range, [], [], [], [],...
+        GLM_range, [], [], [], [],...
         apply_pval_threshold, pval_threshold, disp_signif_stars,...
         fig_correl, subplot_age_hdl);
     
     % sex variable
+%     GLM_sex_range = [min(min(GLM_b_mtrx_sex,[],'omitnan'),[],'omitnan'),...
+%         max(max(GLM_b_mtrx_sex,[],'omitnan'),[],'omitnan')];
     subplot_sex_hdl = subplot(1,3,2);
+    title('Sex');
     corr_plot(GLM_b_mtrx_sex, GLM_pval_mtrx_sex,...
-        corr_range, [], [], [], [],...
+        GLM_range, [], [], [], [],...
         apply_pval_threshold, pval_threshold, disp_signif_stars,...
         fig_correl, subplot_sex_hdl);
     
     % variable correlation
+%     GLM_var_range = [min(min(GLM_b_mtrx_vars,[],'omitnan'),[],'omitnan'),...
+%         max(max(GLM_b_mtrx_vars,[],'omitnan'),[],'omitnan')];
     subplot_var_hdl = subplot(1,3,3);
+    title('Variables of interest');
     corr_plot(GLM_b_mtrx_vars, GLM_pval_mtrx_vars,...
-        corr_range, [], [], [], [],...
+        GLM_range, [], [], [], [],...
         apply_pval_threshold, pval_threshold, disp_signif_stars,...
         fig_correl, subplot_var_hdl);
 end % loop through figures (with/without filtering on p.value)
 
 %% perform circular correlation matrices between specific parts
+pval_thresh = 0.001;
+% brain metabolites + circulatory metabolites (whole-blood + plasma +
+% salivary)
+circ_disp(brain_mb_circulatory_mb_corr_mtrx,...
+    brain_mb_circulatory_mb_pval_mtrx, pval_thresh, brain_mb_circulatory_mb_categ);
 
-% circulatory metabolites (whole-blood + plasma + salivary) and brain =
-% FFQ raw
-warning('to perform');
-% fig;
-% myColorMap = lines(length(corr_mtrx));
-% circularGraph(abs(corr_mtrx),'Colormap',myColorMap,'Label',mega_mtrx_names);
+% behavior + circulatory metabolites (whole-blood + plasma + salivary)
+circ_disp(circulatory_mb_bhv_corr_mtrx,...
+    circulatory_mb_bhv_pval_mtrx, pval_thresh, circulatory_mb_bhv_categ);
 
-% circulatory metabolites (whole-blood + plasma + salivary) and brain =
-% f(FFQ normalized by caloric intake)
-warning('to perform');
-
-% brain metabolites = f(circulatory metabolites (whole-blood + plasma +
-% salivary))
-fig;
-myColorMap = lines(length(corr_mtrx));
-circularGraph(abs(corr_mtrx),'Colormap',myColorMap,'Label',mega_mtrx_names);
-warning('to perform');
-
-% behavior = f(circulatory metabolites (whole-blood + plasma + salivary))
-warning('to perform');
+% behavior + brain metabolites
+circ_disp(brain_mb_bhv_corr_mtrx,...
+    brain_mb_bhv_pval_mtrx, pval_thresh, brain_mb_bhv_categ);
 
 %% save excel file for Gephi
 % create one table for nodes
