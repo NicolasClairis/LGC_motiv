@@ -1,5 +1,6 @@
 function[RT] = extract_RT(subBehaviorFolder, sub_nm, run_nm, task_fullName)
 % [RT] = extract_RT(subBehaviorFolder, sub_nm, run_nm, task_fullName)
+% extract_RT will extract the reaction times for the choices.
 %
 % INPUTS
 % subBehaviorFolder: folder where data is stored
