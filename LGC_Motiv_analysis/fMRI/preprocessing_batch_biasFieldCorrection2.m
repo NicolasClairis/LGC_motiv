@@ -271,7 +271,7 @@ if NS >= 1
             [subj_scan_folders_names] = clear_topup_fromFileList(subj_scan_folders_names);
         end
         
-        %% coregistration
+        %% coregistration of anatomical file to functional space
         preproc_step = 1;
         coreg_step = nb_preprocessingSteps_step3*(iS-1) + preproc_step;
         % extract mean functional which will serve for co-registration of
@@ -295,33 +295,39 @@ if NS >= 1
         matlabbatch_finalPreproc{coreg_step}.spm.spatial.coreg.estimate.eoptions.sep = [4 2];
         matlabbatch_finalPreproc{coreg_step}.spm.spatial.coreg.estimate.eoptions.tol = [0.02 0.02 0.02 0.001 0.001 0.001 0.01 0.01 0.01 0.001 0.001 0.001];
         matlabbatch_finalPreproc{coreg_step}.spm.spatial.coreg.estimate.eoptions.fwhm = [7 7];
-        %% segmentation
+        %% segmentation anatomical scan
         preproc_step = 2;
         segm_step = nb_preprocessingSteps_step3*(iS-1) + preproc_step;
         matlabbatch_finalPreproc{segm_step}.spm.spatial.preproc.channel.vols = {[newAnatFolder,anat_file]};
         matlabbatch_finalPreproc{segm_step}.spm.spatial.preproc.channel.biasreg = 0.001;
         matlabbatch_finalPreproc{segm_step}.spm.spatial.preproc.channel.biasfwhm = 60;
         matlabbatch_finalPreproc{segm_step}.spm.spatial.preproc.channel.write = [1 1];
+        % grey matter
         matlabbatch_finalPreproc{segm_step}.spm.spatial.preproc.tissue(1).tpm = {[spmTemplatePath,',1']};
         matlabbatch_finalPreproc{segm_step}.spm.spatial.preproc.tissue(1).ngaus = 1;
         matlabbatch_finalPreproc{segm_step}.spm.spatial.preproc.tissue(1).native = [1 0];
         matlabbatch_finalPreproc{segm_step}.spm.spatial.preproc.tissue(1).warped = [1 1]; % normalise grey matter and record modulated and unmodulated warped tissue
+        % white matter
         matlabbatch_finalPreproc{segm_step}.spm.spatial.preproc.tissue(2).tpm = {[spmTemplatePath,',2']};
         matlabbatch_finalPreproc{segm_step}.spm.spatial.preproc.tissue(2).ngaus = 1;
         matlabbatch_finalPreproc{segm_step}.spm.spatial.preproc.tissue(2).native = [1 0];
         matlabbatch_finalPreproc{segm_step}.spm.spatial.preproc.tissue(2).warped = [0 0];
+        % CSF
         matlabbatch_finalPreproc{segm_step}.spm.spatial.preproc.tissue(3).tpm = {[spmTemplatePath,',3']};
         matlabbatch_finalPreproc{segm_step}.spm.spatial.preproc.tissue(3).ngaus = 2;
         matlabbatch_finalPreproc{segm_step}.spm.spatial.preproc.tissue(3).native = [1 0];
         matlabbatch_finalPreproc{segm_step}.spm.spatial.preproc.tissue(3).warped = [0 0];
+        % dura matter
         matlabbatch_finalPreproc{segm_step}.spm.spatial.preproc.tissue(4).tpm = {[spmTemplatePath,',4']};
         matlabbatch_finalPreproc{segm_step}.spm.spatial.preproc.tissue(4).ngaus = 3;
         matlabbatch_finalPreproc{segm_step}.spm.spatial.preproc.tissue(4).native = [1 0];
         matlabbatch_finalPreproc{segm_step}.spm.spatial.preproc.tissue(4).warped = [0 0];
+        % skull
         matlabbatch_finalPreproc{segm_step}.spm.spatial.preproc.tissue(5).tpm = {[spmTemplatePath,',5']};
         matlabbatch_finalPreproc{segm_step}.spm.spatial.preproc.tissue(5).ngaus = 4;
         matlabbatch_finalPreproc{segm_step}.spm.spatial.preproc.tissue(5).native = [1 0];
         matlabbatch_finalPreproc{segm_step}.spm.spatial.preproc.tissue(5).warped = [0 0];
+        % air and any other abnormal tissue
         matlabbatch_finalPreproc{segm_step}.spm.spatial.preproc.tissue(6).tpm = {[spmTemplatePath,',6']};
         matlabbatch_finalPreproc{segm_step}.spm.spatial.preproc.tissue(6).ngaus = 2;
         matlabbatch_finalPreproc{segm_step}.spm.spatial.preproc.tissue(6).native = [0 0];
@@ -333,7 +339,7 @@ if NS >= 1
         matlabbatch_finalPreproc{segm_step}.spm.spatial.preproc.warp.fwhm = 0;
         matlabbatch_finalPreproc{segm_step}.spm.spatial.preproc.warp.samp = 3;
         matlabbatch_finalPreproc{segm_step}.spm.spatial.preproc.warp.write = [1 1];
-        %% normalization
+        %% normalization functional images in MNI
         preproc_step = 3;
         normf_step = nb_preprocessingSteps_step3*(iS-1) + preproc_step;
         matlabbatch_finalPreproc{normf_step}.spm.spatial.normalise.write.subj.def(1) = cfg_dep('Segment: Forward Deformations',...
@@ -353,7 +359,7 @@ if NS >= 1
         matlabbatch_finalPreproc{normf_step}.spm.spatial.normalise.write.woptions.vox = [2 2 2];
         matlabbatch_finalPreproc{normf_step}.spm.spatial.normalise.write.woptions.interp = 4;
         matlabbatch_finalPreproc{normf_step}.spm.spatial.normalise.write.woptions.prefix = 'w';
-        %% normalization anatomical scan
+        %% normalization anatomical scan in MNI
         preproc_step = 4;
         norma_step = nb_preprocessingSteps_step3*(iS-1) + preproc_step;
         matlabbatch_finalPreproc{norma_step}.spm.spatial.normalise.write.subj.def(1) = cfg_dep('Segment: Forward Deformations',...
@@ -367,7 +373,7 @@ if NS >= 1
         matlabbatch_finalPreproc{norma_step}.spm.spatial.normalise.write.woptions.vox = [1 1 1];
         matlabbatch_finalPreproc{norma_step}.spm.spatial.normalise.write.woptions.interp = 4;
         matlabbatch_finalPreproc{norma_step}.spm.spatial.normalise.write.woptions.prefix = 'w';
-        %% smoothing
+        %% smoothing functional images
         preproc_step = 5;
         smooth_step = nb_preprocessingSteps_step3*(iS-1) + preproc_step;
         matlabbatch_finalPreproc{smooth_step}.spm.spatial.smooth.data(1) = cfg_dep('Normalise: Write: Normalised Images (Subj 1)',...
