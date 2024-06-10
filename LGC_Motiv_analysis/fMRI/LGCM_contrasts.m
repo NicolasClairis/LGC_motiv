@@ -1,7 +1,7 @@
 function[con_names, con_vector] = LGCM_contrasts(study_nm, sub_nm, GLM,...
-    computer_root, preproc_sm_kernel, condition, biasFieldCorr)
+    computer_root, preproc_sm_kernel, condition, biasFieldCorr, DCM_GLM)
 % [con_names, con_vector] = LGCM_contrasts(study_nm, sub_nm, GLM,...
-%   computer_root, preproc_sm_kernel, condition, biasFieldCorr)
+%   computer_root, preproc_sm_kernel, condition, biasFieldCorr, DCM_GLM)
 % LGCM_contrasts will define the contrast names and contrast vector for the
 % subject and study entered in input.
 %
@@ -26,6 +26,11 @@ function[con_names, con_vector] = LGCM_contrasts(study_nm, sub_nm, GLM,...
 % biasFieldCorr: binary variable indicating whether results are based on
 % bias-field corrected files (1) or not (0)
 %
+% DCM_GLM: use preprocessing adapted for DCM or not (the main difference is
+% that the preprocessing will be including or not a slice-timing correction)
+% (0) use basic preprocessing
+% (1) use preprocessing including slice-timing correction
+%
 % OUTPUTS
 % con_names: list of contrast names
 %
@@ -46,14 +51,22 @@ end
 subj_folder             = [root, filesep, 'CID',sub_nm];
 switch biasFieldCorr
     case 0
-        subj_analysis_folder    = [subj_folder, filesep, 'fMRI_analysis' filesep,...
-            'functional',filesep,'preproc_sm_',num2str(preproc_sm_kernel),'mm',filesep];
+        biasField_sufix = '';
     case 1
-        subj_analysis_folder    = [subj_folder, filesep, 'fMRI_analysis' filesep,...
-            'functional',filesep,'preproc_sm_',num2str(preproc_sm_kernel),'mm_with_BiasFieldCorrection',filesep];
+        biasField_sufix = '_with_BiasFieldCorrection';
     otherwise
         error('biasFieldCorr not defined in the input. Please enter a value');
 end
+switch DCM_GLM
+    case 0
+        DCM_GLM_sufix = '';
+    case 1
+        DCM_GLM_sufix = '_DCM';
+    otherwise
+        error('DCM_GLM not defined in the input. Please enter a value');
+end
+subj_analysis_folder    = [subj_folder, filesep, 'fMRI_analysis' filesep,...
+            'functional',filesep,'preproc_sm_',num2str(preproc_sm_kernel),'mm',biasField_sufix,DCM_GLM_sufix,filesep];
 [resultsFolderName] = fMRI_subFolder(subj_analysis_folder, GLM, condition);
 
 %% extract GLM informations

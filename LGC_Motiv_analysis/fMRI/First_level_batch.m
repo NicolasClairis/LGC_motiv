@@ -1,5 +1,5 @@
-function[] = First_level_batch(GLM, checking, condition, study_nm, subject_id, NS, biasFieldCorr)
-%[] = First_level_batch(GLM, checking, condition, study_nm, subject_id, NS, biasFieldCorr)
+function[] = First_level_batch(GLM, checking, condition, study_nm, subject_id, NS, biasFieldCorr, DCM_GLM)
+%[] = First_level_batch(GLM, checking, condition, study_nm, subject_id, NS, biasFieldCorr, DCM_GLM)
 % First_level_batch will perform 1st level for LGC motivation fMRI studies.
 %
 % INPUTS
@@ -26,7 +26,12 @@ function[] = First_level_batch(GLM, checking, condition, study_nm, subject_id, N
 % the inputs)
 %
 % biasFieldCorr: use bias-field corrected images (1) or not (0)? By default
-% will not use bias-field corrected images
+% will not use bias-field corrected images (=0)
+%
+% DCM_GLM: use preprocessing adapted for DCM or not (the main difference is
+% that the preprocessing will be including or not a slice-timing correction)
+% (0) use basic preprocessing
+% (1) use preprocessing including slice-timing correction
 %
 % See also which_GLM.m, 
 % First_level_loadEachCondition.m, First_level_loadRegressors.m,
@@ -73,11 +78,27 @@ preproc_sm_kernel = 8;
 if ~exist('biasFieldCorr','var') || ~ismember(biasFieldCorr,[0,1])
     biasFieldCorr = 0;
 end
-switch biasFieldCorr
+
+% use preprocessing for DCM (including slice-timing correction) or not?
+if ~exist('DCM_GLM','var') || ~ismember(DCM_GLM,[0,1])
+    DCM_GLM = 0;
+end
+
+switch DCM_GLM
     case 0
-        prefix = 'swr';
+        switch biasFieldCorr
+            case 0
+                prefix = 'swr'; % smoothed(s)-normalized(w)-realigned(r) files
+            case 1
+                prefix = 'swbr'; % smoothed(s)-normalized(w)-bias-field corrected(b)-realigned(r) files
+        end
     case 1
-        prefix = 'swbr';
+        switch biasFieldCorr
+            case 0
+                prefix = 'swar'; % smoothed(s)-normalized(w)-slice-timed(a)-realigned(r) files
+            case 1
+                error('case with bias-field correction and DCM slice-timing preprocessing not ready yet');
+        end
 end
 
 % repetition time for fMRI
@@ -122,18 +143,29 @@ for iS = 1:NS
     % define working folders
     subj_folder             = [root, filesep, 'CID',sub_nm];
     subj_analysis_folder    = [subj_folder, filesep, 'fMRI_analysis' filesep];
-    subj_anat_folder        = [subj_analysis_folder, filesep, 'anatomical' filesep];
+%     subj_anat_folder        = [subj_analysis_folder, filesep, 'anatomical' filesep];
     subj_scans_folder       = [subj_folder, filesep, 'fMRI_scans' filesep];
     subj_behavior_folder    = [subj_folder, filesep, 'behavior' filesep];
     
     % create folder to store the results for the current subject
-    switch biasFieldCorr
+    switch DCM_GLM
         case 0
-            sm_folderName = [subj_analysis_folder 'functional', filesep,...
-                'preproc_sm_',num2str(preproc_sm_kernel),'mm',filesep];
+            switch biasFieldCorr
+                case 0
+                    sm_folderName = [subj_analysis_folder 'functional', filesep,...
+                        'preproc_sm_',num2str(preproc_sm_kernel),'mm',filesep];
+                case 1
+                    sm_folderName = [subj_analysis_folder 'functional', filesep,...
+                        'preproc_sm_',num2str(preproc_sm_kernel),'mm_with_BiasFieldCorrection',filesep];
+            end
         case 1
-            sm_folderName = [subj_analysis_folder 'functional', filesep,...
-                'preproc_sm_',num2str(preproc_sm_kernel),'mm_with_BiasFieldCorrection',filesep];
+            switch biasFieldCorr
+                case 0
+                    sm_folderName = [subj_analysis_folder 'functional', filesep,...
+                        'preproc_sm_',num2str(preproc_sm_kernel),'mm_DCM',filesep];
+                case 1
+                    error('case with bias-field correction and DCM slice-timing preprocessing not ready yet');
+            end
     end
     if ~exist(sm_folderName,'dir')
         mkdir(sm_folderName);
@@ -192,13 +224,24 @@ for iS = 1:NS
         end
         
         % load scans in the GLM
-        switch biasFieldCorr
+        switch DCM_GLM
             case 0
-                runPath = [subj_scans_folder filesep subj_runFoldername_tmp, filesep,...
-                    'preproc_sm_',num2str(preproc_sm_kernel),'mm',filesep]; % run folder
+                switch biasFieldCorr
+                    case 0
+                        runPath = [subj_scans_folder filesep subj_runFoldername_tmp, filesep,...
+                            'preproc_sm_',num2str(preproc_sm_kernel),'mm',filesep]; % run folder
+                    case 1
+                        runPath = [subj_scans_folder filesep subj_runFoldername_tmp, filesep,...
+                            'preproc_sm_',num2str(preproc_sm_kernel),'mm_with_BiasFieldCorrection',filesep]; % run folder
+                end
             case 1
-                runPath = [subj_scans_folder filesep subj_runFoldername_tmp, filesep,...
-                    'preproc_sm_',num2str(preproc_sm_kernel),'mm_with_BiasFieldCorrection',filesep]; % run folder
+                switch biasFieldCorr
+                    case 0
+                        runPath = [subj_scans_folder filesep subj_runFoldername_tmp, filesep,...
+                            'preproc_sm_',num2str(preproc_sm_kernel),'mm_DCM',filesep]; % run folder
+                    case 1
+                        error('case with bias-field correction and DCM slice-timing preprocessing not ready yet');
+                end
         end
         preprocessed_filenames = cellstr(spm_select('ExtFPList',runPath,['^',prefix,'.*\.nii$'])); % extracts all the preprocessed swrf files (smoothed, normalized, realigned)
         % in case data is not in .nii but in .img & .hdr
