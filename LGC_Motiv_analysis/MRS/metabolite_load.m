@@ -1,5 +1,5 @@
-function[metabolites, CRLB] = metabolite_load(subject_id)
-% [metabolites, CRLB] = metabolite_load(subject_id)
+function[metabolites, CRLB, metabolites_bis] = metabolite_load(subject_id)
+% [metabolites, CRLB, metabolites_bis] = metabolite_load(subject_id)
 % metabolite_load will load the metabolite concentrations based on the
 % excel file prepared by Arthur Barakat.
 %
@@ -12,6 +12,9 @@ function[metabolites, CRLB] = metabolite_load(subject_id)
 % CRLB: structure with Cramér-Rao Lower Bound which gives a lower estimate
 % for the variance of an unbiased estimator for each single metabolite (not the
 % ratios)
+%
+% metabolites_bis: same as metabolites, but without most of weird ratios
+% and computations included in metabolites
 
 %% working directory
 % root = pwd;
@@ -68,14 +71,6 @@ for iROI = 1:nROIs
                     CRLB.(ROI_nm).(all_metabolites{iMet})] = deal(NaN(1,NS));
         end
     end % metabolite loop
-    [metabolites.(ROI_nm).Gln_div_Glu,...
-        metabolites.(ROI_nm).z_antiox,...
-        metabolites.(ROI_nm).antiox,...
-        metabolites.(ROI_nm).Glu_div_GSH,...
-        metabolites.(ROI_nm).Glu_div_Tau,...
-        metabolites.(ROI_nm).Glu_div_antiox,...
-        metabolites.(ROI_nm).Glu_div_z_antiox,...
-        metabolites.(ROI_nm).Glu_div_GABA_div_GSH] = deal(NaN(1,NS));
     
     %% load the data
     switch ROI_nm
@@ -135,10 +130,14 @@ for iROI = 1:nROIs
             end
         end % subject loop
     end % metabolites loop
+
+    % just add Gln/Glu to metabolites_bis
+    metabolites_bis.(ROI_nm) = metabolites.(ROI_nm);
     
     %% bonus metabolites: combination of other metabolites
     % perform also division Gln/Glu
     metabolites.(ROI_nm).Gln_div_Glu = metabolites.(ROI_nm).Gln./metabolites.(ROI_nm).Glu;
+    metabolites_bis.(ROI_nm).Gln_div_Glu = metabolites.(ROI_nm).Gln_div_Glu;
     
     % extract a pool of antioxidants
     metabolites.(ROI_nm).antiox = metabolites.(ROI_nm).GSH +...
