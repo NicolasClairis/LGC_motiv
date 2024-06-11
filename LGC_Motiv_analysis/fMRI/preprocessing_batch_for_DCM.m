@@ -73,15 +73,81 @@ TA = TR - (TR/nslices); % time between first and last slice within one scan
 % "We need the time to acquire all but the last slice. SPM calls this TA
 % (time of acquisition). This odd parameter comes from deep in the history of the SPM slice-timing routine."
 % https://bic-berkeley.github.io/psych-214-fall-2016/spm_slice_timing_solution.html
-refslice_sliceT = floor(nslices/2); % reference slice to use (generally the middle one)
 
 % define order of acquisition of the slices in one volume
 % slice_order = [1:2:nslices, 2:2:nslices]; % interleaved ascending order
 % slice_order = [nslices:(-2):1, (nslices-1):(-2):1]; % interleaved descending order
-slice_order = NaN(1,nslices); % interleaved middle-top, ie. scanning top->middle and middle->bottom in parallel
-for iSlice = 1:nslices
-    slice_order(iSlice) = round((nslices - iSlice)/2 + (rem((nslices - iSlice),2)*(nslices - 1)/2)) + 1;
-end % loop over slices
+% slice_order = [...
+%     1	22	43
+%     3	24	45
+%     5	26	47
+%     7	28	49
+%     9	30	51
+%     11	32	53
+%     13	34	55
+%     15	36	57
+%     17	38	59
+%     19	40	61
+%     21	42	63
+%     2	23	44
+%     4	25	46
+%     6	27	48
+%     8	29	50
+%     10	31	52
+%     12	33	54
+%     14	35	56
+%     16	37	58
+%     18	39	60
+%     20	41	62]; % interleaved sequence acquiring 3 slices simultaneously going from bottom up (1-22-43 => +2 => 21-42-63)
+% % and then restarting (2-23-44 => +2 => 20-41-62)
+% commented because SPM refuses matrix, needs a linear vector => only way
+% out = provide timings instead of order
+%
+% Note: timings were obtained by applying the following pipeline:
+% 1) extract the header of one of the raw files for a run (you need the
+% Image Processing toolbox in order to obtain the dicominfo function)
+% info =
+% dicominfo('\\sv-nas1.rcp.epfl.ch\sandi-lab\human_data_private\raw_data_subject\study1\CID019\fMRI_raw\CID019_LGCMOT.MR.RESEARCH_LGC_LAB.0009.0263.2022.10.07.17.34.03.484375.173395677.IMA');
+%
+% 2) check the current file corresponds indeed to a fMRI run and not to
+% anatomy or Gre3D by launching this line:
+% info.ProtocolName
+%
+% 3) extract timings stored in the following variable:
+% info.Private_0019_1029
+%
+% (4) you can also check the corresponding order of slices by launching the
+% corresponding lines:
+% [times,idx]=sort(info.Private_0019_1029)
+% times: will give you the time for each slice, ordered in ascending order
+% idx: will indicate the number of the slices corresponding to each
+% idx1=idx(1:3:63);
+% idx2=idx(2:3:63);
+% idx3=idx(3:3:63);
+% idx_matrix=[idx1,idx2,idx3]
+sliceTimes = [0, 1052.50000002000, 97.5000000000000, 1147.50000002000,...
+    192.500000000000, 1242.50000002000, 287.500000010000, 1340.00000003000,...
+    382.500000010000, 1435, 480.000000010000, 1530, 575.000000010000,...
+    1625, 670.000000010000, 1722.50000000000, 765.000000010000,...
+    1817.50000000000, 860.000000020000, 1912.50000001000,...
+    957.500000020000, 0, 1052.50000002000, 97.5000000000000,...
+    1147.50000002000, 192.500000000000, 1242.50000002000, 287.500000010000,...
+    1340.00000003000, 382.500000010000, 1435, 480.000000010000,...
+    1530, 575.000000010000, 1625, 670.000000010000,...
+    1722.50000000000, 765.000000010000, 1817.50000000000, 860.000000020000,...
+    1912.50000001000, 957.500000020000, 0, 1052.50000002000,...
+    97.5000000000000, 1147.50000002000, 192.500000000000, 1242.50000002000,...
+    287.500000010000, 1340.00000003000, 382.500000010000, 1435,...
+    480.000000010000, 1530, 575.000000010000, 1625,...
+    670.000000010000, 1722.50000000000, 765.000000010000, 1817.50000000000,...
+    860.000000020000, 1912.50000001000, 957.500000020000];
+% since slice timings are indicated in time (in ms), we also need to report
+% the reference slice in timing based on SPM documentation:
+% refslice_sliceT = floor(nslices/2); % reference slice to use (generally the middle one)
+% extract the timing of acquisition of the middle slice
+[times, slice_idx] = sort(sliceTimes); % sort sliceTimes
+middle_slice_idx = floor(nslices/2); % identify index of middle slice
+refslice_sliceT = times(slice_idx == middle_slice_idx); % extract the timing of acquisition of the middle slice
 
 %% decide whether you want to display the preprocessing script at the end 
 % or nor run it directly
