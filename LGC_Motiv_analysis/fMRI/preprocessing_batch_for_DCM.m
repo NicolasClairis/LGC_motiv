@@ -164,9 +164,11 @@ switch checking
 end % checking data
 
 %% remove from the list participants for which preprocessing was already made
+biasF = 0; % no bias-field correction applied
+DCM_preproc = 1; % apply DCM slice-timing correction
 switch spm_launch_or_display
     case 'run'
-        [subject_id, NS] = preproc_already_made(computerRoot, study_nm, subject_id, smKernel);
+        [subject_id, NS] = preproc_already_made(computerRoot, study_nm, subject_id, smKernel, biasF, DCM_preproc);
     otherwise
         warning(['Careful spm_launch_or_display is set to "interactive" ',...
             'and no filter has been done to remove subjects already ',...

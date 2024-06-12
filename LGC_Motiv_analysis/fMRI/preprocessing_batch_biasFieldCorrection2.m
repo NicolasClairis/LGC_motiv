@@ -70,7 +70,9 @@ end
 smKernel = 8;
 
 %% remove from the list participants for which preprocessing was already made
-% [subject_id, NS] = preproc_already_made(computerRoot, study_nm, subject_id, smKernel);
+biasF = 1; % bias-field correction to be applied
+DCM_preproc = 0; % no slice-timing correction (for DCM) applied
+[subject_id, NS] = preproc_already_made(computerRoot, study_nm, subject_id, smKernel, biasF, DCM_preproc);
 NS = length(subject_id);
 if NS >= 1
     %% give path for anatomical template
