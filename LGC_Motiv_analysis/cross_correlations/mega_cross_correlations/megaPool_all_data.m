@@ -222,8 +222,7 @@ mega_mtrx_names = {'gal_age','gal_sex','gal_ISCE','gal_weight','gal_height','gal
     'behavior_task_prm_kBias'};
 n_mega_mtrx_vars = length(mega_mtrx_names);
 mega_mtrx = deal(NaN(n_mega_mtrx_vars, NS));
-[category,...
-    var_short_nm] = deal(cell(1,n_mega_mtrx_vars));
+category = cell(1,n_mega_mtrx_vars);
 for iVar = 1:n_mega_mtrx_vars
     var_nm = mega_mtrx_names{iVar};
     switch var_nm
