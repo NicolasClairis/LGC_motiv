@@ -74,7 +74,7 @@ for iS = 1:NS
             case 1 % slice-timing correction applied
                 switch biasFieldCorr
                     case 0 % no bias-field correction
-                        preproc_newFolder_nm = ['preproc_sm_',num2str(smKernel),'mm_sliceT'];
+                        preproc_newFolder_nm = ['preproc_sm_',num2str(smKernel),'mm_DCM'];
                         prefixToUse = 'swar';
                         % 's' is for smoothed data
                         % 'w' for normalized data
