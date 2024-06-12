@@ -135,6 +135,7 @@ switch study_nm
                 % because 054 had a very weird behavior
                 % remove also 019 if you split R and P trials because saturated P trials
                 % and 039 bugs with boxcar
+                % 054 and 090 now removed at the end for any fMRI analysis
                 fullSubList(bad_subs1b) = [];
         end
         %% initialize the list of subjects to consider
