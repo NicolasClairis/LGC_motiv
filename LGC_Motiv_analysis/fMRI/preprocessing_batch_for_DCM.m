@@ -60,7 +60,12 @@ if (~exist('sub_nm','var') || isempty(sub_nm))
             subject_id = {'001'};
     end
 else
-    subject_id = {sub_nm};
+    if ~iscell(sub_nm) && ischar(sub_nm)
+        % in case sub_nm was entered as a character and not as a cell
+        subject_id = {sub_nm};
+    elseif iscell(sub_nm)
+        subject_id = sub_nm;
+    end
 end
 
 %% smoothing kernel
@@ -271,14 +276,16 @@ if NS >= 1
         preproc_step = 2;
         sliceT_step = nb_preprocessingSteps*(iS-1) + preproc_step;
         for iRun = 1:n_runs
-            matlabbatch{sliceT_step}.spm.temporal.st.scans{iRun}(1) = cfg_dep(['Realign: Estimate: Realigned Images (Sess ',num2str(iRun),')'],...
-                substruct('.','val', '{}',{1}, '.','val', '{}',{1}, '.','val', '{}',{1}, '.','val', '{}',{1}),...
-                substruct('.','sess', '()',{iRun}, '.','cfiles'));
+            matlabbatch{sliceT_step}.spm.temporal.st.scans{iRun}(1) = cfg_dep(['Realign: Estimate & Reslice: Resliced Images (Sess ',num2str(iRun),')'],...
+                substruct('.','val', '{}',{realign_step}, '.','val', '{}',{1}, '.','val', '{}',{1}, '.','val', '{}',{1}),...
+                substruct('.','sess', '()',{iRun}, '.','rfiles'));
         end % run loop
         matlabbatch{sliceT_step}.spm.temporal.st.nslices = nslices;
         matlabbatch{sliceT_step}.spm.temporal.st.tr = TR;
         matlabbatch{sliceT_step}.spm.temporal.st.ta = TA;
-        matlabbatch{sliceT_step}.spm.temporal.st.so = slice_order;
+%         matlabbatch{sliceT_step}.spm.temporal.st.so = slice_order; % if
+%         you provide slice order
+        matlabbatch{sliceT_step}.spm.temporal.st.so = sliceTimes; % if you provide slice timings for each slice (in ascending order)
         matlabbatch{sliceT_step}.spm.temporal.st.refslice = refslice_sliceT;
         matlabbatch{sliceT_step}.spm.temporal.st.prefix = 'a';
         
@@ -357,12 +364,9 @@ if NS >= 1
             substruct('.','fordef', '()',{':'}));
         for iRun = 1:n_runs
             matlabbatch{normf_step}.spm.spatial.normalise.write.subj.resample(iRun) = cfg_dep(['Slice Timing: Slice Timing Corr. Images (Sess ',num2str(iRun),')'],...
-                substruct('.','val', '{}',{sliceT_step}, '.','val', '{}',{1}, '.','val', '{}',{1}, '.','val', '{}',{1}),...
-                substruct('.','sess', '()',{iRun}, '.','files'));
+                substruct('.','val', '{}',{sliceT_step}, '.','val', '{}',{1}, '.','val', '{}',{1}),...
+                substruct('()',{iRun}, '.','files'));
         end
-        matlabbatch{normf_step}.spm.spatial.normalise.write.subj.resample(n_runs+1) = cfg_dep('Realign: Estimate & Reslice: Mean Image',...
-            substruct('.','val', '{}',{sliceT_step}, '.','val', '{}',{1}, '.','val', '{}',{1}, '.','val', '{}',{1}),...
-            substruct('.','rmean'));
         matlabbatch{normf_step}.spm.spatial.normalise.write.woptions.bb = [-78 -112 -70
             78 76 85];
         matlabbatch{normf_step}.spm.spatial.normalise.write.woptions.vox = [2 2 2];
