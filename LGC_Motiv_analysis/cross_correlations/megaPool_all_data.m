@@ -222,8 +222,8 @@ mega_mtrx_names = {'gal_age','gal_sex','gal_ISCE','gal_weight','gal_height','gal
     'behavior_task_prm_kBias'};
 n_mega_mtrx_vars = length(mega_mtrx_names);
 mega_mtrx = deal(NaN(n_mega_mtrx_vars, NS));
-[category,...
-    var_short_nm] = deal(cell(1,n_mega_mtrx_vars));
+category = cell(1,n_mega_mtrx_vars);
+mega_mtrx_short_names = mega_mtrx_names; % create a secondary variable with similar but shorter name when variables are too long
 for iVar = 1:n_mega_mtrx_vars
     var_nm = mega_mtrx_names{iVar};
     switch var_nm
@@ -254,30 +254,39 @@ for iVar = 1:n_mega_mtrx_vars
         case 'gal_avg_sleep'
             mega_mtrx(iVar, :) = questionnaires.sleep.avg;
             category{iVar} = 'sleep';
+            mega_mtrx_short_names{iVar} = 'gal_mSleep';
         case 'gal_prevDay_sleep'
             mega_mtrx(iVar, :) = questionnaires.sleep.prevDay;
             category{iVar} = 'sleep';
+            mega_mtrx_short_names{iVar} = 'gal_prevSleep';
         case 'gal_prevDay_min_avg_sleep'
             mega_mtrx(iVar, :) = questionnaires.sleep.prevDay_min_avg_sleep;
             category{iVar} = 'sleep';
+            mega_mtrx_short_names{iVar} = 'gal_δSleep';
         case 'gal_hexaco_hh'
             mega_mtrx(iVar, :) = questionnaires.hexaco.honestyHumility;
             category{iVar} = 'hexaco';
+            mega_mtrx_short_names{iVar} = 'gal_h_honesty_humility';
         case 'gal_hexaco_emotion'
             mega_mtrx(iVar, :) = questionnaires.hexaco.emotion;
             category{iVar} = 'hexaco';
+            mega_mtrx_short_names{iVar} = 'gal_h_emotion';
         case 'gal_hexaco_extraversion'
             mega_mtrx(iVar, :) = questionnaires.hexaco.extraversion;
             category{iVar} = 'hexaco';
+            mega_mtrx_short_names{iVar} = 'gal_h_extraversion';
         case 'gal_hexaco_agreeableness'
             mega_mtrx(iVar, :) = questionnaires.hexaco.agreeableness;
             category{iVar} = 'hexaco';
+            mega_mtrx_short_names{iVar} = 'gal_h_agreeableness';
         case 'gal_hexaco_consciousness'
             mega_mtrx(iVar, :) = questionnaires.hexaco.consciousness;
             category{iVar} = 'hexaco';
+            mega_mtrx_short_names{iVar} = 'gal_h_consciousness';
         case 'gal_hexaco_openness'
             mega_mtrx(iVar, :) = questionnaires.hexaco.openness;
             category{iVar} = 'hexaco';
+            mega_mtrx_short_names{iVar} = 'gal_h_openness';
         case 'salivary_TESTO1'
             mega_mtrx(iVar, :) = TESTO_data.TESTO(1,:);
             category{iVar} = 'salivary_Testosterone';
@@ -341,21 +350,26 @@ for iVar = 1:n_mega_mtrx_vars
         case 'wholeB_NAD_div_NADH'
             mega_mtrx(iVar, :) = wholeBlood.NAD_div_NADH;
             category{iVar} = 'wholeB_NADomics';
+            mega_mtrx_short_names{iVar} = 'wholeB_NAD/NADH';
         case 'wholeB_NADP_div_NADPH'
             mega_mtrx(iVar, :) = wholeBlood.NADP_div_NADPH;
             category{iVar} = 'wholeB_NADomics';
+            mega_mtrx_short_names{iVar} = 'wholeB_NADP/NADPH';
         case 'wholeB_tNAD'
             mega_mtrx(iVar, :) = wholeBlood.total_NAD;
             category{iVar} = 'wholeB_NADomics';
         case 'wholeB_tNAD_with_precursors'
             mega_mtrx(iVar, :) = wholeBlood.total_NAD_with_precursors;
             category{iVar} = 'wholeB_NADomics';
+            mega_mtrx_short_names{iVar} = 'wholeB_ptNAD';
         case 'wholeB_tNAD_with_byproducts'
             mega_mtrx(iVar, :) = wholeBlood.total_NAD_with_byproducts;
             category{iVar} = 'wholeB_NADomics';
+            mega_mtrx_short_names{iVar} = 'wholeB_tbNAD';
         case 'wholeB_NAD_byproducts'
             mega_mtrx(iVar, :) = wholeBlood.total_NAD_byproducts;
             category{iVar} = 'wholeB_NADomics';
+            mega_mtrx_short_names{iVar} = 'wholeB_bNAD';
         case 'plasma_aa_Ala'
             mega_mtrx(iVar, :) = plasmaM.Ala;
             category{iVar} = 'plasma_aa';
@@ -539,6 +553,7 @@ for iVar = 1:n_mega_mtrx_vars
         case 'brainM_aIns_Gln_div_Glu'
             mega_mtrx(iVar, :) = brainMetabolites.aIns.Gln_div_Glu;
             category{iVar} = 'aIns_mb';
+            mega_mtrx_short_names{iVar} = 'brainM_aIns_Gln/Glu';
         case 'brainM_aIns_GSH'
             mega_mtrx(iVar, :) = brainMetabolites.aIns.GSH;
             category{iVar} = 'aIns_mb';
@@ -569,105 +584,139 @@ for iVar = 1:n_mega_mtrx_vars
         case 'behavior_questionnaires_stress_anxiety_PSS14'
             mega_mtrx(iVar, :) = questionnaires.stress_anxiety.PSS14;
             category{iVar} = 'stress_anxiety';
+            mega_mtrx_short_names{iVar} = 'behavior_questionnaires_PSS14';
         case 'behavior_questionnaires_stress_anxiety_STAI_T'
             mega_mtrx(iVar, :) = questionnaires.stress_anxiety.STAI_T;
             category{iVar} = 'stress_anxiety';
+            mega_mtrx_short_names{iVar} = 'behavior_questionnaires_STAIT';
         case 'behavior_questionnaires_stress_anxiety_SIAS'
             mega_mtrx(iVar, :) = questionnaires.stress_anxiety.SIAS;
             category{iVar} = 'stress_anxiety';
+            mega_mtrx_short_names{iVar} = 'behavior_questionnaires_SIAS';
         case 'behavior_questionnaires_stress_anxiety_CTQ_emotionalA'
             mega_mtrx(iVar, :) = questionnaires.CTQ.emotionalAbuse;
             category{iVar} = 'stress_anxiety';
+            mega_mtrx_short_names{iVar} = 'behavior_questionnaires_CTQea';
         case 'behavior_questionnaires_stress_anxiety_CTQ_physicalA'
             mega_mtrx(iVar, :) = questionnaires.CTQ.physicalAbuse;
             category{iVar} = 'stress_anxiety';
+            mega_mtrx_short_names{iVar} = 'behavior_questionnaires_CTQpa';
         case 'behavior_questionnaires_stress_anxiety_CTQ_sexA'
             mega_mtrx(iVar, :) = questionnaires.CTQ.sexualAbuse;
             category{iVar} = 'stress_anxiety';
+            mega_mtrx_short_names{iVar} = 'behavior_questionnaires_CTQsa';
         case 'behavior_questionnaires_stress_anxiety_CTQ_minDenial'
             mega_mtrx(iVar, :) = questionnaires.CTQ.minimizationDenial;
             category{iVar} = 'stress_anxiety';
+            mega_mtrx_short_names{iVar} = 'behavior_questionnaires_CTQmd';
         case 'behavior_questionnaires_stress_anxiety_CTQ_emotionalN'
             mega_mtrx(iVar, :) = questionnaires.CTQ.emotionalNeglect;
             category{iVar} = 'stress_anxiety';
+            mega_mtrx_short_names{iVar} = 'behavior_questionnaires_CTQen';
         case 'behavior_questionnaires_stress_anxiety_CTQ_physicalN'
             mega_mtrx(iVar, :) = questionnaires.CTQ.physicalNeglect;
             category{iVar} = 'stress_anxiety';
+            mega_mtrx_short_names{iVar} = 'behavior_questionnaires_CTQpn';
         case 'behavior_questionnaires_motivation_MADRS_S'
             mega_mtrx(iVar, :) = questionnaires.Motivation.MADRS_S;
             category{iVar} = 'motivation';
+            mega_mtrx_short_names{iVar} = 'behavior_questionnaires_MADRS-S';
         case 'behavior_questionnaires_motivation_BIS_NPI'
             mega_mtrx(iVar, :) = questionnaires.Motivation.BIS_NPI;
             category{iVar} = 'motivation';
+            mega_mtrx_short_names{iVar} = 'behavior_questionnaires_BIS_NPI';
         case 'behavior_questionnaires_motivation_BIS_MI'
             mega_mtrx(iVar, :) = questionnaires.Motivation.BIS_MI;
             category{iVar} = 'motivation';
+            mega_mtrx_short_names{iVar} = 'behavior_questionnaires_BIS_MI';
         case 'behavior_questionnaires_motivation_BIS_AI'
             mega_mtrx(iVar, :) = questionnaires.Motivation.BIS_AI;
             category{iVar} = 'motivation';
+            mega_mtrx_short_names{iVar} = 'behavior_questionnaires_BIS_AI';
         case 'behavior_questionnaires_motivation_Lars_e_AI_EverydayProd'
             mega_mtrx(iVar, :) = questionnaires.Motivation.Lars_e_AI_EverydayProd;
             category{iVar} = 'motivation';
+            mega_mtrx_short_names{iVar} = 'behavior_questionnaires_LARSe_AIep';
         case 'behavior_questionnaires_motivation_Lars_e_AI_Init'
             mega_mtrx(iVar, :) = questionnaires.Motivation.Lars_e_AI_Init;
             category{iVar} = 'motivation';
+            mega_mtrx_short_names{iVar} = 'behavior_questionnaires_LARSe_AIi';
         case 'behavior_questionnaires_motivation_Lars_e_IC_Interest'
             mega_mtrx(iVar, :) = questionnaires.Motivation.Lars_e_IC_Interest;
             category{iVar} = 'motivation';
+            mega_mtrx_short_names{iVar} = 'behavior_questionnaires_LARSe_ICi';
         case 'behavior_questionnaires_motivation_Lars_e_IC_Novelty'
             mega_mtrx(iVar, :) = questionnaires.Motivation.Lars_e_IC_Novelty;
             category{iVar} = 'motivation';
+            mega_mtrx_short_names{iVar} = 'behavior_questionnaires_LARSe_ICn';
         case 'behavior_questionnaires_motivation_Lars_e_IC_Motiv'
             mega_mtrx(iVar, :) = questionnaires.Motivation.Lars_e_IC_Motiv;
             category{iVar} = 'motivation';
+            mega_mtrx_short_names{iVar} = 'behavior_questionnaires_LARSe_ICm';
         case 'behavior_questionnaires_motivation_Lars_e_IC_Social'
             mega_mtrx(iVar, :) = questionnaires.Motivation.Lars_e_IC_Social;
             category{iVar} = 'motivation';
+            mega_mtrx_short_names{iVar} = 'behavior_questionnaires_LARSe_ICs';
         case 'behavior_questionnaires_motivation_Lars_e_ActionInit'
             mega_mtrx(iVar, :) = questionnaires.Motivation.Lars_e_ActionInit;
             category{iVar} = 'motivation';
+            mega_mtrx_short_names{iVar} = 'behavior_questionnaires_LARSe_AI';
         case 'behavior_questionnaires_motivation_Lars_e_IntellectCuriosity'
             mega_mtrx(iVar, :) = questionnaires.Motivation.Lars_e_IntellectCuriosity;
             category{iVar} = 'motivation';
+            mega_mtrx_short_names{iVar} = 'behavior_questionnaires_LARSe_IC';
         case 'behavior_questionnaires_motivation_Lars_e_EmotResp'
             mega_mtrx(iVar, :) = questionnaires.Motivation.Lars_e_EmotResp;
             category{iVar} = 'motivation';
+            mega_mtrx_short_names{iVar} = 'behavior_questionnaires_LARSe_ER';
         case 'behavior_questionnaires_motivation_Lars_e_SelfAwareness'
             mega_mtrx(iVar, :) = questionnaires.Motivation.Lars_e_SelfAwareness;
             category{iVar} = 'motivation';
+            mega_mtrx_short_names{iVar} = 'behavior_questionnaires_LARSe_SA';
         case 'behavior_questionnaires_motivation_MPSTEFS_physical'
             mega_mtrx(iVar, :) = questionnaires.Motivation.MPSTEFS_physical;
             category{iVar} = 'fatigue';
+            mega_mtrx_short_names{iVar} = 'behavior_questionnaires_MPSTEFSp';
         case 'behavior_questionnaires_motivation_MPSTEFS_mental'
             mega_mtrx(iVar, :) = questionnaires.Motivation.MPSTEFS_mental;
             category{iVar} = 'fatigue';
+            mega_mtrx_short_names{iVar} = 'behavior_questionnaires_MPSTEFSm';
         case 'behavior_questionnaires_motivation_JPIR'
             mega_mtrx(iVar, :) = questionnaires.Motivation.JPIR;
             category{iVar} = 'motivation';
+            mega_mtrx_short_names{iVar} = 'behavior_questionnaires_JPIR';
         case 'behavior_questionnaires_motivation_SHAP'
             mega_mtrx(iVar, :) = questionnaires.Motivation.SHAP;
             category{iVar} = 'motivation';
+            mega_mtrx_short_names{iVar} = 'behavior_questionnaires_SHAP';
         case 'behavior_questionnaires_motivation_SPSRQ_R'
             mega_mtrx(iVar, :) = questionnaires.Motivation.SPSRQ_R;
             category{iVar} = 'motivation';
+            mega_mtrx_short_names{iVar} = 'behavior_questionnaires_SPSRQ_R';
         case 'behavior_questionnaires_motivation_SPSRQ_P'
             mega_mtrx(iVar, :) = questionnaires.Motivation.SPSRQ_P;
             category{iVar} = 'motivation';
+            mega_mtrx_short_names{iVar} = 'behavior_questionnaires_SPSRQ_P';
         case 'behavior_questionnaires_motivation_IPAQinactivity'
             mega_mtrx(iVar, :) = questionnaires.Motivation.IPAQinactivity;
             category{iVar} = 'motivation';
+            mega_mtrx_short_names{iVar} = 'behavior_questionnaires_IPAQinactivity';
         case 'behavior_questionnaires_dominance_PRF_D'
             mega_mtrx(iVar, :) = questionnaires.dominance_compet.PRF_D;
             category{iVar} = 'dominance';
+            mega_mtrx_short_names{iVar} = 'behavior_questionnaires_PRF_D';
         case 'behavior_questionnaires_dominance_CI_enjCompet'
             mega_mtrx(iVar, :) = questionnaires.dominance_compet.CI_enjCompet;
             category{iVar} = 'dominance';
+            mega_mtrx_short_names{iVar} = 'behavior_questionnaires_CIEC';
         case 'behavior_questionnaires_dominance_CI_contentiousness'
             mega_mtrx(iVar, :) = questionnaires.dominance_compet.CI_contentiousness;
             category{iVar} = 'dominance';
+            mega_mtrx_short_names{iVar} = 'behavior_questionnaires_CIc';
         case 'behavior_questionnaires_dominance_socialLadder'
             mega_mtrx(iVar, :) = questionnaires.SES.ladder;
             category{iVar} = 'dominance';
+            mega_mtrx_short_names{iVar} = 'behavior_questionnaires_ladder';
         case 'FFQ_raw_energy_kCal'
             mega_mtrx(iVar, :) = nutrition.raw.energy.kCal;
             category{iVar} = 'FFQ_raw_energy';
@@ -1601,6 +1650,7 @@ category_bis = strrep(category_bis,'dominance','Bd');
 %% perform correlation matrix between all variables
 [corr_mtrx, pval_mtrx] = deal(NaN(n_mega_mtrx_vars, n_mega_mtrx_vars));
 [mtrx_var_nm1, mtrx_var_nm2,...
+    mtrx_var_short_nm1, mtrx_var_short_nm2,...
     mtrx_categ_nm1, mtrx_categ_nm2] =  deal(cell(n_mega_mtrx_vars, n_mega_mtrx_vars));
 for iVar = 1:n_mega_mtrx_vars % loop through rows (all variables)
     for jVar = 1:n_mega_mtrx_vars % loop through columns (all variables)
@@ -1609,6 +1659,9 @@ for iVar = 1:n_mega_mtrx_vars % loop through rows (all variables)
         % extract variable name
         mtrx_var_nm1{iVar, jVar} = mega_mtrx_names{iVar};
         mtrx_var_nm2{iVar, jVar} = mega_mtrx_names{jVar};
+        % extract variable short name
+        mtrx_var_short_nm1{iVar, jVar} = mega_mtrx_short_names{iVar};
+        mtrx_var_short_nm2{iVar, jVar} = mega_mtrx_short_names{jVar};
         % extract corresponding category of variable
         mtrx_categ_nm1{iVar, jVar} = category{iVar};
         mtrx_categ_nm2{iVar, jVar} = category{jVar};
@@ -1866,8 +1919,10 @@ n_corrs = n_mega_mtrx_vars*n_mega_mtrx_vars;
 table_correl = table;
 % variable names
 table_correl.var1 = reshape(mtrx_var_nm1,[n_corrs,1]);
+table_correl.var_shortnm1 = reshape(mtrx_var_short_nm1,[n_corrs,1]);
 table_correl.category_var1 = reshape(mtrx_categ_nm1,[n_corrs,1]);
 table_correl.var2 = reshape(mtrx_var_nm2,[n_corrs,1]);
+table_correl.var_shortnm2 = reshape(mtrx_var_short_nm2,[n_corrs,1]);
 table_correl.category_var2 = reshape(mtrx_categ_nm2,[n_corrs,1]);
 % regressors
 table_correl.r_corr = reshape(abs(corr_mtrx),[n_corrs,1]); % use |r|
@@ -1881,8 +1936,10 @@ n_corrs = n_mega_mtrx_vars*n_mega_mtrx_vars;
 table_correl = table;
 % variable names
 table_correl.var1 = reshape(mtrx_var_nm1,[n_corrs,1]);
+table_correl.var_shortnm1 = reshape(mtrx_var_short_nm1,[n_corrs,1]);
 table_correl.category_var1 = reshape(mtrx_categ_nm1,[n_corrs,1]);
 table_correl.var2 = reshape(mtrx_var_nm2,[n_corrs,1]);
+table_correl.var_shortnm2 = reshape(mtrx_var_short_nm2,[n_corrs,1]);
 table_correl.category_var2 = reshape(mtrx_categ_nm2,[n_corrs,1]);
 % regressors
 table_correl.r_corr = reshape(corr_mtrx,[n_corrs,1]); % use r
@@ -1896,8 +1953,10 @@ n_corrs = n_mega_mtrx_vars*n_mega_mtrx_vars;
 table_GLM = table;
 % variable names
 table_GLM.var1 = reshape(mtrx_var_nm1,[n_corrs,1]);
+table_GLM.var_shortnm1 = reshape(mtrx_var_short_nm1,[n_corrs,1]);
 table_GLM.category_var1 = reshape(mtrx_categ_nm1,[n_corrs,1]);
 table_GLM.var2 = reshape(mtrx_var_nm2,[n_corrs,1]);
+table_GLM.var_shortnm2 = reshape(mtrx_var_short_nm2,[n_corrs,1]);
 table_GLM.category_var2 = reshape(mtrx_categ_nm2,[n_corrs,1]);
 % regressors
 table_GLM.b_age = reshape(abs(GLM_b_mtrx_age),[n_corrs,1]);
@@ -1915,8 +1974,10 @@ n_corrs = n_mega_mtrx_vars*n_mega_mtrx_vars;
 table_GLM = table;
 % variable names
 table_GLM.var1 = reshape(mtrx_var_nm1,[n_corrs,1]);
+table_GLM.var_shortnm1 = reshape(mtrx_var_short_nm1,[n_corrs,1]);
 table_GLM.category_var1 = reshape(mtrx_categ_nm1,[n_corrs,1]);
 table_GLM.var2 = reshape(mtrx_var_nm2,[n_corrs,1]);
+table_GLM.var_shortnm2 = reshape(mtrx_var_short_nm2,[n_corrs,1]);
 table_GLM.category_var2 = reshape(mtrx_categ_nm2,[n_corrs,1]);
 % regressors
 table_GLM.b_age = reshape(GLM_b_mtrx_age,[n_corrs,1]);
