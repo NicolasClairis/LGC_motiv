@@ -216,12 +216,7 @@ for iS = 1:NS
         [~, jRun] = First_level_subRunFilter(study_nm, sub_nm, [], iRun, condition);
         run_nm = num2str(jRun);
         % erase useless spaces from folder with run name
-        n_char = size(subj_scan_folders_names(iRun,:),2);
-        for iLetter = 1:n_char
-            if strcmp(subj_scan_folders_names(iRun,iLetter),' ') == 0 % erase space
-                subj_runFoldername_tmp(iLetter) = subj_scan_folders_names(iRun, iLetter);
-            end
-        end
+        subj_runFoldername_tmp = strrep(subj_scan_folders_names(iRun, :),' ','');
         
         % load scans in the GLM
         switch DCM_GLM
@@ -275,7 +270,7 @@ for iS = 1:NS
             (strcmp(task_nm,'mental') && ~strcmp(runs.tasks(iRun),'Em'))
             error(['problem with run task type for subject ',sub_nm,' and run ',num2str(jRun)]);
         end
-        % perform 1st level
+        % extract onsets + regressors
         matlabbatch = First_level_loadRegressors(matlabbatch, GLMprm, study_nm, sub_nm, sub_idx, iRun, jRun,...
             subj_behavior_folder, currRunBehaviorFileNames, task_nm, computerRoot);
         
