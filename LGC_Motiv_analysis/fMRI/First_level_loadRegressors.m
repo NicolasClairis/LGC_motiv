@@ -755,11 +755,11 @@ if ismember(preChoiceCrossModel,{'stick','boxcar','boxcar_bis'})
         case 1
             n_preChoiceCrossMods = n_preChoiceCrossMods + 1;
             preChoiceCross_modNames{n_preChoiceCrossMods} = 'choice = high effort';
-            preChoiceCross_modVals(n_preChoiceCrossMods,:) = choice_hE; % binary variable => no zscore
+            preChoiceCross_modVals(n_preChoiceCrossMods,:) = choice_hE; % binary variable (0/1) => no zscore
         case 2
             n_preChoiceCrossMods = n_preChoiceCrossMods + 1;
             preChoiceCross_modNames{n_preChoiceCrossMods} = 'choice = high effort';
-            preChoiceCross_modVals(n_preChoiceCrossMods,:) = choice_hE_bis; % binary variable => no zscore
+            preChoiceCross_modVals(n_preChoiceCrossMods,:) = choice_hE_bis; % binary variable (-1/1) => no zscore
         otherwise
             error('not ready yet');
     end
@@ -956,11 +956,11 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                 case 1
                     n_choiceMods = n_choiceMods + 1;
                     choice_modNames{n_choiceMods} = 'choice = high effort';
-                    choice_modVals(n_choiceMods,:) = choice_hE(choice_trial_idx); % binary variable => no zscore
+                    choice_modVals(n_choiceMods,:) = choice_hE(choice_trial_idx); % binary variable (0/1) => no zscore
                 case 2
                     n_choiceMods = n_choiceMods + 1;
                     choice_modNames{n_choiceMods} = 'choice = high effort';
-                    choice_modVals(n_choiceMods,:) = choice_hE_bis(choice_trial_idx); % binary variable => no zscore
+                    choice_modVals(n_choiceMods,:) = choice_hE_bis(choice_trial_idx); % binary variable (-1/1) => no zscore
                 otherwise
                     error('case not ready yet');
             end
@@ -1743,11 +1743,11 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                 case 1
                     n_chosenMods = n_chosenMods + 1;
                     chosen_modNames{n_chosenMods} = 'choice = high effort';
-                    chosen_modVals(n_chosenMods,:) = choice_hE(chosen_trial_idx); % binary variable => no zscore
+                    chosen_modVals(n_chosenMods,:) = choice_hE(chosen_trial_idx); % binary variable (0/1) => no zscore
                 case 2
                     n_chosenMods = n_chosenMods + 1;
                     chosen_modNames{n_chosenMods} = 'choice = high effort';
-                    chosen_modVals(n_chosenMods,:) = choice_hE_bis(chosen_trial_idx); % binary variable => no zscore
+                    chosen_modVals(n_chosenMods,:) = choice_hE_bis(chosen_trial_idx); % binary variable (-1/1) => no zscore
                 otherwise
                     error('not ready yet');
             end
@@ -2462,11 +2462,11 @@ if ismember(preEffortCrossModel,{'stick','boxcar','boxcar_bis'})
                 case 1
                     n_preEcrossMods = n_preEcrossMods + 1;
                     preEcross_modNames{n_preEcrossMods} = 'choice = high effort';
-                    preEcross_modVals(n_preEcrossMods,:) = choice_hE(preEcross_trial_idx); % binary variable => no zscore
+                    preEcross_modVals(n_preEcrossMods,:) = choice_hE(preEcross_trial_idx); % binary variable (0/1) => no zscore
                 case 2
                     n_preEcrossMods = n_preEcrossMods + 1;
                     preEcross_modNames{n_preEcrossMods} = 'choice = high effort';
-                    preEcross_modVals(n_preEcrossMods,:) = choice_hE_bis(preEcross_trial_idx); % binary variable => no zscore
+                    preEcross_modVals(n_preEcrossMods,:) = choice_hE_bis(preEcross_trial_idx); % binary variable (-1/1) => no zscore
                 otherwise
                         error('not ready yet');
             end
@@ -2758,11 +2758,11 @@ if ismember(EperfModel,{'stick','boxcar'})
                 case 1
                     n_EperfMods = n_EperfMods + 1;
                     Eperf_modNames{n_EperfMods} = 'choice = high effort';
-                    Eperf_modVals(n_EperfMods,:) = choice_hE(Eperf_trial_idx); % binary variable => no zscore
+                    Eperf_modVals(n_EperfMods,:) = choice_hE(Eperf_trial_idx); % binary variable (0/1) => no zscore
                 case 2
                     n_EperfMods = n_EperfMods + 1;
                     Eperf_modNames{n_EperfMods} = 'choice = high effort';
-                    Eperf_modVals(n_EperfMods,:) = choice_hE_bis(Eperf_trial_idx); % binary variable => no zscore
+                    Eperf_modVals(n_EperfMods,:) = choice_hE_bis(Eperf_trial_idx); % binary variable (-1/1) => no zscore
                 otherwise
                     error('not ready yet');
             end
@@ -3190,11 +3190,11 @@ if ismember(fbkModel,{'stick','boxcar'})
                 case 1
                     n_fbkMods = n_fbkMods + 1;
                     fbk_modNames{n_fbkMods} = 'choice = high effort';
-                    fbk_modVals(n_fbkMods,:) = choice_hE(fbk_trial_idx); % binary variable => no zscore
+                    fbk_modVals(n_fbkMods,:) = choice_hE(fbk_trial_idx); % binary variable (0/1) => no zscore
                 case 2
                     n_fbkMods = n_fbkMods + 1;
                     fbk_modNames{n_fbkMods} = 'choice = high effort';
-                    fbk_modVals(n_fbkMods,:) = choice_hE_bis(fbk_trial_idx); % binary variable => no zscore
+                    fbk_modVals(n_fbkMods,:) = choice_hE_bis(fbk_trial_idx); % binary variable (-1/1) => no zscore
                 otherwise
                     error('not ready yet');
             end
