@@ -72,6 +72,9 @@ add_drv = GLMprm.gal.add_drv;
 grey_mask = GLMprm.gal.grey_mask;
 autocorrel = GLMprm.gal.autocorrel;
 
+% determine how sessions will be concatenated
+[DCM_mode] = which_DCM_mode_for_GLM;
+
 % value of the smoothing during preprocessing?
 preproc_sm_kernel = 8;
 
@@ -144,7 +147,7 @@ for iS = 1:NS
     if ~exist(sm_folderName,'dir')
         mkdir(sm_folderName);
     end
-    [resultsFolderName] = fMRI_subFolder(sm_folderName, GLM, condition);
+    [resultsFolderName] = fMRI_subFolder_DCM(sm_folderName, GLM, condition, DCM_mode);
     if ~exist(resultsFolderName,'dir')
         mkdir(resultsFolderName);
     else
@@ -186,11 +189,9 @@ for iS = 1:NS
     matlabbatch1{iS}.spm.stats.fmri_spec.timing.fmri_t  = 16;
     matlabbatch1{iS}.spm.stats.fmri_spec.timing.fmri_t0 = 8;
     
+    %% load scans in the batch (concatenate all sessions together)
     % loop through runs and tasks
     for iRun = 1:n_runs
-        % fix run index if some runs were removed
-        [~, jRun] = First_level_subRunFilter(study_nm, sub_nm, [], iRun, condition);
-        run_nm = num2str(jRun);
         % erase useless spaces from folder with run name
         subj_runFoldername_tmp = strrep(subj_scan_folders_names(iRun, :),' ','');
         
@@ -202,10 +203,10 @@ for iS = 1:NS
             case 1
                 error('case with bias-field correction and DCM slice-timing preprocessing not ready yet');
         end
-        preprocessed_filenames = cellstr(spm_select('ExtFPList',runPath,['^',prefix,'.*\.nii$'])); % extracts all the preprocessed swrf files (smoothed, normalized, realigned)
+        preprocessed_filenames = cellstr(spm_select('ExtFPList',runPath,['^',prefix,'.*\.nii$'])); % extracts all the preprocessed swar files (smoothed, normalized, slice-timed, realigned)
         % in case data is not in .nii but in .img & .hdr
         if isempty(preprocessed_filenames{1})
-            preprocessed_filenames = cellstr(spm_select('ExtFPList',runPath,['^',prefix,'.*\.img$'])); % extracts all the preprocessed swrf files (smoothed, normalized, realigned)
+            preprocessed_filenames = cellstr(spm_select('ExtFPList',runPath,['^',prefix,'.*\.img$'])); % extracts all the preprocessed swar files (smoothed, normalized, slice-timed, realigned)
         end
         % check if still empty => if yes, stop the script
         if isempty(preprocessed_filenames{1})
@@ -221,36 +222,14 @@ for iS = 1:NS
                 matlabbatch1{iS}.spm.stats.fmri_spec.sess(1).scans = [matlabbatch1{iS}.spm.stats.fmri_spec.sess(1).scans;...
                     preprocessed_filenames]; % add the files of the current run on each iteration
         end
-        
-        %% load regressors of interest
-        % 1) identify which task corresponds to the current run
-        currRunBehaviorFileNames = ls([subj_behavior_folder,'*_session',run_nm,'_*_task.mat']);
-        if size(currRunBehaviorFileNames,1) > 1
-            error(['problem file identification: too many files popping out with run number',run_nm]);
-        end
-        if strcmp(currRunBehaviorFileNames(16:23),'physical') ||...
-                strcmp(currRunBehaviorFileNames(17:24),'physical')
-            task_nm = 'physical';
-        elseif strcmp(currRunBehaviorFileNames(16:21),'mental') ||...
-                strcmp(currRunBehaviorFileNames(17:22),'mental')
-            task_nm = 'mental';
-        else
-            error('problem in identifying task type because file name doesn''t match');
-        end
-        % check that task type matches the one predicted by
-        % runs_definition.m script to be sure that all works ok
-        if (strcmp(task_nm,'physical') && ~strcmp(runs.tasks(iRun),'Ep')) ||...
-            (strcmp(task_nm,'mental') && ~strcmp(runs.tasks(iRun),'Em'))
-            error(['problem with run task type for subject ',sub_nm,' and run ',num2str(jRun)]);
-        end
-        % extract onsets + regressors
-        matlabbatch1 = First_level_loadRegressors_DCM(matlabbatch1, GLMprm, study_nm, sub_nm, iS, iRun, jRun,...
-            subj_behavior_folder, currRunBehaviorFileNames, task_nm, computerRoot,...
-            n_scansPerRun.(sub_nm), TR);
-        
         %% clear run name to avoid bugs across runs
         clear('subj_runFoldername_tmp');
-    end % run loop
+    end % run loop for concatenating scans
+    
+    %% load regressors of interest. Group sessions depending on the DCM_mode selected
+    % extract onsets + regressors
+    matlabbatch1 = First_level_loadRegressors_DCM(matlabbatch1, GLMprm, study_nm, sub_nm, iS, runs, n_runs,...
+        subj_behavior_folder, computerRoot, n_scansPerRun.(sub_nm), TR, DCM_mode);
     
     %% global run parameters (rp movement file, etc.)
     % 1) concatenate all rp files together
@@ -274,6 +253,7 @@ for iS = 1:NS
     elseif add_drv == 2
         matlabbatch1{iS}.spm.stats.fmri_spec.bases.hrf.derivs = [1 1];
     end
+    
     %% other parameters
     matlabbatch1{iS}.spm.stats.fmri_spec.volt = 1;
     matlabbatch1{iS}.spm.stats.fmri_spec.global = 'None';
@@ -289,7 +269,6 @@ for iS = 1:NS
         case {1,2,3,7} % no filter here since the mask will do the job
             matlabbatch1{iS}.spm.stats.fmri_spec.mthresh = -Inf; % implicitly masks the first level depending on the probability that the voxel is "relevant"
     end
-    
     
     %% add grey mask or not
     switch grey_mask
@@ -342,10 +321,12 @@ for iS = 1:NS
     
 end % loop through subjects to load matlabbatch
 
-%% run spm batch
+% run spm batch for 1st level
 spm_jobman('run',matlabbatch1);
 
 %% apply spm_fmri_concatenate on each SPM.m to correct for pooling all sessions into one
+% spm_fmri_concatenate will create one constant/session + it will adjust the high-pass filter and non-sphericity
+% estimates as if sessions were separate
 for iS = 1:NS
     sub_nm = subject_id{iS};
     
@@ -363,7 +344,8 @@ for iS = 1:NS
     if ~exist(sm_folderName,'dir')
         mkdir(sm_folderName);
     end
-    [subPath] = fMRI_subFolder(sm_folderName, GLM, condition);
+    [subPath] = fMRI_subFolder_DCM(sm_folderName, GLM, condition, DCM_mode);
+    
     % apply spm_fmri_concatenate => will rewrite SPM.mat file
     spm_fmri_concatenate([subPath,'SPM.mat'], n_scansPerRun.(sub_nm));
 end % loop through subjects
@@ -374,9 +356,7 @@ end % loop through subjects
 matlabbatch2_estimate = cell(NS,1);
 for iS = 1:NS
     sub_nm = subject_id{iS};
-    % extract folder for current subject
-    subj_folder             = [root, filesep, 'CID',sub_nm];
-    % create folder to store the results for the current subject
+    % extract path for folder where 1st level SPM.mat is stored
     switch biasFieldCorr
         case 0
             sm_folderName = [root, filesep, 'CID',sub_nm, filesep,...
@@ -385,13 +365,14 @@ for iS = 1:NS
         case 1
             error('case with bias-field correction and DCM slice-timing preprocessing not ready yet');
     end
-    [resultsFolderName] = fMRI_subFolder(sm_folderName, GLM, condition);
+    [resultsFolderName] = fMRI_subFolder_DCM(sm_folderName, GLM, condition, DCM_mode);
     
     % load path into batch
     matlabbatch2_estimate{iS}.spm.stats.fmri_est.spmmat = {[resultsFolderName,'SPM.mat']};
     matlabbatch2_estimate{iS}.spm.stats.fmri_est.write_residuals = 0;
     matlabbatch2_estimate{iS}.spm.stats.fmri_est.method.Classical = 1; % perform classical model
 end
+
 % run spm batch for model estimation
 spm_jobman('run',matlabbatch2_estimate);
 
