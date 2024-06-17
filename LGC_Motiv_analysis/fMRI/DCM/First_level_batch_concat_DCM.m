@@ -219,7 +219,7 @@ for iS = 1:NS
                 matlabbatch1{iS}.spm.stats.fmri_spec.sess(1).scans = preprocessed_filenames;
             otherwise
                 matlabbatch1{iS}.spm.stats.fmri_spec.sess(1).scans = [matlabbatch1{iS}.spm.stats.fmri_spec.sess(1).scans;...
-                    preprocessed_filenames]; % add the files on each iteration
+                    preprocessed_filenames]; % add the files of the current run on each iteration
         end
         
         %% load regressors of interest
@@ -256,7 +256,8 @@ for iS = 1:NS
     % 1) concatenate all rp files together
     [mvmtFolder, mvmt_file_nm] = concatenate_rp_files(subj_scans_folder, subj_scan_folders_names, n_scansPerRun.(sub_nm));
     movement_filePath = [mvmtFolder, mvmt_file_nm];
-    % 2) load them inside the matlabbatch
+    
+    % 2) load concatenated rp files inside the matlabbatch
     matlabbatch1{iS}.spm.stats.fmri_spec.sess(1).multi = {''};
     matlabbatch1{iS}.spm.stats.fmri_spec.sess(1).regress = struct('name', {}, 'val', {});
     matlabbatch1{iS}.spm.stats.fmri_spec.sess(1).multi_reg = {movement_filePath};
@@ -344,10 +345,26 @@ end % loop through subjects to load matlabbatch
 %% run spm batch
 spm_jobman('run',matlabbatch1);
 
-%% apply spm_fmri_concatenate to correct for pooling all sessions into one
+%% apply spm_fmri_concatenate on each SPM.m to correct for pooling all sessions into one
 for iS = 1:NS
     sub_nm = subject_id{iS};
-    subPath = [];
+    
+    % define working folders
+    subj_folder             = [root, filesep, 'CID',sub_nm];
+    subj_analysis_folder    = [subj_folder, filesep, 'fMRI_analysis' filesep];
+    % create folder to store the results for the current subject
+    switch biasFieldCorr
+        case 0
+            sm_folderName = [subj_analysis_folder 'functional', filesep,...
+                'preproc_sm_',num2str(preproc_sm_kernel),'mm_DCM',filesep];
+        case 1
+            error('case with bias-field correction and DCM slice-timing preprocessing not ready yet');
+    end
+    if ~exist(sm_folderName,'dir')
+        mkdir(sm_folderName);
+    end
+    [subPath] = fMRI_subFolder(sm_folderName, GLM, condition);
+    % apply spm_fmri_concatenate => will rewrite SPM.mat file
     spm_fmri_concatenate([subPath,'SPM.mat'], n_scansPerRun.(sub_nm));
 end % loop through subjects
 
@@ -356,11 +373,24 @@ end % loop through subjects
 % for more details as to why)
 matlabbatch2_estimate = cell(NS,1);
 for iS = 1:NS
-    matlabbatch2_estimate{iS}.spm.stats.fmri_est.spmmat(1) = cfg_dep('fMRI model specification: SPM.mat File',...
-        substruct('.','val', '{}',{iS}, '.','val', '{}',{1}, '.','val', '{}',{1}), substruct('.','spmmat'));
+    sub_nm = subject_id{iS};
+    % extract folder for current subject
+    subj_folder             = [root, filesep, 'CID',sub_nm];
+    % create folder to store the results for the current subject
+    switch biasFieldCorr
+        case 0
+            sm_folderName = [root, filesep, 'CID',sub_nm, filesep,...
+                'fMRI_analysis',filesep 'functional', filesep,...
+                'preproc_sm_',num2str(preproc_sm_kernel),'mm_DCM',filesep];
+        case 1
+            error('case with bias-field correction and DCM slice-timing preprocessing not ready yet');
+    end
+    [resultsFolderName] = fMRI_subFolder(sm_folderName, GLM, condition);
+    
+    % load path into batch
+    matlabbatch2_estimate{iS}.spm.stats.fmri_est.spmmat = {[resultsFolderName,'SPM.mat']};
     matlabbatch2_estimate{iS}.spm.stats.fmri_est.write_residuals = 0;
-    % classical model
-    matlabbatch2_estimate{iS}.spm.stats.fmri_est.method.Classical = 1;
+    matlabbatch2_estimate{iS}.spm.stats.fmri_est.method.Classical = 1; % perform classical model
 end
 % run spm batch for model estimation
 spm_jobman('run',matlabbatch2_estimate);
