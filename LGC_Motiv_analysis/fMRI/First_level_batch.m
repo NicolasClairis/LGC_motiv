@@ -251,15 +251,15 @@ for iS = 1:NS
         
         %% load regressors of interest
         % 1) identify which task corresponds to the current run
-        currRunBehaviorFileNames = ls([subj_behavior_folder,'*_session',run_nm,'_*_task.mat']);
-        if size(currRunBehaviorFileNames,1) > 1
+        currRunBehaviorFileName = ls([subj_behavior_folder,'*_session',run_nm,'_*_task.mat']);
+        if size(currRunBehaviorFileName,1) > 1
             error(['problem file identification: too many files popping out with run number',run_nm]);
         end
-        if strcmp(currRunBehaviorFileNames(16:23),'physical') ||...
-                strcmp(currRunBehaviorFileNames(17:24),'physical')
+        if strcmp(currRunBehaviorFileName(16:23),'physical') ||...
+                strcmp(currRunBehaviorFileName(17:24),'physical')
             task_nm = 'physical';
-        elseif strcmp(currRunBehaviorFileNames(16:21),'mental') ||...
-                strcmp(currRunBehaviorFileNames(17:22),'mental')
+        elseif strcmp(currRunBehaviorFileName(16:21),'mental') ||...
+                strcmp(currRunBehaviorFileName(17:22),'mental')
             task_nm = 'mental';
         else
             error('problem in identifying task type because file name doesn''t match');
@@ -272,7 +272,7 @@ for iS = 1:NS
         end
         % extract onsets + regressors
         matlabbatch = First_level_loadRegressors(matlabbatch, GLMprm, study_nm, sub_nm, sub_idx, iRun, jRun,...
-            subj_behavior_folder, currRunBehaviorFileNames, task_nm, computerRoot);
+            subj_behavior_folder, currRunBehaviorFileName, task_nm, computerRoot);
         
         %% global run parameters (rp movement file, etc.)
         matlabbatch{sub_idx}.spm.stats.fmri_spec.sess(iRun).multi = {''};
