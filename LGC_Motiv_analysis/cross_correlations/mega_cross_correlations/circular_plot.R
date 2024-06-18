@@ -23,6 +23,8 @@ varList = unique(corrList$var1)
 galList0 = varList[startsWith(varList,'gal')] # selection of variables associated to general
 galgroup0 = which(startsWith(galList0,'gal_')) # definition of general group
 galList1 <- gsub("gal_","",galList0) # shortening the variable names
+galList1 <- gsub("hexaco_","",galList1) # shortening the variable names
+galList1 <- gsub("prevDay_min_avg_sleep","delta sleep",galList1) # shortening the variable names
 galList2 = galList1
 for (var in galList0){ # replacing short names in corrList [dataframe with value of correlation coefficient]
   ivar = which(galList0 == var)
@@ -46,6 +48,7 @@ behaviorList1 = sapply(behaviorList1,function(x) gsub('behavior_task_choices_','
 behaviorList1 = sapply(behaviorList1,function(x) gsub('behavior_task_prm_','',x))
 # shortening questionnaire variable names
 behaviorList2 = behaviorList1 # shortening the variable names
+# stress/anxiety questionnaires
 behaviorList2[behaviorgroup1] = sapply(behaviorList2[behaviorgroup1],function(x) gsub('stress_anxiety_','',x))
 behaviorList2 <- gsub("CTQ_sexA","CTQsa",behaviorList2)
 behaviorList2 <- gsub("CTQ_physicalA","CTQpa",behaviorList2)
@@ -53,7 +56,12 @@ behaviorList2 <- gsub("CTQ_physicalN","CTQpn",behaviorList2)
 behaviorList2 <- gsub("CTQ_minDenial","CTQmd",behaviorList2)
 behaviorList2 <- gsub("CTQ_emotionalA","CTQea",behaviorList2)
 behaviorList2 <- gsub("CTQ_emotionalN","CTQen",behaviorList2)
-behaviorList2[behaviorgroup2] = sapply(behaviorList2[behaviorgroup3],function(x) gsub('motivation_','',x))
+# dominance questionnaires
+behaviorList2[behaviorgroup2] = sapply(behaviorList2[behaviorgroup2],function(x) gsub('dominance_','',x))
+behaviorList2 <- gsub("CI_contentiousness","CIc",behaviorList2)
+behaviorList2 <- gsub("CI_enjCompet","CIec",behaviorList2)
+# motivation questionnaires
+behaviorList2[behaviorgroup3] = sapply(behaviorList2[behaviorgroup3],function(x) gsub('motivation_','',x))
 behaviorList2 <- gsub("Lars_e_ActionInit","Lars_e_AI",behaviorList2)
 behaviorList2 <- gsub("Lars_e_AI_Init","Lars_e_AIi",behaviorList2)
 behaviorList2 <- gsub("Lars_e_AI_EverydayProd","Lars_e_AIep",behaviorList2)
@@ -66,9 +74,6 @@ behaviorList2 <- gsub("Lars_e_SelfAwareness","Lars_e_SA",behaviorList2)
 behaviorList2 <- gsub("Lars_e_EmotResp","Lars_e_ER",behaviorList2)
 behaviorList2 <- gsub("MPSTEFS_mental","MPSTEFSm",behaviorList2)
 behaviorList2 <- gsub("MPSTEFS_physical","MPSTEFSp",behaviorList2)
-behaviorList2[behaviorgroup3] = sapply(behaviorList2[behaviorgroup2],function(x) gsub('dominance_','',x))
-behaviorList2 <- gsub("CI_contentiousness","CIc",behaviorList2)
-behaviorList2 <- gsub("CI_enjCompet","CIec",behaviorList2)
 for (var in behaviorList0){ # replacing short names in corrList [dataframe with value of correlation coefficient]
   ivar = which(behaviorList0 == var)
   w1 = which(corrList$var1 == var)
@@ -204,11 +209,14 @@ circos.track(ylim = c(-1,1),bg.col=bgcol,
                                                      facing = 'clockwise', cex = 1, adj = c(0,0.5))})
 
 # 8. Creation of the matrix "links" with pairs of correlated variable (r > rThres)
-nvar = nrow(corrMat)
+nvar = nrow(corrMat) #number of variables
 groupVar = rep(NA,nvar)
+# define big groups
+groupVar[which(goodList %in% galList2)] = 'general'
 groupVar[which(goodList %in% behaviorList2)] = 'behavior'
 groupVar[which(goodList %in% brainList2)] = 'brain'
 groupVar[which(goodList %in% circulationList2)] = 'circulation'
+# extract number of links that are above the rThres threshold defined for r
 nlinks = (sum(abs(corrMat)>rThres)-nvar)/2
 links = matrix(NA,nrow = nlinks,ncol=3)
 w = which(abs(corrMat)>rThres)
@@ -224,17 +232,18 @@ for (iw in w){
 }
 
 # 9. Drawing links in the circular plot
-for (il in 1:nrow(links)){
-  w1 = which(goodList == links[il,1])
-  w2 = which(goodList == links[il,2])
+for (icorrel in 1:nrow(links)){ #loop through correlations
+  w1 = which(goodList == links[icorrel,1])
+  w2 = which(goodList == links[icorrel,2])
   if (groupVar[w1] != groupVar[w2]){  #plot only link between variables of different groups
-    circos.link(sector.index1 = links[il,1], c(-wdt,wdt), sector.index2 = links[il,2], c(-wdt,wdt),col = colorLink(as.numeric(links[il,3]),rThres,0.7))
+    circos.link(sector.index1 = links[icorrel,1], c(-wdt,wdt), sector.index2 = links[icorrel,2], c(-wdt,wdt),col = colorLink(as.numeric(links[icorrel,3]),rThres,0.7))
   }
 }
 
 # 10. plotting legend
-legend(1.3,-0.1,legend = c('stress/anxiety','motivation','dominance'),title='Behavior', fill = c('#138808FF','#13880888','#13880844'), cex = 1)
-legend(-1.3,-0.8,legend = c('dmPCF','aIns'),title='Brain', fill = c('#FFDD00FF','#FFDD0066'), cex = 1)
-legend(-1.5,0.9,legend = c('Aminoacids','Lac','Fatty Acid','NAD der.'),title='Circulation', fill = c('#0000FFFF','#0000FFAA','#0000FF77','#0000FF33'), cex = 1)
+legend(1.2,1,legend=c('General'),fill = c('#ffffcc'),cex=1)
+legend(1.2,-0.1,legend = c('Q stress/anxiety','Q dominance','Q motivation','B motivation'),title='Behavior', fill = c('#238b45','#66c2a4','#b2e2e2','#edf8fb'), cex = 1)
+legend(-2,-0.8,legend = c('dmPFC/dACC','aIns'),title='Brain', fill = c('#2b8cbe','#a6bddb'), cex = 1)
+legend(-2.5,1.3,legend = c('plasma amino-acids','plasma lactate','plasma fatty acids','whole-blood NAD','saliva'),title='Circulation', fill = c('#a50f15','#de2d26','#fb6a4a','#fcae91','#fee5d9'), cex = 1)
 # NOTE: first two arguments of the function "legend" refers to the coordinates at which the legend appear.
 # Change them to move the legend in the plot
