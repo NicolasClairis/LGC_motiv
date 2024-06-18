@@ -1,10 +1,14 @@
+# Script by Riccardo Rota from Nestlé
+
 # 1. Loading libraries
 library(circlize)
 library(readxl)
 library(stringr)
 
 # 2. Reading input file
-corrList = read_xlsx('C:/Users/rdrotari/OneDrive - NESTLE/Projects/CircularPlots/ClairisEPFL/crosscorrel_signed_r_table_75subs.xlsx')
+# setwd('C:/Users/rdrotari/OneDrive - NESTLE/Projects/CircularPlots/ClairisEPFL/'); # Ricardo path
+setwd("P:/boulot/postdoc_CarmenSandi/results/mega_correlation_matrix") # Nicolas path
+corrList = read_xlsx('crosscorrel_signed_r_table_75subs.xlsx')
 
 # 3. Selecting relevant variables and organizing them in groups
 varList = unique(corrList$var1)
