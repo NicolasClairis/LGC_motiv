@@ -30,7 +30,7 @@ if exist('pval_mtrx','var')
             pval_thresh < 0 || pval_thresh > 1
         pval_thresh = 0.05; % p.value threshold
     end
-    abs_corr_mtrx(pval_mtrx > pval_thresh) = 0;
+    abs_corr_mtrx(pval_mtrx > pval_thresh) = 0; % set r to 0 if not significant to remove
 end
 
 %% define color map
@@ -56,4 +56,7 @@ else
     circ_graph = circularGraph(abs_corr_mtrx,...
         'Colormap',colormap);
 end
+
+% change legend size to keep them small and visible
+legend_size(10);
 end % function
