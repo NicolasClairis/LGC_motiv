@@ -41,7 +41,7 @@ behaviorList1 = sapply(behaviorList0,function(x) gsub('behavior_questionnaires_'
 # behavioral groups
 behaviorgroup1 = which(startsWith(behaviorList1,'stress_anxiety_')) # definition of group 1 in behavior: stress/anxiety
 behaviorgroup2 = which(startsWith(behaviorList1,'dominance_')) # definition of group 2 in behavior: dominance
-behaviorgroup3 = which(startsWith(behaviorList1,'motivation_')) # definition of group 3 in behavior: motivation (keep close to behavioral task)
+behaviorgroup3 = which(startsWith(behaviorList1,'motivation_')) # definition of group 3 in behavior: motivation
 behaviorgroup4 = which(startsWith(behaviorList1,'behavior_task_')) # definition of group 4: behavioral task
 # task variables
 behaviorList1 = sapply(behaviorList1,function(x) gsub('behavior_task_choices_','',x))
@@ -244,6 +244,6 @@ for (icorrel in 1:nrow(links)){ #loop through correlations
 legend(1.2,1,legend=c('General'),fill = c('#ffffcc'),cex=1)
 legend(1.2,-0.1,legend = c('Q stress/anxiety','Q dominance','Q motivation','B motivation'),title='Behavior', fill = c('#238b45','#66c2a4','#b2e2e2','#edf8fb'), cex = 1)
 legend(-2,-0.8,legend = c('dmPFC/dACC','aIns'),title='Brain', fill = c('#2b8cbe','#a6bddb'), cex = 1)
-legend(-2.5,1.3,legend = c('plasma amino-acids','plasma lactate','plasma fatty acids','whole-blood NAD','saliva'),title='Circulation', fill = c('#a50f15','#de2d26','#fb6a4a','#fcae91','#fee5d9'), cex = 1)
+legend(-2.3,1.3,legend = c('plasma amino-acids','plasma lactate','plasma fatty acids','whole-blood NAD','saliva'),title='Circulation', fill = c('#a50f15','#de2d26','#fb6a4a','#fcae91','#fee5d9'), cex = 1)
 # NOTE: first two arguments of the function "legend" refers to the coordinates at which the legend appear.
 # Change them to move the legend in the plot
