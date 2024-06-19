@@ -1,4 +1,6 @@
 # script originally written by Riccardo Rota from Nestlé, adapted by N.Clairis for our own purposes
+# This version will extract correlation coefficients and display all the correlations between groups (circulatory/brain/behavior/general)
+# You can check at the other functions which filter on variables correlating at least across 2 groups
 
 # 0. install required libraries
 # install.packages("circlize")
