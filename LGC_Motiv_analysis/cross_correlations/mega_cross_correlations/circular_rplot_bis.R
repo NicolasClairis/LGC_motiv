@@ -165,7 +165,7 @@ colorLink <- function(r,Thres,rMax){   # Function to determine the color of the 
 # 5. BASIC DEFINITION OF THE CIRCLE PLOT
 # CHANGE HERE THE VALUES FOR THE THRESHOLD ON THE CORRELATION COEFFICIENT AND THE LINE WIDTH OF THE LINKS
 wdt = 1.5 # line width of the link in the plot
-rThres = 0.30 # Threshold for the absolute value of the correlation coefficient to filter
+rThres = 0.4 # Threshold for the absolute value of the correlation coefficient to filter
 # pvalThresh = 0.001 # Threshold for the p.value of the correlation to filter
 
 # 6. Creation of the circular plot
@@ -210,7 +210,7 @@ circos.track(ylim = c(-1,1),bg.col=bgcol,
              panel.fun = function(x, y) {circos.text(CELL_META$xcenter,CELL_META$cell.ylim[2] + mm_y(2),CELL_META$sector.index,
                                                      facing = 'clockwise', cex = 1, adj = c(0,0.5))})
 
-# 8. Creation of the matrix "links" with pairs of correlated variable (r > rThres)
+# 8. Creation of the matrix "links" with pairs of correlated variable (r > rThres) + (at least 2 links between different categories)
 nvar = nrow(corrMat) #number of variables
 groupVar = rep(NA,nvar)
 # define big groups
@@ -220,7 +220,7 @@ groupVar[which(goodList %in% brainList2)] = 'brain'
 groupVar[which(goodList %in% circulationList2)] = 'circulation'
 # extract number of links that are above the rThres threshold defined for r
 nlinks = (sum(abs(corrMat)>rThres)-nvar)/2
-links = matrix(NA,nrow = nlinks,ncol=3)
+links = matrix(NA,nrow = nlinks,ncol=6) # 6 columns: 1) var1 name, (2) var2 name, (3) correlation coefficient, (4) pvalue, (5) category var1, (6) category var2
 w = which(abs(corrMat)>rThres)
 il = 0
 for (iw in w){
@@ -229,19 +229,52 @@ for (iw in w){
   if (i1>i2){
     il = il+1
     r = corrList$r_corr[corrList$var1 == rownames(corrMat)[i1] & corrList$var2 == colnames(corrMat)[i2]]
-    links[il,] = c(rownames(corrMat)[i1],colnames(corrMat)[i2],r)
+    pval = corrList$pvalue[corrList$var1 == rownames(corrMat)[i1] & corrList$var2 == colnames(corrMat)[i2]]
+    w1 = which(goodList == rownames(corrMat)[i1])
+    w2 = which(goodList == colnames(corrMat)[i2])
+    links[il,] = c(rownames(corrMat)[i1],colnames(corrMat)[i2],r,pval,groupVar[w1],groupVar[w2])
   }
 }
 
 # filter links to only keep those that bridge one item with two different other groups
+#create variable grower to identify the number of links between categories for each item which has a significant correlation with another
+allLinkVars = unique(c(links[,1],links[,2]))
+grower <- matrix(nrow = length(allLinkVars), ncol = 3)
+grower <- as.data.frame(grower)
+grower$V1 <- allLinkVars
 
+for (i in 1:nrow(grower)) { # loop through variables that display a significant correlation with another
+  # extract category of the current variable
+  groupCurrentVar1 = unique(links[links[,1] == grower[i,1],5])
+  groupCurrentVar2 = unique(links[links[,2] == grower[i,1],6])
+  groupCurrentVar <- unique(c(groupCurrentVar1, groupCurrentVar2))
+  # extract category of all the variables correlated to it
+  groupCorrelatedVar1 = unique(links[links[,1] == grower[i,1],6])
+  groupCorrelatedVar2 = unique(links[links[,2] == grower[i,1],5])
+  groupCorrelatedVars <- unique(c(groupCorrelatedVar1, groupCorrelatedVar2))
+  grower[i,2] <- length(groupCorrelatedVars) # extract number of categories correlated to current item (potentially including same category as well)
+  # remove the count for the category belonging to the same dimension
+  if (groupCurrentVar %in% groupCorrelatedVars){
+  grower[i,3] <- length(groupCorrelatedVars) - 1
+  }
+  else {
+    grower[i,3] <- length(groupCorrelatedVars)
+  }
+}
+# filter variables that correlate with at least 2 different categories
+grower <- grower[grower$V3 > 1, ]
+links2 = links[links[,1] %in% grower[,1], ] # remove links from any item that links only within the same category or doesn't have at least 2 different links to different categories
 
 # 9. Drawing links2 in the circular plot
+# define range for color range to be used for links
+rMinScale = 0.2
+rMaxScale = 1
+# draw the links between different categories
 for (icorrel in 1:nrow(links2)){ #loop through correlations
   w1 = which(goodList == links2[icorrel,1])
   w2 = which(goodList == links2[icorrel,2])
   if (groupVar[w1] != groupVar[w2]){  #plot only link between variables of different groups
-    circos.link(sector.index1 = links2[icorrel,1], c(-wdt,wdt), sector.index2 = links2[icorrel,2], c(-wdt,wdt),col = colorLink(as.numeric(links2[icorrel,3]),rThres,1))
+    circos.link(sector.index1 = links2[icorrel,1], c(-wdt,wdt), sector.index2 = links2[icorrel,2], c(-wdt,wdt),col = colorLink(as.numeric(links2[icorrel,3]),rMinScale,rMaxScale))
   }
 }
 
