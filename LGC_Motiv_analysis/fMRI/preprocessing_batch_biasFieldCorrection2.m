@@ -401,7 +401,7 @@ if NS >= 1
     if strcmp(spm_launch_or_display,'run')
         biasFieldCorr = 1;
         move_preproc_files_to_saveFolder(root, study_nm,...
-            subject_id, NS, smKernel, biasFieldCorr);
+            subject_id, NS, smKernel, biasFieldCorr, 0);
     end % move files
 else
     disp(['All subjects have already been preprocessed with smoothing ',...

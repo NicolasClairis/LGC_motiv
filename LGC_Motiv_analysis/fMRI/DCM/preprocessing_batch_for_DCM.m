@@ -407,7 +407,7 @@ if NS >= 1
     %% move files output from the last step (if you launched the script)
     if strcmp(spm_launch_or_display,'run')
         move_preproc_files_to_saveFolder(root, study_nm,...
-            subject_id, NS, smKernel, 0);
+            subject_id, NS, smKernel, 0, DCM_preproc);
     end % move files
 else
     disp(['All subjects have already been preprocessed with smoothing ',...
