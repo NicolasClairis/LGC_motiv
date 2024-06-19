@@ -150,7 +150,7 @@ for (ir in goodList){ # retrieving of correlation coefficients and put in the ma
 
 # 4. Function to determine the color of the link according to the valence of the correlation coefficient (distinguish between positive (in purple) and negative (in grey) correlations)
 colorLink <- function(r,Thres,rMax){   # Function to determine the color of the link according to the value of the correlation coefficient
-  if (r > 0){col0 = '#c51b8a'} else {col0 = '#bdbdbd'}
+  if (r > 0){col0 = '#c51b8a'} else {col0 = '#000000'}
   tr = floor((abs(r)-Thres)/(rMax-Thres)*256)
   if (tr < 16){
     col0 = paste(col0,'0',as.character(as.hexmode(tr)),sep='')
@@ -236,7 +236,7 @@ for (icorrel in 1:nrow(links)){ #loop through correlations
   w1 = which(goodList == links[icorrel,1])
   w2 = which(goodList == links[icorrel,2])
   if (groupVar[w1] != groupVar[w2]){  #plot only link between variables of different groups
-    circos.link(sector.index1 = links[icorrel,1], c(-wdt,wdt), sector.index2 = links[icorrel,2], c(-wdt,wdt),col = colorLink(as.numeric(links[icorrel,3]),rThres,0.7))
+    circos.link(sector.index1 = links[icorrel,1], c(-wdt,wdt), sector.index2 = links[icorrel,2], c(-wdt,wdt),col = colorLink(as.numeric(links[icorrel,3]),rThres,1))
   }
 }
 
