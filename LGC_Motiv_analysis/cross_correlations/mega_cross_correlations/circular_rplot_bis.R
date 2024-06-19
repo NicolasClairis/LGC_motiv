@@ -122,8 +122,8 @@ circulationList1 = c(plasmaList1,bloodList1,salivaList1) # creating the list of 
 circulationgroup1 = which(startsWith(circulationList1,'aa_')) # definition of group 1 in circulation: amino-acids
 circulationgroup2 = which(startsWith(circulationList1,'Lac')) # definition of group 2 in circulation: lactic acid
 circulationgroup3 = which(startsWith(circulationList1,'fa_')) # definition of group 3 in circulation: fatty acids
-circulationgroup4 = which(circulationList1 %in% bloodList1) # definition of group 4 in circulation: NAD derivatives
-circulationgroup5 = which(startsWith(salivaList0,'salivary_')) # salivary measures (testosterone, cortisol, interleukins)
+circulationgroup4 = which(startsWith(circulationList0,'wholeB_')) # definition of group 4 in circulation: NAD derivatives
+circulationgroup5 = which(startsWith(circulationList0,'salivary_')) # salivary measures (testosterone, cortisol, interleukins)
 # shorten variable names
 circulationList2 = circulationList1 # shortening the variable names
 circulationList2[circulationgroup1] = sapply(circulationList1[circulationgroup1],function(x) gsub('aa_','',x))
