@@ -1624,10 +1624,10 @@ category_bis = strrep(category_bis,'wholeB_NADomics','WBn');
 category_bis = strrep(category_bis,'plasma_aa','Paa');
 category_bis = strrep(category_bis,'plasma_Lac','Plac');
 category_bis = strrep(category_bis,'plasma_fa','Pfa');
-category_bis = strrep(category_bis,'dmPFC_aa','D');
-category_bis = strrep(category_bis,'dmPFC_mb','D');
-category_bis = strrep(category_bis,'aIns_aa','A');
-category_bis = strrep(category_bis,'aIns_mb','A');
+category_bis = strrep(category_bis,'dmPFC_aa','dmPFC_aa');
+category_bis = strrep(category_bis,'dmPFC_mb','dmPFC_mb');
+category_bis = strrep(category_bis,'aIns_aa','ai_aa');
+category_bis = strrep(category_bis,'aIns_mb','ai_mb');
 category_bis = strrep(category_bis,'FFQ_raw_energy','FFQre');
 category_bis = strrep(category_bis,'FFQ_raw_proteins_aa','FFQraa');
 category_bis = strrep(category_bis,'FFQ_raw_vitamins','FFQrv');
@@ -1881,15 +1881,15 @@ end % loop through figures (with/without filtering on p.value)
 pval_thresh = 0.001;
 % brain metabolites + circulatory metabolites (whole-blood + plasma +
 % salivary)
-circ_disp(brain_mb_circulatory_mb_corr_mtrx,...
+circ_hdl1 = circ_disp(brain_mb_circulatory_mb_corr_mtrx,...
     brain_mb_circulatory_mb_pval_mtrx, pval_thresh, brain_mb_circulatory_mb_categ);
 
 % behavior + circulatory metabolites (whole-blood + plasma + salivary)
-circ_disp(circulatory_mb_bhv_corr_mtrx,...
+circ_hdl2 = circ_disp(circulatory_mb_bhv_corr_mtrx,...
     circulatory_mb_bhv_pval_mtrx, pval_thresh, circulatory_mb_bhv_categ);
 
 % behavior + brain metabolites
-circ_disp(brain_mb_bhv_corr_mtrx,...
+circ_hdl3 = circ_disp(brain_mb_bhv_corr_mtrx,...
     brain_mb_bhv_pval_mtrx, pval_thresh, brain_mb_bhv_categ);
 
 %% save excel file for Gephi
