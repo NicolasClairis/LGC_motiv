@@ -219,7 +219,7 @@ groupVar[which(goodList %in% behaviorList2)] = 'behavior'
 groupVar[which(goodList %in% brainList2)] = 'brain'
 groupVar[which(goodList %in% circulationList2)] = 'circulation'
 # extract number of links that are above the rThres threshold defined for r
-nlinks = (sum(abs(corrMat)>rThres)-nvar)/2
+nlinks = (sum(abs(corrMat)>rThres)-nvar)/2 #divide by 2 because all links appear twice in the matrix (but no idea what the nvar is doing => waiting for Riccardo's answer)
 links = matrix(NA,nrow = nlinks,ncol=6) # 6 columns: 1) var1 name, (2) var2 name, (3) correlation coefficient, (4) pvalue, (5) category var1, (6) category var2
 w = which(abs(corrMat)>rThres)
 il = 0
@@ -255,7 +255,7 @@ for (i in 1:nrow(grower)) { # loop through variables that display a significant 
   grower[i,2] <- length(groupCorrelatedVars) # extract number of categories correlated to current item (potentially including same category as well)
   # remove the count for the category belonging to the same dimension
   if (groupCurrentVar %in% groupCorrelatedVars){
-  grower[i,3] <- length(groupCorrelatedVars) - 1
+    grower[i,3] <- length(groupCorrelatedVars) - 1
   }
   else {
     grower[i,3] <- length(groupCorrelatedVars)
