@@ -297,3 +297,6 @@ legend(-2,-0.8,legend = c('dmPFC/dACC','aIns'),title='Brain', fill = c('#2b8cbe'
 legend(-2.3,1.3,legend = c('plasma amino-acids','plasma lactate','plasma fatty acids','whole-blood NAD','saliva'),title='Circulation', fill = c('#a50f15','#de2d26','#fb6a4a','#fcae91','#fee5d9'), cex = 1)
 # NOTE: first two arguments of the function "legend" refers to the coordinates at which the legend appear.
 # Change them to move the legend in the plot
+
+## to check specific conditions:
+print(links2[links2[,6]=='behavior',]) # will display all the links involving a variable belonging to the "behavior" group
