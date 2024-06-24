@@ -1,6 +1,10 @@
-# script originally written by Riccardo Rota from Nestlé, adapted by N.Clairis for our own purposes
-# This version will extract correlation coefficients and display all the correlations between groups (circulatory/brain/behavior/general)
-# You can check at the other functions which filter on variables correlating at least across 2 groups
+# script originally written by Riccardo Rota from Nestlé (see circlePlot.R), adapted by N.Clairis for our own purposes
+# This version will extract correlation coefficients and display only the correlations linking at least 2 groups 
+# between the main groups defined (circulatory/brain/behavior/general), while circular_plot.R will display ALL possible correlations, independent of the number of links
+# as long as they are not within the same group.
+# See also related functions:
+# circular_plot.R
+# circular_GLM.R
 
 # 0. install required libraries
 # install.packages("circlize")
@@ -165,7 +169,7 @@ colorLink <- function(r,Thres,rMax){   # Function to determine the color of the 
 # 5. BASIC DEFINITION OF THE CIRCLE PLOT
 # CHANGE HERE THE VALUES FOR THE THRESHOLD ON THE CORRELATION COEFFICIENT AND THE LINE WIDTH OF THE LINKS
 wdt = 1.5 # line width of the link in the plot
-rThres = 0.4 # Threshold for the absolute value of the correlation coefficient to filter
+rThres = 0.3 # Threshold for the absolute value of the correlation coefficient to filter
 # pvalThresh = 0.001 # Threshold for the p.value of the correlation to filter
 
 # 6. Creation of the circular plot
@@ -286,3 +290,9 @@ legend(-2,-0.8,legend = c('dmPFC/dACC','aIns'),title='Brain', fill = c('#2b8cbe'
 legend(-2.3,1.3,legend = c('plasma amino-acids','plasma lactate','plasma fatty acids','whole-blood NAD','saliva'),title='Circulation', fill = c('#a50f15','#de2d26','#fb6a4a','#fcae91','#fee5d9'), cex = 1)
 # NOTE: first two arguments of the function "legend" refers to the coordinates at which the legend appear.
 # Change them to move the legend in the plot
+
+
+## to check specific conditions:
+print(links2[links2[,6]=='behavior',]) # will display all the links involving a variable belonging to the "behavior" group
+print(links2[links2[,1]=='Gln' | links2[,2]=='Gln',]) # will display all the links involving plasma Gln
+print(links2[links2[,1]=='sarcosine' | links2[,2]=='sarcosine',]) # will display all the links involving plasma Gln
