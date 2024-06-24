@@ -1,6 +1,8 @@
 # script originally written by Riccardo Rota from Nestlé, adapted by N.Clairis for our own purposes
 # This version will extract correlation coefficients and display all the correlations between groups (circulatory/brain/behavior/general)
-# You can check at the other functions which filter on variables correlating at least across 2 groups
+# but all intra-group correlations are masked.
+# You can check at the other functions which filter on variables correlating at least across 2 groups:
+# circular_rplot_bis.R, circular_GLM.R
 
 # 0. install required libraries
 # install.packages("circlize")
@@ -165,7 +167,7 @@ colorLink <- function(r,Thres,rMax){   # Function to determine the color of the 
 # 5. BASIC DEFINITION OF THE CIRCLE PLOT
 # CHANGE HERE THE VALUES FOR THE THRESHOLD ON THE CORRELATION COEFFICIENT AND THE LINE WIDTH OF THE LINKS
 wdt = 1.5 # line width of the link in the plot
-rThres = 0.30 # Threshold for the absolute value of the correlation coefficient to filter
+rThres = 0.50 # Threshold for the absolute value of the correlation coefficient to filter
 # pvalThresh = 0.001 # Threshold for the p.value of the correlation to filter
 
 # 6. Creation of the circular plot
