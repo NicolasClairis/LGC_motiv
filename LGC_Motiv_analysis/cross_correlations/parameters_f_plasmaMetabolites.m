@@ -3,7 +3,7 @@
 % designed by N.Clairis - 2024
 
 %% display correlations
-fig_disp = 0; % 1=yes, 0=no
+fig_disp = 1; % 1=yes, 0=no
 
 %% define all subjects
 study_nm = 'study1';
@@ -12,9 +12,11 @@ condition = subject_condition();
 
 %% define metabolite and ROI you want to focus on
 [plasmaM, mb_names, n_mb] = load_plasma_metabolites(subject_id);
-plasma_Lac = plasmaM.Lac;
-metabolite_allSubs = plasma_Lac;
-mb_nm = 'lactate';
+% metabolite selection
+plasma_mb = plasmaM.Gln;
+mb_nm = 'glutamine';
+
+metabolite_allSubs = plasma_mb;
 
 %% extract behavioral parameters
 prm = prm_extraction(study_nm, subject_id);
