@@ -28,7 +28,9 @@ for iPlasma = 1:n_plasma_mb
     for iBrain = 1:n_brain_mb
         brain_mb_nm = brain_mb_names{iBrain};
         % shorten name for final display (if name is long)
-        if length(brain_mb_names{iBrain}) > 3
+        if strcmp(brain_mb_names{iBrain},'Gln_div_Glu')
+            brain_mb_names_short{iBrain} = 'Gln/Glu';
+        elseif length(brain_mb_names{iBrain}) > 3
             brain_mb_names_short{iBrain} = brain_mb_names{iBrain}(1:3);
         end
         
@@ -128,6 +130,7 @@ for iPlasma = 1:size(dmPFC_corr_mtrx,2)
         end % when p.value is significant
     end % loop over Y variables
 end % loop over X variables
+legend_size(15);
 
 % anterior insula
 aIns_subplot_hdl = subplot(1,2,2);
