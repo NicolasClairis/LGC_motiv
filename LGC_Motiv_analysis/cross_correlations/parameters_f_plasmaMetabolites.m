@@ -13,7 +13,7 @@ condition = subject_condition();
 %% define metabolite and ROI you want to focus on
 [plasmaM, mb_names, n_mb] = load_plasma_metabolites(subject_id);
 % metabolite selection
-plasma_mb = plasmaM.Gln;
+plasma_mb = plasmaM.Gln./1000; % convert from μM to mM
 mb_nm = 'glutamine';
 
 metabolite_allSubs = plasma_mb;
