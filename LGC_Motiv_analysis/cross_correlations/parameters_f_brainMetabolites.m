@@ -3,7 +3,7 @@
 % designed by N.Clairis - 2022
 
 %% display correlations
-fig_disp = 0; % 1=yes, 0=no
+fig_disp = 1; % 1=yes, 0=no
 
 %% define all subjects
 study_nm = 'study1';
