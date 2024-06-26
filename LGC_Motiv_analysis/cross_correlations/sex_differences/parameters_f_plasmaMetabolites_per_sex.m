@@ -26,6 +26,9 @@ prm_males = prm_extraction(study_nm, male_CIDS);
 prm_females = prm_extraction(study_nm, female_CIDS);
 parameters = fieldnames(prm_males);
 
+%% extract color for each sex
+[col_m1, col_f1, col_m2, col_f2] = col_per_sex;
+
 %% try uncorrected (all subjects) and corrected for outliers (mean+/-3*SD) analysis
 subsIncluded = {'allSubs','withoutOutliers'};
 
@@ -98,16 +101,19 @@ for iUncorrCorr = 1:length(subsIncluded)
                 fit_hdl_upgrade(fit_male_hdl);
                 fit_hdl_upgrade(fit_female_hdl);
                 % change color for each sex
-                scat_male_hdl.MarkerFaceColor = [166,189,219]./255;
-                scat_female_hdl.MarkerFaceColor = [252,146,114]./255;
-                fit_male_hdl.Color = [43,140,190]./255;
-                fit_female_hdl.Color = [222, 45, 38]./255;
+                scat_male_hdl.MarkerFaceColor = col_m1;
+                scat_female_hdl.MarkerFaceColor = col_f1;
+                fit_male_hdl.Color = col_m2;
+                fit_female_hdl.Color = col_f2;
                 xlabel(['plasma ',mb_nm,' (mM)']);
                 ylabel(prm_nm);
-                % place_r_and_pval(r_corr.males.(uncCorr_nm).(prm_nm),...
-                %     pval_corr.males.(uncCorr_nm).(prm_nm));
-                % place_r_and_pval(r_corr.females.(uncCorr_nm).(prm_nm),...
-                %     pval_corr.females.(uncCorr_nm).(prm_nm));
+                % add correlation coeffs and p.values
+                [txt1_hdl, txt2_hdl, txtSize] = place_r_and_pval_2(r_corr.males.(uncCorr_nm).(prm_nm),...
+                    pval_corr.males.(uncCorr_nm).(prm_nm),...
+                    fit_male_hdl.Color,...
+                    r_corr.females.(uncCorr_nm).(prm_nm),...
+                    pval_corr.females.(uncCorr_nm).(prm_nm),...
+                    fit_female_hdl.Color);
                 legend_size(pSize);
             end
         end % parameter loop
