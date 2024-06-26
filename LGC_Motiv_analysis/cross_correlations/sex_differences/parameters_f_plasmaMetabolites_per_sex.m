@@ -7,7 +7,6 @@ fig_disp = 1; % 1=yes, 0=no
 
 %% define all subjects
 study_nm = 'study1';
-condition = subject_condition();
 [male_CIDS, female_CIDS, male_NS, female_NS, condition] = subject_selection_per_sex();
 
 %% define metabolite and ROI you want to focus on
