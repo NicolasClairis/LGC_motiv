@@ -22,12 +22,7 @@ computerRoot = 'E:';
 studyBehaviorFolder = [computerRoot, filesep, study_nm, filesep];
 
 %% main parameters
-switch task_nm
-    case 'Ep'
-        task_fullName = 'physical';
-    case 'Em'
-        task_fullName = 'mental';
-end
+[task_fullName] = task_fullName_extraction(task_nm);
 nRunsPerTask = 2;
 n_hE_levels = 3;
 NS = length(subject_id);
