@@ -74,7 +74,7 @@ for iUncorrCorr = 1:length(subsIncluded)
                 mb_sorted.females.(uncCorr_nm).(prm_nm),...
                 prm_fit_mbSorted.females.(uncCorr_nm).(prm_nm)] = glm_package(metabolite_females(goodSubs.females.(uncCorr_nm).(prm_nm))',...
                 prm_females_tmp(goodSubs.females.(uncCorr_nm).(prm_nm))', 'normal', 'on');
-        end
+        end % filter to only consider parameters and no other subfield
     end % parameters loop
     
     %% display results
