@@ -23,22 +23,23 @@ end
 %% main parameters
 tasks = {'Ep','Em','all'};
 nTasks = length(tasks);
-fig_choice_f_P_f_kP_violin = fig;
-fig_choice_f_P_f_kP_mean = fig;
-% fig_choice_f_P_f_kP_all = fig;
-% fig_choice_f_P_f_kP_low_kP = fig;
-fig_choice_f_P_f_kP_3_groups_mean = fig;
 n_hP_levels = 3;
 x_hP = 1:n_hP_levels;
 nGroups = 3; % divide in 3 groups (low/medium/high)
+nGroups2 = 4; % divide in 4 groups (very low/low/high/very high)
 
 % median split colours
 low_col1 =[127 191 123]./255;
 high_col1 =[175 141 195]./255;
-% low/medium/high colours
+% 3 groups (low/medium/high) colours
 low_col2 =[239 237 245]./255;
 med_col2 =[188 189 220]./255;
 high_col2 =[106 81 103]./255;
+% 4 groups (low/medium/high) colours
+very_low_col3   = [242 240 247]./255;
+low_col3        = [203 201 226]./255;
+high_col3       = [158 154 200]./255;
+very_high_col3  = [106 81 163]./255;
 pSize = 30;
 lWidth = 3;
 
@@ -46,66 +47,103 @@ lWidth = 3;
 prm = prm_extraction(study_nm, subject_id, 'bayesian', '3');
 
 %% extract parameter
-prm_allSubs = prm.kP;
+kP_allSubs = prm.kP;
+
+%% initialize figures
+% figure/task
+fig_choice_f_P_f_kP_violin_perTask = fig;
+fig_choice_f_P_f_kP_mean_perTask = fig;
+fig_choice_f_P_f_kP_3_groups_mean_perTask = fig;
+fig_choice_f_P_f_kP_4_groups_mean_perTask = fig;
+% figure pooling tasks
+fig_choice_f_P_f_kP_violin = fig;
+fig_choice_f_P_f_kP_mean = fig;
+fig_choice_f_P_f_kP_3_groups_mean = fig;
+fig_choice_f_P_f_kP_4_groups_mean = fig;
 
 %% extract data
 for iT = 1:nTasks
     task_nm = tasks{iT};
     
     %% extract proportion of choices
-    [choice_hEhP_tmp] = extract_proportion_choice_hP_perSub(study_nm, subject_id, condition, task_nm);
+    [choice_hEhP_tmp] = extract_proportion_choice_hP_perSub(study_nm, subject_id, condition);
     choice_hEhP.(task_nm) = choice_hEhP_tmp.(task_nm);
     
     %% 1) median split on the data
-    [low_prm_subs1, high_prm_subs1] = medSplit_prm(study_nm, subject_id, kP);
-    choice_hEhP.(task_nm).mSplit.low_prm.subject_id = subject_id(low_prm_subs1);
-    choice_hEhP.(task_nm).mSplit.high_prm.subject_id = subject_id(high_prm_subs1);
+    [low_kP_subs1, high_kP_subs1] = medSplit_prm(study_nm, subject_id, 'kP');
+    choice_hEhP.(task_nm).mSplit.low_prm.subject_id = subject_id(low_kP_subs1);
+    choice_hEhP.(task_nm).mSplit.high_prm.subject_id = subject_id(high_kP_subs1);
     %% 2) perform 3 groups low/medium/high
-    [~, ~, group_idx] = do_bin2(prm_allSubs, prm_allSubs, nGroups, 0);
-    choice_hEhP.(task_nm).groups.low_prm.subject_id = subject_id(group_idx == 1);
-    choice_hEhP.(task_nm).groups.med_prm.subject_id = subject_id(group_idx == 2);
-    choice_hEhP.(task_nm).groups.high_prm.subject_id = subject_id(group_idx == 3);
+    [~, ~, group_idx1] = do_bin2(kP_allSubs, kP_allSubs, nGroups, 0);
+    choice_hEhP.(task_nm).groups1.low_prm.subject_id = subject_id(group_idx1 == 1);
+    choice_hEhP.(task_nm).groups1.med_prm.subject_id = subject_id(group_idx1 == 2);
+    choice_hEhP.(task_nm).groups1.high_prm.subject_id = subject_id(group_idx1 == 3);
+    
+    %% 3) perform 4 groups very low/low/high/very high
+    [~, ~, group_idx2] = do_bin2(kP_allSubs, kP_allSubs, nGroups2, 0);
+    choice_hEhP.(task_nm).groups2.very_low_prm.subject_id = subject_id(group_idx2 == 1);
+    choice_hEhP.(task_nm).groups2.low_prm.subject_id = subject_id(group_idx2 == 2);
+    choice_hEhP.(task_nm).groups2.high_prm.subject_id = subject_id(group_idx2 == 3);
+    choice_hEhP.(task_nm).groups2.very_high_prm.subject_id = subject_id(group_idx2 == 4);
     
     %% split people according to parameter
     % median split
-    choice_hEhP.(task_nm).mSplit.(['low_',kP]) = choice_hEhP.(task_nm).allSubs(:,low_prm_subs1);
-    choice_hEhP.(task_nm).mSplit.(['high_',kP]) = choice_hEhP.(task_nm).allSubs(:,high_prm_subs1);
-    % more groups
-    choice_hEhP.(task_nm).groups.(['low_',kP]) = choice_hEhP.(task_nm).allSubs(:,group_idx == 1);
-    choice_hEhP.(task_nm).groups.(['med_',kP]) = choice_hEhP.(task_nm).allSubs(:,group_idx == 2);
-    choice_hEhP.(task_nm).groups.(['high_',kP]) = choice_hEhP.(task_nm).allSubs(:,group_idx == 3);
+    choice_hEhP.(task_nm).mSplit.low_kP = choice_hEhP.(task_nm).allSubs(:,low_kP_subs1);
+    choice_hEhP.(task_nm).mSplit.high_kP = choice_hEhP.(task_nm).allSubs(:,high_kP_subs1);
+    % 3 groups
+    choice_hEhP.(task_nm).groups1.low_kP = choice_hEhP.(task_nm).allSubs(:,group_idx1 == 1);
+    choice_hEhP.(task_nm).groups1.med_kP = choice_hEhP.(task_nm).allSubs(:,group_idx1 == 2);
+    choice_hEhP.(task_nm).groups1.high_kP = choice_hEhP.(task_nm).allSubs(:,group_idx1 == 3);
+    % 4 groups
+    choice_hEhP.(task_nm).groups2.very_low_kP = choice_hEhP.(task_nm).allSubs(:,group_idx2 == 1);
+    choice_hEhP.(task_nm).groups2.low_kP = choice_hEhP.(task_nm).allSubs(:,group_idx2 == 2);
+    choice_hEhP.(task_nm).groups2.high_kP = choice_hEhP.(task_nm).allSubs(:,group_idx2 == 3);
+    choice_hEhP.(task_nm).groups2.very_high_kP = choice_hEhP.(task_nm).allSubs(:,group_idx2 == 4);
     %% average
     % median split
-    [m_choice_hEhP.(task_nm).mSplit.(['low_',kP]),...
-        sem_choice_hEhP.(task_nm).mSplit.(['low_',kP])] = mean_sem_sd(choice_hEhP.(task_nm).mSplit.(['low_',kP]),2);
-    [m_choice_hEhP.(task_nm).mSplit.(['high_',kP]),...
-        sem_choice_hEhP.(task_nm).mSplit.(['high_',kP])] = mean_sem_sd(choice_hEhP.(task_nm).mSplit.(['high_',kP]),2);
-    % more groups
-    [m_choice_hEhP.(task_nm).groups.(['low_',kP]),...
-        sem_choice_hEhP.(task_nm).groups.(['low_',kP])] = mean_sem_sd(choice_hEhP.(task_nm).groups.(['low_',kP]),2);
-    [m_choice_hEhP.(task_nm).groups.(['med_',kP]),...
-        sem_choice_hEhP.(task_nm).groups.(['med_',kP])] = mean_sem_sd(choice_hEhP.(task_nm).groups.(['med_',kP]),2);
-    [m_choice_hEhP.(task_nm).groups.(['high_',kP]),...
-        sem_choice_hEhP.(task_nm).groups.(['high_',kP])] = mean_sem_sd(choice_hEhP.(task_nm).groups.(['high_',kP]),2);
-    
+    [m_choice_hEhP.(task_nm).mSplit.low_kP,...
+        sem_choice_hEhP.(task_nm).mSplit.low_kP] = mean_sem_sd(choice_hEhP.(task_nm).mSplit.low_kP,2);
+    [m_choice_hEhP.(task_nm).mSplit.high_kP,...
+        sem_choice_hEhP.(task_nm).mSplit.high_kP] = mean_sem_sd(choice_hEhP.(task_nm).mSplit.high_kP,2);
+    % 3 groups
+    [m_choice_hEhP.(task_nm).groups1.low_kP,...
+        sem_choice_hEhP.(task_nm).groups1.low_kP] = mean_sem_sd(choice_hEhP.(task_nm).groups1.low_kP,2);
+    [m_choice_hEhP.(task_nm).groups1.med_kP,...
+        sem_choice_hEhP.(task_nm).groups1.med_kP] = mean_sem_sd(choice_hEhP.(task_nm).groups1.med_kP,2);
+    [m_choice_hEhP.(task_nm).groups1.high_kP,...
+        sem_choice_hEhP.(task_nm).groups1.high_kP] = mean_sem_sd(choice_hEhP.(task_nm).groups1.high_kP,2);
+    % 4 groups
+    [m_choice_hEhP.(task_nm).groups2.very_low_kP,...
+        sem_choice_hEhP.(task_nm).groups2.very_low_kP] = mean_sem_sd(choice_hEhP.(task_nm).groups2.very_low_kP,2);
+    [m_choice_hEhP.(task_nm).groups2.low_kP,...
+        sem_choice_hEhP.(task_nm).groups2.low_kP] = mean_sem_sd(choice_hEhP.(task_nm).groups2.low_kP,2);
+    [m_choice_hEhP.(task_nm).groups2.high_kP,...
+        sem_choice_hEhP.(task_nm).groups2.high_kP] = mean_sem_sd(choice_hEhP.(task_nm).groups2.high_kP,2);
+    [m_choice_hEhP.(task_nm).groups2.very_high_kP,...
+        sem_choice_hEhP.(task_nm).groups2.very_high_kP] = mean_sem_sd(choice_hEhP.(task_nm).groups2.very_high_kP,2);
     %% figure with violin plot for low vs high median split
-    figure(fig_choice_f_P_f_kP_violin);
-    subplot(1,2,iT);
+    switch task_nm
+        case {'Ep','Em'}
+            figure(fig_choice_f_P_f_kP_violin_perTask);
+            subplot(1,2,iT);
+        case 'all'
+            figure(fig_choice_f_P_f_kP_violin);
+    end
     hold on;
-    if sum(low_prm_subs1) == sum(high_prm_subs1)
-        choice_violin_mtrx = [choice_hEhP.(task_nm).mSplit.(['low_',kP])(1,:)',...
-            choice_hEhP.(task_nm).mSplit.(['high_',kP])(1,:)',...
-            choice_hEhP.(task_nm).mSplit.(['low_',kP])(2,:)',...
-            choice_hEhP.(task_nm).mSplit.(['high_',kP])(2,:)',...
-            choice_hEhP.(task_nm).mSplit.(['low_',kP])(3,:)',...
-            choice_hEhP.(task_nm).mSplit.(['high_',kP])(3,:)'];
-    elseif sum(low_prm_subs1) == sum(high_prm_subs1) + 1 % in case median split on number that is not odd
-        choice_violin_mtrx = [choice_hEhP.(task_nm).mSplit.(['low_',kP])(1,:)',...
-            [choice_hEhP.(task_nm).mSplit.(['high_',kP])(1,:),NaN]',...
-            choice_hEhP.(task_nm).mSplit.(['low_',kP])(2,:)',...
-            [choice_hEhP.(task_nm).mSplit.(['high_',kP])(2,:),NaN]',...
-            choice_hEhP.(task_nm).mSplit.(['low_',kP])(3,:)',...
-            [choice_hEhP.(task_nm).mSplit.(['high_',kP])(3,:),NaN]'];
+    if sum(low_kP_subs1) == sum(high_kP_subs1)
+        choice_violin_mtrx = [choice_hEhP.(task_nm).mSplit.low_kP(1,:)',...
+            choice_hEhP.(task_nm).mSplit.high_kP(1,:)',...
+            choice_hEhP.(task_nm).mSplit.low_kP(2,:)',...
+            choice_hEhP.(task_nm).mSplit.high_kP(2,:)',...
+            choice_hEhP.(task_nm).mSplit.low_kP(3,:)',...
+            choice_hEhP.(task_nm).mSplit.high_kP(3,:)'];
+    elseif sum(low_kP_subs1) == sum(high_kP_subs1) + 1 % in case median split on number that is not odd
+        choice_violin_mtrx = [choice_hEhP.(task_nm).mSplit.low_kP(1,:)',...
+            [choice_hEhP.(task_nm).mSplit.high_kP(1,:),NaN]',...
+            choice_hEhP.(task_nm).mSplit.low_kP(2,:)',...
+            [choice_hEhP.(task_nm).mSplit.high_kP(2,:),NaN]',...
+            choice_hEhP.(task_nm).mSplit.low_kP(3,:)',...
+            [choice_hEhP.(task_nm).mSplit.high_kP(3,:),NaN]'];
     end
     % replace 0 by eps to avoid bugs
     choice_violin_mtrx(choice_violin_mtrx == 0) = eps;
@@ -117,22 +155,27 @@ for iT = 1:nTasks
     legend_size(pSize);
     
     %% figure with average for low vs high median split
-    figure(fig_choice_f_P_f_kP_mean);
-    subplot(1,2,iT);
+    switch task_nm
+        case {'Ep','Em'}
+            figure(fig_choice_f_P_f_kP_mean_perTask);
+            subplot(1,2,iT);
+        case 'all'
+            figure(fig_choice_f_P_f_kP_mean);
+    end
     hold on;
-    low_hdl = errorbar(x_hP-0.02,...
-        m_choice_hEhP.(task_nm).mSplit.(['low_',kP]),...
-        sem_choice_hEhP.(task_nm).mSplit.(['low_',kP]));
-    low_hdl.LineWidth = lWidth;
-    low_hdl.Color = low_col1;
-    low_hdl.LineStyle = '-';
+    very_low_hdl = errorbar(x_hP-0.02,...
+        m_choice_hEhP.(task_nm).mSplit.low_kP,...
+        sem_choice_hEhP.(task_nm).mSplit.low_kP);
+    very_low_hdl.LineWidth = lWidth;
+    very_low_hdl.Color = low_col1;
+    very_low_hdl.LineStyle = '-';
     high_hdl = errorbar(x_hP+0.02,...
-        m_choice_hEhP.(task_nm).mSplit.(['high_',kP]),...
-        sem_choice_hEhP.(task_nm).mSplit.(['high_',kP]));
+        m_choice_hEhP.(task_nm).mSplit.high_kP,...
+        sem_choice_hEhP.(task_nm).mSplit.high_kP);
     high_hdl.LineWidth = lWidth;
     high_hdl.Color = high_col1;
     high_hdl.LineStyle = '-';
-    legend([high_hdl, low_hdl],{['high ',kP],['low ',kP]});
+    legend([high_hdl, very_low_hdl],{'high kP','low kP'});
     legend('boxoff');
     legend('Location','NorthEast');
     ylim([0 1]);
@@ -141,37 +184,84 @@ for iT = 1:nTasks
     xlabel('Punishment level');
     legend_size(pSize);
 
-%% figure with mean for 3 groups (low/medium/high parameter)
-figure(fig_choice_f_P_f_kP_3_groups_mean);
-subplot(1,2,iT);
-hold on;
-low_hdl = errorbar(x_hP-0.02,...
-    m_choice_hEhP.(task_nm).groups.(['low_',kP]),...
-    sem_choice_hEhP.(task_nm).groups.(['low_',kP]));
-low_hdl.LineWidth = lWidth;
-low_hdl.Color = low_col2;
-low_hdl.LineStyle = '-';
-med_hdl = errorbar(x_hP-0.02,...
-    m_choice_hEhP.(task_nm).groups.(['med_',kP]),...
-    sem_choice_hEhP.(task_nm).groups.(['med_',kP]));
-med_hdl.LineWidth = lWidth;
-med_hdl.Color = med_col2;
-med_hdl.LineStyle = '-';
-high_hdl = errorbar(x_hP+0.02,...
-    m_choice_hEhP.(task_nm).groups.(['high_',kP]),...
-    sem_choice_hEhP.(task_nm).groups.(['high_',kP]));
-high_hdl.LineWidth = lWidth;
-high_hdl.Color = high_col2;
-high_hdl.LineStyle = '-';
-legend([high_hdl, med_hdl, low_hdl],...
-    {['high ',kP],['medium ',kP],['low ',kP]});
-legend('boxoff');
-legend('Location','NorthEast');
-ylim([0.2 1]);
-ylabel([task_nm,' choices (%)']);
-xticks(1:n_hP_levels);
-xlabel('Punishment level');
-legend_size(pSize);
+    %% figure with mean for 3 groups (low/medium/high parameter)
+    switch task_nm
+        case {'Ep','Em'}
+            figure(fig_choice_f_P_f_kP_3_groups_mean_perTask);
+            subplot(1,2,iT);
+        case 'all'
+            figure(fig_choice_f_P_f_kP_3_groups_mean);
+    end
+    hold on;
+    very_low_hdl = errorbar(x_hP-0.02,...
+        m_choice_hEhP.(task_nm).groups1.low_kP,...
+        sem_choice_hEhP.(task_nm).groups1.low_kP);
+    very_low_hdl.LineWidth = lWidth;
+    very_low_hdl.Color = low_col2;
+    very_low_hdl.LineStyle = '-';
+    med_hdl = errorbar(x_hP-0.02,...
+        m_choice_hEhP.(task_nm).groups1.med_kP,...
+        sem_choice_hEhP.(task_nm).groups1.med_kP);
+    med_hdl.LineWidth = lWidth;
+    med_hdl.Color = med_col2;
+    med_hdl.LineStyle = '-';
+    high_hdl = errorbar(x_hP+0.02,...
+        m_choice_hEhP.(task_nm).groups1.high_kP,...
+        sem_choice_hEhP.(task_nm).groups1.high_kP);
+    high_hdl.LineWidth = lWidth;
+    high_hdl.Color = high_col2;
+    high_hdl.LineStyle = '-';
+    legend([high_hdl, med_hdl, very_low_hdl],...
+        {'high kP','medium kP','low kP'});
+    legend('boxoff');
+    legend('Location','NorthEast');
+    ylim([0.2 1]);
+    ylabel([task_nm,' choices (%)']);
+    xticks(1:n_hP_levels);
+    xlabel('Punishment level');
+    legend_size(pSize);
+    %% figure with mean for 4 groups (very low/low/high/very high parameter)
+    switch task_nm
+        case {'Ep','Em'}
+            figure(fig_choice_f_P_f_kP_4_groups_mean_perTask);
+            subplot(1,2,iT);
+        case 'all'
+            figure(fig_choice_f_P_f_kP_4_groups_mean);
+    end
+    hold on;
+    very_low_hdl = errorbar(x_hP-0.02,...
+        m_choice_hEhP.(task_nm).groups2.very_low_kP,...
+        sem_choice_hEhP.(task_nm).groups2.very_low_kP);
+    very_low_hdl.LineWidth = lWidth;
+    very_low_hdl.Color = very_low_col3;
+    very_low_hdl.LineStyle = '-';
+    low_hdl = errorbar(x_hP-0.02,...
+        m_choice_hEhP.(task_nm).groups2.low_kP,...
+        sem_choice_hEhP.(task_nm).groups2.low_kP);
+    low_hdl.LineWidth = lWidth;
+    low_hdl.Color = low_col3;
+    low_hdl.LineStyle = '-';
+    high_hdl = errorbar(x_hP+0.02,...
+        m_choice_hEhP.(task_nm).groups2.high_kP,...
+        sem_choice_hEhP.(task_nm).groups2.high_kP);
+    high_hdl.LineWidth = lWidth;
+    high_hdl.Color = high_col3;
+    high_hdl.LineStyle = '-';
+    very_high_hdl = errorbar(x_hP+0.02,...
+        m_choice_hEhP.(task_nm).groups2.very_high_kP,...
+        sem_choice_hEhP.(task_nm).groups2.very_high_kP);
+    very_high_hdl.LineWidth = lWidth;
+    very_high_hdl.Color = very_high_col3;
+    very_high_hdl.LineStyle = '-';
+    legend([very_high_hdl, high_hdl, low_hdl, very_low_hdl],...
+        {'very high kP','high kP','low kP','very low kP'});
+    legend('boxoff');
+    legend('Location','NorthEast');
+    ylim([0.2 1]);
+    ylabel([task_nm,' choices (%)']);
+    xticks(1:n_hP_levels);
+    xlabel('Punishment level');
+    legend_size(pSize);
 end % task loop
 
 end % function
