@@ -299,4 +299,6 @@ legend(-2.3,1.3,legend = c('plasma amino-acids','plasma lactate','plasma fatty a
 # Change them to move the legend in the plot
 
 ## to check specific conditions:
-print(links2[links2[,6]=='behavior',]) # will display all the links involving a variable belonging to the "behavior" group
+if (nrow(grower) > 0) { # filter case where there are no links to plot
+  print(links2[links2[,6]=='behavior',]) # will display all the links involving a variable belonging to the "behavior" group
+}
