@@ -42,7 +42,7 @@ pSize = 30;
 lWidth = 3;
 
 %% load parameter
-prm = prm_extraction(study_nm, subject_id, 'bayesian', '3');
+prm = prm_extraction(study_nm, subject_id, 'bayesian');
 
 %% extract data
 for iT = 1:nTasks

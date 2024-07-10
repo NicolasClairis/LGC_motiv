@@ -1,5 +1,5 @@
-function[choice_hEhP] = choice_f_P_f_kP(study_nm, subject_id, condition)
-%[choice_hE] = choice_f_P_f_kP(study_nm, subject_id, condition)
+function[choice_hEhP, kBias] = choice_f_P_f_kP(study_nm, subject_id, condition)
+%[choice_hE, kBias] = choice_f_P_f_kP(study_nm, subject_id, condition)
 % choice_f_P_f_kP will look at the average proportion of choices per
 % punishment level and also by splitting on the kP parameter from the model
 % looking at both global choices and choices in each task separately.
@@ -9,6 +9,9 @@ function[choice_hEhP] = choice_f_P_f_kP(study_nm, subject_id, condition)
 %
 % OUTPUTS
 % choice_hE: structure with proportion of high-effort choices per subject
+%
+% kBias: structure with bias parameter averaged according to the different
+% grouping methods (to see if there is any change with the kP parameter
 
 %% subject selection
 if ~exist('study_nm','var') || isempty(study_nm)
@@ -44,10 +47,11 @@ pSize = 30;
 lWidth = 3;
 
 %% load parameter
-prm = prm_extraction(study_nm, subject_id, 'bayesian', '3');
+prm = prm_extraction(study_nm, subject_id, 'bayesian');
 
 %% extract parameter
 kP_allSubs = prm.kP;
+kBias_allSubs = prm.kBias;
 
 %% initialize figures
 % figure/task
@@ -73,38 +77,60 @@ for iT = 1:nTasks
     [low_kP_subs1, high_kP_subs1] = medSplit_prm(study_nm, subject_id, 'kP');
     choice_hEhP.(task_nm).mSplit.low_prm.subject_id = subject_id(low_kP_subs1);
     choice_hEhP.(task_nm).mSplit.high_prm.subject_id = subject_id(high_kP_subs1);
+
     %% 2) perform 3 groups low/medium/high
     [~, ~, group_idx1] = do_bin2(kP_allSubs, kP_allSubs, nGroups, 0);
-    choice_hEhP.(task_nm).groups1.low_prm.subject_id = subject_id(group_idx1 == 1);
-    choice_hEhP.(task_nm).groups1.med_prm.subject_id = subject_id(group_idx1 == 2);
-    choice_hEhP.(task_nm).groups1.high_prm.subject_id = subject_id(group_idx1 == 3);
-    
+    low_kP_group1 = group_idx1 == 1;
+    med_kP_group1 = group_idx1 == 2;
+    high_kP_group1 = group_idx1 == 3;
+    choice_hEhP.(task_nm).groups1.low_prm.subject_id = subject_id(low_kP_group1);
+    choice_hEhP.(task_nm).groups1.med_prm.subject_id = subject_id(med_kP_group1);
+    choice_hEhP.(task_nm).groups1.high_prm.subject_id = subject_id(high_kP_group1);
+
     %% 3) perform 4 groups very low/low/high/very high
     [~, ~, group_idx2] = do_bin2(kP_allSubs, kP_allSubs, nGroups2, 0);
-    choice_hEhP.(task_nm).groups2.very_low_prm.subject_id = subject_id(group_idx2 == 1);
-    choice_hEhP.(task_nm).groups2.low_prm.subject_id = subject_id(group_idx2 == 2);
-    choice_hEhP.(task_nm).groups2.high_prm.subject_id = subject_id(group_idx2 == 3);
-    choice_hEhP.(task_nm).groups2.very_high_prm.subject_id = subject_id(group_idx2 == 4);
-    
+    very_low_kP_group2 = group_idx2 == 1;
+    low_kP_group2 = group_idx2 == 2;
+    high_kP_group2 = group_idx2 == 3;
+    very_high_kP_group2 = group_idx2 == 4;
+    choice_hEhP.(task_nm).groups2.very_low_prm.subject_id = subject_id(very_low_kP_group2);
+    choice_hEhP.(task_nm).groups2.low_prm.subject_id = subject_id(low_kP_group2);
+    choice_hEhP.(task_nm).groups2.high_prm.subject_id = subject_id(high_kP_group2);
+    choice_hEhP.(task_nm).groups2.very_high_prm.subject_id = subject_id(very_high_kP_group2);
+
     %% split people according to parameter
     % median split
     choice_hEhP.(task_nm).mSplit.low_kP = choice_hEhP.(task_nm).allSubs(:,low_kP_subs1);
     choice_hEhP.(task_nm).mSplit.high_kP = choice_hEhP.(task_nm).allSubs(:,high_kP_subs1);
+    kBias.mSplit.low_kP.allSubs = kBias_allSubs(low_kP_subs1);
+    kBias.mSplit.high_kP.allSubs = kBias_allSubs(high_kP_subs1);
+
     % 3 groups
-    choice_hEhP.(task_nm).groups1.low_kP = choice_hEhP.(task_nm).allSubs(:,group_idx1 == 1);
-    choice_hEhP.(task_nm).groups1.med_kP = choice_hEhP.(task_nm).allSubs(:,group_idx1 == 2);
-    choice_hEhP.(task_nm).groups1.high_kP = choice_hEhP.(task_nm).allSubs(:,group_idx1 == 3);
+    choice_hEhP.(task_nm).groups1.low_kP = choice_hEhP.(task_nm).allSubs(:,low_kP_group1);
+    choice_hEhP.(task_nm).groups1.med_kP = choice_hEhP.(task_nm).allSubs(:,med_kP_group1);
+    choice_hEhP.(task_nm).groups1.high_kP = choice_hEhP.(task_nm).allSubs(:,high_kP_group1);
+    kBias.groups1.low_kP.allSubs = kBias_allSubs(low_kP_group1);
+    kBias.groups1.med_kP.allSubs = kBias_allSubs(med_kP_group1);
+    kBias.groups1.high_kP.allSubs = kBias_allSubs(high_kP_group1);
     % 4 groups
-    choice_hEhP.(task_nm).groups2.very_low_kP = choice_hEhP.(task_nm).allSubs(:,group_idx2 == 1);
-    choice_hEhP.(task_nm).groups2.low_kP = choice_hEhP.(task_nm).allSubs(:,group_idx2 == 2);
-    choice_hEhP.(task_nm).groups2.high_kP = choice_hEhP.(task_nm).allSubs(:,group_idx2 == 3);
-    choice_hEhP.(task_nm).groups2.very_high_kP = choice_hEhP.(task_nm).allSubs(:,group_idx2 == 4);
+    choice_hEhP.(task_nm).groups2.very_low_kP = choice_hEhP.(task_nm).allSubs(:,very_low_kP_group2);
+    choice_hEhP.(task_nm).groups2.low_kP = choice_hEhP.(task_nm).allSubs(:,low_kP_group2);
+    choice_hEhP.(task_nm).groups2.high_kP = choice_hEhP.(task_nm).allSubs(:,high_kP_group2);
+    choice_hEhP.(task_nm).groups2.very_high_kP = choice_hEhP.(task_nm).allSubs(:,very_high_kP_group2);
+    kBias.groups2.very_low_kP.allSubs = kBias_allSubs(very_low_kP_group2);
+    kBias.groups2.low_kP.allSubs = kBias_allSubs(low_kP_group2);
+    kBias.groups2.high_kP.allSubs = kBias_allSubs(high_kP_group2);
+    kBias.groups2.very_high_kP.allSubs = kBias_allSubs(very_high_kP_group2);
     %% average
     % median split
     [m_choice_hEhP.(task_nm).mSplit.low_kP,...
         sem_choice_hEhP.(task_nm).mSplit.low_kP] = mean_sem_sd(choice_hEhP.(task_nm).mSplit.low_kP,2);
     [m_choice_hEhP.(task_nm).mSplit.high_kP,...
         sem_choice_hEhP.(task_nm).mSplit.high_kP] = mean_sem_sd(choice_hEhP.(task_nm).mSplit.high_kP,2);
+    [kBias.mSplit.low_kP.mean,...
+        kBias.mSplit.low_kP.sem] = mean_sem_sd(kBias.mSplit.low_kP.allSubs,2);
+    [kBias.mSplit.high_kP.mean,...
+        kBias.mSplit.high_kP.sem] = mean_sem_sd(kBias.mSplit.high_kP.allSubs,2);
     % 3 groups
     [m_choice_hEhP.(task_nm).groups1.low_kP,...
         sem_choice_hEhP.(task_nm).groups1.low_kP] = mean_sem_sd(choice_hEhP.(task_nm).groups1.low_kP,2);
@@ -112,6 +138,12 @@ for iT = 1:nTasks
         sem_choice_hEhP.(task_nm).groups1.med_kP] = mean_sem_sd(choice_hEhP.(task_nm).groups1.med_kP,2);
     [m_choice_hEhP.(task_nm).groups1.high_kP,...
         sem_choice_hEhP.(task_nm).groups1.high_kP] = mean_sem_sd(choice_hEhP.(task_nm).groups1.high_kP,2);
+    [kBias.groups1.low_kP.mean,...
+        kBias.groups1.low_kP.sem] = mean_sem_sd(kBias.groups1.low_kP.allSubs,2);
+    [kBias.groups1.med_kP.mean,...
+        kBias.groups1.med_kP.sem] = mean_sem_sd(kBias.groups1.med_kP.allSubs,2);
+    [kBias.groups1.high_kP.mean,...
+        kBias.groups1.high_kP.sem] = mean_sem_sd(kBias.groups1.high_kP.allSubs,2);
     % 4 groups
     [m_choice_hEhP.(task_nm).groups2.very_low_kP,...
         sem_choice_hEhP.(task_nm).groups2.very_low_kP] = mean_sem_sd(choice_hEhP.(task_nm).groups2.very_low_kP,2);
@@ -121,6 +153,14 @@ for iT = 1:nTasks
         sem_choice_hEhP.(task_nm).groups2.high_kP] = mean_sem_sd(choice_hEhP.(task_nm).groups2.high_kP,2);
     [m_choice_hEhP.(task_nm).groups2.very_high_kP,...
         sem_choice_hEhP.(task_nm).groups2.very_high_kP] = mean_sem_sd(choice_hEhP.(task_nm).groups2.very_high_kP,2);
+    [kBias.groups2.very_low_kP.mean,...
+        kBias.groups2.very_low_kP.sem] = mean_sem_sd(kBias.groups2.very_low_kP.allSubs,2);
+    [kBias.groups2.low_kP.mean,...
+        kBias.groups2.low_kP.sem] = mean_sem_sd(kBias.groups2.low_kP.allSubs,2);
+    [kBias.groups2.high_kP.mean,...
+        kBias.groups2.high_kP.sem] = mean_sem_sd(kBias.groups2.high_kP.allSubs,2);
+    [kBias.groups2.very_high_kP.mean,...
+        kBias.groups2.very_high_kP.sem] = mean_sem_sd(kBias.groups2.very_high_kP.allSubs,2);
     %% figure with violin plot for low vs high median split
     switch task_nm
         case {'Ep','Em'}
@@ -153,7 +193,7 @@ for iT = 1:nTasks
     ylim([0 1]);
     ylabel([task_nm,' choices (%)']);
     legend_size(pSize);
-    
+
     %% figure with average for low vs high median split
     switch task_nm
         case {'Ep','Em'}
@@ -262,6 +302,48 @@ for iT = 1:nTasks
     xticks(1:n_hP_levels);
     xlabel('Punishment level');
     legend_size(pSize);
+
 end % task loop
+%% show kBias according to different groups
+fig;
+% median split
+subplot(1,3,1);
+bar_hdl = bar(1:2,[kBias.mSplit.low_kP.mean, kBias.mSplit.high_kP.mean]);
+erbar_hdl = errorbar(1:2,...
+    [kBias.mSplit.low_kP.mean, kBias.mSplit.high_kP.mean],...
+    [kBias.mSplit.low_kP.sem, kBias.mSplit.high_kP.sem]);
+errorbar_hdl_upgrade(erbar_hdl, 'k');
+xticks(1:2);
+xticklabels({'low','high'});
+xlim([0.8 2.2]);
+xlabel('kP');
+ylabel('kBias');
+
+
+% 3 groups
+subplot(1,3,2);
+bar_hdl = bar(1:3,[kBias.groups1.low_kP.mean, kBias.groups1.med_kP.mean, kBias.groups1.high_kP.mean]);
+erbar_hdl = errorbar(1:3,...
+    [kBias.groups1.low_kP.mean, kBias.groups1.med_kP.mean, kBias.groups1.high_kP.mean],...
+    [kBias.groups1.low_kP.sem, kBias.groups1.med_kP.sem, kBias.groups1.high_kP.sem]);
+errorbar_hdl_upgrade(erbar_hdl, 'k');
+xticks(1:3);
+xticklabels({'low','med','high'});
+xlim([0.8 3.2]);
+xlabel('kP');
+ylabel('kBias');
+
+% 4 groups
+subplot(1,3,3);
+bar_hdl = bar(1:4,[kBias.groups2.very_low_kP.mean, kBias.groups2.low_kP.mean, kBias.groups2.high_kP.mean, kBias.groups2.very_high_kP.mean]);
+erbar_hdl = errorbar(1:4,...
+    [kBias.groups2.very_low_kP.mean, kBias.groups2.low_kP.mean, kBias.groups2.high_kP.mean, kBias.groups2.very_high_kP.mean],...
+    [kBias.groups2.very_low_kP.sem, kBias.groups2.low_kP.sem, kBias.groups2.high_kP.sem, kBias.groups2.very_high_kP.sem]);
+errorbar_hdl_upgrade(erbar_hdl, 'k');
+xticks(1:4);
+xticklabels({'vlow','low','high','vhigh'});
+xlim([0.8 4.2]);
+xlabel('kP');
+ylabel('kBias');
 
 end % function
