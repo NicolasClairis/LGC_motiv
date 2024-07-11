@@ -1,28 +1,41 @@
-function[] = First_level_DCM_prepare_regressors_to_load(study_nm, sub_nm, sub_idx, runs, n_runs,...
-        subBehaviorFolder, computerRoot, n_scansPerRun, TR, DCM_mode)
-%
+function[onsets, durations, regressors] = First_level_DCM_prepare_regressors_to_load(study_nm, sub_nm, runs, n_runs,...
+        subBehaviorFolder, computerRoot, n_scansPerRun, TR, GLMprm)
+%[onsets, durations, regressors] = First_level_DCM_prepare_regressors_to_load(study_nm, sub_nm, runs, n_runs,...
+%         subBehaviorFolder, computerRoot, n_scansPerRun, TR, GLMprm)
 % First_level_DCM_prepare_regressors_to_load will pool the regressors
 % together depending on DCM_mode value so that all data are pooled either
 % per run, per task or across everything.
 %
 % INPUTS
-% DCM_mode:
-% (1) all sessions modeled independently like in a classic univariate GLM
-% => hard to manipulate for DCM but could be useful for testing
-% session-specific effects or comparing sessions
-% (2) sessions pooled within each task (ex: session 1 and 3 of physical
-% effort will be concatenated into one single regressor) but each task will
-% be modeled separately
-% (3) all sessions pooled together
-% (4) all trial periods are pooled together across sessions except for
-% choice and effort which are modeled independently for each task (but
-% pooled across sessions of the same task)
-% (5) all trial periods are pooled together across sessions except for
-% the effort period which is modeled independently for each task (but
-% pooled across sessions of the same task)
+% study_nm: study name
+%
+% sub_nm: subject identification number (as a string)
+%
+% runs: structure with information relative to the runs to include or not
+%
+% n_runs: number of runs
+%
+% subBehaviorFolder: subject behavioral folder name
+%
+% computerRoot: root of where the data is (required to be able to load net
+% value if the GLM asks for it)
+%
+% n_scansPerRun: variable indicating the number of scans contained in
+% previous runs (and henceforth the indication about the duration we have
+% to move the onsets)
+%
+% TR: repetition time of fMRI acquisition (to multiply n_scansPerRun when
+% computing the delay to add to the onsets for sessions > 1)
+% 
+% GLMprm: structure with information regarding GLM parameters
 %
 % OUTPUTS
 % all onsets, durations and regressors required for the 1st level
+% with different types of concatenation to adapt easily depending on the 
+% DCM_mode selected
+
+tasks = {'Ep','Em'};
+nTasks = length(tasks);
 
 for iRun = 1:n_runs
     jRun = runs.runsToKeep(iRun);
@@ -570,7 +583,7 @@ for iRun = 1:n_runs
                 prevEfficacy_bis_pureNback(choiceMissedTrials) = [];
         end
         latency(choiceMissedTrials) = [];
-    end
+    end % filter on missed trials
     
     % zscored R/P ignoring P/R trials (respectively)
     [z_R_level_chosen, z_P_level_chosen,...
@@ -591,21 +604,236 @@ for iRun = 1:n_runs
     
     % extract trials where no performance was achieved
     perfOkTrials = ~isnan(latency);
-
+    
     %% pool the data depending on DCM_mode
-    switch DCM_mode
-        case 1 % no change to be done
-
-        case 2 % pooling sessions/task but each task is modeled independently
-
-        case 3 % pooling all sessions
-
-        case 4 % pooling all sessions except for effort and choice
-
-        case 5 % pooling all sessions except for effort period
-
-    end % DCM_mode
-
+    %% one variable/session
+    % onsets
+    onsets.preChoiceCrossOnsets.(['run',run_nm]) = preChoiceCrossOnsets;
+    onsets.dispChoiceOptionOnsets.(['run',run_nm]) = dispChoiceOptionOnsets;
+    onsets.choiceOnsets.(['run',run_nm]) = choiceOnsets;
+    onsets.dispChosenOnsets.(['run',run_nm]) = dispChosenOnsets;
+    onsets.preEffortCrossOnsets.(['run',run_nm]) = preEffortCrossOnsets;
+    onsets.EperfOnsets.(['run',run_nm]) = EperfOnsets;
+    onsets.fbkOnsets.(['run',run_nm]) = fbkOnsets;
+    % durations
+    durations.preChoiceCrossDur.(['run',run_nm]) = preChoiceCrossDur;
+    durations.dispChoiceOptionsDur.(['run',run_nm]) = dispChoiceOptionsDur;
+    durations.dispChosenDur.(['run',run_nm]) = dispChosenDur;
+    durations.preEffortCrossDur.(['run',run_nm]) = preEffortCrossDur;
+    durations.EperfDur.(['run',run_nm]) = EperfDur;
+    durations.fbkDur.(['run',run_nm]) = fbkDur;
+    % regressors
+    regressors.R_trials.(['run',run_nm]) = R_trials;
+    regressors.P_trials.(['run',run_nm]) = P_trials;
+    regressors.defaultSide.(['run',run_nm]) = defaultSide;
+    regressors.RP_var_binary.(['run',run_nm]) = RP_var_binary;
+    regressors.choice_hE.(['run',run_nm]) = choice_hE;
+    regressors.choice_hE_bis.(['run',run_nm]) = choice_hE_bis;
+    regressors.money_level_chosen.(['run',run_nm]) = money_level_chosen;
+    regressors.R_level_chosen.(['run',run_nm]) = R_level_chosen;
+    regressors.P_level_chosen.(['run',run_nm]) = P_level_chosen;
+    regressors.R_level_unchosen.(['run',run_nm]) = R_level_unchosen;
+    regressors.P_level_unchosen.(['run',run_nm]) = P_level_unchosen;
+    regressors.money_amount_left.(['run',run_nm]) = money_amount_left;
+    regressors.money_amount_right.(['run',run_nm]) = money_amount_right;
+    regressors.money_amount_sum.(['run',run_nm]) = money_amount_sum;
+    regressors.money_amount_varOption.(['run',run_nm]) = money_amount_varOption;
+    regressors.R_amount_varOption.(['run',run_nm]) = R_amount_varOption;
+    regressors.P_amount_varOption.(['run',run_nm]) = P_amount_varOption;
+    regressors.money_amount_fixedOption.(['run',run_nm]) = money_amount_fixedOption;
+    regressors.money_level_left.(['run',run_nm]) = money_level_left;
+    regressors.money_level_right.(['run',run_nm]) = money_level_right;
+    regressors.money_level_varOption.(['run',run_nm]) = money_level_varOption;
+    regressors.R_level_varOption.(['run',run_nm]) = R_level_varOption;
+    regressors.P_level_varOption.(['run',run_nm]) = P_level_varOption;
+    regressors.abs_money_amount_varOption.(['run',run_nm]) = abs_money_amount_varOption;
+    regressors.abs_money_level_varOption.(['run',run_nm]) = abs_money_level_varOption;
+    regressors.E_left.(['run',run_nm]) = E_left;
+    regressors.E_right.(['run',run_nm]) = E_right;
+    regressors.E_sum.(['run',run_nm]) = E_sum;
+    regressors.E_varOption.(['run',run_nm]) = E_varOption;
+    regressors.money_level_x_E_varOption.(['run',run_nm]) = money_level_x_E_varOption;
+    regressors.money_level_x_E_chosen.(['run',run_nm]) = money_level_x_E_chosen;
+    regressors.R_level_x_E_varOption.(['run',run_nm]) = R_level_x_E_varOption;
+    regressors.R_level_x_E_chosen.(['run',run_nm]) = R_level_x_E_chosen;
+    regressors.P_level_x_E_varOption.(['run',run_nm]) = P_level_x_E_varOption;
+    regressors.P_level_x_E_chosen.(['run',run_nm]) = P_level_x_E_chosen;
+    regressors.choice_LRandConf.(['run',run_nm]) = choice_LRandConf;
+    regressors.choice_LR.(['run',run_nm]) = choice_LR;
+    if exist('confidence','var') && ~isempty(confidence)
+        regressors.confidence.(['run',run_nm]) = confidence;
+    end
+    regressors.E_chosen.(['run',run_nm]) = E_chosen;
+    regressors.E_chosen_bis.(['run',run_nm]) = E_chosen_bis;
+    regressors.E_unchosen.(['run',run_nm]) = E_unchosen;
+    regressors.E_chosen_min_E_unchosen.(['run',run_nm]) = E_chosen_min_E_unchosen;
+    regressors.Ech_min_Efixed.(['run',run_nm]) = Ech_min_Efixed;
+    regressors.money_amount_chosen.(['run',run_nm]) = money_amount_chosen;
+    regressors.R_amount_chosen.(['run',run_nm]) = R_amount_chosen;
+    regressors.P_amount_chosen.(['run',run_nm]) = P_amount_chosen;
+    regressors.abs_money_amount_chosen.(['run',run_nm]) = abs_money_amount_chosen;
+    regressors.abs_money_level_chosen.(['run',run_nm]) = abs_money_level_chosen;
+    regressors.abs_money_amount_unchosen.(['run',run_nm]) = abs_money_amount_unchosen;
+    regressors.abs_money_level_unchosen.(['run',run_nm]) = abs_money_level_unchosen;
+    regressors.money_amount_unchosen.(['run',run_nm]) = money_amount_unchosen;
+    regressors.money_level_unchosen.(['run',run_nm]) = money_level_unchosen;
+    regressors.moneyChosen_min_moneyUnchosen_amount.(['run',run_nm]) = moneyChosen_min_moneyUnchosen_amount;
+    regressors.absMoneyChosen_min_moneyUnchosen_amount.(['run',run_nm]) = absMoneyChosen_min_moneyUnchosen_amount;
+    regressors.moneyChosen_min_moneyUnchosen_level.(['run',run_nm]) = moneyChosen_min_moneyUnchosen_level;
+    regressors.absMoneyChosen_min_moneyUnchosen_level.(['run',run_nm]) = absMoneyChosen_min_moneyUnchosen_level;
+    regressors.moneyChosen_min_moneyFixed_amount.(['run',run_nm]) = moneyChosen_min_moneyFixed_amount;
+    regressors.moneyChosen_min_moneyFixed_level.(['run',run_nm]) = moneyChosen_min_moneyFixed_level;
+    regressors.money_amount_obtained.(['run',run_nm]) = money_amount_obtained;
+    regressors.win_vs_loss_fbk.(['run',run_nm]) = win_vs_loss_fbk;
+    regressors.choice_RT.(['run',run_nm]) = choice_RT;
+    if exist('NV_mdl_nm','var') &&...
+            (strcmp(NV_mdl_nm(1:4),'mdl_') ||...
+            strcmp(NV_mdl_nm(1:14),'bayesianModel_'))
+        regressors.NV_ch_min_unch.(['run',run_nm]) = NV_ch_min_unch;
+        regressors.NV_ch_min_unch_with_bias.(['run',run_nm]) = NV_ch_min_unch_with_bias;
+        regressors.NV_varOption.(['run',run_nm]) = NV_varOption;
+        regressors.NV_varOption_plus_bias.(['run',run_nm]) = NV_varOption_plus_bias;
+        regressors.pChoice_hE.(['run',run_nm]) = pChoice_hE;
+        regressors.pChosen.(['run',run_nm]) = pChosen;
+    end
+    regressors.trialN.(['run',run_nm]) = trialN;
+    regressors.trialN_dEch.(['run',run_nm]) = trialN_dEch;
+    regressors.trialN_dEnonDef_min_Edef.(['run',run_nm]) = trialN_dEnonDef_min_Edef;
+    regressors.trialN_dEnonDef.(['run',run_nm]) = trialN_dEnonDef;
+    switch task_fullName
+        case 'physical'
+            regressors.AUC.(['run',run_nm]) = AUC;
+            regressors.forcePeak.(['run',run_nm]) = forcePeak;
+            regressors.AUC_overshoot.(['run',run_nm]) = AUC_overshoot;
+            regressors.AUC_N.(['run',run_nm]) = AUC_N;
+            regressors.forcePeak_N.(['run',run_nm]) = forcePeak_N;
+            regressors.AUC_overshoot_N.(['run',run_nm]) = AUC_overshoot_N;
+            regressors.fatigue.(['run',run_nm]) = fatigue;
+        case 'mental'
+            regressors.n_correct.(['run',run_nm]) = n_correct;
+            regressors.n_errors.(['run',run_nm]) = n_errors;
+            regressors.RT_avg.(['run',run_nm]) = RT_avg;
+            regressors.efficacy_with2first.(['run',run_nm]) = efficacy_with2first;
+            regressors.efficacy_pureNback.(['run',run_nm]) = efficacy_pureNback;
+            regressors.efficacy_bis_with2first.(['run',run_nm]) = efficacy_bis_with2first;
+            regressors.efficacy_bis_pureNback.(['run',run_nm]) = efficacy_bis_pureNback;
+            regressors.prevEfficacy_with2first.(['run',run_nm]) = prevEfficacy_with2first;
+            regressors.prevEfficacy_pureNback.(['run',run_nm]) = prevEfficacy_pureNback;
+            regressors.prevEfficacy_bis_with2first.(['run',run_nm]) = prevEfficacy_bis_with2first;
+            regressors.prevEfficacy_bis_pureNback.(['run',run_nm]) = prevEfficacy_bis_pureNback;
+    end
+    regressors.latency.(['run',run_nm]) = latency;
+    
+    % zscored R/P ignoring P/R trials (respectively)
+    regressors.z_R_level_chosen.(['run',run_nm]) = z_R_level_chosen;
+    regressors.z_P_level_chosen.(['run',run_nm]) = z_P_level_chosen;
+    regressors.z_R_level_unchosen.(['run',run_nm]) = z_R_level_unchosen;
+    regressors.z_P_level_unchosen.(['run',run_nm]) = z_P_level_unchosen;
+    regressors.z_R_amount_chosen.(['run',run_nm]) = z_R_amount_chosen;
+    regressors.z_P_amount_chosen.(['run',run_nm]) = z_P_amount_chosen;
+    regressors.z_R_level_varOption.(['run',run_nm]) = z_R_level_varOption;
+    regressors.z_P_level_varOption.(['run',run_nm]) = z_P_level_varOption;
+    regressors.z_R_amount_varOption.(['run',run_nm]) = z_R_amount_varOption;
+    regressors.z_P_amount_varOption.(['run',run_nm]) = z_P_amount_varOption;
 end % run loop to prepare onsets and regressors of interest
+
+% extract number of elements for each
+onset_names = fieldnames(onsets);
+n_onsets = length(onset_names);
+dur_names = fieldnames(durations);
+n_durs = length(onset_names);
+reg_names = fieldnames(regressors);
+n_regs = length(onset_names);
+
+%% pooling sessions/task but each task is modeled independently
+for iTask = 1:nTasks
+    task_nm = tasks{iTask};
+    
+    jR = 0;
+    for iRun = runs.(task_nm).runsToKeep
+        jR = jR + 1;
+        r_nm = ['run',num2str(iRun)];
+        
+        % onsets
+        for iO = 1:n_onsets
+            onset_nm = onset_names{iO};
+            switch jR
+                case 1
+                    onsets.(onset_nm).(task_nm) = onsets.(onset_nm).(r_nm);
+                otherwise
+                    onsets.(onset_nm).(task_nm) = [onsets.(onset_nm).(task_nm);...
+                        onsets.(onset_nm).(r_nm)];
+            end
+        end % onset loop
+        
+        % durations
+        for iD = 1:n_durs
+            dur_nm = dur_names{iD};
+            switch jR
+                case 1
+                    durations.(dur_nm).(task_nm) = durations.(dur_nm).(r_nm);
+                otherwise
+                    durations.(dur_nm).(task_nm) = [durations.(dur_nm).(task_nm);...
+                            durations.(dur_nm).(r_nm)];
+            end
+        end % duration loop
+        
+        % regressors
+        for iReg = 1:n_regs
+            reg_nm = reg_names{iReg};
+            switch jR
+                case 1
+                    regressors.(reg_nm).(task_nm) = regressors.(reg_nm).(r_nm);
+                otherwise
+                    regressors.(reg_nm).(task_nm) = [regressors.(reg_nm).(task_nm);...
+                        regressors.(reg_nm).(r_nm)];
+            end
+        end % regressor loop
+        
+    end % run loop
+end % task loop
+
+%% pooling all sessions
+jR = 0;
+for iRun = runs.runsToKeep
+    jR = jR + 1;
+    r_nm = ['run',num2str(iRun)];
+    
+    % onsets
+    for iO = 1:n_onsets
+        onset_nm = onset_names{iO};
+        switch jR
+            case 1
+                onsets.(onset_nm).allTrials = onsets.(onset_nm).(r_nm);
+            otherwise
+                onsets.(onset_nm).allTrials = [onsets.(onset_nm).allTrials;...
+                    onsets.(onset_nm).(r_nm)];
+        end
+    end % onset loop
+    
+    % durations
+    for iD = 1:n_durs
+        dur_nm = dur_names{iD};
+        switch jR
+            case 1
+                durations.(dur_nm).allTrials = durations.(dur_nm).(r_nm);
+            otherwise
+                durations.(dur_nm).allTrials = [durations.(dur_nm).allTrials;...
+                    durations.(dur_nm).(r_nm)];
+        end
+    end % duration loop
+    
+    % regressors
+    for iReg = 1:n_regs
+        reg_nm = reg_names{iReg};
+        switch jR
+            case 1
+                regressors.(reg_nm).allTrials = regressors.(reg_nm).(r_nm);
+            otherwise
+                regressors.(reg_nm).allTrials = [regressors.(reg_nm).allTrials;...
+                    regressors.(reg_nm).(r_nm)];
+        end
+    end % regressor loop
+end % run loop
 
 end % function
