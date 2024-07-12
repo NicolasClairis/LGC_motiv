@@ -5997,6 +5997,7 @@ if ismember(EperfModel,{'stick','boxcar'})
                             case 'hEch'
                                 Efilter_Eperf = (choice_hE.(run_full_nm) == 1);
                         end
+                        perfOkTrials = isnan(latency.(run_full_nm));
                         switch onsets_only_GLM
                             case 0
                                 Eperf_trial_idx = (RPfilter_Eperf.*Efilter_Eperf.*perfOkTrials) == 1; % NEED to transform it into logical or will just focus on the first trial
@@ -6403,6 +6404,7 @@ if ismember(EperfModel,{'stick','boxcar'})
                             case 'hEch'
                                 Efilter_Eperf = (choice_hE.(task_nm) == 1);
                         end
+                        perfOkTrials = ~isnan(latency.(task_nm));
                         switch onsets_only_GLM
                             case 0
                                 Eperf_trial_idx = (RPfilter_Eperf.*Efilter_Eperf.*perfOkTrials) == 1; % NEED to transform it into logical or will just focus on the first trial
@@ -6806,6 +6808,7 @@ if ismember(EperfModel,{'stick','boxcar'})
                         case 'hEch'
                             Efilter_Eperf = (choice_hE.allTrials == 1);
                     end
+                    perfOkTrials = ~isnan(latency);
                     switch onsets_only_GLM
                         case 0
                             Eperf_trial_idx = (RPfilter_Eperf.*Efilter_Eperf.*perfOkTrials) == 1; % NEED to transform it into logical or will just focus on the first trial
