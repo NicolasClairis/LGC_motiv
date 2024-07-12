@@ -167,7 +167,7 @@ for iS = 1:NS
     [runs, n_runs] = runs_definition(study_nm, sub_nm, condition);
     
     %% initialize number of scans for each run (important for the concatenation required for DCM)
-    n_scansPerRun.(sub_nm) = NaN(1, n_runs);
+    n_scansPerRun.(['CID',sub_nm]) = NaN(1,n_runs);
     
     %% load fMRI data
     subj_scan_folders_names = ls([subj_scans_folder, filesep, '*run*']); % takes all functional runs folders
@@ -213,7 +213,7 @@ for iS = 1:NS
             error('problem with format of preprocessed files: impossible to find them. Did you preprocess the data?');
         end
         % extract number of scans for current run
-        n_scansPerRun.(sub_nm)(iRun) = size(preprocessed_filenames,1);
+        n_scansPerRun.(['CID',sub_nm])(iRun) = size(preprocessed_filenames,1);
         % load scans in matlabbatch
         switch iRun
             case 1
@@ -229,11 +229,11 @@ for iS = 1:NS
     %% load regressors of interest. Group sessions depending on the DCM_mode selected
     % extract onsets + regressors
     matlabbatch1 = First_level_loadRegressors_DCM(matlabbatch1, GLMprm, study_nm, sub_nm, iS, runs, n_runs,...
-        subj_behavior_folder, computerRoot, n_scansPerRun.(sub_nm), TR, DCM_mode);
+        subj_behavior_folder, computerRoot, n_scansPerRun.(['CID',sub_nm]), TR, DCM_mode);
     
     %% global run parameters (rp movement file, etc.)
     % 1) concatenate all rp files together
-    [mvmtFolder, mvmt_file_nm] = concatenate_rp_files(subj_scans_folder, subj_scan_folders_names, n_scansPerRun.(sub_nm));
+    [mvmtFolder, mvmt_file_nm] = concatenate_rp_files(subj_scans_folder, subj_scan_folders_names, n_scansPerRun.(['CID',sub_nm]));
     movement_filePath = [mvmtFolder, mvmt_file_nm];
     
     % 2) load concatenated rp files inside the matlabbatch
@@ -347,7 +347,7 @@ for iS = 1:NS
     [subPath] = fMRI_subFolder_DCM(sm_folderName, GLM, condition, DCM_mode);
     
     % apply spm_fmri_concatenate => will rewrite SPM.mat file
-    spm_fmri_concatenate([subPath,'SPM.mat'], n_scansPerRun.(sub_nm));
+    spm_fmri_concatenate([subPath,'SPM.mat'], n_scansPerRun.(['CID',sub_nm]));
 end % loop through subjects
 
 %% estimate the model AFTER applying spm_fmri_concatenate
