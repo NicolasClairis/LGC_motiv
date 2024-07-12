@@ -745,6 +745,14 @@ reg_names = fieldnames(regressors);
 n_regs = length(reg_names);
 
 %% pooling sessions/task but each task is modeled independently
+% identify Ep/Em specific regressors
+Ep_specific_regs = {'AUC','forcePeak','AUC_overshoot',...
+    'AUC_N','forcePeak_N','AUC_overshoot_N','fatigue'};
+Em_specific_regs = {'n_correct','n_errors','RT_avg',...
+    'efficacy_with2first','efficacy_pureNback',...
+    'efficacy_bis_with2first','efficacy_bis_pureNback',...
+    'prevEfficacy_with2first','prevEfficacy_pureNback',...
+    'prevEfficacy_bis_with2first','prevEfficacy_bis_pureNback'};
 for iTask = 1:nTasks
     task_nm = tasks{iTask};
     
@@ -780,13 +788,17 @@ for iTask = 1:nTasks
         % regressors
         for iReg = 1:n_regs
             reg_nm = reg_names{iReg};
-            switch jR
-                case 1
-                    regressors.(reg_nm).(task_nm) = regressors.(reg_nm).(r_nm);
-                otherwise
-                    regressors.(reg_nm).(task_nm) = [regressors.(reg_nm).(task_nm);...
-                        regressors.(reg_nm).(r_nm)];
-            end
+            if (strcmp(task_nm,'Ep') && ismember(reg_nm,Ep_specific_regs)) ||...
+                    (strcmp(task_nm,'Em') && ismember(reg_nm,Em_specific_regs)) ||...
+                    ~ismember(reg_nm,[Ep_specific_regs,Em_specific_regs])
+                switch jR
+                    case 1
+                        regressors.(reg_nm).(task_nm) = regressors.(reg_nm).(r_nm);
+                    otherwise
+                        regressors.(reg_nm).(task_nm) = [regressors.(reg_nm).(task_nm);...
+                            regressors.(reg_nm).(r_nm)];
+                end
+            end % filter regressors that are specific to one task
         end % regressor loop
         
     end % task run loop
@@ -825,13 +837,16 @@ for iRun = runs.runsToKeep
     % regressors
     for iReg = 1:n_regs
         reg_nm = reg_names{iReg};
-        switch jR
-            case 1
-                regressors.(reg_nm).allTrials = regressors.(reg_nm).(r_nm);
-            otherwise
-                regressors.(reg_nm).allTrials = [regressors.(reg_nm).allTrials;...
-                    regressors.(reg_nm).(r_nm)];
-        end
+        
+        if ~ismember(reg_nm,[Ep_specific_regs,Em_specific_regs])
+            switch jR
+                case 1
+                    regressors.(reg_nm).allTrials = regressors.(reg_nm).(r_nm);
+                otherwise
+                    regressors.(reg_nm).allTrials = [regressors.(reg_nm).allTrials;...
+                        regressors.(reg_nm).(r_nm)];
+            end
+        end % filter regressors that are specific to one task
     end % regressor loop
 end % run loop
 
