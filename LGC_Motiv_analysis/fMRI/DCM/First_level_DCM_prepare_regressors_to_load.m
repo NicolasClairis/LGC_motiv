@@ -740,9 +740,9 @@ end % run loop to prepare onsets and regressors of interest
 onset_names = fieldnames(onsets);
 n_onsets = length(onset_names);
 dur_names = fieldnames(durations);
-n_durs = length(onset_names);
+n_durs = length(dur_names);
 reg_names = fieldnames(regressors);
-n_regs = length(onset_names);
+n_regs = length(reg_names);
 
 %% pooling sessions/task but each task is modeled independently
 for iTask = 1:nTasks
