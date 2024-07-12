@@ -51,9 +51,9 @@ for iRun = 1:n_runs
     end
     
     %% compute delay to add to all onsets to compensate for the fact that all sessions are now grouped
-    if iRun == 1
+    if iRun == 1 % for the first run entered (iRun NOT jRun) take basic onset
         DCM_delay_onset = 0;
-    else
+    else % for other runs, need to delay onsets by the duration of previous runs because all runs are pooled in the same GLM and therefore timings are also aligned to the first run
         DCM_delay_onset = sum(n_scansPerRun(1:(iRun - 1))).*TR;
     end
     
@@ -602,12 +602,10 @@ for iRun = 1:n_runs
     z_R_amount_varOption(R_trials) = zscore(R_amount_varOption(R_trials));
     z_P_amount_varOption(P_trials) = zscore(P_amount_varOption(P_trials));
     
-    % extract trials where no performance was achieved
-    perfOkTrials = ~isnan(latency);
-    
     %% pool the data depending on DCM_mode
     %% one variable/session
     % onsets
+    onsets.allCrossesOnsets.(['run',run_nm]) = allCrossesOnsets;
     onsets.preChoiceCrossOnsets.(['run',run_nm]) = preChoiceCrossOnsets;
     onsets.dispChoiceOptionOnsets.(['run',run_nm]) = dispChoiceOptionOnsets;
     onsets.choiceOnsets.(['run',run_nm]) = choiceOnsets;
@@ -616,6 +614,7 @@ for iRun = 1:n_runs
     onsets.EperfOnsets.(['run',run_nm]) = EperfOnsets;
     onsets.fbkOnsets.(['run',run_nm]) = fbkOnsets;
     % durations
+    durations.allCrossesDur.(['run',run_nm]) = allCrossesDur;
     durations.preChoiceCrossDur.(['run',run_nm]) = preChoiceCrossDur;
     durations.dispChoiceOptionsDur.(['run',run_nm]) = dispChoiceOptionsDur;
     durations.dispChosenDur.(['run',run_nm]) = dispChosenDur;
@@ -790,7 +789,7 @@ for iTask = 1:nTasks
             end
         end % regressor loop
         
-    end % run loop
+    end % task run loop
 end % task loop
 
 %% pooling all sessions
