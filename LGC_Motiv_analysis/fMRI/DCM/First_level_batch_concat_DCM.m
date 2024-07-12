@@ -321,59 +321,68 @@ for iS = 1:NS
     
 end % loop through subjects to load matlabbatch
 
-% run spm batch for 1st level
-spm_jobman('run',matlabbatch1);
-
-%% apply spm_fmri_concatenate on each SPM.m to correct for pooling all sessions into one
-% spm_fmri_concatenate will create one constant/session + it will adjust the high-pass filter and non-sphericity
-% estimates as if sessions were separate
-for iS = 1:NS
-    sub_nm = subject_id{iS};
-    
-    % define working folders
-    subj_folder             = [root, filesep, 'CID',sub_nm];
-    subj_analysis_folder    = [subj_folder, filesep, 'fMRI_analysis' filesep];
-    % create folder to store the results for the current subject
-    switch biasFieldCorr
-        case 0
-            sm_folderName = [subj_analysis_folder 'functional', filesep,...
-                'preproc_sm_',num2str(preproc_sm_kernel),'mm_DCM',filesep];
-        case 1
-            error('case with bias-field correction and DCM slice-timing preprocessing not ready yet');
-    end
-    if ~exist(sm_folderName,'dir')
-        mkdir(sm_folderName);
-    end
-    [subPath] = fMRI_subFolder_DCM(sm_folderName, GLM, condition, DCM_mode);
-    
-    % apply spm_fmri_concatenate => will rewrite SPM.mat file
-    spm_fmri_concatenate([subPath,'SPM.mat'], n_scansPerRun.(['CID',sub_nm]));
-end % loop through subjects
-
-%% estimate the model AFTER applying spm_fmri_concatenate
-% (important to do in that order but see https://www.fil.ion.ucl.ac.uk/spm/docs/wikibooks/Concatenation/
-% for more details as to why)
-matlabbatch2_estimate = cell(NS,1);
-for iS = 1:NS
-    sub_nm = subject_id{iS};
-    % extract path for folder where 1st level SPM.mat is stored
-    switch biasFieldCorr
-        case 0
-            sm_folderName = [root, filesep, 'CID',sub_nm, filesep,...
-                'fMRI_analysis',filesep 'functional', filesep,...
-                'preproc_sm_',num2str(preproc_sm_kernel),'mm_DCM',filesep];
-        case 1
-            error('case with bias-field correction and DCM slice-timing preprocessing not ready yet');
-    end
-    [resultsFolderName] = fMRI_subFolder_DCM(sm_folderName, GLM, condition, DCM_mode);
-    
-    % load path into batch
-    matlabbatch2_estimate{iS}.spm.stats.fmri_est.spmmat = {[resultsFolderName,'SPM.mat']};
-    matlabbatch2_estimate{iS}.spm.stats.fmri_est.write_residuals = 0;
-    matlabbatch2_estimate{iS}.spm.stats.fmri_est.method.Classical = 1; % perform classical model
-end
-
-% run spm batch for model estimation
-spm_jobman('run',matlabbatch2_estimate);
+%% checking => display or no checking => launch spm_fmri_concatenate + 1st level estimation
+switch checking
+    case 0 % not checking => run 1st level + spm_fmri_concatenate + 1st level estimation
+        % run spm batch for 1st level
+        spm_jobman('run',matlabbatch1);
+        
+        %% apply spm_fmri_concatenate on each SPM.m to correct for pooling all sessions into one
+        % spm_fmri_concatenate will create one constant/session + it will adjust the high-pass filter and non-sphericity
+        % estimates as if sessions were separate
+        for iS = 1:NS
+            sub_nm = subject_id{iS};
+            
+            % define working folders
+            subj_folder             = [root, filesep, 'CID',sub_nm];
+            subj_analysis_folder    = [subj_folder, filesep, 'fMRI_analysis' filesep];
+            % create folder to store the results for the current subject
+            switch biasFieldCorr
+                case 0
+                    sm_folderName = [subj_analysis_folder 'functional', filesep,...
+                        'preproc_sm_',num2str(preproc_sm_kernel),'mm_DCM',filesep];
+                case 1
+                    error('case with bias-field correction and DCM slice-timing preprocessing not ready yet');
+            end
+            if ~exist(sm_folderName,'dir')
+                mkdir(sm_folderName);
+            end
+            [subPath] = fMRI_subFolder_DCM(sm_folderName, GLM, condition, DCM_mode);
+            
+            % apply spm_fmri_concatenate => will rewrite SPM.mat file
+            spm_fmri_concatenate([subPath,'SPM.mat'], n_scansPerRun.(['CID',sub_nm]));
+        end % loop through subjects
+        
+        %% estimate the model AFTER applying spm_fmri_concatenate
+        % (important to do in that order but see https://www.fil.ion.ucl.ac.uk/spm/docs/wikibooks/Concatenation/
+        % for more details as to why)
+        matlabbatch2_estimate = cell(NS,1);
+        for iS = 1:NS
+            sub_nm = subject_id{iS};
+            % extract path for folder where 1st level SPM.mat is stored
+            switch biasFieldCorr
+                case 0
+                    sm_folderName = [root, filesep, 'CID',sub_nm, filesep,...
+                        'fMRI_analysis',filesep 'functional', filesep,...
+                        'preproc_sm_',num2str(preproc_sm_kernel),'mm_DCM',filesep];
+                case 1
+                    error('case with bias-field correction and DCM slice-timing preprocessing not ready yet');
+            end
+            [resultsFolderName] = fMRI_subFolder_DCM(sm_folderName, GLM, condition, DCM_mode);
+            
+            % load path into batch
+            matlabbatch2_estimate{iS}.spm.stats.fmri_est.spmmat = {[resultsFolderName,'SPM.mat']};
+            matlabbatch2_estimate{iS}.spm.stats.fmri_est.write_residuals = 0;
+            matlabbatch2_estimate{iS}.spm.stats.fmri_est.method.Classical = 1; % perform classical model
+        end
+        
+        % run spm batch for model estimation
+        spm_jobman('run',matlabbatch2_estimate);
+        
+    case 1 % checking => display 1st level batch and stop there (avoid launching spm_fmri_concatenate + 1st level estimation, only for display: careful to not launch)
+        % run spm batch for 1st level
+        spm_jobman('display',matlabbatch1);
+        warning('This is only for checking and display. Do NOT launch the batch as you need to apply spm_fmri_concatenate + 1st level estimation afterwards');
+end % checking
 
 end % function
