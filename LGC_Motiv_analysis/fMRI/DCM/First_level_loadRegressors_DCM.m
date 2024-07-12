@@ -177,6 +177,9 @@ switch zPerRun
 end
 
 % GLM parameters for choice Reward/Punishment pool
+task_id = 'Ep';
+warning(['use task_id=',task_id,'for extraction of GLMprm to avoid modifying which_GLM.']);
+warning('If onsets/durations/regressors differ between Ep and Em, consider modifying which_GLM accordingly.');
 choice_RPpool = GLMprm.choice.(task_id).RPpool;
 switch choice_RPpool
     case 0
