@@ -381,7 +381,7 @@ switch checking
         
     case 1 % checking => display 1st level batch and stop there (avoid launching spm_fmri_concatenate + 1st level estimation, only for display: careful to not launch)
         % run spm batch for 1st level
-        spm_jobman('display',matlabbatch1);
+        spm_jobman('interactive',matlabbatch1);
         warning('This is only for checking and display. Do NOT launch the batch as you need to apply spm_fmri_concatenate + 1st level estimation afterwards');
 end % checking
 
