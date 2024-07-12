@@ -6433,13 +6433,13 @@ if ismember(EperfModel,{'stick','boxcar'})
                         
                         %% Effort performance onset
                         iCond = iCond + 1;
-                        modelEperfOnset = onsets.EperfOnsets.(run_full_nm)(Eperf_trial_idx);
+                        modelEperfOnset = onsets.EperfOnsets.(task_nm)(Eperf_trial_idx);
                         % duration
                         switch EperfModel
                             case 'stick'
                                 modelEperfDur = 0;
                             case 'boxcar'
-                                modelEperfDur = durations.EperfDur.(run_full_nm)(Eperf_trial_idx);
+                                modelEperfDur = durations.EperfDur.(task_nm)(Eperf_trial_idx);
                         end
                         
                         %% Effort performance modulators
@@ -6453,11 +6453,11 @@ if ismember(EperfModel,{'stick','boxcar'})
                             case 1
                                 n_EperfMods = n_EperfMods + 1;
                                 Eperf_modNames{n_EperfMods} = 'choice = high effort';
-                                Eperf_modVals(n_EperfMods,:) = choice_hE.(run_full_nm)(Eperf_trial_idx); % binary variable => no zscore
+                                Eperf_modVals(n_EperfMods,:) = choice_hE.(task_nm)(Eperf_trial_idx); % binary variable => no zscore
                             case 2
                                 n_EperfMods = n_EperfMods + 1;
                                 Eperf_modNames{n_EperfMods} = 'choice = high effort';
-                                Eperf_modVals(n_EperfMods,:) = choice_hE_bis.(run_full_nm)(Eperf_trial_idx); % binary variable => no zscore
+                                Eperf_modVals(n_EperfMods,:) = choice_hE_bis.(task_nm)(Eperf_trial_idx); % binary variable => no zscore
                             otherwise
                                 error('not ready yet');
                         end
@@ -6468,13 +6468,13 @@ if ismember(EperfModel,{'stick','boxcar'})
                             Eperf_modNames{n_EperfMods} = 'money chosen';
                             switch EperfModel_money_chosen
                                 case 1
-                                    Eperf_modVals(n_EperfMods,:) = raw_or_z(money_amount_chosen.(run_full_nm)(Eperf_trial_idx));
+                                    Eperf_modVals(n_EperfMods,:) = raw_or_z(money_amount_chosen.(task_nm)(Eperf_trial_idx));
                                 case 2
-                                    Eperf_modVals(n_EperfMods,:) = raw_or_z(abs_money_amount_chosen.(run_full_nm)(Eperf_trial_idx));
+                                    Eperf_modVals(n_EperfMods,:) = raw_or_z(abs_money_amount_chosen.(task_nm)(Eperf_trial_idx));
                                 case 3
-                                    Eperf_modVals(n_EperfMods,:) = raw_or_z(money_level_chosen.(run_full_nm)(Eperf_trial_idx));
+                                    Eperf_modVals(n_EperfMods,:) = raw_or_z(money_level_chosen.(task_nm)(Eperf_trial_idx));
                                 case 4
-                                    Eperf_modVals(n_EperfMods,:) = raw_or_z(abs_money_level_chosen.(run_full_nm)(Eperf_trial_idx));
+                                    Eperf_modVals(n_EperfMods,:) = raw_or_z(abs_money_level_chosen.(task_nm)(Eperf_trial_idx));
                                 otherwise
                                     error('not ready yet');
                             end
@@ -6486,11 +6486,11 @@ if ismember(EperfModel,{'stick','boxcar'})
                             Eperf_modNames{n_EperfMods} = 'effort chosen';
                             switch EperfModel_effort_chosen
                                 case 1
-                                    Eperf_modVals(n_EperfMods,:) = raw_or_z(E_chosen.(run_full_nm)(Eperf_trial_idx));
+                                    Eperf_modVals(n_EperfMods,:) = raw_or_z(E_chosen.(task_nm)(Eperf_trial_idx));
                                 case 3
-                                    Eperf_modVals(n_EperfMods,:) = raw_or_z(E_chosen_bis.(run_full_nm)(Eperf_trial_idx));
+                                    Eperf_modVals(n_EperfMods,:) = raw_or_z(E_chosen_bis.(task_nm)(Eperf_trial_idx));
                                 case 4
-                                    Eperf_modVals(n_EperfMods,:) = zscore(E_chosen.(run_full_nm)(Eperf_trial_idx));
+                                    Eperf_modVals(n_EperfMods,:) = zscore(E_chosen.(task_nm)(Eperf_trial_idx));
                                 otherwise
                                     error('not ready yet');
                             end
@@ -6503,13 +6503,13 @@ if ismember(EperfModel,{'stick','boxcar'})
                                 Eperf_modNames{n_EperfMods} = 'force peak';
                                 switch EperfModel_F_peak
                                     case 1
-                                        Eperf_modVals(n_EperfMods,:) = raw_or_z(forcePeak.(run_full_nm)(Eperf_trial_idx));
+                                        Eperf_modVals(n_EperfMods,:) = raw_or_z(forcePeak.(task_nm)(Eperf_trial_idx));
                                     case 2
-                                        Eperf_modVals(n_EperfMods,:) = raw_or_z(forcePeak_N.(run_full_nm)(Eperf_trial_idx));
+                                        Eperf_modVals(n_EperfMods,:) = raw_or_z(forcePeak_N.(task_nm)(Eperf_trial_idx));
                                     case 3
-                                        Eperf_modVals(n_EperfMods,:) = zscore(forcePeak.(run_full_nm)(Eperf_trial_idx));
+                                        Eperf_modVals(n_EperfMods,:) = zscore(forcePeak.(task_nm)(Eperf_trial_idx));
                                     case 4
-                                        Eperf_modVals(n_EperfMods,:) = zscore(forcePeak_N.(run_full_nm)(Eperf_trial_idx));
+                                        Eperf_modVals(n_EperfMods,:) = zscore(forcePeak_N.(task_nm)(Eperf_trial_idx));
                                     otherwise
                                         error('not ready yet');
                                 end
@@ -6521,21 +6521,21 @@ if ismember(EperfModel,{'stick','boxcar'})
                                 Eperf_modNames{n_EperfMods} = 'force integral';
                                 switch EperfModel_F_integral
                                     case 1
-                                        Eperf_modVals(n_EperfMods,:) = raw_or_z(AUC.(run_full_nm)(Eperf_trial_idx));
+                                        Eperf_modVals(n_EperfMods,:) = raw_or_z(AUC.(task_nm)(Eperf_trial_idx));
                                     case 2
-                                        Eperf_modVals(n_EperfMods,:) = raw_or_z(AUC_overshoot.(run_full_nm)(Eperf_trial_idx));
+                                        Eperf_modVals(n_EperfMods,:) = raw_or_z(AUC_overshoot.(task_nm)(Eperf_trial_idx));
                                     case 3
-                                        Eperf_modVals(n_EperfMods,:) = raw_or_z(AUC_N.(run_full_nm)(Eperf_trial_idx));
+                                        Eperf_modVals(n_EperfMods,:) = raw_or_z(AUC_N.(task_nm)(Eperf_trial_idx));
                                     case 4
-                                        Eperf_modVals(n_EperfMods,:) = raw_or_z(AUC_overshoot_N.(run_full_nm)(Eperf_trial_idx));
+                                        Eperf_modVals(n_EperfMods,:) = raw_or_z(AUC_overshoot_N.(task_nm)(Eperf_trial_idx));
                                     case 5
-                                        Eperf_modVals(n_EperfMods,:) = zscore(AUC.(run_full_nm)(Eperf_trial_idx));
+                                        Eperf_modVals(n_EperfMods,:) = zscore(AUC.(task_nm)(Eperf_trial_idx));
                                     case 6
-                                        Eperf_modVals(n_EperfMods,:) = zscore(AUC_overshoot.(run_full_nm)(Eperf_trial_idx));
+                                        Eperf_modVals(n_EperfMods,:) = zscore(AUC_overshoot.(task_nm)(Eperf_trial_idx));
                                     case 7
-                                        Eperf_modVals(n_EperfMods,:) = zscore(AUC_N.(run_full_nm)(Eperf_trial_idx));
+                                        Eperf_modVals(n_EperfMods,:) = zscore(AUC_N.(task_nm)(Eperf_trial_idx));
                                     case 8
-                                        Eperf_modVals(n_EperfMods,:) = zscore(AUC_overshoot_N.(run_full_nm)(Eperf_trial_idx));
+                                        Eperf_modVals(n_EperfMods,:) = zscore(AUC_overshoot_N.(task_nm)(Eperf_trial_idx));
                                     otherwise
                                         error('not ready yet');
                                 end
@@ -6549,21 +6549,21 @@ if ismember(EperfModel,{'stick','boxcar'})
                                 Eperf_modNames{n_EperfMods} = 'Em efficacy';
                                 switch EperfModel_efficacy
                                     case 1
-                                        Eperf_modVals(n_EperfMods,:) = raw_or_z(efficacy_with2first.(run_full_nm)(Eperf_trial_idx));
+                                        Eperf_modVals(n_EperfMods,:) = raw_or_z(efficacy_with2first.(task_nm)(Eperf_trial_idx));
                                     case 2
-                                        Eperf_modVals(n_EperfMods,:) = raw_or_z(efficacy_pureNback.(run_full_nm)(Eperf_trial_idx));
+                                        Eperf_modVals(n_EperfMods,:) = raw_or_z(efficacy_pureNback.(task_nm)(Eperf_trial_idx));
                                     case 3
-                                        Eperf_modVals(n_EperfMods,:) = raw_or_z(efficacy_bis_with2first.(run_full_nm)(Eperf_trial_idx));
+                                        Eperf_modVals(n_EperfMods,:) = raw_or_z(efficacy_bis_with2first.(task_nm)(Eperf_trial_idx));
                                     case 4
-                                        Eperf_modVals(n_EperfMods,:) = raw_or_z(efficacy_bis_pureNback.(run_full_nm)(Eperf_trial_idx));
+                                        Eperf_modVals(n_EperfMods,:) = raw_or_z(efficacy_bis_pureNback.(task_nm)(Eperf_trial_idx));
                                     case 5
-                                        Eperf_modVals(n_EperfMods,:) = zscore(efficacy_with2first.(run_full_nm)(Eperf_trial_idx));
+                                        Eperf_modVals(n_EperfMods,:) = zscore(efficacy_with2first.(task_nm)(Eperf_trial_idx));
                                     case 6
-                                        Eperf_modVals(n_EperfMods,:) = zscore(efficacy_pureNback.(run_full_nm)(Eperf_trial_idx));
+                                        Eperf_modVals(n_EperfMods,:) = zscore(efficacy_pureNback.(task_nm)(Eperf_trial_idx));
                                     case 7
-                                        Eperf_modVals(n_EperfMods,:) = zscore(efficacy_bis_with2first.(run_full_nm)(Eperf_trial_idx));
+                                        Eperf_modVals(n_EperfMods,:) = zscore(efficacy_bis_with2first.(task_nm)(Eperf_trial_idx));
                                     case 8
-                                        Eperf_modVals(n_EperfMods,:) = zscore(efficacy_bis_pureNback.(run_full_nm)(Eperf_trial_idx));
+                                        Eperf_modVals(n_EperfMods,:) = zscore(efficacy_bis_pureNback.(task_nm)(Eperf_trial_idx));
                                     otherwise
                                         error('not ready yet');
                                 end
@@ -6575,7 +6575,7 @@ if ismember(EperfModel,{'stick','boxcar'})
                                 Eperf_modNames{n_EperfMods} = 'avg RT N-back perf';
                                 switch EperfModel_RT_avg
                                     case 1
-                                        Eperf_modVals(n_EperfMods,:) = raw_or_z(RT_avg.(run_full_nm)(Eperf_trial_idx));
+                                        Eperf_modVals(n_EperfMods,:) = raw_or_z(RT_avg.(task_nm)(Eperf_trial_idx));
                                     otherwise
                                         error('not ready yet');
                                 end
@@ -6587,7 +6587,7 @@ if ismember(EperfModel,{'stick','boxcar'})
                                 Eperf_modNames{n_EperfMods} = 'nb correct';
                                 switch EperfModel_n_correct
                                     case 1
-                                        Eperf_modVals(n_EperfMods,:) = raw_or_z(n_correct.(run_full_nm)(Eperf_trial_idx));
+                                        Eperf_modVals(n_EperfMods,:) = raw_or_z(n_correct.(task_nm)(Eperf_trial_idx));
                                     otherwise
                                         error('not ready yet');
                                 end
@@ -6599,7 +6599,7 @@ if ismember(EperfModel,{'stick','boxcar'})
                                 Eperf_modNames{n_EperfMods} = 'nb errors';
                                 switch EperfModel_n_errors
                                     case 1
-                                        Eperf_modVals(n_EperfMods,:) = raw_or_z(n_errors.(run_full_nm)(Eperf_trial_idx));
+                                        Eperf_modVals(n_EperfMods,:) = raw_or_z(n_errors.(task_nm)(Eperf_trial_idx));
                                     otherwise
                                         error('not ready yet');
                                 end
@@ -6612,13 +6612,13 @@ if ismember(EperfModel,{'stick','boxcar'})
                             switch EperfModel_NV_chosen
                                 case 1
                                     Eperf_modNames{n_EperfMods} = 'NV chosen';
-                                    Eperf_modVals(n_EperfMods,:) = raw_or_z(NV_ch_min_unch.(run_full_nm)(Eperf_trial_idx));
+                                    Eperf_modVals(n_EperfMods,:) = raw_or_z(NV_ch_min_unch.(task_nm)(Eperf_trial_idx));
                                 case 2
                                     Eperf_modNames{n_EperfMods} = 'p(chosen)';
-                                    Eperf_modVals(n_EperfMods,:) = raw_or_z(pChosen.(run_full_nm)(Eperf_trial_idx));
+                                    Eperf_modVals(n_EperfMods,:) = raw_or_z(pChosen.(task_nm)(Eperf_trial_idx));
                                 case 3
                                     Eperf_modNames{n_EperfMods} = 'NVch-NVunch';
-                                    Eperf_modVals(n_EperfMods,:) = raw_or_z(NV_ch_min_unch_with_bias.(run_full_nm)(Eperf_trial_idx));
+                                    Eperf_modVals(n_EperfMods,:) = raw_or_z(NV_ch_min_unch_with_bias.(task_nm)(Eperf_trial_idx));
                                 otherwise
                                     error('not ready yet');
                             end
@@ -6630,19 +6630,19 @@ if ismember(EperfModel,{'stick','boxcar'})
                             switch EperfModel_NV_varOption
                                 case 1
                                     Eperf_modNames{n_EperfMods} = 'delta NV high E - low E';
-                                    Eperf_modVals(n_EperfMods,:) = raw_or_z(NV_varOption.(run_full_nm)(Eperf_trial_idx));
+                                    Eperf_modVals(n_EperfMods,:) = raw_or_z(NV_varOption.(task_nm)(Eperf_trial_idx));
                                 case 2
                                     Eperf_modNames{n_EperfMods} = '|delta NV high E - low E|';
-                                    Eperf_modVals(n_EperfMods,:) = raw_or_z(abs(NV_varOption.(run_full_nm)(Eperf_trial_idx)));
+                                    Eperf_modVals(n_EperfMods,:) = raw_or_z(abs(NV_varOption.(task_nm)(Eperf_trial_idx)));
                                 case 3
                                     Eperf_modNames{n_EperfMods} = 'p(choice=hE)';
-                                    Eperf_modVals(n_EperfMods,:) = raw_or_z(abs(pChoice_hE.(run_full_nm)(Eperf_trial_idx)));
+                                    Eperf_modVals(n_EperfMods,:) = raw_or_z(abs(pChoice_hE.(task_nm)(Eperf_trial_idx)));
                                 case 4
                                     Eperf_modNames{n_EperfMods} = 'delta NV high E - low E + bias';
-                                    Eperf_modVals(n_EperfMods,:) = raw_or_z(NV_varOption_plus_bias.(run_full_nm)(Eperf_trial_idx));
+                                    Eperf_modVals(n_EperfMods,:) = raw_or_z(NV_varOption_plus_bias.(task_nm)(Eperf_trial_idx));
                                 case 5
                                     Eperf_modNames{n_EperfMods} = '|delta NV high E - low E + bias|';
-                                    Eperf_modVals(n_EperfMods,:) = raw_or_z(abs(NV_varOption_plus_bias.(run_full_nm)(Eperf_trial_idx)));
+                                    Eperf_modVals(n_EperfMods,:) = raw_or_z(abs(NV_varOption_plus_bias.(task_nm)(Eperf_trial_idx)));
                                 otherwise
                                     error('not ready yet');
                             end
@@ -6654,19 +6654,19 @@ if ismember(EperfModel,{'stick','boxcar'})
                             switch EperfModel_NV_varOption_bis
                                 case 1
                                     Eperf_modNames{n_EperfMods} = 'delta NV high E - low E';
-                                    Eperf_modVals(n_EperfMods,:) = raw_or_z(NV_varOption.(run_full_nm)(Eperf_trial_idx));
+                                    Eperf_modVals(n_EperfMods,:) = raw_or_z(NV_varOption.(task_nm)(Eperf_trial_idx));
                                 case 2
                                     Eperf_modNames{n_EperfMods} = '|delta NV high E - low E|';
-                                    Eperf_modVals(n_EperfMods,:) = raw_or_z(abs(NV_varOption.(run_full_nm)(Eperf_trial_idx)));
+                                    Eperf_modVals(n_EperfMods,:) = raw_or_z(abs(NV_varOption.(task_nm)(Eperf_trial_idx)));
                                 case 3
                                     Eperf_modNames{n_EperfMods} = 'p(choice=hE)';
-                                    Eperf_modVals(n_EperfMods,:) = raw_or_z(abs(pChoice_hE.(run_full_nm)(Eperf_trial_idx)));
+                                    Eperf_modVals(n_EperfMods,:) = raw_or_z(abs(pChoice_hE.(task_nm)(Eperf_trial_idx)));
                                 case 4
                                     Eperf_modNames{n_EperfMods} = 'delta NV high E - low E + bias';
-                                    Eperf_modVals(n_EperfMods,:) = raw_or_z(NV_varOption_plus_bias.(run_full_nm)(Eperf_trial_idx));
+                                    Eperf_modVals(n_EperfMods,:) = raw_or_z(NV_varOption_plus_bias.(task_nm)(Eperf_trial_idx));
                                 case 5
                                     Eperf_modNames{n_EperfMods} = '|delta NV high E - low E + bias|';
-                                    Eperf_modVals(n_EperfMods,:) = raw_or_z(abs(NV_varOption_plus_bias.(run_full_nm)(Eperf_trial_idx)));
+                                    Eperf_modVals(n_EperfMods,:) = raw_or_z(abs(NV_varOption_plus_bias.(task_nm)(Eperf_trial_idx)));
                                 otherwise
                                     error('not ready yet');
                             end
@@ -6678,7 +6678,7 @@ if ismember(EperfModel,{'stick','boxcar'})
                             Eperf_modNames{n_EperfMods} = 'Effort latency';
                             switch EperfModel_RT1stAnswer
                                 case 1
-                                    Eperf_modVals(n_EperfMods,:) = raw_or_z(latency.(run_full_nm)(Eperf_trial_idx));
+                                    Eperf_modVals(n_EperfMods,:) = raw_or_z(latency.(task_nm)(Eperf_trial_idx));
                                 otherwise
                                     error('not ready yet');
                             end
@@ -6692,9 +6692,9 @@ if ismember(EperfModel,{'stick','boxcar'})
                                     Eperf_modNames{n_EperfMods} = 'fatigue';
                                     switch EperfModel_fatigue
                                         case 1
-                                            Eperf_modVals(n_EperfMods,:) = raw_or_z(fatigue.(run_full_nm)(Eperf_trial_idx));
+                                            Eperf_modVals(n_EperfMods,:) = raw_or_z(fatigue.(task_nm)(Eperf_trial_idx));
                                         case 2
-                                            Eperf_modVals(n_EperfMods,:) = zscore(fatigue.(run_full_nm)(Eperf_trial_idx));
+                                            Eperf_modVals(n_EperfMods,:) = zscore(fatigue.(task_nm)(Eperf_trial_idx));
                                         otherwise
                                             error('not ready yet');
                                     end
@@ -6706,7 +6706,7 @@ if ismember(EperfModel,{'stick','boxcar'})
                                     Eperf_modNames{n_EperfMods} = 'Ech_x_fatigue';
                                     switch EperfModel_Ech_x_fatigue
                                         case 1
-                                            Eperf_modVals(n_EperfMods,:) = raw_or_z(E_chosen.(run_full_nm)(Eperf_trial_idx).*fatigue.(run_full_nm)(Eperf_trial_idx));
+                                            Eperf_modVals(n_EperfMods,:) = raw_or_z(E_chosen.(task_nm)(Eperf_trial_idx).*fatigue.(task_nm)(Eperf_trial_idx));
                                         otherwise
                                             error('not ready yet');
                                     end
@@ -6719,21 +6719,21 @@ if ismember(EperfModel,{'stick','boxcar'})
                                     Eperf_modNames{n_EperfMods} = 'previous trial efficacy';
                                     switch EperfModel_prevEfficacy
                                         case 1
-                                            Eperf_modVals(n_EperfMods,:) = raw_or_z(prevEfficacy_with2first.(run_full_nm)(Eperf_trial_idx));
+                                            Eperf_modVals(n_EperfMods,:) = raw_or_z(prevEfficacy_with2first.(task_nm)(Eperf_trial_idx));
                                         case 2
-                                            Eperf_modVals(n_EperfMods,:) = raw_or_z(prevEfficacy_pureNback.(run_full_nm)(Eperf_trial_idx));
+                                            Eperf_modVals(n_EperfMods,:) = raw_or_z(prevEfficacy_pureNback.(task_nm)(Eperf_trial_idx));
                                         case 3
-                                            Eperf_modVals(n_EperfMods,:) = raw_or_z(prevEfficacy_bis_with2first.(run_full_nm)(Eperf_trial_idx));
+                                            Eperf_modVals(n_EperfMods,:) = raw_or_z(prevEfficacy_bis_with2first.(task_nm)(Eperf_trial_idx));
                                         case 4
-                                            Eperf_modVals(n_EperfMods,:) = raw_or_z(prevEfficacy_bis_pureNback.(run_full_nm)(Eperf_trial_idx));
+                                            Eperf_modVals(n_EperfMods,:) = raw_or_z(prevEfficacy_bis_pureNback.(task_nm)(Eperf_trial_idx));
                                         case 5
-                                            Eperf_modVals(n_EperfMods,:) = zscore(prevEfficacy_with2first.(run_full_nm)(Eperf_trial_idx));
+                                            Eperf_modVals(n_EperfMods,:) = zscore(prevEfficacy_with2first.(task_nm)(Eperf_trial_idx));
                                         case 6
-                                            Eperf_modVals(n_EperfMods,:) = zscore(prevEfficacy_pureNback.(run_full_nm)(Eperf_trial_idx));
+                                            Eperf_modVals(n_EperfMods,:) = zscore(prevEfficacy_pureNback.(task_nm)(Eperf_trial_idx));
                                         case 7
-                                            Eperf_modVals(n_EperfMods,:) = zscore(prevEfficacy_bis_with2first.(run_full_nm)(Eperf_trial_idx));
+                                            Eperf_modVals(n_EperfMods,:) = zscore(prevEfficacy_bis_with2first.(task_nm)(Eperf_trial_idx));
                                         case 8
-                                            Eperf_modVals(n_EperfMods,:) = zscore(prevEfficacy_bis_pureNback.(run_full_nm)(Eperf_trial_idx));
+                                            Eperf_modVals(n_EperfMods,:) = zscore(prevEfficacy_bis_pureNback.(task_nm)(Eperf_trial_idx));
                                         otherwise
                                             error('not ready yet');
                                     end
@@ -6745,13 +6745,13 @@ if ismember(EperfModel,{'stick','boxcar'})
                                     Eperf_modNames{n_EperfMods} = 'Ech_x_previous trial efficacy';
                                     switch EperfModel_Ech_x_prevEfficacy
                                         case 1
-                                            Eperf_modVals(n_EperfMods,:) = raw_or_z(E_chosen.(run_full_nm)(Eperf_trial_idx).*prevEfficacy_with2first.(run_full_nm)(Eperf_trial_idx));
+                                            Eperf_modVals(n_EperfMods,:) = raw_or_z(E_chosen.(task_nm)(Eperf_trial_idx).*prevEfficacy_with2first.(task_nm)(Eperf_trial_idx));
                                         case 2
-                                            Eperf_modVals(n_EperfMods,:) = raw_or_z(E_chosen.(run_full_nm)(Eperf_trial_idx).*prevEfficacy_pureNback.(run_full_nm)(Eperf_trial_idx));
+                                            Eperf_modVals(n_EperfMods,:) = raw_or_z(E_chosen.(task_nm)(Eperf_trial_idx).*prevEfficacy_pureNback.(task_nm)(Eperf_trial_idx));
                                         case 3
-                                            Eperf_modVals(n_EperfMods,:) = raw_or_z(E_chosen.(run_full_nm)(Eperf_trial_idx).*prevEfficacy_bis_with2first.(run_full_nm)(Eperf_trial_idx));
+                                            Eperf_modVals(n_EperfMods,:) = raw_or_z(E_chosen.(task_nm)(Eperf_trial_idx).*prevEfficacy_bis_with2first.(task_nm)(Eperf_trial_idx));
                                         case 4
-                                            Eperf_modVals(n_EperfMods,:) = raw_or_z(E_chosen.(run_full_nm)(Eperf_trial_idx).*prevEfficacy_bis_pureNback.(run_full_nm)(Eperf_trial_idx));
+                                            Eperf_modVals(n_EperfMods,:) = raw_or_z(E_chosen.(task_nm)(Eperf_trial_idx).*prevEfficacy_bis_pureNback.(task_nm)(Eperf_trial_idx));
                                         otherwise
                                             error('not ready yet');
                                     end
@@ -6764,13 +6764,13 @@ if ismember(EperfModel,{'stick','boxcar'})
                             Eperf_modNames{n_EperfMods} = 'trial number';
                             switch EperfModel_trialN
                                 case 1
-                                    Eperf_modVals(n_EperfMods,:) = raw_or_z(trialN.(run_full_nm)(Eperf_trial_idx));
+                                    Eperf_modVals(n_EperfMods,:) = raw_or_z(trialN.(task_nm)(Eperf_trial_idx));
                                 case 2
-                                    Eperf_modVals(n_EperfMods,:) = raw_or_z(trialN_dEch.(run_full_nm)(Eperf_trial_idx));
+                                    Eperf_modVals(n_EperfMods,:) = raw_or_z(trialN_dEch.(task_nm)(Eperf_trial_idx));
                                 case 3
-                                    Eperf_modVals(n_EperfMods,:) = raw_or_z(trialN_dEnonDef_min_Edef.(run_full_nm)(Eperf_trial_idx));
+                                    Eperf_modVals(n_EperfMods,:) = raw_or_z(trialN_dEnonDef_min_Edef.(task_nm)(Eperf_trial_idx));
                                 case 4
-                                    Eperf_modVals(n_EperfMods,:) = raw_or_z(trialN_dEnonDef.(run_full_nm)(Eperf_trial_idx));
+                                    Eperf_modVals(n_EperfMods,:) = raw_or_z(trialN_dEnonDef.(task_nm)(Eperf_trial_idx));
                                 otherwise
                                     error('not ready yet');
                             end
@@ -6782,9 +6782,9 @@ if ismember(EperfModel,{'stick','boxcar'})
                             Eperf_modNames{n_EperfMods} = 'confidence';
                             switch EperfModel_conf
                                 case 1 % binary variable => no zscore
-                                    Eperf_modVals(n_EperfMods,:) = confidence.(run_full_nm)(Eperf_trial_idx);
+                                    Eperf_modVals(n_EperfMods,:) = confidence.(task_nm)(Eperf_trial_idx);
                                 case {2,3,4} % confidence inferred by the model => ok to zscore
-                                    Eperf_modVals(n_EperfMods,:) = raw_or_z(confidence.(run_full_nm)(Eperf_trial_idx));
+                                    Eperf_modVals(n_EperfMods,:) = raw_or_z(confidence.(task_nm)(Eperf_trial_idx));
                                 otherwise
                                     error('not ready yet');
                             end
