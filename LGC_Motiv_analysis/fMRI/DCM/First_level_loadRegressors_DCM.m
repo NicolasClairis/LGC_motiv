@@ -70,9 +70,6 @@ E_chosen_bis = regressors.E_chosen_bis;
 E_unchosen = regressors.E_unchosen;
 E_varOption = regressors.E_varOption;
 RP_var_binary = regressors.RP_var_binary;
-NV_ch_min_unch = regressors.NV_ch_min_unch;
-NV_ch_min_unch_with_bias = regressors.NV_ch_min_unch_with_bias;
-pChosen = regressors.pChosen;
 R_amount_varOption = regressors.R_amount_varOption;
 R_level_varOption = regressors.R_level_varOption;
 z_R_amount_varOption = regressors.z_R_amount_varOption;
@@ -122,9 +119,6 @@ R_level_x_E_varOption = regressors.R_level_x_E_varOption;
 R_level_x_E_chosen = regressors.R_level_x_E_chosen;
 P_level_x_E_varOption = regressors.P_level_x_E_varOption;
 P_level_x_E_chosen = regressors.P_level_x_E_chosen;
-NV_varOption = regressors.NV_varOption;
-NV_varOption_plus_bias = regressors.NV_varOption_plus_bias;
-pChoice_hE = regressors.pChoice_hE;
 AUC = regressors.AUC;
 AUC_overshoot = regressors.AUC_overshoot;
 AUC_N = regressors.AUC_N;
@@ -142,13 +136,35 @@ trialN = regressors.trialN;
 trialN_dEch = regressors.trialN_dEch;
 trialN_dEnonDef_min_Edef = regressors.trialN_dEnonDef_min_Edef;
 trialN_dEnonDef = regressors.trialN_dEnonDef;
-confidence = regressors.confidence;
 latency = regressors.latency;
 n_correct = regressors.n_correct;
 n_errors = regressors.n_errors;
 RT_avg = regressors.RT_avg;
 forcePeak = regressors.forcePeak;
 forcePeak_N = regressors.forcePeak_N;
+% since model-related variables not always extracted, only extract them if
+% GLM asks for it
+if isfield(regressors,'NV_ch_min_unch')
+    NV_ch_min_unch = regressors.NV_ch_min_unch;
+end
+if isfield(regressors,'NV_ch_min_unch_with_bias')
+    NV_ch_min_unch_with_bias = regressors.NV_ch_min_unch_with_bias;
+end
+if isfield(regressors,'pChosen')
+    pChosen = regressors.pChosen;
+end
+if isfield(regressors,'NV_varOption')
+    NV_varOption = regressors.NV_varOption;
+end
+if isfield(regressors,'NV_varOption_plus_bias')
+    NV_varOption_plus_bias = regressors.NV_varOption_plus_bias;
+end
+if isfield(regressors,'pChoice_hE')
+    pChoice_hE = regressors.pChoice_hE;
+end
+if isfield(regressors,'confidence')
+    confidence = regressors.confidence;
+end
 
 %% load general GLM parameters
 orth_vars = GLMprm.gal.orth_vars;

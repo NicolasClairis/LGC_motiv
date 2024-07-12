@@ -688,12 +688,14 @@ for iRun = 1:n_runs
     if exist('NV_mdl_nm','var') &&...
             (strcmp(NV_mdl_nm(1:4),'mdl_') ||...
             strcmp(NV_mdl_nm(1:14),'bayesianModel_'))
-        regressors.NV_ch_min_unch.(['run',run_nm]) = NV_ch_min_unch;
-        regressors.NV_ch_min_unch_with_bias.(['run',run_nm]) = NV_ch_min_unch_with_bias;
-        regressors.NV_varOption.(['run',run_nm]) = NV_varOption;
-        regressors.NV_varOption_plus_bias.(['run',run_nm]) = NV_varOption_plus_bias;
-        regressors.pChoice_hE.(['run',run_nm]) = pChoice_hE;
-        regressors.pChosen.(['run',run_nm]) = pChosen;
+        % Note: all variables are flipped to be homogeneous with the others
+        % (otherwise problematic when pooling across sessions)
+        regressors.NV_ch_min_unch.(['run',run_nm]) = NV_ch_min_unch';
+        regressors.NV_ch_min_unch_with_bias.(['run',run_nm]) = NV_ch_min_unch_with_bias';
+        regressors.NV_varOption.(['run',run_nm]) = NV_varOption';
+        regressors.NV_varOption_plus_bias.(['run',run_nm]) = NV_varOption_plus_bias';
+        regressors.pChoice_hE.(['run',run_nm]) = pChoice_hE';
+        regressors.pChosen.(['run',run_nm]) = pChosen';
     end
     regressors.trialN.(['run',run_nm]) = trialN;
     regressors.trialN_dEch.(['run',run_nm]) = trialN_dEch;
@@ -768,7 +770,7 @@ for iTask = 1:nTasks
                 case 1
                     onsets.(onset_nm).(task_nm) = onsets.(onset_nm).(r_nm);
                 otherwise
-                    onsets.(onset_nm).(task_nm) = [onsets.(onset_nm).(task_nm);...
+                    onsets.(onset_nm).(task_nm) = [onsets.(onset_nm).(task_nm),...
                         onsets.(onset_nm).(r_nm)];
             end
         end % onset loop
@@ -780,7 +782,7 @@ for iTask = 1:nTasks
                 case 1
                     durations.(dur_nm).(task_nm) = durations.(dur_nm).(r_nm);
                 otherwise
-                    durations.(dur_nm).(task_nm) = [durations.(dur_nm).(task_nm);...
+                    durations.(dur_nm).(task_nm) = [durations.(dur_nm).(task_nm),...
                             durations.(dur_nm).(r_nm)];
             end
         end % duration loop
@@ -795,7 +797,7 @@ for iTask = 1:nTasks
                     case 1
                         regressors.(reg_nm).(task_nm) = regressors.(reg_nm).(r_nm);
                     otherwise
-                        regressors.(reg_nm).(task_nm) = [regressors.(reg_nm).(task_nm);...
+                        regressors.(reg_nm).(task_nm) = [regressors.(reg_nm).(task_nm),...
                             regressors.(reg_nm).(r_nm)];
                 end
             end % filter regressors that are specific to one task
@@ -817,7 +819,7 @@ for iRun = runs.runsToKeep
             case 1
                 onsets.(onset_nm).allTrials = onsets.(onset_nm).(r_nm);
             otherwise
-                onsets.(onset_nm).allTrials = [onsets.(onset_nm).allTrials;...
+                onsets.(onset_nm).allTrials = [onsets.(onset_nm).allTrials,...
                     onsets.(onset_nm).(r_nm)];
         end
     end % onset loop
@@ -829,7 +831,7 @@ for iRun = runs.runsToKeep
             case 1
                 durations.(dur_nm).allTrials = durations.(dur_nm).(r_nm);
             otherwise
-                durations.(dur_nm).allTrials = [durations.(dur_nm).allTrials;...
+                durations.(dur_nm).allTrials = [durations.(dur_nm).allTrials,...
                     durations.(dur_nm).(r_nm)];
         end
     end % duration loop
@@ -843,7 +845,7 @@ for iRun = runs.runsToKeep
                 case 1
                     regressors.(reg_nm).allTrials = regressors.(reg_nm).(r_nm);
                 otherwise
-                    regressors.(reg_nm).allTrials = [regressors.(reg_nm).allTrials;...
+                    regressors.(reg_nm).allTrials = [regressors.(reg_nm).allTrials,...
                         regressors.(reg_nm).(r_nm)];
             end
         end % filter regressors that are specific to one task
