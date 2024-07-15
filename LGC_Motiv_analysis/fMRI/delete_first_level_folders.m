@@ -24,6 +24,19 @@ switch bfieldCorr_or_raw
         bField = '_with_BiasFieldCorrection';
 end
 
+%% DCM 1st level or not? If yes, which DCM mode?
+DCM_or_not = questdlg('DCM 1st level or not?',...
+    'DCM',...
+    'normal','DCM',...
+    'normal');
+switch DCM_or_not
+    case 'normal'
+        DCM_nm = '';
+    case 'DCM'
+        DCM_nm = '_DCM';
+        [DCM_mode] = which_DCM_mode_for_GLM;
+end
+
 %% GLM choice
 GLM_str = inputdlg('What First level GLM do you want to delete?');
 GLM = str2double(GLM_str);
@@ -67,18 +80,25 @@ for iS = 1:NS
     subFullNm = ['CID',sub_nm];
     subj_folder = [root, filesep, subFullNm];
     subj_analysis_folder = [subj_folder,filesep,'fMRI_analysis',filesep,...
-        'functional',filesep,'preproc_sm_',num2str(sm_kernel),'mm',bField, filesep];
+        'functional',filesep,'preproc_sm_',num2str(sm_kernel),'mm',bField, DCM_nm filesep];
     if exist(subj_analysis_folder,'dir')
         cd(subj_analysis_folder);
         
-        [resultsFolderName, resultsFolderShortName] = fMRI_subFolder(subj_analysis_folder, GLM, condition);
+        switch DCM_or_not
+            case 'normal'
+                [resultsFolderName, resultsFolderShortName] = fMRI_subFolder(subj_analysis_folder, GLM, condition);
+            case 'DCM'
+                [resultsFolderName, resultsFolderShortName] = fMRI_subFolder_DCM(subj_analysis_folder, GLM, condition, DCM_mode);
+        end
         if exist(resultsFolderName,'dir')
-            rmdir(resultsFolderShortName,'s');
+            rmdir(resultsFolderShortName,'s'); % remove GLM folder
             disp([resultsFolderShortName, ' correctly removed for ',sub_nm]);
         else
+            % GLM folder doest not exist for that subject
             disp([resultsFolderShortName, ' not found for ',sub_nm]);
         end
     else
+        % folder containing all 1st levels doe not exist for that subject
         disp([subj_analysis_folder, ' not found for ',sub_nm]);
     end
 end
