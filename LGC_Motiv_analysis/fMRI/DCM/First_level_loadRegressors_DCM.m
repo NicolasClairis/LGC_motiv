@@ -288,6 +288,7 @@ if ismember(allCrossesModel,{'stick','boxcar'})
         case 1 % all sessions independent
             for iRun = 1:n_runs
                 run_full_nm = ['run',num2str(iRun)];
+                run_nb_nm = ['r',num2str(runs.runsToKeep(iRun))];
                 iCond = iCond + 1; % change for each run
                 switch allCrossesModel
                     case 'stick'
@@ -303,7 +304,7 @@ if ismember(allCrossesModel,{'stick','boxcar'})
                 
                 %% load all
                 [matlabbatch] = First_level_loadEachCondition_DCM(matlabbatch, sub_idx, iCond,...
-                    'fixation cross', onsets.allCrossesOnsets.(run_full_nm), modelAllCrossesdur,...
+                    ['fixation cross ',run_nb_nm], onsets.allCrossesOnsets.(run_full_nm), modelAllCrossesdur,...
                     n_allCrossesMods, allCrosses_modNames, allCrosses_modVals,...
                     orth_vars, onsets_only_GLM);
             end % run loop
@@ -325,7 +326,7 @@ if ismember(allCrossesModel,{'stick','boxcar'})
                 
                 %% load all
                 [matlabbatch] = First_level_loadEachCondition_DCM(matlabbatch, sub_idx, iCond,...
-                    'fixation cross', onsets.allCrossesOnsets.(task_nm), modelAllCrossesdur,...
+                    ['fixation cross ',task_nm], onsets.allCrossesOnsets.(task_nm), modelAllCrossesdur,...
                     n_allCrossesMods, allCrosses_modNames, allCrosses_modVals,...
                     orth_vars, onsets_only_GLM);
             end % task loop
@@ -362,6 +363,7 @@ if ismember(preChoiceCrossModel,{'stick','boxcar','boxcar_bis'})
         case 1 % all sessions independent
             for iRun = 1:n_runs
                 run_full_nm = ['run',num2str(iRun)];
+                run_nb_nm = ['r',num2str(runs.runsToKeep(iRun))];
                 
                 iCond = iCond + 1;
                 preChoiceCrossOnsets = onsets.preChoiceCrossOnsets.(run_full_nm);
@@ -382,7 +384,7 @@ if ismember(preChoiceCrossModel,{'stick','boxcar','boxcar_bis'})
                 % RT (first regressor)
                 if preChoiceCrossModel_RT > 0 && ismember(preChoiceCrossModel_RT,[4,5,6])
                     n_preChoiceCrossMods = n_preChoiceCrossMods + 1;
-                    preChoiceCross_modNames{n_preChoiceCrossMods} = 'choice RT';
+                    preChoiceCross_modNames{n_preChoiceCrossMods} = ['choice RT ',run_nb_nm];
                     switch preChoiceCrossModel_RT
                         case 4
                             preChoiceCross_modVals(n_preChoiceCrossMods,:) = raw_or_z(choice_RT.(run_full_nm));
@@ -398,11 +400,11 @@ if ismember(preChoiceCrossModel,{'stick','boxcar','boxcar_bis'})
                     case 0
                     case 1
                         n_preChoiceCrossMods = n_preChoiceCrossMods + 1;
-                        preChoiceCross_modNames{n_preChoiceCrossMods} = 'choice = high effort';
+                        preChoiceCross_modNames{n_preChoiceCrossMods} = ['choice = high effort ',run_nb_nm];
                         preChoiceCross_modVals(n_preChoiceCrossMods,:) = choice_hE.(run_full_nm); % binary variable => no zscore
                     case 2
                         n_preChoiceCrossMods = n_preChoiceCrossMods + 1;
-                        preChoiceCross_modNames{n_preChoiceCrossMods} = 'choice = high effort';
+                        preChoiceCross_modNames{n_preChoiceCrossMods} = ['choice = high effort ',run_nb_nm];
                         preChoiceCross_modVals(n_preChoiceCrossMods,:) = choice_hE_bis.(run_full_nm); % binary variable => no zscore
                     otherwise
                         error('not ready yet');
@@ -411,7 +413,7 @@ if ismember(preChoiceCrossModel,{'stick','boxcar','boxcar_bis'})
                 % effort chosen
                 if preChoiceCrossModel_E_chosen > 0
                     n_preChoiceCrossMods = n_preChoiceCrossMods + 1;
-                    preChoiceCross_modNames{n_preChoiceCrossMods} = 'effort chosen';
+                    preChoiceCross_modNames{n_preChoiceCrossMods} = ['effort chosen ',run_nb_nm];
                     switch preChoiceCrossModel_E_chosen
                         case 0
                         case 1
@@ -428,7 +430,7 @@ if ismember(preChoiceCrossModel,{'stick','boxcar','boxcar_bis'})
                 % RT (last regressor)
                 if preChoiceCrossModel_RT > 0 && ismember(preChoiceCrossModel_RT,[1,2,3])
                     n_preChoiceCrossMods = n_preChoiceCrossMods + 1;
-                    preChoiceCross_modNames{n_preChoiceCrossMods} = 'choice RT';
+                    preChoiceCross_modNames{n_preChoiceCrossMods} = ['choice RT ',run_nb_nm];
                     switch preChoiceCrossModel_RT
                         case 1
                             preChoiceCross_modVals(n_preChoiceCrossMods,:) = raw_or_z(choice_RT.(run_full_nm));
@@ -441,7 +443,7 @@ if ismember(preChoiceCrossModel,{'stick','boxcar','boxcar_bis'})
                 
                 %% load all
                 [matlabbatch] = First_level_loadEachCondition_DCM(matlabbatch, sub_idx, iCond,...
-                    'preChoice fixation cross', preChoiceCrossOnsets, modelPreChoiceCrossdur,...
+                    ['preChoice fixation cross ',run_nb_nm], preChoiceCrossOnsets, modelPreChoiceCrossdur,...
                     n_preChoiceCrossMods, preChoiceCross_modNames, preChoiceCross_modVals,...
                     orth_vars, onsets_only_GLM);
             end % run loop
@@ -467,7 +469,7 @@ if ismember(preChoiceCrossModel,{'stick','boxcar','boxcar_bis'})
                 % RT (first regressor)
                 if preChoiceCrossModel_RT > 0 && ismember(preChoiceCrossModel_RT,[4,5,6])
                     n_preChoiceCrossMods = n_preChoiceCrossMods + 1;
-                    preChoiceCross_modNames{n_preChoiceCrossMods} = 'choice RT';
+                    preChoiceCross_modNames{n_preChoiceCrossMods} = ['choice RT ',task_nm];
                     switch preChoiceCrossModel_RT
                         case 4
                             preChoiceCross_modVals(n_preChoiceCrossMods,:) = raw_or_z(choice_RT.(task_nm));
@@ -483,11 +485,11 @@ if ismember(preChoiceCrossModel,{'stick','boxcar','boxcar_bis'})
                     case 0
                     case 1
                         n_preChoiceCrossMods = n_preChoiceCrossMods + 1;
-                        preChoiceCross_modNames{n_preChoiceCrossMods} = 'choice = high effort';
+                        preChoiceCross_modNames{n_preChoiceCrossMods} = ['choice = high effort ',task_nm];
                         preChoiceCross_modVals(n_preChoiceCrossMods,:) = choice_hE.(task_nm); % binary variable => no zscore
                     case 2
                         n_preChoiceCrossMods = n_preChoiceCrossMods + 1;
-                        preChoiceCross_modNames{n_preChoiceCrossMods} = 'choice = high effort';
+                        preChoiceCross_modNames{n_preChoiceCrossMods} = ['choice = high effort ',task_nm];
                         preChoiceCross_modVals(n_preChoiceCrossMods,:) = choice_hE_bis.(task_nm); % binary variable => no zscore
                     otherwise
                         error('not ready yet');
@@ -496,7 +498,7 @@ if ismember(preChoiceCrossModel,{'stick','boxcar','boxcar_bis'})
                 % effort chosen
                 if preChoiceCrossModel_E_chosen > 0
                     n_preChoiceCrossMods = n_preChoiceCrossMods + 1;
-                    preChoiceCross_modNames{n_preChoiceCrossMods} = 'effort chosen';
+                    preChoiceCross_modNames{n_preChoiceCrossMods} = ['effort chosen ',task_nm];
                     switch preChoiceCrossModel_E_chosen
                         case 0
                         case 1
@@ -513,7 +515,7 @@ if ismember(preChoiceCrossModel,{'stick','boxcar','boxcar_bis'})
                 % RT (last regressor)
                 if preChoiceCrossModel_RT > 0 && ismember(preChoiceCrossModel_RT,[1,2,3])
                     n_preChoiceCrossMods = n_preChoiceCrossMods + 1;
-                    preChoiceCross_modNames{n_preChoiceCrossMods} = 'choice RT';
+                    preChoiceCross_modNames{n_preChoiceCrossMods} = ['choice RT ',task_nm];
                     switch preChoiceCrossModel_RT
                         case 1
                             preChoiceCross_modVals(n_preChoiceCrossMods,:) = raw_or_z(choice_RT.(task_nm));
@@ -526,7 +528,7 @@ if ismember(preChoiceCrossModel,{'stick','boxcar','boxcar_bis'})
                 
                 %% load all
                 [matlabbatch] = First_level_loadEachCondition_DCM(matlabbatch, sub_idx, iCond,...
-                    'preChoice fixation cross', preChoiceCrossOnsets, modelPreChoiceCrossdur,...
+                    ['preChoice fixation cross ',task_nm], preChoiceCrossOnsets, modelPreChoiceCrossdur,...
                     n_preChoiceCrossMods, preChoiceCross_modNames, preChoiceCross_modVals,...
                     orth_vars, onsets_only_GLM);
             end % task loop
@@ -674,6 +676,7 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                 case 1 % all sessions independent
                     for iRun = 1:n_runs
                         run_full_nm = ['run',num2str(iRun)];
+                        run_nb_nm = ['r',num2str(runs.runsToKeep(iRun))];
                         
                         % extract trial index for the current loop
                         switch RP_dispChoice_nm
@@ -729,7 +732,7 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                         % RT (first regressor)
                         if choiceModel_RT > 0 && ~ismember(choiceModel_RT,[1,2,3])
                             n_choiceMods = n_choiceMods + 1;
-                            choice_modNames{n_choiceMods} = 'choice RT';
+                            choice_modNames{n_choiceMods} = ['choice RT ',run_nb_nm];
                             switch choiceModel_RT
                                 case 4
                                     choice_modVals(n_choiceMods,:) = raw_or_z(choice_RT.(run_full_nm)(choice_trial_idx));
@@ -745,13 +748,13 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                             n_choiceMods = n_choiceMods + 1;
                             switch choiceModel_NV_chosen
                                 case 4
-                                    choice_modNames{n_choiceMods} = 'NVch-NVunch';
+                                    choice_modNames{n_choiceMods} = ['NVch-NVunch ',run_nb_nm];
                                     choice_modVals(n_choiceMods,:) = raw_or_z(NV_ch_min_unch.(run_full_nm)(choice_trial_idx));
                                 case 5
-                                    choice_modNames{n_choiceMods} = 'p(chosen)';
+                                    choice_modNames{n_choiceMods} = ['p(chosen) ',run_nb_nm];
                                     choice_modVals(n_choiceMods,:) = raw_or_z(pChosen.(run_full_nm)(choice_trial_idx));
                                 case 6
-                                    choice_modNames{n_choiceMods} = 'NVch-NVunch';
+                                    choice_modNames{n_choiceMods} = ['NVch-NVunch ',run_nb_nm];
                                     choice_modVals(n_choiceMods,:) = raw_or_z(NV_ch_min_unch_with_bias.(run_full_nm)(choice_trial_idx));
                                 otherwise
                                     error('not ready yet');
@@ -762,7 +765,7 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                         if choiceModel_RP == 1
                             if strcmp(RP_dispChoice_nm,'RP')
                                 n_choiceMods = n_choiceMods + 1;
-                                choice_modNames{n_choiceMods} = 'R vs P';
+                                choice_modNames{n_choiceMods} = ['R vs P ',run_nb_nm];
                                 choice_modVals(n_choiceMods,:) = RP_var_binary.(run_full_nm)(choice_trial_idx); % binary variable => no zscore
                             else
                                 error('cannot split R and P trials and add a variable representing R/P trials') ;
@@ -774,11 +777,11 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                             case 0
                             case 1
                                 n_choiceMods = n_choiceMods + 1;
-                                choice_modNames{n_choiceMods} = 'choice = high effort';
+                                choice_modNames{n_choiceMods} = ['choice = high effort ',run_nb_nm];
                                 choice_modVals(n_choiceMods,:) = choice_hE.(run_full_nm)(choice_trial_idx); % binary variable => no zscore
                             case 2
                                 n_choiceMods = n_choiceMods + 1;
-                                choice_modNames{n_choiceMods} = 'choice = high effort';
+                                choice_modNames{n_choiceMods} = ['choice = high effort ',run_nb_nm];
                                 choice_modVals(n_choiceMods,:) = choice_hE_bis.(run_full_nm)(choice_trial_idx); % binary variable => no zscore
                             otherwise
                                 error('case not ready yet');
@@ -787,7 +790,7 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                         % reward for the non-default option
                         if choiceModel_R_varOption > 0
                             n_choiceMods = n_choiceMods + 1;
-                            choice_modNames{n_choiceMods} = 'R non-default';
+                            choice_modNames{n_choiceMods} = ['R non-default ',run_nb_nm];
                             switch choiceModel_R_varOption
                                 case 1 % R high effort option (amount)
                                     choice_modVals(n_choiceMods,:) = raw_or_z(R_amount_varOption.(run_full_nm)(choice_trial_idx));
@@ -803,7 +806,7 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                         % reward for the chosen option
                         if choiceModel_R_chosen > 0
                             n_choiceMods = n_choiceMods + 1;
-                            choice_modNames{n_choiceMods} = 'R chosen';
+                            choice_modNames{n_choiceMods} = ['R chosen ',run_nb_nm];
                             switch choiceModel_R_chosen
                                 case 1 % R chosen option amount
                                     choice_modVals(n_choiceMods,:) = raw_or_z(R_amount_chosen.(run_full_nm)(choice_trial_idx));
@@ -821,7 +824,7 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                         % punishment for the non-default option
                         if choiceModel_P_varOption > 0
                             n_choiceMods = n_choiceMods + 1;
-                            choice_modNames{n_choiceMods} = 'P non-default';
+                            choice_modNames{n_choiceMods} = ['P non-default ',run_nb_nm];
                             switch choiceModel_P_varOption
                                 case 1 % R high effort option (amount)
                                     choice_modVals(n_choiceMods,:) = raw_or_z(P_amount_varOption.(run_full_nm)(choice_trial_idx));
@@ -839,7 +842,7 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                         % punishment for the chosen option
                         if choiceModel_P_chosen > 0
                             n_choiceMods = n_choiceMods + 1;
-                            choice_modNames{n_choiceMods} = 'P chosen';
+                            choice_modNames{n_choiceMods} = ['P chosen ',run_nb_nm];
                             switch choiceModel_P_chosen
                                 case 1 % R high effort option (amount)
                                     choice_modVals(n_choiceMods,:) = raw_or_z(P_amount_chosen.(run_full_nm)(choice_trial_idx));
@@ -857,7 +860,7 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                         % money left
                         if choiceModel_moneyLeft > 0
                             n_choiceMods = n_choiceMods + 1;
-                            choice_modNames{n_choiceMods} = 'money left';
+                            choice_modNames{n_choiceMods} = ['money left ',run_nb_nm];
                             switch choiceModel_moneyLeft
                                 case 1
                                     choice_modVals(n_choiceMods,:) = raw_or_z(money_amount_left.(run_full_nm)(choice_trial_idx));
@@ -875,7 +878,7 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                         % money right
                         if choiceModel_moneyRight > 0
                             n_choiceMods = n_choiceMods + 1;
-                            choice_modNames{n_choiceMods} = 'money right';
+                            choice_modNames{n_choiceMods} = ['money right ',run_nb_nm];
                             switch choiceModel_moneyRight
                                 case 1
                                     choice_modVals(n_choiceMods,:) = raw_or_z(money_amount_right.(run_full_nm)(choice_trial_idx));
@@ -893,7 +896,7 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                         % money chosen
                         if choiceModel_moneyChosen > 0
                             n_choiceMods = n_choiceMods + 1;
-                            choice_modNames{n_choiceMods} = 'money chosen';
+                            choice_modNames{n_choiceMods} = ['money chosen ',run_nb_nm];
                             switch choiceModel_moneyChosen
                                 case 1
                                     choice_modVals(n_choiceMods,:) = raw_or_z(money_amount_chosen.(run_full_nm)(choice_trial_idx));
@@ -911,7 +914,7 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                         % money unchosen
                         if choiceModel_moneyUnchosen > 0
                             n_choiceMods = n_choiceMods + 1;
-                            choice_modNames{n_choiceMods} = 'money unchosen';
+                            choice_modNames{n_choiceMods} = ['money unchosen ',run_nb_nm];
                             switch choiceModel_moneyUnchosen
                                 case 1
                                     choice_modVals(n_choiceMods,:) = raw_or_z(money_amount_unchosen.(run_full_nm)(choice_trial_idx));
@@ -929,7 +932,7 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                         % money associated to the non-default option
                         if choiceModel_moneyNonDefault > 0
                             n_choiceMods = n_choiceMods + 1;
-                            choice_modNames{n_choiceMods} = 'money non-default';
+                            choice_modNames{n_choiceMods} = ['money non-default ',run_nb_nm];
                             switch choiceModel_moneyNonDefault
                                 case 1
                                     choice_modVals(n_choiceMods,:) = raw_or_z(money_amount_varOption.(run_full_nm)(choice_trial_idx));
@@ -947,7 +950,7 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                         % money chosen - money unchosen
                         if choiceModel_moneyChosen_min_moneyUnchosen > 0
                             n_choiceMods = n_choiceMods + 1;
-                            choice_modNames{n_choiceMods} = 'money chosen - unchosen';
+                            choice_modNames{n_choiceMods} = ['money chosen - unchosen ',run_nb_nm];
                             switch choiceModel_moneyChosen_min_moneyUnchosen
                                 case 1
                                     choice_modVals(n_choiceMods,:) = raw_or_z(moneyChosen_min_moneyUnchosen_amount.(run_full_nm)(choice_trial_idx));
@@ -959,7 +962,7 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                         % money chosen - money fixed option (low R low E)
                         if choiceModel_moneyChosen_min_moneyDefault > 0
                             n_choiceMods = n_choiceMods + 1;
-                            choice_modNames{n_choiceMods} = 'money chosen - money fixed';
+                            choice_modNames{n_choiceMods} = ['money chosen - money fixed ',run_nb_nm];
                             switch choiceModel_moneyChosen_min_moneyDefault
                                 case 1
                                     choice_modVals(n_choiceMods,:) = raw_or_z(moneyChosen_min_moneyFixed_amount.(run_full_nm)(choice_trial_idx));
@@ -973,7 +976,7 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                         % sum of money
                         if choiceModel_moneySum > 0
                             n_choiceMods = n_choiceMods + 1;
-                            choice_modNames{n_choiceMods} = 'money sum';
+                            choice_modNames{n_choiceMods} = ['money sum ',run_nb_nm];
                             switch choiceModel_moneySum
                                 case 1
                                     choice_modVals(n_choiceMods,:) = raw_or_z(money_amount_sum.(run_full_nm)(choice_trial_idx));
@@ -985,7 +988,7 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                         % effort left
                         if choiceModel_E_left > 0
                             n_choiceMods = n_choiceMods + 1;
-                            choice_modNames{n_choiceMods} = 'E left';
+                            choice_modNames{n_choiceMods} = ['E left ',run_nb_nm];
                             switch choiceModel_E_left
                                 case 1
                                     choice_modVals(n_choiceMods,:) = raw_or_z(E_left.(run_full_nm)(choice_trial_idx));
@@ -997,7 +1000,7 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                         % effort right
                         if choiceModel_E_right > 0
                             n_choiceMods = n_choiceMods + 1;
-                            choice_modNames{n_choiceMods} = 'E right';
+                            choice_modNames{n_choiceMods} = ['E right ',run_nb_nm];
                             switch choiceModel_E_right
                                 case 1
                                     choice_modVals(n_choiceMods,:) = raw_or_z(E_right.(run_full_nm)(choice_trial_idx));
@@ -1009,7 +1012,7 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                         % effort chosen
                         if choiceModel_E_chosen > 0
                             n_choiceMods = n_choiceMods + 1;
-                            choice_modNames{n_choiceMods} = 'effort chosen';
+                            choice_modNames{n_choiceMods} = ['effort chosen ',run_nb_nm];
                             switch choiceModel_E_chosen
                                 case 1
                                     choice_modVals(n_choiceMods,:) = raw_or_z(E_chosen.(run_full_nm)(choice_trial_idx));
@@ -1025,7 +1028,7 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                         % effort unchosen
                         if choiceModel_E_unchosen > 0
                             n_choiceMods = n_choiceMods + 1;
-                            choice_modNames{n_choiceMods} = 'effort unchosen';
+                            choice_modNames{n_choiceMods} = ['effort unchosen ',run_nb_nm];
                             switch choiceModel_E_unchosen
                                 case 1
                                     choice_modVals(n_choiceMods,:) = raw_or_z(E_unchosen.(run_full_nm)(choice_trial_idx));
@@ -1037,7 +1040,7 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                         % effort non-default option
                         if choiceModel_E_nonDefault > 0
                             n_choiceMods = n_choiceMods + 1;
-                            choice_modNames{n_choiceMods} = 'effort non-default option';
+                            choice_modNames{n_choiceMods} = ['effort non-default option ',run_nb_nm];
                             switch choiceModel_E_nonDefault
                                 case 1
                                     choice_modVals(n_choiceMods,:) = raw_or_z(E_varOption.(run_full_nm)(choice_trial_idx));
@@ -1049,7 +1052,7 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                         % effort chosen - unchosen
                         if choiceModel_Ech_min_Eunch > 0
                             n_choiceMods = n_choiceMods + 1;
-                            choice_modNames{n_choiceMods} = 'effort chosen - unchosen';
+                            choice_modNames{n_choiceMods} = ['effort chosen - unchosen ',run_nb_nm];
                             switch choiceModel_Ech_min_Eunch
                                 case 1
                                     choice_modVals(n_choiceMods,:) = raw_or_z(E_chosen_min_E_unchosen.(run_full_nm)(choice_trial_idx));
@@ -1061,7 +1064,7 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                         % effort chosen - fixed option
                         if choiceModel_Ech_min_Efixed > 0
                             n_choiceMods = n_choiceMods + 1;
-                            choice_modNames{n_choiceMods} = 'effort chosen - fixed';
+                            choice_modNames{n_choiceMods} = ['effort chosen - fixed ',run_nb_nm];
                             switch choiceModel_Ech_min_Efixed
                                 case 1
                                     choice_modVals(n_choiceMods,:) = raw_or_z(Ech_min_Efixed.(run_full_nm)(choice_trial_idx));
@@ -1073,7 +1076,7 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                         % sum of efforts
                         if choiceModel_E_sum > 0
                             n_choiceMods = n_choiceMods + 1;
-                            choice_modNames{n_choiceMods} = 'effort sum';
+                            choice_modNames{n_choiceMods} = ['effort sum ',run_nb_nm];
                             switch choiceModel_E_sum
                                 case 1
                                     choice_modVals(n_choiceMods,:) = raw_or_z(E_sum.(run_full_nm)(choice_trial_idx));
@@ -1085,7 +1088,7 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                         % money level*effort level high E option
                         if choiceModel_money_level_x_E_varOption > 0
                             n_choiceMods = n_choiceMods + 1;
-                            choice_modNames{n_choiceMods} = 'money x effort non-default option';
+                            choice_modNames{n_choiceMods} = ['money x effort non-default option ',run_nb_nm];
                             switch choiceModel_money_level_x_E_varOption
                                 case 1
                                     choice_modVals(n_choiceMods,:) = raw_or_z(money_level_x_E_varOption.(run_full_nm)(choice_trial_idx));
@@ -1097,7 +1100,7 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                         % money level * effort chosen
                         if choiceModel_money_level_x_E_chosen > 0
                             n_choiceMods = n_choiceMods + 1;
-                            choice_modNames{n_choiceMods} = 'money x effort chosen';
+                            choice_modNames{n_choiceMods} = ['money x effort chosen ',run_nb_nm]';
                             switch choiceModel_money_level_x_E_chosen
                                 case 1
                                     choice_modVals(n_choiceMods,:) = raw_or_z(money_level_x_E_chosen.(run_full_nm)(choice_trial_idx));
@@ -1109,7 +1112,7 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                         % R level * effort high E option
                         if choiceModel_R_level_x_E_varOption > 0
                             n_choiceMods = n_choiceMods + 1;
-                            choice_modNames{n_choiceMods} = 'R x E non-default option';
+                            choice_modNames{n_choiceMods} = ['R x E non-default option ',run_nb_nm];
                             switch choiceModel_R_level_x_E_varOption
                                 case 1
                                     choice_modVals(n_choiceMods,:) = raw_or_z(R_level_x_E_varOption.(run_full_nm)(choice_trial_idx));
@@ -1121,7 +1124,7 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                         % R level * effort chosen
                         if choiceModel_R_level_x_E_chosen > 0
                             n_choiceMods = n_choiceMods + 1;
-                            choice_modNames{n_choiceMods} = 'R x E chosen';
+                            choice_modNames{n_choiceMods} = ['R x E chosen ',run_nb_nm];
                             switch choiceModel_R_level_x_E_chosen
                                 case 1
                                     choice_modVals(n_choiceMods,:) = raw_or_z(R_level_x_E_chosen.(run_full_nm)(choice_trial_idx));
@@ -1133,7 +1136,7 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                         % P level * effort high E option
                         if choiceModel_P_level_x_E_varOption > 0
                             n_choiceMods = n_choiceMods + 1;
-                            choice_modNames{n_choiceMods} = 'P x E non-default option';
+                            choice_modNames{n_choiceMods} = ['P x E non-default option ',run_nb_nm];
                             switch choiceModel_P_level_x_E_varOption
                                 case 1
                                     choice_modVals(n_choiceMods,:) = raw_or_z(P_level_x_E_varOption.(run_full_nm)(choice_trial_idx));
@@ -1145,7 +1148,7 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                         % P level * effort chosen
                         if choiceModel_P_level_x_E_chosen > 0
                             n_choiceMods = n_choiceMods + 1;
-                            choice_modNames{n_choiceMods} = 'P x E chosen';
+                            choice_modNames{n_choiceMods} = ['P x E chosen ',run_nb_nm];
                             switch choiceModel_P_level_x_E_chosen
                                 case 1
                                     choice_modVals(n_choiceMods,:) = raw_or_z(P_level_x_E_chosen.(run_full_nm)(choice_trial_idx));
@@ -1159,13 +1162,13 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                             n_choiceMods = n_choiceMods + 1;
                             switch choiceModel_NV_chosen
                                 case 1
-                                    choice_modNames{n_choiceMods} = 'NVch-NVunch';
+                                    choice_modNames{n_choiceMods} = ['NVch-NVunch ',run_nb_nm];
                                     choice_modVals(n_choiceMods,:) = raw_or_z(NV_ch_min_unch.(run_full_nm)(choice_trial_idx));
                                 case 2
-                                    choice_modNames{n_choiceMods} = 'p(chosen)';
+                                    choice_modNames{n_choiceMods} = ['p(chosen) ',run_nb_nm];
                                     choice_modVals(n_choiceMods,:) = raw_or_z(pChosen.(run_full_nm)(choice_trial_idx));
                                 case 3
-                                    choice_modNames{n_choiceMods} = 'NVch-NVunch';
+                                    choice_modNames{n_choiceMods} = ['NVch-NVunch ',run_nb_nm];
                                     choice_modVals(n_choiceMods,:) = raw_or_z(NV_ch_min_unch_with_bias.(run_full_nm)(choice_trial_idx));
                                 otherwise
                                     error('not ready yet');
@@ -1177,19 +1180,19 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                             n_choiceMods = n_choiceMods + 1;
                             switch choiceModel_NV_varOption
                                 case 1
-                                    choice_modNames{n_choiceMods} = 'delta NV high E - low E';
+                                    choice_modNames{n_choiceMods} = ['delta NV high E - low E ',run_nb_nm];
                                     choice_modVals(n_choiceMods,:) = raw_or_z(NV_varOption.(run_full_nm)(choice_trial_idx));
                                 case 2
-                                    choice_modNames{n_choiceMods} = '|delta NV high E - low E|';
+                                    choice_modNames{n_choiceMods} = ['|delta NV high E - low E| ',run_nb_nm];
                                     choice_modVals(n_choiceMods,:) = raw_or_z(abs(NV_varOption.(run_full_nm)(choice_trial_idx)));
                                 case 3
-                                    choice_modNames{n_choiceMods} = 'p(choice=hE)';
+                                    choice_modNames{n_choiceMods} = ['p(choice=hE) ',run_nb_nm];
                                     choice_modVals(n_choiceMods,:) = raw_or_z(pChoice_hE.(run_full_nm)(choice_trial_idx));
                                 case 4
-                                    choice_modNames{n_choiceMods} = 'delta NV high E - low E + bias';
+                                    choice_modNames{n_choiceMods} = ['delta NV high E - low E + bias ',run_nb_nm];
                                     choice_modVals(n_choiceMods,:) = raw_or_z(NV_varOption_plus_bias.(run_full_nm)(choice_trial_idx));
                                 case 5
-                                    choice_modNames{n_choiceMods} = '|delta NV high E - low E + bias|';
+                                    choice_modNames{n_choiceMods} = ['|delta NV high E - low E + bias| ',run_nb_nm];
                                     choice_modVals(n_choiceMods,:) = raw_or_z(abs(NV_varOption_plus_bias.(run_full_nm)(choice_trial_idx)));
                                 otherwise
                                     error('not ready yet');
@@ -1201,19 +1204,19 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                             n_choiceMods = n_choiceMods + 1;
                             switch choiceModel_NV_varOption_bis
                                 case 1
-                                    choice_modNames{n_choiceMods} = 'delta NV high E - low E';
+                                    choice_modNames{n_choiceMods} = ['delta NV high E - low E ',run_nb_nm];
                                     choice_modVals(n_choiceMods,:) = raw_or_z(NV_varOption.(run_full_nm)(choice_trial_idx));
                                 case 2
-                                    choice_modNames{n_choiceMods} = '|delta NV high E - low E|';
+                                    choice_modNames{n_choiceMods} = ['|delta NV high E - low E| ',run_nb_nm];
                                     choice_modVals(n_choiceMods,:) = raw_or_z(abs(NV_varOption.(run_full_nm)(choice_trial_idx)));
                                 case 3
-                                    choice_modNames{n_choiceMods} = 'p(choice=hE)';
+                                    choice_modNames{n_choiceMods} = ['p(choice=hE) ',run_nb_nm];
                                     choice_modVals(n_choiceMods,:) = raw_or_z(pChoice_hE.(run_full_nm)(choice_trial_idx));
                                 case 4
-                                    choice_modNames{n_choiceMods} = 'delta NV high E - low E + bias';
+                                    choice_modNames{n_choiceMods} = ['delta NV high E - low E + bias ',run_nb_nm];
                                     choice_modVals(n_choiceMods,:) = raw_or_z(NV_varOption_plus_bias.(run_full_nm)(choice_trial_idx));
                                 case 5
-                                    choice_modNames{n_choiceMods} = '|delta NV high E - low E + bias|';
+                                    choice_modNames{n_choiceMods} = ['|delta NV high E - low E + bias| ',run_nb_nm];
                                     choice_modVals(n_choiceMods,:) = raw_or_z(abs(NV_varOption_plus_bias.(run_full_nm)(choice_trial_idx)));
                                 otherwise
                                     error('not ready yet');
@@ -1224,7 +1227,7 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                             % force integral
                             if choiceModel_F_integral > 0
                                 n_choiceMods = n_choiceMods + 1;
-                                choice_modNames{n_choiceMods} = 'F integral';
+                                choice_modNames{n_choiceMods} = ['F integral ',run_nb_nm];
                                 switch choiceModel_F_integral
                                     case 1
                                         choice_modVals(n_choiceMods,:) = raw_or_z(AUC.(run_full_nm)(choice_trial_idx));
@@ -1250,7 +1253,7 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                             % fatigue
                             if choiceModel_fatigue > 0
                                 n_choiceMods = n_choiceMods + 1;
-                                choice_modNames{n_choiceMods} = 'fatigue';
+                                choice_modNames{n_choiceMods} = ['fatigue ',run_nb_nm];
                                 switch choiceModel_fatigue
                                     case 1
                                         choice_modVals(n_choiceMods,:) = raw_or_z(fatigue.(run_full_nm)(choice_trial_idx));
@@ -1264,7 +1267,7 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                             % Ech*fatigue
                             if choiceModel_Ech_x_fatigue > 0
                                 n_choiceMods = n_choiceMods + 1;
-                                choice_modNames{n_choiceMods} = 'Ech_x_fatigue';
+                                choice_modNames{n_choiceMods} = ['Ech_x_fatigue ',run_nb_nm];
                                 switch choiceModel_Ech_x_fatigue
                                     case 1
                                         choice_modVals(n_choiceMods,:) = raw_or_z(E_chosen.(run_full_nm)(choice_trial_idx).*fatigue.(run_full_nm)(choice_trial_idx));
@@ -1278,7 +1281,7 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                             % efficacy
                             if choiceModel_efficacy > 0
                                 n_choiceMods = n_choiceMods + 1;
-                                choice_modNames{n_choiceMods} = 'efficacy';
+                                choice_modNames{n_choiceMods} = ['efficacy ',run_nb_nm];
                                 switch choiceModel_efficacy
                                     case 1
                                         choice_modVals(n_choiceMods,:) = raw_or_z(efficacy_with2first.(run_full_nm)(choice_trial_idx));
@@ -1304,7 +1307,7 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                             % previous trial efficacy
                             if choiceModel_prevEfficacy > 0
                                 n_choiceMods = n_choiceMods + 1;
-                                choice_modNames{n_choiceMods} = 'previous trial efficacy';
+                                choice_modNames{n_choiceMods} = ['previous trial efficacy ',run_nb_nm];
                                 switch choiceModel_prevEfficacy
                                     case 1
                                         choice_modVals(n_choiceMods,:) = raw_or_z(prevEfficacy_with2first.(run_full_nm)(choice_trial_idx));
@@ -1330,7 +1333,7 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                             % Ech*(previous trial efficacy)
                             if choiceModel_Ech_x_prevEfficacy > 0
                                 n_choiceMods = n_choiceMods + 1;
-                                choice_modNames{n_choiceMods} = 'Ech_x_previous trial efficacy';
+                                choice_modNames{n_choiceMods} = ['Ech_x_previous trial efficacy ',run_nb_nm];
                                 switch choiceModel_Ech_x_prevEfficacy
                                     case 1
                                         choice_modVals(n_choiceMods,:) = raw_or_z(E_chosen.(run_full_nm)(choice_trial_idx).*prevEfficacy_with2first.(run_full_nm)(choice_trial_idx));
@@ -1349,7 +1352,7 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                         % trial number
                         if choiceModel_trialN > 0
                             n_choiceMods = n_choiceMods + 1;
-                            choice_modNames{n_choiceMods} = 'trial number';
+                            choice_modNames{n_choiceMods} = ['trial number ',run_nb_nm];
                             switch choiceModel_trialN
                                 case 1
                                     choice_modVals(n_choiceMods,:) = raw_or_z(trialN.(run_full_nm)(choice_trial_idx));
@@ -1367,7 +1370,7 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                         % choice confidence
                         if choiceModel_conf > 0
                             n_choiceMods = n_choiceMods + 1;
-                            choice_modNames{n_choiceMods} = 'confidence';
+                            choice_modNames{n_choiceMods} = ['confidence ',run_nb_nm];
                             switch choiceModel_conf
                                 case 1 % binary variable => no zscore
                                     choice_modVals(n_choiceMods,:) = confidence.(run_full_nm)(choice_trial_idx);
@@ -1381,7 +1384,7 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                         % RT (last regressor)
                         if choiceModel_RT > 0 && ~ismember(choiceModel_RT,[4,5,6])
                             n_choiceMods = n_choiceMods + 1;
-                            choice_modNames{n_choiceMods} = 'choice RT';
+                            choice_modNames{n_choiceMods} = ['choice RT ',run_nb_nm];
                             switch choiceModel_RT
                                 case 1
                                     choice_modVals(n_choiceMods,:) = raw_or_z(choice_RT.(run_full_nm)(choice_trial_idx));
@@ -1393,7 +1396,7 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                         end
                         
                         [matlabbatch] = First_level_loadEachCondition_DCM(matlabbatch, sub_idx, iCond,...
-                            ['choice_',RP_dispChoice_nm,'_',splitE_dispChoice_nm], modelChoiceOnset, modelChoiceDur,...
+                            ['choice_',RP_dispChoice_nm,'_',splitE_dispChoice_nm,' ',run_nb_nm], modelChoiceOnset, modelChoiceDur,...
                             n_choiceMods, choice_modNames, choice_modVals,...
                             orth_vars, onsets_only_GLM);
                     end % run loop
@@ -1455,7 +1458,7 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                         % RT (first regressor)
                         if choiceModel_RT > 0 && ~ismember(choiceModel_RT,[1,2,3])
                             n_choiceMods = n_choiceMods + 1;
-                            choice_modNames{n_choiceMods} = 'choice RT';
+                            choice_modNames{n_choiceMods} = ['choice RT ',task_nm];
                             switch choiceModel_RT
                                 case 4
                                     choice_modVals(n_choiceMods,:) = raw_or_z(choice_RT.(task_nm)(choice_trial_idx));
@@ -1471,13 +1474,13 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                             n_choiceMods = n_choiceMods + 1;
                             switch choiceModel_NV_chosen
                                 case 4
-                                    choice_modNames{n_choiceMods} = 'NVch-NVunch';
+                                    choice_modNames{n_choiceMods} = ['NVch-NVunch ',task_nm];
                                     choice_modVals(n_choiceMods,:) = raw_or_z(NV_ch_min_unch.(task_nm)(choice_trial_idx));
                                 case 5
-                                    choice_modNames{n_choiceMods} = 'p(chosen)';
+                                    choice_modNames{n_choiceMods} = ['p(chosen) ',task_nm];
                                     choice_modVals(n_choiceMods,:) = raw_or_z(pChosen.(task_nm)(choice_trial_idx));
                                 case 6
-                                    choice_modNames{n_choiceMods} = 'NVch-NVunch';
+                                    choice_modNames{n_choiceMods} = ['NVch-NVunch ',task_nm];
                                     choice_modVals(n_choiceMods,:) = raw_or_z(NV_ch_min_unch_with_bias.(task_nm)(choice_trial_idx));
                                 otherwise
                                     error('not ready yet');
@@ -1488,7 +1491,7 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                         if choiceModel_RP == 1
                             if strcmp(RP_dispChoice_nm,'RP')
                                 n_choiceMods = n_choiceMods + 1;
-                                choice_modNames{n_choiceMods} = 'R vs P';
+                                choice_modNames{n_choiceMods} = ['R vs P ',task_nm];
                                 choice_modVals(n_choiceMods,:) = RP_var_binary.(task_nm)(choice_trial_idx); % binary variable => no zscore
                             else
                                 error('cannot split R and P trials and add a variable representing R/P trials') ;
@@ -1500,11 +1503,11 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                             case 0
                             case 1
                                 n_choiceMods = n_choiceMods + 1;
-                                choice_modNames{n_choiceMods} = 'choice = high effort';
+                                choice_modNames{n_choiceMods} = ['choice = high effort ',task_nm];
                                 choice_modVals(n_choiceMods,:) = choice_hE.(task_nm)(choice_trial_idx); % binary variable => no zscore
                             case 2
                                 n_choiceMods = n_choiceMods + 1;
-                                choice_modNames{n_choiceMods} = 'choice = high effort';
+                                choice_modNames{n_choiceMods} = ['choice = high effort ',task_nm];
                                 choice_modVals(n_choiceMods,:) = choice_hE_bis.(task_nm)(choice_trial_idx); % binary variable => no zscore
                             otherwise
                                 error('case not ready yet');
@@ -1513,7 +1516,7 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                         % reward for the non-default option
                         if choiceModel_R_varOption > 0
                             n_choiceMods = n_choiceMods + 1;
-                            choice_modNames{n_choiceMods} = 'R non-default';
+                            choice_modNames{n_choiceMods} = ['R non-default ',task_nm];
                             switch choiceModel_R_varOption
                                 case 1 % R high effort option (amount)
                                     choice_modVals(n_choiceMods,:) = raw_or_z(R_amount_varOption.(task_nm)(choice_trial_idx));
@@ -1529,7 +1532,7 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                         % reward for the chosen option
                         if choiceModel_R_chosen > 0
                             n_choiceMods = n_choiceMods + 1;
-                            choice_modNames{n_choiceMods} = 'R chosen';
+                            choice_modNames{n_choiceMods} = ['R chosen ',task_nm];
                             switch choiceModel_R_chosen
                                 case 1 % R chosen option amount
                                     choice_modVals(n_choiceMods,:) = raw_or_z(R_amount_chosen.(task_nm)(choice_trial_idx));
@@ -1547,7 +1550,7 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                         % punishment for the non-default option
                         if choiceModel_P_varOption > 0
                             n_choiceMods = n_choiceMods + 1;
-                            choice_modNames{n_choiceMods} = 'P non-default';
+                            choice_modNames{n_choiceMods} = ['P non-default ',task_nm];
                             switch choiceModel_P_varOption
                                 case 1 % R high effort option (amount)
                                     choice_modVals(n_choiceMods,:) = raw_or_z(P_amount_varOption.(task_nm)(choice_trial_idx));
@@ -1565,7 +1568,7 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                         % punishment for the chosen option
                         if choiceModel_P_chosen > 0
                             n_choiceMods = n_choiceMods + 1;
-                            choice_modNames{n_choiceMods} = 'P chosen';
+                            choice_modNames{n_choiceMods} = ['P chosen ',task_nm];
                             switch choiceModel_P_chosen
                                 case 1 % R high effort option (amount)
                                     choice_modVals(n_choiceMods,:) = raw_or_z(P_amount_chosen.(task_nm)(choice_trial_idx));
@@ -1583,7 +1586,7 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                         % money left
                         if choiceModel_moneyLeft > 0
                             n_choiceMods = n_choiceMods + 1;
-                            choice_modNames{n_choiceMods} = 'money left';
+                            choice_modNames{n_choiceMods} = ['money left ',task_nm];
                             switch choiceModel_moneyLeft
                                 case 1
                                     choice_modVals(n_choiceMods,:) = raw_or_z(money_amount_left.(task_nm)(choice_trial_idx));
@@ -1601,7 +1604,7 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                         % money right
                         if choiceModel_moneyRight > 0
                             n_choiceMods = n_choiceMods + 1;
-                            choice_modNames{n_choiceMods} = 'money right';
+                            choice_modNames{n_choiceMods} = ['money right ',task_nm];
                             switch choiceModel_moneyRight
                                 case 1
                                     choice_modVals(n_choiceMods,:) = raw_or_z(money_amount_right.(task_nm)(choice_trial_idx));
@@ -1619,7 +1622,7 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                         % money chosen
                         if choiceModel_moneyChosen > 0
                             n_choiceMods = n_choiceMods + 1;
-                            choice_modNames{n_choiceMods} = 'money chosen';
+                            choice_modNames{n_choiceMods} = ['money chosen ',task_nm];
                             switch choiceModel_moneyChosen
                                 case 1
                                     choice_modVals(n_choiceMods,:) = raw_or_z(money_amount_chosen.(task_nm)(choice_trial_idx));
@@ -1637,7 +1640,7 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                         % money unchosen
                         if choiceModel_moneyUnchosen > 0
                             n_choiceMods = n_choiceMods + 1;
-                            choice_modNames{n_choiceMods} = 'money unchosen';
+                            choice_modNames{n_choiceMods} = ['money unchosen ',task_nm];
                             switch choiceModel_moneyUnchosen
                                 case 1
                                     choice_modVals(n_choiceMods,:) = raw_or_z(money_amount_unchosen.(task_nm)(choice_trial_idx));
@@ -1655,7 +1658,7 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                         % money associated to the non-default option
                         if choiceModel_moneyNonDefault > 0
                             n_choiceMods = n_choiceMods + 1;
-                            choice_modNames{n_choiceMods} = 'money non-default';
+                            choice_modNames{n_choiceMods} = ['money non-default ',task_nm];
                             switch choiceModel_moneyNonDefault
                                 case 1
                                     choice_modVals(n_choiceMods,:) = raw_or_z(money_amount_varOption.(task_nm)(choice_trial_idx));
@@ -1673,7 +1676,7 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                         % money chosen - money unchosen
                         if choiceModel_moneyChosen_min_moneyUnchosen > 0
                             n_choiceMods = n_choiceMods + 1;
-                            choice_modNames{n_choiceMods} = 'money chosen - unchosen';
+                            choice_modNames{n_choiceMods} = ['money chosen - unchosen ',task_nm];
                             switch choiceModel_moneyChosen_min_moneyUnchosen
                                 case 1
                                     choice_modVals(n_choiceMods,:) = raw_or_z(moneyChosen_min_moneyUnchosen_amount.(task_nm)(choice_trial_idx));
@@ -1685,7 +1688,7 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                         % money chosen - money fixed option (low R low E)
                         if choiceModel_moneyChosen_min_moneyDefault > 0
                             n_choiceMods = n_choiceMods + 1;
-                            choice_modNames{n_choiceMods} = 'money chosen - money fixed';
+                            choice_modNames{n_choiceMods} = ['money chosen - money fixed ',task_nm];
                             switch choiceModel_moneyChosen_min_moneyDefault
                                 case 1
                                     choice_modVals(n_choiceMods,:) = raw_or_z(moneyChosen_min_moneyFixed_amount.(task_nm)(choice_trial_idx));
@@ -1699,7 +1702,7 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                         % sum of money
                         if choiceModel_moneySum > 0
                             n_choiceMods = n_choiceMods + 1;
-                            choice_modNames{n_choiceMods} = 'money sum';
+                            choice_modNames{n_choiceMods} = ['money sum ',task_nm];
                             switch choiceModel_moneySum
                                 case 1
                                     choice_modVals(n_choiceMods,:) = raw_or_z(money_amount_sum.(task_nm)(choice_trial_idx));
@@ -1711,7 +1714,7 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                         % effort left
                         if choiceModel_E_left > 0
                             n_choiceMods = n_choiceMods + 1;
-                            choice_modNames{n_choiceMods} = 'E left';
+                            choice_modNames{n_choiceMods} = ['E left ',task_nm];
                             switch choiceModel_E_left
                                 case 1
                                     choice_modVals(n_choiceMods,:) = raw_or_z(E_left.(task_nm)(choice_trial_idx));
@@ -1723,7 +1726,7 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                         % effort right
                         if choiceModel_E_right > 0
                             n_choiceMods = n_choiceMods + 1;
-                            choice_modNames{n_choiceMods} = 'E right';
+                            choice_modNames{n_choiceMods} = ['E right ',task_nm];
                             switch choiceModel_E_right
                                 case 1
                                     choice_modVals(n_choiceMods,:) = raw_or_z(E_right.(task_nm)(choice_trial_idx));
@@ -1735,7 +1738,7 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                         % effort chosen
                         if choiceModel_E_chosen > 0
                             n_choiceMods = n_choiceMods + 1;
-                            choice_modNames{n_choiceMods} = 'effort chosen';
+                            choice_modNames{n_choiceMods} = ['effort chosen ',task_nm];
                             switch choiceModel_E_chosen
                                 case 1
                                     choice_modVals(n_choiceMods,:) = raw_or_z(E_chosen.(task_nm)(choice_trial_idx));
@@ -1751,7 +1754,7 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                         % effort unchosen
                         if choiceModel_E_unchosen > 0
                             n_choiceMods = n_choiceMods + 1;
-                            choice_modNames{n_choiceMods} = 'effort unchosen';
+                            choice_modNames{n_choiceMods} = ['effort unchosen ',task_nm];
                             switch choiceModel_E_unchosen
                                 case 1
                                     choice_modVals(n_choiceMods,:) = raw_or_z(E_unchosen.(task_nm)(choice_trial_idx));
@@ -1763,7 +1766,7 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                         % effort non-default option
                         if choiceModel_E_nonDefault > 0
                             n_choiceMods = n_choiceMods + 1;
-                            choice_modNames{n_choiceMods} = 'effort non-default option';
+                            choice_modNames{n_choiceMods} = ['effort non-default option ',task_nm];
                             switch choiceModel_E_nonDefault
                                 case 1
                                     choice_modVals(n_choiceMods,:) = raw_or_z(E_varOption.(task_nm)(choice_trial_idx));
@@ -1775,7 +1778,7 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                         % effort chosen - unchosen
                         if choiceModel_Ech_min_Eunch > 0
                             n_choiceMods = n_choiceMods + 1;
-                            choice_modNames{n_choiceMods} = 'effort chosen - unchosen';
+                            choice_modNames{n_choiceMods} = ['effort chosen - unchosen ',task_nm];
                             switch choiceModel_Ech_min_Eunch
                                 case 1
                                     choice_modVals(n_choiceMods,:) = raw_or_z(E_chosen_min_E_unchosen.(task_nm)(choice_trial_idx));
@@ -1787,7 +1790,7 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                         % effort chosen - fixed option
                         if choiceModel_Ech_min_Efixed > 0
                             n_choiceMods = n_choiceMods + 1;
-                            choice_modNames{n_choiceMods} = 'effort chosen - fixed';
+                            choice_modNames{n_choiceMods} = ['effort chosen - fixed ',task_nm];
                             switch choiceModel_Ech_min_Efixed
                                 case 1
                                     choice_modVals(n_choiceMods,:) = raw_or_z(Ech_min_Efixed.(task_nm)(choice_trial_idx));
@@ -1799,7 +1802,7 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                         % sum of efforts
                         if choiceModel_E_sum > 0
                             n_choiceMods = n_choiceMods + 1;
-                            choice_modNames{n_choiceMods} = 'effort sum';
+                            choice_modNames{n_choiceMods} = ['effort sum ',task_nm];
                             switch choiceModel_E_sum
                                 case 1
                                     choice_modVals(n_choiceMods,:) = raw_or_z(E_sum.(task_nm)(choice_trial_idx));
@@ -1811,7 +1814,7 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                         % money level*effort level high E option
                         if choiceModel_money_level_x_E_varOption > 0
                             n_choiceMods = n_choiceMods + 1;
-                            choice_modNames{n_choiceMods} = 'money x effort non-default option';
+                            choice_modNames{n_choiceMods} = ['money x effort non-default option ',task_nm];
                             switch choiceModel_money_level_x_E_varOption
                                 case 1
                                     choice_modVals(n_choiceMods,:) = raw_or_z(money_level_x_E_varOption.(task_nm)(choice_trial_idx));
@@ -1823,7 +1826,7 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                         % money level * effort chosen
                         if choiceModel_money_level_x_E_chosen > 0
                             n_choiceMods = n_choiceMods + 1;
-                            choice_modNames{n_choiceMods} = 'money x effort chosen';
+                            choice_modNames{n_choiceMods} = ['money x effort chosen ',task_nm];
                             switch choiceModel_money_level_x_E_chosen
                                 case 1
                                     choice_modVals(n_choiceMods,:) = raw_or_z(money_level_x_E_chosen.(task_nm)(choice_trial_idx));
@@ -1835,7 +1838,7 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                         % R level * effort high E option
                         if choiceModel_R_level_x_E_varOption > 0
                             n_choiceMods = n_choiceMods + 1;
-                            choice_modNames{n_choiceMods} = 'R x E non-default option';
+                            choice_modNames{n_choiceMods} = ['R x E non-default option ',task_nm];
                             switch choiceModel_R_level_x_E_varOption
                                 case 1
                                     choice_modVals(n_choiceMods,:) = raw_or_z(R_level_x_E_varOption.(task_nm)(choice_trial_idx));
@@ -1847,7 +1850,7 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                         % R level * effort chosen
                         if choiceModel_R_level_x_E_chosen > 0
                             n_choiceMods = n_choiceMods + 1;
-                            choice_modNames{n_choiceMods} = 'R x E chosen';
+                            choice_modNames{n_choiceMods} = ['R x E chosen ',task_nm];
                             switch choiceModel_R_level_x_E_chosen
                                 case 1
                                     choice_modVals(n_choiceMods,:) = raw_or_z(R_level_x_E_chosen.(task_nm)(choice_trial_idx));
@@ -1859,7 +1862,7 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                         % P level * effort high E option
                         if choiceModel_P_level_x_E_varOption > 0
                             n_choiceMods = n_choiceMods + 1;
-                            choice_modNames{n_choiceMods} = 'P x E non-default option';
+                            choice_modNames{n_choiceMods} = ['P x E non-default option ',task_nm];
                             switch choiceModel_P_level_x_E_varOption
                                 case 1
                                     choice_modVals(n_choiceMods,:) = raw_or_z(P_level_x_E_varOption.(task_nm)(choice_trial_idx));
@@ -1871,7 +1874,7 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                         % P level * effort chosen
                         if choiceModel_P_level_x_E_chosen > 0
                             n_choiceMods = n_choiceMods + 1;
-                            choice_modNames{n_choiceMods} = 'P x E chosen';
+                            choice_modNames{n_choiceMods} = ['P x E chosen ',task_nm];
                             switch choiceModel_P_level_x_E_chosen
                                 case 1
                                     choice_modVals(n_choiceMods,:) = raw_or_z(P_level_x_E_chosen.(task_nm)(choice_trial_idx));
@@ -1885,13 +1888,13 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                             n_choiceMods = n_choiceMods + 1;
                             switch choiceModel_NV_chosen
                                 case 1
-                                    choice_modNames{n_choiceMods} = 'NVch-NVunch';
+                                    choice_modNames{n_choiceMods} = ['NVch-NVunch ',task_nm];
                                     choice_modVals(n_choiceMods,:) = raw_or_z(NV_ch_min_unch.(task_nm)(choice_trial_idx));
                                 case 2
-                                    choice_modNames{n_choiceMods} = 'p(chosen)';
+                                    choice_modNames{n_choiceMods} = ['p(chosen) ',task_nm];
                                     choice_modVals(n_choiceMods,:) = raw_or_z(pChosen.(task_nm)(choice_trial_idx));
                                 case 3
-                                    choice_modNames{n_choiceMods} = 'NVch-NVunch';
+                                    choice_modNames{n_choiceMods} = ['NVch-NVunch ',task_nm];
                                     choice_modVals(n_choiceMods,:) = raw_or_z(NV_ch_min_unch_with_bias.(task_nm)(choice_trial_idx));
                                 otherwise
                                     error('not ready yet');
@@ -1903,19 +1906,19 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                             n_choiceMods = n_choiceMods + 1;
                             switch choiceModel_NV_varOption
                                 case 1
-                                    choice_modNames{n_choiceMods} = 'delta NV high E - low E';
+                                    choice_modNames{n_choiceMods} = ['delta NV high E - low E ',task_nm];
                                     choice_modVals(n_choiceMods,:) = raw_or_z(NV_varOption.(task_nm)(choice_trial_idx));
                                 case 2
-                                    choice_modNames{n_choiceMods} = '|delta NV high E - low E|';
+                                    choice_modNames{n_choiceMods} = ['|delta NV high E - low E| ',task_nm];
                                     choice_modVals(n_choiceMods,:) = raw_or_z(abs(NV_varOption.(task_nm)(choice_trial_idx)));
                                 case 3
-                                    choice_modNames{n_choiceMods} = 'p(choice=hE)';
+                                    choice_modNames{n_choiceMods} = ['p(choice=hE) ',task_nm];
                                     choice_modVals(n_choiceMods,:) = raw_or_z(pChoice_hE.(task_nm)(choice_trial_idx));
                                 case 4
-                                    choice_modNames{n_choiceMods} = 'delta NV high E - low E + bias';
+                                    choice_modNames{n_choiceMods} = ['delta NV high E - low E + bias ',task_nm];
                                     choice_modVals(n_choiceMods,:) = raw_or_z(NV_varOption_plus_bias.(task_nm)(choice_trial_idx));
                                 case 5
-                                    choice_modNames{n_choiceMods} = '|delta NV high E - low E + bias|';
+                                    choice_modNames{n_choiceMods} = ['|delta NV high E - low E + bias| ',task_nm];
                                     choice_modVals(n_choiceMods,:) = raw_or_z(abs(NV_varOption_plus_bias.(task_nm)(choice_trial_idx)));
                                 otherwise
                                     error('not ready yet');
@@ -1927,19 +1930,19 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                             n_choiceMods = n_choiceMods + 1;
                             switch choiceModel_NV_varOption_bis
                                 case 1
-                                    choice_modNames{n_choiceMods} = 'delta NV high E - low E';
+                                    choice_modNames{n_choiceMods} = ['delta NV high E - low E ',task_nm];
                                     choice_modVals(n_choiceMods,:) = raw_or_z(NV_varOption.(task_nm)(choice_trial_idx));
                                 case 2
-                                    choice_modNames{n_choiceMods} = '|delta NV high E - low E|';
+                                    choice_modNames{n_choiceMods} = ['|delta NV high E - low E| ',task_nm];
                                     choice_modVals(n_choiceMods,:) = raw_or_z(abs(NV_varOption.(task_nm)(choice_trial_idx)));
                                 case 3
-                                    choice_modNames{n_choiceMods} = 'p(choice=hE)';
+                                    choice_modNames{n_choiceMods} = ['p(choice=hE) ',task_nm];
                                     choice_modVals(n_choiceMods,:) = raw_or_z(pChoice_hE.(task_nm)(choice_trial_idx));
                                 case 4
-                                    choice_modNames{n_choiceMods} = 'delta NV high E - low E + bias';
+                                    choice_modNames{n_choiceMods} = ['delta NV high E - low E + bias ',task_nm];
                                     choice_modVals(n_choiceMods,:) = raw_or_z(NV_varOption_plus_bias.(task_nm)(choice_trial_idx));
                                 case 5
-                                    choice_modNames{n_choiceMods} = '|delta NV high E - low E + bias|';
+                                    choice_modNames{n_choiceMods} = ['|delta NV high E - low E + bias| ',task_nm];
                                     choice_modVals(n_choiceMods,:) = raw_or_z(abs(NV_varOption_plus_bias.(task_nm)(choice_trial_idx)));
                                 otherwise
                                     error('not ready yet');
@@ -1950,7 +1953,7 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                             % force integral
                             if choiceModel_F_integral > 0
                                 n_choiceMods = n_choiceMods + 1;
-                                choice_modNames{n_choiceMods} = 'F integral';
+                                choice_modNames{n_choiceMods} = ['F integral ',task_nm];
                                 switch choiceModel_F_integral
                                     case 1
                                         choice_modVals(n_choiceMods,:) = raw_or_z(AUC.(task_nm)(choice_trial_idx));
@@ -1976,7 +1979,7 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                             % fatigue
                             if choiceModel_fatigue > 0
                                 n_choiceMods = n_choiceMods + 1;
-                                choice_modNames{n_choiceMods} = 'fatigue';
+                                choice_modNames{n_choiceMods} = ['fatigue ',task_nm];
                                 switch choiceModel_fatigue
                                     case 1
                                         choice_modVals(n_choiceMods,:) = raw_or_z(fatigue.(task_nm)(choice_trial_idx));
@@ -1990,7 +1993,7 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                             % Ech*fatigue
                             if choiceModel_Ech_x_fatigue > 0
                                 n_choiceMods = n_choiceMods + 1;
-                                choice_modNames{n_choiceMods} = 'Ech_x_fatigue';
+                                choice_modNames{n_choiceMods} = ['Ech_x_fatigue ',task_nm];
                                 switch choiceModel_Ech_x_fatigue
                                     case 1
                                         choice_modVals(n_choiceMods,:) = raw_or_z(E_chosen.(task_nm)(choice_trial_idx).*fatigue.(task_nm)(choice_trial_idx));
@@ -2004,7 +2007,7 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                             % efficacy
                             if choiceModel_efficacy > 0
                                 n_choiceMods = n_choiceMods + 1;
-                                choice_modNames{n_choiceMods} = 'efficacy';
+                                choice_modNames{n_choiceMods} = ['efficacy ',task_nm];
                                 switch choiceModel_efficacy
                                     case 1
                                         choice_modVals(n_choiceMods,:) = raw_or_z(efficacy_with2first.(task_nm)(choice_trial_idx));
@@ -2030,7 +2033,7 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                             % previous trial efficacy
                             if choiceModel_prevEfficacy > 0
                                 n_choiceMods = n_choiceMods + 1;
-                                choice_modNames{n_choiceMods} = 'previous trial efficacy';
+                                choice_modNames{n_choiceMods} = ['previous trial efficacy ',task_nm];
                                 switch choiceModel_prevEfficacy
                                     case 1
                                         choice_modVals(n_choiceMods,:) = raw_or_z(prevEfficacy_with2first.(task_nm)(choice_trial_idx));
@@ -2056,7 +2059,7 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                             % Ech*(previous trial efficacy)
                             if choiceModel_Ech_x_prevEfficacy > 0
                                 n_choiceMods = n_choiceMods + 1;
-                                choice_modNames{n_choiceMods} = 'Ech_x_previous trial efficacy';
+                                choice_modNames{n_choiceMods} = ['Ech_x_previous trial efficacy ',task_nm];
                                 switch choiceModel_Ech_x_prevEfficacy
                                     case 1
                                         choice_modVals(n_choiceMods,:) = raw_or_z(E_chosen.(task_nm)(choice_trial_idx).*prevEfficacy_with2first.(task_nm)(choice_trial_idx));
@@ -2075,7 +2078,7 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                         % trial number
                         if choiceModel_trialN > 0
                             n_choiceMods = n_choiceMods + 1;
-                            choice_modNames{n_choiceMods} = 'trial number';
+                            choice_modNames{n_choiceMods} = ['trial number ',task_nm];
                             switch choiceModel_trialN
                                 case 1
                                     choice_modVals(n_choiceMods,:) = raw_or_z(trialN.(task_nm)(choice_trial_idx));
@@ -2093,7 +2096,7 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                         % choice confidence
                         if choiceModel_conf > 0
                             n_choiceMods = n_choiceMods + 1;
-                            choice_modNames{n_choiceMods} = 'confidence';
+                            choice_modNames{n_choiceMods} = ['confidence ',task_nm];
                             switch choiceModel_conf
                                 case 1 % binary variable => no zscore
                                     choice_modVals(n_choiceMods,:) = confidence.(task_nm)(choice_trial_idx);
@@ -2107,7 +2110,7 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                         % RT (last regressor)
                         if choiceModel_RT > 0 && ~ismember(choiceModel_RT,[4,5,6])
                             n_choiceMods = n_choiceMods + 1;
-                            choice_modNames{n_choiceMods} = 'choice RT';
+                            choice_modNames{n_choiceMods} = ['choice RT ',task_nm];
                             switch choiceModel_RT
                                 case 1
                                     choice_modVals(n_choiceMods,:) = raw_or_z(choice_RT.(task_nm)(choice_trial_idx));
@@ -2119,7 +2122,7 @@ if ismember(choiceModel,{'stick','boxcar','boxcar_bis'})
                         end
                         
                         [matlabbatch] = First_level_loadEachCondition_DCM(matlabbatch, sub_idx, iCond,...
-                            ['choice_',RP_dispChoice_nm,'_',splitE_dispChoice_nm], modelChoiceOnset, modelChoiceDur,...
+                            ['choice_',RP_dispChoice_nm,'_',splitE_dispChoice_nm,' ',task_nm], modelChoiceOnset, modelChoiceDur,...
                             n_choiceMods, choice_modNames, choice_modVals,...
                             orth_vars, onsets_only_GLM);
                     end % task loop
@@ -2909,6 +2912,7 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                 case 1 % all sessions independent
                     for iRun = 1:n_runs
                         run_full_nm = ['run',num2str(iRun)];
+                        run_nb_nm = ['r',num2str(runs.runsToKeep(iRun))];
                         
                         % extract trial index for the current loop
                         switch RP_dispChosen_nm
@@ -2972,7 +2976,7 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                         % RT (first regressor)
                         if chosenModel_RT > 0 && ~ismember(chosenModel_RT,[1,2,3])
                             n_chosenMods = n_chosenMods + 1;
-                            chosen_modNames{n_chosenMods} = 'choice RT';
+                            chosen_modNames{n_chosenMods} = ['choice RT ',run_nb_nm];
                             switch chosenModel_RT
                                 case 4
                                     chosen_modVals(n_chosenMods,:) = raw_or_z(choice_RT.(run_full_nm)(chosen_trial_idx));
@@ -2988,13 +2992,13 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                             n_chosenMods = n_chosenMods + 1;
                             switch chosenModel_NV_chosen
                                 case 4
-                                    chosen_modNames{n_chosenMods} = 'NVch-NVunch';
+                                    chosen_modNames{n_chosenMods} = ['NVch-NVunch ',run_nb_nm];
                                     chosen_modVals(n_chosenMods,:) = raw_or_z(NV_ch_min_unch.(run_full_nm)(chosen_trial_idx));
                                 case 5
-                                    chosen_modNames{n_chosenMods} = 'p(chosen)';
+                                    chosen_modNames{n_chosenMods} = ['p(chosen) ',run_nb_nm];
                                     chosen_modVals(n_chosenMods,:) = raw_or_z(pChosen.(run_full_nm)(chosen_trial_idx));
                                 case 6
-                                    chosen_modNames{n_chosenMods} = 'NVch-NVunch';
+                                    chosen_modNames{n_chosenMods} = ['NVch-NVunch ',run_nb_nm];
                                     chosen_modVals(n_chosenMods,:) = raw_or_z(NV_ch_min_unch_with_bias.(run_full_nm)(chosen_trial_idx));
                                 otherwise
                                     error('not ready yet');
@@ -3004,7 +3008,7 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                         % reward vs punishment trials
                         if chosenModel_R_vs_P > 0
                             n_chosenMods = n_chosenMods + 1;
-                            chosen_modNames{n_chosenMods} = 'R_vs_P';
+                            chosen_modNames{n_chosenMods} = ['R_vs_P ',run_nb_nm];
                             switch chosenModel_R_vs_P
                                 case 1
                                     chosen_modVals(n_chosenMods,:) = RP_var_binary.(run_full_nm)(chosen_trial_idx);
@@ -3018,11 +3022,11 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                             case 0
                             case 1
                                 n_chosenMods = n_chosenMods + 1;
-                                chosen_modNames{n_chosenMods} = 'choice = high effort';
+                                chosen_modNames{n_chosenMods} = ['choice = high effort ',run_nb_nm];
                                 chosen_modVals(n_chosenMods,:) = choice_hE.(run_full_nm)(chosen_trial_idx); % binary variable => no zscore
                             case 2
                                 n_chosenMods = n_chosenMods + 1;
-                                chosen_modNames{n_chosenMods} = 'choice = high effort';
+                                chosen_modNames{n_chosenMods} = ['choice = high effort ',run_nb_nm];
                                 chosen_modVals(n_chosenMods,:) = choice_hE_bis.(run_full_nm)(chosen_trial_idx); % binary variable => no zscore
                             otherwise
                                 error('not ready yet');
@@ -3031,7 +3035,7 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                         % reward for the non-default option
                         if chosenModel_R_varOption > 0
                             n_chosenMods = n_chosenMods + 1;
-                            chosen_modNames{n_chosenMods} = 'R non-default';
+                            chosen_modNames{n_chosenMods} = ['R non-default ',run_nb_nm];
                             switch chosenModel_R_varOption
                                 case 1 % R high effort option (amount)
                                     chosen_modVals(n_chosenMods,:) = raw_or_z(R_amount_varOption.(run_full_nm)(chosen_trial_idx));
@@ -3049,7 +3053,7 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                         % reward for the chosen option
                         if chosenModel_R_chosen > 0
                             n_chosenMods = n_chosenMods + 1;
-                            chosen_modNames{n_chosenMods} = 'R chosen';
+                            chosen_modNames{n_chosenMods} = ['R chosen ',run_nb_nm];
                             switch chosenModel_R_chosen
                                 case 1 % R high effort option (amount)
                                     chosen_modVals(n_chosenMods,:) = raw_or_z(R_amount_chosen.(run_full_nm)(chosen_trial_idx));
@@ -3067,7 +3071,7 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                         % punishment for the non-default option
                         if chosenModel_P_varOption > 0
                             n_chosenMods = n_chosenMods + 1;
-                            chosen_modNames{n_chosenMods} = 'P non-default';
+                            chosen_modNames{n_chosenMods} = ['P non-default ',run_nb_nm];
                             switch chosenModel_P_varOption
                                 case 1 % R high effort option (amount)
                                     chosen_modVals(n_chosenMods,:) = raw_or_z(P_amount_varOption.(run_full_nm)(chosen_trial_idx));
@@ -3085,7 +3089,7 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                         % punishment for the chosen option
                         if chosenModel_P_chosen > 0
                             n_chosenMods = n_chosenMods + 1;
-                            chosen_modNames{n_chosenMods} = 'P chosen';
+                            chosen_modNames{n_chosenMods} = ['P chosen ',run_nb_nm];
                             switch chosenModel_P_chosen
                                 case 1 % R high effort option (amount)
                                     chosen_modVals(n_chosenMods,:) = raw_or_z(P_amount_chosen.(run_full_nm)(chosen_trial_idx));
@@ -3103,7 +3107,7 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                         % money left
                         if chosenModel_moneyLeft > 0
                             n_chosenMods = n_chosenMods + 1;
-                            chosen_modNames{n_chosenMods} = 'money left';
+                            chosen_modNames{n_chosenMods} = ['money left ',run_nb_nm];
                             switch chosenModel_moneyLeft
                                 case 1
                                     chosen_modVals(n_chosenMods,:) = raw_or_z(money_amount_left.(run_full_nm)(chosen_trial_idx));
@@ -3121,7 +3125,7 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                         % money right
                         if chosenModel_moneyRight > 0
                             n_chosenMods = n_chosenMods + 1;
-                            chosen_modNames{n_chosenMods} = 'money right';
+                            chosen_modNames{n_chosenMods} = ['money right ',run_nb_nm];
                             switch chosenModel_moneyRight
                                 case 1
                                     chosen_modVals(n_chosenMods,:) = raw_or_z(money_amount_right.(run_full_nm)(chosen_trial_idx));
@@ -3139,7 +3143,7 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                         % money chosen
                         if chosenModel_moneyChosen > 0
                             n_chosenMods = n_chosenMods + 1;
-                            chosen_modNames{n_chosenMods} = 'money chosen';
+                            chosen_modNames{n_chosenMods} = ['money chosen ',run_nb_nm];
                             switch chosenModel_moneyChosen
                                 case 1
                                     chosen_modVals(n_chosenMods,:) = raw_or_z(money_amount_chosen.(run_full_nm)(chosen_trial_idx));
@@ -3157,7 +3161,7 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                         % money unchosen
                         if chosenModel_moneyUnchosen > 0
                             n_chosenMods = n_chosenMods + 1;
-                            chosen_modNames{n_chosenMods} = 'money unchosen';
+                            chosen_modNames{n_chosenMods} = ['money unchosen ',run_nb_nm];
                             switch chosenModel_moneyUnchosen
                                 case 1
                                     chosen_modVals(n_chosenMods,:) = raw_or_z(money_amount_unchosen.(run_full_nm)(chosen_trial_idx));
@@ -3175,7 +3179,7 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                         % money non-default option
                         if chosenModel_moneyNonDefault > 0
                             n_chosenMods = n_chosenMods + 1;
-                            chosen_modNames{n_chosenMods} = 'money non-default option';
+                            chosen_modNames{n_chosenMods} = ['money non-default option ',run_nb_nm];
                             switch chosenModel_moneyNonDefault
                                 case 1
                                     chosen_modVals(n_chosenMods,:) = raw_or_z(money_amount_varOption.(run_full_nm)(chosen_trial_idx));
@@ -3193,7 +3197,7 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                         % money chosen - money unchosen
                         if chosenModel_money_chosen_min_money_unchosen > 0
                             n_chosenMods = n_chosenMods + 1;
-                            chosen_modNames{n_chosenMods} = 'money chosen - unchosen';
+                            chosen_modNames{n_chosenMods} = ['money chosen - unchosen ',run_nb_nm];
                             switch chosenModel_money_chosen_min_money_unchosen
                                 case 1
                                     chosen_modVals(n_chosenMods,:) = raw_or_z(moneyChosen_min_moneyUnchosen_amount.(run_full_nm)(chosen_trial_idx));
@@ -3205,7 +3209,7 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                         % money chosen - money fixed option (low R low E)
                         if chosenModel_moneyChosen_min_moneyDefault > 0
                             n_chosenMods = n_chosenMods + 1;
-                            chosen_modNames{n_chosenMods} = 'money chosen - money fixed';
+                            chosen_modNames{n_chosenMods} = ['money chosen - money fixed ',run_nb_nm];
                             switch chosenModel_moneyChosen_min_moneyDefault
                                 case 1
                                     chosen_modVals(n_chosenMods,:) = raw_or_z(moneyChosen_min_moneyFixed_amount.(run_full_nm)(chosen_trial_idx));
@@ -3219,7 +3223,7 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                         % sum of money
                         if chosenModel_moneySum > 0
                             n_chosenMods = n_chosenMods + 1;
-                            chosen_modNames{n_chosenMods} = 'money sum';
+                            chosen_modNames{n_chosenMods} = ['money sum ',run_nb_nm];
                             switch chosenModel_moneySum
                                 case 1
                                     chosen_modVals(n_chosenMods,:) = raw_or_z(money_amount_sum.(run_full_nm)(chosen_trial_idx));
@@ -3231,7 +3235,7 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                         % effort left
                         if chosenModel_E_left > 0
                             n_chosenMods = n_chosenMods + 1;
-                            chosen_modNames{n_chosenMods} = 'effort left';
+                            chosen_modNames{n_chosenMods} = ['effort left ',run_nb_nm];
                             switch chosenModel_E_left
                                 case 1
                                     chosen_modVals(n_chosenMods,:) = raw_or_z(E_left.(run_full_nm)(chosen_trial_idx));
@@ -3243,7 +3247,7 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                         % effort right
                         if chosenModel_E_right > 0
                             n_chosenMods = n_chosenMods + 1;
-                            chosen_modNames{n_chosenMods} = 'effort right';
+                            chosen_modNames{n_chosenMods} = ['effort right ',run_nb_nm];
                             switch chosenModel_E_right
                                 case 1
                                     chosen_modVals(n_chosenMods,:) = raw_or_z(E_right.(run_full_nm)(chosen_trial_idx));
@@ -3255,7 +3259,7 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                         % effort chosen
                         if chosenModel_Echosen > 0
                             n_chosenMods = n_chosenMods + 1;
-                            chosen_modNames{n_chosenMods} = 'effort chosen';
+                            chosen_modNames{n_chosenMods} = ['effort chosen ',run_nb_nm];
                             switch chosenModel_Echosen
                                 case 1
                                     chosen_modVals(n_chosenMods,:) = raw_or_z(E_chosen.(run_full_nm)(chosen_trial_idx));
@@ -3271,7 +3275,7 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                         % effort unchosen
                         if chosenModel_Eunchosen > 0
                             n_chosenMods = n_chosenMods + 1;
-                            chosen_modNames{n_chosenMods} = 'effort unchosen';
+                            chosen_modNames{n_chosenMods} = ['effort unchosen ',run_nb_nm];
                             switch chosenModel_Eunchosen
                                 case 1
                                     chosen_modVals(n_chosenMods,:) = raw_or_z(E_unchosen.(run_full_nm)(chosen_trial_idx));
@@ -3283,7 +3287,7 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                         % effort non-default option
                         if chosenModel_EnonDefault > 0
                             n_chosenMods = n_chosenMods + 1;
-                            chosen_modNames{n_chosenMods} = 'effort non-default option';
+                            chosen_modNames{n_chosenMods} = ['effort non-default option ',run_nb_nm];
                             switch chosenModel_EnonDefault
                                 case 1
                                     chosen_modVals(n_chosenMods,:) = E_varOption.(run_full_nm)(chosen_trial_idx); % binary variable => no zscore
@@ -3295,7 +3299,7 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                         % effort chosen - unchosen
                         if chosenModel_Ech_min_Eunch > 0
                             n_chosenMods = n_chosenMods + 1;
-                            chosen_modNames{n_chosenMods} = 'effort chosen - unchosen';
+                            chosen_modNames{n_chosenMods} = ['effort chosen - unchosen ',run_nb_nm]
                             switch chosenModel_Ech_min_Eunch
                                 case 1
                                     chosen_modVals(n_chosenMods,:) = raw_or_z(E_chosen_min_E_unchosen.(run_full_nm)(chosen_trial_idx));
@@ -3307,7 +3311,7 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                         % effort chosen - fixed option
                         if chosenModel_Ech_min_Efixed > 0
                             n_chosenMods = n_chosenMods + 1;
-                            chosen_modNames{n_chosenMods} = 'effort chosen - fixed';
+                            chosen_modNames{n_chosenMods} = ['effort chosen - fixed ',run_nb_nm];
                             switch chosenModel_Ech_min_Efixed
                                 case 1
                                     chosen_modVals(n_chosenMods,:) = raw_or_z(Ech_min_Efixed.(run_full_nm)(chosen_trial_idx));
@@ -3319,7 +3323,7 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                         % sum of efforts
                         if chosenModel_E_sum > 0
                             n_chosenMods = n_chosenMods + 1;
-                            chosen_modNames{n_chosenMods} = 'effort sum';
+                            chosen_modNames{n_chosenMods} = ['effort sum ',run_nb_nm];
                             switch chosenModel_E_sum
                                 case 1
                                     chosen_modVals(n_chosenMods,:) = raw_or_z(E_sum.(run_full_nm)(chosen_trial_idx));
@@ -3331,7 +3335,7 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                         % money level*effort level high E option
                         if chosenModel_money_level_x_E_varOption > 0
                             n_chosenMods = n_chosenMods + 1;
-                            chosen_modNames{n_chosenMods} = 'money x effort non-default option';
+                            chosen_modNames{n_chosenMods} = ['money x effort non-default option ',run_nb_nm];
                             switch chosenModel_money_level_x_E_varOption
                                 case 1
                                     chosen_modVals(n_chosenMods,:) = raw_or_z(money_level_x_E_varOption.(run_full_nm)(chosen_trial_idx));
@@ -3343,7 +3347,7 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                         % money level * effort chosen
                         if chosenModel_money_level_x_E_chosen > 0
                             n_chosenMods = n_chosenMods + 1;
-                            chosen_modNames{n_chosenMods} = 'money x effort chosen';
+                            chosen_modNames{n_chosenMods} = ['money x effort chosen ',run_nb_nm];
                             switch chosenModel_money_level_x_E_chosen
                                 case 1
                                     chosen_modVals(n_chosenMods,:) = raw_or_z(money_level_x_E_chosen.(run_full_nm)(chosen_trial_idx));
@@ -3355,7 +3359,7 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                         % R level * effort high E option
                         if chosenModel_R_level_x_E_varOption > 0
                             n_chosenMods = n_chosenMods + 1;
-                            chosen_modNames{n_chosenMods} = 'R x E non-default option';
+                            chosen_modNames{n_chosenMods} = ['R x E non-default option ',run_nb_nm];
                             switch chosenModel_R_level_x_E_varOption
                                 case 1
                                     chosen_modVals(n_chosenMods,:) = raw_or_z(R_level_x_E_varOption.(run_full_nm)(chosen_trial_idx));
@@ -3367,7 +3371,7 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                         % R level * effort chosen
                         if chosenModel_R_level_x_E_chosen > 0
                             n_chosenMods = n_chosenMods + 1;
-                            chosen_modNames{n_chosenMods} = 'R x E chosen';
+                            chosen_modNames{n_chosenMods} = ['R x E chosen ',run_nb_nm];
                             switch chosenModel_R_level_x_E_chosen
                                 case 1
                                     chosen_modVals(n_chosenMods,:) = raw_or_z(R_level_x_E_chosen.(run_full_nm)(chosen_trial_idx));
@@ -3379,7 +3383,7 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                         % P level * effort high E option
                         if chosenModel_P_level_x_E_varOption > 0
                             n_chosenMods = n_chosenMods + 1;
-                            chosen_modNames{n_chosenMods} = 'P x E non-default option';
+                            chosen_modNames{n_chosenMods} = ['P x E non-default option ',run_nb_nm];
                             switch chosenModel_P_level_x_E_varOption
                                 case 1
                                     chosen_modVals(n_chosenMods,:) = raw_or_z(P_level_x_E_varOption.(run_full_nm)(chosen_trial_idx));
@@ -3391,7 +3395,7 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                         % P level * effort chosen
                         if chosenModel_P_level_x_E_chosen > 0
                             n_chosenMods = n_chosenMods + 1;
-                            chosen_modNames{n_chosenMods} = 'P x E chosen';
+                            chosen_modNames{n_chosenMods} = ['P x E chosen ',run_nb_nm];
                             switch chosenModel_P_level_x_E_chosen
                                 case 1
                                     chosen_modVals(n_chosenMods,:) = raw_or_z(P_level_x_E_chosen.(run_full_nm)(chosen_trial_idx));
@@ -3405,13 +3409,13 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                             n_chosenMods = n_chosenMods + 1;
                             switch chosenModel_NV_chosen
                                 case 1
-                                    chosen_modNames{n_chosenMods} = 'NVch-NVunch';
+                                    chosen_modNames{n_chosenMods} = ['NVch-NVunch ',run_nb_nm];
                                     chosen_modVals(n_chosenMods,:) = raw_or_z(NV_ch_min_unch.(run_full_nm)(chosen_trial_idx));
                                 case 2
-                                    chosen_modNames{n_chosenMods} = 'p(chosen)';
+                                    chosen_modNames{n_chosenMods} = ['p(chosen) ',run_nb_nm];
                                     chosen_modVals(n_chosenMods,:) = raw_or_z(pChosen.(run_full_nm)(chosen_trial_idx));
                                 case 3
-                                    chosen_modNames{n_chosenMods} = 'NVch-NVunch';
+                                    chosen_modNames{n_chosenMods} = ['NVch-NVunch ',run_nb_nm];
                                     chosen_modVals(n_chosenMods,:) = raw_or_z(NV_ch_min_unch_with_bias.(run_full_nm)(chosen_trial_idx));
                                 otherwise
                                     error('not ready yet');
@@ -3423,19 +3427,19 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                             n_chosenMods = n_chosenMods + 1;
                             switch chosenModel_NV_varOption
                                 case 1
-                                    chosen_modNames{n_chosenMods} = 'delta NV high E - low E';
+                                    chosen_modNames{n_chosenMods} = ['delta NV high E - low E ',run_nb_nm];
                                     chosen_modVals(n_chosenMods,:) = raw_or_z(NV_varOption.(run_full_nm)(chosen_trial_idx));
                                 case 2
-                                    chosen_modNames{n_chosenMods} = '|delta NV high E - low E|';
+                                    chosen_modNames{n_chosenMods} = ['|delta NV high E - low E| ',run_nb_nm];
                                     chosen_modVals(n_chosenMods,:) = raw_or_z(abs(NV_varOption.(run_full_nm)(chosen_trial_idx)));
                                 case 3
-                                    chosen_modNames{n_chosenMods} = 'p(choice=hE)';
+                                    chosen_modNames{n_chosenMods} = ['p(choice=hE) ',run_nb_nm];
                                     chosen_modVals(n_chosenMods,:) = raw_or_z(abs(pChoice_hE.(run_full_nm)(chosen_trial_idx)));
                                 case 4
-                                    chosen_modNames{n_chosenMods} = 'delta NV high E - low E + bias';
+                                    chosen_modNames{n_chosenMods} = ['delta NV high E - low E + bias ',run_nb_nm];
                                     chosen_modVals(n_chosenMods,:) = raw_or_z(NV_varOption_plus_bias.(run_full_nm)(chosen_trial_idx));
                                 case 5
-                                    chosen_modNames{n_chosenMods} = '|delta NV high E - low E + bias|';
+                                    chosen_modNames{n_chosenMods} = ['|delta NV high E - low E + bias| ',run_nb_nm];
                                     chosen_modVals(n_chosenMods,:) = raw_or_z(abs(NV_varOption_plus_bias.(run_full_nm)(chosen_trial_idx)));
                                 otherwise
                                     error('not ready yet');
@@ -3447,19 +3451,19 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                             n_chosenMods = n_chosenMods + 1;
                             switch chosenModel_NV_varOption_bis
                                 case 1
-                                    chosen_modNames{n_chosenMods} = 'delta NV high E - low E';
+                                    chosen_modNames{n_chosenMods} = ['delta NV high E - low E ',run_nb_nm];
                                     chosen_modVals(n_chosenMods,:) = raw_or_z(NV_varOption.(run_full_nm)(chosen_trial_idx));
                                 case 2
-                                    chosen_modNames{n_chosenMods} = '|delta NV high E - low E|';
+                                    chosen_modNames{n_chosenMods} = ['|delta NV high E - low E| ',run_nb_nm];
                                     chosen_modVals(n_chosenMods,:) = raw_or_z(abs(NV_varOption.(run_full_nm)(chosen_trial_idx)));
                                 case 3
-                                    chosen_modNames{n_chosenMods} = 'p(choice=hE)';
+                                    chosen_modNames{n_chosenMods} = ['p(choice=hE) ',run_nb_nm];
                                     chosen_modVals(n_chosenMods,:) = raw_or_z(abs(pChoice_hE.(run_full_nm)(chosen_trial_idx)));
                                 case 4
-                                    chosen_modNames{n_chosenMods} = 'delta NV high E - low E + bias';
+                                    chosen_modNames{n_chosenMods} = ['delta NV high E - low E + bias ',run_nb_nm];
                                     chosen_modVals(n_chosenMods,:) = raw_or_z(NV_varOption_plus_bias.(run_full_nm)(chosen_trial_idx));
                                 case 5
-                                    chosen_modNames{n_chosenMods} = '|delta NV high E - low E + bias|';
+                                    chosen_modNames{n_chosenMods} = ['|delta NV high E - low E + bias| ',run_nb_nm];
                                     chosen_modVals(n_chosenMods,:) = raw_or_z(abs(NV_varOption_plus_bias.(run_full_nm)(chosen_trial_idx)));
                                 otherwise
                                     error('not ready yet');
@@ -3470,7 +3474,7 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                             % force integral
                             if chosenModel_F_integral > 0
                                 n_chosenMods = n_chosenMods + 1;
-                                chosen_modNames{n_chosenMods} = 'F integral';
+                                chosen_modNames{n_chosenMods} = ['F integral ',run_nb_nm];
                                 switch chosenModel_F_integral
                                     case 1
                                         chosen_modVals(n_chosenMods,:) = raw_or_z(AUC.(run_full_nm)(chosen_trial_idx));
@@ -3496,7 +3500,7 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                             % fatigue
                             if chosenModel_fatigue > 0
                                 n_chosenMods = n_chosenMods + 1;
-                                chosen_modNames{n_chosenMods} = 'fatigue';
+                                chosen_modNames{n_chosenMods} = ['fatigue ',run_nb_nm];
                                 switch chosenModel_fatigue
                                     case 1
                                         chosen_modVals(n_chosenMods,:) = raw_or_z(fatigue.(run_full_nm)(chosen_trial_idx));
@@ -3510,7 +3514,7 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                             % Ech*fatigue
                             if chosenModel_Ech_x_fatigue > 0
                                 n_chosenMods = n_chosenMods + 1;
-                                chosen_modNames{n_chosenMods} = 'Ech_x_fatigue';
+                                chosen_modNames{n_chosenMods} = ['Ech_x_fatigue ',run_nb_nm];
                                 switch chosenModel_Ech_x_fatigue
                                     case 1
                                         chosen_modVals(n_chosenMods,:) = raw_or_z(E_chosen.(run_full_nm)(chosen_trial_idx).*fatigue.(run_full_nm)(chosen_trial_idx));
@@ -3524,7 +3528,7 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                             % efficacy
                             if chosenModel_efficacy > 0
                                 n_chosenMods = n_chosenMods + 1;
-                                chosen_modNames{n_chosenMods} = 'efficacy';
+                                chosen_modNames{n_chosenMods} = ['efficacy ',run_nb_nm];
                                 switch chosenModel_efficacy
                                     case 1
                                         chosen_modVals(n_chosenMods,:) = raw_or_z(efficacy_with2first.(run_full_nm)(chosen_trial_idx));
@@ -3550,7 +3554,7 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                             % previous trial efficacy
                             if chosenModel_prevEfficacy > 0
                                 n_chosenMods = n_chosenMods + 1;
-                                chosen_modNames{n_chosenMods} = 'previous trial efficacy';
+                                chosen_modNames{n_chosenMods} = ['previous trial efficacy ',run_nb_nm];
                                 switch chosenModel_prevEfficacy
                                     case 1
                                         chosen_modVals(n_chosenMods,:) = raw_or_z(prevEfficacy_with2first.(run_full_nm)(chosen_trial_idx));
@@ -3576,7 +3580,7 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                             % Ech*(previous trial efficacy)
                             if chosenModel_Ech_x_prevEfficacy > 0
                                 n_chosenMods = n_chosenMods + 1;
-                                chosen_modNames{n_chosenMods} = 'Ech_x_previous trial efficacy';
+                                chosen_modNames{n_chosenMods} = ['Ech_x_previous trial efficacy ',run_nb_nm];
                                 switch chosenModel_Ech_x_prevEfficacy
                                     case 1
                                         chosen_modVals(n_chosenMods,:) = raw_or_z(Echosen.(run_full_nm)(chosen_trial_idx).*prevEfficacy_with2first.(run_full_nm)(chosen_trial_idx));
@@ -3595,7 +3599,7 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                         % trial number
                         if chosenModel_trialN > 0
                             n_chosenMods = n_chosenMods + 1;
-                            chosen_modNames{n_chosenMods} = 'trial number';
+                            chosen_modNames{n_chosenMods} = ['trial number ',run_nb_nm];
                             switch chosenModel_trialN
                                 case 1
                                     chosen_modVals(n_chosenMods,:) = raw_or_z(trialN.(run_full_nm)(chosen_trial_idx));
@@ -3613,7 +3617,7 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                         % confidence
                         if chosenModel_confidence > 0
                             n_chosenMods = n_chosenMods + 1;
-                            chosen_modNames{n_chosenMods} = 'confidence';
+                            chosen_modNames{n_chosenMods} = ['confidence ',run_nb_nm];
                             switch chosenModel_confidence
                                 case 1
                                     chosen_modVals(n_chosenMods,:) = confidence.(run_full_nm)(chosen_trial_idx); % binary variable => no zscore
@@ -3627,7 +3631,7 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                         % RT (last regressor)
                         if chosenModel_RT > 0 && ~ismember(chosenModel_RT,[4,5,6])
                             n_chosenMods = n_chosenMods + 1;
-                            chosen_modNames{n_chosenMods} = 'choice RT';
+                            chosen_modNames{n_chosenMods} = ['choice RT ',run_nb_nm];
                             switch chosenModel_RT
                                 case 1
                                     chosen_modVals(n_chosenMods,:) = raw_or_z(choice_RT.(run_full_nm)(chosen_trial_idx));
@@ -3639,7 +3643,7 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                         end
                         
                         [matlabbatch] = First_level_loadEachCondition_DCM(matlabbatch, sub_idx, iCond,...
-                            ['dispChosen_',RP_dispChosen_nm,'_',splitE_dispChosen_nm], modelChosenOnset, modelChosenDur,...
+                            ['dispChosen_',RP_dispChosen_nm,'_',splitE_dispChosen_nm,' ',run_nb_nm], modelChosenOnset, modelChosenDur,...
                             n_chosenMods, chosen_modNames, chosen_modVals,...
                             orth_vars, onsets_only_GLM);
                     end % run loop
@@ -3709,7 +3713,7 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                         % RT (first regressor)
                         if chosenModel_RT > 0 && ~ismember(chosenModel_RT,[1,2,3])
                             n_chosenMods = n_chosenMods + 1;
-                            chosen_modNames{n_chosenMods} = 'choice RT';
+                            chosen_modNames{n_chosenMods} = ['choice RT ',task_nm];
                             switch chosenModel_RT
                                 case 4
                                     chosen_modVals(n_chosenMods,:) = raw_or_z(choice_RT.(task_nm)(chosen_trial_idx));
@@ -3725,13 +3729,13 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                             n_chosenMods = n_chosenMods + 1;
                             switch chosenModel_NV_chosen
                                 case 4
-                                    chosen_modNames{n_chosenMods} = 'NVch-NVunch';
+                                    chosen_modNames{n_chosenMods} = ['NVch-NVunch ',task_nm];
                                     chosen_modVals(n_chosenMods,:) = raw_or_z(NV_ch_min_unch.(task_nm)(chosen_trial_idx));
                                 case 5
-                                    chosen_modNames{n_chosenMods} = 'p(chosen)';
+                                    chosen_modNames{n_chosenMods} = ['p(chosen) ',task_nm];
                                     chosen_modVals(n_chosenMods,:) = raw_or_z(pChosen.(task_nm)(chosen_trial_idx));
                                 case 6
-                                    chosen_modNames{n_chosenMods} = 'NVch-NVunch';
+                                    chosen_modNames{n_chosenMods} = ['NVch-NVunch ',task_nm];
                                     chosen_modVals(n_chosenMods,:) = raw_or_z(NV_ch_min_unch_with_bias.(task_nm)(chosen_trial_idx));
                                 otherwise
                                     error('not ready yet');
@@ -3741,7 +3745,7 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                         % reward vs punishment trials
                         if chosenModel_R_vs_P > 0
                             n_chosenMods = n_chosenMods + 1;
-                            chosen_modNames{n_chosenMods} = 'R_vs_P';
+                            chosen_modNames{n_chosenMods} = ['R_vs_P ',task_nm];
                             switch chosenModel_R_vs_P
                                 case 1
                                     chosen_modVals(n_chosenMods,:) = RP_var_binary.(task_nm)(chosen_trial_idx);
@@ -3755,11 +3759,11 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                             case 0
                             case 1
                                 n_chosenMods = n_chosenMods + 1;
-                                chosen_modNames{n_chosenMods} = 'choice = high effort';
+                                chosen_modNames{n_chosenMods} = ['choice = high effort ',task_nm];
                                 chosen_modVals(n_chosenMods,:) = choice_hE.(task_nm)(chosen_trial_idx); % binary variable => no zscore
                             case 2
                                 n_chosenMods = n_chosenMods + 1;
-                                chosen_modNames{n_chosenMods} = 'choice = high effort';
+                                chosen_modNames{n_chosenMods} = ['choice = high effort ',task_nm];
                                 chosen_modVals(n_chosenMods,:) = choice_hE_bis.(task_nm)(chosen_trial_idx); % binary variable => no zscore
                             otherwise
                                 error('not ready yet');
@@ -3768,7 +3772,7 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                         % reward for the non-default option
                         if chosenModel_R_varOption > 0
                             n_chosenMods = n_chosenMods + 1;
-                            chosen_modNames{n_chosenMods} = 'R non-default';
+                            chosen_modNames{n_chosenMods} = ['R non-default ',task_nm];
                             switch chosenModel_R_varOption
                                 case 1 % R high effort option (amount)
                                     chosen_modVals(n_chosenMods,:) = raw_or_z(R_amount_varOption.(task_nm)(chosen_trial_idx));
@@ -3786,7 +3790,7 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                         % reward for the chosen option
                         if chosenModel_R_chosen > 0
                             n_chosenMods = n_chosenMods + 1;
-                            chosen_modNames{n_chosenMods} = 'R chosen';
+                            chosen_modNames{n_chosenMods} = ['R chosen ',task_nm];
                             switch chosenModel_R_chosen
                                 case 1 % R high effort option (amount)
                                     chosen_modVals(n_chosenMods,:) = raw_or_z(R_amount_chosen.(task_nm)(chosen_trial_idx));
@@ -3804,7 +3808,7 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                         % punishment for the non-default option
                         if chosenModel_P_varOption > 0
                             n_chosenMods = n_chosenMods + 1;
-                            chosen_modNames{n_chosenMods} = 'P non-default';
+                            chosen_modNames{n_chosenMods} = ['P non-default ',task_nm];
                             switch chosenModel_P_varOption
                                 case 1 % R high effort option (amount)
                                     chosen_modVals(n_chosenMods,:) = raw_or_z(P_amount_varOption.(task_nm)(chosen_trial_idx));
@@ -3822,7 +3826,7 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                         % punishment for the chosen option
                         if chosenModel_P_chosen > 0
                             n_chosenMods = n_chosenMods + 1;
-                            chosen_modNames{n_chosenMods} = 'P chosen';
+                            chosen_modNames{n_chosenMods} = ['P chosen ',task_nm];
                             switch chosenModel_P_chosen
                                 case 1 % R high effort option (amount)
                                     chosen_modVals(n_chosenMods,:) = raw_or_z(P_amount_chosen.(task_nm)(chosen_trial_idx));
@@ -3840,7 +3844,7 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                         % money left
                         if chosenModel_moneyLeft > 0
                             n_chosenMods = n_chosenMods + 1;
-                            chosen_modNames{n_chosenMods} = 'money left';
+                            chosen_modNames{n_chosenMods} = ['money left ',task_nm];
                             switch chosenModel_moneyLeft
                                 case 1
                                     chosen_modVals(n_chosenMods,:) = raw_or_z(money_amount_left.(task_nm)(chosen_trial_idx));
@@ -3858,7 +3862,7 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                         % money right
                         if chosenModel_moneyRight > 0
                             n_chosenMods = n_chosenMods + 1;
-                            chosen_modNames{n_chosenMods} = 'money right';
+                            chosen_modNames{n_chosenMods} = ['money right ',task_nm];
                             switch chosenModel_moneyRight
                                 case 1
                                     chosen_modVals(n_chosenMods,:) = raw_or_z(money_amount_right.(task_nm)(chosen_trial_idx));
@@ -3876,7 +3880,7 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                         % money chosen
                         if chosenModel_moneyChosen > 0
                             n_chosenMods = n_chosenMods + 1;
-                            chosen_modNames{n_chosenMods} = 'money chosen';
+                            chosen_modNames{n_chosenMods} = ['money chosen',task_nm];
                             switch chosenModel_moneyChosen
                                 case 1
                                     chosen_modVals(n_chosenMods,:) = raw_or_z(money_amount_chosen.(task_nm)(chosen_trial_idx));
@@ -3894,7 +3898,7 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                         % money unchosen
                         if chosenModel_moneyUnchosen > 0
                             n_chosenMods = n_chosenMods + 1;
-                            chosen_modNames{n_chosenMods} = 'money unchosen';
+                            chosen_modNames{n_chosenMods} = ['money unchosen ',task_nm];
                             switch chosenModel_moneyUnchosen
                                 case 1
                                     chosen_modVals(n_chosenMods,:) = raw_or_z(money_amount_unchosen.(task_nm)(chosen_trial_idx));
@@ -3912,7 +3916,7 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                         % money non-default option
                         if chosenModel_moneyNonDefault > 0
                             n_chosenMods = n_chosenMods + 1;
-                            chosen_modNames{n_chosenMods} = 'money non-default option';
+                            chosen_modNames{n_chosenMods} = ['money non-default option ',task_nm];
                             switch chosenModel_moneyNonDefault
                                 case 1
                                     chosen_modVals(n_chosenMods,:) = raw_or_z(money_amount_varOption.(task_nm)(chosen_trial_idx));
@@ -3930,7 +3934,7 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                         % money chosen - money unchosen
                         if chosenModel_money_chosen_min_money_unchosen > 0
                             n_chosenMods = n_chosenMods + 1;
-                            chosen_modNames{n_chosenMods} = 'money chosen - unchosen';
+                            chosen_modNames{n_chosenMods} = ['money chosen - unchosen ',task_nm];
                             switch chosenModel_money_chosen_min_money_unchosen
                                 case 1
                                     chosen_modVals(n_chosenMods,:) = raw_or_z(moneyChosen_min_moneyUnchosen_amount.(task_nm)(chosen_trial_idx));
@@ -3942,7 +3946,7 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                         % money chosen - money fixed option (low R low E)
                         if chosenModel_moneyChosen_min_moneyDefault > 0
                             n_chosenMods = n_chosenMods + 1;
-                            chosen_modNames{n_chosenMods} = 'money chosen - money fixed';
+                            chosen_modNames{n_chosenMods} = ['money chosen - money fixed ',task_nm];
                             switch chosenModel_moneyChosen_min_moneyDefault
                                 case 1
                                     chosen_modVals(n_chosenMods,:) = raw_or_z(moneyChosen_min_moneyFixed_amount.(task_nm)(chosen_trial_idx));
@@ -3956,7 +3960,7 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                         % sum of money
                         if chosenModel_moneySum > 0
                             n_chosenMods = n_chosenMods + 1;
-                            chosen_modNames{n_chosenMods} = 'money sum';
+                            chosen_modNames{n_chosenMods} = ['money sum ',task_nm];
                             switch chosenModel_moneySum
                                 case 1
                                     chosen_modVals(n_chosenMods,:) = raw_or_z(money_amount_sum.(task_nm)(chosen_trial_idx));
@@ -3968,7 +3972,7 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                         % effort left
                         if chosenModel_E_left > 0
                             n_chosenMods = n_chosenMods + 1;
-                            chosen_modNames{n_chosenMods} = 'effort left';
+                            chosen_modNames{n_chosenMods} = ['effort left ',task_nm];
                             switch chosenModel_E_left
                                 case 1
                                     chosen_modVals(n_chosenMods,:) = raw_or_z(E_left.(task_nm)(chosen_trial_idx));
@@ -3980,7 +3984,7 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                         % effort right
                         if chosenModel_E_right > 0
                             n_chosenMods = n_chosenMods + 1;
-                            chosen_modNames{n_chosenMods} = 'effort right';
+                            chosen_modNames{n_chosenMods} = ['effort right ',task_nm];
                             switch chosenModel_E_right
                                 case 1
                                     chosen_modVals(n_chosenMods,:) = raw_or_z(E_right.(task_nm)(chosen_trial_idx));
@@ -3992,7 +3996,7 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                         % effort chosen
                         if chosenModel_Echosen > 0
                             n_chosenMods = n_chosenMods + 1;
-                            chosen_modNames{n_chosenMods} = 'effort chosen';
+                            chosen_modNames{n_chosenMods} = ['effort chosen ',task_nm];
                             switch chosenModel_Echosen
                                 case 1
                                     chosen_modVals(n_chosenMods,:) = raw_or_z(E_chosen.(task_nm)(chosen_trial_idx));
@@ -4008,7 +4012,7 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                         % effort unchosen
                         if chosenModel_Eunchosen > 0
                             n_chosenMods = n_chosenMods + 1;
-                            chosen_modNames{n_chosenMods} = 'effort unchosen';
+                            chosen_modNames{n_chosenMods} = ['effort unchosen ',task_nm];
                             switch chosenModel_Eunchosen
                                 case 1
                                     chosen_modVals(n_chosenMods,:) = raw_or_z(E_unchosen.(task_nm)(chosen_trial_idx));
@@ -4020,7 +4024,7 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                         % effort non-default option
                         if chosenModel_EnonDefault > 0
                             n_chosenMods = n_chosenMods + 1;
-                            chosen_modNames{n_chosenMods} = 'effort non-default option';
+                            chosen_modNames{n_chosenMods} = ['effort non-default option ',task_nm];
                             switch chosenModel_EnonDefault
                                 case 1
                                     chosen_modVals(n_chosenMods,:) = E_varOption.(task_nm)(chosen_trial_idx); % binary variable => no zscore
@@ -4032,7 +4036,7 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                         % effort chosen - unchosen
                         if chosenModel_Ech_min_Eunch > 0
                             n_chosenMods = n_chosenMods + 1;
-                            chosen_modNames{n_chosenMods} = 'effort chosen - unchosen';
+                            chosen_modNames{n_chosenMods} = ['effort chosen - unchosen ',task_nm];
                             switch chosenModel_Ech_min_Eunch
                                 case 1
                                     chosen_modVals(n_chosenMods,:) = raw_or_z(E_chosen_min_E_unchosen.(task_nm)(chosen_trial_idx));
@@ -4044,7 +4048,7 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                         % effort chosen - fixed option
                         if chosenModel_Ech_min_Efixed > 0
                             n_chosenMods = n_chosenMods + 1;
-                            chosen_modNames{n_chosenMods} = 'effort chosen - fixed';
+                            chosen_modNames{n_chosenMods} = ['effort chosen - fixed ',task_nm];
                             switch chosenModel_Ech_min_Efixed
                                 case 1
                                     chosen_modVals(n_chosenMods,:) = raw_or_z(Ech_min_Efixed.(task_nm)(chosen_trial_idx));
@@ -4056,7 +4060,7 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                         % sum of efforts
                         if chosenModel_E_sum > 0
                             n_chosenMods = n_chosenMods + 1;
-                            chosen_modNames{n_chosenMods} = 'effort sum';
+                            chosen_modNames{n_chosenMods} = ['effort sum ',task_nm];
                             switch chosenModel_E_sum
                                 case 1
                                     chosen_modVals(n_chosenMods,:) = raw_or_z(E_sum.(task_nm)(chosen_trial_idx));
@@ -4068,7 +4072,7 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                         % money level*effort level high E option
                         if chosenModel_money_level_x_E_varOption > 0
                             n_chosenMods = n_chosenMods + 1;
-                            chosen_modNames{n_chosenMods} = 'money x effort non-default option';
+                            chosen_modNames{n_chosenMods} = ['money x effort non-default option ',task_nm];
                             switch chosenModel_money_level_x_E_varOption
                                 case 1
                                     chosen_modVals(n_chosenMods,:) = raw_or_z(money_level_x_E_varOption.(task_nm)(chosen_trial_idx));
@@ -4080,7 +4084,7 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                         % money level * effort chosen
                         if chosenModel_money_level_x_E_chosen > 0
                             n_chosenMods = n_chosenMods + 1;
-                            chosen_modNames{n_chosenMods} = 'money x effort chosen';
+                            chosen_modNames{n_chosenMods} = ['money x effort chosen ',task_nm];
                             switch chosenModel_money_level_x_E_chosen
                                 case 1
                                     chosen_modVals(n_chosenMods,:) = raw_or_z(money_level_x_E_chosen.(task_nm)(chosen_trial_idx));
@@ -4092,7 +4096,7 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                         % R level * effort high E option
                         if chosenModel_R_level_x_E_varOption > 0
                             n_chosenMods = n_chosenMods + 1;
-                            chosen_modNames{n_chosenMods} = 'R x E non-default option';
+                            chosen_modNames{n_chosenMods} = ['R x E non-default option ',task_nm];
                             switch chosenModel_R_level_x_E_varOption
                                 case 1
                                     chosen_modVals(n_chosenMods,:) = raw_or_z(R_level_x_E_varOption.(task_nm)(chosen_trial_idx));
@@ -4104,7 +4108,7 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                         % R level * effort chosen
                         if chosenModel_R_level_x_E_chosen > 0
                             n_chosenMods = n_chosenMods + 1;
-                            chosen_modNames{n_chosenMods} = 'R x E chosen';
+                            chosen_modNames{n_chosenMods} = ['R x E chosen ',task_nm];
                             switch chosenModel_R_level_x_E_chosen
                                 case 1
                                     chosen_modVals(n_chosenMods,:) = raw_or_z(R_level_x_E_chosen.(task_nm)(chosen_trial_idx));
@@ -4116,7 +4120,7 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                         % P level * effort high E option
                         if chosenModel_P_level_x_E_varOption > 0
                             n_chosenMods = n_chosenMods + 1;
-                            chosen_modNames{n_chosenMods} = 'P x E non-default option';
+                            chosen_modNames{n_chosenMods} = ['P x E non-default option ',task_nm];
                             switch chosenModel_P_level_x_E_varOption
                                 case 1
                                     chosen_modVals(n_chosenMods,:) = raw_or_z(P_level_x_E_varOption.(task_nm)(chosen_trial_idx));
@@ -4128,7 +4132,7 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                         % P level * effort chosen
                         if chosenModel_P_level_x_E_chosen > 0
                             n_chosenMods = n_chosenMods + 1;
-                            chosen_modNames{n_chosenMods} = 'P x E chosen';
+                            chosen_modNames{n_chosenMods} = ['P x E chosen ',task_nm];
                             switch chosenModel_P_level_x_E_chosen
                                 case 1
                                     chosen_modVals(n_chosenMods,:) = raw_or_z(P_level_x_E_chosen.(task_nm)(chosen_trial_idx));
@@ -4142,13 +4146,13 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                             n_chosenMods = n_chosenMods + 1;
                             switch chosenModel_NV_chosen
                                 case 1
-                                    chosen_modNames{n_chosenMods} = 'NVch-NVunch';
+                                    chosen_modNames{n_chosenMods} = ['NVch-NVunch ',task_nm];
                                     chosen_modVals(n_chosenMods,:) = raw_or_z(NV_ch_min_unch.(task_nm)(chosen_trial_idx));
                                 case 2
-                                    chosen_modNames{n_chosenMods} = 'p(chosen)';
+                                    chosen_modNames{n_chosenMods} = ['p(chosen) ',task_nm];
                                     chosen_modVals(n_chosenMods,:) = raw_or_z(pChosen.(task_nm)(chosen_trial_idx));
                                 case 3
-                                    chosen_modNames{n_chosenMods} = 'NVch-NVunch';
+                                    chosen_modNames{n_chosenMods} = ['NVch-NVunch ',task_nm];
                                     chosen_modVals(n_chosenMods,:) = raw_or_z(NV_ch_min_unch_with_bias.(task_nm)(chosen_trial_idx));
                                 otherwise
                                     error('not ready yet');
@@ -4160,19 +4164,19 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                             n_chosenMods = n_chosenMods + 1;
                             switch chosenModel_NV_varOption
                                 case 1
-                                    chosen_modNames{n_chosenMods} = 'delta NV high E - low E';
+                                    chosen_modNames{n_chosenMods} = ['delta NV high E - low E ',task_nm];
                                     chosen_modVals(n_chosenMods,:) = raw_or_z(NV_varOption.(task_nm)(chosen_trial_idx));
                                 case 2
-                                    chosen_modNames{n_chosenMods} = '|delta NV high E - low E|';
+                                    chosen_modNames{n_chosenMods} = ['|delta NV high E - low E| ',task_nm];
                                     chosen_modVals(n_chosenMods,:) = raw_or_z(abs(NV_varOption.(task_nm)(chosen_trial_idx)));
                                 case 3
-                                    chosen_modNames{n_chosenMods} = 'p(choice=hE)';
+                                    chosen_modNames{n_chosenMods} = ['p(choice=hE) ',task_nm];
                                     chosen_modVals(n_chosenMods,:) = raw_or_z(abs(pChoice_hE.(task_nm)(chosen_trial_idx)));
                                 case 4
-                                    chosen_modNames{n_chosenMods} = 'delta NV high E - low E + bias';
+                                    chosen_modNames{n_chosenMods} = ['delta NV high E - low E + bias ',task_nm];
                                     chosen_modVals(n_chosenMods,:) = raw_or_z(NV_varOption_plus_bias.(task_nm)(chosen_trial_idx));
                                 case 5
-                                    chosen_modNames{n_chosenMods} = '|delta NV high E - low E + bias|';
+                                    chosen_modNames{n_chosenMods} = ['|delta NV high E - low E + bias| ',task_nm];
                                     chosen_modVals(n_chosenMods,:) = raw_or_z(abs(NV_varOption_plus_bias.(task_nm)(chosen_trial_idx)));
                                 otherwise
                                     error('not ready yet');
@@ -4184,19 +4188,19 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                             n_chosenMods = n_chosenMods + 1;
                             switch chosenModel_NV_varOption_bis
                                 case 1
-                                    chosen_modNames{n_chosenMods} = 'delta NV high E - low E';
+                                    chosen_modNames{n_chosenMods} = ['delta NV high E - low E ',task_nm];
                                     chosen_modVals(n_chosenMods,:) = raw_or_z(NV_varOption.(task_nm)(chosen_trial_idx));
                                 case 2
-                                    chosen_modNames{n_chosenMods} = '|delta NV high E - low E|';
+                                    chosen_modNames{n_chosenMods} = ['|delta NV high E - low E| ',task_nm];
                                     chosen_modVals(n_chosenMods,:) = raw_or_z(abs(NV_varOption.(task_nm)(chosen_trial_idx)));
                                 case 3
-                                    chosen_modNames{n_chosenMods} = 'p(choice=hE)';
+                                    chosen_modNames{n_chosenMods} = ['p(choice=hE) ',task_nm];
                                     chosen_modVals(n_chosenMods,:) = raw_or_z(abs(pChoice_hE.(task_nm)(chosen_trial_idx)));
                                 case 4
-                                    chosen_modNames{n_chosenMods} = 'delta NV high E - low E + bias';
+                                    chosen_modNames{n_chosenMods} = ['delta NV high E - low E + bias ',task_nm];
                                     chosen_modVals(n_chosenMods,:) = raw_or_z(NV_varOption_plus_bias.(task_nm)(chosen_trial_idx));
                                 case 5
-                                    chosen_modNames{n_chosenMods} = '|delta NV high E - low E + bias|';
+                                    chosen_modNames{n_chosenMods} = ['|delta NV high E - low E + bias| ',task_nm];
                                     chosen_modVals(n_chosenMods,:) = raw_or_z(abs(NV_varOption_plus_bias.(task_nm)(chosen_trial_idx)));
                                 otherwise
                                     error('not ready yet');
@@ -4207,7 +4211,7 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                             % force integral
                             if chosenModel_F_integral > 0
                                 n_chosenMods = n_chosenMods + 1;
-                                chosen_modNames{n_chosenMods} = 'F integral';
+                                chosen_modNames{n_chosenMods} = ['F integral ',task_nm];
                                 switch chosenModel_F_integral
                                     case 1
                                         chosen_modVals(n_chosenMods,:) = raw_or_z(AUC.(task_nm)(chosen_trial_idx));
@@ -4233,7 +4237,7 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                             % fatigue
                             if chosenModel_fatigue > 0
                                 n_chosenMods = n_chosenMods + 1;
-                                chosen_modNames{n_chosenMods} = 'fatigue';
+                                chosen_modNames{n_chosenMods} = ['fatigue ',task_nm];
                                 switch chosenModel_fatigue
                                     case 1
                                         chosen_modVals(n_chosenMods,:) = raw_or_z(fatigue.(task_nm)(chosen_trial_idx));
@@ -4247,7 +4251,7 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                             % Ech*fatigue
                             if chosenModel_Ech_x_fatigue > 0
                                 n_chosenMods = n_chosenMods + 1;
-                                chosen_modNames{n_chosenMods} = 'Ech_x_fatigue';
+                                chosen_modNames{n_chosenMods} = ['Ech_x_fatigue ',task_nm];
                                 switch chosenModel_Ech_x_fatigue
                                     case 1
                                         chosen_modVals(n_chosenMods,:) = raw_or_z(E_chosen.(task_nm)(chosen_trial_idx).*fatigue.(task_nm)(chosen_trial_idx));
@@ -4261,7 +4265,7 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                             % efficacy
                             if chosenModel_efficacy > 0
                                 n_chosenMods = n_chosenMods + 1;
-                                chosen_modNames{n_chosenMods} = 'efficacy';
+                                chosen_modNames{n_chosenMods} = ['efficacy ',task_nm];
                                 switch chosenModel_efficacy
                                     case 1
                                         chosen_modVals(n_chosenMods,:) = raw_or_z(efficacy_with2first.(task_nm)(chosen_trial_idx));
@@ -4287,7 +4291,7 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                             % previous trial efficacy
                             if chosenModel_prevEfficacy > 0
                                 n_chosenMods = n_chosenMods + 1;
-                                chosen_modNames{n_chosenMods} = 'previous trial efficacy';
+                                chosen_modNames{n_chosenMods} = ['previous trial efficacy ',task_nm];
                                 switch chosenModel_prevEfficacy
                                     case 1
                                         chosen_modVals(n_chosenMods,:) = raw_or_z(prevEfficacy_with2first.(task_nm)(chosen_trial_idx));
@@ -4313,7 +4317,7 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                             % Ech*(previous trial efficacy)
                             if chosenModel_Ech_x_prevEfficacy > 0
                                 n_chosenMods = n_chosenMods + 1;
-                                chosen_modNames{n_chosenMods} = 'Ech_x_previous trial efficacy';
+                                chosen_modNames{n_chosenMods} = ['Ech_x_previous trial efficacy ',task_nm];
                                 switch chosenModel_Ech_x_prevEfficacy
                                     case 1
                                         chosen_modVals(n_chosenMods,:) = raw_or_z(Echosen.(task_nm)(chosen_trial_idx).*prevEfficacy_with2first.(task_nm)(chosen_trial_idx));
@@ -4332,7 +4336,7 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                         % trial number
                         if chosenModel_trialN > 0
                             n_chosenMods = n_chosenMods + 1;
-                            chosen_modNames{n_chosenMods} = 'trial number';
+                            chosen_modNames{n_chosenMods} = ['trial number ',task_nm];
                             switch chosenModel_trialN
                                 case 1
                                     chosen_modVals(n_chosenMods,:) = raw_or_z(trialN.(task_nm)(chosen_trial_idx));
@@ -4350,7 +4354,7 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                         % confidence
                         if chosenModel_confidence > 0
                             n_chosenMods = n_chosenMods + 1;
-                            chosen_modNames{n_chosenMods} = 'confidence';
+                            chosen_modNames{n_chosenMods} = ['confidence ',task_nm];
                             switch chosenModel_confidence
                                 case 1
                                     chosen_modVals(n_chosenMods,:) = confidence.(task_nm)(chosen_trial_idx); % binary variable => no zscore
@@ -4364,7 +4368,7 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                         % RT (last regressor)
                         if chosenModel_RT > 0 && ~ismember(chosenModel_RT,[4,5,6])
                             n_chosenMods = n_chosenMods + 1;
-                            chosen_modNames{n_chosenMods} = 'choice RT';
+                            chosen_modNames{n_chosenMods} = ['choice RT ',task_nm];
                             switch chosenModel_RT
                                 case 1
                                     chosen_modVals(n_chosenMods,:) = raw_or_z(choice_RT.(task_nm)(chosen_trial_idx));
@@ -4376,7 +4380,7 @@ if ismember(chosenModel,{'stick','boxcar','boxcar_bis','boxcar_ter'})
                         end
                         
                         [matlabbatch] = First_level_loadEachCondition_DCM(matlabbatch, sub_idx, iCond,...
-                            ['dispChosen_',RP_dispChosen_nm,'_',splitE_dispChosen_nm], modelChosenOnset, modelChosenDur,...
+                            ['dispChosen_',RP_dispChosen_nm,'_',splitE_dispChosen_nm,' ',task_nm], modelChosenOnset, modelChosenDur,...
                             n_chosenMods, chosen_modNames, chosen_modVals,...
                             orth_vars, onsets_only_GLM);
                     end % task loop
@@ -5157,6 +5161,7 @@ if ismember(preEffortCrossModel,{'stick','boxcar','boxcar_bis'})
                 case 1
                     for iRun = 1:n_runs
                         run_full_nm = ['run',num2str(iRun)];
+                        run_nb_nm = ['r',num2str(runs.runsToKeep(iRun))];
                         
                         % extract trial index for the current loop
                         switch RP_preEcross_nm
@@ -5216,11 +5221,11 @@ if ismember(preEffortCrossModel,{'stick','boxcar','boxcar_bis'})
                             case 0
                             case 1
                                 n_preEcrossMods = n_preEcrossMods + 1;
-                                preEcross_modNames{n_preEcrossMods} = 'choice = high effort';
+                                preEcross_modNames{n_preEcrossMods} = ['choice = high effort ',run_nb_nm];
                                 preEcross_modVals(n_preEcrossMods,:) = choice_hE.(run_full_nm)(preEcross_trial_idx); % binary variable => no zscore
                             case 2
                                 n_preEcrossMods = n_preEcrossMods + 1;
-                                preEcross_modNames{n_preEcrossMods} = 'choice = high effort';
+                                preEcross_modNames{n_preEcrossMods} = ['choice = high effort ',run_nb_nm];
                                 preEcross_modVals(n_preEcrossMods,:) = choice_hE_bis.(run_full_nm)(preEcross_trial_idx); % binary variable => no zscore
                             otherwise
                                 error('not ready yet');
@@ -5229,7 +5234,7 @@ if ismember(preEffortCrossModel,{'stick','boxcar','boxcar_bis'})
                         % money chosen
                         if preEcrossModel_money_chosen > 0
                             n_preEcrossMods = n_preEcrossMods + 1;
-                            preEcross_modNames{n_preEcrossMods} = 'money chosen';
+                            preEcross_modNames{n_preEcrossMods} = ['money chosen ',run_nb_nm];
                             switch preEcrossModel_money_chosen
                                 case 1
                                     preEcross_modVals(n_preEcrossMods,:) = raw_or_z(money_amount_chosen.(run_full_nm)(preEcross_trial_idx));
@@ -5247,7 +5252,7 @@ if ismember(preEffortCrossModel,{'stick','boxcar','boxcar_bis'})
                         % effort chosen
                         if preEcrossModel_effort_chosen > 0
                             n_preEcrossMods = n_preEcrossMods + 1;
-                            preEcross_modNames{n_preEcrossMods} = 'effort chosen';
+                            preEcross_modNames{n_preEcrossMods} = ['effort chosen ',run_nb_nm];
                             switch preEcrossModel_effort_chosen
                                 case 1
                                     preEcross_modVals(n_preEcrossMods,:) = raw_or_z(E_chosen.(run_full_nm)(preEcross_trial_idx));
@@ -5265,7 +5270,7 @@ if ismember(preEffortCrossModel,{'stick','boxcar','boxcar_bis'})
                             % force peak
                             if preEcrossModel_F_peak > 0
                                 n_preEcrossMods = n_preEcrossMods + 1;
-                                preEcross_modNames{n_preEcrossMods} = 'force peak';
+                                preEcross_modNames{n_preEcrossMods} = ['force peak ',run_nb_nm];
                                 switch preEcrossModel_F_peak
                                     case 1
                                         preEcross_modVals(n_preEcrossMods,:) = raw_or_z(forcePeak.(run_full_nm)(preEcross_trial_idx));
@@ -5306,13 +5311,13 @@ if ismember(preEffortCrossModel,{'stick','boxcar','boxcar_bis'})
                             n_preEcrossMods = n_preEcrossMods + 1;
                             switch preEcrossModel_NV_chosen
                                 case 1
-                                    preEcross_modNames{n_preEcrossMods} = 'NVch-NVunch';
+                                    preEcross_modNames{n_preEcrossMods} = ['NVch-NVunch ',run_nb_nm];
                                     preEcross_modVals(n_preEcrossMods,:) = raw_or_z(NV_ch_min_unch.(run_full_nm)(preEcross_trial_idx));
                                 case 2
-                                    preEcross_modNames{n_preEcrossMods} = 'p(chosen)';
+                                    preEcross_modNames{n_preEcrossMods} = ['p(chosen) ',run_nb_nm];
                                     preEcross_modVals(n_preEcrossMods,:) = raw_or_z(pChosen.(run_full_nm)(preEcross_trial_idx));
                                 case 3
-                                    preEcross_modNames{n_preEcrossMods} = 'NVch-NVunch';
+                                    preEcross_modNames{n_preEcrossMods} = ['NVch-NVunch ',run_nb_nm];
                                     preEcross_modVals(n_preEcrossMods,:) = raw_or_z(NV_ch_min_unch_with_bias.(run_full_nm)(preEcross_trial_idx));
                                 otherwise
                                     error('not ready yet');
@@ -5324,19 +5329,19 @@ if ismember(preEffortCrossModel,{'stick','boxcar','boxcar_bis'})
                             n_preEcrossMods = n_preEcrossMods + 1;
                             switch preEcrossModel_NV_varOption
                                 case 1
-                                    preEcross_modNames{n_preEcrossMods} = 'delta NV high E - low E';
+                                    preEcross_modNames{n_preEcrossMods} = ['delta NV high E - low E ',run_nb_nm];
                                     preEcross_modVals(n_preEcrossMods,:) = raw_or_z(NV_varOption.(run_full_nm)(preEcross_trial_idx));
                                 case 2
-                                    preEcross_modNames{n_preEcrossMods} = '|delta NV high E - low E|';
+                                    preEcross_modNames{n_preEcrossMods} = ['|delta NV high E - low E| ',run_nb_nm];
                                     preEcross_modVals(n_preEcrossMods,:) = raw_or_z(abs(NV_varOption.(run_full_nm)(preEcross_trial_idx)));
                                 case 3
-                                    preEcross_modNames{n_preEcrossMods} = 'p(choice=hE)';
+                                    preEcross_modNames{n_preEcrossMods} = ['p(choice=hE) ',run_nb_nm];
                                     preEcross_modVals(n_preEcrossMods,:) = raw_or_z(abs(pChoice_hE.(run_full_nm)(preEcross_trial_idx)));
                                 case 4
-                                    preEcross_modNames{n_preEcrossMods} = 'delta NV high E - low E + bias';
+                                    preEcross_modNames{n_preEcrossMods} = ['delta NV high E - low E + bias ',run_nb_nm];
                                     preEcross_modVals(n_preEcrossMods,:) = raw_or_z(NV_varOption_plus_bias.(run_full_nm)(preEcross_trial_idx));
                                 case 5
-                                    preEcross_modNames{n_preEcrossMods} = '|delta NV high E - low E + bias|';
+                                    preEcross_modNames{n_preEcrossMods} = ['|delta NV high E - low E + bias| ',run_nb_nm];
                                     preEcross_modVals(n_preEcrossMods,:) = raw_or_z(abs(NV_varOption_plus_bias.(run_full_nm)(preEcross_trial_idx)));
                                 otherwise
                                     error('not ready yet');
@@ -5348,19 +5353,19 @@ if ismember(preEffortCrossModel,{'stick','boxcar','boxcar_bis'})
                             n_preEcrossMods = n_preEcrossMods + 1;
                             switch preEcrossModel_NV_varOption_bis
                                 case 1
-                                    preEcross_modNames{n_preEcrossMods} = 'delta NV high E - low E';
+                                    preEcross_modNames{n_preEcrossMods} = ['delta NV high E - low E ',run_nb_nm];
                                     preEcross_modVals(n_preEcrossMods,:) = raw_or_z(NV_varOption.(run_full_nm)(preEcross_trial_idx));
                                 case 2
-                                    preEcross_modNames{n_preEcrossMods} = '|delta NV high E - low E|';
+                                    preEcross_modNames{n_preEcrossMods} = ['|delta NV high E - low E| ',run_nb_nm];
                                     preEcross_modVals(n_preEcrossMods,:) = raw_or_z(abs(NV_varOption.(run_full_nm)(preEcross_trial_idx)));
                                 case 3
-                                    preEcross_modNames{n_preEcrossMods} = 'p(choice=hE)';
+                                    preEcross_modNames{n_preEcrossMods} = ['p(choice=hE) ',run_nb_nm];
                                     preEcross_modVals(n_preEcrossMods,:) = raw_or_z(abs(pChoice_hE.(run_full_nm)(preEcross_trial_idx)));
                                 case 4
-                                    preEcross_modNames{n_preEcrossMods} = 'delta NV high E - low E + bias';
+                                    preEcross_modNames{n_preEcrossMods} = ['delta NV high E - low E + bias ',run_nb_nm];
                                     preEcross_modVals(n_preEcrossMods,:) = raw_or_z(NV_varOption_plus_bias.(run_full_nm)(preEcross_trial_idx));
                                 case 5
-                                    preEcross_modNames{n_preEcrossMods} = '|delta NV high E - low E + bias|';
+                                    preEcross_modNames{n_preEcrossMods} = ['|delta NV high E - low E + bias| ',run_nb_nm];
                                     preEcross_modVals(n_preEcrossMods,:) = raw_or_z(abs(NV_varOption_plus_bias.(run_full_nm)(preEcross_trial_idx)));
                                 otherwise
                                     error('not ready yet');
@@ -5370,7 +5375,7 @@ if ismember(preEffortCrossModel,{'stick','boxcar','boxcar_bis'})
                         % RT 1st answer
                         if preEcrossModel_RT1stAnswer > 0
                             n_preEcrossMods = n_preEcrossMods + 1;
-                            preEcross_modNames{n_preEcrossMods} = 'Effort latency';
+                            preEcross_modNames{n_preEcrossMods} = ['Effort latency ',run_nb_nm];
                             switch preEcrossModel_RT1stAnswer
                                 case 1
                                     preEcross_modVals(n_preEcrossMods,:) = raw_or_z(latency.(run_full_nm)(preEcross_trial_idx));
@@ -5383,7 +5388,7 @@ if ismember(preEffortCrossModel,{'stick','boxcar','boxcar_bis'})
                         % trial number
                         if preEcrossModel_trialN > 0
                             n_preEcrossMods = n_preEcrossMods + 1;
-                            preEcross_modNames{n_preEcrossMods} = 'trial number';
+                            preEcross_modNames{n_preEcrossMods} = ['trial number ',run_nb_nm];
                             switch preEcrossModel_trialN
                                 case 1
                                     preEcross_modVals(n_preEcrossMods,:) = raw_or_z(trialN.(run_full_nm)(preEcross_trial_idx));
@@ -5401,7 +5406,7 @@ if ismember(preEffortCrossModel,{'stick','boxcar','boxcar_bis'})
                         % choice confidence
                         if preEcrossModel_conf > 0
                             n_preEcrossMods = n_preEcrossMods + 1;
-                            preEcross_modNames{n_preEcrossMods} = 'confidence';
+                            preEcross_modNames{n_preEcrossMods} = ['confidence ',run_nb_nm];
                             switch preEcrossModel_conf
                                 case 1 % binary variable => no zscore
                                     preEcross_modVals(n_preEcrossMods,:) = confidence.(run_full_nm)(preEcross_trial_idx);
@@ -5413,7 +5418,7 @@ if ismember(preEffortCrossModel,{'stick','boxcar','boxcar_bis'})
                         end
                         
                         [matlabbatch] = First_level_loadEachCondition_DCM(matlabbatch, sub_idx, iCond,...
-                            ['preEffort fixation cross',RP_preEcross_nm,'_',splitE_preEcross_nm], modelpreEcrossOnset, modelPreEffortCrossdur,...
+                            ['preEffort fixation cross',RP_preEcross_nm,'_',splitE_preEcross_nm,' ',run_nb_nm], modelpreEcrossOnset, modelPreEffortCrossdur,...
                             n_preEcrossMods, preEcross_modNames, preEcross_modVals,...
                             orth_vars, onsets_only_GLM);
                     end % run loop
@@ -5480,11 +5485,11 @@ if ismember(preEffortCrossModel,{'stick','boxcar','boxcar_bis'})
                             case 0
                             case 1
                                 n_preEcrossMods = n_preEcrossMods + 1;
-                                preEcross_modNames{n_preEcrossMods} = 'choice = high effort';
+                                preEcross_modNames{n_preEcrossMods} = ['choice = high effort ',task_nm];
                                 preEcross_modVals(n_preEcrossMods,:) = choice_hE.(task_nm)(preEcross_trial_idx); % binary variable => no zscore
                             case 2
                                 n_preEcrossMods = n_preEcrossMods + 1;
-                                preEcross_modNames{n_preEcrossMods} = 'choice = high effort';
+                                preEcross_modNames{n_preEcrossMods} = ['choice = high effort ',task_nm];
                                 preEcross_modVals(n_preEcrossMods,:) = choice_hE_bis.(task_nm)(preEcross_trial_idx); % binary variable => no zscore
                             otherwise
                                 error('not ready yet');
@@ -5493,7 +5498,7 @@ if ismember(preEffortCrossModel,{'stick','boxcar','boxcar_bis'})
                         % money chosen
                         if preEcrossModel_money_chosen > 0
                             n_preEcrossMods = n_preEcrossMods + 1;
-                            preEcross_modNames{n_preEcrossMods} = 'money chosen';
+                            preEcross_modNames{n_preEcrossMods} = ['money chosen ',task_nm];
                             switch preEcrossModel_money_chosen
                                 case 1
                                     preEcross_modVals(n_preEcrossMods,:) = raw_or_z(money_amount_chosen.(task_nm)(preEcross_trial_idx));
@@ -5511,7 +5516,7 @@ if ismember(preEffortCrossModel,{'stick','boxcar','boxcar_bis'})
                         % effort chosen
                         if preEcrossModel_effort_chosen > 0
                             n_preEcrossMods = n_preEcrossMods + 1;
-                            preEcross_modNames{n_preEcrossMods} = 'effort chosen';
+                            preEcross_modNames{n_preEcrossMods} = ['effort chosen ',task_nm];
                             switch preEcrossModel_effort_chosen
                                 case 1
                                     preEcross_modVals(n_preEcrossMods,:) = raw_or_z(E_chosen.(task_nm)(preEcross_trial_idx));
@@ -5529,7 +5534,7 @@ if ismember(preEffortCrossModel,{'stick','boxcar','boxcar_bis'})
                             % force peak
                             if preEcrossModel_F_peak > 0
                                 n_preEcrossMods = n_preEcrossMods + 1;
-                                preEcross_modNames{n_preEcrossMods} = 'force peak';
+                                preEcross_modNames{n_preEcrossMods} = ['force peak ',task_nm];
                                 switch preEcrossModel_F_peak
                                     case 1
                                         preEcross_modVals(n_preEcrossMods,:) = raw_or_z(forcePeak.(task_nm)(preEcross_trial_idx));
@@ -5570,13 +5575,13 @@ if ismember(preEffortCrossModel,{'stick','boxcar','boxcar_bis'})
                             n_preEcrossMods = n_preEcrossMods + 1;
                             switch preEcrossModel_NV_chosen
                                 case 1
-                                    preEcross_modNames{n_preEcrossMods} = 'NVch-NVunch';
+                                    preEcross_modNames{n_preEcrossMods} = ['NVch-NVunch ',task_nm];
                                     preEcross_modVals(n_preEcrossMods,:) = raw_or_z(NV_ch_min_unch.(task_nm)(preEcross_trial_idx));
                                 case 2
-                                    preEcross_modNames{n_preEcrossMods} = 'p(chosen)';
+                                    preEcross_modNames{n_preEcrossMods} = ['p(chosen) ',task_nm];
                                     preEcross_modVals(n_preEcrossMods,:) = raw_or_z(pChosen.(task_nm)(preEcross_trial_idx));
                                 case 3
-                                    preEcross_modNames{n_preEcrossMods} = 'NVch-NVunch';
+                                    preEcross_modNames{n_preEcrossMods} = ['NVch-NVunch ',task_nm];
                                     preEcross_modVals(n_preEcrossMods,:) = raw_or_z(NV_ch_min_unch_with_bias.(task_nm)(preEcross_trial_idx));
                                 otherwise
                                     error('not ready yet');
@@ -5588,19 +5593,19 @@ if ismember(preEffortCrossModel,{'stick','boxcar','boxcar_bis'})
                             n_preEcrossMods = n_preEcrossMods + 1;
                             switch preEcrossModel_NV_varOption
                                 case 1
-                                    preEcross_modNames{n_preEcrossMods} = 'delta NV high E - low E';
+                                    preEcross_modNames{n_preEcrossMods} = ['delta NV high E - low E ',task_nm];
                                     preEcross_modVals(n_preEcrossMods,:) = raw_or_z(NV_varOption.(task_nm)(preEcross_trial_idx));
                                 case 2
-                                    preEcross_modNames{n_preEcrossMods} = '|delta NV high E - low E|';
+                                    preEcross_modNames{n_preEcrossMods} = ['|delta NV high E - low E| ',task_nm];
                                     preEcross_modVals(n_preEcrossMods,:) = raw_or_z(abs(NV_varOption.(task_nm)(preEcross_trial_idx)));
                                 case 3
-                                    preEcross_modNames{n_preEcrossMods} = 'p(choice=hE)';
+                                    preEcross_modNames{n_preEcrossMods} = ['p(choice=hE) ',task_nm];
                                     preEcross_modVals(n_preEcrossMods,:) = raw_or_z(abs(pChoice_hE.(task_nm)(preEcross_trial_idx)));
                                 case 4
-                                    preEcross_modNames{n_preEcrossMods} = 'delta NV high E - low E + bias';
+                                    preEcross_modNames{n_preEcrossMods} = ['delta NV high E - low E + bias ',task_nm];
                                     preEcross_modVals(n_preEcrossMods,:) = raw_or_z(NV_varOption_plus_bias.(task_nm)(preEcross_trial_idx));
                                 case 5
-                                    preEcross_modNames{n_preEcrossMods} = '|delta NV high E - low E + bias|';
+                                    preEcross_modNames{n_preEcrossMods} = ['|delta NV high E - low E + bias| ',task_nm];
                                     preEcross_modVals(n_preEcrossMods,:) = raw_or_z(abs(NV_varOption_plus_bias.(task_nm)(preEcross_trial_idx)));
                                 otherwise
                                     error('not ready yet');
@@ -5612,19 +5617,19 @@ if ismember(preEffortCrossModel,{'stick','boxcar','boxcar_bis'})
                             n_preEcrossMods = n_preEcrossMods + 1;
                             switch preEcrossModel_NV_varOption_bis
                                 case 1
-                                    preEcross_modNames{n_preEcrossMods} = 'delta NV high E - low E';
+                                    preEcross_modNames{n_preEcrossMods} = ['delta NV high E - low E ',task_nm];
                                     preEcross_modVals(n_preEcrossMods,:) = raw_or_z(NV_varOption.(task_nm)(preEcross_trial_idx));
                                 case 2
-                                    preEcross_modNames{n_preEcrossMods} = '|delta NV high E - low E|';
+                                    preEcross_modNames{n_preEcrossMods} = ['|delta NV high E - low E| ',task_nm];
                                     preEcross_modVals(n_preEcrossMods,:) = raw_or_z(abs(NV_varOption.(task_nm)(preEcross_trial_idx)));
                                 case 3
-                                    preEcross_modNames{n_preEcrossMods} = 'p(choice=hE)';
+                                    preEcross_modNames{n_preEcrossMods} = ['p(choice=hE) ',task_nm];
                                     preEcross_modVals(n_preEcrossMods,:) = raw_or_z(abs(pChoice_hE.(task_nm)(preEcross_trial_idx)));
                                 case 4
-                                    preEcross_modNames{n_preEcrossMods} = 'delta NV high E - low E + bias';
+                                    preEcross_modNames{n_preEcrossMods} = ['delta NV high E - low E + bias ',task_nm];
                                     preEcross_modVals(n_preEcrossMods,:) = raw_or_z(NV_varOption_plus_bias.(task_nm)(preEcross_trial_idx));
                                 case 5
-                                    preEcross_modNames{n_preEcrossMods} = '|delta NV high E - low E + bias|';
+                                    preEcross_modNames{n_preEcrossMods} = ['|delta NV high E - low E + bias| ',task_nm];
                                     preEcross_modVals(n_preEcrossMods,:) = raw_or_z(abs(NV_varOption_plus_bias.(task_nm)(preEcross_trial_idx)));
                                 otherwise
                                     error('not ready yet');
@@ -5634,7 +5639,7 @@ if ismember(preEffortCrossModel,{'stick','boxcar','boxcar_bis'})
                         % RT 1st answer
                         if preEcrossModel_RT1stAnswer > 0
                             n_preEcrossMods = n_preEcrossMods + 1;
-                            preEcross_modNames{n_preEcrossMods} = 'Effort latency';
+                            preEcross_modNames{n_preEcrossMods} = ['Effort latency ',task_nm];
                             switch preEcrossModel_RT1stAnswer
                                 case 1
                                     preEcross_modVals(n_preEcrossMods,:) = raw_or_z(latency.(task_nm)(preEcross_trial_idx));
@@ -5647,7 +5652,7 @@ if ismember(preEffortCrossModel,{'stick','boxcar','boxcar_bis'})
                         % trial number
                         if preEcrossModel_trialN > 0
                             n_preEcrossMods = n_preEcrossMods + 1;
-                            preEcross_modNames{n_preEcrossMods} = 'trial number';
+                            preEcross_modNames{n_preEcrossMods} = ['trial number ',task_nm];
                             switch preEcrossModel_trialN
                                 case 1
                                     preEcross_modVals(n_preEcrossMods,:) = raw_or_z(trialN.(task_nm)(preEcross_trial_idx));
@@ -5665,7 +5670,7 @@ if ismember(preEffortCrossModel,{'stick','boxcar','boxcar_bis'})
                         % choice confidence
                         if preEcrossModel_conf > 0
                             n_preEcrossMods = n_preEcrossMods + 1;
-                            preEcross_modNames{n_preEcrossMods} = 'confidence';
+                            preEcross_modNames{n_preEcrossMods} = ['confidence ',task_nm];
                             switch preEcrossModel_conf
                                 case 1 % binary variable => no zscore
                                     preEcross_modVals(n_preEcrossMods,:) = confidence.(task_nm)(preEcross_trial_idx);
@@ -5677,7 +5682,7 @@ if ismember(preEffortCrossModel,{'stick','boxcar','boxcar_bis'})
                         end
                         
                         [matlabbatch] = First_level_loadEachCondition_DCM(matlabbatch, sub_idx, iCond,...
-                            ['preEffort fixation cross',RP_preEcross_nm,'_',splitE_preEcross_nm], modelpreEcrossOnset, modelPreEffortCrossdur,...
+                            ['preEffort fixation cross',RP_preEcross_nm,'_',splitE_preEcross_nm,' ',task_nm], modelpreEcrossOnset, modelPreEffortCrossdur,...
                             n_preEcrossMods, preEcross_modNames, preEcross_modVals,...
                             orth_vars, onsets_only_GLM);
                     end % task loop
@@ -5984,6 +5989,7 @@ if ismember(EperfModel,{'stick','boxcar'})
                 case 1
                     for iRun = 1:n_runs
                         run_full_nm = ['run',num2str(iRun)];
+                        run_nb_nm = ['r',num2str(runs.runsToKeep(iRun))];
                         
                         % extract trial index for the current loop
                         switch RP_Eperf_nm
@@ -6045,11 +6051,11 @@ if ismember(EperfModel,{'stick','boxcar'})
                             case 0
                             case 1
                                 n_EperfMods = n_EperfMods + 1;
-                                Eperf_modNames{n_EperfMods} = 'choice = high effort';
+                                Eperf_modNames{n_EperfMods} = ['choice = high effort ',run_nb_nm];
                                 Eperf_modVals(n_EperfMods,:) = choice_hE.(run_full_nm)(Eperf_trial_idx); % binary variable => no zscore
                             case 2
                                 n_EperfMods = n_EperfMods + 1;
-                                Eperf_modNames{n_EperfMods} = 'choice = high effort';
+                                Eperf_modNames{n_EperfMods} = ['choice = high effort ',run_nb_nm];
                                 Eperf_modVals(n_EperfMods,:) = choice_hE_bis.(run_full_nm)(Eperf_trial_idx); % binary variable => no zscore
                             otherwise
                                 error('not ready yet');
@@ -6058,7 +6064,7 @@ if ismember(EperfModel,{'stick','boxcar'})
                         % money chosen
                         if EperfModel_money_chosen > 0
                             n_EperfMods = n_EperfMods + 1;
-                            Eperf_modNames{n_EperfMods} = 'money chosen';
+                            Eperf_modNames{n_EperfMods} = ['money chosen ',run_nb_nm];
                             switch EperfModel_money_chosen
                                 case 1
                                     Eperf_modVals(n_EperfMods,:) = raw_or_z(money_amount_chosen.(run_full_nm)(Eperf_trial_idx));
@@ -6076,7 +6082,7 @@ if ismember(EperfModel,{'stick','boxcar'})
                         % effort chosen
                         if EperfModel_effort_chosen > 0
                             n_EperfMods = n_EperfMods + 1;
-                            Eperf_modNames{n_EperfMods} = 'effort chosen';
+                            Eperf_modNames{n_EperfMods} = ['effort chosen ',run_nb_nm];
                             switch EperfModel_effort_chosen
                                 case 1
                                     Eperf_modVals(n_EperfMods,:) = raw_or_z(E_chosen.(run_full_nm)(Eperf_trial_idx));
@@ -6093,7 +6099,7 @@ if ismember(EperfModel,{'stick','boxcar'})
                             % force peak
                             if EperfModel_F_peak> 0
                                 n_EperfMods = n_EperfMods + 1;
-                                Eperf_modNames{n_EperfMods} = 'force peak';
+                                Eperf_modNames{n_EperfMods} = ['force peak ',run_nb_nm];
                                 switch EperfModel_F_peak
                                     case 1
                                         Eperf_modVals(n_EperfMods,:) = raw_or_z(forcePeak.(run_full_nm)(Eperf_trial_idx));
@@ -6111,7 +6117,7 @@ if ismember(EperfModel,{'stick','boxcar'})
                             % force integral
                             if EperfModel_F_integral > 0
                                 n_EperfMods = n_EperfMods + 1;
-                                Eperf_modNames{n_EperfMods} = 'force integral';
+                                Eperf_modNames{n_EperfMods} = ['force integral ',run_nb_nm];
                                 switch EperfModel_F_integral
                                     case 1
                                         Eperf_modVals(n_EperfMods,:) = raw_or_z(AUC.(run_full_nm)(Eperf_trial_idx));
@@ -6139,7 +6145,7 @@ if ismember(EperfModel,{'stick','boxcar'})
                             % efficacy
                             if EperfModel_efficacy > 0
                                 n_EperfMods = n_EperfMods + 1;
-                                Eperf_modNames{n_EperfMods} = 'Em efficacy';
+                                Eperf_modNames{n_EperfMods} = ['Em efficacy ',run_nb_nm];
                                 switch EperfModel_efficacy
                                     case 1
                                         Eperf_modVals(n_EperfMods,:) = raw_or_z(efficacy_with2first.(run_full_nm)(Eperf_trial_idx));
@@ -6165,7 +6171,7 @@ if ismember(EperfModel,{'stick','boxcar'})
                             % RT average
                             if EperfModel_RT_avg > 0
                                 n_EperfMods = n_EperfMods + 1;
-                                Eperf_modNames{n_EperfMods} = 'avg RT N-back perf';
+                                Eperf_modNames{n_EperfMods} = ['avg RT N-back perf ',run_nb_nm];
                                 switch EperfModel_RT_avg
                                     case 1
                                         Eperf_modVals(n_EperfMods,:) = raw_or_z(RT_avg.(run_full_nm)(Eperf_trial_idx));
@@ -6177,7 +6183,7 @@ if ismember(EperfModel,{'stick','boxcar'})
                             % number of correct answers
                             if EperfModel_n_correct > 0
                                 n_EperfMods = n_EperfMods + 1;
-                                Eperf_modNames{n_EperfMods} = 'nb correct';
+                                Eperf_modNames{n_EperfMods} = ['nb correct ',run_nb_nm];
                                 switch EperfModel_n_correct
                                     case 1
                                         Eperf_modVals(n_EperfMods,:) = raw_or_z(n_correct.(run_full_nm)(Eperf_trial_idx));
@@ -6189,7 +6195,7 @@ if ismember(EperfModel,{'stick','boxcar'})
                             % number of errors
                             if EperfModel_n_errors > 0
                                 n_EperfMods = n_EperfMods + 1;
-                                Eperf_modNames{n_EperfMods} = 'nb errors';
+                                Eperf_modNames{n_EperfMods} = ['nb errors ',run_nb_nm];
                                 switch EperfModel_n_errors
                                     case 1
                                         Eperf_modVals(n_EperfMods,:) = raw_or_z(n_errors.(run_full_nm)(Eperf_trial_idx));
@@ -6204,13 +6210,13 @@ if ismember(EperfModel,{'stick','boxcar'})
                             n_EperfMods = n_EperfMods + 1;
                             switch EperfModel_NV_chosen
                                 case 1
-                                    Eperf_modNames{n_EperfMods} = 'NV chosen';
+                                    Eperf_modNames{n_EperfMods} = ['NV chosen ',run_nb_nm];
                                     Eperf_modVals(n_EperfMods,:) = raw_or_z(NV_ch_min_unch.(run_full_nm)(Eperf_trial_idx));
                                 case 2
-                                    Eperf_modNames{n_EperfMods} = 'p(chosen)';
+                                    Eperf_modNames{n_EperfMods} = ['p(chosen) ',run_nb_nm];
                                     Eperf_modVals(n_EperfMods,:) = raw_or_z(pChosen.(run_full_nm)(Eperf_trial_idx));
                                 case 3
-                                    Eperf_modNames{n_EperfMods} = 'NVch-NVunch';
+                                    Eperf_modNames{n_EperfMods} = ['NVch-NVunch ',run_nb_nm];
                                     Eperf_modVals(n_EperfMods,:) = raw_or_z(NV_ch_min_unch_with_bias.(run_full_nm)(Eperf_trial_idx));
                                 otherwise
                                     error('not ready yet');
@@ -6222,19 +6228,19 @@ if ismember(EperfModel,{'stick','boxcar'})
                             n_EperfMods = n_EperfMods + 1;
                             switch EperfModel_NV_varOption
                                 case 1
-                                    Eperf_modNames{n_EperfMods} = 'delta NV high E - low E';
+                                    Eperf_modNames{n_EperfMods} = ['delta NV high E - low E ',run_nb_nm];
                                     Eperf_modVals(n_EperfMods,:) = raw_or_z(NV_varOption.(run_full_nm)(Eperf_trial_idx));
                                 case 2
-                                    Eperf_modNames{n_EperfMods} = '|delta NV high E - low E|';
+                                    Eperf_modNames{n_EperfMods} = ['|delta NV high E - low E| ',run_nb_nm];
                                     Eperf_modVals(n_EperfMods,:) = raw_or_z(abs(NV_varOption.(run_full_nm)(Eperf_trial_idx)));
                                 case 3
-                                    Eperf_modNames{n_EperfMods} = 'p(choice=hE)';
+                                    Eperf_modNames{n_EperfMods} = ['p(choice=hE) ',run_nb_nm];
                                     Eperf_modVals(n_EperfMods,:) = raw_or_z(abs(pChoice_hE.(run_full_nm)(Eperf_trial_idx)));
                                 case 4
-                                    Eperf_modNames{n_EperfMods} = 'delta NV high E - low E + bias';
+                                    Eperf_modNames{n_EperfMods} = ['delta NV high E - low E + bias ',run_nb_nm];
                                     Eperf_modVals(n_EperfMods,:) = raw_or_z(NV_varOption_plus_bias.(run_full_nm)(Eperf_trial_idx));
                                 case 5
-                                    Eperf_modNames{n_EperfMods} = '|delta NV high E - low E + bias|';
+                                    Eperf_modNames{n_EperfMods} = ['|delta NV high E - low E + bias| ',run_nb_nm];
                                     Eperf_modVals(n_EperfMods,:) = raw_or_z(abs(NV_varOption_plus_bias.(run_full_nm)(Eperf_trial_idx)));
                                 otherwise
                                     error('not ready yet');
@@ -6246,19 +6252,19 @@ if ismember(EperfModel,{'stick','boxcar'})
                             n_EperfMods = n_EperfMods + 1;
                             switch EperfModel_NV_varOption_bis
                                 case 1
-                                    Eperf_modNames{n_EperfMods} = 'delta NV high E - low E';
+                                    Eperf_modNames{n_EperfMods} = ['delta NV high E - low E ',run_nb_nm];
                                     Eperf_modVals(n_EperfMods,:) = raw_or_z(NV_varOption.(run_full_nm)(Eperf_trial_idx));
                                 case 2
-                                    Eperf_modNames{n_EperfMods} = '|delta NV high E - low E|';
+                                    Eperf_modNames{n_EperfMods} = ['|delta NV high E - low E| ',run_nb_nm];
                                     Eperf_modVals(n_EperfMods,:) = raw_or_z(abs(NV_varOption.(run_full_nm)(Eperf_trial_idx)));
                                 case 3
-                                    Eperf_modNames{n_EperfMods} = 'p(choice=hE)';
+                                    Eperf_modNames{n_EperfMods} = ['p(choice=hE) ',run_nb_nm];
                                     Eperf_modVals(n_EperfMods,:) = raw_or_z(abs(pChoice_hE.(run_full_nm)(Eperf_trial_idx)));
                                 case 4
-                                    Eperf_modNames{n_EperfMods} = 'delta NV high E - low E + bias';
+                                    Eperf_modNames{n_EperfMods} = ['delta NV high E - low E + bias ',run_nb_nm];
                                     Eperf_modVals(n_EperfMods,:) = raw_or_z(NV_varOption_plus_bias.(run_full_nm)(Eperf_trial_idx));
                                 case 5
-                                    Eperf_modNames{n_EperfMods} = '|delta NV high E - low E + bias|';
+                                    Eperf_modNames{n_EperfMods} = ['|delta NV high E - low E + bias| ',run_nb_nm];
                                     Eperf_modVals(n_EperfMods,:) = raw_or_z(abs(NV_varOption_plus_bias.(run_full_nm)(Eperf_trial_idx)));
                                 otherwise
                                     error('not ready yet');
@@ -6268,7 +6274,7 @@ if ismember(EperfModel,{'stick','boxcar'})
                         % RT 1st answer
                         if EperfModel_RT1stAnswer > 0
                             n_EperfMods = n_EperfMods + 1;
-                            Eperf_modNames{n_EperfMods} = 'Effort latency';
+                            Eperf_modNames{n_EperfMods} = ['Effort latency ',run_nb_nm];
                             switch EperfModel_RT1stAnswer
                                 case 1
                                     Eperf_modVals(n_EperfMods,:) = raw_or_z(latency.(run_full_nm)(Eperf_trial_idx));
@@ -6282,7 +6288,7 @@ if ismember(EperfModel,{'stick','boxcar'})
                                 % physical fatigue
                                 if EperfModel_fatigue > 0
                                     n_EperfMods = n_EperfMods + 1;
-                                    Eperf_modNames{n_EperfMods} = 'fatigue';
+                                    Eperf_modNames{n_EperfMods} = ['fatigue ',run_nb_nm];
                                     switch EperfModel_fatigue
                                         case 1
                                             Eperf_modVals(n_EperfMods,:) = raw_or_z(fatigue.(run_full_nm)(Eperf_trial_idx));
@@ -6296,7 +6302,7 @@ if ismember(EperfModel,{'stick','boxcar'})
                                 % Ech*(physical fatigue)
                                 if EperfModel_Ech_x_fatigue > 0
                                     n_EperfMods = n_EperfMods + 1;
-                                    Eperf_modNames{n_EperfMods} = 'Ech_x_fatigue';
+                                    Eperf_modNames{n_EperfMods} = ['Ech_x_fatigue ',run_nb_nm];
                                     switch EperfModel_Ech_x_fatigue
                                         case 1
                                             Eperf_modVals(n_EperfMods,:) = raw_or_z(E_chosen.(run_full_nm)(Eperf_trial_idx).*fatigue.(run_full_nm)(Eperf_trial_idx));
@@ -6309,7 +6315,7 @@ if ismember(EperfModel,{'stick','boxcar'})
                                 % performance
                                 if EperfModel_prevEfficacy > 0
                                     n_EperfMods = n_EperfMods + 1;
-                                    Eperf_modNames{n_EperfMods} = 'previous trial efficacy';
+                                    Eperf_modNames{n_EperfMods} = ['previous trial efficacy ',run_nb_nm];
                                     switch EperfModel_prevEfficacy
                                         case 1
                                             Eperf_modVals(n_EperfMods,:) = raw_or_z(prevEfficacy_with2first.(run_full_nm)(Eperf_trial_idx));
@@ -6335,7 +6341,7 @@ if ismember(EperfModel,{'stick','boxcar'})
                                 % Echosen*(previous trial efficacy)
                                 if EperfModel_Ech_x_prevEfficacy > 0
                                     n_EperfMods = n_EperfMods + 1;
-                                    Eperf_modNames{n_EperfMods} = 'Ech_x_previous trial efficacy';
+                                    Eperf_modNames{n_EperfMods} = ['Ech_x_previous trial efficacy ',run_nb_nm];
                                     switch EperfModel_Ech_x_prevEfficacy
                                         case 1
                                             Eperf_modVals(n_EperfMods,:) = raw_or_z(E_chosen.(run_full_nm)(Eperf_trial_idx).*prevEfficacy_with2first.(run_full_nm)(Eperf_trial_idx));
@@ -6354,7 +6360,7 @@ if ismember(EperfModel,{'stick','boxcar'})
                         % trial number
                         if EperfModel_trialN > 0
                             n_EperfMods = n_EperfMods + 1;
-                            Eperf_modNames{n_EperfMods} = 'trial number';
+                            Eperf_modNames{n_EperfMods} = ['trial number ',run_nb_nm];
                             switch EperfModel_trialN
                                 case 1
                                     Eperf_modVals(n_EperfMods,:) = raw_or_z(trialN.(run_full_nm)(Eperf_trial_idx));
@@ -6372,7 +6378,7 @@ if ismember(EperfModel,{'stick','boxcar'})
                         % choice confidence
                         if EperfModel_conf > 0
                             n_EperfMods = n_EperfMods + 1;
-                            Eperf_modNames{n_EperfMods} = 'confidence';
+                            Eperf_modNames{n_EperfMods} = ['confidence ',run_nb_nm];
                             switch EperfModel_conf
                                 case 1 % binary variable => no zscore
                                     Eperf_modVals(n_EperfMods,:) = confidence.(run_full_nm)(Eperf_trial_idx);
@@ -6384,7 +6390,7 @@ if ismember(EperfModel,{'stick','boxcar'})
                         end
                         
                         [matlabbatch] = First_level_loadEachCondition_DCM(matlabbatch, sub_idx, iCond,...
-                            ['Eperf_',RP_Eperf_nm,'_',splitE_Eperf_nm], modelEperfOnset, modelEperfDur,...
+                            ['Eperf_',RP_Eperf_nm,'_',splitE_Eperf_nm,' ',run_nb_nm], modelEperfOnset, modelEperfDur,...
                             n_EperfMods, Eperf_modNames, Eperf_modVals,...
                             orth_vars, onsets_only_GLM);
                     end % run loop
@@ -6452,11 +6458,11 @@ if ismember(EperfModel,{'stick','boxcar'})
                             case 0
                             case 1
                                 n_EperfMods = n_EperfMods + 1;
-                                Eperf_modNames{n_EperfMods} = 'choice = high effort';
+                                Eperf_modNames{n_EperfMods} = ['choice = high effort ',task_nm];
                                 Eperf_modVals(n_EperfMods,:) = choice_hE.(task_nm)(Eperf_trial_idx); % binary variable => no zscore
                             case 2
                                 n_EperfMods = n_EperfMods + 1;
-                                Eperf_modNames{n_EperfMods} = 'choice = high effort';
+                                Eperf_modNames{n_EperfMods} = ['choice = high effort ',task_nm];
                                 Eperf_modVals(n_EperfMods,:) = choice_hE_bis.(task_nm)(Eperf_trial_idx); % binary variable => no zscore
                             otherwise
                                 error('not ready yet');
@@ -6465,7 +6471,7 @@ if ismember(EperfModel,{'stick','boxcar'})
                         % money chosen
                         if EperfModel_money_chosen > 0
                             n_EperfMods = n_EperfMods + 1;
-                            Eperf_modNames{n_EperfMods} = 'money chosen';
+                            Eperf_modNames{n_EperfMods} = ['money chosen ',task_nm];
                             switch EperfModel_money_chosen
                                 case 1
                                     Eperf_modVals(n_EperfMods,:) = raw_or_z(money_amount_chosen.(task_nm)(Eperf_trial_idx));
@@ -6483,7 +6489,7 @@ if ismember(EperfModel,{'stick','boxcar'})
                         % effort chosen
                         if EperfModel_effort_chosen > 0
                             n_EperfMods = n_EperfMods + 1;
-                            Eperf_modNames{n_EperfMods} = 'effort chosen';
+                            Eperf_modNames{n_EperfMods} = ['effort chosen ',task_nm];
                             switch EperfModel_effort_chosen
                                 case 1
                                     Eperf_modVals(n_EperfMods,:) = raw_or_z(E_chosen.(task_nm)(Eperf_trial_idx));
@@ -6500,7 +6506,7 @@ if ismember(EperfModel,{'stick','boxcar'})
                             % force peak
                             if EperfModel_F_peak> 0
                                 n_EperfMods = n_EperfMods + 1;
-                                Eperf_modNames{n_EperfMods} = 'force peak';
+                                Eperf_modNames{n_EperfMods} = ['force peak ',task_nm];
                                 switch EperfModel_F_peak
                                     case 1
                                         Eperf_modVals(n_EperfMods,:) = raw_or_z(forcePeak.(task_nm)(Eperf_trial_idx));
@@ -6518,7 +6524,7 @@ if ismember(EperfModel,{'stick','boxcar'})
                             % force integral
                             if EperfModel_F_integral > 0
                                 n_EperfMods = n_EperfMods + 1;
-                                Eperf_modNames{n_EperfMods} = 'force integral';
+                                Eperf_modNames{n_EperfMods} = ['force integral ',task_nm];
                                 switch EperfModel_F_integral
                                     case 1
                                         Eperf_modVals(n_EperfMods,:) = raw_or_z(AUC.(task_nm)(Eperf_trial_idx));
@@ -6546,7 +6552,7 @@ if ismember(EperfModel,{'stick','boxcar'})
                             % efficacy
                             if EperfModel_efficacy > 0
                                 n_EperfMods = n_EperfMods + 1;
-                                Eperf_modNames{n_EperfMods} = 'Em efficacy';
+                                Eperf_modNames{n_EperfMods} = ['Em efficacy ',task_nm];
                                 switch EperfModel_efficacy
                                     case 1
                                         Eperf_modVals(n_EperfMods,:) = raw_or_z(efficacy_with2first.(task_nm)(Eperf_trial_idx));
@@ -6572,7 +6578,7 @@ if ismember(EperfModel,{'stick','boxcar'})
                             % RT average
                             if EperfModel_RT_avg > 0
                                 n_EperfMods = n_EperfMods + 1;
-                                Eperf_modNames{n_EperfMods} = 'avg RT N-back perf';
+                                Eperf_modNames{n_EperfMods} = ['avg RT N-back perf ',task_nm];
                                 switch EperfModel_RT_avg
                                     case 1
                                         Eperf_modVals(n_EperfMods,:) = raw_or_z(RT_avg.(task_nm)(Eperf_trial_idx));
@@ -6584,7 +6590,7 @@ if ismember(EperfModel,{'stick','boxcar'})
                             % number of correct answers
                             if EperfModel_n_correct > 0
                                 n_EperfMods = n_EperfMods + 1;
-                                Eperf_modNames{n_EperfMods} = 'nb correct';
+                                Eperf_modNames{n_EperfMods} = ['nb correct ',task_nm];
                                 switch EperfModel_n_correct
                                     case 1
                                         Eperf_modVals(n_EperfMods,:) = raw_or_z(n_correct.(task_nm)(Eperf_trial_idx));
@@ -6596,7 +6602,7 @@ if ismember(EperfModel,{'stick','boxcar'})
                             % number of errors
                             if EperfModel_n_errors > 0
                                 n_EperfMods = n_EperfMods + 1;
-                                Eperf_modNames{n_EperfMods} = 'nb errors';
+                                Eperf_modNames{n_EperfMods} = ['nb errors ',task_nm];
                                 switch EperfModel_n_errors
                                     case 1
                                         Eperf_modVals(n_EperfMods,:) = raw_or_z(n_errors.(task_nm)(Eperf_trial_idx));
@@ -6611,13 +6617,13 @@ if ismember(EperfModel,{'stick','boxcar'})
                             n_EperfMods = n_EperfMods + 1;
                             switch EperfModel_NV_chosen
                                 case 1
-                                    Eperf_modNames{n_EperfMods} = 'NV chosen';
+                                    Eperf_modNames{n_EperfMods} = ['NV chosen ',task_nm];
                                     Eperf_modVals(n_EperfMods,:) = raw_or_z(NV_ch_min_unch.(task_nm)(Eperf_trial_idx));
                                 case 2
-                                    Eperf_modNames{n_EperfMods} = 'p(chosen)';
+                                    Eperf_modNames{n_EperfMods} = ['p(chosen) ',task_nm];
                                     Eperf_modVals(n_EperfMods,:) = raw_or_z(pChosen.(task_nm)(Eperf_trial_idx));
                                 case 3
-                                    Eperf_modNames{n_EperfMods} = 'NVch-NVunch';
+                                    Eperf_modNames{n_EperfMods} = ['NVch-NVunch ',task_nm];
                                     Eperf_modVals(n_EperfMods,:) = raw_or_z(NV_ch_min_unch_with_bias.(task_nm)(Eperf_trial_idx));
                                 otherwise
                                     error('not ready yet');
@@ -6629,19 +6635,19 @@ if ismember(EperfModel,{'stick','boxcar'})
                             n_EperfMods = n_EperfMods + 1;
                             switch EperfModel_NV_varOption
                                 case 1
-                                    Eperf_modNames{n_EperfMods} = 'delta NV high E - low E';
+                                    Eperf_modNames{n_EperfMods} = ['delta NV high E - low E ',task_nm];
                                     Eperf_modVals(n_EperfMods,:) = raw_or_z(NV_varOption.(task_nm)(Eperf_trial_idx));
                                 case 2
-                                    Eperf_modNames{n_EperfMods} = '|delta NV high E - low E|';
+                                    Eperf_modNames{n_EperfMods} = ['|delta NV high E - low E| ',task_nm];
                                     Eperf_modVals(n_EperfMods,:) = raw_or_z(abs(NV_varOption.(task_nm)(Eperf_trial_idx)));
                                 case 3
-                                    Eperf_modNames{n_EperfMods} = 'p(choice=hE)';
+                                    Eperf_modNames{n_EperfMods} = ['p(choice=hE) ',task_nm];
                                     Eperf_modVals(n_EperfMods,:) = raw_or_z(abs(pChoice_hE.(task_nm)(Eperf_trial_idx)));
                                 case 4
-                                    Eperf_modNames{n_EperfMods} = 'delta NV high E - low E + bias';
+                                    Eperf_modNames{n_EperfMods} = ['delta NV high E - low E + bias ',task_nm];
                                     Eperf_modVals(n_EperfMods,:) = raw_or_z(NV_varOption_plus_bias.(task_nm)(Eperf_trial_idx));
                                 case 5
-                                    Eperf_modNames{n_EperfMods} = '|delta NV high E - low E + bias|';
+                                    Eperf_modNames{n_EperfMods} = ['|delta NV high E - low E + bias| ',task_nm];
                                     Eperf_modVals(n_EperfMods,:) = raw_or_z(abs(NV_varOption_plus_bias.(task_nm)(Eperf_trial_idx)));
                                 otherwise
                                     error('not ready yet');
@@ -6653,19 +6659,19 @@ if ismember(EperfModel,{'stick','boxcar'})
                             n_EperfMods = n_EperfMods + 1;
                             switch EperfModel_NV_varOption_bis
                                 case 1
-                                    Eperf_modNames{n_EperfMods} = 'delta NV high E - low E';
+                                    Eperf_modNames{n_EperfMods} = ['delta NV high E - low E ',task_nm];
                                     Eperf_modVals(n_EperfMods,:) = raw_or_z(NV_varOption.(task_nm)(Eperf_trial_idx));
                                 case 2
-                                    Eperf_modNames{n_EperfMods} = '|delta NV high E - low E|';
+                                    Eperf_modNames{n_EperfMods} = ['|delta NV high E - low E| ',task_nm];
                                     Eperf_modVals(n_EperfMods,:) = raw_or_z(abs(NV_varOption.(task_nm)(Eperf_trial_idx)));
                                 case 3
-                                    Eperf_modNames{n_EperfMods} = 'p(choice=hE)';
+                                    Eperf_modNames{n_EperfMods} = ['p(choice=hE) ',task_nm];
                                     Eperf_modVals(n_EperfMods,:) = raw_or_z(abs(pChoice_hE.(task_nm)(Eperf_trial_idx)));
                                 case 4
-                                    Eperf_modNames{n_EperfMods} = 'delta NV high E - low E + bias';
+                                    Eperf_modNames{n_EperfMods} = ['delta NV high E - low E + bias ',task_nm];
                                     Eperf_modVals(n_EperfMods,:) = raw_or_z(NV_varOption_plus_bias.(task_nm)(Eperf_trial_idx));
                                 case 5
-                                    Eperf_modNames{n_EperfMods} = '|delta NV high E - low E + bias|';
+                                    Eperf_modNames{n_EperfMods} = ['|delta NV high E - low E + bias| ',task_nm];
                                     Eperf_modVals(n_EperfMods,:) = raw_or_z(abs(NV_varOption_plus_bias.(task_nm)(Eperf_trial_idx)));
                                 otherwise
                                     error('not ready yet');
@@ -6675,7 +6681,7 @@ if ismember(EperfModel,{'stick','boxcar'})
                         % RT 1st answer
                         if EperfModel_RT1stAnswer > 0
                             n_EperfMods = n_EperfMods + 1;
-                            Eperf_modNames{n_EperfMods} = 'Effort latency';
+                            Eperf_modNames{n_EperfMods} = ['Effort latency ',task_nm];
                             switch EperfModel_RT1stAnswer
                                 case 1
                                     Eperf_modVals(n_EperfMods,:) = raw_or_z(latency.(task_nm)(Eperf_trial_idx));
@@ -6689,7 +6695,7 @@ if ismember(EperfModel,{'stick','boxcar'})
                                 % physical fatigue
                                 if EperfModel_fatigue > 0
                                     n_EperfMods = n_EperfMods + 1;
-                                    Eperf_modNames{n_EperfMods} = 'fatigue';
+                                    Eperf_modNames{n_EperfMods} = ['fatigue ',task_nm];
                                     switch EperfModel_fatigue
                                         case 1
                                             Eperf_modVals(n_EperfMods,:) = raw_or_z(fatigue.(task_nm)(Eperf_trial_idx));
@@ -6703,7 +6709,7 @@ if ismember(EperfModel,{'stick','boxcar'})
                                 % Ech*(physical fatigue)
                                 if EperfModel_Ech_x_fatigue > 0
                                     n_EperfMods = n_EperfMods + 1;
-                                    Eperf_modNames{n_EperfMods} = 'Ech_x_fatigue';
+                                    Eperf_modNames{n_EperfMods} = ['Ech_x_fatigue ',task_nm];
                                     switch EperfModel_Ech_x_fatigue
                                         case 1
                                             Eperf_modVals(n_EperfMods,:) = raw_or_z(E_chosen.(task_nm)(Eperf_trial_idx).*fatigue.(task_nm)(Eperf_trial_idx));
@@ -6716,7 +6722,7 @@ if ismember(EperfModel,{'stick','boxcar'})
                                 % performance
                                 if EperfModel_prevEfficacy > 0
                                     n_EperfMods = n_EperfMods + 1;
-                                    Eperf_modNames{n_EperfMods} = 'previous trial efficacy';
+                                    Eperf_modNames{n_EperfMods} = ['previous trial efficacy ',task_nm];
                                     switch EperfModel_prevEfficacy
                                         case 1
                                             Eperf_modVals(n_EperfMods,:) = raw_or_z(prevEfficacy_with2first.(task_nm)(Eperf_trial_idx));
@@ -6742,7 +6748,7 @@ if ismember(EperfModel,{'stick','boxcar'})
                                 % Echosen*(previous trial efficacy)
                                 if EperfModel_Ech_x_prevEfficacy > 0
                                     n_EperfMods = n_EperfMods + 1;
-                                    Eperf_modNames{n_EperfMods} = 'Ech_x_previous trial efficacy';
+                                    Eperf_modNames{n_EperfMods} = ['Ech_x_previous trial efficacy ',task_nm];
                                     switch EperfModel_Ech_x_prevEfficacy
                                         case 1
                                             Eperf_modVals(n_EperfMods,:) = raw_or_z(E_chosen.(task_nm)(Eperf_trial_idx).*prevEfficacy_with2first.(task_nm)(Eperf_trial_idx));
@@ -6761,7 +6767,7 @@ if ismember(EperfModel,{'stick','boxcar'})
                         % trial number
                         if EperfModel_trialN > 0
                             n_EperfMods = n_EperfMods + 1;
-                            Eperf_modNames{n_EperfMods} = 'trial number';
+                            Eperf_modNames{n_EperfMods} = ['trial number ',task_nm];
                             switch EperfModel_trialN
                                 case 1
                                     Eperf_modVals(n_EperfMods,:) = raw_or_z(trialN.(task_nm)(Eperf_trial_idx));
@@ -6779,7 +6785,7 @@ if ismember(EperfModel,{'stick','boxcar'})
                         % choice confidence
                         if EperfModel_conf > 0
                             n_EperfMods = n_EperfMods + 1;
-                            Eperf_modNames{n_EperfMods} = 'confidence';
+                            Eperf_modNames{n_EperfMods} = ['confidence ',task_nm];
                             switch EperfModel_conf
                                 case 1 % binary variable => no zscore
                                     Eperf_modVals(n_EperfMods,:) = confidence.(task_nm)(Eperf_trial_idx);
@@ -6791,7 +6797,7 @@ if ismember(EperfModel,{'stick','boxcar'})
                         end
                         
                         [matlabbatch] = First_level_loadEachCondition_DCM(matlabbatch, sub_idx, iCond,...
-                            ['Eperf_',RP_Eperf_nm,'_',splitE_Eperf_nm], modelEperfOnset, modelEperfDur,...
+                            ['Eperf_',RP_Eperf_nm,'_',splitE_Eperf_nm,task_nm], modelEperfOnset, modelEperfDur,...
                             n_EperfMods, Eperf_modNames, Eperf_modVals,...
                             orth_vars, onsets_only_GLM);
                     end % task loop
@@ -7224,6 +7230,7 @@ if ismember(fbkModel,{'stick','boxcar'})
                 case 1 % all sessions independent
                     for iRun = 1:n_runs
                         run_full_nm = ['run',num2str(iRun)];
+                        run_nb_nm = ['r',num2str(runs.runsToKeep(iRun))];
                         
                         % extract trial index for the current loop
                         switch RP_fbk_nm
@@ -7278,7 +7285,7 @@ if ismember(fbkModel,{'stick','boxcar'})
                         if fbkModel_winVSloss > 0
                             if strcmp(RP_fbk_nm,'RP')
                                 n_fbkMods = n_fbkMods + 1;
-                                fbk_modNames{n_fbkMods} = 'win vs loss';
+                                fbk_modNames{n_fbkMods} = ['win vs loss ',run_nb_nm];
                                 switch fbkModel_winVSloss % binary variable => no zscore
                                     case 1
                                         fbk_modVals(n_fbkMods,:) = win_vs_loss_fbk.(run_full_nm);
@@ -7295,11 +7302,11 @@ if ismember(fbkModel,{'stick','boxcar'})
                             case 0
                             case 1
                                 n_fbkMods = n_fbkMods + 1;
-                                fbk_modNames{n_fbkMods} = 'choice = high effort';
+                                fbk_modNames{n_fbkMods} = ['choice = high effort ',run_nb_nm];
                                 fbk_modVals(n_fbkMods,:) = choice_hE.(run_full_nm)(fbk_trial_idx); % binary variable => no zscore
                             case 2
                                 n_fbkMods = n_fbkMods + 1;
-                                fbk_modNames{n_fbkMods} = 'choice = high effort';
+                                fbk_modNames{n_fbkMods} = ['choice = high effort ',run_nb_nm];
                                 fbk_modVals(n_fbkMods,:) = choice_hE_bis.(run_full_nm)(fbk_trial_idx); % binary variable => no zscore
                             otherwise
                                 error('not ready yet');
@@ -7308,7 +7315,7 @@ if ismember(fbkModel,{'stick','boxcar'})
                         % money chosen
                         if fbkModel_moneyObtained > 0
                             n_fbkMods = n_fbkMods + 1;
-                            fbk_modNames{n_fbkMods} = 'money obtained';
+                            fbk_modNames{n_fbkMods} = ['money obtained ',run_nb_nm];
                             switch fbkModel_moneyObtained
                                 case 1 % money amount
                                     fbk_modVals(n_fbkMods,:) = raw_or_z(money_amount_obtained.(run_full_nm)(fbk_trial_idx));
@@ -7322,7 +7329,7 @@ if ismember(fbkModel,{'stick','boxcar'})
                         % effort performed
                         if fbkModel_Emade > 0
                             n_fbkMods = n_fbkMods + 1;
-                            fbk_modNames{n_fbkMods} = 'effort made';
+                            fbk_modNames{n_fbkMods} = ['effort made ',run_nb_nm];
                             switch fbkModel_Emade
                                 case 1
                                     error('not ready yet');
@@ -7335,7 +7342,7 @@ if ismember(fbkModel,{'stick','boxcar'})
                         % trial number
                         if fbkModel_trialN > 0
                             n_fbkMods = n_fbkMods + 1;
-                            fbk_modNames{n_fbkMods} = 'trial number';
+                            fbk_modNames{n_fbkMods} = ['trial number ',run_nb_nm];
                             switch fbkModel_trialN
                                 case 1
                                     fbk_modVals(n_fbkMods,:) = raw_or_z(trialN.(run_full_nm)(fbk_trial_idx));
@@ -7353,7 +7360,7 @@ if ismember(fbkModel,{'stick','boxcar'})
                         % confidence
                         if fbkModel_confidence > 0
                             n_fbkMods = n_fbkMods + 1;
-                            fbk_modNames{n_fbkMods} = 'confidence';
+                            fbk_modNames{n_fbkMods} = ['confidence ',run_nb_nm];
                             switch fbkModel_confidence
                                 case 1 % binary variable => no zscore
                                     fbk_modVals(n_choiceMods,:) = confidence.(run_full_nm)(fbk_trial_idx);
@@ -7365,7 +7372,7 @@ if ismember(fbkModel,{'stick','boxcar'})
                         end
                         
                         [matlabbatch] = First_level_loadEachCondition_DCM(matlabbatch, sub_idx, iCond,...
-                            ['fbk_',RP_fbk_nm,'_',splitE_fbk_nm], modelFbkOnset, modelFbkDur,...
+                            ['fbk_',RP_fbk_nm,'_',splitE_fbk_nm,' ',run_nb_nm], modelFbkOnset, modelFbkDur,...
                             n_fbkMods, fbk_modNames, fbk_modVals,...
                             orth_vars, onsets_only_GLM);
                     end % run loop
@@ -7426,7 +7433,7 @@ if ismember(fbkModel,{'stick','boxcar'})
                         if fbkModel_winVSloss > 0
                             if strcmp(RP_fbk_nm,'RP')
                                 n_fbkMods = n_fbkMods + 1;
-                                fbk_modNames{n_fbkMods} = 'win vs loss';
+                                fbk_modNames{n_fbkMods} = ['win vs loss ',task_nm];
                                 switch fbkModel_winVSloss % binary variable => no zscore
                                     case 1
                                         fbk_modVals(n_fbkMods,:) = win_vs_loss_fbk.(task_nm);
@@ -7443,11 +7450,11 @@ if ismember(fbkModel,{'stick','boxcar'})
                             case 0
                             case 1
                                 n_fbkMods = n_fbkMods + 1;
-                                fbk_modNames{n_fbkMods} = 'choice = high effort';
+                                fbk_modNames{n_fbkMods} = ['choice = high effort ',task_nm];
                                 fbk_modVals(n_fbkMods,:) = choice_hE.(task_nm)(fbk_trial_idx); % binary variable => no zscore
                             case 2
                                 n_fbkMods = n_fbkMods + 1;
-                                fbk_modNames{n_fbkMods} = 'choice = high effort';
+                                fbk_modNames{n_fbkMods} = ['choice = high effort ',task_nm];
                                 fbk_modVals(n_fbkMods,:) = choice_hE_bis.(task_nm)(fbk_trial_idx); % binary variable => no zscore
                             otherwise
                                 error('not ready yet');
@@ -7456,7 +7463,7 @@ if ismember(fbkModel,{'stick','boxcar'})
                         % money chosen
                         if fbkModel_moneyObtained > 0
                             n_fbkMods = n_fbkMods + 1;
-                            fbk_modNames{n_fbkMods} = 'money obtained';
+                            fbk_modNames{n_fbkMods} = ['money obtained ',task_nm];
                             switch fbkModel_moneyObtained
                                 case 1 % money amount
                                     fbk_modVals(n_fbkMods,:) = raw_or_z(money_amount_obtained.(task_nm)(fbk_trial_idx));
@@ -7470,7 +7477,7 @@ if ismember(fbkModel,{'stick','boxcar'})
                         % effort performed
                         if fbkModel_Emade > 0
                             n_fbkMods = n_fbkMods + 1;
-                            fbk_modNames{n_fbkMods} = 'effort made';
+                            fbk_modNames{n_fbkMods} = ['effort made ',task_nm];
                             switch fbkModel_Emade
                                 case 1
                                     error('not ready yet');
@@ -7483,7 +7490,7 @@ if ismember(fbkModel,{'stick','boxcar'})
                         % trial number
                         if fbkModel_trialN > 0
                             n_fbkMods = n_fbkMods + 1;
-                            fbk_modNames{n_fbkMods} = 'trial number';
+                            fbk_modNames{n_fbkMods} = ['trial number ',task_nm];
                             switch fbkModel_trialN
                                 case 1
                                     fbk_modVals(n_fbkMods,:) = raw_or_z(trialN.(task_nm)(fbk_trial_idx));
@@ -7501,7 +7508,7 @@ if ismember(fbkModel,{'stick','boxcar'})
                         % confidence
                         if fbkModel_confidence > 0
                             n_fbkMods = n_fbkMods + 1;
-                            fbk_modNames{n_fbkMods} = 'confidence';
+                            fbk_modNames{n_fbkMods} = ['confidence ',task_nm];
                             switch fbkModel_confidence
                                 case 1 % binary variable => no zscore
                                     fbk_modVals(n_choiceMods,:) = confidence.(task_nm)(fbk_trial_idx);
@@ -7513,7 +7520,7 @@ if ismember(fbkModel,{'stick','boxcar'})
                         end
                         
                         [matlabbatch] = First_level_loadEachCondition_DCM(matlabbatch, sub_idx, iCond,...
-                            ['fbk_',RP_fbk_nm,'_',splitE_fbk_nm], modelFbkOnset, modelFbkDur,...
+                            ['fbk_',RP_fbk_nm,'_',splitE_fbk_nm,' ',task_nm], modelFbkOnset, modelFbkDur,...
                             n_fbkMods, fbk_modNames, fbk_modVals,...
                             orth_vars, onsets_only_GLM);
                     end % task loop
