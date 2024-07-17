@@ -1,5 +1,5 @@
-function[] = Second_level_batch(GLM, condition, gender, biasFieldCorr, DCM_GLM)
-% Second_level_batch(GLM, condition, gender, biasFieldCorr, DCM_GLM)
+function[] = Second_level_batch(GLM, condition, gender, biasFieldCorr)
+% Second_level_batch(GLM, condition, gender, biasFieldCorr)
 % script to launch second level on LGC Motivation studies
 %
 % INPUTS
@@ -16,11 +16,6 @@ function[] = Second_level_batch(GLM, condition, gender, biasFieldCorr, DCM_GLM)
 %
 % biasFieldCorr: use bias-field corrected images (1) or not (0)? By default
 % will not use bias-field corrected images
-%
-% DCM_GLM: use preprocessing adapted for DCM or not (the main difference is
-% that the preprocessing will be including or not a slice-timing correction)
-% (0) use basic preprocessing
-% (1) use preprocessing including slice-timing correction
 %
 
 %% clear workspace
@@ -39,11 +34,6 @@ preproc_sm_kernel = 8;
 %% use bias-field corrected files or not?
 if ~exist('biasFieldCorr','var') || ~ismember(biasFieldCorr,[0,1])
     biasFieldCorr = 0;
-end
-
-%% use preprocessing for DCM (including slice-timing correction) or not?
-if ~exist('DCM_GLM','var') || ~ismember(DCM_GLM,[0,1])
-    DCM_GLM = 0;
 end
 
 %% define study and list of subjects to include
@@ -89,19 +79,13 @@ GLM_str = num2str(GLM);
 GLMprm = which_GLM(GLM);
 
 %% create results folder
-switch DCM_GLM
-    case 0
-        DCM_GLM_sufix = '';
-    case 1
-        DCM_GLM_sufix = '_DCM';
-end
 switch biasFieldCorr
     case 0
         biasField_sufix = '';
     case 1
         biasField_sufix = '_with_BiasFieldCorrection';
 end
-mainPath = [studyRoot,filesep,'Second_level',biasField_sufix,DCM_GLM_sufix,filesep];
+mainPath = [studyRoot,filesep,'Second_level',biasField_sufix,filesep];
 switch condition
     case {'fMRI'}
         results_folder = [mainPath,...
@@ -211,10 +195,10 @@ matlabbatch{batch_idx}.spm.util.imcalc.options.dtype = 4;
 switch condition
     case 'fMRI_noSatRun_choiceSplit_Elvl_bis' % in this case, subject_id{1} does not include Em => need to adapt to include Em
         con_names = LGCM_contrasts(study_nm, subject_id{16}, GLM,...
-            computer_root, preproc_sm_kernel, condition, biasFieldCorr, DCM_GLM);
+            computer_root, preproc_sm_kernel, condition, biasFieldCorr);
     otherwise
         con_names = LGCM_contrasts(study_nm, subject_id{1}, GLM,...
-            computer_root, preproc_sm_kernel, condition, biasFieldCorr, DCM_GLM);
+            computer_root, preproc_sm_kernel, condition, biasFieldCorr);
 end
 n_con = length(con_names);
 
@@ -245,7 +229,7 @@ for iCon = 1:n_con
         checkGLM_and_subjectIncompatibility(study_nm, sub_nm, condition, GLMprm);
         subject_main_folder = [studyRoot,filesep,'CID',sub_nm, filesep,...
             'fMRI_analysis' filesep, 'functional' filesep,...
-            'preproc_sm_',num2str(preproc_sm_kernel),'mm',biasField_sufix,DCM_GLM_sufix,filesep];
+            'preproc_sm_',num2str(preproc_sm_kernel),'mm',biasField_sufix,filesep];
         subject_main_folder = fMRI_subFolder(subject_main_folder, GLM, condition);
         if isempty(subject_main_folder)
             error(['condition ',condition,' not planned yet. Please add it.']);
@@ -253,7 +237,7 @@ for iCon = 1:n_con
         
         %% adapt contrast index since some conditions and contrasts are missing for some subjects
         con_names_perSub = LGCM_contrasts(study_nm, sub_nm, GLM,...
-            computer_root, preproc_sm_kernel, condition, biasFieldCorr, DCM_GLM);
+            computer_root, preproc_sm_kernel, condition, biasFieldCorr);
         if sum(strcmp(current_con_nm, con_names_perSub)) > 0
             % extract index (for this subject) of the current contrast
             jCon = find(strcmp(current_con_nm, con_names_perSub));
