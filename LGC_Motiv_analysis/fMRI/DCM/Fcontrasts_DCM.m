@@ -85,7 +85,7 @@ if ~exist('subject_id','var') || ~exist('NS','var') ||...
 end
 
 %% indication of GLM
-disp(['GLM',num2str(GLM),' launching contrasts']);
+disp(['GLM',num2str(GLM),' DCM_mode ',num2str(DCM_mode),' launching contrasts']);
 
 %% loop through subjects to extract all the regressors
 matlabbatch = cell(NS,1);
