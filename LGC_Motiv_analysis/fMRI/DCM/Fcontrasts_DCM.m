@@ -95,7 +95,7 @@ for iSubject = 1:NS
     sub_nm = subject_id{iSubject};
     
     %% extract contrasts list (vectors + corresponding names
-    [con_names, con_vector] = Fcon_list_DCM(study_nm, sub_nm, GLM, computer_root, preproc_sm_kernel, condition, biasFieldCorr);
+    [con_names, con_vector] = Fcon_list_DCM(study_nm, sub_nm, GLM, DCM_mode, computer_root, preproc_sm_kernel, condition, biasFieldCorr);
     
     %% define results directory
     switch biasFieldCorr

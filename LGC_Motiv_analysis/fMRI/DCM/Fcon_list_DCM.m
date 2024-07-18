@@ -1,5 +1,5 @@
-function[con_names, con_vector] = Fcon_list_DCM(study_nm, sub_nm, GLM, computer_root, preproc_sm_kernel, condition, biasFieldCorr)
-% [con_names, con_vector] = Fcon_list_DCM(study_nm, sub_nm, GLM, computer_root, preproc_sm_kernel, condition, biasFieldCorr)
+function[con_names, con_vector] = Fcon_list_DCM(study_nm, sub_nm, GLM, DCM_mode, computer_root, preproc_sm_kernel, condition, biasFieldCorr)
+% [con_names, con_vector] = Fcon_list_DCM(study_nm, sub_nm, GLM, DCM_mode, computer_root, preproc_sm_kernel, condition, biasFieldCorr)
 % [con_names, con_vector] = LGCM_contrasts(study_nm, sub_nm, GLM,...
 %   computer_root, preproc_sm_kernel, condition, biasFieldCorr, DCM_GLM)
 % LGCM_contrasts will define the contrast names and contrast vector for the
@@ -16,6 +16,21 @@ function[con_names, con_vector] = Fcon_list_DCM(study_nm, sub_nm, GLM, computer_
 % sub_nm: subject name
 %
 % GLM: GLM number
+%
+% DCM_mode:
+% (1) all sessions modeled independently like in a classic univariate GLM
+% => hard to manipulate for DCM but could be useful for testing
+% session-specific effects or comparing sessions
+% (2) sessions pooled within each task (ex: session 1 and 3 of physical
+% effort will be concatenated into one single regressor) but each task will
+% be modeled separately
+% (3) all sessions pooled together
+% (4) all trial periods are pooled together across sessions except for
+% choice and effort which are modeled independently for each task (but
+% pooled across sessions of the same task)
+% (5) all trial periods are pooled together across sessions except for
+% the effort period which is modeled independently for each task (but
+% pooled across sessions of the same task)
 %
 % preproc_sm_kernel: kernel used in preprocessing for smoothing the data
 %
