@@ -210,7 +210,7 @@ end % ROI loop
 
 %% lines to launch to display metabolite of interest without outliers (but without boxcox transformation)
 % MRS_ROI_nm='dmPFC';
-MRS_ROI_nm='aIns';
+MRS_ROI_nm='dmPFC';
 metabolite_nm='Lac';
 [metabolite_nm_bis] = metab_div_rnm(metabolite_nm);
 metabolite_allSubs = metabolites.(MRS_ROI_nm).(metabolite_nm);
