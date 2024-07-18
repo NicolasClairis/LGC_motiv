@@ -18,6 +18,8 @@ elseif iCon >= 100 && iCon < 1000
     con_name = ['0',num2str(iCon)];
 elseif iCon >= 1000 && iCon < 10000
     con_name = num2str(iCon);
+else
+    error('con>10000 not planned');
 end
 
 end % function
