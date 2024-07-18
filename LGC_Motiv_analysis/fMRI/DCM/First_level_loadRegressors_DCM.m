@@ -330,7 +330,7 @@ if ismember(allCrossesModel,{'stick','boxcar'})
                     n_allCrossesMods, allCrosses_modNames, allCrosses_modVals,...
                     orth_vars, onsets_only_GLM);
             end % task loop
-        case {3,4,5} % all fixation crosses pooled across sessions
+        case {3,4,5} % all pooled across sessions
             iCond = iCond + 1;
             switch allCrossesModel
                 case 'stick'
