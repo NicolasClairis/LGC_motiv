@@ -6801,7 +6801,7 @@ if ismember(EperfModel,{'stick','boxcar'})
                             n_EperfMods, Eperf_modNames, Eperf_modVals,...
                             orth_vars, onsets_only_GLM);
                     end % task loop
-                case 3 % all crosses pooled across sessions
+                case 3 % all pooled across sessions
                     % extract trial index for the current loop
                     switch RP_Eperf_nm
                         case 'RP'
