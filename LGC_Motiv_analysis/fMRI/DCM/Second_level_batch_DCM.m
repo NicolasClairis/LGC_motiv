@@ -248,7 +248,7 @@ for iCon = 1:n_con
             % extract name for this particular subject of the contrast of
             % interest
             [con_str] = conNumber2conName(jCon);
-            conlist(iS) = {[subject_main_folder,'con_',con_str,'.nii,1']};
+            conlist(iS) = {[subject_main_folder,'spmF_',con_str,'.nii,1']};
         end % in case contrast exists for the current subject
     end % subject loop
     
