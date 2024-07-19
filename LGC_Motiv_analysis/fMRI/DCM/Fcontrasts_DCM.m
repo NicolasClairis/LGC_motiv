@@ -75,7 +75,8 @@ spm('defaults','fmri');
 spm_jobman('initcfg');
 
 %% define subjects of interest
-if ~exist('condition','var') || ~strcmp(condition(1:4),'fMRI')
+if ~exist('condition','var') || isempty(condition) ||...
+        ~strcmp(condition(1:4),'fMRI')
     condition = subject_condition;
 end
 gender = 'all';
@@ -95,7 +96,7 @@ for iSubject = 1:NS
     sub_nm = subject_id{iSubject};
     
     %% extract contrasts list (vectors + corresponding names
-    [con_names, con_vector] = Fcon_list_DCM(study_nm, sub_nm, GLM, DCM_mode, computer_root, preproc_sm_kernel, condition, biasFieldCorr);
+    [fcon_names, fcon_vector] = Fcon_list_DCM(study_nm, sub_nm, GLM, DCM_mode, computer_root, preproc_sm_kernel, condition, biasFieldCorr);
     
     %% define results directory
     switch biasFieldCorr
@@ -110,9 +111,10 @@ for iSubject = 1:NS
     matlabbatch{iSubject}.spm.stats.con.spmmat = {fullfile(resultsFolderName,'SPM.mat')};
 
     %% add each contrast to the list
-    for iCon = 1:length(con_names)
-        matlabbatch{iSubject}.spm.stats.con.consess{iCon}.fcon.name     = con_names{iCon};
-        matlabbatch{iSubject}.spm.stats.con.consess{iCon}.fcon.weights  = con_vector(iCon,:);
+    for iCon = 1:length(fcon_names)
+        con_nm = ['con_',conNumber2conName(iCon)];
+        matlabbatch{iSubject}.spm.stats.con.consess{iCon}.fcon.name     = fcon_names{iCon};
+        matlabbatch{iSubject}.spm.stats.con.consess{iCon}.fcon.weights  = fcon_vector.(con_nm);
         matlabbatch{iSubject}.spm.stats.con.consess{iCon}.fcon.sessrep  = 'none'; % replicate contrast across sessions: no need as sessions are pooled
     end
     
