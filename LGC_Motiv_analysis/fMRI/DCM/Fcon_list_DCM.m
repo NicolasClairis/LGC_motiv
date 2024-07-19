@@ -158,7 +158,7 @@ for iRP = 1:n_RP
     end % E loop
 end % RP loop
 
-% set to 1 everything but movement and run constants (to clean DCM)
+% set to 1 everything but movement + run constants (to clean DCM)
 iCon = 1;
 con_nm = ['fcon_',conNumber2conName(iCon)];
 fcon_names{iCon} = 'effects_of_interest_Fcon1';
@@ -167,7 +167,7 @@ fcon_matrix.(con_nm) = eye(n_totalRegs);
 regs_to_ignore = ismember(reg_names,[mvmt_reg_nm, run_cstt_reg_nm]);
 fcon_matrix.(con_nm)(regs_to_ignore,:) = [];
 
-% set to 1 everything but movement, run constants and fixation cross events (to clean DCM)
+% set to 1 everything but movement + run constants + fixation cross events (to clean DCM)
 iCon = iCon + 1;
 con_nm = ['fcon_',conNumber2conName(iCon)];
 fcon_names{iCon} = 'effects_of_interest_Fcon2';
@@ -177,7 +177,7 @@ regs_to_ignore = ismember(reg_names,[mvmt_reg_nm, run_cstt_reg_nm,...
     allCross_reg_nm, preChoiceCross_reg_nm, preECross_reg_nm]);
 fcon_matrix.(con_nm)(regs_to_ignore,:) = [];
 
-% set to 1 everything but movement, run constants, fixation cross, dispChosen+ fbk events (to clean DCM)
+% set to 1 everything but movement + run constants + fixation cross + dispChosen + fbk events (to clean DCM)
 iCon = iCon + 1;
 con_nm = ['fcon_',conNumber2conName(iCon)];
 fcon_names{iCon} = 'effects_of_interest_Fcon3';
