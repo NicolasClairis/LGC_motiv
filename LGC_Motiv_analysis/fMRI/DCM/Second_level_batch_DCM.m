@@ -48,7 +48,7 @@ if ~exist('study_nm','var')
 end
 
 % define subjects
-if ~exist('condition','var') || ~strcmp(condition(1:4),'fMRI')
+if ~exist('condition','var') || isempty(condition) || ~strcmp(condition(1:4),'fMRI')
     condition = subject_condition;
 end
 if ~exist('gender','var') ||...
@@ -233,7 +233,7 @@ for iCon = 1:n_con
         subject_main_folder = [studyRoot,filesep,'CID',sub_nm, filesep,...
             'fMRI_analysis' filesep, 'functional' filesep,...
             'preproc_sm_',num2str(preproc_sm_kernel),'mm',biasField_sufix,'_DCM',filesep];
-        subject_main_folder = fMRI_subFolder_DCM(subject_main_folder, GLM, condition);
+        subject_main_folder = fMRI_subFolder_DCM(subject_main_folder, GLM, condition, DCM_mode);
         if isempty(subject_main_folder)
             error(['condition ',condition,' not planned yet. Please add it.']);
         end
