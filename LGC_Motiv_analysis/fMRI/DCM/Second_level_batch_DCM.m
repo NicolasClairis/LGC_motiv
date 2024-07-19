@@ -279,9 +279,9 @@ for iCon = 1:n_con
     batch_idx = batch_idx + 1;
     matlabbatch{batch_idx}.spm.stats.con.spmmat(1) = cfg_dep('Model estimation: SPM.mat File',...
         substruct('.','val', '{}',{batch_estm_rtg}, '.','val', '{}',{1}, '.','val', '{}',{1}), substruct('.','spmmat'));
-    matlabbatch{batch_idx}.spm.stats.con.consess{1}.tcon.name = current_fcon_nm;
-    matlabbatch{batch_idx}.spm.stats.con.consess{1}.tcon.weights = 1;
-    matlabbatch{batch_idx}.spm.stats.con.consess{1}.tcon.sessrep = 'none';
+    matlabbatch{batch_idx}.spm.stats.con.consess{1}.fcon.name = current_fcon_nm;
+    matlabbatch{batch_idx}.spm.stats.con.consess{1}.fcon.weights = 1;
+    matlabbatch{batch_idx}.spm.stats.con.consess{1}.fcon.sessrep = 'none';
     matlabbatch{batch_idx}.spm.stats.con.delete = 0;
 
 end % loop over contrasts
