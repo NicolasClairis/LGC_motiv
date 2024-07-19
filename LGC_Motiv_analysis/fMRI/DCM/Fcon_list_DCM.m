@@ -69,9 +69,9 @@ switch biasFieldCorr
     otherwise
         error('biasFieldCorr not defined in the input. Please enter a value');
 end
-subj_analysis_folder    = [subj_folder, filesep, 'fMRI_analysis' filesep,...
-            'functional',filesep,'preproc_sm_',num2str(preproc_sm_kernel),'mm',biasField_sufix,filesep];
-[resultsFolderName] = fMRI_subFolder(subj_analysis_folder, GLM, condition);
+subj_analysis_folder    = [subj_folder, filesep, 'fMRI_analysis' filesep, 'functional',filesep,...
+    'preproc_sm_',num2str(preproc_sm_kernel),'mm',biasField_sufix,'_DCM',filesep];
+[resultsFolderName] = fMRI_subFolder_DCM(subj_analysis_folder, GLM, condition, DCM_mode);
 
 %% extract run information
 [runs, n_runs] = runs_definition(study_nm, sub_nm, condition);
@@ -162,7 +162,7 @@ end % RP loop
 iCon = 1;
 con_nm = ['con_',conNumber2conName(iCon)];
 fcon_names{iCon} = 'effects_of_interest_Fcon1';
-fcon_matrix.(con_nm) = eye(1, n_totalRegs);
+fcon_matrix.(con_nm) = eye(n_totalRegs);
 % remove movement + run constants
 regs_to_ignore = ismember(reg_names,[mvmt_reg_nm, run_cstt_reg_nm]);
 fcon_matrix.(con_nm)(regs_to_ignore,:) = [];
@@ -171,7 +171,7 @@ fcon_matrix.(con_nm)(regs_to_ignore,:) = [];
 iCon = iCon + 1;
 con_nm = ['con_',conNumber2conName(iCon)];
 fcon_names{iCon} = 'effects_of_interest_Fcon2';
-fcon_matrix.(con_nm) = eye(1, n_totalRegs);
+fcon_matrix.(con_nm) = eye(n_totalRegs);
 % remove movement + run constants
 regs_to_ignore = ismember(reg_names,[mvmt_reg_nm, run_cstt_reg_nm,...
     allCross_reg_nm, preChoiceCross_reg_nm, preECross_reg_nm]);
@@ -181,7 +181,7 @@ fcon_matrix.(con_nm)(regs_to_ignore,:) = [];
 iCon = iCon + 1;
 con_nm = ['con_',conNumber2conName(iCon)];
 fcon_names{iCon} = 'effects_of_interest_Fcon3';
-fcon_matrix(1,:,iCon) = eye(1, n_totalRegs);
+fcon_matrix.(con_nm) = eye(n_totalRegs);
 % remove movement + run constants
 regs_to_ignore = ismember(reg_names,[mvmt_reg_nm, run_cstt_reg_nm,...
     allCross_reg_nm, preChoiceCross_reg_nm, preECross_reg_nm,...
