@@ -160,7 +160,7 @@ end % RP loop
 
 % set to 1 everything but movement and run constants (to clean DCM)
 iCon = 1;
-con_nm = ['con_',conNumber2conName(iCon)];
+con_nm = ['fcon_',conNumber2conName(iCon)];
 fcon_names{iCon} = 'effects_of_interest_Fcon1';
 fcon_matrix.(con_nm) = eye(n_totalRegs);
 % remove movement + run constants
@@ -169,7 +169,7 @@ fcon_matrix.(con_nm)(regs_to_ignore,:) = [];
 
 % set to 1 everything but movement, run constants and fixation cross events (to clean DCM)
 iCon = iCon + 1;
-con_nm = ['con_',conNumber2conName(iCon)];
+con_nm = ['fcon_',conNumber2conName(iCon)];
 fcon_names{iCon} = 'effects_of_interest_Fcon2';
 fcon_matrix.(con_nm) = eye(n_totalRegs);
 % remove movement + run constants
@@ -179,7 +179,7 @@ fcon_matrix.(con_nm)(regs_to_ignore,:) = [];
 
 % set to 1 everything but movement, run constants, fixation cross, dispChosen+ fbk events (to clean DCM)
 iCon = iCon + 1;
-con_nm = ['con_',conNumber2conName(iCon)];
+con_nm = ['fcon_',conNumber2conName(iCon)];
 fcon_names{iCon} = 'effects_of_interest_Fcon3';
 fcon_matrix.(con_nm) = eye(n_totalRegs);
 % remove movement + run constants
@@ -194,7 +194,7 @@ for iReg = 1:n_totalRegs
     if ~ismember(reg_nm,{'movement',...
             'r1 constant','r2 constant','r3 constant','r4 constant'})
         iCon = iCon + 1;
-        con_nm = ['con_',conNumber2conName(iCon)];
+        con_nm = ['fcon_',conNumber2conName(iCon)];
         fcon_names{iCon} = reg_nm;
         fcon_matrix.(con_nm)(1,:) = zeros(1, n_totalRegs);
         fcon_matrix.(con_nm)(1,iReg) = 1;
