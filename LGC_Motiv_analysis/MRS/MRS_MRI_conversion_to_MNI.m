@@ -1,4 +1,10 @@
 function[] = MRS_MRI_conversion_to_MNI(condition, study_nm)
+% MRS_MRI_conversion_to_MNI
+%
+% INPUTS
+% condition: condition of subjects to include
+%
+% study_nm: study name
 
 %% subject selection
 % condition
