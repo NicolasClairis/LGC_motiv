@@ -8,6 +8,12 @@ function[] = First_level_batch_concat_DCM(GLM, checking, condition, study_nm, su
 % for the session-specific effects and, in principle, you are then good to
 % go with the DCM analysis.
 %
+%
+% % Look also at:
+% https://en.wikibooks.org/wiki/SPM/Concatenation
+% https://www.fil.ion.ucl.ac.uk/spm/docs/wikibooks/Concatenation/
+% for more details on the session concatenation procedure applied for DCM.
+%
 % INPUTS
 % GLM: GLM number
 %
