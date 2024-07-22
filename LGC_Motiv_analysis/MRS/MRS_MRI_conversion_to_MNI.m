@@ -1,5 +1,8 @@
 function[] = MRS_MRI_conversion_to_MNI(condition, study_nm)
-% MRS_MRI_conversion_to_MNI
+% MRS_MRI_conversion_to_MNI converts whole-brain anatomical individual map 
+% acquired before MRS from native space to MNI space in order to extract
+% the deformation information to convert the MRS voxels.
+% 
 %
 % INPUTS
 % condition: condition of subjects to include

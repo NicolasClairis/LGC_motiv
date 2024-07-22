@@ -1,13 +1,22 @@
 function[] = MRS_voxel_conversion_to_MNI(condition, study_nm)
-% MRS_voxel_conversion_to_MNI converts MRS voxel from native space to MNI
+% MRS_voxel_conversion_to_MNI converts MRS voxels from native space to MNI
 % space using SPM normalisation batch with MRS MRI deformation field and
-% MRS voxel as input.
+% MRS voxel as input. MRS_voxel_conversion_to_MNI needs
+% MRS_MRI_conversion_to_MNI.m to be runned first in order to extract the
+% information relative to the deformation field from native space to MNI
+% space.
+% MRS_voxel_conversion_to_MNI will produce both a probabilistic map 
+% (w-VoxelName.nii) and a binary mask (bw-VoxelName.nii) (based on 
+% bThreshold threshold used to consider a voxel to be part of the MRS voxel
+% or not).
 %
 % INPUTS
 % condition: to know which subjects to include (will be asked if left
 % empty)
 %
 % study_nm: which study? ('study1' by default)
+%
+% See also MRS_MRI_conversion_to_MNI.m
 
 %% subject selection
 % condition
@@ -93,7 +102,7 @@ for iS = 1:NS
             matlabbatch{jStep}.spm.util.imcalc.options.mask     = 0;
             matlabbatch{jStep}.spm.util.imcalc.options.interp   = 1;
             matlabbatch{jStep}.spm.util.imcalc.options.dtype    = 4;
-        end
+        end % ROI existing filter
     end % ROI loop
 end % subject loop
 
