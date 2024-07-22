@@ -1,7 +1,10 @@
-function[] = DCM_timeseries_extraction(GLM, checking)
-% DCM_timeseries_extraction(GLM, checking)
+function[] = DCM_MRS_voxels_timeseries_extraction(GLM, checking)
+% DCM_MRS_voxels_timeseries_extraction(GLM, checking)
 % DCM_timeseries_extraction serves to extract the timeseries in the ROI of
 % interest in order to perform the DCM.
+%
+% See also https://en.wikibooks.org/wiki/SPM/Timeseries_extraction 
+% for more details on the timeseries extraction
 %
 % INPUTS
 % GLM: GLM number
@@ -69,6 +72,7 @@ for iS = 1:NS
             matlabbatch{jBatch}.spm.util.voi.adjust = Fcon_to_adjust; % index of F-contrast used to adjust data
             matlabbatch{jBatch}.spm.util.voi.session = 1; % all sessions pooled for DCM
             matlabbatch{jBatch}.spm.util.voi.name = [VOI_nm,'_timeseries'];
+            
             % load binarized MRS voxels
             switch VOI_nm
                 case {'dmPFCdACC','aIns'}
@@ -77,8 +81,13 @@ for iS = 1:NS
                     error(['ROI = ',VOI_nm,' not ready yet']);
             end
             matlabbatch{jBatch}.spm.util.voi.roi{1}.mask.threshold = 0.1;
+            
+            % load 1st-level implicit mask
             matlabbatch{jBatch}.spm.util.voi.roi{2}.mask.image = {[subFolder,'mask.nii,1']};
             matlabbatch{jBatch}.spm.util.voi.roi{2}.mask.threshold = 0.1;
+            
+            % include only voxels that are both part of 1st level implicit
+            % ROI mask and voxels that are 
             matlabbatch{jBatch}.spm.util.voi.expression = '(i1>0).*(i2>0)==1';
         end % filter if file name exists or not
     end % VOI loop
