@@ -37,39 +37,50 @@ Fcon_to_adjust = 2;
 %% loop over subjects to load matlabbatch
 VOI_names = {'dmPFCdACC','aIns'};
 n_VOIs_per_sub = length(VOI_names);
-matlabbatch = cell(NS*n_VOIs_per_sub,1);
+%% initialize batch
 matlabbatch = cell(1,1);
-for iS = 1%:NS
+jBatch = 0;
+%% loop over subjects
+for iS = 1:NS
     sub_nm = subject_id{iS};
     subFolder = [fullfile('E:',study_nm,['CID',sub_nm],...
         'fMRI_analysis','functional',...
         ['preproc_sm_',num2str(preproc_sm_kernel),'mm_DCM'],...
         ['GLM',num2str(GLM),'_no_satRun_DCM_mode',num2str(DCM_mode)]),filesep];
-    MRS_ROI_folder = fullfile('E:',...
+    MRS_ROI_folder = [fullfile('E:',...
         study_nm,['CID',sub_nm],...
-        'MRS','MRS_voxels');
+        'MRS','MRS_voxels'),filesep];
     
     %% loop over volumes of interest
-    for iVOI = 1%:n_VOIs_per_sub
+    for iVOI = 1:n_VOIs_per_sub
         VOI_nm = VOI_names{iVOI};
-        batch_idx = iVOI + n_VOIs_per_sub.*(iS - 1);
-        
-        matlabbatch{batch_idx}.spm.util.voi.spmmat = {[subFolder,'SPM.mat']};
-        matlabbatch{batch_idx}.spm.util.voi.adjust = Fcon_to_adjust; % index of F-contrast used to adjust data
-        matlabbatch{batch_idx}.spm.util.voi.session = 1; % all sessions pooled for DCM
-        matlabbatch{batch_idx}.spm.util.voi.name = VOI_nm;
+        % name of MNI-normalized and binarized VOI file
         switch VOI_nm
             case 'dmPFCdACC'
-                matlabbatch{batch_idx}.spm.util.voi.roi{1}.mask.image = {[fullfile(MRS_ROI_folder,...
-                    'wdmpfc.nii'),',1']};
+                VOI_file_nm = 'bwdmpfc';
             case 'aIns'
-                matlabbatch{batch_idx}.spm.util.voi.roi{1}.mask.image = {[fullfile(MRS_ROI_folder,...
-                    'wai.nii'),',1']};
-            otherwise
-                error(['ROI = ',VOI_nm,' not ready yet']);
+                VOI_file_nm = 'bwai';
         end
-        matlabbatch{batch_idx}.spm.util.voi.roi{1}.mask.threshold = 0.1;
-        matlabbatch{batch_idx}.spm.util.voi.expression = 'i1';
+        ROI_file_nm = [MRS_ROI_folder, VOI_file_nm,'.nii'];
+        
+        if exist(ROI_file_nm,'file')
+            jBatch = jBatch + 1;
+            matlabbatch{jBatch}.spm.util.voi.spmmat = {[subFolder,'SPM.mat']};
+            matlabbatch{jBatch}.spm.util.voi.adjust = Fcon_to_adjust; % index of F-contrast used to adjust data
+            matlabbatch{jBatch}.spm.util.voi.session = 1; % all sessions pooled for DCM
+            matlabbatch{jBatch}.spm.util.voi.name = [VOI_nm,'_timeseries'];
+            % load binarized MRS voxels
+            switch VOI_nm
+                case {'dmPFCdACC','aIns'}
+                    matlabbatch{jBatch}.spm.util.voi.roi{1}.mask.image = {[ROI_file_nm,',1']};
+                otherwise
+                    error(['ROI = ',VOI_nm,' not ready yet']);
+            end
+            matlabbatch{jBatch}.spm.util.voi.roi{1}.mask.threshold = 0.1;
+            matlabbatch{jBatch}.spm.util.voi.roi{2}.mask.image = {[subFolder,'mask.nii,1']};
+            matlabbatch{jBatch}.spm.util.voi.roi{2}.mask.threshold = 0.1;
+            matlabbatch{jBatch}.spm.util.voi.expression = '(i1>0).*(i2>0)==1';
+        end % filter if file name exists or not
     end % VOI loop
 end % subject loop
 
