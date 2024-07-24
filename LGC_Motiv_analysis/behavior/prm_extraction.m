@@ -121,6 +121,8 @@ switch mdlType
         
         % add kR/kP ratio
         prm.kR_div_kP = prm.kR./prm.kP;
+        % add kEp-kEm difference
+        prm.kEp_min_kEm = prm.kEp - prm.kEm;
     case 'simple'
         %% perform behavioral model
         figDispGroup = 0;
