@@ -50,7 +50,7 @@ aIns_Lac(:) = metabolites.aIns.Lac;
 
 %% load plasma lactate
 [plasma_Lac_struct] = load_plasma_Lac(subject_id);
-plasma_Lac(:) = plasma_Lac_struct.Lac;
+plasma_Lac(:) = plasma_Lac_struct.Lac./1000;
 
 %% remove outliers
 if rmv_outliers_yn == 1
