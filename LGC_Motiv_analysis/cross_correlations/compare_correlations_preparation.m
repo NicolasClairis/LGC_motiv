@@ -119,24 +119,25 @@ for iLac = 1:n_lac_vars
         % correct for outliers present in dmPFC/dACC AND in aIns (to
         % test specificity of dmPFC/dACC vs aIns)
         if ismember(lac_var_nm,{'dmpfc','ains'})
-            idx_goodSubs.noOutliers_dmPFC_vs_aIns.(corr_nm) = (idx_goodSubs.dmpfc_Lac.*idx_goodSubs.ains_Lac.*idx_goodSubs.(bhv_var_nm)) == 1;
-            goodS_tmp2 = idx_goodSubs.noOutliers_dmPFC_vs_aIns.(corr_nm); % create short variable with index of good subjects for practical reasons
-            r_corr.noOutliers_dmPFC_vs_aIns.(corr_nm) = corr(lac_var(goodS_tmp2), bhv_var(goodS_tmp2)); % extract correlation
-            NS_goodS.noOutliers_dmPFC_vs_aIns.(corr_nm) = sum(goodS_tmp2); % extract number of good subjects included in the current correlation
+            outlier_condition_dmPFC_vs_aIns = 'noOutliers_dmPFC_vs_aIns';
+            idx_goodSubs.(outlier_condition_dmPFC_vs_aIns).(corr_nm) = (idx_goodSubs.dmpfc_Lac.*idx_goodSubs.ains_Lac.*idx_goodSubs.(bhv_var_nm)) == 1;
+            goodS_tmp2 = idx_goodSubs.(outlier_condition_dmPFC_vs_aIns).(corr_nm); % create short variable with index of good subjects for practical reasons
+            r_corr.(outlier_condition_dmPFC_vs_aIns).(corr_nm) = corr(lac_var(goodS_tmp2), bhv_var(goodS_tmp2)); % extract correlation
+            NS_goodS.(outlier_condition_dmPFC_vs_aIns).(corr_nm) = sum(goodS_tmp2); % extract number of good subjects included in the current correlation
             % also correlate directly dmPFC/dACC with aIns lactate to inform cocor
-            r_corr.noOutliers_dmPFC_vs_aIns.dmpfcLac_vs_ainsLac = corr(dmPFC_Lac.allSubs(goodS_tmp2), aIns_Lac.allSubs(goodS_tmp2));
+            r_corr.(outlier_condition_dmPFC_vs_aIns).dmpfcLac_vs_ainsLac = corr(dmPFC_Lac.allSubs(goodS_tmp2), aIns_Lac.allSubs(goodS_tmp2));
         end % filter dmPFC/dACC and aIns only
         
         % correct for outliers present in HPE AND in HME (to
         % test specificity of HPE vs HME)
         if ismember(bhv_var_nm,{'HPE','HME'})
-            outlier_condition = (['noOutliers_',lac_var_nm,'_HPE_vs_HME']);
-            idx_goodSubs.(outlier_condition).(corr_nm) = (idx_goodSubs.([lac_var_nm,'_Lac']).*idx_goodSubs.HPE.*idx_goodSubs.HME) == 1;
-            goodS_tmp2 = idx_goodSubs.(outlier_condition).(corr_nm); % create short variable with index of good subjects for practical reasons
-            r_corr.(outlier_condition).(corr_nm) = corr(lac_var(goodS_tmp2), bhv_var(goodS_tmp2)); % extract correlation
-            NS_goodS.(outlier_condition).(corr_nm) = sum(goodS_tmp2); % extract number of good subjects included in the current correlation
+            outlier_condition_HPE_vs_HME = (['noOutliers_',lac_var_nm,'_HPE_vs_HME']);
+            idx_goodSubs.(outlier_condition_HPE_vs_HME).(corr_nm) = (idx_goodSubs.([lac_var_nm,'_Lac']).*idx_goodSubs.HPE.*idx_goodSubs.HME) == 1;
+            goodS_tmp2 = idx_goodSubs.(outlier_condition_HPE_vs_HME).(corr_nm); % create short variable with index of good subjects for practical reasons
+            r_corr.(outlier_condition_HPE_vs_HME).(corr_nm) = corr(lac_var(goodS_tmp2), bhv_var(goodS_tmp2)); % extract correlation
+            NS_goodS.(outlier_condition_HPE_vs_HME).(corr_nm) = sum(goodS_tmp2); % extract number of good subjects included in the current correlation
             % also correlate directly HPE with HME to inform cocor
-            r_corr.(outlier_condition).HPE_vs_HME = corr(kEp.allSubs(goodS_tmp2), kEm.allSubs(goodS_tmp2));
+            r_corr.(outlier_condition_HPE_vs_HME).HPE_vs_HME = corr(kEp.allSubs(goodS_tmp2), kEm.allSubs(goodS_tmp2));
         end % filter HPE and HME
         
         % correct for outliers present in kEp AND in other behavioral prm (to
