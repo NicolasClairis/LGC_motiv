@@ -167,7 +167,7 @@ end % loop over X variables
 legend_size(15);
 
 %% display correlations for some specific metabolites between periphery and brain
-metabolites_to_disp = {'Gln','Glu'};
+metabolites_to_disp = {'Lac','Gln','Glu'};
 n_mb_to_disp = length(metabolites_to_disp);
 
 for iMb = 1:n_mb_to_disp
