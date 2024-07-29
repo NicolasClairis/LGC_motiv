@@ -20,8 +20,12 @@ dmPFC_Lac = metabolites.dmPFC.Lac';
 aIns_Lac = metabolites.aIns.Lac';
 
 %% check number of subjects
-NS_goodS.dmPFC = sum(~isnan(plasma_Lac.*dmPFC_Lac'));
-NS_goodS.aINS = sum(~isnan(plasma_Lac.*aIns_Lac'));
+goodS.dmPFC = ~isnan(plasma_Lac.*dmPFC_Lac');
+NS_goodS.dmPFC = sum(goodS.dmPFC);
+goodS.aINS = ~isnan(plasma_Lac.*aIns_Lac');
+NS_goodS.aINS = sum(goodS.aINS);
+goodS.all = ~isnan(plasma_Lac.*aIns_Lac'.*dmPFC_Lac');
+NS_goodS.all = sum(goodS.all);
 
 %% test significance
 [r_corr.dmPFC, betas.dmPFC, pval.dmPFC,...
@@ -30,6 +34,20 @@ NS_goodS.aINS = sum(~isnan(plasma_Lac.*aIns_Lac'));
     ~, Lac_sorted.aIns, Lac_fit_xSorted.aIns] = glm_package(plasma_Lac', aIns_Lac, 'normal', 'on');
 [r_corr.dmPFC_vs_aIns, betas.dmPFC_vs_aIns, pval.dmPFC_vs_aIns,...
     ~, Lac_sorted.dmPFC_vs_aIns, Lac_fit_xSorted.dmPFC_vs_aIns] = glm_package(plasma_Lac', dmPFC_Lac-aIns_Lac, 'normal', 'on');
+
+%% redo tests but restricting the analysis to the common subjects
+% and extract relevant material for corcor comparison of correlation
+% coefficients
+[r_corr.overlap.dmPFC] = corr(plasma_Lac(goodS.all)', dmPFC_Lac(goodS.all));
+[r_corr.overlap.aIns] = corr(plasma_Lac(goodS.all)', aIns_Lac(goodS.all));
+[r_corr.overlap.dmPFC_vs_aIns] = corr(dmPFC_Lac(goodS.all), aIns_Lac(goodS.all));
+% display relevant information for corcor:
+disp('relevant information for corcor R package:');
+disp(['r(plasma-Lac/dmPFC-dACC-Lac = ',num2str(r_corr.overlap.dmPFC)]);
+disp(['r(plasma-Lac/aIns-Lac = ',num2str(r_corr.overlap.aIns)]);
+disp(['r(dmPFC/dACC-Lac/aIns-Lac = ',num2str(r_corr.overlap.dmPFC_vs_aIns)]);
+disp(['number of subjects ok for both dmPFC/dACC, aIns and plasma lactate = ',num2str(NS_goodS.all)]);
+
 %% figure
 [pSize, lWidth, col, mSize] = general_fig_prm;
 dmPFC_col = col.red;
