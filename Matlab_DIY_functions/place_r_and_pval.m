@@ -34,13 +34,13 @@ elseif pval > 0.001 && pval <= 0.005
     pval_stars = '***';
 elseif pval <= 0.001
     pval_stars = '****';
-elseif strcmp(pval,'NaN')
-    pval_stars = 'NaN';
+elseif isnan(pval)
+    pval_stars = '';
 end
 r_corr_str = [num2str(r_corr),pval_stars];
 
 % for p.value need to track how small p.value is if below 0.001
-if pval >= 0.001
+if (pval >= 0.001) || isnan(pval)
     pval_str = ['p = ',num2str(round(pval, 3))];
 else
     % pval_str = num2str(round(pval,1,'significant')); % to show actual
@@ -60,7 +60,7 @@ ylim_vals = ylim();
 if r_corr < 0 % negative correlation (top right of the screen)
     y_val_txt = ylim_vals(2);
     y_alignment = 'cap'; % start text on top of plot
-elseif r_corr >= 0 % positive correlation (bottom right of the screen)
+elseif (r_corr >= 0) || isnan(r_corr) % positive correlation (bottom right of the screen)
     % ylim_dims = ylim_vals(2) - ylim_vals(1);
     % y_val_txt = ylim_vals(1) + ylim_dims/7; % manual placement
     y_val_txt = ylim_vals(1); % use VerticalAlignment to place text
