@@ -42,11 +42,7 @@ end
 [excelReadQuestionnairesFile, sub_CID_list] = load_questionnaires_data;
 [excelReadQuestionnairesFile2] = load_gal_data_bis(study_nm);
 
-%% filter weird IPAQ values
-IPAQ_all = excelReadQuestionnairesFile.IPAQ;
-[~,~,cleaned_IPAQ] = rmv_outliers_3sd(IPAQ_all);
-
-% prepare variables of interest
+%% prepare variables of interest
 [n_covid, ISCE,...
     money, age, sex, weight, height, BMI,...
     STAI_T, SIAS, PSS14,...
@@ -124,7 +120,6 @@ for iS = 1:NS
     Lars_e_EmotResp(iS) = excelReadQuestionnairesFile.ER(sub_idx);
     Lars_e_SelfAwareness(iS) = excelReadQuestionnairesFile.SA(sub_idx);
     SHAP(iS) = excelReadQuestionnairesFile.SHAPScore(sub_idx);
-    IPAQ(iS) = cleaned_IPAQ(sub_idx);
     IPAQinactivity(iS) = excelReadQuestionnairesFile.IPAQInactivity(sub_idx);
     
     % dominance/competition
@@ -140,6 +135,9 @@ for iS = 1:NS
     hexaco5_consciousness(iS) = excelReadQuestionnairesFile.Conscientiousness(sub_idx);
     hexaco6_openness(iS) = excelReadQuestionnairesFile.OpennessToExperience(sub_idx);
 end % subject loop
+
+%% load clean IPAQ values
+IPAQ(:) = IPAQ_rescoring(study_nm, subject_id, NS);
 
 %% regroup questionnaires by category
 % general
@@ -194,8 +192,7 @@ questionnaires.Motivation.Lars_e_IntellectCuriosity = Lars_e_IntellectCuriosity;
 questionnaires.Motivation.Lars_e_EmotResp = Lars_e_EmotResp;
 questionnaires.Motivation.Lars_e_SelfAwareness = Lars_e_SelfAwareness;
 questionnaires.Motivation.SHAP = SHAP;
-% questionnaires.Motivation.IPAQ = IPAQ; % remove IPAQ as too noisy (+ too
-% high range compared to others)
+questionnaires.Motivation.IPAQ = IPAQ;
 questionnaires.Motivation.IPAQinactivity = IPAQinactivity;
 
 % dominance/competition
