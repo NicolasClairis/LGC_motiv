@@ -93,7 +93,7 @@ end % nutrition loop
 
 %% correlation and figure
 % TO BE DONE EVENTUALLY (although so many tests that not it really makes
-% sense, unless maybe something Arthur-like with the correlation matrix)
+% sense, unless maybe a huge correlation matrix)
 
 % if figDisp == 1
 %     lWidth = 3;
