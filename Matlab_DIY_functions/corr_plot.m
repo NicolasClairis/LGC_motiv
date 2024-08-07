@@ -39,9 +39,12 @@ function[fig_hdl, subplot_hdl] = corr_plot(corr_mtrx, pval_mtrx,...
 % shown if apply_pval_threshold = true.
 %
 % disp_stars:
-% (false): no stars on significant boxes
-% (true): add stars depending on how significant each box is.
+% (0) no stars on significant boxes
+% (1) add stars depending on how significant each box is (starting at p < 0.05).
 % Thresholds being: * for p <= 0.05, **p<0.01, ***p<0.001
+% (2) add stars depending on how significant each box is, but will also
+% display almost significant p.values (0.05 < p < 0.1) with (*)
+% Thresholds being: (*) p<=0.1; * p<=0.05; **p<0.01; ***p<0.001
 % You may want to decide between pval_threshold and disp_stars what to use
 % as both might be partly redundant (both serve to highlight what is significant)
 %
@@ -93,7 +96,7 @@ end
 
 % display stars (by default)
 if ~exist('disp_stars','var') || isempty(disp_stars)
-    disp_stars = true;
+    disp_stars = 1;
 end
 
 %% mask non-significant boxes if asked in input
@@ -163,17 +166,20 @@ if exist('ylabel_nm','var') && ~isempty(ylabel_nm)
 end
 
 %% add stars in the graph for significant correlations
-if disp_stars == true
+if ismember(disp_stars,[1,2])
     for iX_column_var = 1:n_x_vars % loop through columns (from left to right)
         for jY_line_var = 1:n_y_vars % loop through lines (from top to bottom)
-            if pval_mtrx(jY_line_var, iX_column_var) <= 0.05 % filter significant p.values
+            if (pval_mtrx(jY_line_var, iX_column_var) <= 0.05) ||...
+                    (disp_stars == 2 && pval_mtrx(jY_line_var, iX_column_var) <= 0.1) % filter significant (and almost significant) p.values
                 
                 % add stars if correlation is significant
                 % Note: for text x and y are inverted because the X coordinate
                 % for text corresponds to the columns and the Y coordinate for
                 % text corresponds to the lines but reference point (0,0) is
                 % top-left in both cases due to imagesc
-                if pval_mtrx(jY_line_var, iX_column_var) > 0.01 && pval_mtrx(jY_line_var, iX_column_var) <= 0.05
+                if disp_stars == 2 && pval_mtrx(jY_line_var, iX_column_var) > 0.05 && pval_mtrx(jY_line_var, iX_column_var) <= 0.1
+                    pval_hdl = text(iX_column_var, jY_line_var, '(*)'); % add almost significant p.values if disp_stars == 2
+                elseif pval_mtrx(jY_line_var, iX_column_var) > 0.01 && pval_mtrx(jY_line_var, iX_column_var) <= 0.05
                     pval_hdl = text(iX_column_var, jY_line_var, '*');
                 elseif pval_mtrx(jY_line_var, iX_column_var) > 0.001 && pval_mtrx(jY_line_var, iX_column_var) <= 0.01
                     pval_hdl = text(iX_column_var, jY_line_var, '**');
