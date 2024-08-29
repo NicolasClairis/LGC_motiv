@@ -7291,6 +7291,7 @@ switch GLM
             % feedback
             GLMprm.model_onset.(Epm_nm).fbk = 'stick';
         end % physical/mental loop
+        
         %% DCM-GLM
     case 267 % based on GLM 263 but keeping only onsets for DCM-connectivity extraction
         % general parameters
