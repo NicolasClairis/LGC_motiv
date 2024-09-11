@@ -1926,3 +1926,20 @@ table_GLM.b_var = reshape(GLM_b_mtrx_vars,[n_corrs,1]);
 table_GLM.pvalue_var = reshape(GLM_pval_mtrx_vars,[n_corrs,1]);
 % save edges table
 writetable(table_GLM,[saveFolder,filesep,'GLM_table_signed_betas_',num2str(NS),'subs.xlsx']);
+
+%% selection of a few variables of interest and show corresponding correlation matrix
+vars_of_interest = listdlg('PromptString','Select the vars of interest',...
+    'ListString',mega_mtrx_names);
+n_vars_of_interest = length(vars_of_interest);
+corr_selecta = corr_mtrx(vars_of_interest, :);
+pval_corr_selecta = pval_mtrx(vars_of_interest, :);
+for iV = 1:n_vars_of_interest
+    signif_corr_selecta.(mega_mtrx_names{vars_of_interest(iV)}) = mega_mtrx_names(pval_corr_selecta(iV,:) < 0.05);
+end
+
+apply_pval_threshold = false;
+pval_threshold = [];
+disp_signif_stars = false;
+corr_plot(corr_selecta, pval_corr_selecta,...
+    corr_range, [], mega_mtrx_names(vars_of_interest), [], [],...
+    apply_pval_threshold, pval_threshold, disp_signif_stars);
