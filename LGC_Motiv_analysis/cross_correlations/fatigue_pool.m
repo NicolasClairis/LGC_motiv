@@ -1,7 +1,18 @@
-function[fatigue_measures] = fatigue_pool()
-% [fatigue_measures] = fatigue_pool()
+function[fatigue_measures] = fatigue_pool(study_nm, condition, subject_id, NS, genderFilter)
+% [fatigue_measures] = fatigue_pool(study_nm, condition, subject_id, NS, genderFilter)
 % fatigue_pool will extract and pool all the variables of the experiment
 % that somehow relate to physical, mental or central fatigue.
+%
+% INPUTS
+% study_nm: study name
+%
+% condition: condition to use
+%
+% subject_id: subject list
+%
+% NS: number of subjects
+%
+% genderFilter: use of gender filter?
 %
 % OUTPUTS
 % fatigue_measures: structure with all the relevant information. It will
@@ -15,8 +26,24 @@ function[fatigue_measures] = fatigue_pool()
 % - the number of covid infections
 
 %% subject selection
-study_nm = 'study1';
-[study_nm, condition, subject_id, NS, genderFilter] = subject_selection(study_nm);
+if ~exist('study_nm','var') && ~exist('condition','var') &&...
+        ~exist('subject_id','var') && ~exist('NS','var') &&...
+        ~exist('genderFilter','var')
+    [study_nm, condition, subject_id, NS, genderFilter] = subject_selection(study_nm);
+else
+    % study
+    if ~exist('study_nm','var')
+        study_nm = 'study1';
+    end
+    % condition
+    if ~exist('condition','var')
+        condition = subject_condition;
+    end
+    % subject list
+    if ~exist('subject_id','var') || ~exist('NS','var')
+        [subject_id, NS] = LGCM_subject_selection(study_nm, condition);
+    end
+end
 
 %% prepare the data of interest (to force all variables to be with the same dimensions)
 [fatigue_measures.MPSTEFS_physical,...
