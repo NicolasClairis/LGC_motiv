@@ -53,7 +53,9 @@ end
     Lars_e_AI_EverydayProd, Lars_e_AI_Init,...
     Lars_e_IC_Interest, Lars_e_IC_Novelty, Lars_e_IC_Motiv, Lars_e_IC_Social,...
     Lars_e_ActionInit, Lars_e_IntellectCuriosity, Lars_e_EmotResp, Lars_e_SelfAwareness,...
-    MPSTEFS_physical, MPSTEFS_mental,...
+    MPSTEFS_physical_total, MPSTEFS_mental_total,...
+    MPSTEFS_physical_energy, MPSTEFS_mental_energy,...
+    MPSTEFS_physical_fatigue, MPSTEFS_mental_fatigue,...
     JPIR, SHAP, SPSRQ_R, SPSRQ_P,...
     IPAQ, IPAQinactivity,...
     PRF_D, CI_enjCompet, CI_contentiousness,...
@@ -100,8 +102,14 @@ for iS = 1:NS
     
     % motivation questionnaires
     JPIR(iS) = excelReadQuestionnairesFile.JPI_RScore(sub_idx);
-    MPSTEFS_physical(iS) = excelReadQuestionnairesFile.MPSTEFSPhysicalTraitScore(sub_idx);
-    MPSTEFS_mental(iS) = excelReadQuestionnairesFile.MPSTEFSMentalTraitScore(sub_idx);
+    MPSTEFS_physical_total(iS) = excelReadQuestionnairesFile.MPSTEFSPhysicalTraitScore(sub_idx);
+    MPSTEFS_mental_total(iS) = excelReadQuestionnairesFile.MPSTEFSMentalTraitScore(sub_idx);
+    
+    MPSTEFS_physical_energy(iS) = excelReadQuestionnairesFile.(sub_idx);
+    MPSTEFS_mental_energy(iS) = excelReadQuestionnairesFile.(sub_idx);
+    MPSTEFS_physical_fatigue(iS) = excelReadQuestionnairesFile.(sub_idx);
+    MPSTEFS_mental_fatigue(iS) = excelReadQuestionnairesFile.(sub_idx);
+    
     MADRS_S(iS) = excelReadQuestionnairesFile.MADRS_SCorrected(sub_idx);
     SPSRQ_R(iS) = excelReadQuestionnairesFile.RewardScore(sub_idx);
     SPSRQ_P(iS) = excelReadQuestionnairesFile.PunishmentScore(sub_idx);
@@ -173,8 +181,12 @@ questionnaires.CTQ.physicalNeglect = CTQ_physicalN;
 
 % motivation
 questionnaires.Motivation.JPIR = JPIR;
-questionnaires.Motivation.MPSTEFS_physical = MPSTEFS_physical;
-questionnaires.Motivation.MPSTEFS_mental = MPSTEFS_mental;
+questionnaires.Motivation.MPSTEFS_physical = MPSTEFS_physical_total;
+questionnaires.Motivation.MPSTEFS_mental = MPSTEFS_mental_total;
+questionnaires.Motivation.MPSTEFS_physical_energy = MPSTEFS_physical_energy;
+questionnaires.Motivation.MPSTEFS_mental_energy = MPSTEFS_mental_energy;
+questionnaires.Motivation.MPSTEFS_physical_fatigue = MPSTEFS_physical_fatigue;
+questionnaires.Motivation.MPSTEFS_mental_fatigue = MPSTEFS_mental_fatigue;
 questionnaires.Motivation.MADRS_S = MADRS_S;
 questionnaires.Motivation.SPSRQ_R = SPSRQ_R;
 questionnaires.Motivation.SPSRQ_P = SPSRQ_P;
