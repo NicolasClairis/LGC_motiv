@@ -104,12 +104,10 @@ for iS = 1:NS
     JPIR(iS) = excelReadQuestionnairesFile.JPI_RScore(sub_idx);
     MPSTEFS_physical_total(iS) = excelReadQuestionnairesFile.MPSTEFSPhysicalTraitScore(sub_idx);
     MPSTEFS_mental_total(iS) = excelReadQuestionnairesFile.MPSTEFSMentalTraitScore(sub_idx);
-    
-    MPSTEFS_physical_energy(iS) = excelReadQuestionnairesFile.(sub_idx);
-    MPSTEFS_mental_energy(iS) = excelReadQuestionnairesFile.(sub_idx);
-    MPSTEFS_physical_fatigue(iS) = excelReadQuestionnairesFile.(sub_idx);
-    MPSTEFS_mental_fatigue(iS) = excelReadQuestionnairesFile.(sub_idx);
-    
+    MPSTEFS_physical_energy(iS) = excelReadQuestionnairesFile.MPSTEFSEnergyPhysical(sub_idx);
+    MPSTEFS_mental_energy(iS) = excelReadQuestionnairesFile.MPSTEFSEnergyMental(sub_idx);
+    MPSTEFS_physical_fatigue(iS) = excelReadQuestionnairesFile.MPSTEFSFatiguePhysical(sub_idx);
+    MPSTEFS_mental_fatigue(iS) = excelReadQuestionnairesFile.MPSTEFSFatigueMental(sub_idx);
     MADRS_S(iS) = excelReadQuestionnairesFile.MADRS_SCorrected(sub_idx);
     SPSRQ_R(iS) = excelReadQuestionnairesFile.RewardScore(sub_idx);
     SPSRQ_P(iS) = excelReadQuestionnairesFile.PunishmentScore(sub_idx);
