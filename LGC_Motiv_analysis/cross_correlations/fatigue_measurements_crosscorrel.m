@@ -18,6 +18,8 @@ function[corr_F, pval_F, signif, N_goodS] = fatigue_measurements_crosscorrel(out
 % multiple comparisons)
 %
 % N_goodS: number of good subjects for each correlation test
+%
+% See also fatigue_nm_rename.m and fatigue_f_metabolism.m
 
 %% outlier filtering
 if ~exist('outlierF','var') || isempty(outlierF)
@@ -40,47 +42,9 @@ fatigue_vars = fieldnames(fatigue_measures);
 fatigue_vars(strcmp(fatigue_vars,'sub_selection')) = [];
 n_F_vars = length(fatigue_vars);
 fatigue_vars_bis = cell(n_F_vars,1);
-% improve labels
-for iF1 = 1:n_F_vars
-    F_nm1 = fatigue_vars{iF1};
-    switch F_nm1
-        case 'MPSTEFS_physical'
-            fatigue_vars_bis{iF1} = 'MPSTEFS_p';
-        case 'MPSTEFS_mental'
-            fatigue_vars_bis{iF1} = 'MPSTEFS_m';
-        case 'n_covid'
-            fatigue_vars_bis{iF1} = 'n.covid';
-        case 'F4_F1'
-            fatigue_vars_bis{iF1} = 'F4-F1';
-        case 'F4_F3'
-            fatigue_vars_bis{iF1} = 'F4-F3';
-        case 'MVC_R1a'
-            fatigue_vars_bis{iF1} = 'MVC r1a';
-        case 'MVC_R1b'
-            fatigue_vars_bis{iF1} = 'MVC r1b';
-        case 'MVC_R2a'
-            fatigue_vars_bis{iF1} = 'MVC r2a';
-        case 'MVC_R2b'
-            fatigue_vars_bis{iF1} = 'MVC r2b';
-        case 'MVC_dR1'
-            fatigue_vars_bis{iF1} = 'MVC Δr1';
-        case 'MVC_dR2'
-            fatigue_vars_bis{iF1} = 'MVC Δr2';
-        case 'MVC_dTask'
-            fatigue_vars_bis{iF1} = 'MVC ΔTask';
-        case 'perf_decrease_slope_E0'
-            fatigue_vars_bis{iF1} = 'perf dE0';
-        case 'perf_decrease_slope_E1'
-            fatigue_vars_bis{iF1} = 'perf dE1';
-        case 'perf_decrease_slope_E2'
-            fatigue_vars_bis{iF1} = 'perf dE2';
-        case 'perf_decrease_slope_E3'
-            fatigue_vars_bis{iF1} = 'perf dE3';
-        case 'choices_kFp'
-            fatigue_vars_bis{iF1} = 'kFp';
-        otherwise
-            fatigue_vars_bis{iF1} = fatigue_vars{iF1};
-    end % fatigue variable
+% rename fatigue variables for the figure
+for iF = 1:n_F_vars
+    [fatigue_vars_bis{iF}] = fatigue_nm_rename(fatigue_vars{iF});
 end % loop over fatigue variables
 
 %% cross-correlation matrix
