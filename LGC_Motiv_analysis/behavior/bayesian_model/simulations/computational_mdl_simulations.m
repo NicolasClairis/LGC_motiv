@@ -343,7 +343,7 @@ if fig_disp == true
     ylabel('Recovered');
     title('Model recovery');
     hcb = colorbar;
-    set(get(hcb,'label'),'string','Correlation coefficient (R)','Rotation',90.0,'FontSize',16);
+    set(get(hcb,'label'),'string','Correlation coefficient (r)','Rotation',90.0,'FontSize',16);
     colormap(redblue(45));
     
     %% autocorrelation plot
@@ -367,7 +367,7 @@ if fig_disp == true
     xlabel('Recovered');
     title('Model identifiability');
     hcb = colorbar;
-    set(get(hcb,'label'),'string','Correlation coefficient (R)','Rotation',90.0,'FontSize',16);
+    set(get(hcb,'label'),'string','Correlation coefficient (r)','Rotation',90.0,'FontSize',16);
     colormap(redblue(45));
     mean([corrmat(1,1),corrmat(2,2),corrmat(3,3),corrmat(4,4),corrmat(5,5),corrmat(6,6),corrmat(7,7)]);
     
