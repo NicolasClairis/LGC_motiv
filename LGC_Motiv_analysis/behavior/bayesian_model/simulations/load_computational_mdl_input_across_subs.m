@@ -2,7 +2,8 @@ function[var, mean_var, var_names, AUC_perEch, currEff_perEch, mean_AUC_perEch, 
 % [var, mean_var, var_names, AUC_perEch, currEff_perEch, mean_AUC_perEch, mean_currEff_perEch] = load_computational_mdl_input_across_subs()
 % load_computational_mdl_input_across_subs will go through all subjects of
 % the experiments defined in input and will extract their data in order to
-% build a mega var matrix and to average the inputs across subjects
+% build a big matrix with all the variables and to average the inputs 
+% across subjects
 %
 % OUTPUTS
 % var: (7 input variables)*(216 trials)*(NS) matrix including the input
