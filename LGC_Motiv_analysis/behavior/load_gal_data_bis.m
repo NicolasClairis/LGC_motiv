@@ -10,6 +10,11 @@ function[excelReadGeneralFile] = load_gal_data_bis(study_nm)
 % OUTPUTS
 % excelReadGeneralFile: table with subject main informations
 
+%% study
+if ~exist('study_nm','var') || isempty(study_nm)
+    study_nm = 'study1';
+end
+
 %% define path
 list_pcs = {'Lab','Home'};
 which_pc_idx = listdlg('PromptString',{'Lab or home pc?'},...
