@@ -1,4 +1,4 @@
-function[corr_F_vs_mb, pval_F_vs_mb, signif, N_goodS] = fatigue_f_metabolism_and_other_ctrl_vars(outlierF)
+function[GLM_b_F_vs_mb, pval_b_F_vs_mb, signif, N_goodS] = fatigue_f_metabolism_and_other_ctrl_vars(outlierF)
 % [corr_F_vs_mb, pval_F_vs_mb, signif, N_goodS] = fatigue_f_metabolism_and_other_ctrl_vars(outlierF)
 % fatigue_f_metabolism will look at the correlation matrix between the
 % different fatigue metrics from questionnaires + behavior and the
@@ -37,6 +37,19 @@ end % outlier filtering
 %% subject selection
 [study_nm, condition, subject_id, NS, genderFilter] = subject_selection;
 
+%% load general variables (BMI, age, sex)
+[BMI, age, sex] = deal(NaN(NS,1));
+[excelReadGeneralFile] = load_gal_data_bis(study_nm);
+sub_gal = excelReadGeneralFile.CID;
+for iS = 1:NS
+    sub_nm = subject_id{iS};
+    sub_idx = strcmp(['CID',sub_nm],sub_gal);
+    BMI(iS) = excelReadGeneralFile.BMI(sub_idx); % BMI
+    age(iS) = excelReadGeneralFile.Age_yearsOld_(sub_idx);% age in years
+    sex(iS) = strcmp(excelReadGeneralFile.Sexe_femaleF_maleM_(sub_idx),'F') +...
+        -strcmp(excelReadGeneralFile.Sexe_femaleF_maleM_(sub_idx),'M'); % -1=male/+1=female
+end
+
 %% load fatigue metrics
 [fatigue_measures] = fatigue_pool(study_nm, condition, subject_id, NS, genderFilter);
 fatigue_vars = fieldnames(fatigue_measures);
@@ -49,7 +62,7 @@ for iF = 1:n_F_vars
 end % loop over fatigue variables
 
 %% load whole-blood metabolites
-[wholeBlood_mb, sub_List] = load_blood_NAD(study_nm, subject_id);
+wholeBlood_mb = load_blood_NAD(study_nm, subject_id);
 wholeB_mb_names = fieldnames(wholeBlood_mb);
 n_wholeB_mb = length(wholeB_mb_names);
 for iWholeB_Mb = 1:n_wholeB_mb
@@ -64,6 +77,7 @@ for iPlasma_Mb = 1:n_plasma_mb
     plasma_mb_nm = plasma_mb_names{iPlasma_Mb};
     metabolism.(['plasma_',plasma_mb_nm]) = plasmaM.(plasma_mb_nm);
 end
+
 %% load brain metabolites
 [~, ~, brain_metabolites_bis] = metabolite_load(subject_id);
 brain_mb_names = fieldnames(brain_metabolites_bis.dmPFC);
@@ -84,14 +98,20 @@ end
 metabolite_names = fieldnames(metabolism);
 n_mb_vars = length(metabolite_names);
 N_goodS = NaN(n_F_vars, n_mb_vars); % number of good subjects for each correlation
+
 % general matrix
-[corr_F_vs_mb, pval_F_vs_mb] = deal(NaN(n_F_vars, n_mb_vars));
+[GLM_b_F_vs_sex_mb, GLM_b_F_vs_age_mb, GLM_b_F_vs_BMI_mb, GLM_b_F_vs_mb,...
+    pval_b_F_vs_sex_mb, pval_b_F_vs_age_mb, pval_b_F_vs_BMI_mb, pval_b_F_vs_mb] = deal(NaN(n_F_vars, n_mb_vars));
 % matrix for fatigue & whole-blood NADomics
-[corr_F_vs_wbNADomics, pval_F_vs_wbNADomics] = deal(NaN(n_F_vars, n_wholeB_mb));
+[GLM_b_F_vs_sex_wbNADomics, GLM_b_F_vs_age_wbNADomics, GLM_b_F_vs_BMI_wbNADomics, GLM_b_F_vs_wbNADomics,...
+    pval_b_F_vs_sex_wbNADomics, pval_b_F_vs_age_wbNADomics, pval_b_F_vs_BMI_wbNADomics, pval_b_F_vs_wbNADomics] = deal(NaN(n_F_vars, n_wholeB_mb));
 % matrix for fatigue & plasma metabolites
-[corr_F_vs_plasmaMb, pval_F_vs_plasmaMb] = deal(NaN(n_F_vars, n_plasma_mb));
+[GLM_b_F_vs_sex_plasmaMb, GLM_b_F_vs_age_plasmaMb, GLM_b_F_vs_BMI_plasmaMb, GLM_b_F_vs_plasmaMb,...
+    pval_b_F_vs_sex_plasmaMb, pval_b_F_vs_age_plasmaMb, pval_b_F_vs_BMI_plasmaMb, pval_b_F_vs_plasmaMb] = deal(NaN(n_F_vars, n_plasma_mb));
 % matrix for fatigue & brain metabolites
-[corr_F_vs_brainMb, pval_F_vs_brainMb] = deal(NaN(n_F_vars, n_brain_mb*2));
+[GLM_b_F_vs_sex_brainMb, GLM_b_F_vs_age_brainMb, GLM_b_F_vs_BMI_brainMb, GLM_b_F_vs_brainMb,...
+    pval_b_F_vs_sex_brainMb, pval_b_F_vs_age_brainMb, pval_b_F_vs_BMI_brainMb, pval_b_F_vs_brainMb] = deal(NaN(n_F_vars, n_brain_mb*2));
+
 for iF = 1:n_F_vars
     F_nm = fatigue_vars{iF};
     
@@ -107,26 +127,40 @@ for iF = 1:n_F_vars
                 [~, ~, fatigue_var_tmp] = rmv_outliers_3sd(fatigue_measures.(F_nm));
                 [~, ~, metabolism_var_tmp] = rmv_outliers_3sd(metabolism.(mb_nm));
         end
-        goodS_tmp = ~isnan(fatigue_var_tmp.*metabolism_var_tmp);
+        goodS_tmp = ~isnan(BMI.*age.*sex.*metabolism_var_tmp'.*fatigue_var_tmp');
         N_goodS(iF, iMb) = sum(goodS_tmp);
-        % perform the correlation
-        [corr_F_vs_mb(iF, iMb), pval_F_vs_mb(iF, iMb)] = corr(fatigue_measures.(F_nm)(goodS_tmp)', metabolism.(mb_nm)(goodS_tmp)');
+        
+        % perform the GLM
+        X_all_mb = [sex(goodS_tmp),...
+            zscore(age(goodS_tmp)),...
+            zscore(BMI(goodS_tmp)),...
+            zscore(metabolism.(mb_nm)(goodS_tmp))'];
+        [b_tmp, ~, stats_tmp] = glmfit(X_all_mb, zscore(fatigue_measures.(F_nm)(goodS_tmp))','normal');
+        GLM_b_F_vs_sex_mb(iF, iMb) = b_tmp(2);
+        GLM_b_F_vs_age_mb(iF, iMb) = b_tmp(3);
+        GLM_b_F_vs_BMI_mb(iF, iMb) = b_tmp(4);
+        GLM_b_F_vs_mb(iF, iMb) = b_tmp(5);
+        pval_b_F_vs_sex_mb(iF, iMb) = stats_tmp.p(2);
+        pval_b_F_vs_age_mb(iF, iMb) = stats_tmp.p(3);
+        pval_b_F_vs_BMI_mb(iF, iMb) = stats_tmp.p(4);
+        pval_b_F_vs_mb(iF, iMb) = stats_tmp.p(5);
+        
         % store the significant correlations
-        if pval_F_vs_mb(iF,iMb) < 0.05
-            signif.([F_nm,'_f_',mb_nm]).p005.r = corr_F_vs_mb(iF, iMb);
-            signif.([F_nm,'_f_',mb_nm]).p005.p = pval_F_vs_mb(iF, iMb);
+        if pval_b_F_vs_mb(iF,iMb) < 0.05
+            signif.([F_nm,'_f_',mb_nm]).p005.b = GLM_b_F_vs_mb(iF, iMb);
+            signif.([F_nm,'_f_',mb_nm]).p005.p = pval_b_F_vs_mb(iF, iMb);
         end
-        if pval_F_vs_mb(iF,iMb) < 0.01
-            signif.([F_nm,'_f_',mb_nm]).p001.r = corr_F_vs_mb(iF, iMb);
-            signif.([F_nm,'_f_',mb_nm]).p001.p = pval_F_vs_mb(iF, iMb);
+        if pval_b_F_vs_mb(iF,iMb) < 0.01
+            signif.([F_nm,'_f_',mb_nm]).p001.b = GLM_b_F_vs_mb(iF, iMb);
+            signif.([F_nm,'_f_',mb_nm]).p001.p = pval_b_F_vs_mb(iF, iMb);
         end
-        if pval_F_vs_mb(iF,iMb) < 0.005
-            signif.([F_nm,'_f_',mb_nm]).p0005.r = corr_F_vs_mb(iF, iMb);
-            signif.([F_nm,'_f_',mb_nm]).p0005.p = pval_F_vs_mb(iF, iMb);
+        if pval_b_F_vs_mb(iF,iMb) < 0.005
+            signif.([F_nm,'_f_',mb_nm]).p0005.b = GLM_b_F_vs_mb(iF, iMb);
+            signif.([F_nm,'_f_',mb_nm]).p0005.p = pval_b_F_vs_mb(iF, iMb);
         end
-        if pval_F_vs_mb(iF,iMb) < 0.001
-            signif.([F_nm,'_f_',mb_nm]).p0001.r = corr_F_vs_mb(iF, iMb);
-            signif.([F_nm,'_f_',mb_nm]).p0001.p = pval_F_vs_mb(iF, iMb);
+        if pval_b_F_vs_mb(iF,iMb) < 0.001
+            signif.([F_nm,'_f_',mb_nm]).p0001.b = GLM_b_F_vs_mb(iF, iMb);
+            signif.([F_nm,'_f_',mb_nm]).p0001.p = pval_b_F_vs_mb(iF, iMb);
         end
     end % metabolite loop
     
@@ -142,8 +176,20 @@ for iF = 1:n_F_vars
                 [~, ~, fatigue_var_tmp] = rmv_outliers_3sd(fatigue_measures.(F_nm));
                 [~, ~, wholeBloodMb_var_tmp] = rmv_outliers_3sd(wholeBlood_mb.(wholeB_mb_nm));
         end
-        goodS_tmp = ~isnan(fatigue_var_tmp.*wholeBloodMb_var_tmp);
-        [corr_F_vs_wbNADomics(iF, iWholeB_Mb), pval_F_vs_wbNADomics(iF, iWholeB_Mb)] = corr(fatigue_measures.(F_nm)(goodS_tmp)', wholeBlood_mb.(wholeB_mb_nm)(goodS_tmp)');
+        wB_goodS_tmp = ~isnan(BMI.*age.*sex.*wholeBloodMb_var_tmp'.*fatigue_var_tmp');
+        X_wholeB = [sex(wB_goodS_tmp),...
+            zscore(age(wB_goodS_tmp)),...
+            zscore(BMI(wB_goodS_tmp)),...
+            zscore(wholeBlood_mb.(wholeB_mb_nm)(wB_goodS_tmp))'];
+        [b_wB_tmp, ~, stats_wB] = glmfit(X_wholeB, zscore(fatigue_measures.(F_nm)(wB_goodS_tmp))','normal');
+        GLM_b_F_vs_sex_wbNADomics(iF, iWholeB_Mb)  = b_wB_tmp(2);
+        GLM_b_F_vs_age_wbNADomics(iF, iWholeB_Mb)  = b_wB_tmp(3);
+        GLM_b_F_vs_BMI_wbNADomics(iF, iWholeB_Mb)  = b_wB_tmp(4);
+        GLM_b_F_vs_wbNADomics(iF, iWholeB_Mb)      = b_wB_tmp(5);
+        pval_b_F_vs_sex_wbNADomics(iF, iWholeB_Mb) = stats_wB.p(2);
+        pval_b_F_vs_age_wbNADomics(iF, iWholeB_Mb) = stats_wB.p(3);
+        pval_b_F_vs_BMI_wbNADomics(iF, iWholeB_Mb) = stats_wB.p(4);
+        pval_b_F_vs_wbNADomics(iF, iWholeB_Mb)     = stats_wB.p(5);
     end % whole-blood NADomics
         
     %% loop across plasma metabolites
@@ -158,8 +204,20 @@ for iF = 1:n_F_vars
                 [~, ~, fatigue_var_tmp] = rmv_outliers_3sd(fatigue_measures.(F_nm));
                 [~, ~, plasmaMb_var_tmp] = rmv_outliers_3sd(plasmaM.(plasma_mb_nm));
         end
-        goodS_tmp = ~isnan(fatigue_var_tmp.*plasmaMb_var_tmp);
-        [corr_F_vs_plasmaMb(iF, iPlasma_Mb), pval_F_vs_plasmaMb(iF, iPlasma_Mb)] = corr(fatigue_measures.(F_nm)(goodS_tmp)', plasmaM.(plasma_mb_nm)(goodS_tmp)');
+        plasma_goodS_tmp = ~isnan(BMI.*age.*sex.*fatigue_var_tmp'.*plasmaMb_var_tmp');
+        X_fatigue_plasmaMb = [sex(plasma_goodS_tmp),...
+            zscore(age(plasma_goodS_tmp)),...
+            zscore(BMI(plasma_goodS_tmp)),...
+            zscore(plasmaM.(plasma_mb_nm)(plasma_goodS_tmp)')];
+        [b_pMb_tmp, ~, stats_pMb] = glmfit(X_fatigue_plasmaMb, zscore(fatigue_measures.(F_nm)(plasma_goodS_tmp))','normal');
+        GLM_b_F_vs_sex_plasmaMb(iF, iPlasma_Mb)  = b_pMb_tmp(2);
+        GLM_b_F_vs_age_plasmaMb(iF, iPlasma_Mb)  = b_pMb_tmp(3);
+        GLM_b_F_vs_BMI_plasmaMb(iF, iPlasma_Mb)  = b_pMb_tmp(4);
+        GLM_b_F_vs_plasmaMb(iF, iPlasma_Mb)      = b_pMb_tmp(5);
+        pval_b_F_vs_sex_plasmaMb(iF, iPlasma_Mb) = stats_pMb.p(2);
+        pval_b_F_vs_age_plasmaMb(iF, iPlasma_Mb) = stats_pMb.p(3);
+        pval_b_F_vs_BMI_plasmaMb(iF, iPlasma_Mb) = stats_pMb.p(4);
+        pval_b_F_vs_plasmaMb(iF, iPlasma_Mb)     = stats_pMb.p(5);
     end % plasma metabolites
     
     %% loop across brain metabolites
@@ -179,21 +237,45 @@ for iF = 1:n_F_vars
                 [~, ~, dmPFC_mb_var_tmp] = rmv_outliers_3sd(brain_metabolites_bis.dmPFC.(brain_mb_nm));
                 [~, ~, aIns_mb_var_tmp] = rmv_outliers_3sd(brain_metabolites_bis.aIns.(brain_mb_nm));
         end
-        dmPFC_goodS_tmp = ~isnan(fatigue_var_tmp.*dmPFC_mb_var_tmp);
-        [corr_F_vs_brainMb(iF, j_dmPFC_mb), pval_F_vs_brainMb(iF, j_dmPFC_mb)] = corr(fatigue_measures.(F_nm)(dmPFC_goodS_tmp)', brain_metabolites_bis.dmPFC.(brain_mb_nm)(dmPFC_goodS_tmp)');
+        dmPFC_goodS_tmp = ~isnan(BMI.*age.*sex.*fatigue_var_tmp'.*dmPFC_mb_var_tmp');
+        X_fatigue_dmPFCMb = [sex(dmPFC_goodS_tmp),...
+            zscore(age(dmPFC_goodS_tmp)),...
+            zscore(BMI(dmPFC_goodS_tmp)),...
+            zscore(brain_metabolites_bis.dmPFC.(brain_mb_nm)(dmPFC_goodS_tmp)')];
+        [b_dmPFCmb_tmp, ~, stats_dmPFC_mb] = glmfit(X_fatigue_dmPFCMb, zscore(fatigue_measures.(F_nm)(dmPFC_goodS_tmp))','normal');
+        GLM_b_F_vs_sex_brainMb(iF, j_dmPFC_mb)  = b_dmPFCmb_tmp(2);
+        GLM_b_F_vs_age_brainMb(iF, j_dmPFC_mb)  = b_dmPFCmb_tmp(3);
+        GLM_b_F_vs_BMI_brainMb(iF, j_dmPFC_mb)  = b_dmPFCmb_tmp(4);
+        GLM_b_F_vs_brainMb(iF, j_dmPFC_mb)      = b_dmPFCmb_tmp(5);
+        pval_b_F_vs_sex_brainMb(iF, j_dmPFC_mb) = stats_dmPFC_mb.p(2);
+        pval_b_F_vs_age_brainMb(iF, j_dmPFC_mb) = stats_dmPFC_mb.p(3);
+        pval_b_F_vs_BMI_brainMb(iF, j_dmPFC_mb) = stats_dmPFC_mb.p(4);
+        pval_b_F_vs_brainMb(iF, j_dmPFC_mb)     = stats_dmPFC_mb.p(5);
+        
         % anterior insula
         j_aIns_mb = 2 + 2*(iBrain_Mb - 1);
         brain_mb_names_bis{j_aIns_mb} = ['aIns ',brain_mb_nm];
-        aIns_goodS_tmp = ~isnan(fatigue_var_tmp.*aIns_mb_var_tmp);
-        [corr_F_vs_brainMb(iF, j_aIns_mb), pval_F_vs_brainMb(iF, j_aIns_mb)] = corr(fatigue_measures.(F_nm)(aIns_goodS_tmp)', brain_metabolites_bis.aIns.(brain_mb_nm)(aIns_goodS_tmp)');
+        aIns_goodS_tmp = ~isnan(BMI.*age.*sex.*fatigue_var_tmp'.*aIns_mb_var_tmp');
+        X_fatigue_aInsMb = [sex(aIns_goodS_tmp),...
+            zscore(age(aIns_goodS_tmp)),...
+            zscore(BMI(aIns_goodS_tmp)),...
+            zscore(brain_metabolites_bis.aIns.(brain_mb_nm)(aIns_goodS_tmp)')];
+        [b_aInsMb_tmp, ~, stats_aIns_mb] = glmfit(X_fatigue_aInsMb,...
+            zscore(fatigue_measures.(F_nm)(aIns_goodS_tmp))','normal');
+        GLM_b_F_vs_sex_brainMb(iF, j_aIns_mb)   = b_aInsMb_tmp(2);
+        GLM_b_F_vs_age_brainMb(iF, j_aIns_mb)   = b_aInsMb_tmp(3);
+        GLM_b_F_vs_BMI_brainMb(iF, j_aIns_mb)   = b_aInsMb_tmp(4);
+        GLM_b_F_vs_brainMb(iF, j_aIns_mb)       = b_aInsMb_tmp(5);
+        pval_b_F_vs_sex_brainMb(iF, j_aIns_mb)  = stats_aIns_mb.p(2);
+        pval_b_F_vs_age_brainMb(iF, j_aIns_mb)  = stats_aIns_mb.p(3);
+        pval_b_F_vs_BMI_brainMb(iF, j_aIns_mb)  = stats_aIns_mb.p(4);
+        pval_b_F_vs_brainMb(iF, j_aIns_mb)      = stats_aIns_mb.p(5);
     end % brain metabolites
 end % fatigue loop
 
 %% display resulting correlation matrix
 % general figure parameters
-[~, ~, col] = general_fig_prm;
 pSize = 15;
-color_range_choices = redblue(45);
 
 % correlation range
 corr_range = [-1 1];
@@ -203,25 +285,25 @@ pval_threshold = []; % no pvalue threshold
 disp_signif_stars = true; % display stars upon the significant correlations
 
 %% general correlation matrix
-corr_plot(corr_F_vs_mb, pval_F_vs_mb,...
+corr_plot(GLM_b_F_vs_mb, pval_b_F_vs_mb,...
     corr_range, [], fatigue_vars_bis, [], [],...
     apply_pval_threshold, pval_threshold, disp_signif_stars);
 legend_size(pSize);
 
 %% correlation matrix whole-blood NADomics
-corr_plot(corr_F_vs_wbNADomics, pval_F_vs_wbNADomics,...
+corr_plot(GLM_b_F_vs_wbNADomics, pval_b_F_vs_wbNADomics,...
     corr_range, wholeB_mb_names, fatigue_vars_bis, [], [],...
     apply_pval_threshold, pval_threshold, disp_signif_stars);
 legend_size(pSize);
 
 %% correlation matrix plasma metabolites
-corr_plot(corr_F_vs_plasmaMb, pval_F_vs_plasmaMb,...
+corr_plot(GLM_b_F_vs_plasmaMb, pval_b_F_vs_plasmaMb,...
     corr_range, plasma_mb_names, fatigue_vars_bis, [], [],...
     apply_pval_threshold, pval_threshold, disp_signif_stars);
 legend_size(pSize);
 
 %% correlation matrix brain metabolites
-corr_plot(corr_F_vs_brainMb, pval_F_vs_brainMb,...
+corr_plot(GLM_b_F_vs_brainMb, pval_b_F_vs_brainMb,...
     corr_range, brain_mb_names_bis, fatigue_vars_bis, [], [],...
     apply_pval_threshold, pval_threshold, disp_signif_stars);
 legend_size(pSize);
