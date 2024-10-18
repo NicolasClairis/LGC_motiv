@@ -43,7 +43,7 @@ end
 [excelReadQuestionnairesFile2] = load_gal_data_bis(study_nm);
 
 %% prepare variables of interest
-[n_covid, ISCE,...
+[n_covid, covid_months_since_last_infection, ISCE,...
     money, age, sex, weight, height, BMI,...
     STAI_T, SIAS, PSS14,...
     CTQ_emotionalA, CTQ_physicalA,...
@@ -76,6 +76,7 @@ for iS = 1:NS
     
     % general
     n_covid(iS) = excelReadQuestionnairesFile.NombreD_infectionsAuCOVID(sub_idx);
+    covid_months_since_last_infection(iS) = excelReadQuestionnairesFile.Distance_enMois_DepuisDernierCovid(sub_idx);
     age(iS) = excelReadQuestionnairesFile2.Age_yearsOld_(sub_idx2);
     sex(iS) = strcmp(excelReadQuestionnairesFile2.Sexe_femaleF_maleM_(sub_idx2),'F');
     weight(iS) = excelReadQuestionnairesFile2.Weight(sub_idx2);
@@ -148,6 +149,7 @@ IPAQ(:) = IPAQ_rescoring(study_nm, subject_id, NS);
 %% regroup questionnaires by category
 % general
 questionnaires.general.n_covid = n_covid;
+questionnaires.general.covid_months_since_last_infection = covid_months_since_last_infection;
 questionnaires.general.age = age;
 questionnaires.general.sex = sex;
 questionnaires.general.weight = weight;
