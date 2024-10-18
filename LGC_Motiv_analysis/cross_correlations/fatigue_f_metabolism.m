@@ -39,13 +39,13 @@ end % outlier filtering
 
 %% load fatigue metrics
 [fatigue_measures] = fatigue_pool(study_nm, condition, subject_id, NS, genderFilter);
-fatigue_vars = fieldnames(fatigue_measures);
-fatigue_vars(strcmp(fatigue_vars,'sub_selection')) = [];
-n_F_vars = length(fatigue_vars);
+fatigue_var_names = fieldnames(fatigue_measures);
+fatigue_var_names(strcmp(fatigue_var_names,'sub_selection')) = [];
+n_F_vars = length(fatigue_var_names);
 fatigue_vars_bis = cell(n_F_vars,1);
 % rename fatigue variables for the figure
 for iF = 1:n_F_vars
-    [fatigue_vars_bis{iF}] = fatigue_nm_rename(fatigue_vars{iF});
+    [fatigue_vars_bis{iF}] = fatigue_nm_rename(fatigue_var_names{iF});
 end % loop over fatigue variables
 
 %% load whole-blood metabolites
@@ -93,7 +93,7 @@ N_goodS = NaN(n_F_vars, n_mb_vars); % number of good subjects for each correlati
 % matrix for fatigue & brain metabolites
 [corr_F_vs_brainMb, pval_F_vs_brainMb] = deal(NaN(n_F_vars, n_brain_mb*2));
 for iF = 1:n_F_vars
-    F_nm = fatigue_vars{iF};
+    F_nm = fatigue_var_names{iF};
     
     % loop across all metabolites
     for iMb = 1:n_mb_vars
@@ -225,5 +225,37 @@ corr_plot(corr_F_vs_brainMb, pval_F_vs_brainMb,...
     corr_range, brain_mb_names_bis, fatigue_vars_bis, [], [],...
     apply_pval_threshold, pval_threshold, disp_signif_stars);
 legend_size(pSize);
+
+%% additional correlation plots
+pSize = 20;
+detail_plots = questdlg('Do you want to zoom in some of these correlations?','correlation plots?','No','Yes','Yes');
+switch detail_plots
+    case 'Yes'
+        n_plots_str = inputdlg('How many plots do you want to see?','N.plots');
+        n_plots = str2double(n_plots_str);
+        for iPlot = 1:n_plots
+            % select variable
+            jMb = listdlg('PromptString','Select metabolite',...
+                'SelectionMode','single','ListString',metabolite_names);
+            mb_var_nm = metabolite_names{jMb};
+            mb_var = metabolism.(mb_var_nm);
+            jF = listdlg('PromptString','Select fatigue variable',...
+                'SelectionMode','single','ListString',fatigue_var_names);
+            fatigue_var_nm = fatigue_var_names{jF};
+            fatigue_var = fatigue_measures.(fatigue_var_nm);
+            
+            % display corresponding figure + correlation coefficient and
+            % p.value
+            fig;
+            scat_hdl = scatter(mb_var, fatigue_var);
+            scat_hdl_upgrade(scat_hdl);
+            xlabel(mb_var_nm);
+            ylabel(fatigue_var_nm);
+            legend_size(pSize);
+            place_r_and_pval(corr_F_vs_mb(jF, jMb), pval_F_vs_mb(jF, jMb));
+            
+        end % plot loop
+    case 'No'
+end % show correlation plots in more details
 
 end % function
