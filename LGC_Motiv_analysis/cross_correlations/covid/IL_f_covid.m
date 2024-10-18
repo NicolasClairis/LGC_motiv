@@ -15,7 +15,7 @@ function[r_corr, pval, signif, N_goodS] = IL_f_covid()
 % signif: significant correlations (based on p < 0.05)
 %
 % N_goodS: structure with number of good subjects for each test (will vary
-% depending on if outlier filtering or not
+% depending on if outlier filtering or not)
 
 %% outlier filtering
 if ~exist('outlierF','var') || isempty(outlierF)
@@ -94,7 +94,7 @@ for iIL = 1:n_IL
     covidDist_hdl = scatter(covid_dist(goodS_nCovid_tmp)', IL_data.(IL_nm)(goodS_nCovid_tmp));
     scat_hdl_upgrade(covidDist_hdl);
     xlabel('Covid distance (months)');
-    ylabel([IL_nm,' (mM)']);
+    ylabel([IL_nm,' (pg/mL)']);
     place_r_and_pval(r_corr.(covidDist_f_IL_nm)(iIL), pval.(covidDist_f_IL_nm)(iIL));
 end % interleukin loop
 
