@@ -328,6 +328,9 @@ if fig_disp == 1
                 ' Please do it manually or change the script to be able to do it automatically in the future.']);
         end
     end % figure loop
+else
+    selectedCon = [];
+    figConNames = cell(1);
 end % figure display
 
 %% to create your own figure with your own order:
