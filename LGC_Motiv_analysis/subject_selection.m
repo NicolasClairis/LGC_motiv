@@ -1,5 +1,7 @@
 function[study_nm, condition, subject_id, NS, genderFilter] = subject_selection(study_nm, condition, subject_id, NS, genderFilter)
 % [study_nm, condition, subject_id, NS, genderFilter] = subject_selection(study_nm, condition, subject_id, NS, genderFilter)
+%subject_selection allows to select the subjects and conditions of
+%interest.
 %
 % INPUTS (any input can be left empty and will be selected accordingly)
 % study_nm: study name ('study1' by default if left empty)
