@@ -7238,7 +7238,7 @@ switch GLM
             % feedback
             GLMprm.model_onset.(Epm_nm).fbk = 'stick';
         end % physical/mental loop
-    case 265 % main GLM: Ech/SVch/RT orthogonalized, like GLM 259 but using corrected model 5
+    case 265 % main GLM (paper Mol. Psy.): Ech/SVch/RT orthogonalized, like GLM 259 but using corrected model 5
         % general parameters
         GLMprm.gal.orth_vars = 1;
         GLMprm.gal.zPerRun = 1;
