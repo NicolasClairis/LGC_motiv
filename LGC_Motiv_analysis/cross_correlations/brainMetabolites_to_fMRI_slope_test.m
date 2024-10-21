@@ -1,4 +1,5 @@
-% check if dmPFC slope can be explained by several metabolites => kEp
+% check if dmPFC slope (con_data) can be explained by brain 1H-MRS metabolites
+% => kEp
 
 %% launch mediation
 mediation_allMetabolites_fMRI_allBehavPrm;
