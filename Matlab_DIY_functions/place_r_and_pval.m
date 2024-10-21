@@ -50,9 +50,9 @@ end
 
 %% define x coordinate for the text
 xlim_vals = xlim();
-% xlim_dims = xlim_vals(2) - xlim_vals(1);
-% x_val_txt = xlim_vals(2) - xlim_dims/7; % manual centering
-x_val_txt = xlim_vals(2);
+xlim_dims = xlim_vals(2) - xlim_vals(1);
+x_val_txt = xlim_vals(2) - xlim_dims/7; % manual centering
+% x_val_txt = xlim_vals(2);
 x_alignment = 'center'; % use HorizontalAlignment property to align
 
 %% define y coordinate depending on if correlation is negative or positive (to avoid overlapping relevant values)
@@ -68,7 +68,7 @@ elseif (r_corr >= 0) || isnan(r_corr) % positive correlation (bottom right of th
 end
 
 %% text size
-txtSize = 30;
+txtSize = 20;
 
 %% add the text
 txt_hdl = text(x_val_txt,y_val_txt,...
@@ -76,5 +76,22 @@ txt_hdl = text(x_val_txt,y_val_txt,...
     'FontSize',txtSize,...
     'HorizontalAlignment',x_alignment,...
     'VerticalAlignment',y_alignment);
+
+%% re-adjust position based on text size
+% re-measure x and y limits
+xlim_vals = xlim();
+ylim_vals = ylim();
+% extract text size
+txt_x_width = txt_hdl.Extent(3);
+txt_y_height = txt_hdl.Extent(4);
+% replace x and y accordingly
+% replace X at the border of the X dimension
+txt_hdl.Position(1) = xlim_vals(2) - txt_x_width;
+% replace y up or down
+if r_corr < 0 % negative correlation (top right of the screen)
+    txt_hdl.Position(2) = ylim_vals(2);
+elseif (r_corr >= 0) || isnan(r_corr) % positive correlation (bottom right of the screen)
+    txt_hdl.Position(2) = ylim_vals(1) + txt_y_height;
+end
 
 end % function
