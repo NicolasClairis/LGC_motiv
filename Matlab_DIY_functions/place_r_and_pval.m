@@ -48,50 +48,31 @@ else
     pval_str = 'p < 0.001'; % just mention this if pvalue is smaller than 0.001
 end
 
-%% define x coordinate for the text
-xlim_vals = xlim();
-xlim_dims = xlim_vals(2) - xlim_vals(1);
-x_val_txt = xlim_vals(2) - xlim_dims/7; % manual centering
-% x_val_txt = xlim_vals(2);
-x_alignment = 'center'; % use HorizontalAlignment property to align
-
-%% define y coordinate depending on if correlation is negative or positive (to avoid overlapping relevant values)
-ylim_vals = ylim();
-if r_corr < 0 % negative correlation (top right of the screen)
-    y_val_txt = ylim_vals(2);
-    y_alignment = 'cap'; % start text on top of plot
-elseif (r_corr >= 0) || isnan(r_corr) % positive correlation (bottom right of the screen)
-    % ylim_dims = ylim_vals(2) - ylim_vals(1);
-    % y_val_txt = ylim_vals(1) + ylim_dims/7; % manual placement
-    y_val_txt = ylim_vals(1); % use VerticalAlignment to place text
-    y_alignment = 'bottom'; % start text on bottom of plot
-end
-
 %% text size
 txtSize = 20;
 
 %% add the text
-txt_hdl = text(x_val_txt,y_val_txt,...
+txt_hdl = text(0, 0,...
     {['r = ',r_corr_str], pval_str},...
-    'FontSize',txtSize,...
-    'HorizontalAlignment',x_alignment,...
-    'VerticalAlignment',y_alignment);
+    'FontSize',txtSize);
 
-%% re-adjust position based on text size
-% re-measure x and y limits
-xlim_vals = xlim();
-ylim_vals = ylim();
-% extract text size
-txt_x_width = txt_hdl.Extent(3);
-txt_y_height = txt_hdl.Extent(4);
+%% adjust text position to be in top-right or bottom-right part of the figure
+% measure current x and y limits
+xlim_vals = xlim;
+ylim_vals = ylim;
+
 % replace x and y accordingly
 % replace X at the border of the X dimension
-txt_hdl.Position(1) = xlim_vals(2) - txt_x_width;
+txt_hdl.Position(1) = xlim_vals(2);
+txt_hdl.HorizontalAlignment = 'right'; % text finishing on the right border
+    
 % replace y up or down
 if r_corr < 0 % negative correlation (top right of the screen)
     txt_hdl.Position(2) = ylim_vals(2);
+    txt_hdl.VerticalAlignment = 'cap'; % align to the top of the screen
 elseif (r_corr >= 0) || isnan(r_corr) % positive correlation (bottom right of the screen)
-    txt_hdl.Position(2) = ylim_vals(1) + txt_y_height;
+    txt_hdl.Position(2) = ylim_vals(1);
+    txt_hdl.VerticalAlignment = 'bottom'; % align to the bottom of the screen
 end
 
 end % function
