@@ -1,4 +1,4 @@
-function[GLM_b_F_vs_mb, pval_b_F_vs_mb, signif, N_goodS] = fatigue_f_metabolism_and_other_ctrl_vars(outlierF)
+% function[GLM_b_F_vs_mb, pval_b_F_vs_mb, signif, N_goodS] = fatigue_f_metabolism_and_other_ctrl_vars(outlierF)
 % [corr_F_vs_mb, pval_F_vs_mb, signif, N_goodS] = fatigue_f_metabolism_and_other_ctrl_vars(outlierF)
 % fatigue_f_metabolism will look at the correlation matrix between the
 % different fatigue metrics from questionnaires + behavior and the
@@ -52,13 +52,13 @@ end
 
 %% load fatigue metrics
 [fatigue_measures] = fatigue_pool(study_nm, condition, subject_id, NS, genderFilter);
-fatigue_vars = fieldnames(fatigue_measures);
-fatigue_vars(strcmp(fatigue_vars,'sub_selection')) = [];
-n_F_vars = length(fatigue_vars);
+fatigue_var_names = fieldnames(fatigue_measures);
+fatigue_var_names(strcmp(fatigue_var_names,'sub_selection')) = [];
+n_F_vars = length(fatigue_var_names);
 fatigue_vars_bis = cell(n_F_vars,1);
 % rename fatigue variables for the figure
 for iF = 1:n_F_vars
-    [fatigue_vars_bis{iF}] = fatigue_nm_rename(fatigue_vars{iF});
+    [fatigue_vars_bis{iF}] = fatigue_nm_rename(fatigue_var_names{iF});
 end % loop over fatigue variables
 
 %% load whole-blood metabolites
@@ -113,9 +113,9 @@ N_goodS = NaN(n_F_vars, n_mb_vars); % number of good subjects for each correlati
     pval_b_F_vs_sex_brainMb, pval_b_F_vs_age_brainMb, pval_b_F_vs_BMI_brainMb, pval_b_F_vs_brainMb] = deal(NaN(n_F_vars, n_brain_mb*2));
 
 for iF = 1:n_F_vars
-    F_nm = fatigue_vars{iF};
+    F_nm = fatigue_var_names{iF};
     
-    % loop across all metabolites
+    %% loop across all metabolites
     for iMb = 1:n_mb_vars
         mb_nm = metabolite_names{iMb};
         % remove (or not) the outliers in each measure
@@ -144,6 +144,10 @@ for iF = 1:n_F_vars
         pval_b_F_vs_age_mb(iF, iMb) = stats_tmp.p(3);
         pval_b_F_vs_BMI_mb(iF, iMb) = stats_tmp.p(4);
         pval_b_F_vs_mb(iF, iMb) = stats_tmp.p(5);
+        % store corresponding fit
+        corr_nm = [F_nm,'_f_',mb_nm];
+        [z_metabolism_fit.(corr_nm), idx_sort_tmp] = sort(zscore(metabolism.(mb_nm)(goodS_tmp)));
+        fatigue_measures_fit.(corr_nm) = glmval(b_tmp, X_all_mb(idx_sort_tmp,:), 'identity', 'Constant','on');
         
         % store the significant correlations
         if pval_b_F_vs_mb(iF,iMb) < 0.05
@@ -308,4 +312,39 @@ corr_plot(GLM_b_F_vs_brainMb, pval_b_F_vs_brainMb,...
     apply_pval_threshold, pval_threshold, disp_signif_stars);
 legend_size(pSize);
 
-end % function
+%% additional correlation plots
+pSize = 40;
+detail_plots = questdlg('Do you want to zoom in some of these correlations?','correlation plots?','No','Yes','Yes');
+switch detail_plots
+    case 'Yes'
+        n_plots_str = inputdlg('How many plots do you want to see?','N.plots');
+        n_plots = str2double(n_plots_str);
+        for iPlot = 1:n_plots
+            % select variable
+            jMb = listdlg('PromptString','Select metabolite',...
+                'SelectionMode','single','ListString',metabolite_names);
+            mb_var_nm = metabolite_names{jMb};
+            mb_var = metabolism.(mb_var_nm);
+            jF = listdlg('PromptString','Select fatigue variable',...
+                'SelectionMode','single','ListString',fatigue_var_names);
+            fatigue_var_nm = fatigue_var_names{jF};
+            fatigue_var = fatigue_measures.(fatigue_var_nm);
+            goodS_tmp = ~isnan(mb_var.*fatigue_var);
+            
+            % display corresponding figure + correlation coefficient and
+            % p.value
+            fig;
+            scat_hdl = scatter(zscore(mb_var(goodS_tmp)), zscore(fatigue_var(goodS_tmp)));
+            scat_hdl_upgrade(scat_hdl);
+            corr_nm = [fatigue_var_nm,'_f_',mb_var_nm];
+            fit_hdl = plot(z_metabolism_fit.(corr_nm), fatigue_measures_fit.(corr_nm));
+            fit_hdl_upgrade(fit_hdl);
+            xlabel(['z(',strrep(mb_var_nm,'_',' '),')']);
+            ylabel(['z(',strrep(fatigue_var_nm,'_',' '),')']);
+            place_r_and_pval(GLM_b_F_vs_mb(jF, jMb), pval_b_F_vs_mb(jF, jMb));
+            legend_size(pSize);
+        end % plot loop
+    case 'No'
+end % show correlation plots in more details
+
+% end % function
