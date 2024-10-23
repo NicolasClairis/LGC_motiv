@@ -48,7 +48,8 @@ for iF = 1:n_F_vars
     [fatigue_vars_bis{iF}] = fatigue_nm_rename(fatigue_var_names{iF});
 end % loop over fatigue variables
 
-%% load whole-blood metabolites
+%% pool all metabolic measures together
+% load whole-blood metabolites
 [wholeBlood_mb, sub_List] = load_blood_NAD(study_nm, subject_id);
 wholeB_mb_names = fieldnames(wholeBlood_mb);
 n_wholeB_mb = length(wholeB_mb_names);
@@ -57,14 +58,14 @@ for iWholeB_Mb = 1:n_wholeB_mb
     metabolism.(['wholeB_',wholeB_mb_nm]) = wholeBlood_mb.(wholeB_mb_nm);
 end
 
-%% pool all metabolic measures together
 % load plasma metabolites
 [plasmaM, plasma_mb_names, n_plasma_mb] = load_plasma_metabolites(subject_id);
 for iPlasma_Mb = 1:n_plasma_mb
     plasma_mb_nm = plasma_mb_names{iPlasma_Mb};
     metabolism.(['plasma_',plasma_mb_nm]) = plasmaM.(plasma_mb_nm);
 end
-%% load brain metabolites
+
+% load brain metabolites
 [~, ~, brain_metabolites_bis] = metabolite_load(subject_id);
 brain_mb_names = fieldnames(brain_metabolites_bis.dmPFC);
 n_brain_mb = length(brain_mb_names);
@@ -110,7 +111,10 @@ for iF = 1:n_F_vars
         goodS_tmp = ~isnan(fatigue_var_tmp.*metabolism_var_tmp);
         N_goodS(iF, iMb) = sum(goodS_tmp);
         % perform the correlation
-        [corr_F_vs_mb(iF, iMb), pval_F_vs_mb(iF, iMb)] = corr(fatigue_measures.(F_nm)(goodS_tmp)', metabolism.(mb_nm)(goodS_tmp)');
+        [corr_F_vs_mb(iF, iMb), pval_F_vs_mb(iF, iMb)] = corr(metabolism.(mb_nm)(goodS_tmp)', fatigue_measures.(F_nm)(goodS_tmp)');
+        % extract corresponding fit in case figure will be displayed
+        corr_nm = [F_nm,'_f_',mb_nm];
+        [~,~,~,~,metabolism_fit.(corr_nm), fatigue_measures_fit.(corr_nm)] = glm_package(metabolism.(mb_nm)(goodS_tmp)',fatigue_measures.(F_nm)(goodS_tmp)','normal');
         % store the significant correlations
         if pval_F_vs_mb(iF,iMb) < 0.05
             signif.([F_nm,'_f_',mb_nm]).p005.r = corr_F_vs_mb(iF, iMb);
@@ -227,7 +231,8 @@ corr_plot(corr_F_vs_brainMb, pval_F_vs_brainMb,...
 legend_size(pSize);
 
 %% additional correlation plots
-pSize = 20;
+% pSize = 25;
+pSize = 40;
 detail_plots = questdlg('Do you want to zoom in some of these correlations?','correlation plots?','No','Yes','Yes');
 switch detail_plots
     case 'Yes'
@@ -249,11 +254,13 @@ switch detail_plots
             fig;
             scat_hdl = scatter(mb_var, fatigue_var);
             scat_hdl_upgrade(scat_hdl);
-            xlabel(mb_var_nm);
-            ylabel(fatigue_var_nm);
-            legend_size(pSize);
+            corr_nm = [fatigue_var_nm,'_f_',mb_var_nm];
+            fit_hdl = plot(metabolism_fit.(corr_nm), fatigue_measures_fit.(corr_nm));
+            fit_hdl_upgrade(fit_hdl);
+            xlabel(strrep(mb_var_nm,'_',' '));
+            ylabel(strrep(fatigue_var_nm,'_',' '));
             place_r_and_pval(corr_F_vs_mb(jF, jMb), pval_F_vs_mb(jF, jMb));
-            
+            legend_size(pSize);
         end % plot loop
     case 'No'
 end % show correlation plots in more details
