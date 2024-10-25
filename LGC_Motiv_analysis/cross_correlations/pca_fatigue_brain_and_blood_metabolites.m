@@ -153,7 +153,7 @@ NaN_var_percThreshold = 20;
 for iV = n_vars:(-1):1
     % remove variable with too many NaNs
     if NaNperc_perVar(iV) >= NaN_var_percThreshold
-        pca_var_nm_filtered{iV} = [];
+        pca_var_nm_filtered(iV) = [];
         pca_vars_filtered(:,iV) = [];
     end
 end
@@ -183,7 +183,55 @@ end % subject loop
 % tsquared = Hotelling’s T-squared statistic
 % explained = % of total variance explained by each PC
 
+%% identify subjects with low/high levels of dmPFC/dACC Glu
+
+
+%% figures
+pSize = 20;
 %% display PC1 & PC2
+% figure;
+% biplot(coeff(:,1:2),'scores',score(:,1:2));
+
+fig;
+scat_hdl = scatter(score(:,1), score(:,2));
+scat_hdl_upgrade(scat_hdl);
+xlabel('Principal Component 1');
+ylabel('Principal Component 2');
+
+%% display weights in each PC
+% general map of the weights on each PC
+fig;
+corr_range = [-1 1];
+color_range_choices = redblue(45);
+subplot_hdl = subplot(1,1,1);
+% display correlation matrix
+imagesc(coeff, corr_range);
+colormap(subplot_hdl, color_range_choices);
+xlabel('Principal Components');
+yticks(1:n_vars_filtered);
+yticklabels(pca_var_nm_filtered);
+ylabel('Variables');
+% display scale
+cbar = colorbar;
+legend_size(10);
+
+% zoom on PC1 and PC2
+for iPC = 1:2 % Index of the principal component to examine
+    fig;
+    bar(1:n_vars_filtered, coeff(:, iPC));
+    xlabel('Variable');
+    xticks(1:n_vars_filtered);
+    xticklabels(pca_var_nm_filtered);
+    ylabel('Weight');
+    title(['Variable Weights on Principal Component ', num2str(iPC)]);
+    legend_size(10);
+end % loop over Principal Components
+
+%% show cumulative of explained variance depending on the number of PCs included
+cumulativeExplained = cumsum(explained);
 figure;
-biplot(coeff(:,1:2),'scores',score(:,1:2));
-%% display weights in PC1 and in PC2
+plot(cumulativeExplained, '-o');
+xlabel('Number of Principal Components');
+ylabel('Cumulative Explained Variance (%)');
+title('Explained Variance by Principal Components');
+
