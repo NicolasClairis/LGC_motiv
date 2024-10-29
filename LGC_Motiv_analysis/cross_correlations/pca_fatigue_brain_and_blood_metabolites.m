@@ -184,54 +184,20 @@ end % subject loop
 % explained = % of total variance explained by each PC
 
 %% identify subjects with low/high levels of dmPFC/dACC Glu
-
+% extract dmPFC Glu index
+dmPFC_Glu_idx = strcmp(pca_var_nm_filtered,'dmPFC_Glu');
+dmPFC_Glu_filtered_data = pca_vars_filtered(:,dmPFC_Glu_idx);
+% compute median for dmPFC/dACC Glu
+median_dmPFC_Glu = median(dmPFC_Glu_filtered_data,1,'omitnan');
+% identify subjects above/below threshold
+low_dmPFC_Glu_subs  = dmPFC_Glu_filtered_data(okSubs) <= median_dmPFC_Glu;
+high_dmPFC_Glu_subs = dmPFC_Glu_filtered_data(okSubs) > median_dmPFC_Glu;
 
 %% figures
-pSize = 20;
-%% display PC1 & PC2
-% figure;
-% biplot(coeff(:,1:2),'scores',score(:,1:2));
-
-fig;
-scat_hdl = scatter(score(:,1), score(:,2));
-scat_hdl_upgrade(scat_hdl);
-xlabel('Principal Component 1');
-ylabel('Principal Component 2');
-
-%% display weights in each PC
-% general map of the weights on each PC
-fig;
-corr_range = [-1 1];
-color_range_choices = redblue(45);
-subplot_hdl = subplot(1,1,1);
-% display correlation matrix
-imagesc(coeff, corr_range);
-colormap(subplot_hdl, color_range_choices);
-xlabel('Principal Components');
-yticks(1:n_vars_filtered);
-yticklabels(pca_var_nm_filtered);
-ylabel('Variables');
-% display scale
-cbar = colorbar;
-legend_size(10);
-
-% zoom on PC1 and PC2
-for iPC = 1:2 % Index of the principal component to examine
-    fig;
-    bar(1:n_vars_filtered, coeff(:, iPC));
-    xlabel('Variable');
-    xticks(1:n_vars_filtered);
-    xticklabels(pca_var_nm_filtered);
-    ylabel('Weight');
-    title(['Variable Weights on Principal Component ', num2str(iPC)]);
-    legend_size(10);
-end % loop over Principal Components
-
-%% show cumulative of explained variance depending on the number of PCs included
-cumulativeExplained = cumsum(explained);
-figure;
-plot(cumulativeExplained, '-o');
-xlabel('Number of Principal Components');
-ylabel('Cumulative Explained Variance (%)');
-title('Explained Variance by Principal Components');
-
+n_PC_loading_details = 2;
+mSplit_disp = 1;
+[sortedContributions, sorted_var_names,...
+    fig_PC1_vs_PC2, fig_PC1_vs_PC2_and_mSplit,...
+    fig_cumulativeExplVariance, fig_PC_contrib] = pca_figures(n_PC_loading_details, coeff, score, explained,...
+    pca_var_nm_filtered,...
+    mSplit_disp, low_dmPFC_Glu_subs, high_dmPFC_Glu_subs, 'low dmPFC/dACC Glu', 'high dmPFC/dACC Glu');
