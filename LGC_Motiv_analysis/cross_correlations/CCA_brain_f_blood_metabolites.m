@@ -64,5 +64,10 @@ end % subject loop
 
 %% perform CCA
 [A, B, r, U, V, stats] = canoncorr(blood_mb(okSubs,:), brain_mb(okSubs,:));
+% A: canonical coefficients of blood_mb
+% B: canonical coefficients for brain_mb
+% r: canonical correlations (one for each canonical variable)
+% U & V: canonical variables for blood_mb and brain_mb
+% stats: statistical information
 
 %% display the results
