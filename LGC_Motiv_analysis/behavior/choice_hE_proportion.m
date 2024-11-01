@@ -31,7 +31,7 @@ else
 end
 
 %% working directories
-which_pc = 'lab';
+which_pc = 'home';
 switch which_pc
     case 'lab'
         rootPath = [fullfile('E:',study_nm),filesep];
