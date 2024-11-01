@@ -21,7 +21,7 @@ function[brainMetabolites, CRLB, brainMetabolites_bis] = metabolite_load(subject
 list_pcs = {'Lab','Home'};
 % which_pc_idx = listdlg('PromptString',{'Lab or home pc?'},...
 %     'SelectionMode','single','ListString',list_pcs);
-which_pc_idx = 1;
+which_pc_idx = 2;
 switch list_pcs{which_pc_idx}
     case 'Lab'
         metaboliteFolder = fullfile('M:','human_data_private','analyzed_data','study1');
