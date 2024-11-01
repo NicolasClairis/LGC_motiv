@@ -13,12 +13,11 @@ which_pc_idx = listdlg('PromptString',{'Lab or home pc?'},...
     'SelectionMode','single','ListString',list_pcs);
 switch list_pcs{which_pc_idx}
     case 'Lab'
-        hardDisk = 'M:';
+        pcPath = fullfile('M:','human_data_private',...
+            'raw_data_subject','study1');
     case 'Home'
-        hardDisk = '\\sv-nas1.rcp.epfl.ch\Sandi-lab\';
+        pcPath = 'P:\boulot\postdoc_CarmenSandi\results\questionnaires';
 end
-pcPath = fullfile(hardDisk,'human_data_private',...
-    'raw_data_subject','study1');
 % cd(pcPath);
 
 %% extract the data
