@@ -11,7 +11,8 @@
 [study_nm, condition, ~, subject_id, NS] = sub_id;
 
 %% working directories
-root_path = fullfile('C:','Users','clairis','Desktop');
+% root_path = fullfile('C:','Users','clairis','Desktop');
+root_path = fullfile('C:','Users','Nicolas Clairis','Documents');
 mdl_results_folder = fullfile(root_path,...
     'GitHub','LGC_motiv','LGC_Motiv_results',...
     study_nm,'bayesian_modeling');
