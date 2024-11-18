@@ -3,6 +3,11 @@ function[] = choice_RT_heatmap_f_dR_dE(study_nm, condition)
 % proportion of effortful choices and reaction times (RT) depending on the 
 % incentives and effort at stake for each effort type.
 %
+% INPUTS
+% study_nm: study name (study1 by default if left empty)
+%
+% condition: condition to use to filter subjects and sessions (will be
+% asked by default if left empty)
 
 %% working directory
 [computerRoot] = LGCM_root_paths();
@@ -33,14 +38,16 @@ nRunsPerTask = 2;
     RT_avg_perSubperRun.Ep, RT_fit_avg_perSubperRun.Ep,...
     choice_avg_perSubperRun.Em, choice_fit_avg_perSubperRun.Em,...
     RT_avg_perSubperRun.Em, RT_fit_avg_perSubperRun.Em] = deal(NaN(n_dInc, n_dE, NS, nRunsPerTask));
-RT_fit_GLM = 4; % GLM to use for RT fit extraction
-choice_fit_GLM = 3;
+RT_fit_GLM = 5; % GLM to use for RT fit extraction
+
+% bayesian model number to use:
+[~, mdl_n_nm] = which_bayesian_mdl_n;
 bayesian_choice_folder = [fullfile('C:','Users','clairis','Desktop',...
     'GitHub','LGC_motiv','LGC_Motiv_results',study_nm,...
     'bayesian_modeling'), filesep];
-bayesian_pChoice = getfield(load([bayesian_choice_folder,...
-    'bayesian_pChoice_data.mat'],'bayesian_pChoice'),'bayesian_pChoice');
-choice_fit_allSubs = bayesian_pChoice.(['mdl_',num2str(choice_fit_GLM)]);
+choice_fit_allSubs = getfield(load([bayesian_choice_folder,...
+    'bayesian_model_',mdl_n_nm,'_results.mat'],...
+    'choices_pred_perSub_perRun'),'choices_pred_perSub_perRun');
 
 %% loop through subjects
 for iS = 1:NS
@@ -147,6 +154,8 @@ for iTask = 1:nTasks
     
     %% choice figure
     figure(choice_fig);
+    
+    %% actual data
     iChoiceLine = 1;
     choice_plot_hdl = subplot(nLines, nTasks, iTask + nTasks*(iChoiceLine - 1));
     imagesc(choice_avg.(task_nm3).*100, choice_range);
@@ -159,7 +168,7 @@ for iTask = 1:nTasks
     legend_size(pSize);
     colorbar;
     
-    % should add bayesian fit here
+    %% bayesian model
     iChoiceLine = 2;
     choice_fit_plot_hdl = subplot(nLines, nTasks, iTask + nTasks*(iChoiceLine - 1));
     imagesc(choice_fit_avg.(task_nm3).*100, choice_range);
@@ -180,6 +189,8 @@ for iTask = 1:nTasks
     task_nm4 = task_names{iTask};
     %% RT figures
     figure(RT_fig);
+    
+    %% actual RT
     iRTline = 1;
     RT_plot_hdl = subplot(nLines, nTasks, iTask +  + nTasks*(iRTline - 1));
     imagesc(RT_avg.(task_nm4), RT_range);
@@ -194,7 +205,7 @@ for iTask = 1:nTasks
     legend_size(pSize);
     colorbar;
     
-    % RT fit
+    %% RT fitted
     iRTline = 2;
     RT_fit_plot_hdl = subplot(nLines, nTasks, iTask +  + nTasks*(iRTline - 1));
     imagesc(RT_fit_avg.(task_nm4), RT_range);

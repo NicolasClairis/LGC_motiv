@@ -1,7 +1,7 @@
 function[] = move_preproc_files_to_saveFolder(root, study_nm,...
-    subject_id, NS, smKernel, biasFieldCorr)
+    subject_id, NS, smKernel, biasFieldCorr, sliceT)
 % move_preproc_files_to_saveFolder(root, study_nm,...
-%     subject_id, NS, smKernel, biasFieldCorr)
+%     subject_id, NS, smKernel, biasFieldCorr, sliceT)
 % move_preproc_files_to_saveFolder will move the files generated after
 % performing preprocessing to a corresponding folder in the initial subject
 % scan folders allowing to use different smoothing kernels or with/without
@@ -19,8 +19,14 @@ function[] = move_preproc_files_to_saveFolder(root, study_nm,...
 %
 % smKernel: smoothing kernel used during the preprocessing
 %
-% biasFieldCorr: (0) if not bias-field corrected or (1) if bias-field
-% corrected
+% biasFieldCorr:
+% (0) if not bias-field corrected (for preprocessing_batch.m and preprocessing_batch_for_DCM.m)
+% (1) if bias-field corrected data (for preprocessing_batch_biasFieldCorrection2.m)
+%
+% sliceT:
+% (0) no slice-timing correction (for preprocessing_batch.m and
+% preprocessing_batch_biasFieldCorrection2.m)
+% (1) slice-timing applied (for preprocessing_batch_for_DCM.m)
 
 for iS = 1:NS
     sub_nm = subject_id{iS};
@@ -51,16 +57,34 @@ for iS = 1:NS
     for iRun = 1:n_runs % loop through runs for 3 ratings, 3 choices 1D, 3 choices 2D runs
         runPath = [subj_scans_folder,...
             strrep(subj_scan_folders_names(iRun,:),' ',''),filesep]; % go to run folder
-        switch biasFieldCorr
-            case 0 % no bias-field correction
-                preproc_newFolder_nm = ['preproc_sm_',num2str(smKernel),'mm'];
-                prefixToUse = 'swr';
-                % s is for smoothed data
-                % 'w' for normalized data
-                % and 'r' for realigned
-            case 1 % with bias-field correction
-                preproc_newFolder_nm = ['preproc_sm_',num2str(smKernel),'mm_with_BiasFieldCorrection'];
-                prefixToUse = 'swbr'; % 'b' is for bias-field corrected
+        switch sliceT
+            case 0
+                switch biasFieldCorr
+                    case 0 % no bias-field correction
+                        preproc_newFolder_nm = ['preproc_sm_',num2str(smKernel),'mm'];
+                        prefixToUse = 'swr';
+                        % s is for smoothed data
+                        % 'w' for normalized data
+                        % and 'r' for realigned
+                    case 1 % with bias-field correction
+                        preproc_newFolder_nm = ['preproc_sm_',num2str(smKernel),'mm_with_BiasFieldCorrection'];
+                        prefixToUse = 'swbr'; % 'b' is for bias-field corrected
+                end
+                
+            case 1 % slice-timing correction applied
+                switch biasFieldCorr
+                    case 0 % no bias-field correction
+                        preproc_newFolder_nm = ['preproc_sm_',num2str(smKernel),'mm_DCM'];
+                        prefixToUse = 'swar';
+                        % 's' is for smoothed data
+                        % 'w' for normalized data
+                        % 'a' for slice-timed data
+                        % and 'r' for realigned
+                    case 1 % with bias-field correction
+                        %                         preproc_newFolder_nm = ['preproc_sm_',num2str(smKernel),'mm_with_BiasFieldCorrection_sliceT'];
+                        %                         prefixToUse = 'swbar'; % 'b' is for bias-field corrected
+                        error('need to modify preprocessing_batch_biasFieldCorrection2.mat first to make this work');
+                end
         end
         if ~exist([runPath,preproc_newFolder_nm],'dir')
             mkdir([runPath,preproc_newFolder_nm]);

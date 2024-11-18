@@ -4,7 +4,7 @@
 %
 % Written by Jules Brochard and Nicolas Clairis - 16/01/17
 
-expression = input(['Name of the script? \n Please add a ( if it''s a function',...
+expression = input(['Name of the script? \n Please add a ( if it''s a function ',...
     'and you want to ignore comments. \n Example: script( \n'],'s');
 where_to_check = input('Check this folder (1) or elsewhere (2)?');
 if where_to_check == 1

@@ -36,6 +36,9 @@ preproc_sm_kernel = 8;
 %% use bias-field corrected maps?
 biasFieldCorr = 0;
 
+%% use preprocessing optimized for DCM (with slice-timing correction)?
+DCM_GLM = 0;
+
 %% extract subjects
 [condition] = subject_condition;
 [subject_id, NS] = LGCM_subject_selection(study_nm, condition);
@@ -45,10 +48,10 @@ NS_str = num2str(NS);
 switch condition
     case 'fMRI_noSatRun_choiceSplit_Elvl_bis' % in this case, subject_id{1} does not include Em => need to adapt to include Em
         con_names = LGCM_contrasts(study_nm, subject_id{16}, GLM,...
-            computerRoot, preproc_sm_kernel, condition, biasFieldCorr);
+            computerRoot, preproc_sm_kernel, condition, biasFieldCorr, DCM_GLM);
     otherwise
         con_names = LGCM_contrasts(study_nm, subject_id{1}, GLM,...
-            computerRoot, preproc_sm_kernel, condition, biasFieldCorr);
+            computerRoot, preproc_sm_kernel, condition, biasFieldCorr, DCM_GLM);
 end
 n_cons = length(con_names);
 

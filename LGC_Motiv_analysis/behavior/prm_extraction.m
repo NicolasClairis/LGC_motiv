@@ -54,27 +54,49 @@ NS = length(subject_id);
 mdlType = 'bayesian';
 
 %% which model number to use?
-% if ~exist('mdlN','var') || isempty(mdlN)
-%     switch mdlType
-%         case 'bayesian'
-%             listPossibleModelNumbers = {'3'};
-%         case 'simple'
-%             listPossibleModelNumbers = {'1','2','3','4'};
-%     end
-%     mdlN_idx = listdlg('promptstring','Which model number?',...
-%         'ListString',listPossibleModelNumbers);
-%     mdlN = listPossibleModelNumbers{mdlN_idx};
-% end
-mdlN = '3';
+if ~exist('mdlN','var') || isempty(mdlN)
+    switch mdlType
+        case 'bayesian'
+            listPossibleModelNumbers = {'1','2','3','4','5','6','7'};
+        case 'simple'
+            listPossibleModelNumbers = {'1','2','3','4'};
+    end
+    mdlN_idx = listdlg('promptstring','Which model number?',...
+        'ListString',listPossibleModelNumbers);
+    mdlN = listPossibleModelNumbers{mdlN_idx};
+end
 %% extract parameters of the selected model
 switch mdlType
     case 'bayesian'
-        bayesian_models = getfield(load([bayesian_root,filesep,...
-            'behavioral_prm.mat'],'bayesian_mdl'),'bayesian_mdl');
-        bayesian_mdl = bayesian_models.(['mdl_',mdlN]);
-        parameter_names = fieldnames(bayesian_mdl);
-        % remove subject name from the list
-        parameter_names(strcmp(parameter_names,'subject_id')) = [];
+        % old version
+%         bayesian_models = getfield(load([bayesian_root,filesep,...
+%             'behavioral_prm.mat'],'bayesian_mdl'),'bayesian_mdl');
+%         bayesian_mdl = bayesian_models.(['mdl_',mdlN]);
+%         parameter_names = fieldnames(bayesian_mdl);
+%         % remove subject name from the list
+%         parameter_names(strcmp(parameter_names,'subject_id')) = [];
+%         nPrm = length(parameter_names);
+%         % initialize all parameters
+%         for iPrm = 1:nPrm
+%             prm_nm = parameter_names{iPrm};
+%             prm.(prm_nm) = NaN(1,NS);
+%         end
+%         for iS = 1:NS
+%             sub_nm = subject_id{iS};
+%             % extract parameters
+%             sub_idx = strcmp(bayesian_mdl.subject_id, sub_nm);
+%             if sum(sub_idx == 1)
+%                 for iBPrm = 1:length(parameter_names)
+%                     bayesian_prm_nm = parameter_names{iBPrm};
+%                     prm.(bayesian_prm_nm)(iS) = bayesian_mdl.(bayesian_prm_nm)(sub_idx);
+%                 end
+%             end % filter if subject extracted by Arthur
+%         end % subject list
+
+% new version
+        bayesian_mdl = load([bayesian_root,filesep,...
+            'bayesian_model_',mdlN,'_results.mat'],'prm','subject_id');
+        parameter_names = fieldnames(bayesian_mdl.prm);
         nPrm = length(parameter_names);
         % initialize all parameters
         for iPrm = 1:nPrm
@@ -85,16 +107,22 @@ switch mdlType
             sub_nm = subject_id{iS};
             % extract parameters
             sub_idx = strcmp(bayesian_mdl.subject_id, sub_nm);
-            if sum(sub_idx == 1)
-                for iBPrm = 1:length(parameter_names)
-                    bayesian_prm_nm = parameter_names{iBPrm};
-                    prm.(bayesian_prm_nm)(iS) = bayesian_mdl.(bayesian_prm_nm)(sub_idx);
-                end
-            end % filter if subject extracted by Arthur
+            switch sum(sub_idx)
+                case 1
+                    for iBPrm = 1:length(parameter_names)
+                        bayesian_prm_nm = parameter_names{iBPrm};
+                        prm.(bayesian_prm_nm)(iS) = bayesian_mdl.prm.(bayesian_prm_nm)(sub_idx);
+                    end
+                case 0 % subject not extracted => just skip
+                otherwise % too many subjects
+                    error('Too many subjects with the same index');
+            end % filter if subject extracted
         end % subject list
         
         % add kR/kP ratio
         prm.kR_div_kP = prm.kR./prm.kP;
+        % add kEp-kEm difference
+        prm.kEp_min_kEm = prm.kEp - prm.kEm;
     case 'simple'
         %% perform behavioral model
         figDispGroup = 0;

@@ -63,6 +63,14 @@ elseif size(y_var,1) == 1 && size(y_var,2) > size(y_var,1) % flip y if entered a
     y_var = y_var';
 end
 
+%% extract nTrials and n_x_vars now that the variables are in correct orientation
+nTrials = size(x_var, 1);
+% sanity check
+if nTrials ~= size(y_var,1)
+    error('X and Y don''t have the same size.');
+end
+n_x_vars = size(x_var,2);
+
 %% initialize inputs
 % distribution
 list_possible_distribs = {'normal','binomial',...
@@ -82,12 +90,11 @@ end
 [betas,~,stats] = glmfit(x_var, y_var, distrib, 'Constant',constant);
 pval = stats.p;
 %% extract correlation coefficients
-if size(x_var,2) == 1
+if n_x_vars == 1
     [z_betas,~,stats_z_vars] = glmfit(nanzscore(x_var), nanzscore(y_var),distrib,'Constant',constant);
-elseif size(x_var,2) > 1
+elseif n_x_vars > 1
     % if more then 1 x.variables => need to zscore each independently
-    z_x_var = NaN(size(x_var));
-    n_x_vars = size(x_var,2);
+    z_x_var = NaN(nTrials, n_x_vars);
     for iX_var = 1:n_x_vars
         z_x_var(:,iX_var) = nanzscore(x_var(:,iX_var));
     end % loop through x_var variables
@@ -118,10 +125,10 @@ y_fit = glmval(betas, x_var, distrib_fit, 'Constant',constant);
 
 %% if only 1 x.variable => sort to make fit nicer, otherwise just keep all
 % the values
-if size(x_var,2) == 1
+if n_x_vars == 1
     x_sorted = sort(x_var);
     y_fit_xSorted = glmval(betas, x_sorted, distrib_fit, 'Constant',constant);
-else
+else % avoid extracting as no way to sort x_var easily if there are many variables in x
     x_sorted = [];
     y_fit_xSorted = [];
 end

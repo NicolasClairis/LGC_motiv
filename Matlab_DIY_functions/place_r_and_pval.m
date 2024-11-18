@@ -34,40 +34,45 @@ elseif pval > 0.001 && pval <= 0.005
     pval_stars = '***';
 elseif pval <= 0.001
     pval_stars = '****';
-elseif strcmp(pval,'NaN')
-    pval_stars = 'NaN';
+elseif isnan(pval)
+    pval_stars = '';
 end
 r_corr_str = [num2str(r_corr),pval_stars];
 
 % for p.value need to track how small p.value is if below 0.001
-if pval > 0.001
-    pval_str = num2str(round(pval, 3));
+if (pval >= 0.001) || isnan(pval)
+    pval_str = ['p = ',num2str(round(pval, 3))];
 else
-    pval_str = num2str(round(pval,1,'significant'));
-end
-
-%% define x coordinate for the text
-xlim_vals = xlim();
-xlim_dims = xlim_vals(2) - xlim_vals(1);
-x_val_txt = xlim_vals(2) - xlim_dims/7;
-
-%% define y coordinate depending on if correlation is negative or positive (to avoid overlapping relevant values)
-if r_corr < 0 % negative correlation (top right of the screen)
-    ylim_vals = ylim();
-    y_val_txt = ylim_vals(2);
-elseif r_corr >= 0 % positive correlation (bottom right of the screen)
-    ylim_vals = ylim();
-    ylim_dims = ylim_vals(2) - ylim_vals(1);
-    y_val_txt = ylim_vals(1) + ylim_dims/7;
+    % pval_str = num2str(round(pval,1,'significant')); % to show actual
+    % value
+    pval_str = 'p < 0.001'; % just mention this if pvalue is smaller than 0.001
 end
 
 %% text size
-txtSize = 30;
+txtSize = 20;
 
 %% add the text
-txt_hdl = text(x_val_txt,y_val_txt,...
-    {['r = ',r_corr_str],...
-    ['p = ',pval_str]},...
+txt_hdl = text(0, 0,...
+    {['r = ',r_corr_str], pval_str},...
     'FontSize',txtSize);
+
+%% adjust text position to be in top-right or bottom-right part of the figure
+% measure current x and y limits
+xlim_vals = xlim;
+ylim_vals = ylim;
+
+% replace x and y accordingly
+% replace X at the border of the X dimension
+txt_hdl.Position(1) = xlim_vals(2);
+txt_hdl.HorizontalAlignment = 'right'; % text finishing on the right border
+    
+% replace y up or down
+if r_corr < 0 % negative correlation (top right of the screen)
+    txt_hdl.Position(2) = ylim_vals(2);
+    txt_hdl.VerticalAlignment = 'cap'; % align to the top of the screen
+elseif (r_corr >= 0) || isnan(r_corr) % positive correlation (bottom right of the screen)
+    txt_hdl.Position(2) = ylim_vals(1);
+    txt_hdl.VerticalAlignment = 'bottom'; % align to the bottom of the screen
+end
 
 end % function

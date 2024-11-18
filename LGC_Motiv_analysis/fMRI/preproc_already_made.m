@@ -1,5 +1,5 @@
-function[subject_id, NS] = preproc_already_made(computerRoot, study_nm, subject_id, smKernel)
-% [subject_id, NS] = preproc_already_made(computerRoot, study_nm, subject_id, smKernel)
+function[subject_id, NS] = preproc_already_made(computerRoot, study_nm, subject_id, smKernel, biasF, DCM_GLM)
+% [subject_id, NS] = preproc_already_made(computerRoot, study_nm, subject_id, smKernel, biasF, DCM_GLM)
 % preproc_already_made will check if the preprocessing has already been
 % done or not for each subject for the preprocessing kernel entered as
 % input.
@@ -14,6 +14,8 @@ function[subject_id, NS] = preproc_already_made(computerRoot, study_nm, subject_
 % subject_id: list of subjects
 %
 % smKernel: smoothing kernel used (in mm)
+%
+%
 %
 % OUTPUTS
 % subject_id: list of subjects after filtering those already preprocessed
@@ -43,7 +45,16 @@ for iS = 1:NS
     n_runs = size(subj_scan_folders_names,1);
     dataPreprocessed_tmp = false;
     for iRun = 1:n_runs
-        runPath = [subj_scans_folder, subj_scan_folders_names(iRun,:),filesep,'preproc_sm_',num2str(smKernel),'mm'];
+        runFolder = [subj_scans_folder, subj_scan_folders_names(iRun,:),filesep];
+        if biasF == 0 && DCM_GLM == 0
+            runPath = [runFolder,'preproc_sm_',num2str(smKernel),'mm'];
+        elseif biasF == 1 && DCM_GLM == 0
+            runPath = [runFolder,'preproc_sm_',num2str(smKernel),'mm_with_BiasFieldCorrection'];
+        elseif biasF == 0 && DCM_GLM == 1
+            runPath = [runFolder,'preproc_sm_',num2str(smKernel),'mm_DCM'];
+        elseif biasF == 1 && DCM_GLM == 1
+            runPath = [runFolder,'preproc_sm_',num2str(smKernel),'mm_with_BiasFieldCorrection_DCM'];
+        end
         if exist(runPath,'dir')
             disp([runPath,' already existed and was ignored from preprocessing']);
             % if any of the runs has already been preprocessed => ignore
@@ -62,7 +73,6 @@ end % subject loop
 
 %% back to main folder
 cd(studyPath);
-
 
 %% extract new list of subjects
 subject_id = subject_id(subNotAlreadyPreprocessed);

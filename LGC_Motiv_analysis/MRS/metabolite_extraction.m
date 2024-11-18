@@ -1,7 +1,8 @@
 function[metabolite_allSubs, MRS_ROI_nm, metabolite_nm] = metabolite_extraction(study_nm, subject_id)
 % [metabolite_allSubs, MRS_ROI_nm, metabolite_nm] = metabolite_extraction(study_nm, subject_id)
-% metabolite_extraction will load the metabolites levels for the study and
-% the subjects selected and output it in the variable metabolite_allSubs.
+% metabolite_extraction will load the levels of the selected metabolite
+% for the study and the subjects selected and output it in the variable 
+% metabolite_allSubs.
 %
 % INPUTS
 % study_nm:

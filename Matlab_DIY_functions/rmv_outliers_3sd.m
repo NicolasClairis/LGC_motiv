@@ -28,7 +28,7 @@ elseif size(variable_X,1) == 0 && size(variable_X,2) == 0
     error('variable_X is empty');
 end
 
-%% check if there are NaNs
+%% check if there are NaNs before removing outliers
 idx_badSubs = isnan(variable_X);
 idx_goodSubs = ~isnan(variable_X);
 
@@ -39,7 +39,9 @@ std_X = std(variable_X, [],2, 'omitnan');
 %% extract outliers index
 too_high = variable_X > mu_X + 3.*std_X;
 too_low = variable_X < mu_X - 3.*std_X;
+% add outlier information in indexes output
 idx_badSubs(too_high | too_low) = true;
+idx_goodSubs(too_high | too_low) = false;
 
 %% remove outliers
 cleaned_X = variable_X(idx_badSubs == false);

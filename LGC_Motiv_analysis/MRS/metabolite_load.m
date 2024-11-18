@@ -1,5 +1,5 @@
-function[metabolites, CRLB] = metabolite_load(subject_id)
-% [metabolites, CRLB] = metabolite_load(subject_id)
+function[brainMetabolites, CRLB, brainMetabolites_bis] = metabolite_load(subject_id)
+% [brainMetabolites, CRLB, brainMetabolites_bis] = metabolite_load(subject_id)
 % metabolite_load will load the metabolite concentrations based on the
 % excel file prepared by Arthur Barakat.
 %
@@ -7,18 +7,21 @@ function[metabolites, CRLB] = metabolite_load(subject_id)
 % subject_id: list of subject names (if left empty, will load all subjects)
 %
 % OUTPUTS
-% metabolites: structure with all the metabolites
+% brainMetabolites: structure with all the metabolites
 %
 % CRLB: structure with Cramér-Rao Lower Bound which gives a lower estimate
 % for the variance of an unbiased estimator for each single metabolite (not the
 % ratios)
+%
+% brainMetabolites_bis: same as metabolites, but without most of weird ratios
+% and computations included in metabolites
 
 %% working directory
 % root = pwd;
 list_pcs = {'Lab','Home'};
 % which_pc_idx = listdlg('PromptString',{'Lab or home pc?'},...
 %     'SelectionMode','single','ListString',list_pcs);
-which_pc_idx = 1;
+which_pc_idx = 2;
 switch list_pcs{which_pc_idx}
     case 'Lab'
         metaboliteFolder = fullfile('M:','human_data_private','analyzed_data','study1');
@@ -61,21 +64,13 @@ for iROI = 1:nROIs
     for iMet = 1:n_metabolites
         switch all_metabolites{iMet}
             case 'Glu_Gln'
-                [metabolites.(ROI_nm).Glx,...
+                [brainMetabolites.(ROI_nm).Glx,...
                     CRLB.(ROI_nm).Glx] = deal(NaN(1,NS));
             otherwise
-                [metabolites.(ROI_nm).(all_metabolites{iMet}),...
+                [brainMetabolites.(ROI_nm).(all_metabolites{iMet}),...
                     CRLB.(ROI_nm).(all_metabolites{iMet})] = deal(NaN(1,NS));
         end
     end % metabolite loop
-    [metabolites.(ROI_nm).Gln_div_Glu,...
-        metabolites.(ROI_nm).z_antiox,...
-        metabolites.(ROI_nm).antiox,...
-        metabolites.(ROI_nm).Glu_div_GSH,...
-        metabolites.(ROI_nm).Glu_div_Tau,...
-        metabolites.(ROI_nm).Glu_div_antiox,...
-        metabolites.(ROI_nm).Glu_div_z_antiox,...
-        metabolites.(ROI_nm).Glu_div_GABA_div_GSH] = deal(NaN(1,NS));
     
     %% load the data
     switch ROI_nm
@@ -130,54 +125,58 @@ for iROI = 1:nROIs
                 % and subjects for which the Cramer Lower Bound is too bad
                 % (>50%) and subjects which are clearly outliers because
                 % their values are too far from the others (>/< mean+3*SD)
-                metabolites.(ROI_nm).(met_nm_bis)(iS) = all_met_data(subj_line);
+                brainMetabolites.(ROI_nm).(met_nm_bis)(iS) = all_met_data(subj_line);
                 CRLB.(ROI_nm).(met_nm_bis)(iS) = CRLB_tmp;
             end
         end % subject loop
     end % metabolites loop
+
+    % just add Gln/Glu to metabolites_bis
+    brainMetabolites_bis.(ROI_nm) = brainMetabolites.(ROI_nm);
     
     %% bonus metabolites: combination of other metabolites
     % perform also division Gln/Glu
-    metabolites.(ROI_nm).Gln_div_Glu = metabolites.(ROI_nm).Gln./metabolites.(ROI_nm).Glu;
+    brainMetabolites.(ROI_nm).Gln_div_Glu = brainMetabolites.(ROI_nm).Gln./brainMetabolites.(ROI_nm).Glu;
+    brainMetabolites_bis.(ROI_nm).Gln_div_Glu = brainMetabolites.(ROI_nm).Gln_div_Glu;
     
     % extract a pool of antioxidants
-    metabolites.(ROI_nm).antiox = metabolites.(ROI_nm).GSH +...
-        metabolites.(ROI_nm).Tau;
-    metabolites.(ROI_nm).z_antiox = nanzscore(nanzscore(metabolites.(ROI_nm).GSH) +...
-        nanzscore(metabolites.(ROI_nm).Tau));
+    brainMetabolites.(ROI_nm).antiox = brainMetabolites.(ROI_nm).GSH +...
+        brainMetabolites.(ROI_nm).Tau;
+    brainMetabolites.(ROI_nm).z_antiox = nanzscore(nanzscore(brainMetabolites.(ROI_nm).GSH) +...
+        nanzscore(brainMetabolites.(ROI_nm).Tau));
     
     % perform also division Glu/GABA (known as Excitation/Inhibition (E-I) ratio)
-    metabolites.(ROI_nm).Glu_div_GABA = metabolites.(ROI_nm).Glu./metabolites.(ROI_nm).GABA;
+    brainMetabolites.(ROI_nm).Glu_div_GABA = brainMetabolites.(ROI_nm).Glu./brainMetabolites.(ROI_nm).GABA;
     % perform (Glu/GABA)/GSH ((E-I) ratio divided by GSH)
-    metabolites.(ROI_nm).Glu_div_GABA_div_GSH = metabolites.(ROI_nm).Glu_div_GABA./metabolites.(ROI_nm).GSH;
+    brainMetabolites.(ROI_nm).Glu_div_GABA_div_GSH = brainMetabolites.(ROI_nm).Glu_div_GABA./brainMetabolites.(ROI_nm).GSH;
     
     % Glu/antioxidants
-    metabolites.(ROI_nm).Glu_div_GSH = metabolites.(ROI_nm).Glu./metabolites.(ROI_nm).GSH;
-    metabolites.(ROI_nm).Glu_div_Tau = metabolites.(ROI_nm).Glu./metabolites.(ROI_nm).Tau;
-    metabolites.(ROI_nm).Glu_div_antiox = metabolites.(ROI_nm).Glu./metabolites.(ROI_nm).antiox;
-    metabolites.(ROI_nm).Glu_div_z_antiox = metabolites.(ROI_nm).Glu./metabolites.(ROI_nm).z_antiox;
+    brainMetabolites.(ROI_nm).Glu_div_GSH = brainMetabolites.(ROI_nm).Glu./brainMetabolites.(ROI_nm).GSH;
+    brainMetabolites.(ROI_nm).Glu_div_Tau = brainMetabolites.(ROI_nm).Glu./brainMetabolites.(ROI_nm).Tau;
+    brainMetabolites.(ROI_nm).Glu_div_antiox = brainMetabolites.(ROI_nm).Glu./brainMetabolites.(ROI_nm).antiox;
+    brainMetabolites.(ROI_nm).Glu_div_z_antiox = brainMetabolites.(ROI_nm).Glu./brainMetabolites.(ROI_nm).z_antiox;
     
     % combination Asp+Lac
-    metabolites.(ROI_nm).Asp_plus_Lac = metabolites.(ROI_nm).Asp + metabolites.(ROI_nm).Lac;
-    metabolites.(ROI_nm).zAsp_plus_zLac = nanzscore(metabolites.(ROI_nm).Asp) + nanzscore(metabolites.(ROI_nm).Lac);
+    brainMetabolites.(ROI_nm).Asp_plus_Lac = brainMetabolites.(ROI_nm).Asp + brainMetabolites.(ROI_nm).Lac;
+    brainMetabolites.(ROI_nm).zAsp_plus_zLac = nanzscore(brainMetabolites.(ROI_nm).Asp) + nanzscore(brainMetabolites.(ROI_nm).Lac);
     
     % Glu U-shape, GSH U-shape, (Glu U-shape)/GSH, Glu/(GSH U-shape), (Glu
     % U-shape)/(GSH U-shape) and (Glu/GSH) U-shape
-    metabolites.(ROI_nm).Glu_Ushape = (metabolites.(ROI_nm).Glu - mean(metabolites.(ROI_nm).Glu,'omitnan')).^2;
-    metabolites.(ROI_nm).GSH_Ushape = (metabolites.(ROI_nm).GSH - mean(metabolites.(ROI_nm).GSH,'omitnan')).^2;
-    metabolites.(ROI_nm).Glu_Ushape_div_GSH = metabolites.(ROI_nm).Glu_Ushape./metabolites.(ROI_nm).GSH;
-    metabolites.(ROI_nm).Glu_div_GSH_Ushape = metabolites.(ROI_nm).Glu./metabolites.(ROI_nm).GSH_Ushape;
-    metabolites.(ROI_nm).Glu_Ushape_div_GSH_Ushape = metabolites.(ROI_nm).Glu_Ushape./metabolites.(ROI_nm).GSH_Ushape;
-    metabolites.(ROI_nm).Glu_div_GSH_ratio_Ushape = (metabolites.(ROI_nm).Glu_div_GSH - mean(metabolites.(ROI_nm).Glu_div_GSH,'omitnan')).^2;
+    brainMetabolites.(ROI_nm).Glu_Ushape = (brainMetabolites.(ROI_nm).Glu - mean(brainMetabolites.(ROI_nm).Glu,'omitnan')).^2;
+    brainMetabolites.(ROI_nm).GSH_Ushape = (brainMetabolites.(ROI_nm).GSH - mean(brainMetabolites.(ROI_nm).GSH,'omitnan')).^2;
+    brainMetabolites.(ROI_nm).Glu_Ushape_div_GSH = brainMetabolites.(ROI_nm).Glu_Ushape./brainMetabolites.(ROI_nm).GSH;
+    brainMetabolites.(ROI_nm).Glu_div_GSH_Ushape = brainMetabolites.(ROI_nm).Glu./brainMetabolites.(ROI_nm).GSH_Ushape;
+    brainMetabolites.(ROI_nm).Glu_Ushape_div_GSH_Ushape = brainMetabolites.(ROI_nm).Glu_Ushape./brainMetabolites.(ROI_nm).GSH_Ushape;
+    brainMetabolites.(ROI_nm).Glu_div_GSH_ratio_Ushape = (brainMetabolites.(ROI_nm).Glu_div_GSH - mean(brainMetabolites.(ROI_nm).Glu_div_GSH,'omitnan')).^2;
     
     % add Glu/Asp based on Arthur's results with ML on mental effort
-    metabolites.(ROI_nm).Glu_div_Asp = metabolites.(ROI_nm).Glu./metabolites.(ROI_nm).Asp;
+    brainMetabolites.(ROI_nm).Glu_div_Asp = brainMetabolites.(ROI_nm).Glu./brainMetabolites.(ROI_nm).Asp;
     % add Lac/GSH, Lac/(GSH+Tau), (Glu+Lac)/(GSH) and
     % (Glu+Lac)/(GSH+Tau) considering Glu+Lac = "toxic" and GSH+Tau prevent
-    metabolites.(ROI_nm).Lac_div_GSH = metabolites.(ROI_nm).Lac./metabolites.(ROI_nm).GSH;
-    metabolites.(ROI_nm).Lac_div_antiox = metabolites.(ROI_nm).Lac./(metabolites.(ROI_nm).GSH + metabolites.(ROI_nm).Tau);
-    metabolites.(ROI_nm).Glu_plus_Lac_div_GSH = (metabolites.(ROI_nm).Glu+metabolites.(ROI_nm).Lac)./metabolites.(ROI_nm).GSH;
-    metabolites.(ROI_nm).Glu_plus_Lac_div_antiox = (metabolites.(ROI_nm).Glu + metabolites.(ROI_nm).Lac)./(metabolites.(ROI_nm).GSH + metabolites.(ROI_nm).Tau);
+    brainMetabolites.(ROI_nm).Lac_div_GSH = brainMetabolites.(ROI_nm).Lac./brainMetabolites.(ROI_nm).GSH;
+    brainMetabolites.(ROI_nm).Lac_div_antiox = brainMetabolites.(ROI_nm).Lac./(brainMetabolites.(ROI_nm).GSH + brainMetabolites.(ROI_nm).Tau);
+    brainMetabolites.(ROI_nm).Glu_plus_Lac_div_GSH = (brainMetabolites.(ROI_nm).Glu+brainMetabolites.(ROI_nm).Lac)./brainMetabolites.(ROI_nm).GSH;
+    brainMetabolites.(ROI_nm).Glu_plus_Lac_div_antiox = (brainMetabolites.(ROI_nm).Glu + brainMetabolites.(ROI_nm).Lac)./(brainMetabolites.(ROI_nm).GSH + brainMetabolites.(ROI_nm).Tau);
 end % ROI loop
 
 % %% go back to root

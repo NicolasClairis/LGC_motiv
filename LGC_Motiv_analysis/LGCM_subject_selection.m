@@ -19,8 +19,15 @@ function[subject_id, NS] = LGCM_subject_selection(study_nm, condition, genderFil
 %   completely any of the tasks (ie the two runs of a given task)
 % 'behavior_noSatRun': like 'behavior' list but saturation runs will be
 %   removed from the subjects concerned
+% 'behavior_noSatRun_lenient': like 'behavior_noSatRun' list but saturation 
+% threshold set at 0/100% instead of 6/94%
 % 'behavior_noSatTask': like 'behavior' list but saturation tasks will be
 %   removed from the subjects concerned
+% 'behavior_noSatTaskSub_noSatRun': all subjects but removing all subjects who saturated 
+%   completely any of the tasks (ie the two runs of a given task) and
+%   removing all the runs that were saturated
+% 'behavior_noSatTaskSub_noSatRun_lenient': like 'behavior_noSatTaskSub_noSatRun' list but saturation 
+% threshold set at 0/100% instead of 6/94% 
 % 'respiration_and_noSatRun': respiration ok and no saturation run
 % 'fMRI': all subjects who performed the behavioral task in the fMRI
 %   (removing only the runs where fMRI crashed)
@@ -116,18 +123,19 @@ switch study_nm
             case 'fullList'
                 bad_subs = false(1,length(fullSubList));
             otherwise
-                bad_subs1 = ismember(fullSubList,{'030','049'});
+                bad_subs1 = ismember(fullSubList,{'030','049'}); % 030 and 049 did not do the behavioral task
                 fullSubList(bad_subs1) = [];
 
                 %% also remove outlier subject who has bad brain image + weird behavior in all tasks
-                bad_subs1b = ismember(fullSubList,{'054','090'}); % remove for anatomical outliers
+%                 bad_subs1b = ismember(fullSubList,{'054','090'}); % remove for anatomical outliers
 %                 bad_subs1b = ismember(fullSubList,{'039','054','090'});
 %                 bad_subs1b = ismember(fullSubList,{'054'}); % remove outlier
-%                 bad_subs1b = []; % no further exclusion
+                bad_subs1b = []; % no further exclusion
                 % 054 and 090 removed to have a better MRI image and
                 % because 054 had a very weird behavior
                 % remove also 019 if you split R and P trials because saturated P trials
                 % and 039 bugs with boxcar
+                % 054 and 090 now removed at the end for any fMRI analysis
                 fullSubList(bad_subs1b) = [];
         end
         %% initialize the list of subjects to consider
@@ -135,7 +143,7 @@ switch study_nm
         
         %% remove some subjects depending on the condition entered as input
         switch condition
-            case {'behavior','fMRI',...
+            case {'fullList','behavior','behavior_noSatRun_lenient','fMRI',...
                     'fMRI_noMove_bis','fMRI_noMove_ter'} % all subjects
                 % (but removing the bad runs if the condition requires it)
                 bad_subs = false(1,length(fullSubList));
@@ -197,7 +205,8 @@ switch study_nm
                 % 097: run 1 ND for Ep task
                 % 099: run 3 ND for Em task
                 % 100: run 3 (Em) and run 4 (Ep) ND
-            case {'behavior_noSatTaskSub',...
+            case {'behavior_noSatTaskSub','behavior_noSatTaskSub_noSatRun',...
+                    'behavior_noSatTaskSub_noSatRun_lenient',...
                     'fMRI_noSatTaskSub','fMRI_noSatTaskSub_noSatRun'}
                 % remove subjects for which either mental (Em) or physical
                 % (Ep) task was fully saturated during choices and remove
@@ -326,7 +335,7 @@ switch study_nm
                 % too much movement:
                 % 008, 022 and 024
                 
-                case {'fMRI_noSatTaskSub_noMoveSub_noSatRun_noMoveRun'} % remove subjects who saturated one full task and/or who moved too much across all sessions
+            case {'fMRI_noSatTaskSub_noMoveSub_noSatRun_noMoveRun'} % remove subjects who saturated one full task and/or who moved too much across all sessions
                 bad_subs = ismember(fullSubList,{'008','022','024','027',...
                     '047','052','069','076','095','097'});
                 % saturators:
@@ -341,6 +350,8 @@ switch study_nm
                 % 008, 022 and 024
                 %
                 % '097': saturated r1 and moved too much in r2, r3 and r4
+            otherwise
+                error([condition,' not ready']);
         end
         %% split subjects based on gender
         males = {'002','004',...
@@ -371,9 +382,12 @@ switch study_nm
             case 'females'
                 bad_subs(ismember(fullSubList, males)) = true;
         end
-        %% remove subjects who did behavior but not fMRI
+        %% remove subjects who did behavior but not fMRI or who had problematic fMRI
         if strcmp(condition(1:4),'fMRI')
-            bad_subs(ismember(fullSubList,{'034','091'})) = true;
+            bad_subs(ismember(fullSubList,{'034','091'})) = true; % 034 and 091: did the behavior, but the fMRI did not work
+            
+            % additional filter:
+            bad_subs(ismember(fullSubList,{'054','090'})) = true;% 054 and 090 occipital cortex is partly missing + 054 had a very weird behavior during training and the whole task
         end
         %% remove irrelevant subjects from the current analysis
         all_subs(bad_subs) = [];

@@ -289,7 +289,7 @@ for iCateg = 1:n_categ
         % add p.value indication if difference is significant        
         [l_hdl, star_hdl] = add_pval_comparison(questionnaires.(categ_nm).(quest_nm).male,...
             questionnaires.(categ_nm).(quest_nm).female,...
-            pval_tmp, jPos_male, jPos_female, '');
+            pval.(corr_method_nm).(categ_nm).(quest_nm), jPos_male, jPos_female, '');
     end % questionnaire loop
     switch categ_nm
         case 'sleep'

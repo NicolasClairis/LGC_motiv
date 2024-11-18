@@ -1,8 +1,16 @@
-% function[r_corr, pval] = blood_f_nutrition()
-% [r_corr, pval] = blood_f_nutrition()
+% function[r_corr, pval] = blood_f_nutrition(fig_disp)
+% [r_corr, pval] = blood_f_nutrition(fig_disp)
 % Try correlations between nutrition metabolites and blood metabolites (in
 % particular Lactate which could correlate with some energy-related food
 % nutrients).
+%
+% INPUTS
+% fig_disp: display figure (1) or not (0)?
+
+%% define default inputs
+if ~exist('fig_disp','var') || isempty(fig_disp)
+    fig_disp = 1;
+end
 
 %% define subjects
 study_nm = 'study1';
@@ -53,14 +61,15 @@ for iN = 1:nNutrients
             food_nutrients_allData.(nutrient_nm) = FFQ_struct.FFQ_results.(nutrient_nm);
     end
 end
-%% loop through subjects
+
+%% loop through subjects to extract Lactate and FFQ info for each subject
 for iS = 1:NS
     sub_nm = subject_id{iS};
     sub_nm_bis = ['CID',sub_nm];
 
     %% load blood
     sub_blood_idx = strcmp(Lac_struct.CID, sub_nm_bis);
-    Lac(iS) = Lac_struct.Lac(sub_blood_idx);
+    Lac(iS) = Lac_struct.Lac(sub_blood_idx)./1000;
     %% load nutrition data
     sub_nutrition_idx = strcmp(sub_nm, FFQ_subject_id);
     % extract nutrition info
@@ -70,97 +79,110 @@ for iS = 1:NS
     end
 end % subject loop
 
+%% initialize correlation matrix data
+[corr_mtrx, corr_mtrx_pval] = deal(NaN(1, nNutrients));
+[foodNutrient_short_names,...
+    foodNutrient_short_names2] = deal(cell(1, nNutrients));
+
 %% test correlations
 for iN = 1:nNutrients
     nutrient_nm = foodNutrient_names{iN};
-    corr_nm = ['Lac_f_',nutrient_nm];
-    goodSubs.(corr_nm) = (~isnan(Lac)).*(~isnan(food_nutrients.(nutrient_nm))) == 1;
-    [r_corr.(corr_nm), betas.(corr_nm), pval.(corr_nm),...
-        ~, food_nutrients_fit_sorted.(corr_nm),...
-        Lac_fit_foodNutrientSorted.(corr_nm)] = glm_package(food_nutrients.(nutrient_nm)(goodSubs.(corr_nm)),...
-        Lac(goodSubs.(corr_nm)),...
-        'normal', 'on');
-    pval_correl_tmp = pval.(corr_nm)(2);
-    % store significant p.values for slope
-    if pval_correl_tmp < 0.05
-        signif.signif.pval.(corr_nm) = pval_correl_tmp;
-        signif.signif.r_corr.(corr_nm) = r_corr.(corr_nm);
-    elseif pval_correl_tmp > 0.05 && pval_correl_tmp < 0.1
-        signif.almostSignif.pval.(corr_nm) = pval_correl_tmp;
-        signif.almostSignif.r_corr.(corr_nm) = r_corr.(corr_nm);
-    end
+    
+    if strcmp(caloric_corr,'yes') && strcmp(nutrient_nm,'energy_kcalPerWeek')
+    else
+        % create short name by removing anything after '_'
+        end_nm_idx = strfind(nutrient_nm,'_');
+        foodNutrient_short_names{iN} = nutrient_nm(1:(end_nm_idx(1)-1));
+        foodNutrient_short_names2{iN} = nutrient_nm_converter(foodNutrient_short_names{iN});
+        corr_nm = ['Lac_f_',nutrient_nm];
+        goodSubs.(corr_nm) = (~isnan(Lac)).*(~isnan(food_nutrients.(nutrient_nm))) == 1;
+        [r_corr.(corr_nm), betas.(corr_nm), pval.(corr_nm),...
+            ~, food_nutrients_fit_sorted.(corr_nm),...
+            Lac_fit_foodNutrientSorted.(corr_nm),...
+            pval_z.(corr_nm)] = glm_package(food_nutrients.(nutrient_nm)(goodSubs.(corr_nm)),...
+            Lac(goodSubs.(corr_nm)),...
+            'normal', 'on');
+        pval_correl_tmp = pval.(corr_nm)(2);
+        % store significant p.values for slope
+        if pval_correl_tmp < 0.05
+            signif.signif.pval.(corr_nm) = pval_correl_tmp;
+            signif.signif.r_corr.(corr_nm) = r_corr.(corr_nm);
+        elseif pval_correl_tmp > 0.05 && pval_correl_tmp < 0.1
+            signif.almostSignif.pval.(corr_nm) = pval_correl_tmp;
+            signif.almostSignif.r_corr.(corr_nm) = r_corr.(corr_nm);
+        end
+        
+        % store all in a big correlation matrix (actually a vector)
+        corr_mtrx(iN) = r_corr.(corr_nm);
+        corr_mtrx_pval(iN) = pval_z.(corr_nm);
+    end % filter caloric intake when variables corrected by caloric intake (just a series of 1)
 end % nutrition loop
 
 %% correlation and figure
-% TO BE DONE EVENTUALLY (although so many tests that not it really makes
-% sense, unless maybe something Arthur-like with the correlation matrix)
-
-% if figDisp == 1
-%     lWidth = 3;
-%     pSize = 25;
-%     black = 'k';
-%     orange = [254 75 3]./255;
-%     %% show results
-%     for iQuest = 1:nQuest
-%         quest_nm = questToCheck{iQuest};
-%         fig1 = fig; j_fig1 = 0;
-%         fig2 = fig; j_fig2 = 0;
-%         for iN = 1:n_BloodPrm
-%             bloodMb_nm = bloodMb_names{iN};
-%             corr_nm = [quest_nm,'_f_',bloodMb_nm];
-%             % define y.label for questionnaires
-%             switch quest_nm
-%                 case 'JPI_RScore'
-%                     quest_nm_bis = 'JPI-R';
-%                 case 'MADRS_SCorrected'
-%                     quest_nm_bis = 'MADRS-S';
-%                 case 'MPSTEFSPhysicalTraitScore'
-%                     quest_nm_bis = 'MPSTEFS physical';
-%                 case 'MPSTEFSMentalTraitScore'
-%                     quest_nm_bis = 'MPSTEFS mental';
-%                 case 'PunishmentScore'
-%                     quest_nm_bis = 'PANAS P';
-%                 case 'RewardScore'
-%                     quest_nm_bis = 'PANAS R';
-%                 case 'IPAQ'
-%                     quest_nm_bis = 'IPAQ activity';
-%                 case 'IPAQInactivity'
-%                     quest_nm_bis = 'IPAQ inactivity';
-%             end
-% 
-%             switch bloodMb_nm
-%                 case {'Nam','NMN','NR','NAD',...
-%                         'NADH','NADP','NADPH','MeNam',...
-%                         'MeXPY'}
-%                     figure(fig1);
-%                     j_fig1 = j_fig1 + 1;
-%                     subplot(3,4,j_fig1);
-%                 case {'NAD_div_NADH',...
-%                         'NADP_div_NADPH',...
-%                         'total_NAD_precursors',...
-%                         'total_NAD',...
-%                         'total_NAD_with_precursors',...
-%                         'total_NAD_with_byproducts',...
-%                         'total_NAD_byproducts'}
-%                     figure(fig2);
-%                     j_fig2 = j_fig2 + 1;
-%                     subplot(3,3,j_fig2);
-%             end
-%             %% figure
-%             hold on;
-%             scat_hdl = scatter(bloodMb.(bloodMb_nm)(goodSubs.(corr_nm)),...
-%                 quest_data.(quest_nm)(goodSubs.(corr_nm)));
-%             plot_hdl = plot(bloodMb_sort.(corr_nm), quest_fit.(corr_nm));
-%             scat_hdl.LineWidth = lWidth;
-%             scat_hdl.MarkerEdgeColor = black;
-%             plot_hdl.Color = orange;
-%             plot_hdl.LineStyle = '--';
-%             [blood_labelname] = blood_label(bloodMb_nm);
-%             xlabel(blood_labelname);
-%             ylabel(quest_nm_bis);
-%             legend_size(pSize);
-%         end % metabolite loop
-%     end % questionnaire loop
-% end % fig disp
+% display global correlation matrix + significant correlations
+if fig_disp == 1
+    lWidth = 3;
+    pSize = 25;
+    black = 'k';
+    orange = [254 75 3]./255;
+    color_range_choices = redblue(45);
+    
+    % correlation range
+    corr_range = [-1 1];
+    apply_pval_threshold = 0;
+    pval_threshold = [];
+    disp_signif_stars = 2; % also display almost significant correlations
+    
+    %% correlation matrix
+    corr_plot(corr_mtrx, corr_mtrx_pval,...
+        corr_range, foodNutrient_short_names2, 'Lac','', '',...
+        apply_pval_threshold, pval_threshold, disp_signif_stars);
+    legend_size(10);
+    
+    %% show significant results
+    for iN = 1:nNutrients
+        nutrient_nm = foodNutrient_names{iN};
+        short_nutrient_nm = foodNutrient_short_names2{iN};
+        corr_nm = ['Lac_f_',nutrient_nm];
+        if ~isempty(signif.signif.pval)
+            signif_corrs = fieldnames(signif.signif.pval);
+        else
+            signif_corrs = {''};
+        end
+        if ~isempty(signif.almostSignif.pval)
+            almostSignif_corrs = fieldnames(signif.almostSignif.pval);
+        else
+            almostSignif_corrs = {''};
+        end
+        
+        if ismember(corr_nm,[almostSignif_corrs; signif_corrs])
+            fig;
+            scat_hdl = scatter(food_nutrients.(nutrient_nm), Lac);
+            fit_hdl = plot(food_nutrients_fit_sorted.(corr_nm),...
+                Lac_fit_foodNutrientSorted.(corr_nm));
+            scat_hdl_upgrade(scat_hdl);
+            fit_hdl_upgrade(fit_hdl);
+            place_r_and_pval(corr_mtrx(iN), corr_mtrx_pval(iN));
+            if (length(nutrient_nm) > 10 && strcmp(nutrient_nm(end-10:end),'kcalPerWeek')) ||...
+                    (length(nutrient_nm) > 30 && strcmp(nutrient_nm(end-30:end),'kcalAvecFibres_portion__PerWeek'))
+                xlabel([short_nutrient_nm,' (kCal/week)']);
+            elseif (length(nutrient_nm) > 18 && strcmp(nutrient_nm(end-18:end),'kJ_portion__PerWeek')) ||...
+                    (length(nutrient_nm) > 28 && strcmp(nutrient_nm(end-28:end),'kJAvecFibres_portion__PerWeek'))
+                xlabel([short_nutrient_nm,' (kJ/week)']);
+            elseif length(nutrient_nm) > 17 && (strcmp(nutrient_nm(end-17:end),'g_portion__PerWeek'))
+                xlabel([short_nutrient_nm,' (g/week)']);
+            elseif (length(nutrient_nm) > 18 && (strcmp(nutrient_nm(end-18:end),'mg_portion__PerWeek'))) ||...
+                    (length(nutrient_nm) > 8 && (strcmp(nutrient_nm(end-8:end),'mgPerWeek')))
+                xlabel([short_nutrient_nm,' (mg/week)']);
+            elseif length(nutrient_nm) > 8 && (strcmp(nutrient_nm(end-8:end),'ugPerWeek'))
+                xlabel([short_nutrient_nm,' (μg/week)']);
+            else
+                error(['case ',nutrient_nm,' to plan']);
+            end
+            ylabel('Plasma Lactate (mM)');
+            legend_size(pSize);
+        end % filter signif or almost signif correlations
+    end % questionnaire loop
+end % fig disp
 
 % end % function

@@ -7,7 +7,7 @@ function[meanVar, semVar, sdVar, medianVar] = mean_sem_sd(var, dim)
 % INPUTS
 % var: vector/matrix with the variable of interest
 %
-% bin: dimension along which the mean, sem and sd will be extracted
+% dim: dimension along which the mean, sem and sd will be extracted
 %
 % OUTPUTS
 % meanVar: mean of var along dim

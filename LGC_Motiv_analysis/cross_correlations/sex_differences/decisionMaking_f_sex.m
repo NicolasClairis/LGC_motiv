@@ -7,7 +7,7 @@ function[choices, parameters, RT, deltaIP] = decisionMaking_f_sex(fig_disp, rmv_
 % from our computational model (kR, kP, kEp, kEm, kFp, kLm, bias).
 %
 % INPUTS
-% fig_disp: display figures? (1) yes (0) no
+% fig_disp: display figures? (1) yes (by default) or (0) no
 %
 % rmv_outliers_yn: remove median +/- 3*SD outliers yes (1) or no (0)? Yes by
 % default
@@ -43,7 +43,7 @@ fig_disp0 = 0;
 
 % load behavioral parameters
 prm_names = {'kR','kP','kEp','kEm',...
-    'kBiasM','kFp','kLm'};
+    'kBias','kFp','kLm'};
 nPrm = length(prm_names);
 [prm_males, mdlType, mdlN] = prm_extraction(study_nm, male_CIDS);
 [prm_females, ~, ~] = prm_extraction(study_nm, female_CIDS);

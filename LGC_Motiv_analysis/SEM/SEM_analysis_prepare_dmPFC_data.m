@@ -7,7 +7,8 @@
 % to know how to implement the SEM properly
 
 %% working dir
-SEM_path = fullfile('P:','boulot','postdoc_CarmenSandi','results','SEM');
+SEM_path = fullfile('P:','boulot','postdoc_CarmenSandi',...
+    'results','SEM');
 
 %% subject selection
 study_nm = 'study1';

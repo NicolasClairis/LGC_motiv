@@ -12,7 +12,7 @@ function[E_chosen] = extract_E_chosen(subBehaviorFolder, sub_nm, run_nm, task_fu
 %
 % OUTPUTS
 % E_chosen: 1*nTrials vector with information about the effort level 
-% chosen for the current study, subject and run.
+% chosen (0/1/2/3) for the current study, subject and run.
 
 %% load data
 behaviorStruct = load([subBehaviorFolder,...

@@ -1,0 +1,9 @@
+- model_1: basic model with kR and kP only
+- model_2: basic model with kR, kP, kEp and kEm only
+- model_3: former model of Arthur, based on current efficiency instead of previous efficiency (+0 on trial 1 of each run which should not be here)
+- model_4: former model of Arthur like model_3 (see above) but binary output (0/1) for choices instead of (0/0.25/0.75/1)
+- model_5: model using previous efficiency instead of current efficiency as initially intended
+- model_6: same as model_5 but using binary output (0/1) for choices instead of (0/0.25/0.75/1)
+- model_7: basic model with kR, kP, kEp, kEm and kBias
+
+Currently, models are based on a lenient saturation threshold for runs

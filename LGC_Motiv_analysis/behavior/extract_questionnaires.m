@@ -42,23 +42,20 @@ end
 [excelReadQuestionnairesFile, sub_CID_list] = load_questionnaires_data;
 [excelReadQuestionnairesFile2] = load_gal_data_bis(study_nm);
 
-%% filter weird IPAQ values
-IPAQ_all = excelReadQuestionnairesFile.IPAQ;
-[~,~,cleaned_IPAQ] = rmv_outliers_3sd(IPAQ_all);
-
-% prepare variables of interest
-[n_covid, ISCE,...
-    money, age, weight, height, BMI,...
-    avg_sleep, prevDay_sleep, avg_min_prevDay_sleep,...
+%% prepare variables of interest
+[n_covid, covid_months_since_last_infection, ISCE,...
+    money, age, sex, weight, height, BMI,...
     STAI_T, SIAS, PSS14,...
-    CTQ_emotionalA,CTQ_physicalA,...
-    CTQ_sexA,CTQ_minDenial,...
-    CTQ_emotionalN,CTQ_physicalN,...
+    CTQ_emotionalA, CTQ_physicalA,...
+    CTQ_sexA, CTQ_minDenial,...
+    CTQ_emotionalN, CTQ_physicalN,...
     MADRS_S, BIS_NPI, BIS_MI, BIS_AI,...
     Lars_e_AI_EverydayProd, Lars_e_AI_Init,...
     Lars_e_IC_Interest, Lars_e_IC_Novelty, Lars_e_IC_Motiv, Lars_e_IC_Social,...
     Lars_e_ActionInit, Lars_e_IntellectCuriosity, Lars_e_EmotResp, Lars_e_SelfAwareness,...
-    MPSTEFS_physical, MPSTEFS_mental,...
+    MPSTEFS_physical_total, MPSTEFS_mental_total,...
+    MPSTEFS_physical_energy, MPSTEFS_mental_energy,...
+    MPSTEFS_physical_fatigue, MPSTEFS_mental_fatigue,...
     JPIR, SHAP, SPSRQ_R, SPSRQ_P,...
     IPAQ, IPAQinactivity,...
     PRF_D, CI_enjCompet, CI_contentiousness,...
@@ -69,7 +66,7 @@ IPAQ_all = excelReadQuestionnairesFile.IPAQ;
 % extract sleep
 [avg_sleep,...
     prevDay_sleep,...
-    avg_min_prevDay_sleep] = extract_sleep(study_nm, subject_id, NS);
+    prevDay_min_avg_sleep] = extract_sleep(study_nm, subject_id, NS);
 
 %% extract data for each subject selected
 for iS = 1:NS
@@ -79,7 +76,9 @@ for iS = 1:NS
     
     % general
     n_covid(iS) = excelReadQuestionnairesFile.NombreD_infectionsAuCOVID(sub_idx);
+    covid_months_since_last_infection(iS) = excelReadQuestionnairesFile.Distance_enMois_DepuisDernierCovid(sub_idx);
     age(iS) = excelReadQuestionnairesFile2.Age_yearsOld_(sub_idx2);
+    sex(iS) = strcmp(excelReadQuestionnairesFile2.Sexe_femaleF_maleM_(sub_idx2),'F');
     weight(iS) = excelReadQuestionnairesFile2.Weight(sub_idx2);
     height(iS) = excelReadQuestionnairesFile2.Height(sub_idx2).*100; % convert in cm (instead of m)
     BMI(iS) = excelReadQuestionnairesFile2.BMI(sub_idx2);
@@ -104,8 +103,12 @@ for iS = 1:NS
     
     % motivation questionnaires
     JPIR(iS) = excelReadQuestionnairesFile.JPI_RScore(sub_idx);
-    MPSTEFS_physical(iS) = excelReadQuestionnairesFile.MPSTEFSPhysicalTraitScore(sub_idx);
-    MPSTEFS_mental(iS) = excelReadQuestionnairesFile.MPSTEFSMentalTraitScore(sub_idx);
+    MPSTEFS_physical_total(iS) = excelReadQuestionnairesFile.MPSTEFSPhysicalTraitScore(sub_idx);
+    MPSTEFS_mental_total(iS) = excelReadQuestionnairesFile.MPSTEFSMentalTraitScore(sub_idx);
+    MPSTEFS_physical_energy(iS) = excelReadQuestionnairesFile.MPSTEFSEnergyPhysical(sub_idx);
+    MPSTEFS_mental_energy(iS) = excelReadQuestionnairesFile.MPSTEFSEnergyMental(sub_idx);
+    MPSTEFS_physical_fatigue(iS) = excelReadQuestionnairesFile.MPSTEFSFatiguePhysical(sub_idx);
+    MPSTEFS_mental_fatigue(iS) = excelReadQuestionnairesFile.MPSTEFSFatigueMental(sub_idx);
     MADRS_S(iS) = excelReadQuestionnairesFile.MADRS_SCorrected(sub_idx);
     SPSRQ_R(iS) = excelReadQuestionnairesFile.RewardScore(sub_idx);
     SPSRQ_P(iS) = excelReadQuestionnairesFile.PunishmentScore(sub_idx);
@@ -124,7 +127,6 @@ for iS = 1:NS
     Lars_e_EmotResp(iS) = excelReadQuestionnairesFile.ER(sub_idx);
     Lars_e_SelfAwareness(iS) = excelReadQuestionnairesFile.SA(sub_idx);
     SHAP(iS) = excelReadQuestionnairesFile.SHAPScore(sub_idx);
-    IPAQ(iS) = cleaned_IPAQ(sub_idx);
     IPAQinactivity(iS) = excelReadQuestionnairesFile.IPAQInactivity(sub_idx);
     
     % dominance/competition
@@ -141,10 +143,15 @@ for iS = 1:NS
     hexaco6_openness(iS) = excelReadQuestionnairesFile.OpennessToExperience(sub_idx);
 end % subject loop
 
+%% load clean IPAQ values
+IPAQ(:) = IPAQ_rescoring(study_nm, subject_id, NS);
+
 %% regroup questionnaires by category
 % general
 questionnaires.general.n_covid = n_covid;
+questionnaires.general.covid_months_since_last_infection = covid_months_since_last_infection;
 questionnaires.general.age = age;
+questionnaires.general.sex = sex;
 questionnaires.general.weight = weight;
 questionnaires.general.height = height;
 questionnaires.general.BMI = BMI;
@@ -157,7 +164,7 @@ questionnaires.SES.money = money;
 % sleep
 questionnaires.sleep.avg = avg_sleep;
 questionnaires.sleep.prevDay = prevDay_sleep;
-questionnaires.sleep.avg_min_prevDay = avg_min_prevDay_sleep;
+questionnaires.sleep.prevDay_min_avg_sleep = prevDay_min_avg_sleep;
 
 % stress/anxiety
 questionnaires.stress_anxiety.STAI_T = STAI_T;
@@ -174,8 +181,12 @@ questionnaires.CTQ.physicalNeglect = CTQ_physicalN;
 
 % motivation
 questionnaires.Motivation.JPIR = JPIR;
-questionnaires.Motivation.MPSTEFS_physical = MPSTEFS_physical;
-questionnaires.Motivation.MPSTEFS_mental = MPSTEFS_mental;
+questionnaires.Motivation.MPSTEFS_physical = MPSTEFS_physical_total;
+questionnaires.Motivation.MPSTEFS_mental = MPSTEFS_mental_total;
+questionnaires.Motivation.MPSTEFS_physical_energy = MPSTEFS_physical_energy;
+questionnaires.Motivation.MPSTEFS_mental_energy = MPSTEFS_mental_energy;
+questionnaires.Motivation.MPSTEFS_physical_fatigue = MPSTEFS_physical_fatigue;
+questionnaires.Motivation.MPSTEFS_mental_fatigue = MPSTEFS_mental_fatigue;
 questionnaires.Motivation.MADRS_S = MADRS_S;
 questionnaires.Motivation.SPSRQ_R = SPSRQ_R;
 questionnaires.Motivation.SPSRQ_P = SPSRQ_P;
@@ -193,8 +204,7 @@ questionnaires.Motivation.Lars_e_IntellectCuriosity = Lars_e_IntellectCuriosity;
 questionnaires.Motivation.Lars_e_EmotResp = Lars_e_EmotResp;
 questionnaires.Motivation.Lars_e_SelfAwareness = Lars_e_SelfAwareness;
 questionnaires.Motivation.SHAP = SHAP;
-% questionnaires.Motivation.IPAQ = IPAQ; % remove IPAQ as too noisy (+ too
-% high range compared to others)
+questionnaires.Motivation.IPAQ = IPAQ;
 questionnaires.Motivation.IPAQinactivity = IPAQinactivity;
 
 % dominance/competition
