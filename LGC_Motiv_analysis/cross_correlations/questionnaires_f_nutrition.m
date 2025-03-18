@@ -14,9 +14,11 @@ root = LGCM_root_paths;
 % study
 study_nm = 'study1';
 switch root
-    case 'E:'
+    case ['E:',filesep] % lab pc
         gitPath = fullfile('C:','Users','clairis','Desktop','GitHub');
-    case [filesep,filesep,fullfile('sv-nas1.rcp.epfl.ch','Sandi-lab','human_data_private','raw_data_subject'),filesep]
+    case [filesep,filesep,fullfile('sv-nas1.rcp.epfl.ch','Sandi-lab','human_data_private','raw_data_subject'),filesep] % LGC server
+        gitPath = fullfile('C:','Users','Nicolas Clairis','Documents','GitHub');
+    case ['F:',filesep] % hard drive
         gitPath = fullfile('C:','Users','Nicolas Clairis','Documents','GitHub');
 end
 FFQ_resultsPath = [fullfile(gitPath, 'LGC_motiv','LGC_Motiv_results',...
@@ -106,74 +108,61 @@ end % nutrition loop
 
 %% correlation and figure
 % TO BE DONE EVENTUALLY (although so many tests that not it really makes
-% sense, unless maybe something Arthur-like with the correlation matrix)
+% sense, unless maybe a big correlation matrix). For now, we will just
+% display the correlations that are significant (p<0.05 uncorrected for
+% multiple comparisons)
+figDisp = 1; % display figure?
+pval_thresh = 0.05;
 
-% if figDisp == 1
-%     lWidth = 3;
-%     pSize = 25;
-%     black = 'k';
-%     orange = [254 75 3]./255;
-%     %% show results
-%     for iQuest = 1:nQuest
-%         quest_nm = questToCheck{iQuest};
-%         fig1 = fig; j_fig1 = 0;
-%         fig2 = fig; j_fig2 = 0;
-%         for iN = 1:n_BloodPrm
-%             bloodMb_nm = bloodMb_names{iN};
-%             corr_nm = [quest_nm,'_f_',bloodMb_nm];
-%             % define y.label for questionnaires
-%             switch quest_nm
-%                 case 'JPI_RScore'
-%                     quest_nm_bis = 'JPI-R';
-%                 case 'MADRS_SCorrected'
-%                     quest_nm_bis = 'MADRS-S';
-%                 case 'MPSTEFSPhysicalTraitScore'
-%                     quest_nm_bis = 'MPSTEFS physical';
-%                 case 'MPSTEFSMentalTraitScore'
-%                     quest_nm_bis = 'MPSTEFS mental';
-%                 case 'PunishmentScore'
-%                     quest_nm_bis = 'PANAS P';
-%                 case 'RewardScore'
-%                     quest_nm_bis = 'PANAS R';
-%                 case 'IPAQ'
-%                     quest_nm_bis = 'IPAQ activity';
-%                 case 'IPAQInactivity'
-%                     quest_nm_bis = 'IPAQ inactivity';
-%             end
-% 
-%             switch bloodMb_nm
-%                 case {'Nam','NMN','NR','NAD',...
-%                         'NADH','NADP','NADPH','MeNam',...
-%                         'MeXPY'}
-%                     figure(fig1);
-%                     j_fig1 = j_fig1 + 1;
-%                     subplot(3,4,j_fig1);
-%                 case {'NAD_div_NADH',...
-%                         'NADP_div_NADPH',...
-%                         'total_NAD_precursors',...
-%                         'total_NAD',...
-%                         'total_NAD_with_precursors',...
-%                         'total_NAD_with_byproducts',...
-%                         'total_NAD_byproducts'}
-%                     figure(fig2);
-%                     j_fig2 = j_fig2 + 1;
-%                     subplot(3,3,j_fig2);
-%             end
-%             %% figure
-%             hold on;
-%             scat_hdl = scatter(bloodMb.(bloodMb_nm)(goodSubs.(corr_nm)),...
-%                 quest_data.(quest_nm)(goodSubs.(corr_nm)));
-%             plot_hdl = plot(bloodMb_sort.(corr_nm), quest_fit.(corr_nm));
-%             scat_hdl.LineWidth = lWidth;
-%             scat_hdl.MarkerEdgeColor = black;
-%             plot_hdl.Color = orange;
-%             plot_hdl.LineStyle = '--';
-%             [blood_labelname] = blood_label(bloodMb_nm);
-%             xlabel(blood_labelname);
-%             ylabel(quest_nm_bis);
-%             legend_size(pSize);
-%         end % metabolite loop
-%     end % questionnaire loop
-% end % fig disp
+if figDisp == 1
+    lWidth = 3;
+    pSize = 25;
+    black = 'k';
+    orange = [254 75 3]./255;
+    %% show results
+    for iQuest = 1:nQuest
+        quest_nm = questionnairesToCheck{iQuest};
+        for iN = 1:nNutrients
+            nutrient_nm = foodNutrient_names{iN};
+            [nutrient_nm2] = convert_nutrient_nm_for_label(nutrient_nm);
+            corr_nm = [quest_nm,'_f_',nutrient_nm];
+            % define y.label for questionnaires
+            switch quest_nm
+                case 'JPI_RScore'
+                    quest_nm_bis = 'JPI-R';
+                case 'MADRS_SCorrected'
+                    quest_nm_bis = 'MADRS-S';
+                case 'MPSTEFSPhysicalTraitScore'
+                    quest_nm_bis = 'MPSTEFS physical';
+                case 'MPSTEFSMentalTraitScore'
+                    quest_nm_bis = 'MPSTEFS mental';
+                case 'PunishmentScore'
+                    quest_nm_bis = 'PANAS P';
+                case 'RewardScore'
+                    quest_nm_bis = 'PANAS R';
+                case 'IPAQ'
+                    quest_nm_bis = 'IPAQ activity';
+                case 'IPAQInactivity'
+                    quest_nm_bis = 'IPAQ inactivity';
+            end
+
+            %% figure
+            if pval.(corr_nm)(2) < pval_thresh
+                fig;
+                scat_hdl = scatter(food_nutrients.(nutrient_nm)(goodSubs.(corr_nm)),...
+                    quest_data.(quest_nm)(goodSubs.(corr_nm)));
+                plot_hdl = plot(food_nutrients_fit_sorted.(corr_nm), quest_fit_foodNutrientSorted.(corr_nm));
+                scat_hdl.LineWidth = lWidth;
+                scat_hdl.MarkerEdgeColor = black;
+                plot_hdl.Color = orange;
+                plot_hdl.LineStyle = '--';
+                xlabel(nutrient_nm2);
+                ylabel(quest_nm_bis);
+                legend_size(pSize);
+                place_r_and_pval(r_corr.(corr_nm),pval.(corr_nm)(2));
+            end % p.value threshold to decide which figure to display
+        end % nutrient loop
+    end % questionnaire loop
+end % fig disp
 
 % end % function
