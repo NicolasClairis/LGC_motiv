@@ -22,6 +22,7 @@ subjects = {'CID001','CID002','CID003','CID004','CID005','CID008','CID009',...
             'CID071','CID072','CID073','CID074','CID075','CID076','CID078','CID079',...
             'CID080','CID081','CID082','CID083','CID085','CID086','CID087','CID088',...
             'CID090','CID091','CID093','CID094','CID095','CID097','CID099','CID100'};
+NS = length(subjects);
 
 %% copy-paste all the data
 for iS = 1:NS 
@@ -71,3 +72,5 @@ if summary_success
 else
     warning('Summary folder: problem with copy-pasting.');
 end
+
+disp('copy-pasting finished');
