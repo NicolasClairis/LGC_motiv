@@ -37,7 +37,8 @@ for iS = 1:NS
     %% behavior
     bhv_sourcePath = fullfile(source_path,'raw_data_subject',...
         'study1',sub_nm,'behavior');
-    [bhv_copy_success] = copyfile(bhv_sourcePath,subj_targetPath,'f');
+    bhv_targetPath = fullfile(subj_targetPath,'behavior');
+    [bhv_copy_success] = copyfile(bhv_sourcePath,bhv_targetPath,'f');
     
     %% MRS data
     % raw data
@@ -51,7 +52,7 @@ for iS = 1:NS
     %% analyzed MRS data
     MRS_analyzed_sourcePath = fullfile(source_path,'analyzed_data',...
         'study1',sub_nm,'MRS');
-    MRS_anal_data_targetPath = fullfile(subj_targetPath,'MRS','raw_data');
+    MRS_anal_data_targetPath = fullfile(subj_targetPath,'MRS','analyzed_data');
     if ~exist(MRS_anal_data_targetPath,'dir')
         mkdir(MRS_anal_data_targetPath);
     end
