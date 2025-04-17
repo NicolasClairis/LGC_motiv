@@ -502,7 +502,7 @@ for i_pm = 1:2
                 Em_learningTimings = learningTimes_Em;
                 Em_learningTimings.time_limit = false;
                 % perform all the difficulty levels
-                [learning2PerfSummary_Em, onsets] = mental_learning(scr, stim, key_Em, n_E_levels, n_to_reach, n_Em_learningForceRepeats, Em_learningTimings);
+                [learning2PerfSummary_Em, onsets_learning] = mental_learning(scr, stim, key_Em, n_E_levels, n_to_reach, n_Em_learningForceRepeats, Em_learningTimings);
                 
                 %% temporary save of data
                 save([subResultFolder, file_nm,'.mat']);
