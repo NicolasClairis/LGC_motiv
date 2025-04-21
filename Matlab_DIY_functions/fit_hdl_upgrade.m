@@ -15,7 +15,7 @@ function[] = fit_hdl_upgrade(fit_hdl, color_to_use)
 %% improve display
 fit_hdl.LineStyle = '-';
 if ~exist('color_to_use','var') || isempty(color_to_use)
-    fit_hdl.Color = col.grey;
+    fit_hdl.Color = col.black;
 else
     fit_hdl.Color = color_to_use;
 end

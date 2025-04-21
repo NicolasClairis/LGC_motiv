@@ -1,5 +1,5 @@
-function[r_corr, betas, pval, y_fit, x_sorted, y_fit_xSorted] = glm_package(x_var, y_var, distrib, constant)
-% [r_corr, betas, pval, y_fit, x_sorted, y_fit_xSorted] = glm_package(x_var, y_var, distrib, constant)
+function[r_corr, betas, pval, y_fit, x_sorted, y_fit_xSorted, z_pval_corr] = glm_package(x_var, y_var, distrib, constant)
+% [r_corr, betas, pval, y_fit, x_sorted, y_fit_xSorted, z_pval_corr] = glm_package(x_var, y_var, distrib, constant)
 % glm_package will perform all the package required by a classic GLM to
 % have all the data you may want in output. In other words, it will provide
 % you with correlation coefficients, betas, p.values and the corresponding
@@ -36,6 +36,8 @@ function[r_corr, betas, pval, y_fit, x_sorted, y_fit_xSorted] = glm_package(x_va
 % y_fit_xSorted: corresponding fit for x_sorted (to make figure displays
 % easier) (only if there is only 1 variable in X)
 %
+% z_pval_corr: p.value for the correlation coefficients in r_corr
+%
 % See also glmfit.m and glmval.m
 % This script requires the Statistics and Machine Learning Toolbox
 % https://www.mathworks.com/products/statistics.html
@@ -61,6 +63,14 @@ elseif size(y_var,1) == 1 && size(y_var,2) > size(y_var,1) % flip y if entered a
     y_var = y_var';
 end
 
+%% extract nTrials and n_x_vars now that the variables are in correct orientation
+nTrials = size(x_var, 1);
+% sanity check
+if nTrials ~= size(y_var,1)
+    error('X and Y don''t have the same size.');
+end
+n_x_vars = size(x_var,2);
+
 %% initialize inputs
 % distribution
 list_possible_distribs = {'normal','binomial',...
@@ -80,23 +90,24 @@ end
 [betas,~,stats] = glmfit(x_var, y_var, distrib, 'Constant',constant);
 pval = stats.p;
 %% extract correlation coefficients
-if size(x_var,2) == 1
-    [z_betas] = glmfit(nanzscore(x_var), nanzscore(y_var),distrib,'Constant',constant);
-elseif size(x_var,2) > 1
+if n_x_vars == 1
+    [z_betas,~,stats_z_vars] = glmfit(nanzscore(x_var), nanzscore(y_var),distrib,'Constant',constant);
+elseif n_x_vars > 1
     % if more then 1 x.variables => need to zscore each independently
-    z_x_var = NaN(size(x_var));
-    n_x_vars = size(x_var,2);
+    z_x_var = NaN(nTrials, n_x_vars);
     for iX_var = 1:n_x_vars
         z_x_var(:,iX_var) = nanzscore(x_var(:,iX_var));
     end % loop through x_var variables
     
-    [z_betas] = glmfit(z_x_var, nanzscore(y_var),distrib,'Constant',constant);
+    [z_betas,~,stats_z_vars] = glmfit(z_x_var, nanzscore(y_var),distrib,'Constant',constant);
 end
 switch constant
     case 'off'
         r_corr = z_betas;
+        z_pval_corr = stats_z_vars.p;
     case 'on' % ignore constant
         r_corr = z_betas(2:end);
+        z_pval_corr = stats_z_vars.p(2:end);
 end
 
 %% extract corresponding fit
@@ -114,10 +125,10 @@ y_fit = glmval(betas, x_var, distrib_fit, 'Constant',constant);
 
 %% if only 1 x.variable => sort to make fit nicer, otherwise just keep all
 % the values
-if size(x_var,2) == 1
+if n_x_vars == 1
     x_sorted = sort(x_var);
     y_fit_xSorted = glmval(betas, x_sorted, distrib_fit, 'Constant',constant);
-else
+else % avoid extracting as no way to sort x_var easily if there are many variables in x
     x_sorted = [];
     y_fit_xSorted = [];
 end

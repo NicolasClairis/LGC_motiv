@@ -123,7 +123,7 @@ iCorrectAnswers = 0; % indicator to know when trial is considered as a success
 % (note that iCorrectAnswers will decrease for each error made, but not
 % jCorrectAnswers)
 jCorrectAnswers = 0; % indicator tracking actual real number of correct answers
-% number of questions answered
+% number of questions answered (including two first digits)
 i_question = 1;
 
 %% wait all keys are released before starting
@@ -165,7 +165,7 @@ while (iCorrectAnswers < n_max_to_reach) &&...
                     mod(jErrorsMade, errorMappingLimit) == 0 &&...
                     goodOrBadAnswer(i_question  - 1) == 0
                 % will display instructions for the next question everytime after
-                % 2 errors (can be adapted easily to remain for th whole trial if
+                % 2 errors (can be adapted easily to remain for the whole trial if
                 % necessary)
                 learning_instructions_bis = 'fullInstructions';
             else

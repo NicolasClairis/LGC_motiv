@@ -15,7 +15,8 @@ Nicolas_labPath = [fullfile('E:'),filesep];
 human_serverPath = [filesep,filesep,fullfile('sv-nas1.rcp.epfl.ch','Sandi-lab','human_data_private','raw_data_subject'),filesep];
 % human_serverPath = [fullfile('L:','human_data_private','raw_data_subject'),filesep];
 Arthur_serverPath = [fullfile('sv-nas1.rcp.epfl.ch','Sandi-Lab','Arthur'),filesep];
-Nicolas_homePath = human_serverPath;
+% Nicolas_homePath = human_serverPath;
+Nicolas_homePath = [fullfile('F:'),filesep]; % path to hard drive with data
 
 % spm specific
 Nicolas_homeSPMpath = fullfile('C:','Program Files','MATLAB','spm');

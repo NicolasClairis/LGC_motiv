@@ -1,5 +1,5 @@
 function [reg_names, n_regs] = GLM_details(GLM, dispRegs)
-% [Ep_regs, Em_regs] = GLM_details(GLM, dispRegs)
+% [reg_names, n_regs] = GLM_details(GLM, dispRegs)
 %GLM_details will provide the number of regressors, the text with the
 %details of the GLM, the order of the regressors in the current GLM for
 %each task.

@@ -2,7 +2,10 @@ function[con_vec_all,...
     con_avg, con_sem, con_sd,...
     con_names,...
     ROI_coords, ttest_ROI, subject_id, GLM,...
-    selectedCon, n_ROIs, figConNames] = ROI_extraction_group(study_nm, GLM,...
+    selectedCon, n_ROIs, figConNames,...
+    con_vec_all_no_outliers,...
+    con_avg_no_outliers, con_sem_no_outliers, con_sd_no_outliers,...
+    ttest_ROI_no_outliers] = ROI_extraction_group(study_nm, GLM,...
     subject_id, condition, fig_disp, biasFieldCorr)
 % [con_vec_all,...
 %     con_avg, con_sem, con_sd,...
@@ -56,6 +59,10 @@ function[con_vec_all,...
 % n_ROIs: number of ROIs extracted
 %
 % figConNames: structure with name for each variable displayed
+%
+% con_vec_all_no_outliers, con_avg_no_outliers, con_sem_no_outliers, con_sd_no_outliers,...
+% ttest_ROI_no_outliers: same as the corresponding variables extracted
+% before, but after removing any outlier subject
 
 
 %% extract working directories
@@ -115,7 +122,7 @@ if ~exist('GLM','var') || isempty(GLM)
     GLM = spm_input('fMRI GLM number?',1,'e');
 end
 GLMstr = num2str(GLM);
-GLMprm = which_GLM(GLM);
+% GLMprm = which_GLM(GLM);
 
 %% beta or t value?
 % beta_or_t_values = {'beta_value','t_value'};
@@ -321,6 +328,9 @@ if fig_disp == 1
                 ' Please do it manually or change the script to be able to do it automatically in the future.']);
         end
     end % figure loop
+else
+    selectedCon = [];
+    figConNames = cell(1);
 end % figure display
 
 %% to create your own figure with your own order:
@@ -332,5 +342,46 @@ end % figure display
 % [roi_fig] = roi_graph(1:size(var_of_interest,1), n_ROIs,...
 %             var_of_interest, [], [],...
 %             var_names, ttest_var_of_interest);
-        
+
+%% performing same extraction but after removing 3*SD outliers
+% create clone of all variables but removing any outlier
+con_vec_all_no_outliers = con_vec_all;
+[con_avg_no_outliers,...
+    con_sem_no_outliers,...
+    con_sd_no_outliers,...
+    ttest_pval_no_outliers,...
+    ttest_ROI_no_outliers.p_value,...
+    ttest_ROI_no_outliers.t_value] = deal(NaN(n_max_con,1));
+for iC = 1:n_max_con
+    [~,~,con_vec_all_no_outliers(iC,:)] = rmv_outliers_3sd(con_vec_all(iC,:));
+    [con_avg_no_outliers(iC),...
+        con_sem_no_outliers(iC),...
+        con_sd_no_outliers(iC)] = mean_sem_sd(con_vec_all_no_outliers(iC,:),2);
+    
+    % t.test
+    curr_con_noOutliers = NaN(1,NS);
+    curr_con_noOutliers(1,:) = con_vec_all_no_outliers(iC, :);
+    [~, ttest_pval_no_outliers(iC),~,stats_tmp] = ttest( curr_con_noOutliers );
+    ttest_ROI_no_outliers.p_value(iC) = ttest_pval_no_outliers(iC);
+    ttest_ROI_no_outliers.t_value(iC) = stats_tmp.tstat;
+end
+
+% extract figure again but after outlier removal
+if fig_disp == 1
+    for iFig = 1:n_figs
+        conFig = which_con(iFig,:);
+        selectedCon = find(conFig == 1); % extract index of contrasts selected
+        % display figure
+        goodS = true(1,NS);
+        for iSelectedC = 1:length(selectedCon)
+            curr_con_idx = selectedCon(iSelectedC);
+            badS_for_current_con = isnan(con_vec_all_no_outliers(curr_con_idx,:));
+            goodS(badS_for_current_con) = false;
+        end
+        roi_graph(selectedCon, n_ROIs,...
+            con_vec_all_no_outliers(:,goodS), con_avg_no_outliers, con_sem_no_outliers,...
+            figConNames.(['fig',num2str(iFig)]), ttest_ROI_no_outliers.p_value);
+    end % figure loop
+end % figure display
+
 end % function

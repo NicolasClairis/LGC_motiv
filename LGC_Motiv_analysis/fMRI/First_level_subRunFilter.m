@@ -1,6 +1,6 @@
-function[subj_scan_folders_names, jRun] = First_level_subRunFilter(study_nm, sub_nm,....
+function[subj_scan_folders_names, jRun, task_nm] = First_level_subRunFilter(study_nm, sub_nm,....
     subj_scan_folders_names, iRun, condition)
-%[subj_scan_folders_names, jRun] = First_level_subRunFilter(study_nm, sub_nm,...
+%[subj_scan_folders_names, jRun, task_nm] = First_level_subRunFilter(study_nm, sub_nm,...
 %   subj_scan_folders_names, iRun, condition)
 % First_level_subRunFilter will remove the files that cannot be used when
 % appropriate and will adapt the run index accordingly.
@@ -22,6 +22,8 @@ function[subj_scan_folders_names, jRun] = First_level_subRunFilter(study_nm, sub
 % subj_scan_folders_names: cell with list of fMRI runs after filtering useless runs
 %
 % jRun: index corrected depending on the runs that are ok
+%
+% task_nm: task name ('Ep': physical effort; 'Em': mental effort)
 
 %% check if subject has been well taken into account
 [runs, n_runs] = runs_definition(study_nm, sub_nm, condition);
@@ -959,6 +961,7 @@ end % subj_scan_folders_names correction
 %% fix index of the run
 if exist('iRun','var') && ~isempty(iRun)
     jRun = runs.runsToKeep(iRun);
+    task_nm = runs.tasks{iRun};
 end
 
 end % function

@@ -109,6 +109,22 @@ switch GLM
         GLMprm.regs.deltaEp = 'on';
         GLMprm.regs.deltaEm = 'on';
         GLMprm.regs.trialN = 'on';
+    case 5 % like GLM4 but using corrected bayesian model 5
+        % general
+        GLMprm.main.RT_format = 'raw';
+        GLMprm.main.orth_vars = 'off';
+        GLMprm.main.confMdlType = 'bayesian';
+        GLMprm.main.confMdlN = '5';
+        % which regressors to include
+        GLMprm.regs.run_cstt = 'on';
+        GLMprm.regs.task_cstt = 'off';
+        GLMprm.regs.conf = 'on';
+        GLMprm.regs.RP = 'on';
+        GLMprm.regs.deltaR = 'on';
+        GLMprm.regs.deltaP = 'on';
+        GLMprm.regs.deltaEp = 'on';
+        GLMprm.regs.deltaEm = 'on';
+        GLMprm.regs.trialN = 'on';
     otherwise
         error(['RT GLM number ',num2str(GLM),' does not exist yet.']);
 end % GLM

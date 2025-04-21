@@ -62,9 +62,11 @@ smKernel = 8;
 spm_launch_or_display = 'interactive'; % 'run' or 'interactive'
 
 %% remove from the list participants for which preprocessing was already made
+biasF = 0; % no bias-field correction
+DCM_preproc = 0; % no slice-timing correction
 switch spm_launch_or_display
     case 'run'
-        [subject_id, NS] = preproc_already_made(computerRoot, study_nm, subject_id, smKernel);
+        [subject_id, NS] = preproc_already_made(computerRoot, study_nm, subject_id, smKernel, biasF, DCM_preproc);
     otherwise
         warning(['Careful spm_launch_or_display is set to "interactive" ',...
             'and no filter has been done to remove subjects already ',...
@@ -161,7 +163,7 @@ if NS >= 1
         matlabbatch{realign_step}.spm.spatial.realign.estwrite.roptions.wrap = [0 0 0];
         matlabbatch{realign_step}.spm.spatial.realign.estwrite.roptions.mask = 1;
         matlabbatch{realign_step}.spm.spatial.realign.estwrite.roptions.prefix = 'r';
-        %% coregistration
+        %% coregistration of anatomical file to functional space
         preproc_step = 2;
         coreg_step = nb_preprocessingSteps*(iS-1) + preproc_step;
         matlabbatch{coreg_step}.spm.spatial.coreg.estimate.ref(1) = cfg_dep('Realign: Estimate & Reslice: Mean Image',...
@@ -183,33 +185,39 @@ if NS >= 1
         matlabbatch{coreg_step}.spm.spatial.coreg.estimate.eoptions.sep = [4 2];
         matlabbatch{coreg_step}.spm.spatial.coreg.estimate.eoptions.tol = [0.02 0.02 0.02 0.001 0.001 0.001 0.01 0.01 0.01 0.001 0.001 0.001];
         matlabbatch{coreg_step}.spm.spatial.coreg.estimate.eoptions.fwhm = [7 7];
-        %% segmentation
+        %% segmentation anatomical scan
         preproc_step = 3;
         segm_step = nb_preprocessingSteps*(iS-1) + preproc_step;
         matlabbatch{segm_step}.spm.spatial.preproc.channel.vols = {[newAnatFolder,anat_file]};
         matlabbatch{segm_step}.spm.spatial.preproc.channel.biasreg = 0.001;
         matlabbatch{segm_step}.spm.spatial.preproc.channel.biasfwhm = 60;
         matlabbatch{segm_step}.spm.spatial.preproc.channel.write = [1 1];
+        % grey matter
         matlabbatch{segm_step}.spm.spatial.preproc.tissue(1).tpm = {[spmTemplatePath,',1']};
         matlabbatch{segm_step}.spm.spatial.preproc.tissue(1).ngaus = 1;
         matlabbatch{segm_step}.spm.spatial.preproc.tissue(1).native = [1 0];
         matlabbatch{segm_step}.spm.spatial.preproc.tissue(1).warped = [1 1]; % normalise grey matter and record modulated and unmodulated warped tissue
+        % white matter
         matlabbatch{segm_step}.spm.spatial.preproc.tissue(2).tpm = {[spmTemplatePath,',2']};
         matlabbatch{segm_step}.spm.spatial.preproc.tissue(2).ngaus = 1;
         matlabbatch{segm_step}.spm.spatial.preproc.tissue(2).native = [1 0];
         matlabbatch{segm_step}.spm.spatial.preproc.tissue(2).warped = [1 1]; % normalise white matter and record modulated and unmodulated warped tissue
+        % CSF
         matlabbatch{segm_step}.spm.spatial.preproc.tissue(3).tpm = {[spmTemplatePath,',3']};
         matlabbatch{segm_step}.spm.spatial.preproc.tissue(3).ngaus = 2;
         matlabbatch{segm_step}.spm.spatial.preproc.tissue(3).native = [1 0];
         matlabbatch{segm_step}.spm.spatial.preproc.tissue(3).warped = [0 0];
+        % dura matter
         matlabbatch{segm_step}.spm.spatial.preproc.tissue(4).tpm = {[spmTemplatePath,',4']};
         matlabbatch{segm_step}.spm.spatial.preproc.tissue(4).ngaus = 3;
         matlabbatch{segm_step}.spm.spatial.preproc.tissue(4).native = [1 0];
         matlabbatch{segm_step}.spm.spatial.preproc.tissue(4).warped = [0 0];
+        % skull
         matlabbatch{segm_step}.spm.spatial.preproc.tissue(5).tpm = {[spmTemplatePath,',5']};
         matlabbatch{segm_step}.spm.spatial.preproc.tissue(5).ngaus = 4;
         matlabbatch{segm_step}.spm.spatial.preproc.tissue(5).native = [1 0];
         matlabbatch{segm_step}.spm.spatial.preproc.tissue(5).warped = [0 0];
+        % air and any other abnormal tissue
         matlabbatch{segm_step}.spm.spatial.preproc.tissue(6).tpm = {[spmTemplatePath,',6']};
         matlabbatch{segm_step}.spm.spatial.preproc.tissue(6).ngaus = 2;
         matlabbatch{segm_step}.spm.spatial.preproc.tissue(6).native = [0 0];
@@ -221,7 +229,7 @@ if NS >= 1
         matlabbatch{segm_step}.spm.spatial.preproc.warp.fwhm = 0;
         matlabbatch{segm_step}.spm.spatial.preproc.warp.samp = 3;
         matlabbatch{segm_step}.spm.spatial.preproc.warp.write = [1 1]; % record inverse and forward deformation fields
-        %% normalization
+        %% normalization functional images in MNI
         preproc_step = 4;
         normf_step = nb_preprocessingSteps*(iS-1) + preproc_step;
         matlabbatch{normf_step}.spm.spatial.normalise.write.subj.def(1) = cfg_dep('Segment: Forward Deformations',...
@@ -240,7 +248,7 @@ if NS >= 1
         matlabbatch{normf_step}.spm.spatial.normalise.write.woptions.vox = [2 2 2];
         matlabbatch{normf_step}.spm.spatial.normalise.write.woptions.interp = 4;
         matlabbatch{normf_step}.spm.spatial.normalise.write.woptions.prefix = 'w';
-        %% normalization anatomical scan
+        %% normalization anatomical scan in MNI
         preproc_step = 5;
         norma_step = nb_preprocessingSteps*(iS-1) + preproc_step;
         matlabbatch{norma_step}.spm.spatial.normalise.write.subj.def(1) = cfg_dep('Segment: Forward Deformations',...
@@ -254,7 +262,7 @@ if NS >= 1
         matlabbatch{norma_step}.spm.spatial.normalise.write.woptions.vox = [1 1 1];
         matlabbatch{norma_step}.spm.spatial.normalise.write.woptions.interp = 4;
         matlabbatch{norma_step}.spm.spatial.normalise.write.woptions.prefix = 'w';
-        %% smoothing
+        %% smoothing functional images
         preproc_step = 6;
         smooth_step = nb_preprocessingSteps*(iS-1) + preproc_step;
         matlabbatch{smooth_step}.spm.spatial.smooth.data(1) = cfg_dep('Normalise: Write: Normalised Images (Subj 1)',...
@@ -273,7 +281,7 @@ if NS >= 1
     %% move files output from the last step (if you launched the script)
     if strcmp(spm_launch_or_display,'run')
         move_preproc_files_to_saveFolder(root, study_nm,...
-            subject_id, NS, smKernel, 0);
+            subject_id, NS, smKernel, 0, 0);
     end % move files
 else
     disp(['All subjects have already been preprocessed with smoothing ',...

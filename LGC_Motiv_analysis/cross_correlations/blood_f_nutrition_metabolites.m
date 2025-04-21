@@ -1,4 +1,4 @@
-% function[] = blood_f_nutrition_metabolites()
+function[] = blood_f_nutrition_metabolites()
 % blood_f_nutrition_metabolites will check whether plasma levels of
 % particular metabolites correspond to the evaluated nutritional intake
 % based on the FFQ questionnaire.
@@ -68,7 +68,7 @@ for iS = 1:NS
     end
     
     %% load plasma scores
-    sub_plasma_idx = find(blood_AA_table.MasterSampleID == str2double(sub_nm));
+    sub_plasma_idx = find(strcmp(blood_AA_table.CID,['CID',sub_nm]));
     plasma.L_Gly(iS) = blood_AA_table.L_Glycine(sub_plasma_idx);
     plasma.L_Glu(iS) = blood_AA_table.L_GlutamicA(sub_plasma_idx);
     plasma.L_Gln(iS) = blood_AA_table.L_Glutamine(sub_plasma_idx);
@@ -201,4 +201,4 @@ legend_size(pSize);
 % place_r_and_pval(r_corr.Tau_div_totalCal, pval.Tau_div_totalCal(2));
 % legend_size(pSize);
 
-% end % function
+end % function

@@ -1,7 +1,7 @@
 function[y] = sigmo(x, lambda)
 % [y]=sigmo(x, lambda)
 % sigmo will compute the sigmoid of x eventually multiplied by a parameter
-% lambda
+% lambda (inverse temperature)
 % y = 1/(1 + exp(-lambda*x)
 %
 % If lambda left empty, will use lambda = 1 by default
@@ -9,7 +9,7 @@ function[y] = sigmo(x, lambda)
 % INPUTS
 % x: the variable passed through the sigmoid
 %
-% lambda: the multiplying variable of x
+% lambda: the multiplying variable of x (=inverse temperature)
 %
 % OUTPUTS
 % y: the output, sigmoid of x

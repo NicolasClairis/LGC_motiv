@@ -17,6 +17,11 @@ function[runs, n_runs] = runs_definition(study_nm, sub_nm, condition)
 % OUTPUTS
 % runs: structure with number of runs for each task and also the order of
 % the runs
+%   runs.tasks: name for each run ('Ep': physical; 'Em': mental)
+%   runs.nb_runs.Ep/Em: number of runs for each task
+%   runs.Ep/Em.runsToKeep: index of the runs to keep per task
+%   runs.runsToKeep: index of the runs to keep (global)
+%   runs.runsToIgnore: index of the runs to ignore (global)
 %
 % n_runs: number of runs to include
 
@@ -74,17 +79,19 @@ switch study_nm
         %% remove subjects where behavior and fMRI could not be performed => remove runs independently of the condition
         switch sub_nm
             case {'030','049'}
-                error([sub_nm,' should not be included under the condition ''',condition,...
-                    ''' (tasks not performed).']);
+%                 error([sub_nm,' should not be included under the condition ''',condition,...
+%                     ''' (tasks not performed).']);
+                runs.runsToKeep = [];
+                runs.runsToIgnore = 1:4;
             case '040' % fMRI crashed during run 3 and subject was already stressing a lot
-                % => avoid including this run
+                % => avoid including runs 3 and 4
                 runs.runsToKeep = [1,2];
                 runs.runsToIgnore = 3:4;
         end
         
         %% define subject runs to keep depending on condition
         switch condition
-            case {'behavior'} % nothing to change for those conditions
+            case {'fullList','behavior'} % nothing to change for those conditions
             %% for all fMRI conditions, need to remove run 1 from those subjects because of fMRI crash
             case {'fMRI','fMRI_noSatRunSub'}
                 switch sub_nm
@@ -136,7 +143,76 @@ switch study_nm
                         runs.runsToKeep = [1,3];
                         runs.runsToIgnore = [2,4];
                 end % subject loop
-                %% removing any run with saturation
+                %% removing any subject with saturation and any saturated run (based on 6%/94% threshold for saturation)
+            case {'behavior_noSatTaskSub_noSatRun'}
+                switch sub_nm
+                    case {'027','047','052','069','076','095'}
+                        error([sub_nm,' should not be included under the condition ',condition]);
+                    case '002'
+                        runs.runsToKeep = [1,2,4];
+                        runs.runsToIgnore = 3;
+                    case '004'
+                        runs.runsToKeep = [1,2,4];
+                        runs.runsToIgnore = 3;
+                    case '005'
+                        runs.runsToKeep = 1:3;
+                        runs.runsToIgnore = 4;
+                    case '012'
+                        runs.runsToKeep = 1:3;
+                        runs.runsToIgnore = 4;
+                    case '022'
+                        runs.runsToKeep = [1,2,4];
+                        runs.runsToIgnore = 3;
+                    case '032'
+                        runs.runsToKeep = [1,2,4];
+                        runs.runsToIgnore = 3;
+                    case '038'
+                        runs.runsToKeep = [1,3,4];
+                        runs.runsToIgnore = 2;
+                    case '044'
+                        runs.runsToKeep = [1,2,4];
+                        runs.runsToIgnore = 3;
+                    case '048'
+                        runs.runsToKeep = [1,3,4];
+                        runs.runsToIgnore = 2;
+                    case '054'
+                        runs.runsToKeep = 2:4;
+                        runs.runsToIgnore = 1;
+                    case '055'
+                        runs.runsToKeep = 1:3;
+                        runs.runsToIgnore = 4;
+                    case '058'
+                        runs.runsToKeep = 1:3;
+                        runs.runsToIgnore = 4;
+                    case '061'
+                        runs.runsToKeep = 2:4;
+                        runs.runsToIgnore = 1;
+                    case '062'
+                        runs.runsToKeep = [1,2,4];
+                        runs.runsToIgnore = 3;
+                    case '081'
+                        runs.runsToKeep = [1,2,4];
+                        runs.runsToIgnore = 3;
+                    case '082'
+                        runs.runsToKeep = [1,2];
+                        runs.runsToIgnore = [3,4];
+                    case '083'
+                        runs.runsToKeep = [1,2,3];
+                        runs.runsToIgnore = 4;
+                    case '088'
+                        runs.runsToKeep = [1,2,3];
+                        runs.runsToIgnore = 4;
+                    case '097'
+                        runs.runsToKeep = 2:4;
+                        runs.runsToIgnore = 1;
+                    case '099'
+                        runs.runsToKeep = [1,2,4];
+                        runs.runsToIgnore = 3;
+                    case '100'
+                        runs.runsToKeep = [1,2];
+                        runs.runsToIgnore = [3,4];
+                end
+                %% removing any run with saturation (based on 6%/94% threshold for saturation)
             case {'behavior_noSatRun','behavior_noSatRun_bayesianMdl'}
                 switch sub_nm
                     case '002'
@@ -216,6 +292,69 @@ switch study_nm
                     case '099'
                         runs.runsToKeep = [1,2,4];
                         runs.runsToIgnore = 3;
+                    case '100'
+                        runs.runsToKeep = [1,2];
+                        runs.runsToIgnore = [3,4];
+                end
+                
+                %% removing any subject with saturation and any saturated run with more lenient threshold (based on 0%/100% threshold for saturation)
+            case {'behavior_noSatTaskSub_noSatRun_lenient'}
+                switch sub_nm
+                    case {'027','047','052','069','076','095'}
+                        error([sub_nm,' should not be included under the condition ',condition]);
+                    case '002'
+                        runs.runsToKeep = [1,2,4];
+                        runs.runsToIgnore = 3;
+                    case '005'
+                        runs.runsToKeep = 1:3;
+                        runs.runsToIgnore = 4;
+                    case '012'
+                        runs.runsToKeep = 1:3;
+                        runs.runsToIgnore = 4;
+                    case '032'
+                        runs.runsToKeep = [1,2,4];
+                        runs.runsToIgnore = 3;
+                    case '048'
+                        runs.runsToKeep = [1,3,4];
+                        runs.runsToIgnore = 2;
+                    case '100'
+                        runs.runsToKeep = [1,2];
+                        runs.runsToIgnore = [3,4];
+                end
+                
+                %% removing any run with saturation with more lenient threshold (based on 0%/100% threshold for saturation)
+            case {'behavior_noSatRun_lenient','behavior_noSatRun_bayesianMdl_lenient'}
+                switch sub_nm
+                    case '002'
+                        runs.runsToKeep = [1,2,4];
+                        runs.runsToIgnore = 3;
+                    case '005'
+                        runs.runsToKeep = 1:3;
+                        runs.runsToIgnore = 4;
+                    case '012'
+                        runs.runsToKeep = 1:3;
+                        runs.runsToIgnore = 4;
+                    case '027'
+                        runs.runsToKeep = 1;
+                        runs.runsToIgnore = [2,4];
+                    case '032'
+                        runs.runsToKeep = [1,2,4];
+                        runs.runsToIgnore = 3;
+                    case '047'
+                        runs.runsToKeep = 3;
+                        runs.runsToIgnore = [1,2,4];
+                    case '048'
+                        runs.runsToKeep = [1,3,4];
+                        runs.runsToIgnore = 2;
+                    case '052'
+                        runs.runsToKeep = [2,4];
+                        runs.runsToIgnore = [1,3];
+                    case '076'
+                        runs.runsToKeep = [1,2,3];
+                        runs.runsToIgnore = 4;
+                    case '095'
+                        runs.runsToKeep = [1,3];
+                        runs.runsToIgnore = [2,4];
                     case '100'
                         runs.runsToKeep = [1,2];
                         runs.runsToIgnore = [3,4];
@@ -311,8 +450,8 @@ switch study_nm
                         runs.runsToKeep = [1,2];
                         runs.runsToIgnore = [3,4];
                 end
-            case {'fMRI_noSatRun','fMRI_noSatRun_bayesianMdl',...
-                    'fMRI_noSatTaskSub_noSatRun', 'fMRI_noSatTaskSub_noMoveSub_noSatRun'}
+                %% fMRI and no saturation run
+            case {'fMRI_noSatRun','fMRI_noSatRun_bayesianMdl'}
                 switch sub_nm
                     case {'017','043','074'} % first run: fMRI crashed => we have the behavior but not enough trials for fMRI
                         runs.runsToKeep = 2:4;
@@ -388,6 +527,78 @@ switch study_nm
                     case '095'
                         runs.runsToKeep = 1;
                         runs.runsToIgnore = [2,3,4];
+                    case '097'
+                        runs.runsToKeep = 2:4;
+                        runs.runsToIgnore = 1;
+                    case '099'
+                        runs.runsToKeep = [1,2,4];
+                        runs.runsToIgnore = 3;
+                    case '100'
+                        runs.runsToKeep = [1,2];
+                        runs.runsToIgnore = [3,4];
+                end
+                %% fMRI and no saturation subject for one task and no saturation run
+            case {'fMRI_noSatTaskSub_noSatRun', 'fMRI_noSatTaskSub_noMoveSub_noSatRun'}
+                switch sub_nm
+                    case {'027','047','052','069','076','095'}
+                        error([sub_nm,' should not be included under the condition ',condition]);
+                    case {'017','043','074'} % first run: fMRI crashed => we have the behavior but not enough trials for fMRI
+                        runs.runsToKeep = 2:4;
+                        runs.runsToIgnore = 1;
+                    case '002'
+                        runs.runsToKeep = [1,2,4];
+                        runs.runsToIgnore = 3;
+                    case '004'
+                        runs.runsToKeep = [1,2,4];
+                        runs.runsToIgnore = 3;
+                    case '005'
+                        runs.runsToKeep = 1:3;
+                        runs.runsToIgnore = 4;
+                    case '012'
+                        runs.runsToKeep = 1:3;
+                        runs.runsToIgnore = 4;
+                    case '022'
+                        runs.runsToKeep = [1,2,4];
+                        runs.runsToIgnore = 3;
+                    case '032'
+                        runs.runsToKeep = [1,2,4];
+                        runs.runsToIgnore = 3;
+                    case '038'
+                        runs.runsToKeep = [1,3,4];
+                        runs.runsToIgnore = 2;
+                    case '044'
+                        runs.runsToKeep = [1,2,4];
+                        runs.runsToIgnore = 3;
+                    case '048'
+                        runs.runsToKeep = [1,3,4];
+                        runs.runsToIgnore = 2;
+                    case '054'
+                        runs.runsToKeep = 2:4;
+                        runs.runsToIgnore = 1;
+                    case '055'
+                        runs.runsToKeep = 1:3;
+                        runs.runsToIgnore = 4;
+                    case '058'
+                        runs.runsToKeep = 1:3;
+                        runs.runsToIgnore = 4;
+                    case '061'
+                        runs.runsToKeep = 2:4;
+                        runs.runsToIgnore = 1;
+                    case '062'
+                        runs.runsToKeep = [1,2,4];
+                        runs.runsToIgnore = 3;
+                    case '081'
+                        runs.runsToKeep = [1,2,4];
+                        runs.runsToIgnore = 3;
+                    case '082'
+                        runs.runsToKeep = [1,2];
+                        runs.runsToIgnore = [3,4];
+                    case '083'
+                        runs.runsToKeep = [1,2,3];
+                        runs.runsToIgnore = 4;
+                    case '088'
+                        runs.runsToKeep = [1,2,3];
+                        runs.runsToIgnore = 4;
                     case '097'
                         runs.runsToKeep = 2:4;
                         runs.runsToIgnore = 1;

@@ -44,27 +44,41 @@ function[NV_chosen_min_unch, deltaNV_hE_min_lE, confidence_highE, pChoice,...
 % NV_chosen_min_unch, but also including bias (ie same as pChoice before
 % the sigmoid transformation)
 
-study_nm = 'study1';
 %% load data
-deltaNVstruct = getfield(load([resultsFolder,'bayesian_deltaNV_data.mat']),'bayesian_deltaNV');
-pChoiceStruct = getfield(load([resultsFolder,'bayesian_pChoice_data.mat']),'bayesian_pChoice');
-run_nm_bis = ['run',run_nm];
+mdlN = strrep(mdl_nm,'mdl_','');
+model_data_struct = load([resultsFolder,'bayesian_model_',mdlN,'_results.mat']);
+prm = model_data_struct.prm;
+
 %% choice of low or high effort option?
 [choice_highE] = extract_choice_hE(subBehaviorFolder, sub_nm, run_nm, task_fullName);
 
-%% load model bias (if present in the model)
-mdl_nm_start = strfind(mdl_nm,'_') + 1;
-mdlN = mdl_nm(mdl_nm_start:end);
-prm = prm_extraction(study_nm, {sub_nm},...
-    'bayesian', mdlN);
-if ~isempty(strcmp(fieldnames(prm),'kBiasM'))
-    kBias = prm.kBiasM;
+%% load model bias for the current subject (if parameter present in the model)
+if ismember('kBias',fieldnames(prm))
+    % extract subject index for parameter
+    sub_idx = strcmp(sub_nm, model_data_struct.subject_id);
+    % extract bias parameter value for the current subject
+    kBias = prm.kBias(sub_idx);
 else
     kBias = 0;
 end
-    
-%% extract net value
-deltaNV_hE_min_lE = deltaNVstruct.(mdl_nm).(['CID',sub_nm]).(run_nm_bis);
+
+%% identify relevant subject and trials
+sub_nm_bis = ['CID',sub_nm];
+run_nm_bis = ['run',run_nm];
+
+% verify fields exist
+% subject
+if ~ismember(sub_nm_bis, fieldnames(model_data_struct.dV_pred_perSub_perRun))
+    error([sub_nm_bis,' missing for bayesian model ',mdlN,' extraction']);
+end
+% run
+if ~ismember(run_nm_bis, fieldnames(model_data_struct.dV_pred_perSub_perRun.(sub_nm_bis)))
+    error([run_nm_bis,' missing for ',sub_nm_bis,' with bayesian model ',mdlN]);
+end
+
+%% extract net value for current subject and run
+deltaNV_hE_min_lE = model_data_struct.dV_pred_perSub_perRun.(sub_nm_bis).(run_nm_bis);
+
 % in case of infinite values, replace with values giving a high probability
 % but not equal to +Inf or -Inf
 plus_inf_idx = find(deltaNV_hE_min_lE == Inf); % p(choice=hE) = 1
@@ -90,8 +104,9 @@ NV_chosen_min_unch(isnan(choice_highE)) = NaN;
 deltaNV_hE_min_lE_plus_bias = deltaNV_hE_min_lE + kBias;
 NV_ch_min_unch_with_bias = deltaNV_hE_min_lE_plus_bias.*choice_vector;
 
-%% p(choice)
-pChoice = pChoiceStruct.(mdl_nm).(['CID',sub_nm]).(run_nm_bis);
+%% extract p(choice) predicted by the model
+pChoice = model_data_struct.choices_pred_perSub_perRun.(sub_nm_bis).(run_nm_bis);
+
 %% confidence
 confidence_highE = (pChoice - 0.5).^2;
 % normalize confidence to make it between 0 and 1

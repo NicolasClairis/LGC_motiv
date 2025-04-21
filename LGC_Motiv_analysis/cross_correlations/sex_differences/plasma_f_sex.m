@@ -180,6 +180,8 @@ if fig_disp == 1
         Lac_females,...
         plasma_Lac.pval, jPos_male, jPos_female, 'NS');
     ylabel('Lactate (μM)');
+    xticks(1:2);
+    xticklabels({'Males','Females'});
     
     % fatty acids
     fig;

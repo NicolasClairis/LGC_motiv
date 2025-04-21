@@ -46,14 +46,14 @@ end
 subj_folder             = [root, filesep, 'CID',sub_nm];
 switch biasFieldCorr
     case 0
-        subj_analysis_folder    = [subj_folder, filesep, 'fMRI_analysis' filesep,...
-            'functional',filesep,'preproc_sm_',num2str(preproc_sm_kernel),'mm',filesep];
+        biasField_sufix = '';
     case 1
-        subj_analysis_folder    = [subj_folder, filesep, 'fMRI_analysis' filesep,...
-            'functional',filesep,'preproc_sm_',num2str(preproc_sm_kernel),'mm_with_BiasFieldCorrection',filesep];
+        biasField_sufix = '_with_BiasFieldCorrection';
     otherwise
         error('biasFieldCorr not defined in the input. Please enter a value');
 end
+subj_analysis_folder    = [subj_folder, filesep, 'fMRI_analysis' filesep,...
+            'functional',filesep,'preproc_sm_',num2str(preproc_sm_kernel),'mm',biasField_sufix,filesep];
 [resultsFolderName] = fMRI_subFolder(subj_analysis_folder, GLM, condition);
 
 %% extract GLM informations

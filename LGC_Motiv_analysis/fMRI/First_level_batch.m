@@ -1,5 +1,5 @@
-function[] = First_level_batch(GLM, checking, condition, study_nm, subject_id, NS, biasFieldCorr)
-%[] = First_level_batch(GLM, checking, condition, study_nm, subject_id, NS, biasFieldCorr)
+function[] = First_level_batch(GLM, checking, condition, study_nm, subject_id, NS, biasFieldCorr, DCM_GLM)
+%[] = First_level_batch(GLM, checking, condition, study_nm, subject_id, NS, biasFieldCorr, DCM_GLM)
 % First_level_batch will perform 1st level for LGC motivation fMRI studies.
 %
 % INPUTS
@@ -26,7 +26,12 @@ function[] = First_level_batch(GLM, checking, condition, study_nm, subject_id, N
 % the inputs)
 %
 % biasFieldCorr: use bias-field corrected images (1) or not (0)? By default
-% will not use bias-field corrected images
+% will not use bias-field corrected images (=0)
+%
+% DCM_GLM: use preprocessing adapted for DCM or not (the main difference is
+% that the preprocessing will be including or not a slice-timing correction)
+% (0) use basic preprocessing
+% (1) use preprocessing including slice-timing correction
 %
 % See also which_GLM.m, 
 % First_level_loadEachCondition.m, First_level_loadRegressors.m,
@@ -73,11 +78,27 @@ preproc_sm_kernel = 8;
 if ~exist('biasFieldCorr','var') || ~ismember(biasFieldCorr,[0,1])
     biasFieldCorr = 0;
 end
-switch biasFieldCorr
+
+% use preprocessing for DCM (including slice-timing correction) or not?
+if ~exist('DCM_GLM','var') || ~ismember(DCM_GLM,[0,1])
+    DCM_GLM = 0;
+end
+
+switch DCM_GLM
     case 0
-        prefix = 'swr';
+        switch biasFieldCorr
+            case 0
+                prefix = 'swr'; % smoothed(s)-normalized(w)-realigned(r) files
+            case 1
+                prefix = 'swbr'; % smoothed(s)-normalized(w)-bias-field corrected(b)-realigned(r) files
+        end
     case 1
-        prefix = 'swbr';
+        switch biasFieldCorr
+            case 0
+                prefix = 'swar'; % smoothed(s)-normalized(w)-slice-timed(a)-realigned(r) files
+            case 1
+                error('case with bias-field correction and DCM slice-timing preprocessing not ready yet');
+        end
 end
 
 % repetition time for fMRI
@@ -122,18 +143,29 @@ for iS = 1:NS
     % define working folders
     subj_folder             = [root, filesep, 'CID',sub_nm];
     subj_analysis_folder    = [subj_folder, filesep, 'fMRI_analysis' filesep];
-    subj_anat_folder        = [subj_analysis_folder, filesep, 'anatomical' filesep];
+%     subj_anat_folder        = [subj_analysis_folder, filesep, 'anatomical' filesep];
     subj_scans_folder       = [subj_folder, filesep, 'fMRI_scans' filesep];
     subj_behavior_folder    = [subj_folder, filesep, 'behavior' filesep];
     
     % create folder to store the results for the current subject
-    switch biasFieldCorr
+    switch DCM_GLM
         case 0
-            sm_folderName = [subj_analysis_folder 'functional', filesep,...
-                'preproc_sm_',num2str(preproc_sm_kernel),'mm',filesep];
+            switch biasFieldCorr
+                case 0
+                    sm_folderName = [subj_analysis_folder 'functional', filesep,...
+                        'preproc_sm_',num2str(preproc_sm_kernel),'mm',filesep];
+                case 1
+                    sm_folderName = [subj_analysis_folder 'functional', filesep,...
+                        'preproc_sm_',num2str(preproc_sm_kernel),'mm_with_BiasFieldCorrection',filesep];
+            end
         case 1
-            sm_folderName = [subj_analysis_folder 'functional', filesep,...
-                'preproc_sm_',num2str(preproc_sm_kernel),'mm_with_BiasFieldCorrection',filesep];
+            switch biasFieldCorr
+                case 0
+                    sm_folderName = [subj_analysis_folder 'functional', filesep,...
+                        'preproc_sm_',num2str(preproc_sm_kernel),'mm_DCM',filesep];
+                case 1
+                    error('case with bias-field correction and DCM slice-timing preprocessing not ready yet');
+            end
     end
     if ~exist(sm_folderName,'dir')
         mkdir(sm_folderName);
@@ -184,21 +216,27 @@ for iS = 1:NS
         [~, jRun] = First_level_subRunFilter(study_nm, sub_nm, [], iRun, condition);
         run_nm = num2str(jRun);
         % erase useless spaces from folder with run name
-        n_char = size(subj_scan_folders_names(iRun,:),2);
-        for iLetter = 1:n_char
-            if strcmp(subj_scan_folders_names(iRun,iLetter),' ') == 0 % erase space
-                subj_runFoldername_tmp(iLetter) = subj_scan_folders_names(iRun, iLetter);
-            end
-        end
+        subj_runFoldername_tmp = strrep(subj_scan_folders_names(iRun, :),' ','');
         
         % load scans in the GLM
-        switch biasFieldCorr
+        switch DCM_GLM
             case 0
-                runPath = [subj_scans_folder filesep subj_runFoldername_tmp, filesep,...
-                    'preproc_sm_',num2str(preproc_sm_kernel),'mm',filesep]; % run folder
+                switch biasFieldCorr
+                    case 0
+                        runPath = [subj_scans_folder filesep subj_runFoldername_tmp, filesep,...
+                            'preproc_sm_',num2str(preproc_sm_kernel),'mm',filesep]; % run folder
+                    case 1
+                        runPath = [subj_scans_folder filesep subj_runFoldername_tmp, filesep,...
+                            'preproc_sm_',num2str(preproc_sm_kernel),'mm_with_BiasFieldCorrection',filesep]; % run folder
+                end
             case 1
-                runPath = [subj_scans_folder filesep subj_runFoldername_tmp, filesep,...
-                    'preproc_sm_',num2str(preproc_sm_kernel),'mm_with_BiasFieldCorrection',filesep]; % run folder
+                switch biasFieldCorr
+                    case 0
+                        runPath = [subj_scans_folder filesep subj_runFoldername_tmp, filesep,...
+                            'preproc_sm_',num2str(preproc_sm_kernel),'mm_DCM',filesep]; % run folder
+                    case 1
+                        error('case with bias-field correction and DCM slice-timing preprocessing not ready yet');
+                end
         end
         preprocessed_filenames = cellstr(spm_select('ExtFPList',runPath,['^',prefix,'.*\.nii$'])); % extracts all the preprocessed swrf files (smoothed, normalized, realigned)
         % in case data is not in .nii but in .img & .hdr
@@ -213,15 +251,15 @@ for iS = 1:NS
         
         %% load regressors of interest
         % 1) identify which task corresponds to the current run
-        currRunBehaviorFileNames = ls([subj_behavior_folder,'*_session',run_nm,'_*_task.mat']);
-        if size(currRunBehaviorFileNames,1) > 1
+        currRunBehaviorFileName = ls([subj_behavior_folder,'*_session',run_nm,'_*_task.mat']);
+        if size(currRunBehaviorFileName,1) > 1
             error(['problem file identification: too many files popping out with run number',run_nm]);
         end
-        if strcmp(currRunBehaviorFileNames(16:23),'physical') ||...
-                strcmp(currRunBehaviorFileNames(17:24),'physical')
+        if strcmp(currRunBehaviorFileName(16:23),'physical') ||...
+                strcmp(currRunBehaviorFileName(17:24),'physical')
             task_nm = 'physical';
-        elseif strcmp(currRunBehaviorFileNames(16:21),'mental') ||...
-                strcmp(currRunBehaviorFileNames(17:22),'mental')
+        elseif strcmp(currRunBehaviorFileName(16:21),'mental') ||...
+                strcmp(currRunBehaviorFileName(17:22),'mental')
             task_nm = 'mental';
         else
             error('problem in identifying task type because file name doesn''t match');
@@ -232,9 +270,9 @@ for iS = 1:NS
             (strcmp(task_nm,'mental') && ~strcmp(runs.tasks(iRun),'Em'))
             error(['problem with run task type for subject ',sub_nm,' and run ',num2str(jRun)]);
         end
-        % perform 1st level
+        % extract onsets + regressors
         matlabbatch = First_level_loadRegressors(matlabbatch, GLMprm, study_nm, sub_nm, sub_idx, iRun, jRun,...
-            subj_behavior_folder, currRunBehaviorFileNames, task_nm, computerRoot);
+            subj_behavior_folder, currRunBehaviorFileName, task_nm, computerRoot);
         
         %% global run parameters (rp movement file, etc.)
         matlabbatch{sub_idx}.spm.stats.fmri_spec.sess(iRun).multi = {''};

@@ -191,7 +191,7 @@ for i_pm = 1:2
             if strcmp(taskToPerform.physical.calib,'on')
                 n_MVC_repeat = 3;
                 [MVC_tmp, onsets_MVC] = physical_effort_MVC(scr, stim, dq, n_MVC_repeat, calibTimes_Ep, 'MVC', key_Ep);
-                MVC = mean(MVC_tmp.MVC); % expressed in Voltage
+                MVC = MVC_tmp.MVC; % expressed in Voltage
                 save(Ep_calib_filenm,'MVC');
             elseif strcmp(taskToPerform.physical.calib,'off') &&...
                     ( strcmp(taskToPerform.physical.learning,'on') ||...
@@ -502,7 +502,7 @@ for i_pm = 1:2
                 Em_learningTimings = learningTimes_Em;
                 Em_learningTimings.time_limit = false;
                 % perform all the difficulty levels
-                [learning2PerfSummary_Em, onsets] = mental_learning(scr, stim, key_Em, n_E_levels, n_to_reach, n_Em_learningForceRepeats, Em_learningTimings);
+                [learning2PerfSummary_Em, onsets_learning] = mental_learning(scr, stim, key_Em, n_E_levels, n_to_reach, n_Em_learningForceRepeats, Em_learningTimings);
                 
                 %% temporary save of data
                 save([subResultFolder, file_nm,'.mat']);

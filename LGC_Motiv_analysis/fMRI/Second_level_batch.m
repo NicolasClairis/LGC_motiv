@@ -6,8 +6,6 @@ function[] = Second_level_batch(GLM, condition, gender, biasFieldCorr)
 % GLM: number of the GLM
 %
 % condition: define subjects and runs to include
-% 'fMRI': all subjects where fMRI ok
-% 'fMRI_no_move': remove runs with too much movement
 %
 % gender:
 % 'all': all subjects by default
@@ -17,6 +15,7 @@ function[] = Second_level_batch(GLM, condition, gender, biasFieldCorr)
 % biasFieldCorr: use bias-field corrected images (1) or not (0)? By default
 % will not use bias-field corrected images
 %
+
 %% clear workspace
 close all; clc;
 
@@ -80,10 +79,11 @@ GLMprm = which_GLM(GLM);
 %% create results folder
 switch biasFieldCorr
     case 0
-        mainPath = [studyRoot,filesep,'Second_level',filesep];
+        biasField_sufix = '';
     case 1
-        mainPath = [studyRoot,filesep,'Second_level_with_BiasFieldCorrection',filesep];
+        biasField_sufix = '_with_BiasFieldCorrection';
 end
+mainPath = [studyRoot,filesep,'Second_level',biasField_sufix,filesep];
 switch condition
     case {'fMRI'}
         results_folder = [mainPath,...
@@ -108,15 +108,15 @@ switch condition
     case 'fMRI_noMoveSub_bis'
         results_folder = [mainPath,...
             'GLM',GLM_str,'_',NS_str,'subs_',...
-            'preprocSm',num2str(preproc_sm_kernel),'mm_noMvmtSubLenient_',filesep];
+            'preprocSm',num2str(preproc_sm_kernel),'mm_noMvmtSubLenient',filesep];
     case 'fMRI_noMoveSub_ter'
         results_folder = [mainPath,...
             'GLM',GLM_str,'_',NS_str,'subs_',...
-            'preprocSm',num2str(preproc_sm_kernel),'mm_noMvmtSubStringent_',filesep];
+            'preprocSm',num2str(preproc_sm_kernel),'mm_noMvmtSubStringent',filesep];
     case 'fMRI_noSatTaskSub_noMove_bis_Sub'
         results_folder = [mainPath,...
             'GLM',GLM_str,'_',NS_str,'subs_',...
-            'preprocSm',num2str(preproc_sm_kernel),'mm_noSatTaskNoMvmtSub_',filesep];
+            'preprocSm',num2str(preproc_sm_kernel),'mm_noSatTaskNoMvmtSub',filesep];
     case {'fMRI_noSatTask','fMRI_noSatTask_bayesianMdl'}
         results_folder = [mainPath,...
             'GLM',GLM_str,'_',NS_str,'subs_',...
@@ -132,15 +132,15 @@ switch condition
     case 'fMRI_noMove_bis'
         results_folder = [mainPath,...
             'GLM',GLM_str,'_',NS_str,'subs_',...
-            'preprocSm',num2str(preproc_sm_kernel),'mm_noMvmtRunLenient_',filesep];
+            'preprocSm',num2str(preproc_sm_kernel),'mm_noMvmtRunLenient',filesep];
     case 'fMRI_noMove_ter'
         results_folder = [mainPath,...
             'GLM',GLM_str,'_',NS_str,'subs_',...
-            'preprocSm',num2str(preproc_sm_kernel),'mm_noMvmtRunStringent_',filesep];
+            'preprocSm',num2str(preproc_sm_kernel),'mm_noMvmtRunStringent',filesep];
     case {'fMRI_noSatTask_noMove_bis','fMRI_noSatTask_noMove_bis_bayesianMdl'}
         results_folder = [mainPath,...
             'GLM',GLM_str,'_',NS_str,'subs_',...
-            'preprocSm',num2str(preproc_sm_kernel),'mm_noSatTaskNoMvmtRun_',filesep];
+            'preprocSm',num2str(preproc_sm_kernel),'mm_noSatTaskNoMvmtRun',filesep];
     case 'fMRI_noSatTaskSub_noMoveSub_noSatRun'
         results_folder = [mainPath,...
             'GLM',GLM_str,'_',NS_str,'subs_',...
@@ -225,16 +225,9 @@ for iCon = 1:n_con
         % if you need to redefine the list of subjects included in the
         % analysis
         checkGLM_and_subjectIncompatibility(study_nm, sub_nm, condition, GLMprm);
-        switch biasFieldCorr
-            case 0
-                subject_main_folder = [studyRoot,filesep,'CID',sub_nm, filesep,...
-                    'fMRI_analysis' filesep, 'functional' filesep,...
-                    'preproc_sm_',num2str(preproc_sm_kernel),'mm',filesep];
-            case 1
-                subject_main_folder = [studyRoot,filesep,'CID',sub_nm, filesep,...
-                    'fMRI_analysis' filesep, 'functional' filesep,...
-                    'preproc_sm_',num2str(preproc_sm_kernel),'mm_with_BiasFieldCorrection',filesep];
-        end
+        subject_main_folder = [studyRoot,filesep,'CID',sub_nm, filesep,...
+            'fMRI_analysis' filesep, 'functional' filesep,...
+            'preproc_sm_',num2str(preproc_sm_kernel),'mm',biasField_sufix,filesep];
         subject_main_folder = fMRI_subFolder(subject_main_folder, GLM, condition);
         if isempty(subject_main_folder)
             error(['condition ',condition,' not planned yet. Please add it.']);

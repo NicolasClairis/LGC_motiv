@@ -2273,10 +2273,12 @@ switch GLM
             % choice
             GLMprm.model_onset.(Epm_nm).choice = 'stick';
             GLMprm.choice.(Epm_nm).splitPerE = 3;
-            GLMprm.choice.(Epm_nm).RP.lEch.money_varOption = 1;
-            GLMprm.choice.(Epm_nm).RP.lEch.E_varOption = 1;
-            GLMprm.choice.(Epm_nm).RP.hEch.money_varOption = 1;
-            GLMprm.choice.(Epm_nm).RP.hEch.E_varOption = 1;
+            % loop between low and high E chosen
+            for iEch = 1:length(Ech_conds_bis)
+                lhEch_nm = Ech_conds_bis{iEch};
+                GLMprm.choice.(Epm_nm).RP.(lhEch_nm).money_varOption = 1;
+                GLMprm.choice.(Epm_nm).RP.(lhEch_nm).E_varOption = 1;
+            end % low/high Ech
             % chosen
             GLMprm.model_onset.(Epm_nm).chosen = 'boxcar';
             % pre-effort cross
@@ -2656,10 +2658,12 @@ switch GLM
             % choice
             GLMprm.model_onset.(Epm_nm).choice = 'stick';
             GLMprm.choice.(Epm_nm).splitPerE = 3;
-            GLMprm.choice.(Epm_nm).RP.lEch.money_varOption = 1;
-            GLMprm.choice.(Epm_nm).RP.lEch.E_varOption = 1;
-            GLMprm.choice.(Epm_nm).RP.hEch.money_varOption = 1;
-            GLMprm.choice.(Epm_nm).RP.hEch.E_varOption = 1;
+            % loop between low and high E chosen
+            for iEch = 1:length(Ech_conds_bis)
+                lhEch_nm = Ech_conds_bis{iEch};
+                GLMprm.choice.(Epm_nm).RP.(lhEch_nm).money_varOption = 1;
+                GLMprm.choice.(Epm_nm).RP.(lhEch_nm).E_varOption = 1;
+            end % low/high Ech
             % chosen
             GLMprm.model_onset.(Epm_nm).chosen = 'boxcar';
             % effort perf (effort execution)
@@ -3438,7 +3442,7 @@ switch GLM
                         GLMprm.Eperf.Em.RP.(Ech_nm).efficacy = 3;
                 end
                 GLMprm.Eperf.(Epm_nm).RP.(Ech_nm).RT_1stAnswer = 1;
-            end
+            end % Ech 0/1/2/3
             % feedback
             GLMprm.model_onset.(Epm_nm).fbk = 'stick';
         end % physical/mental loop
@@ -7119,16 +7123,14 @@ switch GLM
             % choice
             GLMprm.choice.(Epm_nm).splitPerE = 3;
             GLMprm.model_onset.(Epm_nm).choice = 'stick';
-            % low E chosen
-            GLMprm.choice.(Epm_nm).RP.lEch.NV_mdl = 'bayesianModel_3';
-            GLMprm.choice.(Epm_nm).RP.lEch.NV_varOption = 4;
-            GLMprm.choice.(Epm_nm).RP.lEch.E_varOption = 1;
-            GLMprm.choice.(Epm_nm).RP.lEch.RT = 1;
-            % high E chosen
-            GLMprm.choice.(Epm_nm).RP.hEch.NV_mdl = 'bayesianModel_3';
-            GLMprm.choice.(Epm_nm).RP.hEch.NV_varOption = 4;
-            GLMprm.choice.(Epm_nm).RP.hEch.E_varOption = 1;
-            GLMprm.choice.(Epm_nm).RP.hEch.RT = 1;
+            % loop between low and high E chosen
+            for iEch = 1:length(Ech_conds_bis)
+                lhEch_nm = Ech_conds_bis{iEch};
+                GLMprm.choice.(Epm_nm).RP.(lhEch_nm).NV_mdl = 'bayesianModel_3';
+                GLMprm.choice.(Epm_nm).RP.(lhEch_nm).NV_varOption = 4;
+                GLMprm.choice.(Epm_nm).RP.(lhEch_nm).E_varOption = 1;
+                GLMprm.choice.(Epm_nm).RP.(lhEch_nm).RT = 1;
+            end % low/high Ech
             % chosen
             GLMprm.model_onset.(Epm_nm).chosen = 'stick';
             % effort perf (effort execution)
@@ -7177,6 +7179,253 @@ switch GLM
             GLMprm.model_onset.(Epm_nm).choice = 'stick';
             GLMprm.choice.(Epm_nm).RP.E.R_chosen = 4;
             GLMprm.choice.(Epm_nm).RP.E.P_chosen = 4;
+            GLMprm.choice.(Epm_nm).RP.E.E_chosen = 1;
+            GLMprm.choice.(Epm_nm).RP.E.RT = 1;
+            % chosen
+            GLMprm.model_onset.(Epm_nm).chosen = 'stick';
+            % effort perf (effort execution)
+            GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
+            % feedback
+            GLMprm.model_onset.(Epm_nm).fbk = 'stick';
+        end % physical/mental loop
+
+        %% redoing GLM with correct model
+    case 263 % main GLM: Ech/SVch/RT, like GLM 235 but using corrected model 5
+        % general parameters
+        GLMprm.gal.orth_vars = 0;
+        GLMprm.gal.zPerRun = 1;
+        GLMprm.gal.grey_mask = 3;
+        GLMprm.gal.mask_probaThreshold = 5;
+        % loop per task
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % fixation crosses
+            GLMprm.model_onset.(Epm_nm).allCrosses = 'stick';
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'stick';
+            GLMprm.choice.(Epm_nm).RP.E.NV_mdl = 'bayesianModel_5';
+            GLMprm.choice.(Epm_nm).RP.E.NV_chosen = 3;
+            GLMprm.choice.(Epm_nm).RP.E.E_chosen = 1;
+            GLMprm.choice.(Epm_nm).RP.E.RT = 1;
+            % chosen
+            GLMprm.model_onset.(Epm_nm).chosen = 'stick';
+            % effort perf (effort execution)
+            GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
+            % feedback
+            GLMprm.model_onset.(Epm_nm).fbk = 'stick';
+        end % physical/mental loop
+    case 264 % main GLM: RT/SVch/Ech orthogonalized, like GLM 253 but using corrected model 5
+        % general parameters
+        GLMprm.gal.orth_vars = 1;
+        GLMprm.gal.zPerRun = 1;
+        GLMprm.gal.grey_mask = 3;
+        GLMprm.gal.mask_probaThreshold = 5;
+        % loop per task
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % fixation crosses
+            GLMprm.model_onset.(Epm_nm).allCrosses = 'stick';
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'stick';
+            GLMprm.choice.(Epm_nm).RP.E.NV_mdl = 'bayesianModel_5';
+            GLMprm.choice.(Epm_nm).RP.E.NV_chosen = 6;
+            GLMprm.choice.(Epm_nm).RP.E.E_chosen = 1;
+            GLMprm.choice.(Epm_nm).RP.E.RT = 4;
+            % chosen
+            GLMprm.model_onset.(Epm_nm).chosen = 'stick';
+            % effort perf (effort execution)
+            GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
+            % feedback
+            GLMprm.model_onset.(Epm_nm).fbk = 'stick';
+        end % physical/mental loop
+    case 265 % main GLM (paper Mol. Psy.): Ech/SVch/RT orthogonalized, like GLM 259 but using corrected model 5
+        % general parameters
+        GLMprm.gal.orth_vars = 1;
+        GLMprm.gal.zPerRun = 1;
+        GLMprm.gal.grey_mask = 3;
+        GLMprm.gal.mask_probaThreshold = 5;
+        % loop per task
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % fixation crosses
+            GLMprm.model_onset.(Epm_nm).allCrosses = 'stick';
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'stick';
+            GLMprm.choice.(Epm_nm).RP.E.NV_mdl = 'bayesianModel_5';
+            GLMprm.choice.(Epm_nm).RP.E.NV_chosen = 3;
+            GLMprm.choice.(Epm_nm).RP.E.E_chosen = 1;
+            GLMprm.choice.(Epm_nm).RP.E.RT = 1;
+            % chosen
+            GLMprm.model_onset.(Epm_nm).chosen = 'stick';
+            % effort perf (effort execution)
+            GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
+            % feedback
+            GLMprm.model_onset.(Epm_nm).fbk = 'stick';
+        end % physical/mental loop
+    case 266 % main GLM: hE/hSV/RT split between hEch/lEch, like GLM 260 but using corrected model 5
+        % general parameters
+        GLMprm.gal.orth_vars = 0;
+        GLMprm.gal.zPerRun = 1;
+        GLMprm.gal.grey_mask = 3;
+        GLMprm.gal.mask_probaThreshold = 5;
+        % loop per task
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % fixation crosses
+            GLMprm.model_onset.(Epm_nm).allCrosses = 'stick';
+            % choice
+            GLMprm.choice.(Epm_nm).splitPerE = 3;
+            GLMprm.model_onset.(Epm_nm).choice = 'stick';
+            % loop between low and high E chosen
+            for iEch = 1:length(Ech_conds_bis)
+                lhEch_nm = Ech_conds_bis{iEch};
+                GLMprm.choice.(Epm_nm).RP.(lhEch_nm).NV_mdl = 'bayesianModel_5';
+                GLMprm.choice.(Epm_nm).RP.(lhEch_nm).NV_varOption = 4;
+                GLMprm.choice.(Epm_nm).RP.(lhEch_nm).E_varOption = 1;
+                GLMprm.choice.(Epm_nm).RP.(lhEch_nm).RT = 1;
+            end % loop low/high Ech
+            % chosen
+            GLMprm.model_onset.(Epm_nm).chosen = 'stick';
+            % effort perf (effort execution)
+            GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
+            % feedback
+            GLMprm.model_onset.(Epm_nm).fbk = 'stick';
+        end % physical/mental loop
+        
+        %% DCM-GLM
+    case 267 % based on GLM 263 but keeping only onsets for DCM-connectivity extraction
+        % general parameters
+        GLMprm.gal.orth_vars = 0;
+        GLMprm.gal.zPerRun = 1;
+        GLMprm.gal.grey_mask = 3;
+        GLMprm.gal.mask_probaThreshold = 5;
+        % loop per task
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % fixation crosses
+            GLMprm.model_onset.(Epm_nm).allCrosses = 'stick';
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'stick';
+            % chosen
+            GLMprm.model_onset.(Epm_nm).chosen = 'stick';
+            % effort perf (effort execution)
+            GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
+            % feedback
+            GLMprm.model_onset.(Epm_nm).fbk = 'stick';
+        end % physical/mental loop
+        %% GLMs including Punishments to study potential link with Gln
+    case 268 % hR/hP/hE/RT
+        % like GLM 263 but focus on hR/hP/hE instead of SV and Ech
+        % + no zscore
+        % general parameters
+        GLMprm.gal.orth_vars = 0;
+        GLMprm.gal.zPerRun = 0;
+        GLMprm.gal.grey_mask = 3;
+        GLMprm.gal.mask_probaThreshold = 5;
+        % loop per task
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % fixation crosses
+            GLMprm.model_onset.(Epm_nm).allCrosses = 'stick';
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'stick';
+            GLMprm.choice.(Epm_nm).RP.E.R_varOption = 2; % R level
+            GLMprm.choice.(Epm_nm).RP.E.P_varOption = 2; % P level
+            GLMprm.choice.(Epm_nm).RP.E.E_varOption = 1; % E level
+            GLMprm.choice.(Epm_nm).RP.E.RT = 1;
+            % chosen
+            GLMprm.model_onset.(Epm_nm).chosen = 'stick';
+            % effort perf (effort execution)
+            GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
+            % feedback
+            GLMprm.model_onset.(Epm_nm).fbk = 'stick';
+        end % physical/mental loop
+    case 269 % Rch/Pch/Ech/RT
+        % like GLM 268 but using chosen variables
+        % general parameters
+        GLMprm.gal.orth_vars = 0;
+        GLMprm.gal.zPerRun = 0;
+        GLMprm.gal.grey_mask = 3;
+        GLMprm.gal.mask_probaThreshold = 5;
+        % loop per task
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % fixation crosses
+            GLMprm.model_onset.(Epm_nm).allCrosses = 'stick';
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'stick';
+            GLMprm.choice.(Epm_nm).RP.E.R_chosen = 2; % R level chosen
+            GLMprm.choice.(Epm_nm).RP.E.P_chosen = 2; % P level chosen
+            GLMprm.choice.(Epm_nm).RP.E.E_chosen = 1;
+            GLMprm.choice.(Epm_nm).RP.E.RT = 1;
+            % chosen
+            GLMprm.model_onset.(Epm_nm).chosen = 'stick';
+            % effort perf (effort execution)
+            GLMprm.model_onset.(Epm_nm).Eperf = 'stick';
+            % feedback
+            GLMprm.model_onset.(Epm_nm).fbk = 'stick';
+        end % physical/mental loop
+    
+        %% main GLM without fixation cross modeled
+    case 270 % main GLM like GLM 263 but removing cross regressors (=> considered as baseline) + with boxcar
+        % Ech/SVch/RT
+        % general parameters
+        GLMprm.gal.orth_vars = 0;
+        GLMprm.gal.zPerRun = 1;
+        GLMprm.gal.grey_mask = 3;
+        GLMprm.gal.mask_probaThreshold = 5;
+        % loop per task
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'boxcar';
+            GLMprm.choice.(Epm_nm).RP.E.NV_mdl = 'bayesianModel_5';
+            GLMprm.choice.(Epm_nm).RP.E.NV_chosen = 3;
+            GLMprm.choice.(Epm_nm).RP.E.E_chosen = 1;
+            GLMprm.choice.(Epm_nm).RP.E.RT = 1;
+            % chosen
+            GLMprm.model_onset.(Epm_nm).chosen = 'boxcar';
+            % effort perf (effort execution)
+            GLMprm.model_onset.(Epm_nm).Eperf = 'boxcar';
+            % feedback
+            GLMprm.model_onset.(Epm_nm).fbk = 'boxcar';
+        end % physical/mental loop
+        %% DCM-GLM
+    case 271 % based on GLM 270 (no fixation cross) but keeping only onsets for DCM-connectivity extraction
+        % general parameters
+        GLMprm.gal.orth_vars = 0;
+        GLMprm.gal.zPerRun = 1;
+        GLMprm.gal.grey_mask = 3;
+        GLMprm.gal.mask_probaThreshold = 5;
+        % loop per task
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'boxcar';
+            % chosen
+            GLMprm.model_onset.(Epm_nm).chosen = 'boxcar';
+            % effort perf (effort execution)
+            GLMprm.model_onset.(Epm_nm).Eperf = 'boxcar';
+            % feedback
+            GLMprm.model_onset.(Epm_nm).fbk = 'boxcar';
+        end % physical/mental loop
+        
+        %% main GLM without fixation cross modeled
+    case 272 % main GLM like GLM 263 but removing cross regressors (=> considered as baseline)
+        % like GLM 270 but with sticks
+        % Ech/SVch/RT
+        % general parameters
+        GLMprm.gal.orth_vars = 0;
+        GLMprm.gal.zPerRun = 1;
+        GLMprm.gal.grey_mask = 3;
+        GLMprm.gal.mask_probaThreshold = 5;
+        % loop per task
+        for iEpm = 1:length(Epm)
+            Epm_nm = Epm{iEpm};
+            % choice
+            GLMprm.model_onset.(Epm_nm).choice = 'stick';
+            GLMprm.choice.(Epm_nm).RP.E.NV_mdl = 'bayesianModel_5';
+            GLMprm.choice.(Epm_nm).RP.E.NV_chosen = 3;
             GLMprm.choice.(Epm_nm).RP.E.E_chosen = 1;
             GLMprm.choice.(Epm_nm).RP.E.RT = 1;
             % chosen
