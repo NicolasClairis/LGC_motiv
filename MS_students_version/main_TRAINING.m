@@ -79,7 +79,7 @@ taskToPerform.physical.learning = 'off';
 taskToPerform.physical.task = 'on';
 taskToPerform.mental.learning_1 = 'off';
 taskToPerform.mental.learning_2 = 'off';
-taskToPerform.mental.task = 'on';
+taskToPerform.mental.task = 'off';
 
 switch langue
     case 'f'
@@ -180,7 +180,7 @@ for i_pm = 1:2
         case 'p'
             %% physical MVC (calibrate the Fmax for the whole experiment)
             if strcmp(taskToPerform.physical.calib,'on')
-                n_MVC_repeat = 7;
+                n_MVC_repeat = 12;
                 [MVC_tmp, onsets_MVC] = physical_effort_MVC(scr, stim, dq, n_MVC_repeat, calibTimes_Ep, 'MVC', key_Ep);
                 MVC = mean(MVC_tmp.MVC); % expressed in Voltage
                 save(Ep_calib_filenm,'MVC');
