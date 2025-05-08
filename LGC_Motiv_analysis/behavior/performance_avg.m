@@ -28,7 +28,7 @@ end
 
 %% working directory
 % pcRoot = LGCM_root_paths;
-pcRoot = 'E:\';
+pcRoot = 'F:\';
 study_path = [pcRoot, study_nm, filesep];
 
 %% initialize variables of interest
