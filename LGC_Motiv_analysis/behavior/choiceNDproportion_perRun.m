@@ -83,6 +83,19 @@ for iRun = 1:nRuns
             jTrials = jTrials + 1;
         else % no choice was made = ignore the trial
         end % choice = default or not?
+
+
+        % % if you want to reproduce Arthur's filtering method, you also have
+        % % to base the filter on the proportion of high effort*high
+        % % confidence trials:
+        % if choiceSide_tmp(iTrial) == -defaultSide_tmp(iTrial) && runData.perfSummary.confidence.lowOrHigh(iTrial) == 2 % choice non-default option
+        %     choiceND_tmp(iTrial) = 1;
+        %     jTrials = jTrials + 1;
+        % elseif choiceSide_tmp(iTrial) == defaultSide_tmp(iTrial) || runData.perfSummary.confidence.lowOrHigh(iTrial) == 1 % choice default option
+        %     choiceND_tmp(iTrial) = 0;
+        %     jTrials = jTrials + 1;
+        % else % no choice was made = ignore the trial
+        % end % choice = default or not?
     end % trial loop
     
     % extract proportion of non-default choices per run (ignoring trials
