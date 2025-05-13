@@ -28,6 +28,10 @@ function[subject_id, NS] = LGCM_subject_selection(study_nm, condition, genderFil
 %   removing all the runs that were saturated
 % 'behavior_noSatTaskSub_noSatRun_lenient': like 'behavior_noSatTaskSub_noSatRun' list but saturation 
 % threshold set at 0/100% instead of 6/94% 
+% 'behavior_noSatEm_Arthur': all subjects who performed the task and who
+% are not considered outliers based on Arthur's filter (which is based on
+% saturating the task by selecting high effort*high confidence option all
+% the time in the mental effort task)
 % 'respiration_and_noSatRun': respiration ok and no saturation run
 % 'fMRI': all subjects who performed the behavioral task in the fMRI
 %   (removing only the runs where fMRI crashed)
@@ -161,6 +165,12 @@ switch study_nm
                 % computational model (027, 052, 095) because one task was
                 % saturated
                 bad_subs = ismember(fullSubList,{'027','047','052','095'});
+            case 'behavior_noSatEm_Arthur'
+                % removing subjects where no run survives after removing
+                % runs with too much saturation in the mental effort task
+                % and based on saturation defined as selection of high
+                % effort option+high confidence option all the time
+                bad_subs = ismember(fullSubList,{'027','047'});
             case 'fMRI_noSatRun_noMove_bis'
                 % removing subjects where no run survives after removing
                 % runs with too much movement or saturation

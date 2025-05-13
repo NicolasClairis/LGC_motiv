@@ -91,7 +91,8 @@ switch study_nm
         
         %% define subject runs to keep depending on condition
         switch condition
-            case {'fullList','behavior'} % nothing to change for those conditions
+            case {'fullList','behavior',... % nothing to change for those conditions
+                    'behavior_noSatEm_Arthur'}
             %% for all fMRI conditions, need to remove run 1 from those subjects because of fMRI crash
             case {'fMRI','fMRI_noSatRunSub'}
                 switch sub_nm
