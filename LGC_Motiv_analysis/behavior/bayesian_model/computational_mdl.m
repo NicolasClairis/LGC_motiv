@@ -40,7 +40,7 @@ condition1 = 'behavior_noSatTaskSub_noSatRun_lenient'; % by default, include all
 condition2 = 'behavior_noSatTaskSub'; % this will allow to extract the information regarding the inputs for all trials, even though runs will be excluded from the analysis
 
 %% define working directories
-root = 'E:';
+root = 'F:';
 root_saveFolder = fullfile('C:','Users','clairis','Desktop'); % pc-specific pathway to update if script launched elsewhere
 saveFolder = fullfile(root_saveFolder,'GitHub','LGC_motiv','LGC_Motiv_results','study1','bayesian_modeling');
 
