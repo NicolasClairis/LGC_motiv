@@ -70,7 +70,7 @@ G_parameters = mdl_prm.G_prm_names;
 n_G_prm = length(G_parameters);
 for iP = 1:n_G_prm
     G_prm_nm = G_parameters{iP};
-    prm.(G_prm_nm) = NaN(1,NS);
+    [old_prm.(G_prm_nm), prm.(G_prm_nm)] = deal(NaN(1,NS));
 end
 
 % model quality
@@ -295,7 +295,8 @@ for iS = 1:NS
             case false % no constraint on the parameter
                 prm.(G_prm_nm)(iS) = posterior.muPhi(iP);
             case true % positivity constraint => transform parameter accordingly
-                prm.(G_prm_nm)(iS) = log(1 + exp(posterior.muPhi(iP)));
+                [prm.(G_prm_nm)(iS)] = fn_for_posterior(posterior.muPhi(iP), posterior.sigmaPhi(iP,iP), 'pos2'); % 'pos2' refers to the log(1+exp(X)) transformation
+                old_prm.(G_prm_nm)(iS) = log(1 + exp(posterior.muPhi(iP))); % wrong but this is what we did initially => need to control if it's ok
         end
     end
 
@@ -334,5 +335,6 @@ save([saveFolder,filesep,'bayesian_model_',mdl_n_nm,'_results.mat'],...
     'prm', 'mdl_quality', 'subject_id', 'NS',...
     'choices_raw', 'choices_pred','dV_pred',...
     'choices_raw_perSub','choices_pred_perSub','dV_pred_perSub',...
-    'choices_raw_perSub_perRun','choices_pred_perSub_perRun','dV_pred_perSub_perRun');
+    'choices_raw_perSub_perRun','choices_pred_perSub_perRun','dV_pred_perSub_perRun',...
+    'old_prm');
 end % function
