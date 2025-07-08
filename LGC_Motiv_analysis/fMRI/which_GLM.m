@@ -6449,6 +6449,9 @@ switch GLM
         end % physical/mental loop
         
     case 235 % same as GLM 214 but removing time effect Fp/Fm
+        % same as GLM263 (in theory) but was launched with previous (wrong)
+        % version of the bayesian model => GLM263 was designed to fix that
+        % issue without the need to erase and redo the same twice
         % general parameters
         GLMprm.gal.orth_vars = 0;
         GLMprm.gal.zPerRun = 1;
