@@ -7190,6 +7190,7 @@ switch GLM
         end % physical/mental loop
 
         %% redoing GLM with correct model
+        %% main GLM (paper Mol. Psy.) GLM1
     case 263 % main GLM: Ech/SVch/RT, like GLM 235 but using corrected model 5
         % general parameters
         GLMprm.gal.orth_vars = 0;
@@ -7214,6 +7215,8 @@ switch GLM
             % feedback
             GLMprm.model_onset.(Epm_nm).fbk = 'stick';
         end % physical/mental loop
+
+        %% paper Mol. Psy (Fig.S3-3A)
     case 264 % main GLM: RT/SVch/Ech orthogonalized, like GLM 253 but using corrected model 5
         % general parameters
         GLMprm.gal.orth_vars = 1;
@@ -7238,7 +7241,8 @@ switch GLM
             % feedback
             GLMprm.model_onset.(Epm_nm).fbk = 'stick';
         end % physical/mental loop
-    case 265 % main GLM (paper Mol. Psy.): Ech/SVch/RT orthogonalized, like GLM 259 but using corrected model 5
+        %% paper Mol. Psy (Fig.S3-3B)
+    case 265 % main GLM : Ech/SVch/RT orthogonalized, like GLM 259 but using corrected model 5
         % general parameters
         GLMprm.gal.orth_vars = 1;
         GLMprm.gal.zPerRun = 1;
@@ -7262,6 +7266,7 @@ switch GLM
             % feedback
             GLMprm.model_onset.(Epm_nm).fbk = 'stick';
         end % physical/mental loop
+        %%
     case 266 % main GLM: hE/hSV/RT split between hEch/lEch, like GLM 260 but using corrected model 5
         % general parameters
         GLMprm.gal.orth_vars = 0;
