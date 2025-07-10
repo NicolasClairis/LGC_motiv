@@ -31,7 +31,7 @@ condition1 = 'behavior_noSatTaskSub_noSatRun_lenient'; % by default, include all
 condition2 = 'behavior_noSatTaskSub'; % this will allow to extract the information regarding the inputs for all trials, even though runs will be excluded from the analysis
 
 %% define working directories
-root = 'E:';
+root = 'F:';
 
 %% general parameters
 nTrialsPerRun = 54;
