@@ -265,7 +265,8 @@ for i_simu = 1:n_simulations
         G_prm_nm = G_prm_names{iPrm};
         switch mdl_prm.pos.(G_prm_nm)
             case true % positivity constraint => adapt parameter accordingly
-                posteriorPhi_transfo(iPrm,i_simu) = log(1 + exp(posteriorPhi(iPrm,i_simu)));
+                posteriorPhi_transfo(iPrm,i_simu) = fn_for_posterior(posterior.muPhi(iPrm),...
+                    posterior.SigmaPhi(iPrm,iPrm), 'pos2');
             case false % no constraint
                 posteriorPhi_transfo(iPrm,i_simu) = posteriorPhi(iPrm,i_simu);
         end
