@@ -62,7 +62,7 @@ matlabbatch{batch_avg}.spm.util.imcalc.options.dmtx     = 1; % data matrix set t
 matlabbatch{batch_avg}.spm.util.imcalc.options.mask     = 0;
 matlabbatch{batch_avg}.spm.util.imcalc.options.interp   = 1;
 matlabbatch{batch_avg}.spm.util.imcalc.options.dtype    = 4;
-%% binarize resulting grey mask
+%% binarize resulting white mask
 batch_binarize = 2;
 matlabbatch{batch_binarize}.spm.util.imcalc.input(1) = cfg_dep('Image Calculator: ImCalc Computed Image: output',...
     substruct('.','val', '{}',{batch_avg}, '.','val', '{}',{1}, '.','val', '{}',{1}), substruct('.','files'));
