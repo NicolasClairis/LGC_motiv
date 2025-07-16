@@ -74,7 +74,7 @@ matlabbatch{batch_avg}.spm.util.imcalc.options.interp   = 1;
 matlabbatch{batch_avg}.spm.util.imcalc.options.dtype    = 4;
 %% produce binary mask where any voxel which is either part of 
 % grey matter or of white matter with a probability higher than 
-% proba_thresholdis included
+% proba_threshold is included
 batch_binarize = 2;
 % matlabbatch{2}.spm.util.imcalc.input(1) = cfg_dep('Image Calculator: ImCalc Computed Image: pool_greyAndWhiteM_65_subjects_fMRI_noSatTaskSub_noSatRun_20percentWhiteM', substruct('.','val', '{}',{1}, '.','val', '{}',{1}, '.','val', '{}',{1}), substruct('.','files'));
 matlabbatch{batch_binarize}.spm.util.imcalc.input(1) = cfg_dep('Image Calculator: ImCalc Computed Image: output',...
