@@ -21,12 +21,12 @@ function[CORT_data] = load_CORT(study_nm, subject_id)
 % N. Clairis - november 2022
 
 %% working directories
-which_pc = 'Lab';
+which_pc = 'home';
 switch which_pc
     case 'Lab'
         gitPath = 'C:\Users\clairis\Desktop\';
     case 'home'
-        gitPath = 'C:\Users\Loco\Documents\';
+        gitPath = 'C:\Users\Nicolas Clairis\Documents\';
 end 
 CORTpath = fullfile(gitPath,'GitHub','LGC_motiv',...
     'LGC_Motiv_results',study_nm,'CORT');

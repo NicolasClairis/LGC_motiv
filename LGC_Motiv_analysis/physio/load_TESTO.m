@@ -21,7 +21,7 @@ function[TESTO_data] = load_TESTO(study_nm, subject_id)
 % N. Clairis - april 2023
 
 %% working directories
-which_pc = 'Lab';
+which_pc = 'home';
 switch which_pc
     case 'Lab'
         gitPath = 'C:\Users\clairis\Desktop\';
