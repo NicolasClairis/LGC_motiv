@@ -152,9 +152,11 @@ if strcmp(punishment_yn,'yes') && mod(nTrials,2) ~= 0
 end
 %
 % determine reward/punishment and effort level combinations for each trial
-% choiceOptions = choice_option_design(n_R_levels, n_E_levels, punishment_yn, nTrials, R_money);
+% choiceOptions = design_choiceOptions(n_R_levels, n_E_levels, punishment_yn, nTrials); % default initialization of choiceOptions
+% initialize choiceOptions with bestMatrix so that effort levels and number
+% of trials and conditions are always the same across subjects and sessions
 bestMatrix = getfield( load([main_task_folder,'DaBestDesignMat.mat'],'bestMatrix'),'bestMatrix');
-choiceOptions = RP_moneyLevels(bestMatrix, R_money);
+choiceOptions = RP_moneyLevels(bestMatrix, R_money); % update of bestMatrix based on the IP for the monetary amounts of R and P => bestMatrix becomes choiceOptions
 % display of different answers only during the training
 confDispDuringChoice = false;
 

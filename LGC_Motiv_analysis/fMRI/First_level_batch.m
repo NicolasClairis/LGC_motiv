@@ -301,6 +301,7 @@ for iS = 1:NS
     %% other parameters
     matlabbatch{sub_idx}.spm.stats.fmri_spec.volt = 1;
     matlabbatch{sub_idx}.spm.stats.fmri_spec.global = 'None';
+    % adjust mthresh threshold which implicitly masks the first level depending on the probability that the voxel is "relevant"
     switch grey_mask
         case 0 % filter with threshold here if no mask entered
             matlabbatch{sub_idx}.spm.stats.fmri_spec.mthresh = 0.8; % default value
@@ -311,7 +312,7 @@ for iS = 1:NS
         case 6 % filter with threshold here if no mask entered
             matlabbatch{sub_idx}.spm.stats.fmri_spec.mthresh = 0.1; % try lower value to include ventral striatum
         case {1,2,3,7} % no filter here since the mask will do the job
-            matlabbatch{sub_idx}.spm.stats.fmri_spec.mthresh = -Inf; % implicitly masks the first level depending on the probability that the voxel is "relevant"
+            matlabbatch{sub_idx}.spm.stats.fmri_spec.mthresh = -Inf; % remove the threshold and filter "manually" with an inclusive mask
     end
     
     

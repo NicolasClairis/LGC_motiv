@@ -1,12 +1,12 @@
-function[var, mean_var, var_names, AUC_perEch, currEff_perEch, mean_AUC_perEch, mean_currEff_perEch] = load_computational_mdl_input_across_subs()
-% [var, mean_var, var_names, AUC_perEch, currEff_perEch, mean_AUC_perEch, mean_currEff_perEch] = load_computational_mdl_input_across_subs()
+function[vars, mean_var, var_names, AUC_perEch, currEff_perEch, mean_AUC_perEch, mean_currEff_perEch] = load_computational_mdl_input_across_subs()
+% [vars, mean_var, var_names, AUC_perEch, currEff_perEch, mean_AUC_perEch, mean_currEff_perEch] = load_computational_mdl_input_across_subs()
 % load_computational_mdl_input_across_subs will go through all subjects of
 % the experiments defined in input and will extract their data in order to
 % build a big matrix with all the variables and to average the inputs 
 % across subjects
 %
 % OUTPUTS
-% var: (7 input variables)*(216 trials)*(NS) matrix including the input
+% vars: (7 input variables)*(216 trials)*(NS) matrix including the input
 % variables for the model across all these subjects
 %
 % mean_var: (7 input variables)*(216 trials) matrix averaged across
@@ -31,7 +31,7 @@ condition1 = 'behavior_noSatTaskSub_noSatRun_lenient'; % by default, include all
 condition2 = 'behavior_noSatTaskSub'; % this will allow to extract the information regarding the inputs for all trials, even though runs will be excluded from the analysis
 
 %% define working directories
-root = 'E:';
+root = 'F:';
 
 %% general parameters
 nTrialsPerRun = 54;
@@ -39,7 +39,7 @@ nRuns = 4;
 nTotalTrials = nTrialsPerRun.*nRuns;
 var_names = {'dR','dP','dE','EpEm','Fp','currEff','prevEff'};
 n_vars = length(var_names);
-var = NaN(n_vars, nTotalTrials, NS);
+vars = NaN(n_vars, nTotalTrials, NS);
 
 Ech_levels = 0:3;
 n_Ech = length(Ech_levels);
@@ -140,10 +140,10 @@ for iS = 1:NS
     Fp = Fp./1000;
     
     %% pool everybody in var
-    var(:,:,iS) = [deltaR; deltaP; deltaE; Ep_or_Em_trials; Fp; currEff; prevEff];
+    vars(:,:,iS) = [deltaR; deltaP; deltaE; Ep_or_Em_trials; Fp; currEff; prevEff];
     % remove bad trials
     bad_trials = ok_trials == false;
-    var(:,bad_trials,iS) = NaN;
+    vars(:,bad_trials,iS) = NaN;
     
     %% extract AUC and Efficiency per effort level
     for iEch = Ech_levels
@@ -164,7 +164,7 @@ for iS = 1:NS
 end % subject loop
 
 %% average the data across subjects
-mean_var = mean(var,3,'omitnan');
+mean_var = mean(vars,3,'omitnan');
 % replace Ep_or_Em_trials to fix it (alternating between Ep and Em across
 % sessions) instead of weird average
 mean_var(strcmp(var_names,'EpEm'),:) = [ones(1,nTrialsPerRun), zeros(1,nTrialsPerRun), ones(1,nTrialsPerRun), zeros(1,nTrialsPerRun)];

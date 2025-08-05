@@ -46,8 +46,8 @@ disp('(1/4) **Load real data and average it**');
 [~, mean_var, var_names, ~,~,m_AUC_perEch, m_Eff_perEch] = load_computational_mdl_input_across_subs();
 % keep everything except for Fp/Lm where we will adjust the data to
 % simulated choices
-var = mean_var;
-var(ismember(var_names,{'Fp','currEff','prevEff'}),:) = NaN;
+vars = mean_var;
+vars(ismember(var_names,{'Fp','currEff','prevEff'}),:) = NaN;
 
 %% 2) simulate data based on inputs, model selected and parameter priors
 disp('(2/4) **Start performing simulations**');
@@ -55,7 +55,7 @@ disp('(2/4) **Start performing simulations**');
 n_simulations = 10000; % number of simulations to perform for each model considered
 
 % replicate var by number of simulations in 3rd dimension
-var = repmat(var,1,1,n_simulations);
+vars = repmat(vars,1,1,n_simulations);
 
 % noise parameters
 % 1/sd noise for f_evolution and g_obs. Inf adds 0 noise
@@ -178,13 +178,13 @@ for i_simu = 1:n_simulations
         % loop over trials with one simulation/trial
         for iPrm = 1:nTrialsPerRun
             jTrial = iPrm + nTrialsPerRun*(iRun - 1);
-            is_Ep_trial = var(strcmp(var_names,'EpEm'),jTrial,i_simu);
+            is_Ep_trial = vars(strcmp(var_names,'EpEm'),jTrial,i_simu);
             if  is_Ep_trial == 1 % Ep trial
-                var(strcmp(var_names,'Fp'),jTrial,i_simu) = Ep_sum_AUC;
-                var(strcmp(var_names,'prevEff'),jTrial,i_simu) = 0;
+                vars(strcmp(var_names,'Fp'),jTrial,i_simu) = Ep_sum_AUC;
+                vars(strcmp(var_names,'prevEff'),jTrial,i_simu) = 0;
             else % Em trial
-                var(strcmp(var_names,'Fp'),jTrial,i_simu) = 0;
-                var(strcmp(var_names,'prevEff'),jTrial,i_simu) = Em_prevEff;
+                vars(strcmp(var_names,'Fp'),jTrial,i_simu) = 0;
+                vars(strcmp(var_names,'prevEff'),jTrial,i_simu) = Em_prevEff;
             end
             
             % launch the simulation trial/trial which allows to extract
@@ -193,13 +193,13 @@ for i_simu = 1:n_simulations
             % nevertheless based on the average Fp/Lm values across
             % subjects for each condition
             [pChoice_HE_simu(jTrial,i_simu)] = VBA_simulate(1, f_evol_function, g_obs_function,...
-                theta, parameterPhi(:,i_simu), var(:,jTrial,i_simu), alpha, sigma, options, x0);
+                theta, parameterPhi(:,i_simu), vars(:,jTrial,i_simu), alpha, sigma, options, x0);
             
             % extract level of effort chosen
             if pChoice_HE_simu(jTrial, i_simu) < 0.5
                 Ech_tmp = 0;
             else
-                Ech_tmp = var(strcmp(var_names,'dE'),jTrial,i_simu);
+                Ech_tmp = vars(strcmp(var_names,'dE'),jTrial,i_simu);
             end
             
             % update accumulated effort/efficiency parameter depending on
@@ -257,7 +257,7 @@ for i_simu = 1:n_simulations
     options.inG.var_names = var_names;
     
     % compute posterior
-    [posterior, out] = VBA_NLStateSpaceModel(pChoice_HE_simu(:,i_simu)', var(:,:,i_simu), f_evol_function, g_obs_function, options.dim, options);
+    [posterior, out] = VBA_NLStateSpaceModel(pChoice_HE_simu(:,i_simu)', vars(:,:,i_simu), f_evol_function, g_obs_function, options.dim, options);
     
     %% save the data
     posteriorPhi(:, i_simu) = posterior.muPhi;
@@ -265,7 +265,8 @@ for i_simu = 1:n_simulations
         G_prm_nm = G_prm_names{iPrm};
         switch mdl_prm.pos.(G_prm_nm)
             case true % positivity constraint => adapt parameter accordingly
-                posteriorPhi_transfo(iPrm,i_simu) = log(1 + exp(posteriorPhi(iPrm,i_simu)));
+                posteriorPhi_transfo(iPrm,i_simu) = fn_for_posterior(posterior.muPhi(iPrm),...
+                    posterior.SigmaPhi(iPrm,iPrm), 'pos2');
             case false % no constraint
                 posteriorPhi_transfo(iPrm,i_simu) = posteriorPhi(iPrm,i_simu);
         end

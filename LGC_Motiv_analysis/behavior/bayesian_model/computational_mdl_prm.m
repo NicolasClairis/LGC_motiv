@@ -81,7 +81,7 @@ switch mdl_n
         pos.kFp = true;
         pos.kLm = true;
         pos.kBias = false;
-    case 5 % main model
+    case 5 % main model (used in the 2 papers)
         F_prm_names = {};
         G_prm_names = {'kR','kP','kEp','kEm','kBias','kFp','kLm'};
         include_Inc = false;
@@ -101,7 +101,7 @@ switch mdl_n
         pos.kFp = true;
         pos.kLm = true;
         pos.kBias = false;
-    case 6 % model with binary output for choices (0/1) instead of 4-levels (0/0.25/0.75/1)
+    case 6 % model with binary output for choices (0/1) instead of 4-levels (0/0.25/0.75/1) (for applying oMCD)
         F_prm_names = {};
         G_prm_names = {'kR','kP','kEp','kEm','kBias','kFp','kLm'};
         include_Inc = false;

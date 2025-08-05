@@ -10,7 +10,7 @@ function[training_dur] = training_duration()
 [study_nm, ~, ~, subject_id, NS] = sub_id;
 
 %% working directory
-training_folder = [fullfile('M:','human_data_private',...
+training_folder = [filesep,filesep,fullfile('sv-nas1.rcp.epfl.ch','human_data_private',...
     'raw_data_subject',study_nm), filesep];
 
 %% load the data

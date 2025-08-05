@@ -40,8 +40,8 @@ condition1 = 'behavior_noSatTaskSub_noSatRun_lenient'; % by default, include all
 condition2 = 'behavior_noSatTaskSub'; % this will allow to extract the information regarding the inputs for all trials, even though runs will be excluded from the analysis
 
 %% define working directories
-root = 'E:';
-root_saveFolder = fullfile('C:','Users','clairis','Desktop'); % pc-specific pathway to update if script launched elsewhere
+root = 'F:';
+root_saveFolder = fullfile('C:','Users','Nicolas Clairis','Documents'); % pc-specific pathway to update if script launched elsewhere
 saveFolder = fullfile(root_saveFolder,'GitHub','LGC_motiv','LGC_Motiv_results','study1','bayesian_modeling');
 
 %% main parameters
@@ -70,7 +70,7 @@ G_parameters = mdl_prm.G_prm_names;
 n_G_prm = length(G_parameters);
 for iP = 1:n_G_prm
     G_prm_nm = G_parameters{iP};
-    prm.(G_prm_nm) = NaN(1,NS);
+    [old_prm.(G_prm_nm), prm.(G_prm_nm)] = deal(NaN(1,NS));
 end
 
 % model quality
@@ -121,8 +121,9 @@ for iS = 1:NS
         end
         run_trial_idx = (1:nTrialsPerRun) + nTrialsPerRun.*(jR - 1);
         
-        % keep these trials if run not saturated, otherwise ignore it from
-        % the analysis (isYout = 1) to improve model estimation
+        % keep trials when run not saturated (isYout = 0),
+        % otherwise ignore the run from the analysis (isYout = 1) to 
+        % improve the model estimation
         if ismember(jR, runs_ok.runsToKeep)
             options.isYout(run_trial_idx) = 0;
         end
@@ -187,19 +188,19 @@ for iS = 1:NS
     Fp = Fp./1000;
     
     %% pool everybody in var
-    var = [deltaR; deltaP; deltaE; Ep_or_Em_trials; Fp; currEff; prevEff];
+    vars = [deltaR; deltaP; deltaE; Ep_or_Em_trials; Fp; currEff; prevEff];
     var_names = {'dR','dP','dE','EpEm','Fp','currEff','prevEff'};
     % control no NaNs remaining as that would make VBA crash
-    if sum(sum(isnan(var))) > 0
+    if sum(sum(isnan(vars))) > 0
         switch sub_nm
             case '040' % run 3 and run 4 not executed => replace with zeros to avoid VBA crash, but trials will be ignored through isYout
-                var(:,109:216) = 0;
+                vars(:,109:216) = 0;
             otherwise
                 % identify variable and trial which are problematic and report it
                 iVar = 1;
-                while sum(isnan(var(:,iVar))) == 0 && iVar < size(var,2)
+                while sum(isnan(vars(:,iVar))) == 0 && iVar < size(vars,2)
                     iVar = iVar + 1;
-                    error(['var contains a NaN in trial ',num2str(find(isnan(var(:,iVar)))),' for the variable ',var_names{iVar}]);
+                    error(['var contains a NaN in trial ',num2str(find(isnan(vars(:,iVar)))),' for the variable ',var_names{iVar}]);
                 end
 
                 % only in case where var is equal to NaN for saturated
@@ -232,12 +233,18 @@ for iS = 1:NS
     options.verbose = 0; % display text during inversion (1) or not (0)
     options.GnFigs = 0; % flag to display (=1) or not (=0) the Gauss-Newton inner loops display figures {0} by default
     
+    % define nature of the output (binary/non-binary)
     switch binary_answers
         case false
             options.sources.type = 0; % output is not binary
         case true
             options.sources.type = 1; % output is binary
     end
+    % since you define options.sources.type, you also have to define
+    % options.sources.out or VBA_check will crash but can be left empty if
+    % you don't define options.sources.type as VBA will automatically fill
+    % these fields together.
+    options.sources.out = 1:size(all_choices,1); % vector varying with the number of output variables (in principle = 1 in this design)
     
     % priors on the parameters
     % no hidden states, nor F function => no priors
@@ -281,7 +288,7 @@ for iS = 1:NS
     options.inG.var_names = var_names;
     
     %% compute model for this subject
-    [posterior, out] = VBA_NLStateSpaceModel(all_choices, var, f_evol_function, g_obs_function, dim, options);
+    [posterior, out] = VBA_NLStateSpaceModel(all_choices, vars, f_evol_function, g_obs_function, dim, options);
     
     %% extract variables of interest
     % model prediction for choices
@@ -295,7 +302,8 @@ for iS = 1:NS
             case false % no constraint on the parameter
                 prm.(G_prm_nm)(iS) = posterior.muPhi(iP);
             case true % positivity constraint => transform parameter accordingly
-                prm.(G_prm_nm)(iS) = log(1 + exp(posterior.muPhi(iP)));
+                [prm.(G_prm_nm)(iS)] = fn_for_posterior(posterior.muPhi(iP), posterior.SigmaPhi(iP,iP), 'pos2'); % 'pos2' refers to the log(1+exp(X)) transformation
+                old_prm.(G_prm_nm)(iS) = log(1 + exp(posterior.muPhi(iP))); % wrong but this is what we did initially => need to control if it's ok
         end
     end
 
@@ -334,5 +342,6 @@ save([saveFolder,filesep,'bayesian_model_',mdl_n_nm,'_results.mat'],...
     'prm', 'mdl_quality', 'subject_id', 'NS',...
     'choices_raw', 'choices_pred','dV_pred',...
     'choices_raw_perSub','choices_pred_perSub','dV_pred_perSub',...
-    'choices_raw_perSub_perRun','choices_pred_perSub_perRun','dV_pred_perSub_perRun');
+    'choices_raw_perSub_perRun','choices_pred_perSub_perRun','dV_pred_perSub_perRun',...
+    'old_prm');
 end % function
